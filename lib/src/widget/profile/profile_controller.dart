@@ -36,6 +36,7 @@ class _ProfileControllerState extends State<ProfileController> with Observer {
   bool isPro = true;
   SecureModel? secureModel;
   final AppRepository _appRepository = AppRepository();
+  var userInfo = AppSettings.userInfo;
 
   @override
   void initState() {
@@ -142,7 +143,7 @@ class _ProfileControllerState extends State<ProfileController> with Observer {
                                   Image.asset(isPro ? R.drawable.ic_pro : R.drawable.ic_crown_green,
                                       width: 20, height: 20),
                                   const SizedBox(width: 8),
-                                  Text(R.string.coaching_package.tr(),
+                                  Text(userInfo?.packageName ?? '',
                                       style:
                                           TextStyle(color: R.color.textDark, fontSize: 14, fontWeight: FontWeight.w700))
                                 ],

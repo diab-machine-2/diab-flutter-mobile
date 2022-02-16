@@ -45,13 +45,8 @@ class UserClient extends FetchClient {
         if (response.data['data'] == null) {
           return null;
         } else {
-          UserModel? user;
-          try {
-            user = UserModel.fromJson(response.data['data']);
-            AppSettings.userInfo = user;
-          } catch(error){
-            print(error.toString());
-          }
+          var user = UserModel.fromJson(response.data['data']);
+          AppSettings.userInfo = user;
 
           //await fetchUserInfo(user.patientId);
           Observable.instance.notifyObservers([], notifyName: "user_info_change");
@@ -474,7 +469,7 @@ class UserClient extends FetchClient {
     }
   }
 
-   Future<List<CategoryItemUserModel>?> fetchDiabeteStatesNoHeader() async {
+  Future<List<CategoryItemUserModel>?> fetchDiabeteStatesNoHeader() async {
     try {
       final Response response = await super.fetchDataNoHeaders(url: '/App/Patient/DiabeteStates');
       if (response.statusCode == 200) {

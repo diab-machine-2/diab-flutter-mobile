@@ -243,7 +243,10 @@ class _HomeControllerState extends State<HomeController> with Observer {
                                   return _buildExcercise(context, index, name as String?, image as String?,
                                       icon as String?, model!.exercise!);
                                 }
-                                if (index == 6 && model != null && model!.processCard != null && model!.processCard!.target != 0) {
+                                if (index == 6 &&
+                                    model != null &&
+                                    model!.processCard != null &&
+                                    model!.processCard!.target != 0) {
                                   return _buildProgress(context, index, name as String?, image as String?,
                                       icon as String?, model!.processCard!);
                                 }
@@ -705,7 +708,8 @@ class _HomeControllerState extends State<HomeController> with Observer {
                 Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                   Text(name ?? '', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
                   const SizedBox(height: 4),
-                  Text(getStringToday(model.createDateTime ?? 0).isEmpty
+                  Text(
+                      getStringToday(model.createDateTime ?? 0).isEmpty
                           ? convertToUTC(model.createDateTime ?? 0, 'dd/MM/yyyy')
                           : getStringToday(model.createDateTime ?? 0),
                       style: TextStyle(color: R.color.captionColorGray, fontSize: 12, fontWeight: FontWeight.w400)),
@@ -733,8 +737,8 @@ class _HomeControllerState extends State<HomeController> with Observer {
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Image.network(
-                      model.icon?.url ?? '',
+                    Image.asset(
+                      getExerciseIcon(model.facExercise ?? 0, model.targetExercise ?? 0),
                       width: 25,
                       height: 25,
                       errorBuilder: (context, error, stackTrace) {
@@ -761,6 +765,28 @@ class _HomeControllerState extends State<HomeController> with Observer {
         )
       ]),
     );
+  }
+
+  String getExerciseIcon(double targetComplete, double target) {
+    if (target == 0) return R.drawable.ic_complete;
+    double percent = targetComplete / target;
+    if (percent >= 0 && percent <= 33) {
+      return R.drawable.ic_not_complete1;
+    } else if (percent > 33 && percent <= 66) {
+      return R.drawable.ic_not_complete2;
+    } else if (percent > 66 && percent <= 100) {
+      return R.drawable.ic_complete;
+    } else {
+      return R.drawable.ic_complete;
+    }
+  }
+
+  String getProgressIcon(ProcessCardModel model) {
+    if (model.exerciseCompeleted! < model.exercise!) {
+      return R.drawable.ic_not_complete_exercise;
+    } else {
+      return R.drawable.ic_complete_exercise;
+    }
   }
 
   Widget buildHbA1C(HbA1CIndexModel model) {
@@ -836,8 +862,7 @@ class _HomeControllerState extends State<HomeController> with Observer {
     );
   }
 
-  Widget _buildProgress(
-      BuildContext context, int index, String? name, String? image, String? icon, ProcessCardModel model) {
+  _buildProgress(BuildContext context, int index, String? name, String? image, String? icon, ProcessCardModel model) {
     return GestureDetector(
       onTap: () async {
         if (model.target != null && model.target != 0) {
@@ -890,20 +915,16 @@ class _HomeControllerState extends State<HomeController> with Observer {
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      NetWorkImageWidget(imageUrl: model.icon?.url ?? '', width: 25, height: 25),
+                      Image.asset(getProgressIcon(model), width: 25, height: 25),
                       const SizedBox(width: 6),
                       Flexible(
-                        child: Padding(
-                          padding: const EdgeInsets.only(top: 8),
-                          child: FittedBox(
-                            fit: BoxFit.scaleDown,
-                            child: Text(
-                              getStatusProgress(model),
-                              style:
-                                  TextStyle(color: R.color.captionColorGray, fontSize: 14, fontWeight: FontWeight.w400),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
+                        child: FittedBox(
+                          fit: BoxFit.scaleDown,
+                          child: Text(
+                            getProgressStatus(model),
+                            style:
+                                TextStyle(color: R.color.captionColorGray, fontSize: 12, fontWeight: FontWeight.w400),
+                            maxLines: 2,
                           ),
                         ),
                       )
@@ -917,15 +938,11 @@ class _HomeControllerState extends State<HomeController> with Observer {
     );
   }
 
-  getStatusProgress(ProcessCardModel model) {
-    if (model.exercise != null && model.exerciseCompeleted != null) {
-      if (model.exerciseCompeleted! < model.exercise!) {
-        return 'Chưa hoàn thành';
-      } else if (model.exercise! == model.exerciseCompeleted!) {
-        return 'Hoàn thành';
-      } else {
-        return '';
-      }
+  getProgressStatus(ProcessCardModel model) {
+    if (model.exerciseCompeleted! < model.exercise!) {
+      return 'Chưa hoàn thành\nbài tập vận động';
+    } else if (model.exercise! == model.exerciseCompeleted!) {
+      return 'Đã hoàn thành\nbài tập vận động';
     } else {
       return '';
     }

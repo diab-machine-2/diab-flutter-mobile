@@ -448,18 +448,30 @@ class DiabeteModel {
 class TrainingGroupModel {
   final String? trainingGroupId;
   final String? patientId;
+  final String? id;
+  final String? coachPhoneNumber;
+  final String? zaloUrl;
+  final String? nameTrainingGroup;
   final TrainingGroup? trainingGroup;
 
   TrainingGroupModel({
     required this.trainingGroupId,
     required this.patientId,
     required this.trainingGroup,
+    required this.nameTrainingGroup,
+    required this.id,
+    required this.coachPhoneNumber,
+    required this.zaloUrl,
   });
 
   factory TrainingGroupModel.fromJson(Map<String, dynamic> json) {
     return TrainingGroupModel(
       trainingGroupId: json['trainingGroupId'],
       patientId: json['patientId'],
+      id: json['id'],
+      coachPhoneNumber: json['coachPhoneNumber'],
+      nameTrainingGroup: json['nameTrainingGroup'],
+      zaloUrl: json['zaloUrl'],
       trainingGroup: json['trainingGroup'] == null ? null : TrainingGroup.fromJson(json['trainingGroup']),
     );
   }

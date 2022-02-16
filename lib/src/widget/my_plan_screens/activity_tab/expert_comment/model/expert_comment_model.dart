@@ -25,7 +25,7 @@ class ExpertCommentModel {
   final CalendarTraining? calendarTraining;
 
   String get name {
-    if(calendarTraining?.calendar?.performer != null){
+    if (calendarTraining?.calendar?.performer != null) {
       return calendarTraining!.calendar!.performer!.fullName ?? '';
     } else {
       return '';
@@ -33,7 +33,7 @@ class ExpertCommentModel {
   }
 
   String get dateTimeFormatted {
-    if(updateDateTime != null){
+    if (updateDateTime != null) {
       return convertToUTC(updateDateTime!, 'dd/MM/yyyy');
     } else {
       return '';
@@ -41,8 +41,8 @@ class ExpertCommentModel {
   }
 
   String get type {
-    if(calendarTraining?.type != null){
-      switch(calendarTraining!.type!){
+    if (calendarTraining?.type != null) {
+      switch (calendarTraining!.type!) {
         case 0:
           return 'Phân loại đầu ra';
         case 1:
@@ -66,8 +66,8 @@ class ExpertCommentModel {
   }
 
   String? get url {
-    if(calendarTraining?.calendar?.performer != null){
-      return calendarTraining!.calendar!.performer!.avatar;
+    if (calendarTraining?.calendar?.performer?.creatorUrl != null) {
+      return calendarTraining!.calendar!.performer!.creatorUrl!.url;
     } else {
       return null;
     }
@@ -78,8 +78,8 @@ class ExpertCommentModel {
   }
 
   Color getColor() {
-    if(calendarTraining?.type != null){
-      switch(calendarTraining!.type!){
+    if (calendarTraining?.type != null) {
+      switch (calendarTraining!.type!) {
         case 0:
           return R.color.greenGradientBottom;
         case 1:
@@ -98,7 +98,7 @@ class ExpertCommentModel {
     }
   }
 
-   @override
+  @override
   factory ExpertCommentModel.fromJson(Map<String, dynamic> json) {
     return ExpertCommentModel(
       accountId: json['accountId'],
@@ -149,7 +149,7 @@ class CalendarTraining {
 
 //  DateTime? get time => DateUtil.parseStringToDate(updateDateTime, 'dd/MM/yyyy');
 
-   @override
+  @override
   factory CalendarTraining.fromJson(Map<String, dynamic> json) {
     return CalendarTraining(
       trainingGroupId: json['trainingGroupId'],
@@ -215,7 +215,7 @@ class CalendarModel {
 
 //  DateTime? get time => DateUtil.parseStringToDate(updateDateTime, 'dd/MM/yyyy');
 
-   @override
+  @override
   factory CalendarModel.fromJson(Map<String, dynamic> json) {
     return CalendarModel(
       name: json['name'],

@@ -162,12 +162,15 @@ class FunkyOverlayState extends State<FunkyOverlay> with SingleTickerProviderSta
                         label: 'Chat với huấn luyện viên',
                         ontap: () async {
                           if (user?.trainingGroups != null && user!.trainingGroups!.isNotEmpty) {
-                            if (user!.trainingGroups!.first.trainingGroup?.account != null) {
-                              String? phone = user!.trainingGroups!.first.trainingGroup!.account!.phoneNumber;
-                              if (phone != null && phone.isNotEmpty) {
-                                goToZaloCoach(phone);
-                                return;
-                              }
+                            // if (user!.trainingGroups!.first.trainingGroup?.account != null) {
+                            //   String? phone = user!.trainingGroups!.first.trainingGroup!.account!.phoneNumber;
+                            //   if (phone != null && phone.isNotEmpty) {
+                            //     goToZaloCoach(phone);
+                            //     return;
+                            //   }
+                            // }
+                            if (user!.trainingGroups!.first.coachPhoneNumber != null) {
+                              goToZaloCoach(user!.trainingGroups!.first.coachPhoneNumber!);
                             }
                           }
                           Message.showToastMessage(context, 'Không tìm thấy số điện thoại');
@@ -180,13 +183,16 @@ class FunkyOverlayState extends State<FunkyOverlay> with SingleTickerProviderSta
                         label: 'Chat nhóm',
                         ontap: () {
                           if (user?.trainingGroups != null && user!.trainingGroups!.isNotEmpty) {
-                            if (user!.trainingGroups!.first.trainingGroup?.account != null) {
-                              String? linkZalo = user!.trainingGroups!.first.trainingGroup!.linkZalo;
-                              if (linkZalo != null && linkZalo.isNotEmpty) {
-                                goToZaloGroup(linkZalo);
-                                return;
-                              }
+                            if (user!.trainingGroups!.first.zaloUrl != null) {
+                              goToZaloGroup(user!.trainingGroups!.first.zaloUrl!);
                             }
+                            // if (user!.trainingGroups!.first.trainingGroup?.account != null) {
+                            //   String? linkZalo = user!.trainingGroups!.first.trainingGroup!.linkZalo;
+                            //   if (linkZalo != null && linkZalo.isNotEmpty) {
+                            //     goToZaloGroup(linkZalo);
+                            //     return;
+                            //   }
+                            // }
                           }
                           Message.showToastMessage(context, 'Không tìm thấy nhóm');
                         },

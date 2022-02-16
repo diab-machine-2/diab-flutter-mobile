@@ -1,6 +1,6 @@
 class Const {
 //  static const String HOST_URL = "https://api.savvycom.asia/";
-  static const String HOST_URL = "https://diab-api-dev.savvycom.vn/";
+  static const String HOST_URL = "https://api.dev.savvycom.asia/";
 
   static const String API_URL = "${HOST_URL}api/";
 

@@ -37,7 +37,7 @@ class _ExpertCommentPageState extends State<ExpertCommentPage> {
         create: (context) => _cubit,
         child: BlocListener<ExpertCommentCubit, ExpertCommentState>(
           listener: (context, state) {
-            if(state is ExpertCommentLoading){
+            if (state is ExpertCommentLoading) {
               BotToast.showLoading();
             } else {
               BotToast.closeAllLoading();
@@ -87,19 +87,21 @@ class _ExpertCommentPageState extends State<ExpertCommentPage> {
     return Expanded(
       child: Container(
         padding: EdgeInsets.only(left: 8, right: 8, bottom: 8),
-        child: _cubit.commentList == null ? Container() : _cubit.commentList!.length > 0
-            ? ListView.builder(
-                padding: EdgeInsets.zero,
-                itemCount: _cubit.commentList!.length,
-                shrinkWrap: true,
-                itemBuilder: (context, position) {
-                  return _buildItem(_cubit.commentList![position]);
-                },
-                // separatorBuilder: (context, position) {
-                //   return Divider(height: 0);
-                // },
-              )
-            : _buildEmpty(),
+        child: _cubit.commentList == null
+            ? Container()
+            : _cubit.commentList!.length > 0
+                ? ListView.builder(
+                    padding: EdgeInsets.zero,
+                    itemCount: _cubit.commentList!.length,
+                    shrinkWrap: true,
+                    itemBuilder: (context, position) {
+                      return _buildItem(_cubit.commentList![position]);
+                    },
+                    // separatorBuilder: (context, position) {
+                    //   return Divider(height: 0);
+                    // },
+                  )
+                : _buildEmpty(),
       ),
     );
   }
@@ -118,7 +120,7 @@ class _ExpertCommentPageState extends State<ExpertCommentPage> {
               decoration: BoxDecoration(color: R.color.mainColor, borderRadius: BorderRadius.circular(52)),
               child: item.url == null
                   ? Icon(Icons.person, size: 56, color: R.color.white)
-                  : NetWorkImageWidget(imageUrl: item.url!, width: 56, height: 56),
+                  : NetWorkImageWidget(imageUrl: item.url ?? '', width: 56, height: 56),
             ),
             SizedBox(width: 12),
             Expanded(

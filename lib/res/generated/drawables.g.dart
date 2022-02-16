@@ -104,6 +104,11 @@ class Drawables {
   String get ic_close => "lib/res/drawables/ic_close.png";
   String get ic_close_border => "lib/res/drawables/ic_close_border.png";
   String get ic_coin => "lib/res/drawables/ic_coin.png";
+  String get ic_complete => "lib/res/drawables/ic_complete.png";
+  String get ic_complete_exercise => "lib/res/drawables/ic_complete_exercise.png";
+  String get ic_not_complete_exercise => "lib/res/drawables/ic_not_complete_exercise.png";
+  String get ic_not_complete1 => "lib/res/drawables/ic_not_complete1.png";
+  String get ic_not_complete2 => "lib/res/drawables/ic_not_complete2.png";
   String get ic_comment_checked => "lib/res/drawables/ic_comment_checked.png";
   String get ic_congratulation => "lib/res/drawables/ic_congratulation.png";
   String get ic_contact => "lib/res/drawables/ic_contact.png";

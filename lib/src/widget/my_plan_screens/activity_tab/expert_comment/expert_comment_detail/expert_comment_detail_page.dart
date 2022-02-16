@@ -88,8 +88,8 @@ class _ExpertCommentDetailPageState extends State<ExpertCommentDetailPage> {
                 clipBehavior: Clip.hardEdge,
                 decoration: BoxDecoration(color: R.color.mainColor, borderRadius: BorderRadius.circular(52)),
                 child: _cubit.expertCommentModel?.url == null
-                  ? Icon(Icons.person, size: 64, color: R.color.white)
-                  : NetWorkImageWidget(imageUrl: _cubit.expertCommentModel?.url!, width: 64, height: 64),
+                    ? Icon(Icons.person, size: 64, color: R.color.white)
+                    : NetWorkImageWidget(imageUrl: _cubit.expertCommentModel?.url ?? '', width: 64, height: 64),
               ),
               SizedBox(height: 8),
               Text(
@@ -102,7 +102,8 @@ class _ExpertCommentDetailPageState extends State<ExpertCommentDetailPage> {
                 children: [
                   Text(
                     _cubit.expertCommentModel?.type ?? '',
-                    style: TextStyle(color: _cubit.expertCommentModel?.getColor(), fontSize: 14, fontWeight: FontWeight.w700),
+                    style: TextStyle(
+                        color: _cubit.expertCommentModel?.getColor(), fontSize: 14, fontWeight: FontWeight.w700),
                   ),
                   SizedBox(width: 4),
                   Container(
@@ -134,8 +135,8 @@ class _ExpertCommentDetailPageState extends State<ExpertCommentDetailPage> {
               ),
               SizedBox(height: 8),
               Visibility(
-                visible: (_cubit.expertCommentModel?.calendarTraining?.type != null 
-                        && _cubit.expertCommentModel?.calendarTraining?.type == 2),
+                visible: (_cubit.expertCommentModel?.calendarTraining?.type != null &&
+                    _cubit.expertCommentModel?.calendarTraining?.type == 2),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
