@@ -1,6 +1,8 @@
 import 'package:dio/dio.dart';
 import 'package:medical/src/model/request/make_comment_request.dart';
 import 'package:medical/src/model/request/make_question_request.dart';
+import 'package:medical/src/model/response/calendar_training_response.dart';
+import 'package:medical/src/model/response/expert_comment_list_response.dart';
 import 'package:medical/src/model/response/lesson_module_response.dart';
 import 'package:medical/src/model/response/question_answer_response.dart';
 import 'package:retrofit/http.dart';
@@ -29,6 +31,7 @@ import 'response/detail_package_response.dart';
 import 'response/detail_survey_response.dart';
 import 'response/diabetes_status_response.dart';
 import 'response/exercise_movement_response.dart';
+import 'response/expert_comment_response.dart';
 import 'response/filter_data_response.dart';
 import 'response/food_suggest_response.dart';
 import 'response/latest_hba1c_input_response.dart';
@@ -283,6 +286,15 @@ abstract class AppApi {
   // My Progress
   @GET("App/MyProgress")
   Future<MyProgressResponse> getMyProgress({@Query('type') int? type});
+
+  @GET("App/CalendarTrainingComment/GetCommentProfessorByAccountId")
+  Future<ExpertCommentListResponse> getCommentProfessorByAccountId(@Query('accountId') String? accountId);
+
+  @GET("App/CalendarTrainingComment/{id}")
+  Future<ExpertCommentResponse> getCommentById(@Path('id') String id);
+
+  @GET("App/CalendarTraining")
+  Future<CalendarTrainingListResponse> getCalendarTraining(@Query('calendarId') String calendarId);
 
   //Referral, Share Profile
   @GET("App/Patient/GetAccountInfoWithReferalOfCurrentPatient")

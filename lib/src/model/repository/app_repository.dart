@@ -24,6 +24,7 @@ import 'package:medical/src/model/response/detail_package_response.dart';
 import 'package:medical/src/model/response/detail_survey_response.dart';
 import 'package:medical/src/model/response/diabetes_status_response.dart';
 import 'package:medical/src/model/response/exercise_movement_response.dart';
+import 'package:medical/src/model/response/expert_comment_list_response.dart';
 import 'package:medical/src/model/response/filter_data_response.dart';
 import 'package:medical/src/model/response/food_suggest_response.dart';
 import 'package:medical/src/model/response/latest_hba1c_input_response.dart';
@@ -52,6 +53,8 @@ import 'package:medical/src/model/response/week_states_response.dart';
 import 'package:medical/src/model/service/api_result.dart';
 import 'package:medical/src/model/service/network_exceptions.dart';
 
+import '../response/calendar_training_response.dart';
+import '../response/expert_comment_response.dart';
 import '../service/app_client.dart';
 
 class AppRepository {
@@ -566,6 +569,33 @@ class AppRepository {
   Future<ApiResult<MyProgressResponse>> getMyProgress({int? type}) async {
     try {
       final MyProgressResponse response = await appClient.getMyProgress(type: type);
+      return ApiResult.success(data: response);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
+  Future<ApiResult<ExpertCommentListResponse>> getCommentProfessorByAccountId(String accountId) async {
+    try {
+      final ExpertCommentListResponse response = await appClient.getCommentProfessorByAccountId(accountId);
+      return ApiResult.success(data: response);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
+  Future<ApiResult<ExpertCommentResponse>> getCommentById(String id) async {
+    try {
+      final ExpertCommentResponse response = await appClient.getCommentById(id);
+      return ApiResult.success(data: response);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
+  Future<ApiResult<CalendarTrainingListResponse>> getCalendarTraining(String calendarId) async {
+    try {
+      final CalendarTrainingListResponse response = await appClient.getCalendarTraining(calendarId);
       return ApiResult.success(data: response);
     } catch (e) {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));

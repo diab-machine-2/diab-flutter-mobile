@@ -705,7 +705,9 @@ class _HomeControllerState extends State<HomeController> with Observer {
                 Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                   Text(name ?? '', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
                   const SizedBox(height: 4),
-                  Text('Hôm nay',
+                  Text(getStringToday(model.createDateTime ?? 0).isEmpty
+                          ? convertToUTC(model.createDateTime ?? 0, 'dd/MM/yyyy')
+                          : getStringToday(model.createDateTime ?? 0),
                       style: TextStyle(color: R.color.captionColorGray, fontSize: 12, fontWeight: FontWeight.w400)),
                 ]),
                 Row(

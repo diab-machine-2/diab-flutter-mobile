@@ -6,6 +6,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/my_plan_screens/activity_tab/expert_comment/model/expert_comment_model.dart';
+import '../../../../../model/repository/app_repository.dart';
+import '../../../../../widgets/network_image_widget.dart';
 import 'expert_comment_detail.dart';
 
 class ExpertCommentDetailPage extends StatefulWidget {
@@ -23,7 +25,8 @@ class _ExpertCommentDetailPageState extends State<ExpertCommentDetailPage> {
   @override
   void initState() {
     super.initState();
-    _cubit = ExpertCommentDetailCubit();
+    final AppRepository appRepository = AppRepository();
+    _cubit = ExpertCommentDetailCubit(appRepository, widget.item);
   }
 
   @override
@@ -84,14 +87,13 @@ class _ExpertCommentDetailPageState extends State<ExpertCommentDetailPage> {
               Container(
                 clipBehavior: Clip.hardEdge,
                 decoration: BoxDecoration(color: R.color.mainColor, borderRadius: BorderRadius.circular(52)),
-                child: Icon(Icons.person, size: 64, color: R.color.white),
-                // widget.item?.url == null
-                //     ? Icon(Icons.person, size: 64, color: R.color.white)
-                //     : Image.network(user.imageUrl!.url!, width: 64, height: 64)),
+                child: _cubit.expertCommentModel?.url == null
+                  ? Icon(Icons.person, size: 64, color: R.color.white)
+                  : NetWorkImageWidget(imageUrl: _cubit.expertCommentModel?.url!, width: 64, height: 64),
               ),
               SizedBox(height: 8),
               Text(
-                widget.item?.name ?? '',
+                _cubit.expertCommentModel?.name ?? '',
                 style: TextStyle(color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w700),
               ),
               SizedBox(height: 4),
@@ -99,8 +101,8 @@ class _ExpertCommentDetailPageState extends State<ExpertCommentDetailPage> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
-                    widget.item?.role ?? '',
-                    style: TextStyle(color: getColor(0), fontSize: 14, fontWeight: FontWeight.w700),
+                    _cubit.expertCommentModel?.type ?? '',
+                    style: TextStyle(color: _cubit.expertCommentModel?.getColor(), fontSize: 14, fontWeight: FontWeight.w700),
                   ),
                   SizedBox(width: 4),
                   Container(
@@ -109,7 +111,7 @@ class _ExpertCommentDetailPageState extends State<ExpertCommentDetailPage> {
                       decoration: BoxDecoration(shape: BoxShape.circle, color: R.color.notActiveGreen)),
                   SizedBox(width: 4),
                   Text(
-                    widget.item?.dateTime ?? '',
+                    _cubit.expertCommentModel?.dateTimeFormatted ?? '',
                     style: TextStyle(color: R.color.textDark, fontSize: 14, fontWeight: FontWeight.w400),
                   ),
                 ],
@@ -127,38 +129,32 @@ class _ExpertCommentDetailPageState extends State<ExpertCommentDetailPage> {
               ),
               SizedBox(height: 4),
               Text(
-                widget.item?.comment ?? '',
+                _cubit.expertCommentModel?.comment ?? '',
                 style: TextStyle(color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w400),
               ),
               SizedBox(height: 8),
-              Text(
-                R.string.next_action.tr(),
-                style: TextStyle(color: R.color.captionColorGray, fontSize: 14, fontWeight: FontWeight.w400),
-              ),
-              SizedBox(height: 4),
-              Text(
-                'Duy trì hoạt động tập thể dục hàng ngày vào mỗi buổi sáng.',
-                style: TextStyle(color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w400),
+              Visibility(
+                visible: (_cubit.expertCommentModel?.calendarTraining?.type != null 
+                        && _cubit.expertCommentModel?.calendarTraining?.type == 2),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      R.string.next_action.tr(),
+                      style: TextStyle(color: R.color.captionColorGray, fontSize: 14, fontWeight: FontWeight.w400),
+                    ),
+                    SizedBox(height: 4),
+                    Text(
+                      _cubit.expertCommentModel?.nextAction ?? '',
+                      style: TextStyle(color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w400),
+                    ),
+                  ],
+                ),
               ),
             ],
           ),
         ],
       ),
     );
-  }
-
-  Color getColor(int index) {
-    switch (index) {
-      case 0:
-        return R.color.main_1;
-      case 1:
-        return R.color.orange_1;
-      case 2:
-        return R.color.accentColor;
-      case 3:
-        return R.color.yellow;
-      default:
-        return R.color.green;
-    }
   }
 }
