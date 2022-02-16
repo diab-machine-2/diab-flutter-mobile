@@ -193,6 +193,7 @@ class CreateGoalCubit extends Cubit<CreateGoalState> {
   }
 
   Future<void> getSmartGoal({bool isRefresh = false, bool keepCurrentDay = true}) async {
+    await Future.delayed(Duration(microseconds: 50));
     emit(const CreateGoalLoading());
     await getSmartGoalStatistics(isRefresh: isRefresh, hideLoadingAfterDone: true, keepCurrentDay: keepCurrentDay);
     await getListSmartGoal(isRefresh: isRefresh);
