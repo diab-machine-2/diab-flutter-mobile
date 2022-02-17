@@ -11,11 +11,11 @@ public class Application extends FlutterApplication implements PluginRegistrantC
   @Override
   public void onCreate() {
     super.onCreate();
-    FlutterFirebaseMessagingBackgroundService.setPluginRegistrant(this);
+ //   FlutterFirebaseMessagingBackgroundService.setPluginRegistrant(this);
   }
 
   @Override
   public void registerWith(PluginRegistry registry) {
-    FlutterFirebaseMessagingPlugin.registerWith(registry.registrarFor("io.flutter.plugins.firebasemessaging.FirebaseMessagingPlugin"));
+ //   FlutterFirebaseMessagingPlugin.registerWith(registry.registrarFor("io.flutter.plugins.firebasemessaging.FirebaseMessagingPlugin"));
   }
 }
