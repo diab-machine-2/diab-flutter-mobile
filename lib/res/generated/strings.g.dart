@@ -1010,4 +1010,8 @@ class Strings {
 	String get today => 'today';
 	String get chua_hoan_thanh => 'chua_hoan_thanh';
 	String get hoan_thanh => 'hoan_thanh';
+	String get install_zalo => 'install_zalo';
+	String get phone_not_available => 'phone_not_available';
+	String get group_not_available => 'group_not_available';
+	String get error_redirect_zalo => 'error_redirect_zalo';
 }

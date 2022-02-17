@@ -37,6 +37,7 @@ import 'package:medical/src/widgets/select_bottom_sheet_widget.dart';
 import 'package:medical/src/widgets/user_icon_widget.dart';
 import 'package:permission_handler/permission_handler.dart';
 
+import '../../widgets/select_interests_bottom_sheet_widget.dart';
 import 'widgets/birth_day_picker.dart';
 import 'widgets/diabetes_status_date_picker.dart';
 import 'widgets/diabetes_status_picker.dart';
@@ -414,7 +415,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                               showActionFilter(
                                   context: context,
                                   builder: (context) {
-                                    return SelectBottomSheetWidget(
+                                    return SelectInterestsBottomSheetWidget(
                                       title: 'Chọn chủ đề quan tâm',
                                       elementList: user.lessonTagList!.map((e) => e.text ?? '').toList(),
                                       selectedList: user.lessonTagList!
@@ -422,6 +423,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                                           .map((e) => e.text ?? '')
                                           .toList(),
                                       isMultipleChoice: true,
+                                      isRequiredSelection: false,
                                       onSelected: (typeList) {
                                         var selectedIndexList = getSelectedIndexList(
                                             user.lessonTagList!.map((e) => e.text ?? '').toList(), typeList);

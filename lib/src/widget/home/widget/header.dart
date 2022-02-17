@@ -161,7 +161,7 @@ class _HomeHeaderState extends State<HomeHeader> with Observer {
                             if (isZaloAppExisted) {
                               showChatMenu();
                             } else {
-                              goToStore();
+                              showDialogConfirmZalo();
                             }
                           },
                           child: Container(
@@ -251,6 +251,7 @@ class _HomeHeaderState extends State<HomeHeader> with Observer {
     );
     if (isInstalled is bool) return isInstalled;
     if (isInstalled is int) {
+    //  Message.showToastMessage(context, 'isInstalled = $isInstalled');
       return isInstalled == 1 ? true : false;
     }
     return false;
@@ -275,6 +276,73 @@ class _HomeHeaderState extends State<HomeHeader> with Observer {
       context: context,
       builder: (_) => FunkyOverlay(isCircular: false),
     );
+  }
+
+  showDialogConfirmZalo() {
+    showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+            contentPadding: const EdgeInsets.all(0),
+            content: Stack(children: [
+              Container(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(top: 16.0),
+                      child: Text(R.string.install_zalo.tr(),
+                          textAlign: TextAlign.center,
+                          style: TextStyle(color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w600)),
+                    ),
+                    Container(
+                      margin: const EdgeInsets.only(top: 24),
+                      child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                        Expanded(
+                          child: GestureDetector(
+                            onTap: () {
+                              Navigator.pop(context);
+                            },
+                            child: Container(
+                                height: 43,
+                                decoration:
+                                    BoxDecoration(borderRadius: BorderRadius.circular(200), color: R.color.grayBorder),
+                                child: Center(
+                                  child: Text(R.string.close.tr(),
+                                      style: TextStyle(
+                                          color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w600)),
+                                )),
+                          ),
+                        ),
+                        const SizedBox(width: 14),
+                        Expanded(
+                          child: GestureDetector(
+                            onTap: () {
+                              Navigator.pop(context);
+                              goToStore();
+                            },
+                            child: Container(
+                              height: 43,
+                              decoration: BoxDecoration(
+                                  color: R.color.red,
+                                  borderRadius: BorderRadius.circular(200),
+                                  gradient: LinearGradient(
+                                      begin: Alignment.topLeft,
+                                      end: Alignment.centerRight,
+                                      colors: [R.color.greenGradientTop, R.color.greenGradientBottom])),
+                              child: Center(
+                                child: Text(R.string.tiep_tuc.tr(),
+                                    style: TextStyle(color: R.color.white, fontSize: 16, fontWeight: FontWeight.w600)),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ]),
+                    ),
+                  ],
+                ),
+              ),
+            ])));
   }
 
   _showDialogUpdateMotivation(MotivationModel? model) {

@@ -162,18 +162,12 @@ class FunkyOverlayState extends State<FunkyOverlay> with SingleTickerProviderSta
                         label: 'Chat với huấn luyện viên',
                         ontap: () async {
                           if (user?.trainingGroups != null && user!.trainingGroups!.isNotEmpty) {
-                            // if (user!.trainingGroups!.first.trainingGroup?.account != null) {
-                            //   String? phone = user!.trainingGroups!.first.trainingGroup!.account!.phoneNumber;
-                            //   if (phone != null && phone.isNotEmpty) {
-                            //     goToZaloCoach(phone);
-                            //     return;
-                            //   }
-                            // }
-                            if (user!.trainingGroups!.first.coachPhoneNumber != null) {
+                            if (user!.trainingGroups!.first.coachPhoneNumber != null && user!.trainingGroups!.first.coachPhoneNumber!.isNotEmpty) {
                               goToZaloCoach(user!.trainingGroups!.first.coachPhoneNumber!);
+                              return;
                             }
                           }
-                          Message.showToastMessage(context, 'Không tìm thấy số điện thoại');
+                          Message.showToastMessage(context, R.string.phone_not_available.tr());
                         },
                         icon: Image.asset(R.drawable.ic_chat_coach, width: 32, height: 32),
                         labelColor: Colors.white,
@@ -183,18 +177,12 @@ class FunkyOverlayState extends State<FunkyOverlay> with SingleTickerProviderSta
                         label: 'Chat nhóm',
                         ontap: () {
                           if (user?.trainingGroups != null && user!.trainingGroups!.isNotEmpty) {
-                            if (user!.trainingGroups!.first.zaloUrl != null) {
+                            if (user!.trainingGroups!.first.zaloUrl != null && user!.trainingGroups!.first.zaloUrl!.isNotEmpty) {
                               goToZaloGroup(user!.trainingGroups!.first.zaloUrl!);
+                              return;
                             }
-                            // if (user!.trainingGroups!.first.trainingGroup?.account != null) {
-                            //   String? linkZalo = user!.trainingGroups!.first.trainingGroup!.linkZalo;
-                            //   if (linkZalo != null && linkZalo.isNotEmpty) {
-                            //     goToZaloGroup(linkZalo);
-                            //     return;
-                            //   }
-                            // }
                           }
-                          Message.showToastMessage(context, 'Không tìm thấy nhóm');
+                          Message.showToastMessage(context, R.string.group_not_available.tr());
                         },
                         icon: Image.asset(R.drawable.ic_chat_group, width: 32, height: 32),
                         labelColor: Colors.white,
@@ -215,17 +203,19 @@ class FunkyOverlayState extends State<FunkyOverlay> with SingleTickerProviderSta
       //   appStoreLink: 'https://apps.apple.com/vn/app/zalo/id579523206',
       //   // openStore: false
       // );
+      phone = phone.replaceAll('+84', '0');
       launch("https://zalo.me/" + phone);
     } on PlatformException catch (e) {
-      goToStore();
+      Message.showToastMessage(context, R.string.error_redirect_zalo.tr());
     }
   }
 
   goToZaloGroup(String linkZalo) async {
     try {
+      linkZalo = linkZalo.replaceAll('+84', '0');
       launch(linkZalo);
     } on PlatformException catch (e) {
-      goToStore();
+      Message.showToastMessage(context, R.string.error_redirect_zalo.tr());
     }
   }
 
