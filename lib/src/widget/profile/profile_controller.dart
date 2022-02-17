@@ -143,7 +143,7 @@ class _ProfileControllerState extends State<ProfileController> with Observer {
                                   Image.asset(isPro ? R.drawable.ic_pro : R.drawable.ic_crown_green,
                                       width: 20, height: 20),
                                   const SizedBox(width: 8),
-                                  Text(userInfo?.packageName ?? R.string.thanh_vien_co_ban.tr(),
+                                  Text((userInfo?.packageName != null && userInfo!.packageName!.isNotEmpty) ? userInfo!.packageName! : R.string.thanh_vien_co_ban.tr(),
                                       style:
                                           TextStyle(color: R.color.textDark, fontSize: 14, fontWeight: FontWeight.w700))
                                 ],

@@ -2,6 +2,7 @@ import 'package:medical/src/modal/base/images.dart';
 import 'package:medical/src/modal/user/update_profile_request.dart';
 import 'package:meta/meta.dart';
 
+import '../../model/response/user_info_response.dart';
 import 'category_item_user_model.dart';
 
 @immutable
@@ -79,6 +80,7 @@ class UserModel {
 
   final String? nameOfAgency;
   final String? nameOfDoctor;
+  final UserInfoResponseDataOwnPackage? ownPackage;
 
   const UserModel({
     required this.id,
@@ -149,6 +151,7 @@ class UserModel {
     required this.accountRule,
     required this.nameOfAgency,
     required this.nameOfDoctor,
+    required this.ownPackage,
   });
 
   UserModel copyWith({
@@ -221,6 +224,7 @@ class UserModel {
     AccountRule? accountRule,
     String? nameOfAgency,
     String? nameOfDoctor,
+    UserInfoResponseDataOwnPackage? ownPackage,
   }) =>
       UserModel(
         id: id ?? this.id,
@@ -291,6 +295,7 @@ class UserModel {
         accountRule: accountRule ?? this.accountRule,
         nameOfAgency: nameOfAgency ?? this.nameOfAgency,
         nameOfDoctor: nameOfDoctor ?? this.nameOfDoctor,
+        ownPackage: ownPackage ?? this.ownPackage,
       );
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
@@ -368,6 +373,7 @@ class UserModel {
       personalityRuleList: CategoryItemUserModel.toList(json['personalityRuleList']),
       nameOfAgency: json['nameOfAgency'],
       nameOfDoctor: json['nameOfDoctor'],
+      ownPackage: json['ownPackage'] == null ? null : UserInfoResponseDataOwnPackage.fromJson(json['ownPackage']),
     );
   }
 

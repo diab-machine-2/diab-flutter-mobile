@@ -138,12 +138,18 @@ class _HomeHeaderState extends State<HomeHeader> with Observer {
                             const SizedBox(width: 8),
                             Expanded(
                               child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                                Text(user.fullName!.trim(),
-                                    style: TextStyle(
-                                      color: R.color.white,
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w700,
-                                    )),
+                                FittedBox(
+                                  fit: BoxFit.scaleDown,
+                                  child: Text(user.fullName!.trim(),
+                                      style: TextStyle(
+                                        color: R.color.white,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w700,
+                                      ),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      ),
+                                ),
                                 const SizedBox(height: 4),
                                 Text((user.packageName != null && user.packageName!.isNotEmpty) ? user.packageName! : R.string.thanh_vien_co_ban.tr(),
                                     style: TextStyle(color: R.color.white, fontSize: 14, fontWeight: FontWeight.w400))
@@ -157,12 +163,7 @@ class _HomeHeaderState extends State<HomeHeader> with Observer {
                       children: [
                         InkWell(
                           onTap: () async {
-                            var isZaloAppExisted = await checkZaloAppExisted();
-                            if (isZaloAppExisted) {
-                              showChatMenu();
-                            } else {
-                              showDialogConfirmZalo();
-                            }
+                            showChatMenu();
                           },
                           child: Container(
                             padding: EdgeInsets.only(bottom: 4, top: 4, right: 4, left: 16),
@@ -244,31 +245,6 @@ class _HomeHeaderState extends State<HomeHeader> with Observer {
             )));
   }
 
-  Future<bool> checkZaloAppExisted() async {
-    var isInstalled = await LaunchApp.isAppInstalled(
-      androidPackageName: 'com.zing.zalo',
-      iosUrlScheme: 'zalo://',
-    );
-    if (isInstalled is bool) return isInstalled;
-    if (isInstalled is int) {
-    //  Message.showToastMessage(context, 'isInstalled = $isInstalled');
-      return isInstalled == 1 ? true : false;
-    }
-    return false;
-  }
-
-  goToStore() {
-    if (Platform.isIOS) {
-      try {
-        launch('https://apps.apple.com/vn/app/zalo/id579523206');
-      } on PlatformException catch (e) {}
-    } else {
-      try {
-        launch("https://play.google.com/store/apps/details?id=com.zing.zalo");
-      } on PlatformException catch (e) {}
-    }
-  }
-
   showChatMenu() {
     showDialog(
       barrierColor: R.color.color0xff003F38.withOpacity(0.8),
@@ -276,73 +252,6 @@ class _HomeHeaderState extends State<HomeHeader> with Observer {
       context: context,
       builder: (_) => FunkyOverlay(isCircular: false),
     );
-  }
-
-  showDialogConfirmZalo() {
-    showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-            contentPadding: const EdgeInsets.all(0),
-            content: Stack(children: [
-              Container(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(top: 16.0),
-                      child: Text(R.string.install_zalo.tr(),
-                          textAlign: TextAlign.center,
-                          style: TextStyle(color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w600)),
-                    ),
-                    Container(
-                      margin: const EdgeInsets.only(top: 24),
-                      child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                        Expanded(
-                          child: GestureDetector(
-                            onTap: () {
-                              Navigator.pop(context);
-                            },
-                            child: Container(
-                                height: 43,
-                                decoration:
-                                    BoxDecoration(borderRadius: BorderRadius.circular(200), color: R.color.grayBorder),
-                                child: Center(
-                                  child: Text(R.string.close.tr(),
-                                      style: TextStyle(
-                                          color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w600)),
-                                )),
-                          ),
-                        ),
-                        const SizedBox(width: 14),
-                        Expanded(
-                          child: GestureDetector(
-                            onTap: () {
-                              Navigator.pop(context);
-                              goToStore();
-                            },
-                            child: Container(
-                              height: 43,
-                              decoration: BoxDecoration(
-                                  color: R.color.red,
-                                  borderRadius: BorderRadius.circular(200),
-                                  gradient: LinearGradient(
-                                      begin: Alignment.topLeft,
-                                      end: Alignment.centerRight,
-                                      colors: [R.color.greenGradientTop, R.color.greenGradientBottom])),
-                              child: Center(
-                                child: Text(R.string.tiep_tuc.tr(),
-                                    style: TextStyle(color: R.color.white, fontSize: 16, fontWeight: FontWeight.w600)),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ]),
-                    ),
-                  ],
-                ),
-              ),
-            ])));
   }
 
   _showDialogUpdateMotivation(MotivationModel? model) {

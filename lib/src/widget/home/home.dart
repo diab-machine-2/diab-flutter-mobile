@@ -866,7 +866,7 @@ class _HomeControllerState extends State<HomeController> with Observer {
     return GestureDetector(
       onTap: () async {
         if (model.target != null && model.target != 0) {
-          if (model.userFree ?? true) {
+          if (user?.ownPackage == null) {
             // await Navigator.pushReplacementNamed(context, NavigatorName.tabbar, arguments: {
             //   'isRedirectFromNotification': true,
             // });
