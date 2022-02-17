@@ -156,14 +156,14 @@ class _ExpertCommentPageState extends State<ExpertCommentPage> {
                       SizedBox(width: 4),
                       Text(
                         item.dateTimeFormatted,
-                        style: TextStyle(color: R.color.textDark, fontSize: 12, fontWeight: FontWeight.w400),
+                        style: TextStyle(color: R.color.captionColorGray, fontSize: 12, fontWeight: FontWeight.w400),
                       ),
                     ],
                   ),
                   SizedBox(height: 2),
                   Text(
                     item.comment ?? '',
-                    style: TextStyle(color: R.color.textDark, fontSize: 12, fontWeight: FontWeight.w400),
+                    style: TextStyle(color: R.color.captionColorGray, fontSize: 12, fontWeight: FontWeight.w400),
                     overflow: TextOverflow.ellipsis,
                     maxLines: 1,
                   ),
