@@ -4,6 +4,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/app_setting/deep_link_config.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:package_info/package_info.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
@@ -53,6 +54,15 @@ class _StepListControllerState extends State<StepListController> {
   void initState() {
     super.initState();
     //startTimer();
+    DeepLinkConfig.setUpHandleDeepLink(onHaveLink: (code) {
+      if (code?.isNotEmpty == true) {
+        Navigator.pushNamed(
+          context,
+          NavigatorName.register,
+          arguments: code,
+        );
+      }
+    });
     getVersion();
     
   }

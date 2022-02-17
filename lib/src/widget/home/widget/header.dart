@@ -8,6 +8,7 @@ import 'package:flutter_observer/Observable.dart';
 import 'package:flutter_observer/Observer.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
+import 'package:medical/src/app_setting/deep_link_config.dart';
 import 'package:medical/src/modal/error/error_model.dart';
 import 'package:medical/src/modal/user/motivation_model.dart';
 import 'package:medical/src/repo/notification/notification_client.dart';
@@ -41,6 +42,11 @@ class _HomeHeaderState extends State<HomeHeader> with Observer {
   void initState() {
     super.initState();
     Observable.instance.addObserver(this);
+    DeepLinkConfig.setUpHandleDeepLink(onHaveLink: (code) {
+      if (code?.isNotEmpty == true) {
+        ShareProfilePopup.instance.onHasSharedCode(context: context, code: code!);
+      }
+    });
     initData();
   }
 
