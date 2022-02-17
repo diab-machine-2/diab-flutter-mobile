@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'dart:ui';
 
 import 'package:better_player/better_player.dart';
@@ -63,7 +64,14 @@ class VideoManager {
       );
       this.controller!.setupDataSource(betterPlayerDataSource);
 
-      this.controller?.videoPlayerController?.addListener(() {
+      this.controller?.videoPlayerController?.addListener(() async {
+        if (Platform.isIOS) {
+          if ((this.controller?.videoPlayerController!.value.position.inMilliseconds) ==
+              this.controller?.videoPlayerController!.value.duration!.inMilliseconds) {
+            await this.controller?.pause();
+            print('this.controller.pause()');
+          }
+        }
         if (!isLocked &&
             this.controller?.videoPlayerController?.value != null &&
             !this.controller!.videoPlayerController!.value.isPlaying &&

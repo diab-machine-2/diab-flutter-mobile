@@ -443,11 +443,11 @@ class _LessonTabPageState extends State<LessonTabPage> with AutomaticKeepAliveCl
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          if (lessonDetail?.tagName.isNotEmpty == true)
+                          if (lessonDetail?.module?.isNotEmpty == true)
                             Row(
                               children: [
                                 Text(
-                                  lessonDetail?.tagName ?? '',
+                                  lessonDetail?.module ?? '',
                                   style: TextStyle(
                                     color: R.color.greenGradientBottom,
                                     fontSize: 14,
