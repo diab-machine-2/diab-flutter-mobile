@@ -113,6 +113,9 @@ class _SelectInterestsBottomSheetWidgetState extends State<SelectInterestsBottom
                     if (selectedList.length > 0) {
                       if (!isClickSave) {
                         isClickSave = true;
+                        if(selectedList.first == 'Tất cả'){
+                          selectedList.removeAt(0);
+                        }
                         widget.onSelected(selectedList);
                         Navigator.pop(context);
                       }
@@ -159,7 +162,12 @@ class _SelectInterestsBottomSheetWidgetState extends State<SelectInterestsBottom
   }
 
   Widget _buildItem({required String title, bool isLast = false, required int position}) {
-    final bool isSelected = title != null && selectedList.contains(title);
+    bool isSelected = title != null && selectedList.contains(title);
+    if(position == 0){
+      if(selectedList.length == widget.elementList.length){
+        isSelected = true;
+      }
+    }
     return Column(
       children: [
         GestureDetector(
@@ -181,7 +189,13 @@ class _SelectInterestsBottomSheetWidgetState extends State<SelectInterestsBottom
                     selectedList.clear();
                   }
                   selectedList.add(title);
+                  if(selectedList.first != 'Tất cả' && selectedList.length == widget.elementList.length){
+                    selectedList.insert(0, 'Tất cả');
+                  }
                 } else if (widget.isMultipleChoice) {
+                  if(selectedList.first == 'Tất cả'){
+                    selectedList.removeAt(0);
+                  }
                   selectedList.remove(title);
                 }
               }

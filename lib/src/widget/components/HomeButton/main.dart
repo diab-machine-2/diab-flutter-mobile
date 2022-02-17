@@ -196,27 +196,119 @@ class FunkyOverlayState extends State<FunkyOverlay> with SingleTickerProviderSta
   }
 
   goToZaloCoach(String phone) async {
-    try {
+    var isZaloAppExisted = await checkZaloAppExisted();
+    if (isZaloAppExisted) {
+      try {
       // await LaunchApp.openApp(
       //   androidPackageName: 'com.zing.zalo',
       //   iosUrlScheme: 'zalo://',
       //   appStoreLink: 'https://apps.apple.com/vn/app/zalo/id579523206',
       //   // openStore: false
       // );
+      Navigator.pop(context);
       phone = phone.replaceAll('+84', '0');
       launch("https://zalo.me/" + phone);
     } on PlatformException catch (e) {
       Message.showToastMessage(context, R.string.error_redirect_zalo.tr());
     }
+    } else {
+      showDialogConfirmZalo();
+    }
   }
 
   goToZaloGroup(String linkZalo) async {
-    try {
-      linkZalo = linkZalo.replaceAll('+84', '0');
-      launch(linkZalo);
-    } on PlatformException catch (e) {
-      Message.showToastMessage(context, R.string.error_redirect_zalo.tr());
+    var isZaloAppExisted = await checkZaloAppExisted();
+    if (isZaloAppExisted) {
+      try {
+        Navigator.pop(context);
+        linkZalo = linkZalo.replaceAll('+84', '0');
+        launch(linkZalo);
+      } on PlatformException catch (e) {
+        Message.showToastMessage(context, R.string.error_redirect_zalo.tr());
+      }
+    } else {
+      showDialogConfirmZalo();
     }
+  }
+
+  showDialogConfirmZalo() {
+    showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+            contentPadding: const EdgeInsets.all(0),
+            content: Stack(children: [
+              Container(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(top: 16.0),
+                      child: Text(R.string.install_zalo.tr(),
+                          textAlign: TextAlign.center,
+                          style: TextStyle(color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w600)),
+                    ),
+                    Container(
+                      margin: const EdgeInsets.only(top: 24),
+                      child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                        Expanded(
+                          child: GestureDetector(
+                            onTap: () {
+                              Navigator.pop(context);
+                            },
+                            child: Container(
+                                height: 43,
+                                decoration:
+                                    BoxDecoration(borderRadius: BorderRadius.circular(200), color: R.color.grayBorder),
+                                child: Center(
+                                  child: Text(R.string.close.tr(),
+                                      style: TextStyle(
+                                          color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w600)),
+                                )),
+                          ),
+                        ),
+                        const SizedBox(width: 14),
+                        Expanded(
+                          child: GestureDetector(
+                            onTap: () {
+                              Navigator.pop(context);
+                              goToStore();
+                            },
+                            child: Container(
+                              height: 43,
+                              decoration: BoxDecoration(
+                                  color: R.color.red,
+                                  borderRadius: BorderRadius.circular(200),
+                                  gradient: LinearGradient(
+                                      begin: Alignment.topLeft,
+                                      end: Alignment.centerRight,
+                                      colors: [R.color.greenGradientTop, R.color.greenGradientBottom])),
+                              child: Center(
+                                child: Text(R.string.tiep_tuc.tr(),
+                                    style: TextStyle(color: R.color.white, fontSize: 16, fontWeight: FontWeight.w600)),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ]),
+                    ),
+                  ],
+                ),
+              ),
+            ])));
+  }
+
+  Future<bool> checkZaloAppExisted() async {
+    var isInstalled = await LaunchApp.isAppInstalled(
+      androidPackageName: 'com.zing.zalo',
+      iosUrlScheme: 'zalo://',
+    );
+    if (isInstalled is bool) return isInstalled;
+    if (isInstalled is int) {
+    //  Message.showToastMessage(context, 'isInstalled = $isInstalled');
+      return isInstalled == 1 ? true : false;
+    }
+    return false;
   }
 
   goToStore() {

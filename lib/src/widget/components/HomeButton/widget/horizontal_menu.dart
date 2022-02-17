@@ -194,7 +194,7 @@ class _MenuItemWidget extends StatelessWidget {
 
   /// Closes the menu and calls the function for a particular menu item
   void onTap() {
-    toggleMenu();
+   // toggleMenu();
     item.ontap();
   }
 

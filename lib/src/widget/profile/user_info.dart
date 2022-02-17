@@ -63,7 +63,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
     super.initState();
     Observable.instance.addObserver(this);
 
-    isHasRoadMap = user.roadMapId != null;
+    isHasRoadMap = user.ownPackage?.ownRoadmap != null;
 
     for (int i = 0; i < user.levelOfDiabetesRuleList!.length; i++) {
       if (user.levelOfDiabetesRuleList![i].selected!) {
