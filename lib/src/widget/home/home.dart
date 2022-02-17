@@ -769,7 +769,7 @@ class _HomeControllerState extends State<HomeController> with Observer {
 
   String getExerciseIcon(double targetComplete, double target) {
     if (target == 0) return R.drawable.ic_complete;
-    double percent = targetComplete / target;
+    double percent = targetComplete / target * 100;
     if (percent >= 0 && percent <= 33) {
       return R.drawable.ic_not_complete1;
     } else if (percent > 33 && percent <= 66) {
@@ -950,7 +950,9 @@ class _HomeControllerState extends State<HomeController> with Observer {
 
   String getPercentExercise(ExerciseIndexModel model) {
     if (model.targetExercise != 0) {
-      return (model.facExercise! / model.targetExercise! * 100).round().toString() + '%';
+      double percent = model.facExercise! / model.targetExercise! * 100;
+      if(percent > 100) percent = 100;
+      return percent.round().toString() + '%';
     } else {
       return '0%';
     }
