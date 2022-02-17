@@ -113,7 +113,7 @@ class _ExpertCommentDetailPageState extends State<ExpertCommentDetailPage> {
                   SizedBox(width: 4),
                   Text(
                     _cubit.expertCommentModel?.dateTimeFormatted ?? '',
-                    style: TextStyle(color: R.color.textDark, fontSize: 14, fontWeight: FontWeight.w400),
+                    style: TextStyle(color: R.color.captionColorGray, fontSize: 14, fontWeight: FontWeight.w400),
                   ),
                 ],
               ),
