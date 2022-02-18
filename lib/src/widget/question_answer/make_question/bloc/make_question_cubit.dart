@@ -27,17 +27,20 @@ class MakeQuestionCubit extends Cubit<MakeQuestionState> {
     if (textSearch.isEmpty) return suggestList;
     final List<LessonModuleItem?> suggestFiltered = [];
     for (final LessonModuleItem? filterDataItem in suggestList) {
-      if (filterDataItem?.name
-              ?.toUpperCase()
-              .contains(textSearch.toUpperCase()) ==
-          true) {
+      if (filterDataItem?.name?.toUpperCase().contains(textSearch.toUpperCase()) == true) {
         suggestFiltered.add(filterDataItem);
       }
     }
     return suggestFiltered;
   }
 
-  MakeQuestionCubit(this.repository, this.lessonModuleItems) : super(MakeQuestionInitial()) {}
+  MakeQuestionCubit(this.repository, this.lessonModuleItems) : super(MakeQuestionInitial()) {
+    if (lessonModuleItems.isNotEmpty) {
+      if (lessonModuleItems.first.name == 'Tất cả') {
+        lessonModuleItems.removeAt(0);
+      }
+    }
+  }
 
   setCurrentLessonModule(LessonModuleItem item) {
     currentLessonModule = item;

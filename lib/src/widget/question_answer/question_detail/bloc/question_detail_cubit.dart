@@ -26,10 +26,9 @@ class QuestionDetailCubit extends Cubit<QuestionDetailState> {
   bool canRefreshScreen = true;
   final userInfo = AppSettings.userInfo;
   double titleHeight = 280;
+  final ScrollController commentScrollController = ScrollController();
 
-  QuestionDetailCubit(this.repository, this.isAll, this.questionModel) : super(QuestionDetailInitial()) {
-    // TODO
-  }
+  QuestionDetailCubit(this.repository, this.isAll, this.questionModel) : super(QuestionDetailInitial()) {}
 
   Future<bool> get keyboardHidden async {
     final check = () => (WidgetsBinding.instance?.window.viewInsets.bottom ?? 0) <= 0;
@@ -64,22 +63,25 @@ class QuestionDetailCubit extends Cubit<QuestionDetailState> {
           professor: response.data!.professor,
           answers: response.data!.answers,
         );
-        if (isAll) {
-          if (questionModel.status == 0) {
-            if (questionModel.answers != null && questionModel.answers!.isNotEmpty) {
-              bool isReplied = false;
-              for (var answer in questionModel.answers!) {
-                if (answer.accountId != userInfo?.accountId) {
-                  isReplied = true;
-                  break;
-                }
-              }
-              questionModel.status = isReplied ? 2 : 1;
-            } else {
-              questionModel.status = 1;
-            }
-          }
+        if (questionModel.answers != null && questionModel.answers!.isNotEmpty) {
+          commentScrollController.jumpTo(questionModel.answers!.length - 1);
         }
+        // if (isAll) {
+        //   if (questionModel.status == 0) {
+        //     if (questionModel.answers != null && questionModel.answers!.isNotEmpty) {
+        //       bool isReplied = false;
+        //       for (var answer in questionModel.answers!) {
+        //         if (answer.accountId != userInfo?.accountId) {
+        //           isReplied = true;
+        //           break;
+        //         }
+        //       }
+        //       questionModel.status = isReplied ? 2 : 1;
+        //     } else {
+        //       questionModel.status = 1;
+        //     }
+        //   }
+        // }
       }
       emit(const QuestionDetailSuccess());
     }, failure: (NetworkExceptions error) {
@@ -114,6 +116,7 @@ class QuestionDetailCubit extends Cubit<QuestionDetailState> {
     final ApiResult<CommonResponse> apiResult = await repository.makeComment(request);
     apiResult.when(success: (CommonResponse response) async {
       canRefreshScreen = true;
+      await Future.delayed(Duration(milliseconds: 200));
       await getQuestionById();
     }, failure: (NetworkExceptions error) {
       canRefreshScreen = true;

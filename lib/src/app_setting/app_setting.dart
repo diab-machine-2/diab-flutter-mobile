@@ -121,6 +121,7 @@ class AppSettings {
       navigatorKey.currentState!.pushReplacementNamed(NavigatorName.step_list);
       await FetchClient().checkNetwork();
       await LoginClient().logout();
+      await deleteHomeData();
       await clearToken();
       await clearRefreshToken();
       final GoogleSignIn _googleSignIn = GoogleSignIn();
