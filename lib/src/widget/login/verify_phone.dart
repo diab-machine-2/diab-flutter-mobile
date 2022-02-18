@@ -282,15 +282,15 @@ class _VerifyPhoneControllerState extends State<VerifyPhoneController> {
           "external_token": authen.accessToken,
           "provider": 'Google'
         });
+
+        final result = await LoginClient().createPatient(widget.userInfo);
+        if (result == true) {
+          Navigator.pushReplacementNamed(context, NavigatorName.rules,
+              arguments: {'googleAccount': widget.googleAccount, 'appleAccount': null});
+        }
         BotToast.closeAllLoading();
         Navigator.popUntil(context, (route) => route.isFirst);
         Navigator.pushReplacementNamed(context, NavigatorName.tabbar);
-        // final result = await LoginClient().createPatient(widget.userInfo);
-        // if (result == true) {
-        //   Navigator.pushReplacementNamed(context, NavigatorName.rules,
-        //       arguments: {'googleAccount': widget.googleAccount, 'appleAccount': null});
-        // }
-
       } else if (widget.type == 'facebook') {
         await LoginClient().verifyOTP(widget.phone, otpCode);
         await LoginClient().login({
@@ -314,11 +314,11 @@ class _VerifyPhoneControllerState extends State<VerifyPhoneController> {
           "external_token": widget.appleAccount!.identityToken,
           "provider": 'Apple'
         });
-        // final result = await LoginClient().createPatient(widget.userInfo);
-        // if (result == true) {
-        //   Navigator.pushReplacementNamed(context, NavigatorName.rules,
-        //       arguments: {'googleAccount': null, 'appleAccount': widget.appleAccount});
-        // }
+        final result = await LoginClient().createPatient(widget.userInfo);
+        if (result == true) {
+          Navigator.pushReplacementNamed(context, NavigatorName.rules,
+              arguments: {'googleAccount': null, 'appleAccount': widget.appleAccount});
+        }
         BotToast.closeAllLoading();
         Navigator.popUntil(context, (route) => route.isFirst);
         Navigator.pushReplacementNamed(context, NavigatorName.tabbar);
