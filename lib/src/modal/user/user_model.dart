@@ -82,6 +82,28 @@ class UserModel {
   final String? nameOfDoctor;
   final UserInfoResponseDataOwnPackage? ownPackage;
 
+  bool get isUserFree {
+    return ownPackage == null;
+  }
+
+  bool get isUserSubcription {
+    if(ownPackage != null){
+      if(ownPackage!.ownRoadmap == null){
+        return true;
+      }
+    }
+    return false;
+  }
+
+  bool get isUserHasRoadmap {
+    if(ownPackage != null){
+      if(ownPackage!.ownRoadmap != null){
+        return true;
+      }
+    }
+    return false;
+  }
+
   const UserModel({
     required this.id,
     required this.accountId,

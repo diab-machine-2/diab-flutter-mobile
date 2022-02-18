@@ -866,13 +866,17 @@ class _HomeControllerState extends State<HomeController> with Observer {
     return GestureDetector(
       onTap: () async {
         if (model.target != null && model.target != 0) {
-          if (user?.ownPackage == null) {
+          if (user!.isUserFree) {
             // await Navigator.pushReplacementNamed(context, NavigatorName.tabbar, arguments: {
             //   'isRedirectFromNotification': true,
             // });
             Observable.instance.notifyObservers([], notifyName: Const.NAVIGATE_TO_MY_PLAN_TAB);
           } else {
-            await Navigator.pushNamed(context, NavigatorName.my_progress);
+            if(user!.isUserHasRoadmap) {
+              await Navigator.pushNamed(context, NavigatorName.my_progress);
+            } else {
+              Observable.instance.notifyObservers([], notifyName: Const.NAVIGATE_TO_MY_PLAN_TAB);
+            }
           }
         }
       },
@@ -911,7 +915,7 @@ class _HomeControllerState extends State<HomeController> with Observer {
                     ),
                   ],
                 ),
-                user?.ownPackage == null ? Container() :
+                (user!.isUserSubcription || user!.isUserFree) ? Container() :
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
