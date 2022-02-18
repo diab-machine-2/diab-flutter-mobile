@@ -111,6 +111,8 @@ class VideoManager {
           );
     this.controller?.setupDataSource(dataSource);
     await this.controller?.retryDataSource();
+    await this.controller?.seekTo(Duration.zero);
+    await this.controller?.play();
     this.controller?.setControlsAlwaysVisible(true);
   }
 
@@ -119,6 +121,7 @@ class VideoManager {
     if (newLoopTimes > 0) {
       sourceList[currentSourceIndex].loopTimes = newLoopTimes;
       await this.controller?.seekTo(Duration.zero);
+      await this.controller?.play();
     } else {
       await playNextVideo();
     }
