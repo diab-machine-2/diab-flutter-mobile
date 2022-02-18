@@ -72,7 +72,7 @@ class VideoManager {
             (this.controller!.videoPlayerController!.value.duration ==
                 this.controller!.videoPlayerController!.value.position)) {
           _startTimer();
-          onCompleteVideo?.call(sourceList[currentSourceIndex].exerciseCategoryId, this.controller?.videoPlayerController?.value.duration?.inSeconds ?? 0);
+      //    onCompleteVideo?.call(sourceList[currentSourceIndex].exerciseCategoryId, this.controller?.videoPlayerController?.value.duration?.inSeconds ?? 0);
           loopVideo();
         }
       });

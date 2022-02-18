@@ -945,11 +945,9 @@ class _HomeControllerState extends State<HomeController> with Observer {
   getProgressStatus(ProcessCardModel model) {
     if (model.exerciseCompeleted! < model.exercise!) {
       return 'Chưa hoàn thành\nbài tập vận động';
-    } else if (model.exercise! == model.exerciseCompeleted!) {
-      return 'Đã hoàn thành\nbài tập vận động';
     } else {
-      return '';
-    }
+      return 'Đã hoàn thành\nbài tập vận động';
+    } 
   }
 
   String getPercentExercise(ExerciseIndexModel model) {
