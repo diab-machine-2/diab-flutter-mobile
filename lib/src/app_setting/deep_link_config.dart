@@ -11,6 +11,12 @@ class DeepLinkConfig {
 
   String? sharedCode;
 
+  static void setUpHandleDeepLink({required Function(String? code) onHaveLink}) {
+    linkStream.listen((link) {
+      onHaveLink(getShareCodeFromUrl(link));
+    });
+  }
+
   Future<String?> getInitLink() async {
     try {
       final String? initialLink = await getInitialLink();
@@ -24,6 +30,7 @@ class DeepLinkConfig {
       sharedCode = getShareCodeFromUrl(initialUri?.path);
       return sharedCode;
     } on FormatException {}
+    return null;
   }
 
   Future<void> handleDeepLink() async {
@@ -41,7 +48,7 @@ class DeepLinkConfig {
     _subUni.cancel();
   }
 
-  String getShareCodeFromUrl(String? url) {
+  static String getShareCodeFromUrl(String? url) {
     if (url == null) return '';
     return url.substring(url.length - 6, url.length);
   }
