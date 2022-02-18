@@ -10,6 +10,7 @@ import 'package:retrofit/retrofit.dart';
 
 import 'request/complete_exercise_request.dart';
 import 'request/complete_smart_goal_request.dart';
+import 'request/complete_video_request.dart';
 import 'request/create_menu_request.dart';
 import 'request/create_smart_goal_request.dart';
 import 'request/exercise_feedback_request.dart';
@@ -203,6 +204,11 @@ abstract class AppApi {
   @POST("App/ExerciseMovementAccount")
   Future<CommonResponse> completeExercise(
     @Body() CompleteExerciseRequest request,
+  );
+
+  @POST("App/ExerciseMovementAccount/Input")
+  Future<CommonResponse> completeVideo(
+    @Body() CompleteVideoRequest request,
   );
 
   @GET("App/Roadmap/GetWeekStates")
