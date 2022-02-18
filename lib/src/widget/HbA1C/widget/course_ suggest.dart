@@ -64,11 +64,14 @@ class _CourseSuggestState extends State<CourseSuggest>
                           child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Image.network(
-                                  models[index].imageUrl.url ?? '',
-                                  width: 223,
-                                  height: 112,
-                                  fit: BoxFit.fill,
+                                ClipRRect(
+                                  borderRadius: BorderRadius.circular(8.0),
+                                  child: Image.network(
+                                    models[index].imageUrl.url ?? '',
+                                    width: 223,
+                                    height: 112,
+                                    fit: BoxFit.fitWidth,
+                                  ),
                                 ),
                                 SizedBox(height: 8),
                                 Text(models[index].title!,
