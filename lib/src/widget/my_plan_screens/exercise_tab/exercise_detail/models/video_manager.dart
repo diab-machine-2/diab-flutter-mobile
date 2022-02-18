@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:medical/src/model/response/exercise_movement_response.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/widget/helper/show_message.dart';
 
 class VideoManager {
   BetterPlayerController? controller;
@@ -16,6 +17,8 @@ class VideoManager {
   final VoidCallback? onDone;
   bool isLocked = false;
   Timer? _timer;
+
+  int count = 0;
 
   _startTimer() {
     _stopTimer();
@@ -31,7 +34,7 @@ class VideoManager {
     }
   }
 
-  VideoManager.fromExerciseData(ExerciseMovementResponseData exerciseData, {this.onDone}) {
+  VideoManager.fromExerciseData(BuildContext context, ExerciseMovementResponseData exerciseData, {this.onDone}) {
     sourceList.clear();
 
     for (final ExerciseMovementResponseDataSections? data in exerciseData.sections ?? []) {
@@ -43,7 +46,7 @@ class VideoManager {
     }
 
     if (sourceList.isNotEmpty) {
-      this.controller = BetterPlayerController(
+      final BetterPlayerController newController = BetterPlayerController(
        BetterPlayerConfiguration(
           placeholder: Image.asset(R.drawable.ic_thumbnail1, fit: BoxFit.fill),
           showPlaceholderUntilPlay: true,
@@ -58,60 +61,66 @@ class VideoManager {
           ],
         ),
       );
-      var betterPlayerDataSource = BetterPlayerDataSource(
+      BetterPlayerDataSource betterPlayerDataSource = BetterPlayerDataSource(
         BetterPlayerDataSourceType.network,
         sourceList[currentSourceIndex].url,
       );
-      this.controller!.setupDataSource(betterPlayerDataSource);
+      newController.setupDataSource(betterPlayerDataSource);
 
-      this.controller?.videoPlayerController?.addListener(() async {
+      newController.videoPlayerController?.addListener(() async {
         if (Platform.isIOS) {
-          if ((this.controller?.videoPlayerController!.value.position.inMilliseconds) ==
-              this.controller?.videoPlayerController!.value.duration!.inMilliseconds) {
-            await this.controller?.pause();
-            print('this.controller.pause()');
+          if ((newController.videoPlayerController!.value.position.inMilliseconds) ==
+              newController.videoPlayerController!.value.duration!.inMilliseconds) {
+        //    Message.showToastMessage(context, 'Paused');
+            await newController.pause();
           }
         }
         if (!isLocked &&
-            this.controller?.videoPlayerController?.value != null &&
-            !this.controller!.videoPlayerController!.value.isPlaying &&
-            this.controller!.videoPlayerController!.value.initialized &&
-            (this.controller!.videoPlayerController!.value.duration ==
-                this.controller!.videoPlayerController!.value.position)) {
+            newController.videoPlayerController?.value != null &&
+            !newController.videoPlayerController!.value.isPlaying &&
+            newController.videoPlayerController!.value.initialized &&
+            (newController.videoPlayerController!.value.duration ==
+                newController.videoPlayerController!.value.position)) {
           _startTimer();
-          loopVideo();
+          // if (Platform.isIOS) {
+          //   Message.showToastMessage(context, 'Paused1');
+          //   await this.controller?.pause();
+          // }
+          await loopVideo();
         }
       });
+      this.controller = newController;
     }
   }
 
   lock() {}
 
-  void playNextVideo() {
+  Future playNextVideo() async {
+    await Future.delayed(Duration(milliseconds: 600));
     if (currentSourceIndex + 1 >= sourceList.length) {
       isCompleted = true;
-      this.controller?.pause();
+      await this.controller?.pause();
       onDone?.call();
       return;
     }
+    await this.controller?.seekTo(Duration.zero);
     currentSourceIndex += 1;
-    this.controller?.setupDataSource(
-          BetterPlayerDataSource(
+    var dataSource = BetterPlayerDataSource(
             BetterPlayerDataSourceType.network,
             sourceList[currentSourceIndex].url,
-          ),
-        );
-    this.controller?.retryDataSource();
+          );
+    this.controller?.setupDataSource(dataSource);
+    await this.controller?.retryDataSource();
     this.controller?.setControlsAlwaysVisible(true);
   }
 
-  void loopVideo() {
+  Future loopVideo() async {
     final int newLoopTimes = sourceList[currentSourceIndex].loopTimes - 1;
     if (newLoopTimes > 0) {
       sourceList[currentSourceIndex].loopTimes = newLoopTimes;
-      this.controller?.seekTo(Duration.zero);
+      await this.controller?.seekTo(Duration.zero);
     } else {
-      playNextVideo();
+      await playNextVideo();
     }
   }
 

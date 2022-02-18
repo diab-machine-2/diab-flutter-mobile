@@ -29,7 +29,7 @@ class _ExerciseDetailState extends State<ExerciseDetail> {
     super.initState();
     final AppRepository appRepository = AppRepository();
     _cubit = ExerciseDetailCubit(appRepository);
-    _cubit.initData(widget.exerciseData);
+    _cubit.initData(widget.exerciseData, context);
   }
 
   @override
