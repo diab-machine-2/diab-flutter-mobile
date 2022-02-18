@@ -51,7 +51,7 @@ class _ExpertCommentDetailPageState extends State<ExpertCommentDetailPage> {
       body: Container(
         color: R.color.greenbg,
         child: Column(
-          mainAxisSize: MainAxisSize.max,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _buildAppBar(context),
             _buildBody(),
@@ -76,85 +76,102 @@ class _ExpertCommentDetailPageState extends State<ExpertCommentDetailPage> {
   }
 
   _buildBody() {
-    return Container(
-      padding: EdgeInsets.only(left: 16, right: 16, bottom: 16),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                clipBehavior: Clip.hardEdge,
-                decoration: BoxDecoration(color: R.color.mainColor, borderRadius: BorderRadius.circular(52)),
-                child: _cubit.expertCommentModel?.url == null
-                    ? Icon(Icons.person, size: 64, color: R.color.white)
-                    : NetWorkImageWidget(imageUrl: _cubit.expertCommentModel?.url ?? '', width: 64, height: 64),
-              ),
-              SizedBox(height: 8),
-              Text(
-                _cubit.expertCommentModel?.name ?? '',
-                style: TextStyle(color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w700),
-              ),
-              SizedBox(height: 4),
-              Row(
+    return Expanded(
+      child: Container(
+        padding: EdgeInsets.only(left: 16, right: 16, bottom: 16),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              alignment: Alignment.center,
+              child: Column(
                 mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Container(
+                    clipBehavior: Clip.hardEdge,
+                    decoration: BoxDecoration(color: R.color.mainColor, borderRadius: BorderRadius.circular(52)),
+                    child: _cubit.expertCommentModel?.url == null
+                        ? Icon(Icons.person, size: 64, color: R.color.white)
+                        : NetWorkImageWidget(imageUrl: _cubit.expertCommentModel?.url ?? '', width: 64, height: 64),
+                  ),
+                  SizedBox(height: 12),
+                  Text(
+                    _cubit.expertCommentModel?.name ?? '',
+                    style: TextStyle(color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w700),
+                  ),
+                  SizedBox(height: 8),
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        _cubit.expertCommentModel?.typeString ?? '',
+                        style: TextStyle(
+                            color: _cubit.expertCommentModel?.getColor(), fontSize: 14, fontWeight: FontWeight.w700),
+                      ),
+                      SizedBox(width: 4),
+                      Container(
+                          width: 4,
+                          height: 4,
+                          decoration: BoxDecoration(shape: BoxShape.circle, color: R.color.notActiveGreen)),
+                      SizedBox(width: 4),
+                      Text(
+                        _cubit.expertCommentModel?.dateTimeFormatted ?? '',
+                        style: TextStyle(color: R.color.captionColorGray, fontSize: 14, fontWeight: FontWeight.w400),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 8),
+                ],
+              ),
+            ),
+            SizedBox(height: 8),
+            Expanded(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    _cubit.expertCommentModel?.type ?? '',
-                    style: TextStyle(
-                        color: _cubit.expertCommentModel?.getColor(), fontSize: 14, fontWeight: FontWeight.w700),
-                  ),
-                  SizedBox(width: 4),
-                  Container(
-                      width: 4,
-                      height: 4,
-                      decoration: BoxDecoration(shape: BoxShape.circle, color: R.color.notActiveGreen)),
-                  SizedBox(width: 4),
-                  Text(
-                    _cubit.expertCommentModel?.dateTimeFormatted ?? '',
+                    R.string.comment.tr(),
                     style: TextStyle(color: R.color.captionColorGray, fontSize: 14, fontWeight: FontWeight.w400),
+                  ),
+                  SizedBox(height: 6),
+                  Expanded(
+                    child: SingleChildScrollView(
+                      child: Text(
+                        _cubit.expertCommentModel?.comment ?? '',
+                        style: TextStyle(color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w400),
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 8),
+                  Visibility(
+                    visible: (_cubit.expertCommentModel?.type != null &&
+                        _cubit.expertCommentModel?.type == 2),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SizedBox(height: 4),
+                        Text(
+                          R.string.next_action.tr(),
+                          style: TextStyle(color: R.color.captionColorGray, fontSize: 14, fontWeight: FontWeight.w400),
+                        ),
+                        SizedBox(height: 4),
+                        Text(
+                          _cubit.expertCommentModel?.nextAction ?? '',
+                          style: TextStyle(color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w400),
+                        ),
+                        SizedBox(height: 8),
+                      ],
+                    ),
                   ),
                 ],
               ),
-              SizedBox(height: 8),
-            ],
-          ),
-          SizedBox(height: 4),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                R.string.comment.tr(),
-                style: TextStyle(color: R.color.captionColorGray, fontSize: 14, fontWeight: FontWeight.w400),
-              ),
-              SizedBox(height: 4),
-              Text(
-                _cubit.expertCommentModel?.comment ?? '',
-                style: TextStyle(color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w400),
-              ),
-              SizedBox(height: 8),
-              Visibility(
-                visible: (_cubit.expertCommentModel?.calendarTraining?.type != null &&
-                    _cubit.expertCommentModel?.calendarTraining?.type == 2),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      R.string.next_action.tr(),
-                      style: TextStyle(color: R.color.captionColorGray, fontSize: 14, fontWeight: FontWeight.w400),
-                    ),
-                    SizedBox(height: 4),
-                    Text(
-                      _cubit.expertCommentModel?.nextAction ?? '',
-                      style: TextStyle(color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w400),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ],
+            ),
+          ],
+        ),
       ),
     );
   }

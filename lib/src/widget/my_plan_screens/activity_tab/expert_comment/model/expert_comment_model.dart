@@ -12,8 +12,10 @@ class ExpertCommentModel {
     required this.comment,
     required this.creatorId,
     required this.creator,
+    required this.type,
     required this.updateDateTime,
     required this.calendarTraining,
+    required this.creatorUrl,
   });
 
   final String? calendarTrainingId;
@@ -21,12 +23,14 @@ class ExpertCommentModel {
   final String? comment;
   final String? creatorId;
   final String? creator;
+  final int? type;
   final int? updateDateTime;
   final CalendarTraining? calendarTraining;
+  final Avatar? creatorUrl;
 
   String get name {
-    if (calendarTraining?.calendar?.performer != null) {
-      return calendarTraining!.calendar!.performer!.fullName ?? '';
+    if (creator != null) {
+      return creator!;
     } else {
       return '';
     }
@@ -40,9 +44,9 @@ class ExpertCommentModel {
     }
   }
 
-  String get type {
-    if (calendarTraining?.type != null) {
-      switch (calendarTraining!.type!) {
+  String get typeString {
+    if (type != null) {
+      switch (type!) {
         case 0:
           return 'Phân loại đầu ra';
         case 1:
@@ -66,8 +70,8 @@ class ExpertCommentModel {
   }
 
   String? get url {
-    if (calendarTraining?.calendar?.performer?.creatorUrl != null) {
-      return calendarTraining!.calendar!.performer!.creatorUrl!.url;
+    if (creatorUrl != null) {
+      return creatorUrl!.url;
     } else {
       return null;
     }
@@ -78,8 +82,8 @@ class ExpertCommentModel {
   }
 
   Color getColor() {
-    if (calendarTraining?.type != null) {
-      switch (calendarTraining!.type!) {
+    if (type != null) {
+      switch (type!) {
         case 0:
           return R.color.greenGradientBottom;
         case 1:
@@ -106,7 +110,9 @@ class ExpertCommentModel {
       comment: json['comment'],
       creatorId: json['creatorId'],
       creator: json['creator'],
+      type: json['type'],
       updateDateTime: json['updateDateTime'],
+      creatorUrl: json['creatorUrl'] == null ? null : Avatar.fromJson(json['creatorUrl']),
       calendarTraining: json['calendarTraining'] == null ? null : CalendarTraining.fromJson(json['calendarTraining']),
     );
   }
@@ -118,9 +124,13 @@ class ExpertCommentModel {
     data["comment"] = comment;
     data["creatorId"] = creatorId;
     data["creator"] = creator;
+    data['type'] = type;
     data["updateDateTime"] = updateDateTime;
     if (calendarTraining != null) {
       data["calendarTraining"] = calendarTraining!.toJson();
+    }
+    if (creatorUrl != null) {
+      data["creatorUrl"] = creatorUrl!.toJson();
     }
     return data;
   }

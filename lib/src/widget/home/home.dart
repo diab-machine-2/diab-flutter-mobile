@@ -911,7 +911,7 @@ class _HomeControllerState extends State<HomeController> with Observer {
                     ),
                   ],
                 ),
-                if ((model.userFree ?? true) == false)
+                user?.ownPackage == null ? Container() :
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [

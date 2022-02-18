@@ -65,10 +65,12 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
 
     isHasRoadMap = user.ownPackage?.ownRoadmap != null;
 
-    for (int i = 0; i < user.levelOfDiabetesRuleList!.length; i++) {
-      if (user.levelOfDiabetesRuleList![i].selected!) {
-        diabetesName = user.levelOfDiabetesRuleList![i].text!;
-        break;
+    if(user.levelOfDiabetesRuleList != null) {
+      for (int i = 0; i < user.levelOfDiabetesRuleList!.length; i++) {
+        if (user.levelOfDiabetesRuleList![i].selected!) {
+          diabetesName = user.levelOfDiabetesRuleList![i].text!;
+          break;
+        }
       }
     }
     diabetesStatus = getSelectedIndexDiabetes();
@@ -398,7 +400,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                               icon: R.drawable.ic_user_bmi,
                               title: user.height == null
                                   ? R.string.not_updated_yet.tr()
-                                  : Utils.getBMI(height: user.height!, weight: user.weight!),
+                                  : Utils.getBMI(height: user.height ?? 0, weight: user.weight ?? 0),
                               subTitle: 'BMI',
                               isTitleFromSelectedCategory: false,
                               callback: (selectedIndexList) {},

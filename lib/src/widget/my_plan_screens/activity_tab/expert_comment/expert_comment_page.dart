@@ -140,12 +140,12 @@ class _ExpertCommentPageState extends State<ExpertCommentPage> {
                       ),
                     ],
                   ),
-                  SizedBox(height: 2),
+                  SizedBox(height: 4),
                   Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
-                        item.type,
+                        item.typeString,
                         style: TextStyle(color: item.getColor(), fontSize: 12, fontWeight: FontWeight.w700),
                       ),
                       SizedBox(width: 4),
@@ -160,7 +160,7 @@ class _ExpertCommentPageState extends State<ExpertCommentPage> {
                       ),
                     ],
                   ),
-                  SizedBox(height: 2),
+                  SizedBox(height: 4),
                   Text(
                     item.comment ?? '',
                     style: TextStyle(color: R.color.captionColorGray, fontSize: 12, fontWeight: FontWeight.w400),
