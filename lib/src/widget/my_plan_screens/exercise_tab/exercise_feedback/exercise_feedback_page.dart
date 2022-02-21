@@ -217,6 +217,7 @@ class _ExerciseFeedbackPageState extends State<ExerciseFeedbackPage> {
               hintText: R.string.enter_your_feeling.tr(),
               hintStyle: TextStyle(color: R.color.gray, fontSize: 16),
               focusColor: R.color.accentColor,
+              counterText: '',
               enabledBorder: UnderlineInputBorder(
                 borderSide: BorderSide(color: R.color.gray),
               ),

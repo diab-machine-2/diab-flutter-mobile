@@ -238,6 +238,7 @@ class _AddBloodPressureControllerState
                                                             FontWeight.w500),
                                                     decoration: InputDecoration(
                                                         hintText: '-',
+                                                        counterText: '',
                                                         contentPadding:
                                                             EdgeInsets.only(
                                                                 bottom: 8),

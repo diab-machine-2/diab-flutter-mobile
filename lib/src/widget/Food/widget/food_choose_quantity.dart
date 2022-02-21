@@ -217,6 +217,7 @@ class _FoodChooseQuantityState extends State<FoodChooseQuantity> {
                                         contentPadding:
                                             const EdgeInsets.only(bottom: 8),
                                         border: InputBorder.none,
+                                        counterText: '',
                                         hintStyle: TextStyle(
                                             fontSize: 16,
                                             fontWeight: FontWeight.w400,

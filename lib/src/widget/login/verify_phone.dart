@@ -53,9 +53,17 @@ class _VerifyPhoneControllerState extends State<VerifyPhoneController> {
   @override
   void initState() {
     super.initState();
-    otpCount = widget.remainingRequestCount;
+    otpCount = widget.remainingRequestCount ?? 0;
     otpTemp = widget.otp;
-    startTimer();
+
+    // if(otpCount == 0 && otpTemp == null){
+    //   timeCount = 0;
+    //   Future.delayed(Duration.zero, () {
+    //     _showDialogError();
+    //   });
+    // } else {
+      startTimer();
+    //}
   }
 
   void startTimer() {

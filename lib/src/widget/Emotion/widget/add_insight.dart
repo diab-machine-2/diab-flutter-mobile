@@ -687,6 +687,7 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
                                           hintText: R
                                               .string.nhap_ghi_chu_cua_ban
                                               .tr(),
+                                          counterText: '',
                                           contentPadding:
                                               EdgeInsets.only(bottom: 8),
                                           border: InputBorder.none,

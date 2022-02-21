@@ -20,6 +20,11 @@ import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 class LoginController extends StatefulWidget {
+
+  const LoginController(this.sharedCode);
+
+  final String sharedCode;
+
   @override
   _LoginControllerState createState() => _LoginControllerState();
 }
@@ -218,7 +223,7 @@ class _LoginControllerState extends State<LoginController> {
         Navigator.pushReplacementNamed(context, NavigatorName.update_info, arguments: {'type': 'phone'});
       } else {
         Navigator.popUntil(context, (route) => route.isFirst);
-        Navigator.pushReplacementNamed(context, NavigatorName.tabbar);
+        Navigator.pushReplacementNamed(context, NavigatorName.tabbar, arguments: widget.sharedCode,);
       }
     } catch (e, _) {
       BotToast.closeAllLoading();
@@ -334,7 +339,7 @@ class _LoginControllerState extends State<LoginController> {
             // });
           } else {
             Navigator.popUntil(context, (route) => route.isFirst);
-            Navigator.pushReplacementNamed(context, NavigatorName.tabbar);
+            Navigator.pushReplacementNamed(context, NavigatorName.tabbar, arguments: widget.sharedCode,);
           }
         } catch (error) {
           BotToast.closeAllLoading();
@@ -396,7 +401,7 @@ class _LoginControllerState extends State<LoginController> {
         //     arguments: {'type': 'google', 'googleAccount': account});
       } else {
         Navigator.popUntil(context, (route) => route.isFirst);
-        Navigator.pushReplacementNamed(context, NavigatorName.tabbar);
+        Navigator.pushReplacementNamed(context, NavigatorName.tabbar, arguments: widget.sharedCode,);
       }
     } catch (error) {
       if (error is Error && error.code == '5' && account != null) {
@@ -449,7 +454,7 @@ class _LoginControllerState extends State<LoginController> {
             googleAccount: null, appleCredential: credential);
       } else {
         Navigator.popUntil(context, (route) => route.isFirst);
-        Navigator.pushReplacementNamed(context, NavigatorName.tabbar);
+        Navigator.pushReplacementNamed(context, NavigatorName.tabbar, arguments: widget.sharedCode,);
       }
     } catch (error) {
       BotToast.closeAllLoading();

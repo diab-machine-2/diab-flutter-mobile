@@ -1320,6 +1320,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                         obscureText: false,
                         decoration: InputDecoration(
                             fillColor: R.color.textDark,
+                            counterText: '',
                             enabledBorder: OutlineInputBorder(
                               borderSide: BorderSide(color: R.color.grayComponentBorder, width: 1.0),
                               borderRadius: BorderRadius.circular(10),
@@ -1832,6 +1833,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                         obscureText: false,
                         decoration: InputDecoration(
                           fillColor: R.color.textDark,
+                          counterText: '',
                           enabledBorder: OutlineInputBorder(
                             borderSide: BorderSide(color: R.color.grayComponentBorder, width: 1.0),
                             borderRadius: BorderRadius.circular(10),

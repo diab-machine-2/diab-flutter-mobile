@@ -82,11 +82,12 @@ class _StepListControllerState extends State<StepListController> {
     buildNumber = packageInfo.buildNumber;
     setState(() {});
     if (widget.sharedCode.isNotEmpty) {
-      Navigator.pushNamed(
-        context,
-        NavigatorName.register,
-        arguments: widget.sharedCode,
-      );
+      sharedCode = widget.sharedCode;
+      // Navigator.pushNamed(
+      //   context,
+      //   NavigatorName.register,
+      //   arguments: widget.sharedCode,
+      // );
     }
   }
 
@@ -165,7 +166,7 @@ class _StepListControllerState extends State<StepListController> {
                         ),
                         GestureDetector(
                           onTap: () {
-                            Navigator.pushNamed(context, NavigatorName.login);
+                            Navigator.pushNamed(context, NavigatorName.login, arguments: sharedCode,);
                           },
                           child: Container(
                             height: 48,

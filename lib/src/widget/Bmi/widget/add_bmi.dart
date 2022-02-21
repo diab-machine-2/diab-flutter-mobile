@@ -562,6 +562,7 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                                       hintText: R.string.nhap_ghi_chu_cua_ban.tr(),
                                       contentPadding: EdgeInsets.only(bottom: 8),
                                       border: InputBorder.none,
+                                      counterText: '',
                                       hintStyle: TextStyle(
                                           fontSize: 16, fontWeight: FontWeight.w400, color: R.color.primaryGreyColor))),
                               Container(height: 1, color: R.color.color0xffE5E5E5),

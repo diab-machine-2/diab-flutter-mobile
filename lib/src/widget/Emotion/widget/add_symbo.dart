@@ -325,6 +325,7 @@ class _AddSymboControllerState extends BaseState<AddSymboController> {
                       obscureText: false,
                       decoration: InputDecoration(
                         fillColor: R.color.textDark,
+                        counterText: '',
                         enabledBorder: OutlineInputBorder(
                           borderSide:
                               BorderSide(color: R.color.grayComponentBorder, width: 1.0),

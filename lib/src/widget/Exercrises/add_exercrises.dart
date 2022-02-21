@@ -775,6 +775,7 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
                                           hintText: R
                                               .string.nhap_ghi_chu_cua_ban
                                               .tr(),
+                                          counterText: '',
                                           contentPadding:
                                               EdgeInsets.only(bottom: 8),
                                           border: InputBorder.none,

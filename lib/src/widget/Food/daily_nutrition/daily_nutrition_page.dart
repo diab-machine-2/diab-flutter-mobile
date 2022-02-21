@@ -529,6 +529,7 @@ class _DailyNutritionPageState extends State<DailyNutritionPage> {
                                                   'Nhập lượng calo bạn đã nạp',
                                               contentPadding:
                                                   EdgeInsets.only(bottom: 8),
+                                              counterText: '',
                                               border: InputBorder.none,
                                               hintStyle: TextStyle(
                                                   fontSize: 16,

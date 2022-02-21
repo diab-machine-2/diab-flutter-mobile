@@ -427,6 +427,7 @@ class _QuestionDetailPageState extends State<QuestionDetailPage> with WidgetsBin
           Expanded(
             child: TextField(
               decoration: InputDecoration(
+                  counterText: '',
                   contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),

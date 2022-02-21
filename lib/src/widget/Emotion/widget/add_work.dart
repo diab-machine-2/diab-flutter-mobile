@@ -337,6 +337,7 @@ class _AddWorkControllerState extends BaseState<AddWorkController> {
                       obscureText: false,
                       decoration: InputDecoration(
                         fillColor: R.color.textDark,
+                        counterText: '',
                         enabledBorder: OutlineInputBorder(
                           borderSide:
                               BorderSide(color: R.color.grayComponentBorder, width: 1.0),

@@ -134,7 +134,11 @@ class _AppState extends State<App> {
                         isRedirectFromNotification: isRedirectFromNotification,
                       ));
                 case NavigatorName.login:
-                  return _buildRoute(settings, LoginController(), isPresent: true);
+                  String sharedCode = '';
+                  if (settings.arguments != null) {
+                    sharedCode = settings.arguments! as String;
+                  }
+                  return _buildRoute(settings, LoginController(sharedCode), isPresent: true);
                 case NavigatorName.register:
                   String sharedCode = '';
                   if (settings.arguments != null) {

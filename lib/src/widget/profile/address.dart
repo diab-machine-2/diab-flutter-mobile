@@ -64,6 +64,7 @@ class _AddressControllerState extends State<AddressController> {
                 obscureText: false,
                 decoration: InputDecoration(
                   fillColor: R.color.textDark,
+                  counterText: '',
                   enabledBorder: OutlineInputBorder(
                     borderSide: BorderSide(color: R.color.grayComponentBorder, width: 1.0),
                     borderRadius: BorderRadius.circular(10),

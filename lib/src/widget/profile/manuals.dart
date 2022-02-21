@@ -97,6 +97,7 @@ class _ManualControllerState extends State<ManualController> {
                                     },
                                     decoration: InputDecoration(
                                         border: InputBorder.none,
+                                        counterText: '',
                                         contentPadding:
                                             EdgeInsets.only(top: -20),
                                         hintText: R.string.tim_kiem_hoat_dong.tr(),
