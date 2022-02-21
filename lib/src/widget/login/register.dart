@@ -575,6 +575,9 @@ class _RegisterControllerState extends State<RegisterController> {
       // Navigator.pushReplacementNamed(context, NavigatorName.rules,
       //     arguments: {'googleAccount': googleAccount, 'appleCredential': appleCredential});
       //}
+
+     // Message.showToastMessage(context, 'Name: ${appleCredential?.givenName}, ${appleCredential?.familyName}\n userIdentifier: ${appleCredential?.userIdentifier}\n identityToken: ${appleCredential?.identityToken}');
+
       Navigator.pushReplacementNamed(context, NavigatorName.register_success, arguments: {
         'type': provider.toLowerCase(),
         'googleAccount': googleAccount,

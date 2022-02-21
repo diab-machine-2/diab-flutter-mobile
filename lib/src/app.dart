@@ -151,7 +151,7 @@ class _AppState extends State<App> {
                         referalCode: data?['referalCode'],
                         type: data?['type'],
                         googleAccount: data?['googleAccount'],
-                        appleAccount: data?['appleCredential'],
+                        appleAccount: data?['appleAccount'],
                         diabeteStates: data?['diabeteStates'],
                       ));
                 case NavigatorName.update_info:

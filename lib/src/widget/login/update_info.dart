@@ -62,7 +62,7 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
             : widget.type == 'facebook'
                 ? widget.userInfo['name']
                 : widget.type == 'apple'
-                    ? widget.appleAccount?.givenName ?? ''
+                    ? '${widget.appleAccount?.familyName ?? ''} ${widget.appleAccount?.givenName ?? ''}'
                     : '');
   }
 
@@ -631,6 +631,9 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
       }
 
       if (widget.type == 'google') {
+        if (widget.googleAccount?.email != null) {
+          params['email'] = widget.googleAccount!.email;
+        }
         final result = await LoginClient().registerWithSocial({
           'providerName': 'Google',
           'providerKey': widget.googleAccount!.id,
@@ -660,6 +663,9 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
           'userInfo': params
         });
       } else if (widget.type == 'apple') {
+        if (widget.appleAccount?.email != null) {
+          params['email'] = widget.appleAccount!.email!;
+        }
         final result = await LoginClient().registerWithSocial({
           'providerName': 'Apple',
           'providerKey': widget.appleAccount?.userIdentifier,

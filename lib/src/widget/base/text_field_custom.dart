@@ -162,6 +162,10 @@ class TextFieldCustomState extends State<TextFieldCustom> {
                                 focusNode: focusNode,
                                 keyboardType: TextInputType.number,
                                 autofocus: widget.autoFocus,
+                                inputFormatters: [
+                                  LengthLimitingTextInputFormatter(widget.maxLength),
+                                ],
+                                maxLength: widget.maxLength,
                                 style: TextStyle(
                                     fontFamily: 'Viga',
                                     color: R.color.textDark,
