@@ -633,6 +633,7 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
       if (widget.type == 'google') {
         if (widget.googleAccount?.email != null) {
           params['email'] = widget.googleAccount!.email;
+          params['googleEmail'] = widget.googleAccount!.email;
         }
         final result = await LoginClient().registerWithSocial({
           'providerName': 'Google',
@@ -665,6 +666,7 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
       } else if (widget.type == 'apple') {
         if (widget.appleAccount?.email != null) {
           params['email'] = widget.appleAccount!.email!;
+          params['googleEmail'] = widget.appleAccount!.email!;
         }
         final result = await LoginClient().registerWithSocial({
           'providerName': 'Apple',

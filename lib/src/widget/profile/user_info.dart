@@ -629,7 +629,8 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                             _buildItemProfile(
                               image: R.drawable.ic_email,
                               title: user.isLinkedGoogle == true
-                                  ? (user.googleEmail ?? '')
+                                  ? (user.googleEmail == null || user.googleEmail!.isEmpty ? R.string.not_updated_yet.tr()
+                                      : user.googleEmail!)
                                   : (user.email == null || user.email!.isEmpty
                                       ? R.string.not_updated_yet.tr()
                                       : user.email!),
