@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_observer/Observable.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/request/complete_smart_goal_request.dart';
@@ -149,6 +150,8 @@ class ActivityTabCubit extends Cubit<ActivityTabState> {
         CompleteSmartGoalRequest(id: smartGoalId, executeTimes: executeDayTimes, type: type);
     final ApiResult<CommonResponse> apiResult = await repository.completeSmartGoal(request);
     apiResult.when(success: (CommonResponse response) {
+      Observable.instance
+            .notifyObservers([], notifyName: "food_change_data");
       refreshData(isRefresh: true);
       //   emit(const ActivityTabSuccess());
     }, failure: (NetworkExceptions error) {
@@ -162,6 +165,8 @@ class ActivityTabCubit extends Cubit<ActivityTabState> {
     emit(const ActivityTabLoading());
     final ApiResult<DeleteSmartGoalReponse> apiResult = await repository.deleteSmartGoal(smartGoalId);
     apiResult.when(success: (DeleteSmartGoalReponse response) {
+      Observable.instance
+            .notifyObservers([], notifyName: "food_change_data");
       refreshData(isRefresh: true);
       //  emit(const ActivityTabSuccess());
     }, failure: (NetworkExceptions error) {

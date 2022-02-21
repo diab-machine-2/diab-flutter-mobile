@@ -15,6 +15,7 @@ class VideoManager {
   final VoidCallback? onDone;
   bool isLocked = false;
   Timer? _timer;
+  final Function(String, int)? onCompleteVideo;
 
   _startTimer() {
     _stopTimer();
@@ -30,15 +31,15 @@ class VideoManager {
     }
   }
 
-  VideoManager.fromExerciseData(ExerciseMovementResponseData exerciseData, {this.onDone}) {
+  VideoManager.fromExerciseData(ExerciseMovementResponseData exerciseData, {this.onDone, this.onCompleteVideo,}) {
     sourceList.clear();
 
     for (final ExerciseMovementResponseDataSections? data in exerciseData.sections ?? []) {
-      sourceList.add(VideoSourceData(url: data?.videoUrl ?? '', loopTimes: data?.replayTime ?? 1));
+      sourceList.add(VideoSourceData(url: data?.videoUrl ?? '', loopTimes: data?.replayTime ?? 1, exerciseCategoryId: data?.exerciseCategoryId ?? ''));
     }
 
     if (sourceList.isEmpty) {
-      sourceList.add(VideoSourceData(url: exerciseData.videoUrl ?? '', loopTimes: 1));
+      sourceList.add(VideoSourceData(url: exerciseData.videoUrl ?? '', loopTimes: 1, exerciseCategoryId: ''));
     }
 
     if (sourceList.isNotEmpty) {
@@ -71,6 +72,7 @@ class VideoManager {
             (this.controller!.videoPlayerController!.value.duration ==
                 this.controller!.videoPlayerController!.value.position)) {
           _startTimer();
+      //    onCompleteVideo?.call(sourceList[currentSourceIndex].exerciseCategoryId, this.controller?.videoPlayerController?.value.duration?.inSeconds ?? 0);
           loopVideo();
         }
       });
@@ -113,7 +115,8 @@ class VideoManager {
 }
 
 class VideoSourceData {
-  VideoSourceData({required this.url, required this.loopTimes});
+  VideoSourceData({required this.url, required this.loopTimes, required this.exerciseCategoryId});
   final String url;
   int loopTimes;
+  String exerciseCategoryId;
 }

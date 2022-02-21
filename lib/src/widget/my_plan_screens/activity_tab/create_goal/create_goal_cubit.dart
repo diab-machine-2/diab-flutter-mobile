@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_observer/Observable.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/modal/user/goal_info.dart';
@@ -182,6 +183,8 @@ class CreateGoalCubit extends Cubit<CreateGoalState> {
     apiResult = await repository.createSmartGoal(dataModel.request ?? CreateSmartGoalRequest());
     apiResult.when(success: (CreateSmartGoalResponse response) {
       if (response.meta?.success ?? false) {
+        Observable.instance
+            .notifyObservers([], notifyName: "food_change_data");
         emit(const CreateGoalSuccess());
       } else {
         emit(CreateGoalFailure(response.error?.message ?? R.string.error));
