@@ -311,7 +311,7 @@ class _VerifyPhoneControllerState extends State<VerifyPhoneController> {
           "client_id": Const.CLIENT_ID,
           "client_secret": Const.CLIENT_SECRET,
           "grant_type": "external",
-          "external_token": widget.appleAccount!.identityToken,
+          "external_token": widget.appleAccount?.identityToken,
           "provider": 'Apple'
         });
         final result = await LoginClient().createPatient(widget.userInfo);

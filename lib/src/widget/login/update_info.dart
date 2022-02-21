@@ -61,7 +61,9 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
             ? (widget.googleAccount?.displayName ?? '')
             : widget.type == 'facebook'
                 ? widget.userInfo['name']
-                : widget.appleAccount?.givenName!);
+                : widget.type == 'apple'
+                    ? widget.appleAccount?.givenName ?? ''
+                    : '');
   }
 
   void dispose() {
@@ -107,7 +109,7 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
                                 child: Text(
                                     widget.type == 'phone'
                                         ? R.string.hay_de_diab_thau_hieu_ban_hon.tr()
-                                        : '${R.string.chao_mung.tr()} ${widget.type == 'google' ? widget.googleAccount!.displayName!.split(' ').last : widget.type == 'facebook' ? widget.userInfo['name'].split(' ').last : widget.appleAccount!.givenName ?? R.string.ban.tr()},\n${R.string.hay_de_diab_thau_hieu_ban_hon_single_line.tr()}',
+                                        : '${R.string.chao_mung.tr()} ${widget.type == 'google' ? widget.googleAccount!.displayName!.split(' ').last : widget.type == 'facebook' ? widget.userInfo['name'].split(' ').last : widget.appleAccount?.givenName ?? R.string.ban.tr()},\n${R.string.hay_de_diab_thau_hieu_ban_hon_single_line.tr()}',
                                     style: TextStyle(
                                         height: 1.5,
                                         color: R.color.mainColor,
@@ -660,7 +662,7 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
       } else if (widget.type == 'apple') {
         final result = await LoginClient().registerWithSocial({
           'providerName': 'Apple',
-          'providerKey': widget.appleAccount!.userIdentifier,
+          'providerKey': widget.appleAccount?.userIdentifier,
           'phoneNumber': phone,
         });
         //     final resultCreatePatient = await LoginClient().createPatient(params);
