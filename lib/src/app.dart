@@ -146,7 +146,14 @@ class _AppState extends State<App> {
                   return _buildRoute(
                       settings,
                       RegisterSuccess(
-                          phone: data?['phone'], password: data?['password'], referalCode: data?['referalCode']));
+                        phone: data?['phone'],
+                        password: data?['password'],
+                        referalCode: data?['referalCode'],
+                        type: data?['type'],
+                        googleAccount: data?['googleAccount'],
+                        appleAccount: data?['appleCredential'],
+                        diabeteStates: data?['diabeteStates'],
+                      ));
                 case NavigatorName.update_info:
                   final data = settings.arguments as Map<String, dynamic>?;
                   return _buildRoute(

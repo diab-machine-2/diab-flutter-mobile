@@ -1012,3 +1012,4 @@ install_zalo,"Để bắt đầu trò chuyện, bạn sẽ được chuyển hư
 phone_not_available,Không tìm thấy số điện thoại của huấn luyện viên,
 group_not_available,Không tìm thấy nhóm,
 error_redirect_zalo,Có lỗi khi chuyển hướng sang Zalo,
+wrong_phone_number,"Số điện thoại không hợp lệ!",

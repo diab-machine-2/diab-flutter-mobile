@@ -285,12 +285,10 @@ class _VerifyPhoneControllerState extends State<VerifyPhoneController> {
 
         final result = await LoginClient().createPatient(widget.userInfo);
         if (result == true) {
-          Navigator.pushReplacementNamed(context, NavigatorName.rules,
-              arguments: {'googleAccount': widget.googleAccount, 'appleAccount': null});
+          final user = await UserClient().fetchUser();
+          BotToast.closeAllLoading();
+          Navigator.pushReplacementNamed(context, NavigatorName.rules);
         }
-        BotToast.closeAllLoading();
-        Navigator.popUntil(context, (route) => route.isFirst);
-        Navigator.pushReplacementNamed(context, NavigatorName.tabbar);
       } else if (widget.type == 'facebook') {
         await LoginClient().verifyOTP(widget.phone, otpCode);
         await LoginClient().login({
@@ -302,6 +300,8 @@ class _VerifyPhoneControllerState extends State<VerifyPhoneController> {
         });
         final result = await LoginClient().createPatient(widget.userInfo);
         if (result == true) {
+          final user = await UserClient().fetchUser();
+          BotToast.closeAllLoading();
           Navigator.pushReplacementNamed(context, NavigatorName.rules);
         }
         BotToast.closeAllLoading();
@@ -316,12 +316,10 @@ class _VerifyPhoneControllerState extends State<VerifyPhoneController> {
         });
         final result = await LoginClient().createPatient(widget.userInfo);
         if (result == true) {
-          Navigator.pushReplacementNamed(context, NavigatorName.rules,
-              arguments: {'googleAccount': null, 'appleAccount': widget.appleAccount});
+          final user = await UserClient().fetchUser();
+          BotToast.closeAllLoading();
+          Navigator.pushReplacementNamed(context, NavigatorName.rules);
         }
-        BotToast.closeAllLoading();
-        Navigator.popUntil(context, (route) => route.isFirst);
-        Navigator.pushReplacementNamed(context, NavigatorName.tabbar);
       } else if (widget.type == 'linked_google') {
         final result = await LoginClient().linkedAccount({
           'providerName': 'Google',

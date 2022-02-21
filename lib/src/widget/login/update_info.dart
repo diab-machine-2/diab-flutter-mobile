@@ -19,6 +19,8 @@ import 'package:medical/src/widget/profile/widgets/diabetes_status_picker.dart';
 import 'package:medical/src/widget/profile/widgets/gender_picker.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
+import '../../repo/user/user_client.dart';
+
 class UpdateInfoController extends StatefulWidget {
   final String? type;
   final GoogleSignInAccount? googleAccount;
@@ -128,6 +130,7 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
                                                 placeholder: R.string.nhap_so_dien_thoai.tr(),
                                                 autoFocus: false,
                                                 showStar: true,
+                                                maxLength: 10,
                                                 onChanged: (value) {
                                                   phone = value;
                                                 }),
@@ -576,6 +579,11 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
       phoneKey.currentState!.validate(R.string.ban_chua_nhap_so_dien_thoai.tr());
       return;
     }
+    if (phone.length < 9 && widget.type != 'phone') {
+      phoneKey.currentState!.validate(R.string.wrong_phone_number.tr());
+      return;
+    }
+
     if (name.isEmpty) {
       Message.showToastMessage(context, R.string.ban_chua_nhap_ho_ten.tr());
       return;
@@ -640,6 +648,7 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
           'providerKey': widget.facebookAccount!.accessToken?.userId,
           'phoneNumber': phone
         });
+        //   final resultCreatePatient = await LoginClient().createPatient(params);
         Navigator.pushNamed(context, NavigatorName.verify, arguments: {
           'type': 'facebook',
           'otp': result.token,
@@ -649,8 +658,12 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
           'userInfo': params
         });
       } else if (widget.type == 'apple') {
-        final result = await LoginClient().registerWithSocial(
-            {'providerName': 'Apple', 'providerKey': widget.appleAccount!.userIdentifier, 'phoneNumber': phone});
+        final result = await LoginClient().registerWithSocial({
+          'providerName': 'Apple',
+          'providerKey': widget.appleAccount!.userIdentifier,
+          'phoneNumber': phone,
+        });
+        //     final resultCreatePatient = await LoginClient().createPatient(params);
         Navigator.pushNamed(context, NavigatorName.verify, arguments: {
           'type': 'apple',
           'otp': result.token,

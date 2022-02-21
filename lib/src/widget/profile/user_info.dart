@@ -65,7 +65,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
 
     isHasRoadMap = user.ownPackage?.ownRoadmap != null;
 
-    if(user.levelOfDiabetesRuleList != null) {
+    if (user.levelOfDiabetesRuleList != null) {
       for (int i = 0; i < user.levelOfDiabetesRuleList!.length; i++) {
         if (user.levelOfDiabetesRuleList![i].selected!) {
           diabetesName = user.levelOfDiabetesRuleList![i].text!;
@@ -358,7 +358,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                         _buildCardLayout(title: R.string.pathological_info.tr(), children: [
                           _buildItemProfile(
                             image: R.drawable.ic_folder,
-                            title: user.diabetesName == null ? R.string.updating.tr() : user.diabetesName!,
+                            title: user.diabetes?.name == null ? R.string.updating.tr() : user.diabetes!.name!,
                             subTitle: R.string.loai_benh.tr(),
                             isTitleFromSelectedCategory: false,
                             callback: (selectedIndexList) {

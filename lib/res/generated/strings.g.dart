@@ -1014,4 +1014,5 @@ class Strings {
 	String get phone_not_available => 'phone_not_available';
 	String get group_not_available => 'group_not_available';
 	String get error_redirect_zalo => 'error_redirect_zalo';
+	String get wrong_phone_number => 'wrong_phone_number';
 }

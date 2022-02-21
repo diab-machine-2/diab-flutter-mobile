@@ -488,20 +488,26 @@ class _LoginControllerState extends State<LoginController> {
       //   });
       // }
 
-      // //  final diabeteStates = await UserClient().fetchDiabeteStatesNoHeader();
+      final diabeteStates = await UserClient().fetchDiabeteStatesNoHeader();
 
       // final result = await LoginClient().createPatient({
       //   'fullName': userName,
       //   'dateOfBirth': '0',
       //   'gender': '1',
-      //   //   'diabetesStatus': diabeteStates?.isEmpty ?? true ? '1' : diabeteStates?.first['key'].toString() ?? '',
-      //   'diabetesStatus': '1',
+      //   'diabetesStatus': diabeteStates?.isEmpty ?? true ? '1' : diabeteStates?.first.key.toString() ?? '1',
+      //   // 'diabetesStatus': '1',
       //   'diabetesDate': (DateTime.now().millisecondsSinceEpoch ~/ 1000).toString()
       // });
       // if (result == true) {
-      Navigator.pushReplacementNamed(context, NavigatorName.rules,
-          arguments: {'googleAccount': googleAccount, 'appleCredential': appleCredential});
+      // Navigator.pushReplacementNamed(context, NavigatorName.rules,
+      //     arguments: {'googleAccount': googleAccount, 'appleCredential': appleCredential});
       //}
+      Navigator.pushReplacementNamed(context, NavigatorName.register_success, arguments: {
+        'type': provider.toLowerCase(),
+        'googleAccount': googleAccount,
+        'appleAccount': appleCredential,
+        'diabeteStates': diabeteStates
+      });
       BotToast.closeAllLoading();
     } catch (error) {
       BotToast.closeAllLoading();

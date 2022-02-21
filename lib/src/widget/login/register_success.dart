@@ -1,17 +1,32 @@
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/user/category_item_user_model.dart';
 import 'package:medical/src/repo/login/login_client.dart';
 import 'package:medical/src/repo/user/user_client.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigator_name.dart';
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 class RegisterSuccess extends StatefulWidget {
   final String? phone;
   final String? password;
   final String? referalCode;
-  RegisterSuccess({this.phone, this.password, this.referalCode});
+  final GoogleSignInAccount? googleAccount;
+  final AuthorizationCredentialAppleID? appleAccount;
+  final String? type;
+  final List<CategoryItemUserModel>? diabeteStates;
+
+  RegisterSuccess({
+    this.phone,
+    this.password,
+    this.referalCode,
+    this.type,
+    this.googleAccount,
+    this.appleAccount,
+    this.diabeteStates,
+  });
   @override
   _RegisterSuccessState createState() => _RegisterSuccessState();
 }
@@ -36,19 +51,12 @@ class _RegisterSuccessState extends State<RegisterSuccess> {
                   Column(children: [
                     SizedBox(height: 180),
                     Text('Đăng ký thành công!',
-                        style: TextStyle(
-                            color: R.color.mainColor,
-                            fontSize: 20,
-                            fontWeight: FontWeight.w600)),
+                        style: TextStyle(color: R.color.mainColor, fontSize: 20, fontWeight: FontWeight.w600)),
                     SizedBox(height: 20),
                     Padding(
                       padding: EdgeInsets.only(left: 32, right: 32),
-                      child: Text(
-                          'Vui lòng cập nhật hồ sơ để\nDiaB có thể hỗ trợ bạn tốt hơn!',
-                          style: TextStyle(
-                              color: R.color.color0xff333333,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w400),
+                      child: Text('Vui lòng cập nhật hồ sơ để\nDiaB có thể hỗ trợ bạn tốt hơn!',
+                          style: TextStyle(color: R.color.color0xff333333, fontSize: 16, fontWeight: FontWeight.w400),
                           textAlign: TextAlign.center),
                     )
                   ])
@@ -57,7 +65,7 @@ class _RegisterSuccessState extends State<RegisterSuccess> {
             ),
             Container(
               child: GestureDetector(
-                onTap: () {
+                onTap: () async {
                   getToken();
                 },
                 child: SafeArea(
@@ -75,10 +83,7 @@ class _RegisterSuccessState extends State<RegisterSuccess> {
                               colors: [R.color.greenGradientTop, R.color.greenGradientBottom])),
                       child: Center(
                           child: Text('Cập nhật hồ sơ',
-                              style: TextStyle(
-                                  color: R.color.white,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600)))),
+                              style: TextStyle(color: R.color.white, fontSize: 16, fontWeight: FontWeight.w600)))),
                 ),
               ),
             )
@@ -89,27 +94,36 @@ class _RegisterSuccessState extends State<RegisterSuccess> {
   }
 
   getToken() async {
-    BotToast.showLoading();
-    final result = await LoginClient().login({
-      "client_id": Const.CLIENT_ID,
-      "client_secret": Const.CLIENT_SECRET,
-      "grant_type": "phone_number_password",
-      "password": widget.password,
-      "phone_number": widget.phone
-    });
-    List<CategoryItemUserModel>? diabeteStates;
-    try {
-      diabeteStates = await UserClient().fetchDiabeteStatesNoHeader();
-    } catch(e){
+    if (widget.type != null) {
+      Navigator.pushReplacementNamed(context, NavigatorName.update_info, arguments: {
+        'type': widget.type,
+        'googleAccount': widget.googleAccount,
+        'appleAccount': widget.appleAccount,
+        'diabeteStates': widget.diabeteStates
+      });
+    } else {
+      BotToast.showLoading();
+      final result = await LoginClient().login({
+        "client_id": Const.CLIENT_ID,
+        "client_secret": Const.CLIENT_SECRET,
+        "grant_type": "phone_number_password",
+        "password": widget.password,
+        "phone_number": widget.phone
+      });
+      List<CategoryItemUserModel>? diabeteStates;
+      try {
+        diabeteStates = await UserClient().fetchDiabeteStatesNoHeader();
+      } catch (e) {
+        BotToast.closeAllLoading();
+        //   return;
+      }
       BotToast.closeAllLoading();
-   //   return;
-    }
-    BotToast.closeAllLoading();
-    print(result);
+      print(result);
 
-    // if (result.access_token != null) {
-    Navigator.pushReplacementNamed(context, NavigatorName.update_info,
-        arguments: {'type': 'phone', 'referalCode': widget.referalCode, 'diabeteStates': diabeteStates});
-    // }
+      // if (result.access_token != null) {
+      Navigator.pushReplacementNamed(context, NavigatorName.update_info,
+          arguments: {'type': 'phone', 'referalCode': widget.referalCode, 'diabeteStates': diabeteStates});
+      // }
+    }
   }
 }
