@@ -175,6 +175,7 @@ class TextFieldCustomState extends State<TextFieldCustom> {
                                     border: InputBorder.none,
                                     contentPadding: const EdgeInsets.only(top: -22),
                                     hintText: widget.placeholder,
+                                    counterText: "",
                                     hintStyle: TextStyle(
                                         fontFamily: 'roboto',
                                         color: R.color.textDark,
