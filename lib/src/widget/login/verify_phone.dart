@@ -62,7 +62,7 @@ class _VerifyPhoneControllerState extends State<VerifyPhoneController> {
     //     _showDialogError();
     //   });
     // } else {
-      startTimer();
+    startTimer();
     //}
   }
 

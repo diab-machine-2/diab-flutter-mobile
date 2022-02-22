@@ -358,7 +358,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                         _buildCardLayout(title: R.string.pathological_info.tr(), children: [
                           _buildItemProfile(
                             image: R.drawable.ic_folder,
-                            title: user.diabetes?.name == null ? R.string.updating.tr() : user.diabetes!.name!,
+                            title: getSelectedDiabetes(),
                             subTitle: R.string.loai_benh.tr(),
                             isTitleFromSelectedCategory: false,
                             callback: (selectedIndexList) {
@@ -2122,5 +2122,16 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
       }
     }
     return 0;
+  }
+
+  String getSelectedDiabetes(){
+    if(user.levelOfDiabetesRuleList != null){
+      for(var item in user.levelOfDiabetesRuleList!){
+        if(item.selected ?? false){
+          return item.text ?? R.string.updating.tr();
+        }
+      }
+    }
+    return R.string.updating.tr();
   }
 }
