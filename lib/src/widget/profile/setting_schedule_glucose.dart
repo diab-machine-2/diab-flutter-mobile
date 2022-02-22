@@ -254,7 +254,8 @@ class _SettingScheduleGlucoseControllerState
                         setState(() {});
                       },
                       title: R.string.nhap_thoi_gian.tr(),
-                      max: 60,
+                      max: index == 1 ? 150 : 30,
+                      range: index == 1 ? 5 : 1,
                       numberDefault: index == 0
                           ? timeModel!.beforeEat
                           : index == 1

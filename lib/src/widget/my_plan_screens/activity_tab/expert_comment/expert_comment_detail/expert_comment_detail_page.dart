@@ -137,7 +137,7 @@ class _ExpertCommentDetailPageState extends State<ExpertCommentDetailPage> {
                     style: TextStyle(color: R.color.captionColorGray, fontSize: 14, fontWeight: FontWeight.w400),
                   ),
                   SizedBox(height: 6),
-                  Expanded(
+                  Flexible(
                     child: SingleChildScrollView(
                       child: Text(
                         _cubit.expertCommentModel?.comment ?? '',

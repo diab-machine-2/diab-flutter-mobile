@@ -1494,8 +1494,9 @@ class CustomNumPicker extends StatefulWidget {
   final int? max;
   final int? numberDefault;
   final String? unit;
+  int? range;
 
-  CustomNumPicker({this.callback, this.title, this.subTitle, this.max, this.numberDefault, this.unit});
+  CustomNumPicker({this.callback, this.title, this.subTitle, this.max, this.numberDefault, this.unit, this.range = 1});
 
   @override
   CustomNumPickerState createState() => CustomNumPickerState();
@@ -1504,10 +1505,15 @@ class CustomNumPicker extends StatefulWidget {
 class CustomNumPickerState extends State<CustomNumPicker> {
   FixedExtentScrollController? numController;
   int? selectedNum;
+  List<int> list = [];
 
   @override
   void initState() {
-    selectedNum = widget.numberDefault;
+    list.clear();
+    for(int i = 0; i <= widget.max!; i = i + widget.range!){
+      list.add(i);
+    }
+    selectedNum = widget.numberDefault! ~/ widget.range!;
     super.initState();
     numController = FixedExtentScrollController(initialItem: selectedNum!);
   }
@@ -1572,11 +1578,10 @@ class CustomNumPickerState extends State<CustomNumPicker> {
                                 });
                               },
                               itemExtent: 47.0,
-                              children: List<int>.generate(widget.max! + 1, (i) => i)
-                                  .map((e) => Center(
+                              children: list.map((e) => Center(
                                         child: Text('$e',
                                             style: TextStyle(
-                                                color: selectedNum == e ? R.color.mainColor : R.color.color0xffC0C2C5,
+                                                color: selectedNum == (e / widget.range!) ? R.color.mainColor : R.color.color0xffC0C2C5,
                                                 fontSize: 24,
                                                 fontWeight: FontWeight.bold)),
                                       ))
@@ -1604,7 +1609,7 @@ class CustomNumPickerState extends State<CustomNumPicker> {
                       ),
                       GestureDetector(
                         onTap: () {
-                          widget.callback!(selectedNum);
+                          widget.callback!(selectedNum! * widget.range!);
                           Navigator.pop(context);
                         },
                         child: Container(
