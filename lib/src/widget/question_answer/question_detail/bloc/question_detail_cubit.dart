@@ -1,21 +1,16 @@
 import 'dart:async';
 
-import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/request/make_comment_request.dart';
 import 'package:medical/src/model/response/common_response.dart';
-import 'package:medical/src/model/response/lesson_module_response.dart';
 import 'package:medical/src/model/response/question_answer_response.dart';
 import 'package:medical/src/model/service/api_result.dart';
 import 'package:medical/src/model/service/network_exceptions.dart';
-import 'package:medical/src/repo/question_answer/question_answer_client.dart';
 import 'package:medical/src/widget/question_answer/all_question_answer/model/question_model.dart';
 import '../question_detail.dart';
-import 'package:medical/src/modal/error/error_model.dart';
 
 class QuestionDetailCubit extends Cubit<QuestionDetailState> {
   QuestionModel questionModel;
@@ -116,7 +111,7 @@ class QuestionDetailCubit extends Cubit<QuestionDetailState> {
     final ApiResult<CommonResponse> apiResult = await repository.makeComment(request);
     apiResult.when(success: (CommonResponse response) async {
       canRefreshScreen = true;
-      await Future.delayed(Duration(milliseconds: 200));
+      await Future.delayed(Duration(milliseconds: 100));
       await getQuestionById();
     }, failure: (NetworkExceptions error) {
       canRefreshScreen = true;

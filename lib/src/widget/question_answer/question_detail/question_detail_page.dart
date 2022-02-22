@@ -150,7 +150,7 @@ class _QuestionDetailPageState extends State<QuestionDetailPage> with WidgetsBin
           highlightColor: R.color.transparent,
           icon: Icon(Icons.arrow_back, color: R.color.textDark),
           onPressed: () {
-            Navigator.pop(context, _cubit.questionModel);
+            _backPressed();
           }),
     );
   }

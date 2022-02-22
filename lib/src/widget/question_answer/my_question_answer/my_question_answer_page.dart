@@ -58,9 +58,7 @@ class _MyQuestionAnswerPageState extends State<MyQuestionAnswerPage> with Automa
       //     _cubit.refreshData();
       //   }
       // } else {
-      _cubit.controller.requestRefresh();
-      await _cubit.refreshData();
-      _questionScrollController.jumpTo(0);
+      await refresh();
       //}
     }
   }
@@ -258,7 +256,7 @@ class _MyQuestionAnswerPageState extends State<MyQuestionAnswerPage> with Automa
         var result = await Navigator.pushNamed(context, NavigatorName.make_question,
             arguments: {'lessonModuleItems': _cubit.allLessonModules});
         if (result != null) {
-          await _cubit.getQuestions(isShowLoading: true);
+          await refresh();
           Observable.instance
               .notifyObservers([], notifyName: "update_all_question", map: {'question': _cubit.questions.first});
         }
@@ -323,10 +321,8 @@ class _MyQuestionAnswerPageState extends State<MyQuestionAnswerPage> with Automa
         var result = await Navigator.pushNamed(context, NavigatorName.question_detail,
             arguments: {'questionModel': questionModel, 'isAll': false});
         if (result != null) {
-          _cubit.controller.requestRefresh();
-          await _cubit.refreshData();
+          await refresh();
           Observable.instance.notifyObservers([], notifyName: "update_all_question");
-          _questionScrollController.jumpTo(0);
 
           // if (result is Map) {
           //   var type = result['type'];
@@ -349,6 +345,12 @@ class _MyQuestionAnswerPageState extends State<MyQuestionAnswerPage> with Automa
         Navigator.pop(context);
       },
     );
+  }
+
+  refresh() async {
+    _cubit.controller.requestRefresh();
+    await _cubit.refreshData();
+    _questionScrollController.jumpTo(0);
   }
 
   @override
