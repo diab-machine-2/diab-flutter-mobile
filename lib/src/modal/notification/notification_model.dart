@@ -28,7 +28,7 @@ class NotificationModel {
 
   NotificationActionType get actionType =>
       NotificationActionExtend.getNotificationActionTypeFromIndex(
-          notificationType);
+          data?.notificationType);
 
   @override
   factory NotificationModel.fromJson(Map<String, dynamic> json) {
