@@ -24,6 +24,7 @@ import 'package:medical/src/widgets/day_in_week_widget.dart';
 import 'package:medical/src/widgets/pdf_viewer_widget.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:visibility_detector/visibility_detector.dart';
+import '../../../helper/helper.dart';
 
 import '../../exercise_tab/exercise_detail/exercise_detail_page.dart';
 import '../../lesson_tab/lesson_detail/lesson_detail_page.dart';
@@ -52,6 +53,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
   late final ActivityTabCubit _cubit;
   final RefreshController _controller = RefreshController();
   final ScrollController _scrollController = ScrollController();
+  final ScrollController _scrollSmartGoalListController = ScrollController();
   bool isVisible = false;
 
   @override
@@ -103,6 +105,9 @@ class _ActivityTabPageState extends State<ActivityTabPage>
           } else {
             BotToast.closeAllLoading();
             _controller.refreshCompleted();
+          }
+          if (state is ActivityTabSuccess) {
+        //    _scrollSmartGoalListController.animateTo(_scrollSmartGoalListController.position.minScrollExtent, duration: Duration(microseconds: 10), curve: Curves.ease);
           }
           if (state is ActivityTabFailure) {
             Message.showToastMessage(context, state.error);
@@ -173,6 +178,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
                     controller: _controller,
                     onRefresh: () => _cubit.refreshData(isRefresh: true),
                     child: SingleChildScrollView(
+                      controller: _scrollSmartGoalListController,
                       child: Padding(
                         padding: EdgeInsets.fromLTRB(16, 32, 16, MediaQuery.of(context).padding.bottom + 75),
                         child: Column(
@@ -193,9 +199,19 @@ class _ActivityTabPageState extends State<ActivityTabPage>
                                   borderColor: R.color.greenGradientBottom,
                                   backgroundColor: R.color.white,
                                   onPressed: () async {
-                                    Observable.instance.notifyObservers([], notifyName: Const.HIDE_OVERLAY_KEY);
-                                    await NavigationUtil.navigatePage(context, CreateGoalPage(_cubit.smartGoalDayList));
-                                    _cubit.refreshData();
+                                    if(DateUtil.isAfter(_cubit.currentDay, DateTime.now().millisecondsSinceEpoch ~/ 1000) ?? false){
+                                      _showDialogConfirmCreateGoal(context, 
+                                      'Mục tiêu sẽ hiệu lực từ ngày ${convertToUTC(DateTime.now().millisecondsSinceEpoch ~/ 1000, 'dd/MM/yyyy')}, bạn có muốn tiếp tục?',
+                                       () async {
+                                          Observable.instance.notifyObservers([], notifyName: Const.HIDE_OVERLAY_KEY);
+                                          await NavigationUtil.navigatePage(context, CreateGoalPage(_cubit.smartGoalDayList));
+                                          _cubit.refreshData(keepCurrentDay: false);
+                                       },);
+                                    } else {
+                                      Observable.instance.notifyObservers([], notifyName: Const.HIDE_OVERLAY_KEY);
+                                      await NavigationUtil.navigatePage(context, CreateGoalPage(_cubit.smartGoalDayList));
+                                      _cubit.refreshData(keepCurrentDay: false);
+                                    }
                                   }),
                             )
                           ],
@@ -918,6 +934,82 @@ class _ActivityTabPageState extends State<ActivityTabPage>
           ),
         ),
       ),
+    );
+  }
+
+  _showDialogConfirmCreateGoal(BuildContext context, String title, VoidCallback onContinue) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+            contentPadding: EdgeInsets.all(0),
+            content: Stack(children: [
+              Container(
+                padding: EdgeInsets.all(16),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.only(top: 36.0, bottom: 10, left: 16, right: 16),
+                      child: Text(title,
+                          textAlign: TextAlign.center,
+                          style: TextStyle(color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w600)),
+                    ),
+                    Container(
+                      margin: EdgeInsets.only(top: 16),
+                      child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                        Expanded(
+                          child: GestureDetector(
+                            onTap: () {
+                              Navigator.pop(context);
+                            },
+                            child: Container(
+                                height: 40,
+                                decoration:
+                                    BoxDecoration(borderRadius: BorderRadius.circular(200), color: R.color.grayBorder),
+                                child: Center(
+                                  child: Text(R.string.back.tr(),
+                                      style: TextStyle(
+                                          color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w600)),
+                                )),
+                          ),
+                        ),
+                        SizedBox(width: 14),
+                        Expanded(
+                          child: GestureDetector(
+                            onTap: () async {
+                              Navigator.pop(context);
+                              onContinue();
+                            },
+                            child: Container(
+                              height: 40,
+                              decoration: BoxDecoration(
+                                color: R.color.mainColor,
+                                borderRadius: BorderRadius.circular(200),
+                              ),
+                              child: Center(
+                                child: Text(R.string.tiep_tuc.tr(),
+                                    style: TextStyle(color: R.color.white, fontSize: 16, fontWeight: FontWeight.w600)),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ]),
+                    ),
+                  ],
+                ),
+              ),
+              Positioned(
+                top: 0,
+                right: 0,
+                child: IconButton(
+                    icon: Icon(Icons.close, color: R.color.color0xffBEC0C8),
+                    onPressed: () {
+                      Navigator.pop(context);
+                    }),
+              )
+            ]));
+      },
     );
   }
 
