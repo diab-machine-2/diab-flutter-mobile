@@ -107,7 +107,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
             _controller.refreshCompleted();
           }
           if (state is ActivityTabSuccess) {
-        //    _scrollSmartGoalListController.animateTo(_scrollSmartGoalListController.position.minScrollExtent, duration: Duration(microseconds: 10), curve: Curves.ease);
+       //     _scrollSmartGoalListController.animateTo(_scrollSmartGoalListController.position.minScrollExtent, duration: Duration(milliseconds: 200), curve: Curves.ease);
           }
           if (state is ActivityTabFailure) {
             Message.showToastMessage(context, state.error);
