@@ -41,7 +41,7 @@ dependencies:
   flutter_datetime_picker: ^1.5.1
   percent_indicator: ^3.4.0
   intl: ^0.17.0
-  fl_chart: ^0.40.0
+  fl_chart: ^0.45.0
   # sms_autofill: ^1.2.6
   pin_code_fields: ^7.3.0
 #  dart_notification_center: ^1.0.0+1

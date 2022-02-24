@@ -12,6 +12,7 @@ import 'package:medical/src/widget/Food/daily_nutrition/daily_nutrition.dart';
 import 'package:medical/src/widget/Food/food_detail_tabbar.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
+import 'package:visibility_detector/visibility_detector.dart';
 
 class FoodTrendChart extends StatefulWidget {
   FoodTrendChart({Key? key}) : super(key: key);
@@ -28,6 +29,7 @@ class FoodTrendChartState extends State<FoodTrendChart>
   int periodFilterType = 1;
   bool isEnergyTab = true;
   int touchIndex = -1;
+  int? previousDate = 0;
 
   @override
   void initState() {
@@ -77,57 +79,66 @@ class FoodTrendChartState extends State<FoodTrendChart>
               ? Container(
                   height: 491.5,
                   child: Center(child: CircularProgressIndicator()))
-              : Container(
-                  color: R.color.transparent,
-                  padding:
-                      EdgeInsets.only(left: 18, right: 18, bottom: 18, top: 18),
-                  child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Text(R.string.xu_huong_dinh_duong.tr(),
-                                style: TextStyle(
-                                    fontSize: 20, fontWeight: FontWeight.w600)),
-                          ],
-                        ),
-                        SizedBox(height: 23),
-                        (isEnergyTab
-                                ? model.energyChart.items.length == 0
-                                : model.carbChart.items.length == 0)
-                            ? GestureDetector(
-                                onTap: () {
-                                  NavigationUtil.navigatePage(
-                                    context,
-                                    DailyNutritionPage(
-                                      type: 'input',
-                                      id: null,
-                                    ),
-                                  );
-                                },
-                                child:
-                                    Image.asset(R.drawable.img_food_empty),
-                              )
-                            : Container(
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(16),
-                                  color: R.color.white,
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: R.color.grey.withOpacity(0.5),
-                                      spreadRadius: 1,
-                                      blurRadius: 7,
-                                      offset: Offset(
-                                          0, 2), // changes position of shadow
-                                    ),
-                                  ],
-                                ),
-                                child: buildChart(isEnergyTab
-                                    ? model.energyChart
-                                    : model.carbChart))
-                        // SizedBox(height: 26),
-                      ]),
-                );
+              : VisibilityDetector(
+                 key: Key('food_trend_chart'),
+                  onVisibilityChanged: (visibilityInfo) {
+                    var visiblePercentage = visibilityInfo.visibleFraction * 100;
+                    if(visiblePercentage == 0){
+                      previousDate = 0;
+                    }
+                  },
+                child: Container(
+                    color: R.color.transparent,
+                    padding:
+                        EdgeInsets.only(left: 18, right: 18, bottom: 18, top: 18),
+                    child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Text(R.string.xu_huong_dinh_duong.tr(),
+                                  style: TextStyle(
+                                      fontSize: 20, fontWeight: FontWeight.w600)),
+                            ],
+                          ),
+                          SizedBox(height: 23),
+                          (isEnergyTab
+                                  ? model.energyChart.items.length == 0
+                                  : model.carbChart.items.length == 0)
+                              ? GestureDetector(
+                                  onTap: () {
+                                    NavigationUtil.navigatePage(
+                                      context,
+                                      DailyNutritionPage(
+                                        type: 'input',
+                                        id: null,
+                                      ),
+                                    );
+                                  },
+                                  child:
+                                      Image.asset(R.drawable.img_food_empty),
+                                )
+                              : Container(
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(16),
+                                    color: R.color.white,
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: R.color.grey.withOpacity(0.5),
+                                        spreadRadius: 1,
+                                        blurRadius: 7,
+                                        offset: Offset(
+                                            0, 2), // changes position of shadow
+                                      ),
+                                    ],
+                                  ),
+                                  child: buildChart(isEnergyTab
+                                      ? model.energyChart
+                                      : model.carbChart))
+                          // SizedBox(height: 26),
+                        ]),
+                  ),
+              );
         }));
   }
 
@@ -337,6 +348,7 @@ class FoodTrendChartState extends State<FoodTrendChart>
                                   },
                                 ),
                                 touchCallback: (FlTouchEvent event, LineTouchResponse? lineTouch) {
+                                  previousDate = 0;
                                   if (lineTouch!.lineBarSpots!.length == 1 &&
                                       event is! FlLongPressEnd &&
                                       event is! FlPanEndEvent) {
@@ -366,7 +378,9 @@ class FoodTrendChartState extends State<FoodTrendChart>
                                   if (value.toInt() > model.items.length - 1) {
                                     return '';
                                   }
-                                  final date = model.items[value.toInt()].date;
+                                  var date = model.items[value.toInt()].date;
+                                  if(previousDate == date) return '';
+                                  previousDate = date;
                                   if (date == null) {
                                     return '';
                                   } else {

@@ -5,6 +5,7 @@ import 'package:bot_toast/bot_toast.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_html/flutter_html.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/bloc/weight/weight_bloc.dart';
 import 'package:medical/src/modal/bmi/weight_trend.dart';
@@ -17,6 +18,7 @@ import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:medical/src/modal/error/error_model.dart';
+import 'package:visibility_detector/visibility_detector.dart';
 
 class BmiTrendChart extends StatefulWidget {
   BmiTrendChart({Key? key}) : super(key: key);
@@ -27,13 +29,16 @@ class BmiTrendChart extends StatefulWidget {
 
 class BmiTrendChartState extends State<BmiTrendChart>
     with AutomaticKeepAliveClientMixin<BmiTrendChart> {
+
   @override
   bool get wantKeepAlive => true;
+
   late BuildContext currentContext;
   int periodFilterType = 1;
   int trendTypeIndex = 1;
   int touchIndex = -1;
   String trendType = R.string.all.tr();
+  int? previousDate = 0;
 
   @override
   void initState() {
@@ -78,7 +83,15 @@ class BmiTrendChartState extends State<BmiTrendChart>
               ? Container(
                   height: 491.5,
                   child: Center(child: CircularProgressIndicator()))
-              : Container(
+              : VisibilityDetector(
+                  key: Key('bmi_trend_chart'),
+                  onVisibilityChanged: (visibilityInfo) {
+                    var visiblePercentage = visibilityInfo.visibleFraction * 100;
+                    if(visiblePercentage == 0){
+                      previousDate = 0;
+                    }
+                  },
+                  child: Container(
                   color: R.color.transparent,
                   padding: EdgeInsets.all(16),
                   child: Column(
@@ -287,13 +300,12 @@ class BmiTrendChartState extends State<BmiTrendChart>
                         SizedBox(height: 16),
                         // buildDescription(model)
                       ]),
-                );
+                ),);
         }));
   }
 
   buildChart(TrendWeightModel model) {
     final width = (MediaQuery.of(context).size.width - 200) / 5;
-
     int length = model.trendItems!.length;
     List<int?> dates = [];
     List<TrendItemWeightModel> trends = model.trendItems!;
@@ -477,145 +489,152 @@ class BmiTrendChartState extends State<BmiTrendChart>
                         height: 300,
                         padding: EdgeInsets.only(top: 8, bottom: 8),
                         child: LineChart(
-                          LineChartData(
-                            lineTouchData: LineTouchData(
-                                 getTouchLineStart: (barData, index) => -double.infinity, // default: from bottom
-                                getTouchLineEnd: (barData, index) => double.infinity, //to top
-                                getTouchedSpotIndicator:
-                                    (LineChartBarData barData,
-                                        List<int> spotIndexes) {
-                                  return spotIndexes.map((index) {
-                                    return TouchedSpotIndicatorData(
-                                      FlLine(
-                                          color:
-                                              toColor(trends[index].colorCode),
-                                          strokeWidth: 0.5),
-                                      FlDotData(
-                                        show: true,
-                                        getDotPainter:
-                                            (spot, percent, barData, index) =>
-                                                FlDotCirclePainter(
-                                          radius: 6.5,
-                                          color: toColor(
-                                              trends[touchIndex].colorCode),
-                                          strokeWidth: 18,
-                                          strokeColor: toColor(
-                                                  trends[touchIndex].colorCode)
-                                              .withOpacity(0.3),
-                                        ),
-                                      ),
-                                    );
-                                  }).toList();
-                                },
-                                touchTooltipData: LineTouchTooltipData(
-                                  showOnTopOfTheChartBoxArea: true,
-                                  fitInsideVertically: true,
-                                  tooltipBgColor: touchIndex == -1
-                                      ? R.color.transparent
-                                      : toColor(trends[touchIndex].colorCode)
-                                          .withOpacity(0.2),
-                                  tooltipRoundedRadius: 8,
-                                  getTooltipItems:
-                                      (List<LineBarSpot> lineBarsSpot) {
-                                    return lineBarsSpot.map((lineBarSpot) {
-                                      return LineTooltipItem(
-                                        lineBarSpot.y.round() == lineBarSpot.y
-                                            ? lineBarSpot.y.round().toString() +
-                                                ' ${R.string.kg.tr()}'
-                                            : lineBarSpot.y.toString() + ' ${R.string.kg.tr()}',
-                                        TextStyle(
+                            LineChartData(
+                              lineTouchData: LineTouchData(
+                                   getTouchLineStart: (barData, index) => -double.infinity, // default: from bottom
+                                  getTouchLineEnd: (barData, index) => double.infinity, //to top
+                                  getTouchedSpotIndicator:
+                                      (LineChartBarData barData,
+                                          List<int> spotIndexes) {
+                                    return spotIndexes.map((index) {
+                                      return TouchedSpotIndicatorData(
+                                        FlLine(
+                                            color:
+                                                toColor(trends[index].colorCode),
+                                            strokeWidth: 0.5),
+                                        FlDotData(
+                                          show: true,
+                                          getDotPainter:
+                                              (spot, percent, barData, index) =>
+                                                  FlDotCirclePainter(
+                                            radius: 6.5,
                                             color: toColor(
                                                 trends[touchIndex].colorCode),
-                                            fontWeight: FontWeight.bold),
+                                            strokeWidth: 18,
+                                            strokeColor: toColor(
+                                                    trends[touchIndex].colorCode)
+                                                .withOpacity(0.3),
+                                          ),
+                                        ),
                                       );
                                     }).toList();
                                   },
-                                ),
-                                touchCallback: (FlTouchEvent event,
-                                    LineTouchResponse? lineTouch) {
-                                  if (lineTouch?.lineBarSpots?.length == 1 &&
-                                      event is! FlLongPressEnd &&
-                                      event is! FlPanEndEvent) {
-                                    final value = lineTouch?.lineBarSpots?[0].x;
-                                    if (value != null) {
-                                      setState(() {
-                                        touchIndex = value.toInt();
-                                      });
+                                  touchTooltipData: LineTouchTooltipData(
+                                    showOnTopOfTheChartBoxArea: true,
+                                    fitInsideVertically: true,
+                                    tooltipBgColor: touchIndex == -1
+                                        ? R.color.transparent
+                                        : toColor(trends[touchIndex].colorCode)
+                                            .withOpacity(0.2),
+                                    tooltipRoundedRadius: 8,
+                                    getTooltipItems:
+                                        (List<LineBarSpot> lineBarsSpot) {
+                                      return lineBarsSpot.map((lineBarSpot) {
+                                        return LineTooltipItem(
+                                          lineBarSpot.y.round() == lineBarSpot.y
+                                              ? lineBarSpot.y.round().toString() +
+                                                  ' ${R.string.kg.tr()}'
+                                              : lineBarSpot.y.toString() + ' ${R.string.kg.tr()}',
+                                          TextStyle(
+                                              color: toColor(
+                                                  trends[touchIndex].colorCode),
+                                              fontWeight: FontWeight.bold),
+                                        );
+                                      }).toList();
+                                    },
+                                  ),
+                                  touchCallback: (FlTouchEvent event,
+                                      LineTouchResponse? lineTouch) {
+                                    previousDate = 0;
+                                    if (lineTouch?.lineBarSpots?.length == 1 &&
+                                        event is! FlLongPressEnd &&
+                                        event is! FlPanEndEvent) {
+                                      final value = lineTouch?.lineBarSpots?[0].x;
+                                      if (value != null) {
+                                        setState(() {
+                                          touchIndex = value.toInt();
+                                        });
+                                      }
+                                    } else {
+                                      touchIndex = -1;
                                     }
-                                  } else {
-                                    touchIndex = -1;
-                                  }
-                                }),
-                            gridData: FlGridData(show: false),
-                            titlesData: FlTitlesData(
-                              bottomTitles: SideTitles(
-                                showTitles: true,
-                                margin: 16,
-                                reservedSize: -16,
-                                getTextStyles: (context, value) {
-                                  return TextStyle(
-                                      color: touchIndex == value.toInt()
-                                          ? R.color.black
-                                          : R.color.color0xffC0C2C5,
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.normal);
-                                },
-                                getTitles: (double value) {
-                                  if (value.toInt() > dates.length - 1) {
-                                    return '';
-                                  }
-                                  final date = dates[value.toInt()];
-                                  if (date == null) {
-                                    return '';
-                                  } else {
-                                    return convertToUTC(date, 'dd/MM');
-                                  }
-                                  //  if (value.toInt() > dates.length - 1) {
-                                  //   return '';
-                                  // }
-                                  // final date = dates[value.toInt()];
-                                  // int? dateBefore;
-                                  // if(value.toInt() > 0){
-                                  //   dateBefore = dates[value.toInt() - 1];
-                                  // }
-                                  // if(dateBefore == null){
-                                  //    if (date == null) {
-                                  //       return '';
-                                  //     } else {
-                                  //       return convertToUTC(date, 'dd/MM');
-                                  //     }
-                                  // } else {
-                                  //   if(date == dateBefore){
-                                  //     return '';
-                                  //   } else {
-                                  //     if (date == null) {
-                                  //       return '';
-                                  //     } else {
-                                  //       return convertToUTC(date, 'dd/MM');
-                                  //     }
-                                  //   }
-                                  // }
-                                },
-                              ),
-                              leftTitles: SideTitles(
-                                  showTitles: true,
-                                  getTitles: (double value) {
-                                    return '';
                                   }),
-                              rightTitles: SideTitles(showTitles: false),
-                              topTitles: SideTitles(showTitles: false),
+                              gridData: FlGridData(show: false),
+                              titlesData: FlTitlesData(
+                                bottomTitles: SideTitles(
+                                  showTitles: true,
+                                  margin: 16,
+                                  reservedSize: -16,
+                                  getTextStyles: (context, value) {
+                                    return TextStyle(
+                                        color: touchIndex == value.toInt()
+                                            ? R.color.black
+                                            : R.color.color0xffC0C2C5,
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.normal);
+                                  },
+                                  getTitles: (double value) {
+                                    if (value.toInt() > dates.length - 1) {
+                                      return '';
+                                    }
+                                    final date = dates[value.toInt()];
+
+                                    print('duc2111 value = ${value.toInt()} previousDate = $previousDate, date = $date');
+                                    if(previousDate == date) return '';
+                                    previousDate = date;
+                                    
+                                    if (date == null) {
+                                      return '';
+                                    } else {
+                                      return convertToUTC(date, 'dd/MM');
+                                    }
+                                    //  if (value.toInt() > dates.length - 1) {
+                                    //   return '';
+                                    // }
+                                    // final date = dates[value.toInt()];
+                                    // int? dateBefore;
+                                    // if(value.toInt() > 0){
+                                    //   dateBefore = dates[value.toInt() - 1];
+                                    // }
+                                    // if(dateBefore == null){
+                                    //    if (date == null) {
+                                    //       return '';
+                                    //     } else {
+                                    //       return convertToUTC(date, 'dd/MM');
+                                    //     }
+                                    // } else {
+                                    //   if(date == dateBefore){
+                                    //     return '';
+                                    //   } else {
+                                    //     if (date == null) {
+                                    //       return '';
+                                    //     } else {
+                                    //       return convertToUTC(date, 'dd/MM');
+                                    //     }
+                                    //   }
+                                    // }
+                                  },
+                                ),
+                                leftTitles: SideTitles(
+                                    showTitles: true,
+                                    getTitles: (double value) {
+                                      return '';
+                                    }),
+                                rightTitles: SideTitles(showTitles: false),
+                                topTitles: SideTitles(showTitles: false),
+                              ),
+                              borderData: FlBorderData(
+                                show: false,
+                              ),
+                              minX: 0,
+                              maxX: length.toDouble(),
+                              maxY: maxY,
+                              minY: minY,
+                              lineBarsData: linesBarData(model),
                             ),
-                            borderData: FlBorderData(
-                              show: false,
-                            ),
-                            minX: 0,
-                            maxX: length.toDouble(),
-                            maxY: maxY,
-                            minY: minY,
-                            lineBarsData: linesBarData(model),
+                            swapAnimationDuration: Duration(milliseconds: 250),
                           ),
-                          swapAnimationDuration: Duration(milliseconds: 250),
-                        )),
+                        ),
                     SizedBox(height: 340)
                   ])),
             )
