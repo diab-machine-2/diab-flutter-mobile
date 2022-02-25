@@ -567,9 +567,11 @@ class BmiTrendChartState extends State<BmiTrendChart>
                                   reservedSize: -16,
                                   getTextStyles: (context, value) {
                                     return TextStyle(
-                                        color: touchIndex == value.toInt()
-                                            ? R.color.black
-                                            : R.color.color0xffC0C2C5,
+                                        color: 
+                                        touchIndex == value.toInt() ? 
+                                        R.color.black
+                                            : R.color.color0xffC0C2C5
+                                        ,
                                         fontSize: 14,
                                         fontWeight: FontWeight.normal);
                                   },
@@ -578,8 +580,9 @@ class BmiTrendChartState extends State<BmiTrendChart>
                                       return '';
                                     }
                                     final date = dates[value.toInt()];
-
+                                    
                                     print('duc2111 value = ${value.toInt()} previousDate = $previousDate, date = $date');
+                                    
                                     if(previousDate == date) return '';
                                     previousDate = date;
                                     

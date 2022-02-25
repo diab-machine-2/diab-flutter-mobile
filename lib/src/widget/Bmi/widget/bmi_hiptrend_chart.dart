@@ -517,9 +517,11 @@ class BmiHipTrendChartState extends State<BmiHipTrendChart>
                                 reservedSize: -16,
                                 getTextStyles: (context, value) {
                                   return TextStyle(
-                                      color: touchIndex == value.toInt()
-                                          ? R.color.black
-                                          : R.color.color0xffC0C2C5,
+                                      color:
+                                        touchIndex == value.toInt() ? 
+                                        R.color.black
+                                            : R.color.color0xffC0C2C5
+                                        ,
                                       fontSize: 14,
                                       fontWeight: FontWeight.normal);
                                 },
