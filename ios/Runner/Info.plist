@@ -37,6 +37,8 @@
 	<string>154356806592189</string>
 	<key>FacebookDisplayName</key>
 	<string>diaB</string>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
 		<string>fbapi</string>

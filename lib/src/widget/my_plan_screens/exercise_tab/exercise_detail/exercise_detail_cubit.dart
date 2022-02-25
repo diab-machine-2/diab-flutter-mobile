@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/request/complete_exercise_request.dart';
@@ -20,10 +21,11 @@ class ExerciseDetailCubit extends Cubit<ExerciseDetailState> {
 
   bool exerciseCompleted = false;
 
-  void initData(ExerciseMovementResponseData? exerciseData) {
+  void initData(ExerciseMovementResponseData? exerciseData, BuildContext context) async {
     if (exerciseData == null) return;
     this.exerciseData = exerciseData;
     videoManager = VideoManager.fromExerciseData(
+      context,
       exerciseData,
       onCompleteVideo: (exerciseCategoryId, duration) async {
         await completeVideo(exerciseCategoryId, duration);

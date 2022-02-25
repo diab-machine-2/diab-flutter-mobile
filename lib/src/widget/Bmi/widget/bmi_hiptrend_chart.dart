@@ -16,6 +16,7 @@ import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/modal/error/error_model.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:visibility_detector/visibility_detector.dart';
 
 class BmiHipTrendChart extends StatefulWidget {
   BmiHipTrendChart({Key? key}) : super(key: key);
@@ -26,13 +27,16 @@ class BmiHipTrendChart extends StatefulWidget {
 
 class BmiHipTrendChartState extends State<BmiHipTrendChart>
     with AutomaticKeepAliveClientMixin<BmiHipTrendChart> {
+
   @override
   bool get wantKeepAlive => true;
+
   late BuildContext currentContext;
   int periodFilterType = 1;
   int trendTypeIndex = 1;
   int touchIndex = -1;
   String trendType = R.string.all.tr();
+  int? previousDate = 0;
 
   @override
   void initState() {
@@ -77,7 +81,15 @@ class BmiHipTrendChartState extends State<BmiHipTrendChart>
               ? Container(
                   height: 491.5,
                   child: Center(child: CircularProgressIndicator()))
-              : Container(
+              : VisibilityDetector(
+                  key: Key('bmi_hiptrend_chart'),
+                  onVisibilityChanged: (visibilityInfo) {
+                    var visiblePercentage = visibilityInfo.visibleFraction * 100;
+                    if(visiblePercentage == 0){
+                      previousDate = 0;
+                    }
+                  },
+                  child: Container(
                   color: R.color.transparent,
                   padding: EdgeInsets.all(16),
                   child: Column(
@@ -268,7 +280,7 @@ class BmiHipTrendChartState extends State<BmiHipTrendChart>
                             )),
                         // buildDescription(model)
                       ]),
-                );
+                ),);
         }));
   }
 
@@ -480,10 +492,12 @@ class BmiHipTrendChartState extends State<BmiHipTrendChart>
                                   },
                                 ),
                                 touchCallback: (FlTouchEvent event, LineTouchResponse? lineTouch) {
+                                  previousDate = 0;
                                   if (lineTouch?.lineBarSpots?.length == 1 &&
                                       event is! FlLongPressEnd &&
                                       event is! FlPanEndEvent) {
                                     final value = lineTouch?.lineBarSpots?[0].x;
+                                    
                                     if (value != null) {
                                     setState(() {
                                       touchIndex = value.toInt();
@@ -503,9 +517,11 @@ class BmiHipTrendChartState extends State<BmiHipTrendChart>
                                 reservedSize: -16,
                                 getTextStyles: (context, value) {
                                   return TextStyle(
-                                      color: touchIndex == value.toInt()
-                                          ? R.color.black
-                                          : R.color.color0xffC0C2C5,
+                                      color:
+                                        touchIndex == value.toInt() ? 
+                                        R.color.black
+                                            : R.color.color0xffC0C2C5
+                                        ,
                                       fontSize: 14,
                                       fontWeight: FontWeight.normal);
                                 },
@@ -514,10 +530,19 @@ class BmiHipTrendChartState extends State<BmiHipTrendChart>
                                     return '';
                                   }
                                   final date = dates[value.toInt()];
+                                  
+                                  if(previousDate == date) return '';
+                                  previousDate = date;
+                                  
                                   if (date == null) {
                                     return '';
                                   } else {
-                                    return convertToUTC(date, 'dd/MM');
+                                    final dateTime = DateTime.fromMillisecondsSinceEpoch(date * 1000);
+                                    if(dateTime.hour > 0 && dateTime.hour < 7){
+                                      return convertToGMT0(date, 'dd/MM');
+                                    } else {
+                                      return convertToUTC(date, 'dd/MM');
+                                    }
                                   }
                                 },
                               ),

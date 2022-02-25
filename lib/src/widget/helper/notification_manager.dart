@@ -94,6 +94,7 @@ class NotificationManager {
     NotificationModel model = NotificationModel(
       title: message.notification?.title,
       body: message.notification?.body ?? '',
+      notificationType: message.data['notificationType'],
       data: NotificationData.fromJson(message.data),
     );
 
