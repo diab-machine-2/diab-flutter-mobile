@@ -258,9 +258,9 @@ class HeartChartState extends State<HeartChart>
                                     if (lineTouch?.lineBarSpots?.isNotEmpty == true) {
                                       final double value =
                                           lineTouch!.lineBarSpots!.first.x;
-                                      setState(() {
+                                   //   setState(() {
                                         touchIndex = value.toInt();
-                                      });
+                                  //    });
                                     }
                                   } else {
                                     touchIndex = -1;

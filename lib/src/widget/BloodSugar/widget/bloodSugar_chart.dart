@@ -369,9 +369,9 @@ class BloodSugarChartState extends State<BloodSugarChart>
                                   event is! FlPanEndEvent) {
                                 final value = lineTouch?.lineBarSpots?[0].x;
                                 if (value != null) {
-                                  setState(() {
+                              //    setState(() {
                                     touchIndex = value.toInt();
-                                  });
+                              //    });
                                 }
                               } else {
                                 touchIndex = -1;
@@ -402,6 +402,7 @@ class BloodSugarChartState extends State<BloodSugarChart>
                                 return '';
                               }
                               final date = dates[value.toInt()];
+                               print('duc2111 previousDate = $previousDate date = $date');
                               if(previousDate == date) return '';
                               previousDate = date;
                               if (date == null) {

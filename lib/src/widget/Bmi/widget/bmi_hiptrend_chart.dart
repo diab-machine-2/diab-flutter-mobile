@@ -499,9 +499,9 @@ class BmiHipTrendChartState extends State<BmiHipTrendChart>
                                     final value = lineTouch?.lineBarSpots?[0].x;
                                     
                                     if (value != null) {
-                                    setState(() {
+                                 //   setState(() {
                                       touchIndex = value.toInt();
-                                    });
+                                 //   });
                                     }
                                   } else {
                                     touchIndex = -1;

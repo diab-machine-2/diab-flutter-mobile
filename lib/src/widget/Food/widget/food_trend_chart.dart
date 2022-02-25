@@ -349,13 +349,13 @@ class FoodTrendChartState extends State<FoodTrendChart>
                                 ),
                                 touchCallback: (FlTouchEvent event, LineTouchResponse? lineTouch) {
                                   previousDate = 0;
-                                  if (lineTouch!.lineBarSpots!.length == 1 &&
+                                  if (lineTouch?.lineBarSpots != null && lineTouch!.lineBarSpots!.length == 1 &&
                                       event is! FlLongPressEnd &&
                                       event is! FlPanEndEvent) {
                                     final value = lineTouch.lineBarSpots?[0].x;
-                                    setState(() {
+                                //    setState(() {
                                       touchIndex = value?.toInt() ?? -1;
-                                    });
+                                //    });
                                   } else {
                                     touchIndex = -1;
                                   }
