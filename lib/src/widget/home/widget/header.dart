@@ -17,6 +17,8 @@ import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/components/HomeButton/main.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
+import 'package:medical/src/widget/home/welcome_package_screen/bloc/welcome_package_screen_cubit.dart';
+import 'package:medical/src/widget/home/welcome_package_screen/welcome_package_screen_page.dart';
 import 'package:medical/src/widget/profile/user_info.dart';
 import 'package:medical/src/widget/profile/widgets/motivation_popup_widget.dart';
 import 'package:medical/src/widgets/qr_scan_widget.dart';
@@ -197,6 +199,20 @@ class _HomeHeaderState extends State<HomeHeader> with Observer {
                         const SizedBox(width: 10),
                         InkWell(
                           onTap: () async {
+                            // final result = await NavigationUtil.navigatePage(
+                            //   context,
+                            //   WelcomePackageScreenPage(
+                            //     icon: R.drawable.ic_package_experience,
+                            //     title: R.string.package_experience.tr(),
+                            //     subTitle: R.string.package_experience_subtitle.tr(),
+                            //     onSkip: () async {      
+
+                            //     },
+                            //     onNavigateToMyPlan: () async {
+                                  
+                            //     },
+                            //   ),
+                            // );
                             Navigator.pushNamed(context, NavigatorName.notification);
                           },
                           child: Container(

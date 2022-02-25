@@ -35,6 +35,8 @@ class Drawables {
   String get bg_weight => "lib/res/drawables/bg_weight.png";
   String get bg_welcome => "lib/res/drawables/bg_welcome.png";
   String get ic_a1c => "lib/res/drawables/ic_a1c.png";
+  String get ic_package_experience => "lib/res/drawables/ic_package_experience.png";
+  String get ic_package_roadmap => "lib/res/drawables/ic_package_roadmap.png";
   String get ic_account => "lib/res/drawables/ic_account.png";
   String get ic_activity_1 => "lib/res/drawables/ic_activity_1.png";
   String get ic_activity_2 => "lib/res/drawables/ic_activity_2.png";

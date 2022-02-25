@@ -1015,4 +1015,8 @@ class Strings {
 	String get group_not_available => 'group_not_available';
 	String get error_redirect_zalo => 'error_redirect_zalo';
 	String get wrong_phone_number => 'wrong_phone_number';
+	String get package_experience => 'package_experience';
+	String get package_experience_subtitle => 'package_experience_subtitle';
+	String get package_roadmap => 'package_roadmap';
+	String get package_roadmap_subtitle => 'package_roadmap_subtitle';
 }

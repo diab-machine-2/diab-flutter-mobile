@@ -1013,3 +1013,7 @@ phone_not_available,Không tìm thấy số điện thoại của huấn luyện
 group_not_available,Không tìm thấy nhóm,
 error_redirect_zalo,Có lỗi khi chuyển hướng sang Zalo,
 wrong_phone_number,"Số điện thoại không hợp lệ!",
+package_experience,Gói trải nghiệm,
+package_experience_subtitle,"Gói cung cấp những tính năng cơ bản, theo dõi chỉ số sinh học, hỗ trợ tốt hơn trong cuộc chiến với đái tháo đường",
+package_roadmap,Gói lộ trình,
+package_roadmap_subtitle,"Gói cung cấp những tính năng cơ bản, theo dõi chỉ số sinh học, hỗ trợ tốt hơn trong cuộc chiến với đái tháo đường",
