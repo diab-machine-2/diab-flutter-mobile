@@ -183,7 +183,7 @@ abstract class AppApi {
 
   //Exercise
 
-  @GET("App/Roadmap/MyRoadmap")
+  @GET("App/Agenda/MyRoadmap")
   Future<ListRoadmapResponse> getRoadMap();
 
   @POST("App/Patient/Roadmap")
@@ -211,7 +211,7 @@ abstract class AppApi {
     @Body() CompleteVideoRequest request,
   );
 
-  @GET("App/Roadmap/GetWeekStates")
+  @GET("App/Agenda/GetWeekStates")
   Future<WeekStatesResponse> getExerciseWeekStates();
 
   @GET("App/Lesson/GetWeekStates")

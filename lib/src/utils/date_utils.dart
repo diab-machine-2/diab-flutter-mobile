@@ -38,6 +38,24 @@ class DateUtil {
     }
   }
 
+  static bool? isSameDay(int? dateTime1, int? dateTime2) {
+    DateTime? date1;
+    DateTime? date2;
+    if (dateTime1 != null) {
+      date1 = DateTime.fromMillisecondsSinceEpoch(dateTime1 * 1000);
+      date1 = DateTime(date1.year, date1.month, date1.day);
+    }
+    if (dateTime2 != null) {
+      date2 = DateTime.fromMillisecondsSinceEpoch(dateTime2 * 1000);
+      date2 = DateTime(date2.year, date2.month, date2.day);
+    }
+    if (date1 != null && date2 != null) {
+      return date1.year == date2.year && date1.month == date2.month && date1.day == date2.day;
+    } else {
+      return null;
+    }
+  }
+
   static bool isSameDate(DateTime date1, DateTime date2) {
     return date1.year == date2.year && date1.month == date2.month && date1.day == date2.day;
   }

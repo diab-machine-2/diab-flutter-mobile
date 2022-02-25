@@ -438,7 +438,7 @@ class _AppApi implements AppApi {
     final _result = await _dio.fetch<Map<String, dynamic>>(
         _setStreamType<ListRoadmapResponse>(
             Options(method: 'GET', headers: _headers, extra: _extra)
-                .compose(_dio.options, 'App/Roadmap/MyRoadmap',
+                .compose(_dio.options, 'App/Agenda/MyRoadmap',
                     queryParameters: queryParameters, data: _data)
                 .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
     final value = ListRoadmapResponse.fromJson(_result.data!);
@@ -538,7 +538,7 @@ class _AppApi implements AppApi {
     final _result = await _dio.fetch<Map<String, dynamic>>(
         _setStreamType<WeekStatesResponse>(
             Options(method: 'GET', headers: _headers, extra: _extra)
-                .compose(_dio.options, 'App/Roadmap/GetWeekStates',
+                .compose(_dio.options, 'App/Agenda/GetWeekStates',
                     queryParameters: queryParameters, data: _data)
                 .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
     final value = WeekStatesResponse.fromJson(_result.data!);

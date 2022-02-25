@@ -199,7 +199,11 @@ class _ActivityTabPageState extends State<ActivityTabPage>
                                   borderColor: R.color.greenGradientBottom,
                                   backgroundColor: R.color.white,
                                   onPressed: () async {
-                                    if(DateUtil.isAfter(_cubit.currentDay, DateTime.now().millisecondsSinceEpoch ~/ 1000) ?? false){
+                                    if(DateUtil.isSameDay(_cubit.currentDay, DateTime.now().millisecondsSinceEpoch ~/ 1000) ?? false){
+                                      Observable.instance.notifyObservers([], notifyName: Const.HIDE_OVERLAY_KEY);
+                                      await NavigationUtil.navigatePage(context, CreateGoalPage(_cubit.smartGoalDayList));
+                                      _cubit.refreshData(keepCurrentDay: false);
+                                    } else {
                                       _showDialogConfirmCreateGoal(context, 
                                       'Mục tiêu sẽ hiệu lực từ ngày ${convertToUTC(DateTime.now().millisecondsSinceEpoch ~/ 1000, 'dd/MM/yyyy')}, bạn có muốn tiếp tục?',
                                        () async {
@@ -207,10 +211,6 @@ class _ActivityTabPageState extends State<ActivityTabPage>
                                           await NavigationUtil.navigatePage(context, CreateGoalPage(_cubit.smartGoalDayList));
                                           _cubit.refreshData(keepCurrentDay: false);
                                        },);
-                                    } else {
-                                      Observable.instance.notifyObservers([], notifyName: Const.HIDE_OVERLAY_KEY);
-                                      await NavigationUtil.navigatePage(context, CreateGoalPage(_cubit.smartGoalDayList));
-                                      _cubit.refreshData(keepCurrentDay: false);
                                     }
                                   }),
                             )
