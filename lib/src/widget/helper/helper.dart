@@ -8,6 +8,12 @@ String convertToUTC(int timeStamp, String fotmat) {
   return formattedDate;
 }
 
+String convertToGMT0(int timeStamp, String fotmat) {
+  final date = DateTime.fromMillisecondsSinceEpoch(timeStamp * 1000);
+  String formattedDate = DateFormat(fotmat).format(date.toUtc());
+  return formattedDate;
+}
+
 String convertToTicketDate(int timeStamp, String format) {
   final date = DateTime.fromMillisecondsSinceEpoch(timeStamp * 1000);
   String formattedDate = DateFormat('EEEE, $format', 'vi_VN').format(date);

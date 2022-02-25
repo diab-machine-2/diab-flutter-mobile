@@ -294,7 +294,12 @@ class HeartChartState extends State<HeartChart>
                                   if (date == null) {
                                     return '';
                                   } else {
-                                    return convertToUTC(date, 'dd/MM');
+                                    final dateTime = DateTime.fromMillisecondsSinceEpoch(date * 1000);
+                                    if(dateTime.hour > 0 && dateTime.hour < 7){
+                                      return convertToGMT0(date, 'dd/MM');
+                                    } else {
+                                      return convertToUTC(date, 'dd/MM');
+                                    }
                                   }
                                 },
                               ),

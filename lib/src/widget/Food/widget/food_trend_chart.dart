@@ -388,7 +388,13 @@ class FoodTrendChartState extends State<FoodTrendChart>
                                   if (date == null) {
                                     return '';
                                   } else {
-                                    return convertToUTC(date, 'dd/MM');
+                                    final dateTime = DateTime.fromMillisecondsSinceEpoch(date * 1000);
+                                    print('duc2111 dateTime.hour = ${dateTime.hour}, date = $date');
+                                    if(dateTime.hour > 0 && dateTime.hour < 7){
+                                      return convertToGMT0(date, 'dd/MM');
+                                    } else {
+                                      return convertToUTC(date, 'dd/MM');
+                                    }
                                   }
                                 },
                               ),

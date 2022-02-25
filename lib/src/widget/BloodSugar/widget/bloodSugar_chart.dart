@@ -407,7 +407,13 @@ class BloodSugarChartState extends State<BloodSugarChart>
                               if (date == null) {
                                 return '';
                               } else {
-                                return convertToUTC(date, 'dd/MM');
+                                final dateTime = DateTime.fromMillisecondsSinceEpoch(date * 1000);
+                            //    print('duc2111 dateTime = ${convertToUTC(date, 'dd/MM/yyyy HH:mm')}, hour = ${dateTime.hour}');
+                                if(dateTime.hour > 0 && dateTime.hour < 7){
+                                  return convertToGMT0(date, 'dd/MM');
+                                } else {
+                                  return convertToUTC(date, 'dd/MM');
+                                }
                               }
                               // if (value.toInt() > dates.length - 1) {
                               //       return '';

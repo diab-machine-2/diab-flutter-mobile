@@ -22,11 +22,15 @@ class TrendModel {
   final double? glucose;
   final String? type;
   final String? color;
+  final int? date;
+  final String? timeFrameName;
 
   TrendModel({
     required this.glucose,
     required this.type,
     required this.color,
+    required this.date,
+    required this.timeFrameName,
   });
   @override
   factory TrendModel.fromJson(Map<String, dynamic> json) {
@@ -36,6 +40,8 @@ class TrendModel {
           : json['glucoseMmoll'],
       type: json['type'],
       color: json['color'],
+      date: json['date'],
+      timeFrameName: json['timeFrameName'],
     );
   }
 
