@@ -25,6 +25,7 @@ class SurveyData {
     bool? isBeta,
     int? questionCount,
     int? status,
+    int? state,
     String? updateDatetime,
     String? updaterName,
     ImagesModel? updaterImage,
@@ -39,6 +40,7 @@ class SurveyData {
     _isBeta = isBeta;
     _questionCount = questionCount;
     _status = status;
+    _state = state;
     _updateDatetime = updateDatetime;
     _updaterName = updaterName;
     _updaterImage = updaterImage;
@@ -53,6 +55,7 @@ class SurveyData {
     _name = json['name'];
     _description = json['description'];
     _isBeta = json['isBeta'];
+    _state = json['state'];
     _questionCount = json['questionCount'];
     _status = json['status'];
     _updateDatetime = json['updateDatetime'];
@@ -74,6 +77,7 @@ class SurveyData {
   bool? _isBeta;
   int? _questionCount;
   int? _status;
+  int? _state;
   String? _updateDatetime;
   String? _updaterName;
   ImagesModel? _updaterImage;
@@ -104,6 +108,7 @@ class SurveyData {
     map['isBeta'] = _isBeta;
     map['questionCount'] = _questionCount;
     map['status'] = _status;
+    map['state'] = _state;
     map['updateDatetime'] = _updateDatetime;
     map['updaterName'] = _updaterName;
     map['updaterImage'] = _updaterImage;

@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:medical/src/modal/user/user_model.dart';
 import 'package:medical/src/model/response/user_info_referral_code_response.dart';
@@ -50,7 +51,7 @@ class ExpertCommentModel {
         case 0:
           return 'Phân loại đầu ra';
         case 1:
-          return 'Đánh giá đầu vào';
+          return R.string.input_evaluate.tr();
         case 2:
           return 'Tư vấn cá nhân';
         case 3:

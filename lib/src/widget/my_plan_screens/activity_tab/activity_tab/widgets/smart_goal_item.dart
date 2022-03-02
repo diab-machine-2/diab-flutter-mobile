@@ -9,6 +9,7 @@ import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widgets/button_widget.dart';
 
+import '../models/schedule_state.dart';
 import '../models/schedule_type.dart';
 
 class SmartGoalItem extends StatelessWidget {
@@ -19,11 +20,13 @@ class SmartGoalItem extends StatelessWidget {
       this.appointmentDate,
       required this.isDone,
       required this.onTap,
+      required this.state,
       required this.onRemove});
   final ScheduleType type;
   final String name;
   final String frequency;
   final bool isDone;
+  final int state;
   final int? appointmentDate;
   final VoidCallback onTap;
   final VoidCallback onRemove;
@@ -95,7 +98,7 @@ class SmartGoalItem extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        type == ScheduleType.custom ? name : type.title,
+                        (type == ScheduleType.custom) ? name : type.title,
                         style: TextStyle(color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w700),
                       ),
                       if (frequency.isNotEmpty) const SizedBox(height: 4),
@@ -107,7 +110,8 @@ class SmartGoalItem extends StatelessWidget {
                     ],
                   ),
                 ),
-                Container(
+                state == ScheduleState.in_progress.stateIndex 
+                  ? Image.asset(R.drawable.ic_learning, width: 24, height: 24, color: R.color.mainColor) : Container(
                   width: 24,
                   height: 24,
                   alignment: Alignment.center,

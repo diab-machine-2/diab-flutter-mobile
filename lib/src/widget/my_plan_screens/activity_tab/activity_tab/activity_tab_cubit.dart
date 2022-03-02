@@ -13,6 +13,7 @@ import 'package:medical/src/model/response/week_states_response.dart';
 import 'package:medical/src/model/service/api_result.dart';
 import 'package:medical/src/model/service/network_exceptions.dart';
 import 'package:medical/src/utils/date_utils.dart';
+import 'package:medical/src/widget/my_plan_screens/activity_tab/activity_tab/models/schedule_type.dart';
 import 'package:medical/src/widgets/day_in_week_widget.dart';
 
 import '../../my_plan/my_plan.dart';
@@ -101,7 +102,10 @@ class ActivityTabCubit extends Cubit<ActivityTabState> {
       smartGoalDayList = response.data?.daily ?? [];
       smartGoalWeekList = response.data?.weekly ?? [];
 
-      AppSettings.smartGoalDayList = response.data?.daily ?? [];
+      // smartGoalDayList.removeWhere((element) => element?.state == 4);
+      // smartGoalWeekList.removeWhere((element) => element?.state == 4);
+
+      AppSettings.smartGoalDayList = smartGoalDayList;
 
       congratulationState.currentDate = DateUtil.parseTimespanToDateTime(currentDay!);
 

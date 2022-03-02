@@ -1019,4 +1019,9 @@ class Strings {
 	String get package_experience_subtitle => 'package_experience_subtitle';
 	String get package_roadmap => 'package_roadmap';
 	String get package_roadmap_subtitle => 'package_roadmap_subtitle';
+	String get update_profile_type => 'update_profile_type';
+	String get coaching_11 => 'coaching_11';
+	String get coaching_1n => 'coaching_1n';
+	String get input_evaluate => 'input_evaluate';
+	String get output_evaluate => 'output_evaluate';
 }

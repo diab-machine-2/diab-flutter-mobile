@@ -98,15 +98,15 @@ class NotificationManager {
       data: NotificationData.fromJson(message.data),
     );
 
-    if (user != null) {
-      if (model.title != null && user.fullName != null) {
-        model.title = model.title!.replaceAll('{Username}}', user.fullName!);
+    if (user?.fullName != null) {
+      if (model.title != null) {
+        model.title = model.title!.replaceAll('{Username}}', user!.fullName!);
       }
-      if (model.body != null && user.fullName != null) {
-        model.body = model.body!.replaceAll('{Username}}', user.fullName!);
+      if (model.body != null) {
+        model.body = model.body!.replaceAll('{Username}}', user!.fullName!);
       }
-      if (model.topic != null && user.fullName != null) {
-        model.topic = model.topic!.replaceAll('{Username}}', user.fullName!);
+      if (model.topic != null) {
+        model.topic = model.topic!.replaceAll('{Username}}', user!.fullName!);
       }
     }
 

@@ -83,6 +83,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
         notifyName == 'food_change_data' ||
         notifyName == 'hba1c_change_data' ||
         notifyName == 'goal_calo_changed') {
+      _controller.requestRefresh();
       _cubit.refreshData(isRefresh: true);
     }
   }
@@ -186,7 +187,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
                             ..._buildSmartGoalDayList(
                               dailyList: _cubit.smartGoalDayList,
                             ),
-                            const SizedBox(height: 32),
+                            
                             ..._buildSmartGoalWeekList(smartGoalList: _cubit.smartGoalWeekList),
                             const SizedBox(height: 16),
                             SizedBox(
@@ -437,7 +438,10 @@ class _ActivityTabPageState extends State<ActivityTabPage>
           ],
         ),
       ),
-      const SizedBox(height: 20),
+      Visibility(
+        visible: dailyList.length > 0,
+        child: SizedBox(height: 20),
+      ),
       ...dailyList.map((smartGoal) {
         final ScheduleType type = ScheduleTypeExtend.getTypeFromIndex(smartGoal?.type);
         return SmartGoalItem(
@@ -446,6 +450,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
           frequency: smartGoal?.description ?? '',
           appointmentDate: smartGoal?.appointmentDate,
           isDone: smartGoal?.progress == 1,
+          state: smartGoal?.state ?? 0,
           onTap: () {
             _onSelectGoal(
               type,
@@ -457,6 +462,10 @@ class _ActivityTabPageState extends State<ActivityTabPage>
           },
         );
       }).toList(),
+      Visibility(
+        visible: dailyList.length > 0,
+        child: SizedBox(height: 32),
+      ),
     ];
     return children;
   }
@@ -493,6 +502,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
           frequency: smartGoal?.description ?? '',
           appointmentDate: smartGoal?.appointmentDate,
           isDone: smartGoal?.progress == 1,
+          state: smartGoal?.state ?? 0,
           onTap: () {
             _onSelectGoal(
               type,
@@ -560,7 +570,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
       case ScheduleType.book_1_n:
         break;
       case ScheduleType.survey:
-        _showSurveyPopup();
+        _showSurveyPopup(survey: smartGoal);
         break;
       case ScheduleType.lesson:
         final LessonSectionListResponseData? lessonDetail = smartGoal?.lessonData;
@@ -576,6 +586,8 @@ class _ActivityTabPageState extends State<ActivityTabPage>
       case ScheduleType.io_evaluate:
         break;
       case ScheduleType.update_profile:
+        break;
+      case ScheduleType.output_assessment:
         break;
     }
   }
@@ -741,13 +753,13 @@ class _ActivityTabPageState extends State<ActivityTabPage>
     );
   }
 
-  _showSurveyPopup() {
+  _showSurveyPopup({SmartGoalList? survey}) {
     return _showPopup(
       context: context,
       buttonTitle: R.string.start_survey.tr(),
       onTap: () {
         NavigationUtil.pop(context);
-        NavigationUtil.navigatePage(context, const IntroduceSurveyPage());
+        NavigationUtil.navigatePage(context, IntroduceSurveyPage(survey: survey));
       },
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,

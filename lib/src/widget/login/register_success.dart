@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -82,7 +83,7 @@ class _RegisterSuccessState extends State<RegisterSuccess> {
                               end: Alignment.centerRight,
                               colors: [R.color.greenGradientTop, R.color.greenGradientBottom])),
                       child: Center(
-                          child: Text('Cập nhật hồ sơ',
+                          child: Text(R.string.update_profile_type.tr(),
                               style: TextStyle(color: R.color.white, fontSize: 16, fontWeight: FontWeight.w600)))),
                 ),
               ),

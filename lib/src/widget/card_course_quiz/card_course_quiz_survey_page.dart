@@ -142,11 +142,11 @@ class CardCourseQuizSurveyPageState extends State<CardCourseQuizSurveyPage>
           Text(
             quizData.name ?? "",
             style: TextStyle(
-                fontSize: 20,
+                fontSize: 18,
                 fontWeight: FontWeight.w700,
                 color: R.color.textDark,
                 height: 1.4),
-            maxLines: 2,
+        //    maxLines: 2,
           ),
           SizedBox(height: 20.h),
           Expanded(

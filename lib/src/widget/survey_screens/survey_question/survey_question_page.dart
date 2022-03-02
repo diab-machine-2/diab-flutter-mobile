@@ -306,7 +306,7 @@ class _SurveyQuestionPageState extends State<SurveyQuestionPage> {
   }
 
   void jumpToQuiz(int newIndex) {
-    if (newIndex == _cubit.lengthQuiz - 1) {
+    if (newIndex == _cubit.lengthQuiz) {
       final bool isLastPart =
           widget.index + 1 == (widget.surveyData.sections?.length ?? 0);
       _cubit.emit(SurveyQuestionHideProgressMessage());

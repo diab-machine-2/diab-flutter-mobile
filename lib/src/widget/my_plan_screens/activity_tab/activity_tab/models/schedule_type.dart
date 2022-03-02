@@ -15,7 +15,8 @@ enum ScheduleType {
   survey,
   lesson,
   io_evaluate,
-  update_profile
+  update_profile,
+  output_assessment
 }
 
 extension ScheduleTypeExtend on ScheduleType {
@@ -49,6 +50,8 @@ extension ScheduleTypeExtend on ScheduleType {
         return R.drawable.ic_schedule_io_evaluate;
       case ScheduleType.update_profile:
         return R.drawable.ic_schedule_update_profile;
+        case ScheduleType.output_assessment:
+        return R.drawable.ic_schedule_io_evaluate;
     }
   }
 
@@ -71,17 +74,19 @@ extension ScheduleTypeExtend on ScheduleType {
       case ScheduleType.custom:
         return '';
       case ScheduleType.book_1_1:
-        return '';
+        return R.string.coaching_11.tr();
       case ScheduleType.book_1_n:
-        return '';
+        return R.string.coaching_1n.tr();
       case ScheduleType.survey:
-        return '';
+        return R.string.survey.tr();
       case ScheduleType.lesson:
         return R.string.smart_goal_lesson.tr();
       case ScheduleType.io_evaluate:
-        return '';
+        return R.string.input_evaluate;
       case ScheduleType.update_profile:
-        return '';
+        return R.string.update_profile_type.tr();
+      case ScheduleType.output_assessment:
+        return R.string.output_evaluate.tr();
     }
   }
 
@@ -114,6 +119,8 @@ extension ScheduleTypeExtend on ScheduleType {
       case ScheduleType.io_evaluate:
         return -1;
       case ScheduleType.update_profile:
+        return -1;
+      case ScheduleType.output_assessment:
         return -1;
     }
   }
@@ -148,6 +155,8 @@ extension ScheduleTypeExtend on ScheduleType {
         return 12;
       case ScheduleType.update_profile:
         return 13;
+      case ScheduleType.output_assessment:
+        return 14;
     }
   }
 
@@ -181,6 +190,8 @@ extension ScheduleTypeExtend on ScheduleType {
         return false;
       case ScheduleType.update_profile:
         return false;
+      case ScheduleType.output_assessment:
+        return false;
     }
   }
 
@@ -199,6 +210,7 @@ extension ScheduleTypeExtend on ScheduleType {
     if (index == ScheduleType.book_1_n.typeIndex) return ScheduleType.book_1_n;
     if (index == ScheduleType.survey.typeIndex) return ScheduleType.survey;
     if (index == ScheduleType.lesson.typeIndex) return ScheduleType.lesson;
+    if (index == ScheduleType.output_assessment.typeIndex) return ScheduleType.output_assessment;
     return ScheduleType.custom;
   }
 }

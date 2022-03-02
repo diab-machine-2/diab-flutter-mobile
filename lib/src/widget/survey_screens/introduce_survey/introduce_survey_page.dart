@@ -6,15 +6,19 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
+import 'package:medical/src/widget/my_plan_screens/activity_tab/activity_tab/models/schedule_state.dart';
 import 'package:medical/src/widget/survey_screens/survey/survey.dart';
 import 'package:medical/src/widgets/button_widget.dart';
 import 'package:medical/src/widgets/common_page.dart';
 import 'package:medical/src/widgets/network_image_widget.dart';
 
+import '../../../model/response/smart_goal_list_reponse.dart';
 import 'introduce_survey.dart';
 
 class IntroduceSurveyPage extends StatefulWidget {
-  const IntroduceSurveyPage({Key? key}) : super(key: key);
+  SmartGoalList? survey;
+
+  IntroduceSurveyPage({Key? key, this.survey}) : super(key: key);
 
   @override
   _IntroduceSurveyPageState createState() => _IntroduceSurveyPageState();
@@ -22,11 +26,12 @@ class IntroduceSurveyPage extends StatefulWidget {
 
 class _IntroduceSurveyPageState extends State<IntroduceSurveyPage> {
   late IntroduceSurveyCubit _cubit;
-  final String surveyId = "588bc11c-92c6-4bd6-6511-08d9cc1b8dbc";
+  late String surveyId;
 
   @override
   void initState() {
     super.initState();
+    surveyId = widget.survey?.surveyId ?? "";
     final AppRepository repository = AppRepository();
     _cubit = IntroduceSurveyCubit(repository);
     _cubit.getDetailSurvey(surveyId);
@@ -107,6 +112,10 @@ class _IntroduceSurveyPageState extends State<IntroduceSurveyPage> {
                 title: R.string.start_survey.tr(),
                 onPressed: () {
                   if (_cubit.surveyData == null) return;
+                  if(ScheduleState.future.stateIndex == widget.survey?.state) {
+                    Message.showToastMessage(context, 'Không thể bắt đầu khảo sát trong tương lai!');
+                    return;
+                  }
                   NavigationUtil.navigatePage(
                     context,
                     SurveyPage(

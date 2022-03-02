@@ -152,6 +152,8 @@ class SmartGoalList {
   int? executeDayTimes;
   int? actualExecuteDayTimes;
   String? description;
+  String? surveyId;
+  int? state;
   dynamic data;
   SmartGoalListReponseDataDailyTargetScheduler? targetScheduler;
 
@@ -165,17 +167,21 @@ class SmartGoalList {
     this.executeDayTimes,
     this.actualExecuteDayTimes,
     this.description,
+    this.surveyId,
+    this.state,
     this.data,
     this.targetScheduler,
   });
 
   double get progress {
-    if (actualExecuteDayTimes == null) return 0;
-    if (executeDayTimes == null || executeDayTimes == 0) return 1;
-    final double progress = actualExecuteDayTimes! / executeDayTimes!;
-    if (progress < 0) return 0;
-    if (progress > 1) return 1;
-    return progress;
+    if(state == 1) return 1;
+    return 0;
+    // if (actualExecuteDayTimes == null) return 0;
+    // if (executeDayTimes == null || executeDayTimes == 0) return 1;
+    // final double progress = actualExecuteDayTimes! / executeDayTimes!;
+    // if (progress < 0) return 0;
+    // if (progress > 1) return 1;
+    // return progress;
   }
 
   bool get isCompleted => progress >= 1;
@@ -200,6 +206,8 @@ class SmartGoalList {
     executeDayTimes = json['executeDayTimes']?.toInt();
     actualExecuteDayTimes = json['actualExecuteDayTimes']?.toInt();
     description = json['description']?.toString();
+    state = json['state']?.toInt();
+    surveyId = json['surveyId']?.toString();
     if (json['data'] != null &&
         type == ScheduleType.exercise_movement.typeIndex) {
       data = ExerciseMovementResponseData.fromJson(json['data']);
@@ -223,6 +231,8 @@ class SmartGoalList {
     data['executeDayTimes'] = executeDayTimes;
     data['actualExecuteDayTimes'] = actualExecuteDayTimes;
     data['description'] = description;
+    data['surveyId'] = surveyId;
+    data['state'] = state;
     data['data'] = data.toString();
     if (targetScheduler != null) {
       data['targetScheduler'] = targetScheduler!.toJson();
