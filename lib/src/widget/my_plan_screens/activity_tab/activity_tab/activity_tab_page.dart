@@ -497,7 +497,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
       ...smartGoalList.map((smartGoal) {
         final ScheduleType type = ScheduleTypeExtend.getTypeFromIndex(smartGoal?.type);
         return SmartGoalItem(
-          type: ScheduleTypeExtend.getTypeFromIndex(smartGoal?.type),
+          type: type,
           name: smartGoal?.name ?? '',
           frequency: smartGoal?.description ?? '',
           appointmentDate: smartGoal?.appointmentDate,

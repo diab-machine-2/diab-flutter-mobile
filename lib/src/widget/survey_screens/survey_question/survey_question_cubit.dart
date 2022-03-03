@@ -160,10 +160,12 @@ class SurveyQuestionCubit extends Cubit<SurveyQuestionState> {
       list.add(value);
     });
 
-    final PostSurveyRequest request = PostSurveyRequest(
-        questionAnswerResults: list
+    var listAnswer = list
             .where((element) => element.surveyQuestionId == questionId)
-            .toList());
+            .toList();
+
+    final PostSurveyRequest request = PostSurveyRequest(
+        questionAnswerResults: listAnswer.isNotEmpty ? listAnswer.first : null);
     final ApiResult<CommonResponse> apiResult =
         await repository.submitSurvey(request);
     apiResult.when(success: (CommonResponse response) {

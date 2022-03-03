@@ -61,31 +61,17 @@ class PostSurveyRequest {
 } 
 */
 
-  List<QuestionAnswerResults?>? questionAnswerResults;
+  QuestionAnswerResults? questionAnswerResults;
 
   PostSurveyRequest({
     this.questionAnswerResults,
   });
   PostSurveyRequest.fromJson(Map<String, dynamic> json) {
     if (json['questionAnswerResults'] != null) {
-      final v = json['questionAnswerResults'];
-      final arr0 = <QuestionAnswerResults>[];
-      v.forEach((v) {
-        arr0.add(QuestionAnswerResults.fromJson(v));
-      });
-      questionAnswerResults = arr0;
+      questionAnswerResults = QuestionAnswerResults.fromJson(json['questionAnswerResults']);
     }
   }
   Map<String, dynamic> toJson() {
-    final data = <String, dynamic>{};
-    if (questionAnswerResults != null) {
-      final v = questionAnswerResults;
-      final arr0 = [];
-      v!.forEach((v) {
-        arr0.add(v!.toJson());
-      });
-      data['questionAnswerResults'] = arr0;
-    }
-    return data;
+    return questionAnswerResults!.toJson();
   }
 }
