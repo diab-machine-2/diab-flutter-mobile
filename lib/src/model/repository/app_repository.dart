@@ -54,6 +54,7 @@ import 'package:medical/src/model/service/api_result.dart';
 import 'package:medical/src/model/service/network_exceptions.dart';
 
 import '../request/complete_video_request.dart';
+import '../request/mark_completed_calendar_request.dart';
 import '../request/read_welcome_request.dart';
 import '../response/calendar_training_response.dart';
 import '../response/expert_comment_response.dart';
@@ -471,6 +472,15 @@ class AppRepository {
   Future<ApiResult<CommonResponse>> completeSmartGoal(CompleteSmartGoalRequest request) async {
     try {
       final CommonResponse response = await appClient.completeSmartGoal(request);
+      return ApiResult.success(data: response);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
+  Future<ApiResult<CommonResponse>> markCompletedCalendar(String id) async {
+    try {
+      final CommonResponse response = await appClient.markCompletedCalendar(id);
       return ApiResult.success(data: response);
     } catch (e) {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));

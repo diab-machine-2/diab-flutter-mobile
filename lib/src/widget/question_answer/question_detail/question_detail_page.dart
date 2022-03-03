@@ -421,35 +421,40 @@ class _QuestionDetailPageState extends State<QuestionDetailPage> with WidgetsBin
     if (_cubit.questionModel.status == 0) return Container();
     if (_cubit.questionModel.accountId != _cubit.userInfo?.accountId) return Container();
     return Container(
-      padding: EdgeInsets.only(left: 16, right: 16, bottom: 16),
+      padding: EdgeInsets.only(left: 16, right: 16, bottom: 24),
       child: Row(
         children: [
           Expanded(
             child: TextField(
-              decoration: InputDecoration(
-                  counterText: '',
-                  contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: R.color.grayBorder, width: 1),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  filled: true,
-                  hintStyle: TextStyle(color: R.color.gray),
-                  hintText: R.string.add_comment.tr(),
-                  fillColor: R.color.white),
-              controller: _controller,
+                style: TextStyle(
+                  fontSize: 18.0,
+                  color: R.color.black,                 
+                ),
+                decoration: InputDecoration(
+                    counterText: '',
+                    isDense: true,
+                    contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 18),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: R.color.grayBorder, width: 1),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    filled: true,
+                    hintStyle: TextStyle(color: R.color.gray, fontSize: 18),
+                    hintText: R.string.add_comment.tr(),
+                    fillColor: R.color.white),
+                controller: _controller,
+              ),
             ),
-          ),
           SizedBox(width: 12),
           FloatingActionButton(
               backgroundColor: R.color.greenGradientBottom,
               child: Image.asset(
                 R.drawable.ic_send,
-                width: 28,
-                height: 28,
+                width: 30,
+                height: 30,
               ),
               onPressed: () async {
                 await _submitData();

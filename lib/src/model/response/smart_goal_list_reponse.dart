@@ -153,6 +153,7 @@ class SmartGoalList {
   int? actualExecuteDayTimes;
   String? description;
   String? surveyId;
+  String? calendarId;
   int? state;
   dynamic data;
   SmartGoalListReponseDataDailyTargetScheduler? targetScheduler;
@@ -168,6 +169,7 @@ class SmartGoalList {
     this.actualExecuteDayTimes,
     this.description,
     this.surveyId,
+    this.calendarId,
     this.state,
     this.data,
     this.targetScheduler,
@@ -208,6 +210,7 @@ class SmartGoalList {
     description = json['description']?.toString();
     state = json['state']?.toInt();
     surveyId = json['surveyId']?.toString();
+    calendarId = json['calendarId']?.toString();
     if (json['data'] != null &&
         type == ScheduleType.exercise_movement.typeIndex) {
       data = ExerciseMovementResponseData.fromJson(json['data']);
@@ -232,6 +235,7 @@ class SmartGoalList {
     data['actualExecuteDayTimes'] = actualExecuteDayTimes;
     data['description'] = description;
     data['surveyId'] = surveyId;
+    data['calendarId'] = calendarId;
     data['state'] = state;
     data['data'] = data.toString();
     if (targetScheduler != null) {

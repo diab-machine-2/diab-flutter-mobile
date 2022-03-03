@@ -17,6 +17,7 @@ import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/Food/daily_nutrition/daily_nutrition.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
+import 'package:medical/src/widget/my_booking/my_booking.dart';
 import 'package:medical/src/widget/my_plan_screens/activity_tab/expert_comment/expert_comment_page.dart';
 import 'package:medical/src/widget/survey_screens/introduce_survey/introduce_survey.dart';
 import 'package:medical/src/widgets/button_widget.dart';
@@ -24,6 +25,7 @@ import 'package:medical/src/widgets/day_in_week_widget.dart';
 import 'package:medical/src/widgets/pdf_viewer_widget.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:visibility_detector/visibility_detector.dart';
+import '../../../booking_coach/booking_coach.dart';
 import '../../../helper/helper.dart';
 
 import '../../exercise_tab/exercise_detail/exercise_detail_page.dart';
@@ -565,11 +567,13 @@ class _ActivityTabPageState extends State<ActivityTabPage>
         );
         break;
       case ScheduleType.book_1_1:
-        _showCoachingPopup();
+        _showCoachingPopup(smartGoal?.calendarId);
         break;
       case ScheduleType.book_1_n:
+        _showCoachingPopup(smartGoal?.calendarId);
         break;
       case ScheduleType.survey:
+        //_showCoachingPopup();
         _showSurveyPopup(survey: smartGoal);
         break;
       case ScheduleType.lesson:
@@ -584,10 +588,12 @@ class _ActivityTabPageState extends State<ActivityTabPage>
         _cubit.refreshData();
         break;
       case ScheduleType.io_evaluate:
+        _showCoachingPopup(smartGoal?.calendarId);
         break;
       case ScheduleType.update_profile:
         break;
       case ScheduleType.output_assessment:
+        _showCoachingPopup(smartGoal?.calendarId);
         break;
     }
   }
@@ -706,11 +712,14 @@ class _ActivityTabPageState extends State<ActivityTabPage>
     );
   }
 
-  _showCoachingPopup() {
+  _showCoachingPopup(String? id) {
     return _showPopup(
       context: context,
       buttonTitle: R.string.join.tr(),
-      onTap: () {},
+      onTap: () async {
+        await _cubit.markCompletedCalendar(id);
+        Navigator.pop(context);
+      },
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -754,32 +763,33 @@ class _ActivityTabPageState extends State<ActivityTabPage>
   }
 
   _showSurveyPopup({SmartGoalList? survey}) {
-    return _showPopup(
-      context: context,
-      buttonTitle: R.string.start_survey.tr(),
-      onTap: () {
-        NavigationUtil.pop(context);
-        NavigationUtil.navigatePage(context, IntroduceSurveyPage(survey: survey));
-      },
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 57, vertical: 10),
-            child: Image.asset(R.drawable.img_survey_4),
-          ),
-          Text(
-            'Khảo sát',
-            style: TextStyle(color: R.color.textDark, fontSize: 20, fontWeight: FontWeight.w700),
-          ),
-          const SizedBox(height: 6),
-          Text(
-            'Tìm hiểu về thói quen sinh hoạt',
-            style: TextStyle(color: R.color.textDark, fontSize: 14, fontWeight: FontWeight.w400),
-          ),
-        ],
-      ),
-    );
+    NavigationUtil.navigatePage(context, IntroduceSurveyPage(survey: survey));
+    // return _showPopup(
+    //   context: context,
+    //   buttonTitle: R.string.start_survey.tr(),
+    //   onTap: () {
+    //     NavigationUtil.pop(context);
+    //     NavigationUtil.navigatePage(context, IntroduceSurveyPage(survey: survey));
+    //   },
+    //   child: Column(
+    //     crossAxisAlignment: CrossAxisAlignment.center,
+    //     children: [
+    //       Padding(
+    //         padding: const EdgeInsets.symmetric(horizontal: 57, vertical: 10),
+    //         child: Image.asset(R.drawable.img_survey_4),
+    //       ),
+    //       Text(
+    //         'Khảo sát',
+    //         style: TextStyle(color: R.color.textDark, fontSize: 20, fontWeight: FontWeight.w700),
+    //       ),
+    //       const SizedBox(height: 6),
+    //       Text(
+    //         'Tìm hiểu về thói quen sinh hoạt',
+    //         style: TextStyle(color: R.color.textDark, fontSize: 14, fontWeight: FontWeight.w400),
+    //       ),
+    //     ],
+    //   ),
+    // );
   }
 
   _showPopupCongratulation({

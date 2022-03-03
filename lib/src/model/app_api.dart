@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:medical/src/model/request/make_comment_request.dart';
 import 'package:medical/src/model/request/make_question_request.dart';
+import 'package:medical/src/model/request/mark_completed_calendar_request.dart';
 import 'package:medical/src/model/request/read_welcome_request.dart';
 import 'package:medical/src/model/response/calendar_training_response.dart';
 import 'package:medical/src/model/response/expert_comment_list_response.dart';
@@ -227,6 +228,11 @@ abstract class AppApi {
   @POST("App/Target/MarkCompletedTarget")
   Future<CommonResponse> completeSmartGoal(
     @Body() CompleteSmartGoalRequest request,
+  );
+
+  @POST("App/Calendar/MarkCompletedCalendar")
+  Future<CommonResponse> markCompletedCalendar(
+    @Query("id") String id,
   );
 
   @POST("App/ReadWelcome")

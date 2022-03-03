@@ -5,6 +5,7 @@ import 'package:flutter_observer/Observable.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/request/complete_smart_goal_request.dart';
+import 'package:medical/src/model/request/mark_completed_calendar_request.dart';
 import 'package:medical/src/model/response/common_response.dart';
 import 'package:medical/src/model/response/delete_smart_goal_reponse.dart';
 import 'package:medical/src/model/response/smart_goal_list_reponse.dart';
@@ -40,7 +41,7 @@ class ActivityTabCubit extends Cubit<ActivityTabState> {
   List<WeekStatesResponseData?> get weekStatesList => statistic?.weeks ?? [];
   List<DayStatesResponseData?> get dayStatesList => statistic?.daysInCurrentWeek ?? [];
 
-  int? get currentWeek => currentWeekIndex == null ? null : currentWeekIndex! + 1;
+  int? get currentWeek => currentWeekIndex == null ? null : currentWeekIndex!;
 
   int? get currentDay => dayStatesList.isEmpty ? 0 : dayStatesList[currentDayIndex]?.day;
 
@@ -178,4 +179,20 @@ class ActivityTabCubit extends Cubit<ActivityTabState> {
     });
     // emit(const ActivityTabInitial());
   }
+
+  Future<void> markCompletedCalendar(String? calendarId) async {
+    if (calendarId == null) return;
+    emit(const ActivityTabLoading());
+    final ApiResult<CommonResponse> apiResult = await repository.markCompletedCalendar(calendarId);
+    apiResult.when(success: (CommonResponse response) {
+      Observable.instance
+            .notifyObservers([], notifyName: "food_change_data");
+      refreshData(isRefresh: true);
+      //   emit(const ActivityTabSuccess());
+    }, failure: (NetworkExceptions error) {
+      emit(ActivityTabFailure(NetworkExceptions.getErrorMessage(error)));
+    });
+    //   emit(const ActivityTabInitial());
+  }
+
 }
