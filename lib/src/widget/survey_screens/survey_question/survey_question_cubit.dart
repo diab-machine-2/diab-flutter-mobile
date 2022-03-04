@@ -13,6 +13,7 @@ class SurveyQuestionCubit extends Cubit<SurveyQuestionState> {
   SurveyQuestionCubit(this.repository, this.sectionSurvey, this.surveyData, this.listAnsweredQuestionId,)
       : super(InitialSurveyQuestionState()) {
     questions = sectionSurvey?.questionList ?? [];
+    isRecalculateListAnsweredQuestion = this.listAnsweredQuestionId.isEmpty;
     calculateProgress();
   }
 
@@ -27,6 +28,7 @@ class SurveyQuestionCubit extends Cubit<SurveyQuestionState> {
   bool isShowed = true;
   List<String> listAnsweredQuestionId = [];
   List<String> listAllQuestionId = [];
+  bool isRecalculateListAnsweredQuestion = true;
 
   int get lengthQuiz => questions.length;
 
@@ -45,17 +47,8 @@ class SurveyQuestionCubit extends Cubit<SurveyQuestionState> {
         for (int index = 0; index < section.questionList.length; index++) {
           if(section.questionList[index].id != null){
             listAllQuestionId.add(section.questionList[index].id!);
-          }
-        }
-      }
-
-      if(listAnsweredQuestionId.isEmpty){
-        for(var section in surveyData.sections!){
-          for (int index = 0; index < section.questionList.length; index++) {
-            if(section.questionList[index].id != null){
-              if (section.questionList[index].hasUserAnswer) {
-                listAnsweredQuestionId.add(section.questionList[index].id!);
-              }
+            if (section.questionList[index].hasUserAnswer && isRecalculateListAnsweredQuestion) {
+              listAnsweredQuestionId.add(section.questionList[index].id!);
             }
           }
         }
@@ -192,10 +185,6 @@ class SurveyQuestionCubit extends Cubit<SurveyQuestionState> {
       list.add(value);
     });
 
-    if(!listAnsweredQuestionId.contains(questionId)){
-      listAnsweredQuestionId.add(questionId);
-    }
-
     var listAnswer = list
             .where((element) => element.surveyQuestionId == questionId)
             .toList();
@@ -205,6 +194,9 @@ class SurveyQuestionCubit extends Cubit<SurveyQuestionState> {
     final ApiResult<CommonResponse> apiResult =
         await repository.submitSurvey(request);
     apiResult.when(success: (CommonResponse response) {
+      if(!listAnsweredQuestionId.contains(questionId)){
+        listAnsweredQuestionId.add(questionId);
+      }
       emit(SubmitSurveySuccess());
     }, failure: (NetworkExceptions error) {
       emit(SurveyQuestionFailure(NetworkExceptions.getErrorMessage(error)));
