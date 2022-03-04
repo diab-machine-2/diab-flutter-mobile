@@ -60,26 +60,29 @@ class _NotificationDetailControllerState extends State<NotificationDetailControl
                           )
                         ]),
                       ),
-                      GestureDetector(
-                        onTap: () {
-                          _launchInBrowser(notification?.hyperLink ?? '');
-                        },
-                        child: Container(
-                            margin: const EdgeInsets.all(16),
-                            width: 195,
-                            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                            decoration: BoxDecoration(
-                                color: R.color.mainColor,
-                                borderRadius: BorderRadius.circular(20),
-                                gradient: LinearGradient(
-                                    begin: Alignment.topLeft,
-                                    end: Alignment.centerRight,
-                                    colors: [R.color.greenGradientTop, R.color.greenGradientBottom])),
-                            child: Center(
-                                child: Text(notification?.hyperText ?? '',
-                                    textAlign: TextAlign.center,
-                                    style:
-                                        TextStyle(color: R.color.white, fontWeight: FontWeight.w600, fontSize: 14)))),
+                      Visibility(
+                        visible: (notification?.hyperLink != null && notification!.hyperLink!.isNotEmpty),
+                        child: GestureDetector(
+                          onTap: () {
+                            _launchInBrowser(notification?.hyperLink ?? '');
+                          },
+                          child: Container(
+                              margin: const EdgeInsets.all(16),
+                              width: 195,
+                              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                              decoration: BoxDecoration(
+                                  color: R.color.mainColor,
+                                  borderRadius: BorderRadius.circular(20),
+                                  gradient: LinearGradient(
+                                      begin: Alignment.topLeft,
+                                      end: Alignment.centerRight,
+                                      colors: [R.color.greenGradientTop, R.color.greenGradientBottom])),
+                              child: Center(
+                                  child: Text(notification?.hyperText ?? '',
+                                      textAlign: TextAlign.center,
+                                      style:
+                                          TextStyle(color: R.color.white, fontWeight: FontWeight.w600, fontSize: 14)))),
+                        ),
                       )
                     ],
                   ),

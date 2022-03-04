@@ -10,11 +10,13 @@ import 'package:medical/src/model/service/network_exceptions.dart';
 import 'survey_question.dart';
 
 class SurveyQuestionCubit extends Cubit<SurveyQuestionState> {
-  SurveyQuestionCubit(this.repository, this.sectionSurvey)
+  SurveyQuestionCubit(this.repository, this.sectionSurvey, this.surveyData, this.listAnsweredQuestionId,)
       : super(InitialSurveyQuestionState()) {
     questions = sectionSurvey?.questionList ?? [];
+    calculateProgress();
   }
 
+  final SurveyData surveyData;
   final AppRepository repository;
   final SectionSurvey? sectionSurvey;
   List<QuizData> questions = [];
@@ -23,15 +25,45 @@ class SurveyQuestionCubit extends Cubit<SurveyQuestionState> {
   int selectedCourseIndex = 0;
 
   bool isShowed = true;
+  List<String> listAnsweredQuestionId = [];
+  List<String> listAllQuestionId = [];
 
   int get lengthQuiz => questions.length;
 
-  double get progress => answer.length / lengthQuiz;
+ // double get progress => answer.length / lengthQuiz;
+
+ double get progress => listAnsweredQuestionId.length / listAllQuestionId.length;
 
   bool get nextButtonEnable =>
       answer.containsKey(questions[selectedCourseIndex].id);
 
   QuizData? get currentQuestion => questions[selectedCourseIndex];
+
+  void calculateProgress() {
+    if(surveyData.sections != null){
+      for(var section in surveyData.sections!){
+        for (int index = 0; index < section.questionList.length; index++) {
+          if(section.questionList[index].id != null){
+            listAllQuestionId.add(section.questionList[index].id!);
+          }
+        }
+      }
+
+      if(listAnsweredQuestionId.isEmpty){
+        for(var section in surveyData.sections!){
+          for (int index = 0; index < section.questionList.length; index++) {
+            if(section.questionList[index].id != null){
+              if (section.questionList[index].hasUserAnswer) {
+                listAnsweredQuestionId.add(section.questionList[index].id!);
+              }
+            }
+          }
+        }
+      }
+    }
+    
+    print('countAnsweredQuestion = ${listAnsweredQuestionId.length}, countAllQuestion = ${listAllQuestionId.length}');
+  }
 
   Future<void> scrollToNotAnsweredQuiz() async {
     int scrollIndex = 0;
@@ -159,6 +191,10 @@ class SurveyQuestionCubit extends Cubit<SurveyQuestionState> {
     answer.forEach((key, value) {
       list.add(value);
     });
+
+    if(!listAnsweredQuestionId.contains(questionId)){
+      listAnsweredQuestionId.add(questionId);
+    }
 
     var listAnswer = list
             .where((element) => element.surveyQuestionId == questionId)

@@ -18,6 +18,16 @@ class IntroduceSurveyCubit extends Cubit<IntroduceSurveyState> {
         await repository.getDetailSurvey(surveyId);
     apiResult.when(success: (SurveyData response) {
       surveyData = response;
+      
+      if(surveyData?.sections != null){
+        surveyData!.sections!.sort((a, b) { 
+          if(a.order != null && b.order != null){
+            return a.order!.compareTo(b.order!); 
+          } else {
+            return 0;
+          }
+        });
+      }
       emit(GetDetailSurveySuccess(response));
     }, failure: (NetworkExceptions error) {
       emit(IntroduceSurveyFailure(NetworkExceptions.getErrorMessage(error)));

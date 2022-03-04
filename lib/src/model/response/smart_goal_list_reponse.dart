@@ -1,6 +1,9 @@
+import 'package:medical/src/model/response/exercise_movement_target.dart';
+import 'package:medical/src/model/response/survey_target.dart';
 import 'package:medical/src/widget/my_plan_screens/activity_tab/activity_tab/models/schedule_type.dart';
 import 'package:medical/src/widget/my_plan_screens/activity_tab/create_goal/models/day_in_week.dart';
 
+import 'calendar_target.dart';
 import 'exercise_movement_response.dart';
 import 'lesson_section_list_response.dart';
 
@@ -157,6 +160,9 @@ class SmartGoalList {
   int? state;
   dynamic data;
   SmartGoalListReponseDataDailyTargetScheduler? targetScheduler;
+  ExerciseMovementTarget? exerciseMovement;
+  SurveyTarget? survey;
+  CalendarTarget? calendar;
 
   SmartGoalList({
     this.id,
@@ -173,6 +179,7 @@ class SmartGoalList {
     this.state,
     this.data,
     this.targetScheduler,
+    this.calendar,
   });
 
   double get progress {
@@ -222,6 +229,10 @@ class SmartGoalList {
         ? SmartGoalListReponseDataDailyTargetScheduler.fromJson(
             json['targetScheduler'])
         : null;
+    calendar = (json['calendar'] != null)
+        ? CalendarTarget.fromJson(
+            json['calendar'])
+        : null;
   }
   Map<String, dynamic> toJson() {
     final data = <String, dynamic>{};
@@ -240,6 +251,9 @@ class SmartGoalList {
     data['data'] = data.toString();
     if (targetScheduler != null) {
       data['targetScheduler'] = targetScheduler!.toJson();
+    }
+    if (calendar != null) {
+      data['calendar'] = calendar!.toJson();
     }
     return data;
   }

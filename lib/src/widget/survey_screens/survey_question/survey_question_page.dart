@@ -25,9 +25,10 @@ import 'widgets/custom_progress_bar_widget.dart';
 class SurveyQuestionPage extends StatefulWidget {
   final int index;
   final SurveyData surveyData;
+  List<String> listAnsweredQuestionId;
 
-  const SurveyQuestionPage(
-      {Key? key, required this.index, required this.surveyData})
+  SurveyQuestionPage(
+      {Key? key, required this.index, required this.surveyData, required this.listAnsweredQuestionId,})
       : super(key: key);
 
   @override
@@ -46,7 +47,7 @@ class _SurveyQuestionPageState extends State<SurveyQuestionPage> {
     final AppRepository repository = AppRepository();
     final SectionSurvey? _sectionSurvey =
         widget.surveyData.sections?[widget.index];
-    _cubit = SurveyQuestionCubit(repository, _sectionSurvey);
+    _cubit = SurveyQuestionCubit(repository, _sectionSurvey, widget.surveyData, widget.listAnsweredQuestionId);
     if (widget.surveyData.sections != null) {
       _sectionSurvey?.questions?.forEach((element) {
         listGlobal.add(GlobalKey<CardCourseQuizPageState>());
@@ -63,6 +64,17 @@ class _SurveyQuestionPageState extends State<SurveyQuestionPage> {
       });
     });
   }
+
+  // SurveyData? reOrderSectionQuestion(SurveyData? surveyData){
+  //   if(surveyData == null) return null;
+  //   surveyData.sections?.sort((a, b) => a.order.compareTo(b.order));
+  //   if(surveyData.sections != null) {
+  //     for(var section in surveyData.sections!){
+  //       section.questions?.sort((a, b) => a.order.compareTo(b.order));
+  //     }
+  //   }
+  //   return surveyData;
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -249,6 +261,7 @@ class _SurveyQuestionPageState extends State<SurveyQuestionPage> {
                     SurveyPage(
                       index: widget.index + 1,
                       surveyData: widget.surveyData,
+                      listAnsweredQuestionId: _cubit.listAnsweredQuestionId,
                     ));
               }
             } else {
@@ -318,6 +331,7 @@ class _SurveyQuestionPageState extends State<SurveyQuestionPage> {
             SurveyPage(
               index: widget.index + 1,
               surveyData: widget.surveyData,
+              listAnsweredQuestionId: _cubit.listAnsweredQuestionId,
             ));
       }
     } else {

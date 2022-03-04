@@ -567,10 +567,10 @@ class _ActivityTabPageState extends State<ActivityTabPage>
         );
         break;
       case ScheduleType.book_1_1:
-        _showCoachingPopup(smartGoal?.calendarId);
+        _showCoachingPopup(smartGoal);
         break;
       case ScheduleType.book_1_n:
-        _showCoachingPopup(smartGoal?.calendarId);
+        _showCoachingPopup(smartGoal);
         break;
       case ScheduleType.survey:
         //_showCoachingPopup();
@@ -588,12 +588,12 @@ class _ActivityTabPageState extends State<ActivityTabPage>
         _cubit.refreshData();
         break;
       case ScheduleType.io_evaluate:
-        _showCoachingPopup(smartGoal?.calendarId);
+        _showCoachingPopup(smartGoal);
         break;
       case ScheduleType.update_profile:
         break;
       case ScheduleType.output_assessment:
-        _showCoachingPopup(smartGoal?.calendarId);
+        _showCoachingPopup(smartGoal);
         break;
     }
   }
@@ -712,12 +712,13 @@ class _ActivityTabPageState extends State<ActivityTabPage>
     );
   }
 
-  _showCoachingPopup(String? id) {
+  _showCoachingPopup(SmartGoalList? smartGoal) {
+    if(smartGoal?.calendar == null) return;
     return _showPopup(
       context: context,
       buttonTitle: R.string.join.tr(),
       onTap: () async {
-        await _cubit.markCompletedCalendar(id);
+        await _cubit.markCompletedCalendar(smartGoal?.calendarId);
         Navigator.pop(context);
       },
       child: Column(

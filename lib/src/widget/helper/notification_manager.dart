@@ -110,6 +110,10 @@ class NotificationManager {
       }
     }
 
+    if (user?.packageName != null && user!.packageName!.isNotEmpty) {
+      model.body = model.body!.replaceAll('{Packagename}}', user.packageName!);
+    }
+
     if (model.actionType == NotificationActionType.share_profile) {
       ShareProfilePopup.instance.onHasSharedCode(requestFromDoctor: true, code: '123456');
       return;

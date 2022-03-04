@@ -121,6 +121,7 @@ class _IntroduceSurveyPageState extends State<IntroduceSurveyPage> {
                     SurveyPage(
                       index: 0,
                       surveyData: _cubit.surveyData!,
+                      listAnsweredQuestionId: [],
                     ),
                   );
                 },
