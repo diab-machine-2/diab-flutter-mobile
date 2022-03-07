@@ -685,6 +685,7 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
       } else {
         final result = await LoginClient().createPatient(params);
         if (result == true) {
+          await UserClient().fetchUser();
           Navigator.pushReplacementNamed(context, NavigatorName.rules);
         }
       }

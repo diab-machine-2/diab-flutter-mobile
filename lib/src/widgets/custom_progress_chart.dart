@@ -197,9 +197,9 @@ class MyPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final Paint _paint1 = Paint()..color = R.color.greenGradientBottom;
+    final Paint _paint1 = Paint()..color = R.color.white;
     final Paint _paint2 = Paint()..color = R.color.orange_1;
-    final Paint _paint3 = Paint()..color = R.color.white;
+    final Paint _paint3 = Paint()..color = R.color.greenGradientBottom;
 
     final String _completedPercent =
         mark2 == 0 ? '' : '${((mark1 / mark2) * 100).toInt()}%';

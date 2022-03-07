@@ -983,7 +983,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
       BotToast.showLoading();
       await UserClient().inputMotivationDiary(model.content);
       Observable.instance.notifyObservers([], notifyName: "motivation_change");
-      //   await loadMotivation();
+      await loadMotivation();
       BotToast.closeAllLoading();
     } catch (e, _) {
       BotToast.closeAllLoading();
@@ -1000,7 +1000,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
       BotToast.showLoading();
       await UserClient().editMotivationDiary(model.id, model.content);
       Observable.instance.notifyObservers([], notifyName: "motivation_change");
-      //     await loadMotivation();
+      await loadMotivation();
       BotToast.closeAllLoading();
     } catch (e, _) {
       BotToast.closeAllLoading();
@@ -2130,6 +2130,11 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
         if(item.selected ?? false){
           return item.text ?? R.string.updating.tr();
         }
+      }
+    }
+    if(user.diabetes != null){
+      if(user.diabetes?.name != null && user.diabetes!.name!.isNotEmpty){
+        return user.diabetes!.name!;
       }
     }
     return R.string.updating.tr();

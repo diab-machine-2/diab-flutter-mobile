@@ -31,9 +31,10 @@ class NotificationClient extends FetchClient {
     }
   }
 
-  Future<NotificationModel> fetchNotificationDetail(String? id) async {
+  Future<NotificationModel> fetchNotificationDetail(String? id, String? communicationId) async {
     try {
-      final Response response = await super.fetchData(url: '/App/Communication/$id');
+      Map<String, String> params = {'notificationId': id ?? '', 'communicationId': communicationId ?? ''};
+      final Response response = await super.fetchData(url: '/App/Communication/NotiDetail', params: params);
       if (response.statusCode == 200) {
         return NotificationModel.fromJson(response.data['data']);
       } else {
@@ -59,10 +60,11 @@ class NotificationClient extends FetchClient {
     }
   }
 
-  Future<bool?> readNotification(String? communicationId, String? patientId, int? notificationType, bool isRead) async {
+  Future<bool?> readNotification(String? communicationId, String? notificationId, String? patientId, int? notificationType, bool isRead) async {
     try {
       final Response response = await super.putData(url: '/App/Communication/MarkReadUnread', params: {
-        'notificationId': communicationId,
+        'notificationId': notificationId,
+        'communicationId': communicationId,
         'notificationType': notificationType,
         'patientId': patientId,
         'isRead': isRead

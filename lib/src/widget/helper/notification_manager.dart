@@ -120,7 +120,7 @@ class NotificationManager {
     }
 
     NotificationClient().readNotification(
-        model.id ?? model.data?.communicationId, AppSettings.userInfo?.id, model.data?.notificationType, true);
+      model.data?.communicationId, model.id ?? model.data?.notificationId, AppSettings.userInfo?.id, model.data?.notificationType, true);
 
     switch (model.actionType) {
       case NotificationActionType.redirect_to_activity_tab:
@@ -131,7 +131,7 @@ class NotificationManager {
         break;
       case NotificationActionType.redirect_to_url:
         Navigator.pushNamed(navigatorKey.currentState!.context, NavigatorName.notification_detail,
-            arguments: {'id': model.data?.communicationId});
+            arguments: {'id': model.data?.notificationId, 'communicationId': model.data?.communicationId});
         break;
       case NotificationActionType.add_reminder:
         Navigator.pushNamed(navigatorKey.currentState!.context, NavigatorName.add_reminder,

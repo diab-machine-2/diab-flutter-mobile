@@ -389,7 +389,7 @@ class _AppState extends State<App> {
                   return _buildRoute(settings, NotificationTabbarController());
                 case NavigatorName.notification_detail:
                   final data = settings.arguments as Map<String, dynamic>?;
-                  return _buildRoute(settings, NotificationDetailController(id: data?['id']));
+                  return _buildRoute(settings, NotificationDetailController(id: data?['id'], communicationId: data?['communicationId']));
                 case NavigatorName.schedule_activity:
                   return _buildRoute(settings, ScheduleActivityController());
                 case NavigatorName.manual:

@@ -18,6 +18,7 @@ import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/components/load_more.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
+import 'package:medical/src/widgets/network_image_widget.dart';
 
 class NotificationController extends StatefulWidget {
   const NotificationController({required this.isRemovealbe});
@@ -208,7 +209,7 @@ class NotificationControllerState extends State<NotificationController>
           children: [
             ClipRRect(
               borderRadius: BorderRadius.circular(20),
-              child: Image.network(model.imageUrl!, width: 40, height: 40, fit: BoxFit.fill),
+              child: NetWorkImageWidget(imageUrl: model.imageUrl!, width: 40, height: 40),
             ),
             const SizedBox(width: 8),
             Expanded(
@@ -260,13 +261,13 @@ class NotificationControllerState extends State<NotificationController>
     if ((widget.isRemovealbe != true) && !notificationModel.isRead!) {
       Observable.instance.notifyObservers([], notifyName: "read_notification", map: {'id': notificationModel.id});
       NotificationClient()
-          .readNotification(notificationModel.id, AppSettings.userInfo!.id, notificationModel.notificationType, true);
+          .readNotification(notificationModel.id, notificationModel.notificationId, AppSettings.userInfo!.id, notificationModel.notificationType, true);
     }
     switch (notificationModel.actionType) {
       case NotificationActionType.redirect_to_activity_tab:
         break;
       case NotificationActionType.redirect_to_url:
-        Navigator.pushNamed(context, NavigatorName.notification_detail, arguments: {'id': notificationModel.id});
+        Navigator.pushNamed(context, NavigatorName.notification_detail, arguments: {'id': notificationModel.notificationId ?? '', 'communicationId': notificationModel.id});
         break;
       case NotificationActionType.add_reminder:
         Navigator.pushNamed(context, NavigatorName.add_reminder,

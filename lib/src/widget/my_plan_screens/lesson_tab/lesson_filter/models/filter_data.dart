@@ -50,7 +50,7 @@ class FilterData {
   bool get filterWithWeek =>
       tagFilter.isEmpty && nameFilter.isEmpty && isCompleted == false;
 
-  int? get week => currentWeek == null ? null : (currentWeek! + 1);
+  int? get week => currentWeek == null ? null : currentWeek!;
 
   LessonFilterRequest getRequest({required int type}) {
     return LessonFilterRequest(

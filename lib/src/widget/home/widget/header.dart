@@ -227,42 +227,43 @@ class _HomeHeaderState extends State<HomeHeader> with Observer {
                   ],
                 ),
                 // SizedBox(height: 30),
-                if (!isChoose)
-                  const SizedBox()
-                else
-                  motivation != null
-                      ? Padding(
-                          padding: const EdgeInsets.only(top: 16),
-                          child: Text(motivation!.content!,
-                              style: TextStyle(color: R.color.white, fontSize: 14, fontWeight: FontWeight.w400)),
-                        )
-                      : Column(children: [
-                          Padding(
-                            padding: const EdgeInsets.only(top: 16),
-                            child: Text(R.string.share_with_diab.tr(),
-                                style: TextStyle(color: R.color.white, fontSize: 14, fontWeight: FontWeight.w400)),
-                          ),
-                          const SizedBox(height: 8),
-                          Center(
-                            child: GestureDetector(
-                              onTap: () {
-                                _showDialogUpdateMotivation(null);
-                              },
-                              child: Container(
-                                  height: 32,
-                                  decoration:
-                                      BoxDecoration(color: R.color.white, borderRadius: BorderRadius.circular(16)),
-                                  padding: const EdgeInsets.only(left: 16, right: 16),
-                                  child: Row(mainAxisSize: MainAxisSize.min, children: [
-                                    Text(R.string.viet_dong_luc.tr(),
-                                        style: TextStyle(
-                                            color: R.color.mainColor, fontSize: 15, fontWeight: FontWeight.w600)),
-                                    const SizedBox(width: 4),
-                                    Image.asset(R.drawable.ic_arrow_right, width: 24, height: 24)
-                                  ])),
-                            ),
-                          )
-                        ])
+                // if (!isChoose)
+                //   const SizedBox()
+                // else
+                motivation != null
+                    ? Padding(
+                        padding: const EdgeInsets.only(top: 16),
+                        child: Text(motivation!.content!,
+                            style: TextStyle(color: R.color.white, fontSize: 14, fontWeight: FontWeight.w400)),
+                      )
+                    : Container()
+                      // Column(children: [
+                      //     Padding(
+                      //       padding: const EdgeInsets.only(top: 16),
+                      //       child: Text(R.string.share_with_diab.tr(),
+                      //           style: TextStyle(color: R.color.white, fontSize: 14, fontWeight: FontWeight.w400)),
+                      //     ),
+                      //     const SizedBox(height: 8),
+                      //     Center(
+                      //       child: GestureDetector(
+                      //         onTap: () {
+                      //           _showDialogUpdateMotivation(null);
+                      //         },
+                      //         child: Container(
+                      //             height: 32,
+                      //             decoration:
+                      //                 BoxDecoration(color: R.color.white, borderRadius: BorderRadius.circular(16)),
+                      //             padding: const EdgeInsets.only(left: 16, right: 16),
+                      //             child: Row(mainAxisSize: MainAxisSize.min, children: [
+                      //               Text(R.string.viet_dong_luc.tr(),
+                      //                   style: TextStyle(
+                      //                       color: R.color.mainColor, fontSize: 15, fontWeight: FontWeight.w600)),
+                      //               const SizedBox(width: 4),
+                      //               Image.asset(R.drawable.ic_arrow_right, width: 24, height: 24)
+                      //             ])),
+                      //       ),
+                      //     )
+                      //   ])
               ],
             )));
   }

@@ -99,29 +99,29 @@ class _MyProgressPageState extends State<MyProgressPage> {
                                     return ReportListWidget(
                                       title: R.string.report.tr(),
                                       reportList: [
-                                        ReportData(
-                                          title: 'Báo cáo đầu vào',
-                                          dateTime: DateTime.now(),
-                                          url:
-                                              'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
-                                        ),
-                                        ReportData(
-                                          title: 'Báo cáo tiến độ chung',
-                                          dateTime: DateTime.now().subtract(
-                                            const Duration(days: 1, hours: 2),
-                                          ),
-                                          url:
-                                              'http://www.africau.edu/images/default/sample.pdf',
-                                        ),
-                                        ReportData(
-                                          title:
-                                              'Báo cáo tiến độ 6 tháng gần đây',
-                                          dateTime: DateTime.now().subtract(
-                                            const Duration(days: 1, hours: 7),
-                                          ),
-                                          url:
-                                              'https://www.clickdimensions.com/links/TestPDFfile.pdf',
-                                        ),
+                                        // ReportData(
+                                        //   title: 'Báo cáo đầu vào',
+                                        //   dateTime: DateTime.now(),
+                                        //   url:
+                                        //       'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
+                                        // ),
+                                        // ReportData(
+                                        //   title: 'Báo cáo tiến độ chung',
+                                        //   dateTime: DateTime.now().subtract(
+                                        //     const Duration(days: 1, hours: 2),
+                                        //   ),
+                                        //   url:
+                                        //       'http://www.africau.edu/images/default/sample.pdf',
+                                        // ),
+                                        // ReportData(
+                                        //   title:
+                                        //       'Báo cáo tiến độ 6 tháng gần đây',
+                                        //   dateTime: DateTime.now().subtract(
+                                        //     const Duration(days: 1, hours: 7),
+                                        //   ),
+                                        //   url:
+                                        //       'https://www.clickdimensions.com/links/TestPDFfile.pdf',
+                                        // ),
                                       ],
                                       onSelected: (url) {
                                         NavigationUtil.navigatePage(
@@ -244,11 +244,11 @@ class _MyProgressPageState extends State<MyProgressPage> {
                                             CustomProgressChart(
                                               title: R.string.goal.tr(),
                                               mark1: _cubit.myProgressData?.data
-                                                  ?.target?.completed,
+                                                  ?.target?.allTime,
                                               mark2: _cubit.myProgressData?.data
-                                                  ?.target?.unlocked,
+                                                  ?.target?.inTime,
                                               mark3: _cubit.myProgressData?.data
-                                                  ?.target?.total,
+                                                  ?.target?.inTimeCompleted,
                                               messageStream:
                                                   _messageController.stream,
                                               onTap: () {
@@ -259,11 +259,11 @@ class _MyProgressPageState extends State<MyProgressPage> {
                                             CustomProgressChart(
                                               title: R.string.coach11.tr(),
                                               mark1: _cubit.myProgressData?.data
-                                                  ?.coach11?.completed,
+                                                  ?.coach11?.allTime,
                                               mark2: _cubit.myProgressData?.data
-                                                  ?.coach11?.unlocked,
+                                                  ?.coach11?.inTime,
                                               mark3: _cubit.myProgressData?.data
-                                                  ?.coach11?.total,
+                                                  ?.coach11?.inTimeCompleted,
                                               messageStream:
                                                   _messageController.stream,
                                               onTap: () {
@@ -274,11 +274,11 @@ class _MyProgressPageState extends State<MyProgressPage> {
                                             CustomProgressChart(
                                               title: R.string.coach1n.tr(),
                                               mark1: _cubit.myProgressData?.data
-                                                  ?.coach1N?.completed,
+                                                  ?.coach1N?.allTime,
                                               mark2: _cubit.myProgressData?.data
-                                                  ?.coach1N?.unlocked,
+                                                  ?.coach1N?.inTime,
                                               mark3: _cubit.myProgressData?.data
-                                                  ?.coach1N?.total,
+                                                  ?.coach1N?.inTimeCompleted,
                                               messageStream:
                                                   _messageController.stream,
                                               onTap: () {
@@ -308,13 +308,13 @@ class _MyProgressPageState extends State<MyProgressPage> {
                                         },
                                         child: CustomProgressChart(
                                           mark1: _cubit.myProgressData?.data
-                                                  ?.lesson?.completed ??
+                                                  ?.lesson?.allTime ??
                                               0,
                                           mark2: _cubit.myProgressData?.data
-                                                  ?.lesson?.unlocked ??
+                                                  ?.lesson?.inTime ??
                                               0,
                                           mark3: _cubit.myProgressData?.data
-                                                  ?.lesson?.total ??
+                                                  ?.lesson?.inTimeCompleted ??
                                               0,
                                           messageStream:
                                               _messageController.stream,
@@ -334,16 +334,16 @@ class _MyProgressPageState extends State<MyProgressPage> {
                                                   .myProgressData
                                                   ?.data
                                                   ?.exerciseMovement
-                                                  ?.completed ??
+                                                  ?.allTime ??
                                               0,
                                           mark2: _cubit
                                                   .myProgressData
                                                   ?.data
                                                   ?.exerciseMovement
-                                                  ?.unlocked ??
+                                                  ?.inTime ??
                                               0,
                                           mark3: _cubit.myProgressData?.data
-                                                  ?.exerciseMovement?.total ??
+                                                  ?.exerciseMovement?.inTimeCompleted ??
                                               0,
                                           messageStream:
                                               _messageController.stream,
