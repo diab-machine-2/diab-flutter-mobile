@@ -1396,7 +1396,13 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
 
   _showDialogUpdateBirthday() {
     final width = MediaQuery.of(context).size.width;
-    DateTime selectedDate = DateTime.fromMillisecondsSinceEpoch(AppSettings.userInfo!.dateOfBirth! * 1000);
+    DateTime selectedDate;
+    int dateOfBirth = AppSettings.userInfo!.dateOfBirth!;
+    if(dateOfBirth <= 0){
+      dateOfBirth = DateTime.now().millisecondsSinceEpoch ~/ 1000;
+    }
+    selectedDate = DateTime.fromMillisecondsSinceEpoch(dateOfBirth * 1000);
+    
     showDialog(
         context: context,
         builder: (context) => AlertDialog(
@@ -1418,7 +1424,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                     height: 250,
                     width: width - 36,
                     child: BirthDayPicker(
-                      selectedDate: DateTime.fromMillisecondsSinceEpoch(AppSettings.userInfo!.dateOfBirth! * 1000),
+                      selectedDate: selectedDate,
                       onChanged: (date) {
                         selectedDate = date;
                       },

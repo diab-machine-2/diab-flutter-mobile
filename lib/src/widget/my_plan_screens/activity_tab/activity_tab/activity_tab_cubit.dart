@@ -41,6 +41,8 @@ class ActivityTabCubit extends Cubit<ActivityTabState> {
   List<WeekStatesResponseData?> get weekStatesList => statistic?.weeks ?? [];
   List<DayStatesResponseData?> get dayStatesList => statistic?.daysInCurrentWeek ?? [];
 
+  int currentWeekStudying = 0;
+
   int? get currentWeek => currentWeekIndex == null ? null : currentWeekIndex!;
 
   int? get currentDay => dayStatesList.isEmpty ? 0 : dayStatesList[currentDayIndex]?.day;
@@ -138,6 +140,14 @@ class ActivityTabCubit extends Cubit<ActivityTabState> {
     final ApiResult<SmartGoalStatisticResponse> apiResult = await repository.getSmartGoalStatistics(week: currentWeek);
     apiResult.when(success: (SmartGoalStatisticResponse response) {
       statistic = response.data;
+      
+      if(statistic?.weeks != null){
+        for(var item in statistic!.weeks!){
+          if(item?.state == 2){
+            currentWeekStudying = item?.week ?? 0;
+          }
+        }
+      }
       if (!keepCurrentDay) currentDayIndex = response.initDayIndex;
       mark = response.getCompletedMarkIndex(currentWeek: currentWeek, userCurrentWeek: myPlanCubit.currentStudyWeek);
       //     if (hideLoadingAfterDone) emit(const ActivityTabSuccess());
