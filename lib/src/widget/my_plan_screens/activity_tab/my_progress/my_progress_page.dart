@@ -244,11 +244,11 @@ class _MyProgressPageState extends State<MyProgressPage> {
                                             CustomProgressChart(
                                               title: R.string.goal.tr(),
                                               mark1: _cubit.myProgressData?.data
-                                                  ?.target?.allTime,
+                                                  ?.target?.inTimeCompleted,
                                               mark2: _cubit.myProgressData?.data
                                                   ?.target?.inTime,
                                               mark3: _cubit.myProgressData?.data
-                                                  ?.target?.inTimeCompleted,
+                                                  ?.target?.allTime,
                                               messageStream:
                                                   _messageController.stream,
                                               onTap: () {
@@ -259,11 +259,11 @@ class _MyProgressPageState extends State<MyProgressPage> {
                                             CustomProgressChart(
                                               title: R.string.coach11.tr(),
                                               mark1: _cubit.myProgressData?.data
-                                                  ?.coach11?.allTime,
+                                                  ?.coach11?.inTimeCompleted,
                                               mark2: _cubit.myProgressData?.data
                                                   ?.coach11?.inTime,
                                               mark3: _cubit.myProgressData?.data
-                                                  ?.coach11?.inTimeCompleted,
+                                                  ?.coach11?.allTime,
                                               messageStream:
                                                   _messageController.stream,
                                               onTap: () {
@@ -274,11 +274,11 @@ class _MyProgressPageState extends State<MyProgressPage> {
                                             CustomProgressChart(
                                               title: R.string.coach1n.tr(),
                                               mark1: _cubit.myProgressData?.data
-                                                  ?.coach1N?.allTime,
+                                                  ?.coach1N?.inTimeCompleted,
                                               mark2: _cubit.myProgressData?.data
                                                   ?.coach1N?.inTime,
                                               mark3: _cubit.myProgressData?.data
-                                                  ?.coach1N?.inTimeCompleted,
+                                                  ?.coach1N?.allTime,
                                               messageStream:
                                                   _messageController.stream,
                                               onTap: () {
@@ -308,13 +308,13 @@ class _MyProgressPageState extends State<MyProgressPage> {
                                         },
                                         child: CustomProgressChart(
                                           mark1: _cubit.myProgressData?.data
-                                                  ?.lesson?.allTime ??
+                                                  ?.lesson?.inTimeCompleted ??
                                               0,
                                           mark2: _cubit.myProgressData?.data
                                                   ?.lesson?.inTime ??
                                               0,
                                           mark3: _cubit.myProgressData?.data
-                                                  ?.lesson?.inTimeCompleted ??
+                                                  ?.lesson?.allTime ??
                                               0,
                                           messageStream:
                                               _messageController.stream,
@@ -334,7 +334,7 @@ class _MyProgressPageState extends State<MyProgressPage> {
                                                   .myProgressData
                                                   ?.data
                                                   ?.exerciseMovement
-                                                  ?.allTime ??
+                                                  ?.inTimeCompleted ??
                                               0,
                                           mark2: _cubit
                                                   .myProgressData
@@ -343,7 +343,7 @@ class _MyProgressPageState extends State<MyProgressPage> {
                                                   ?.inTime ??
                                               0,
                                           mark3: _cubit.myProgressData?.data
-                                                  ?.exerciseMovement?.inTimeCompleted ??
+                                                  ?.exerciseMovement?.allTime ??
                                               0,
                                           messageStream:
                                               _messageController.stream,
