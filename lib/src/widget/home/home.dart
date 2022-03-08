@@ -20,6 +20,8 @@ import 'package:medical/src/widget/list_service/list_service_page.dart';
 import 'package:medical/src/widget/my_plan_screens/activity_tab/create_goal/create_goal_page.dart';
 import 'package:medical/src/widgets/network_image_widget.dart';
 
+import 'welcome_package_screen/welcome_package_screen.dart';
+
 class HomeController extends StatefulWidget {
   const HomeController({this.sharedCode});
   final String? sharedCode;
@@ -185,6 +187,11 @@ class _HomeControllerState extends State<HomeController> with Observer {
           }
           if (state is HomeLoaded) {
             model = state.model;
+            if(model?.isDisplayedWelcome ?? false){
+              Future.delayed(Duration.zero, () async {
+                showWelcomeDialog();
+              });
+            }
 
             isLoading = false;
           }
@@ -345,6 +352,23 @@ class _HomeControllerState extends State<HomeController> with Observer {
             ),
           );
         }));
+  }
+
+  showWelcomeDialog() async {
+    final result = await NavigationUtil.navigatePage(
+      context,
+      WelcomePackageScreenPage(
+        icon: R.drawable.ic_package_experience,
+        title: R.string.package_experience.tr(),
+        subTitle: R.string.package_experience_subtitle.tr(),
+        onSkip: () async {      
+          
+        },
+        onNavigateToMyPlan: () async {
+          
+        },
+      ),
+    );
   }
 
   Widget _buildItem(BuildContext context, int index, String? name, String? image, String? icon) {

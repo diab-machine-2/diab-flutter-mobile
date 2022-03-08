@@ -98,31 +98,7 @@ class _MyProgressPageState extends State<MyProgressPage> {
                                   builder: (context) {
                                     return ReportListWidget(
                                       title: R.string.report.tr(),
-                                      reportList: [
-                                        // ReportData(
-                                        //   title: 'Báo cáo đầu vào',
-                                        //   dateTime: DateTime.now(),
-                                        //   url:
-                                        //       'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
-                                        // ),
-                                        // ReportData(
-                                        //   title: 'Báo cáo tiến độ chung',
-                                        //   dateTime: DateTime.now().subtract(
-                                        //     const Duration(days: 1, hours: 2),
-                                        //   ),
-                                        //   url:
-                                        //       'http://www.africau.edu/images/default/sample.pdf',
-                                        // ),
-                                        // ReportData(
-                                        //   title:
-                                        //       'Báo cáo tiến độ 6 tháng gần đây',
-                                        //   dateTime: DateTime.now().subtract(
-                                        //     const Duration(days: 1, hours: 7),
-                                        //   ),
-                                        //   url:
-                                        //       'https://www.clickdimensions.com/links/TestPDFfile.pdf',
-                                        // ),
-                                      ],
+                                      reportList: _cubit.reports,
                                       onSelected: (url) {
                                         NavigationUtil.navigatePage(
                                             context, PDFViewerWidget(url: url));

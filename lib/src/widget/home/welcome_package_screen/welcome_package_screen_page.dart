@@ -24,6 +24,7 @@ class WelcomePackageScreenPage extends StatefulWidget {
 
 class _WelcomePackageScreenPageState extends State<WelcomePackageScreenPage> {
   late WelcomePackageScreenCubit _cubit;
+  bool isClickSkip = false;
 
   @override
   void initState() {
@@ -88,7 +89,10 @@ class _WelcomePackageScreenPageState extends State<WelcomePackageScreenPage> {
                 children: [
                   GestureDetector(
                     onTap: () async {
-                      await _backPressed();
+                      if(!isClickSkip){
+                        isClickSkip = true;
+                        await _backPressed();
+                      }
                     },
                     child: SafeArea(
                       top: false,
@@ -105,8 +109,11 @@ class _WelcomePackageScreenPageState extends State<WelcomePackageScreenPage> {
                     ),
                   GestureDetector(
                     onTap: () async {
-                      await _backPressed();
-                      Observable.instance.notifyObservers([], notifyName: Const.NAVIGATE_TO_MY_PLAN_TAB);
+                      if(!isClickSkip){
+                        isClickSkip = true;
+                        await _backPressed();
+                        Observable.instance.notifyObservers([], notifyName: Const.NAVIGATE_TO_MY_PLAN_TAB);
+                      }                      
                     },
                     child: SafeArea(
                       top: false,
@@ -137,7 +144,8 @@ class _WelcomePackageScreenPageState extends State<WelcomePackageScreenPage> {
   }
 
   Future<bool> _backPressed() async {
-    await _cubit.readWelcome();
+    await _cubit.markDisplayedWelcome();
+    isClickSkip = false;
     Navigator.pop(context);
     return true;
   }

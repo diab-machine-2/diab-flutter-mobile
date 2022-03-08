@@ -7,6 +7,7 @@ import 'package:medical/src/model/response/calendar_training_response.dart';
 import 'package:medical/src/model/response/expert_comment_list_response.dart';
 import 'package:medical/src/model/response/lesson_module_response.dart';
 import 'package:medical/src/model/response/question_answer_response.dart';
+import 'package:medical/src/model/response/report_response.dart';
 import 'package:retrofit/http.dart';
 import 'package:retrofit/retrofit.dart';
 
@@ -235,10 +236,11 @@ abstract class AppApi {
     @Query("id") String id,
   );
 
-  @POST("App/ReadWelcome")
-  Future<CommonResponse> readWelcome(
-    @Body() ReadWelcomeRequest request,
-  );
+  @POST("App/Home/MarkDisplayedWelcome")
+  Future<CommonResponse> markDisplayedWelcome();
+
+  @GET("App/MyProgress/Reports")
+  Future<ReportListResponse> getReports();
 
   @GET("App/Target")
   Future<SmartGoalListReponse> getListSmartGoal({

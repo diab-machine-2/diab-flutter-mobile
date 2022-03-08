@@ -39,6 +39,7 @@ import 'package:medical/src/model/response/my_lesson_response.dart';
 import 'package:medical/src/model/response/my_progress_response.dart';
 import 'package:medical/src/model/response/question_answer_response.dart';
 import 'package:medical/src/model/response/patient_info_response.dart';
+import 'package:medical/src/model/response/report_response.dart';
 import 'package:medical/src/model/response/save_survey_result_response.dart';
 import 'package:medical/src/model/response/smart_goal_detail_response.dart';
 import 'package:medical/src/model/response/smart_goal_list_reponse.dart';
@@ -459,6 +460,15 @@ class AppRepository {
     }
   }
 
+  Future<ApiResult<ReportListResponse>> getReports() async {
+    try {
+      final ReportListResponse response = await appClient.getReports();
+      return ApiResult.success(data: response);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
   //Activity
   Future<ApiResult<CreateSmartGoalResponse>> createSmartGoal(CreateSmartGoalRequest request) async {
     try {
@@ -487,9 +497,9 @@ class AppRepository {
     }
   }
 
-    Future<ApiResult<CommonResponse>> readWelcome(ReadWelcomeRequest request) async {
+    Future<ApiResult<CommonResponse>> markDisplayedWelcome() async {
     try {
-      final CommonResponse response = await appClient.readWelcome(request);
+      final CommonResponse response = await appClient.markDisplayedWelcome();
       return ApiResult.success(data: response);
     } catch (e) {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));

@@ -5,6 +5,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_observer/Observable.dart';
+import 'package:html/parser.dart';
 import 'package:medical/src/app.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/modal/notification/notification_model.dart';
@@ -66,6 +67,10 @@ class NotificationManager {
         ShareProfilePopup.instance.onHasSharedCode(requestFromDoctor: true, code: '123456');
         return;
       }
+      
+      if(model.body != null){
+        model.body = parseHtmlString(model.body!);
+      }
       Message.showNotificationMessage(
           model: model,
           callback: (model) {
@@ -110,6 +115,10 @@ class NotificationManager {
       }
     }
 
+    if(model.body != null){
+      model.body = parseHtmlString(model.body!);
+    }
+
     if (user?.packageName != null && user!.packageName!.isNotEmpty) {
       model.body = model.body!.replaceAll('{Packagename}}', user.packageName!);
     }
@@ -148,6 +157,12 @@ class NotificationManager {
       case NotificationActionType.redirect_date_detail:
         break;
     }
+  }
+
+  String parseHtmlString(String htmlString) {
+    final document = parse(htmlString);
+    final String parsedString = parse(document.body!.text).documentElement!.text;
+    return parsedString;  
   }
 
   Future<Map<String, dynamic>?> getDeviceInformation() async {

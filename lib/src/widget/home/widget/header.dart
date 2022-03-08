@@ -199,20 +199,6 @@ class _HomeHeaderState extends State<HomeHeader> with Observer {
                         const SizedBox(width: 10),
                         InkWell(
                           onTap: () async {
-                            // final result = await NavigationUtil.navigatePage(
-                            //   context,
-                            //   WelcomePackageScreenPage(
-                            //     icon: R.drawable.ic_package_experience,
-                            //     title: R.string.package_experience.tr(),
-                            //     subTitle: R.string.package_experience_subtitle.tr(),
-                            //     onSkip: () async {      
-
-                            //     },
-                            //     onNavigateToMyPlan: () async {
-                                  
-                            //     },
-                            //   ),
-                            // );
                             Navigator.pushNamed(context, NavigatorName.notification);
                           },
                           child: Container(

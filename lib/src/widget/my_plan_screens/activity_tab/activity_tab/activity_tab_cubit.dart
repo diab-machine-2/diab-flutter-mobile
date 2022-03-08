@@ -17,6 +17,8 @@ import 'package:medical/src/utils/date_utils.dart';
 import 'package:medical/src/widget/my_plan_screens/activity_tab/activity_tab/models/schedule_type.dart';
 import 'package:medical/src/widgets/day_in_week_widget.dart';
 
+import '../../../../model/response/report_model.dart';
+import '../../../../model/response/report_response.dart';
 import '../../my_plan/my_plan.dart';
 import 'activity_tab.dart';
 import 'models/congratulation_state.dart';
@@ -32,6 +34,8 @@ class ActivityTabCubit extends Cubit<ActivityTabState> {
   int mark = 0;
   int? currentWeekIndex;
   int currentDayIndex = 0;
+
+  List<ReportModel> reports = [];
 
   CongratulationState congratulationState = CongratulationState(currentDate: DateTime.now());
 
@@ -69,6 +73,7 @@ class ActivityTabCubit extends Cubit<ActivityTabState> {
 
   Future<void> initData() async {
     await myPlanCubit.checkUserInfo();
+    await getReports();
     if (myPlanCubit.isHasRoadmapUser) {
       currentWeekIndex = myPlanCubit.currentStudyWeek! - 1;
       if (currentWeekIndex == -1) currentWeekIndex = 0;
@@ -205,4 +210,13 @@ class ActivityTabCubit extends Cubit<ActivityTabState> {
     //   emit(const ActivityTabInitial());
   }
 
+ Future<void> getReports({bool isRefresh = false}) async {
+    await Future.delayed(Duration.zero);
+    final ApiResult<ReportListResponse> apiResult =
+        await repository.getReports();
+    apiResult.when(success: (ReportListResponse response) {
+      reports = response.data ?? [];
+    }, failure: (NetworkExceptions error) {
+    });
+  }
 }

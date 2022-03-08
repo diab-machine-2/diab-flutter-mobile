@@ -15,11 +15,11 @@ class WelcomePackageScreenCubit extends Cubit<WelcomePackageScreenState> {
     
   }
 
-   Future<void> readWelcome() async {
+   Future<void> markDisplayedWelcome() async {
     emit(WelcomePackageScreenLoading());
-    final ReadWelcomeRequest request =
-        ReadWelcomeRequest(id: '');
-    final ApiResult<CommonResponse> apiResult = await repository.readWelcome(request);
+    // final ReadWelcomeRequest request =
+    //     ReadWelcomeRequest(id: '');
+    final ApiResult<CommonResponse> apiResult = await repository.markDisplayedWelcome();
     apiResult.when(success: (CommonResponse response) {
        emit(const WelcomePackageScreenSuccess());
     }, failure: (NetworkExceptions error) {

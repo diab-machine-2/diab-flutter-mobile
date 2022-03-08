@@ -13,6 +13,7 @@ class HomeModel {
   final HbA1CIndexModel hbA1CIndex;
   final EnergyExerciseCardModel? energyExerciseCard;
   final ProcessCardModel? processCard;
+  final bool isDisplayedWelcome;
 
   HomeModel({
     required this.glucoseIndex,
@@ -24,6 +25,7 @@ class HomeModel {
     required this.energyCard,
     required this.energyExerciseCard,
     required this.processCard,
+    required this.isDisplayedWelcome,
   });
 
   factory HomeModel.fromJson(Map<String, dynamic> json) {
@@ -41,6 +43,7 @@ class HomeModel {
               json['energyExerciseCard'],
             ),
       processCard: json['processCard'] == null ? null : ProcessCardModel.fromJson(json['processCard']),
+      isDisplayedWelcome: json['isDisplayedWelcome'] ?? false,
     );
   }
 
