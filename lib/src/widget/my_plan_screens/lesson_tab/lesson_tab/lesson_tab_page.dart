@@ -70,7 +70,7 @@ class _LessonTabPageState extends State<LessonTabPage> with AutomaticKeepAliveCl
               if(_cubit.lessonsList != null && _cubit.lessonsList!.length > 5){
                  _lessonScrollController.animateTo(
                   127.0 * state.newIndex,
-                  duration: const Duration(milliseconds: 0),
+                  duration: const Duration(milliseconds: 10),
                   curve: Curves.ease,
                 );
               }

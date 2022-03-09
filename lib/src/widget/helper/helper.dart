@@ -67,6 +67,18 @@ DateTime toDate(int timeStamp) {
   return DateTime(date.year, date.month, date.day);
 }
 
+String getWeekDay(int timeStamp){
+  final date = DateTime.fromMillisecondsSinceEpoch(timeStamp * 1000);
+  var dateTime = DateTime(date.year, date.month, date.day);
+  if(dateTime.weekday + 1 >= 2 && dateTime.weekday + 1 <=7){
+    return "Thứ ${dateTime.weekday + 1}";
+  } else if(dateTime.weekday + 1 == 8){
+    return "Chủ Nhật";
+  } else {
+    return "";
+  }
+}
+
 String toStringDate(DateTime date) {
   return '${date.day} tháng ${date.month} năm ${date.year}';
 }

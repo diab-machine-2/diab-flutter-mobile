@@ -119,7 +119,7 @@ class _WelcomePackageScreenPageState extends State<WelcomePackageScreenPage> {
                       top: false,
                       child: Container(
                           height: 48,
-                          width: 195,
+                          width: 180,
                           margin: EdgeInsets.all(16),
                           decoration: BoxDecoration(
                               color: R.color.mainColor,

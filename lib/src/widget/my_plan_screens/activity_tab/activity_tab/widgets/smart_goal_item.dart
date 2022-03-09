@@ -98,7 +98,7 @@ class SmartGoalItem extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        (type == ScheduleType.custom) ? name : type.title,
+                        (type == ScheduleType.custom || type == ScheduleType.io_evaluate || type == ScheduleType.output_assessment || type == ScheduleType.book_1_1 || type == ScheduleType.book_1_n) ? name : type.title,
                         style: TextStyle(color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w700),
                       ),
                       if (frequency.isNotEmpty) const SizedBox(height: 4),

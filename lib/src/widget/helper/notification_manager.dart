@@ -68,9 +68,9 @@ class NotificationManager {
         return;
       }
       
-      if(model.body != null){
-        model.body = parseHtmlString(model.body!);
-      }
+      // if(model.body != null){
+      //   model.body = parseHtmlString(model.body!);
+      // }
       Message.showNotificationMessage(
           model: model,
           callback: (model) {
@@ -115,9 +115,9 @@ class NotificationManager {
       }
     }
 
-    if(model.body != null){
-      model.body = parseHtmlString(model.body!);
-    }
+    // if(model.body != null){
+    //   model.body = parseHtmlString(model.body!);
+    // }
 
     if (user?.packageName != null && user!.packageName!.isNotEmpty) {
       model.body = model.body!.replaceAll('{Packagename}}', user.packageName!);

@@ -1,3 +1,9 @@
+import 'package:medical/src/modal/user/user_model.dart';
+import 'package:medical/src/model/response/user_info_referral_code_response.dart';
+import 'package:medical/src/model/response/user_info_response.dart';
+
+import 'user_coach.dart';
+
 class CalendarTarget {
   String? creatorId;
   String? id;
@@ -18,6 +24,7 @@ class CalendarTarget {
   String? roomId;
   CalendarScheduler? calendarScheduler;
   CalendarTraining? calendarTraining;
+  List<UserCoach>? coaches;
 
   CalendarTarget(
       {this.creatorId,
@@ -38,7 +45,9 @@ class CalendarTarget {
       this.calendarId,
       this.roomId,
       this.calendarScheduler,
-      this.calendarTraining});
+      this.calendarTraining,
+      this.coaches,
+      });
 
   CalendarTarget.fromJson(Map<String, dynamic> json) {
     creatorId = json['creatorId'];
@@ -64,6 +73,14 @@ class CalendarTarget {
     calendarTraining = json['calendarTraining'] != null
         ? new CalendarTraining.fromJson(json['calendarTraining'])
         : null;
+    if (json['coaches'] != null) {
+      final v = json['coaches'];
+      final arr0 = <UserCoach>[];
+      v.forEach((v) {
+        arr0.add(UserCoach.fromJson(v));
+      });
+      coaches = arr0;
+    }
   }
 
   Map<String, dynamic> toJson() {
@@ -90,6 +107,14 @@ class CalendarTarget {
     }
     if (this.calendarTraining != null) {
       data['calendarTraining'] = this.calendarTraining!.toJson();
+    }
+    if (this.coaches != null) {
+      final v = this.coaches;
+      final arr0 = [];
+      v!.forEach((v) {
+        arr0.add(v.toJson());
+      });
+      data['coaches'] = arr0;
     }
     return data;
   }

@@ -213,7 +213,7 @@ class ExerciseMovementResponseData {
   String? id;
   String? code;
   String? coverId;
-  String? roadmapId;
+  String? agendaId;
   String? name;
   String? description;
   bool? isFree;
@@ -232,7 +232,7 @@ class ExerciseMovementResponseData {
     this.id,
     this.code,
     this.coverId,
-    this.roadmapId,
+    this.agendaId,
     this.name,
     this.description,
     this.isFree,
@@ -259,7 +259,7 @@ class ExerciseMovementResponseData {
     id = json['id']?.toString();
     code = json['code']?.toString();
     coverId = json['coverId']?.toString();
-    roadmapId = json['roadmapId']?.toString();
+    agendaId = json['agendaId']?.toString();
     name = json['name']?.toString();
     description = json['description']?.toString();
     isFree = json['isFree'];
@@ -298,7 +298,7 @@ class ExerciseMovementResponseData {
     data['id'] = id;
     data['code'] = code;
     data['coverId'] = coverId;
-    data['roadmapId'] = roadmapId;
+    data['agendaId'] = agendaId;
     data['name'] = name;
     data['description'] = description;
     data['isFree'] = isFree;

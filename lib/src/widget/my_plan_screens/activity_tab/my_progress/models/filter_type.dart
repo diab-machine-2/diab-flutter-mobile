@@ -19,6 +19,19 @@ extension FilterTypeExtends on FilterType {
     }
   }
 
+  int get typeIndex {
+    switch (this) {
+      case FilterType.week2:
+        return 1;
+      case FilterType.week4:
+        return 2;
+      case FilterType.week6:
+        return 3;
+      case FilterType.all:
+        return 0;
+    }
+  }
+
   static FilterType? getTypeFromString(String text) {
     if (text == FilterType.week2.title) return FilterType.week2;
     if (text == FilterType.week4.title) return FilterType.week4;

@@ -22,8 +22,10 @@ import 'package:medical/src/widget/my_plan_screens/activity_tab/expert_comment/e
 import 'package:medical/src/widget/survey_screens/introduce_survey/introduce_survey.dart';
 import 'package:medical/src/widgets/button_widget.dart';
 import 'package:medical/src/widgets/day_in_week_widget.dart';
+import 'package:medical/src/widgets/network_image_widget.dart';
 import 'package:medical/src/widgets/pdf_viewer_widget.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 import '../../../booking_coach/booking_coach.dart';
 import '../../../helper/helper.dart';
@@ -604,6 +606,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
     String? buttonTitle,
     VoidCallback? onTap,
     bool isDisableCompleteButton = false,
+    bool isShowCompleteButton = true,
   }) {
     showDialog(
       barrierColor: R.color.color0xff003F38.withOpacity(0.5),
@@ -621,6 +624,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
               child: Stack(
                 children: [
                   Container(
+                    width: double.infinity,
                     margin: const EdgeInsets.symmetric(horizontal: 24),
                     padding: const EdgeInsets.all(20),
                     decoration: BoxDecoration(
@@ -636,25 +640,29 @@ class _ActivityTabPageState extends State<ActivityTabPage>
                     ),
                     child: SingleChildScrollView(
                       child: Column(
-                        children: [
-                          child,
-                          const SizedBox(height: 16),
-                          Visibility(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            child,
+                            Visibility(
                             visible: onTap != null,
-                            child: SizedBox(
-                              width: 245,
-                              child: ButtonWidget(
-                                backgroundColor: isDisableCompleteButton ? R.color.gray : R.color.accentColor,
-                                title: buttonTitle ?? '',
-                                textSize: 14,
-                                onPressed: isDisableCompleteButton ? null : onTap,
+                              child: SizedBox(height: 16),
+                            ),
+                            Visibility(
+                            visible: onTap != null,
+                                child: Container(
+                                margin: EdgeInsets.symmetric(horizontal: 16),
+                                child: ButtonWidget(
+                                  backgroundColor: isDisableCompleteButton ? R.color.white : R.color.accentColor,
+                                  title: buttonTitle ?? '',
+                                  textSize: 14,
+                                  onPressed: isDisableCompleteButton ? null : onTap,
+                                ),
                               ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
-                  ),
                   Positioned(
                       top: 4,
                       right: 24,
@@ -717,47 +725,60 @@ class _ActivityTabPageState extends State<ActivityTabPage>
     return _showPopup(
       context: context,
       buttonTitle: R.string.join.tr(),
+      isDisableCompleteButton: (((DateUtil.isSameDay(DateTime.now().millisecondsSinceEpoch ~/ 1000, smartGoal?.appointmentDate) ?? false) == false) || (smartGoal?.progress == 1)),
       onTap: () async {
         await _cubit.markCompletedCalendar(smartGoal?.calendarId);
         Navigator.pop(context);
+
+        if(smartGoal?.calendar?.meetingLink != null) {
+          await canLaunch(smartGoal!.calendar!.meetingLink!)
+            ? await launch(smartGoal.calendar!.meetingLink!, forceSafariVC: false, forceWebView: false)
+            : throw 'Could not launch ${smartGoal.calendar!.meetingLink!}';
+        }
       },
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Thứ 6, 12/7/2021',
+            "${getWeekDay(smartGoal?.appointmentDate ?? 0)}, ${convertToUTC(smartGoal?.appointmentDate ?? 0, "dd/MM/yyyy")}",
             style: TextStyle(color: R.color.main_1, fontSize: 20, fontWeight: FontWeight.w700),
           ),
-          Text(
-            '10:00 am - 11:00 am',
-            style: TextStyle(color: R.color.main_1, fontSize: 20, fontWeight: FontWeight.w700),
-          ),
-          const SizedBox(height: 12),
-          Text(
-            'Buổi Coaching 1 - 1 lập kế hoạch học tập cho user sử dụng gói thấu cảm',
-            style: TextStyle(color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w400),
-          ),
-          const SizedBox(height: 16),
-          Row(
-            children: [
-              Container(width: 44, height: 44, color: R.color.blue),
-              const SizedBox(width: 8),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Coach',
-                    style: TextStyle(color: R.color.textDark, fontSize: 14, fontWeight: FontWeight.w400),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    'Văn Hùng Trần',
-                    style: TextStyle(color: R.color.main_1, fontSize: 16, fontWeight: FontWeight.w700),
-                  ),
-                ],
-              )
-            ],
-          )
+          SizedBox(height: 4),
+          if((smartGoal?.description != null && smartGoal!.description!.isNotEmpty))
+            Text(
+              smartGoal.description ?? "",
+              style: TextStyle(color: R.color.main_1, fontSize: 20, fontWeight: FontWeight.w700),
+            ),
+          if(smartGoal?.description != null && smartGoal!.description!.isNotEmpty)
+            const SizedBox(height: 12),
+          if((smartGoal?.calendar?.goal != null && smartGoal!.calendar!.goal!.isNotEmpty))
+            Text(
+              smartGoal.calendar?.goal ?? "",
+              style: TextStyle(color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w400),
+            ),
+          if((smartGoal?.calendar?.goal != null && smartGoal!.calendar!.goal!.isNotEmpty))
+            const SizedBox(height: 16),
+          if(smartGoal?.calendar?.coaches != null && smartGoal!.calendar!.coaches!.isNotEmpty)
+            Row(
+              children: [
+                NetWorkImageWidget(imageUrl: smartGoal.calendar!.coaches!.first.avatar?.url ?? "", width: 44, height: 44),
+                const SizedBox(width: 8),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Coach',
+                      style: TextStyle(color: R.color.textDark, fontSize: 14, fontWeight: FontWeight.w400),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      smartGoal.calendar!.coaches!.first.fullName ?? "",
+                      style: TextStyle(color: R.color.main_1, fontSize: 16, fontWeight: FontWeight.w700),
+                    ),
+                  ],
+                )
+              ],
+            ),
         ],
       ),
     );

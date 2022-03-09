@@ -223,8 +223,9 @@ class _MyProgressPageState extends State<MyProgressPage> {
                                                   ?.target?.inTimeCompleted,
                                               mark2: _cubit.myProgressData?.data
                                                   ?.target?.inTime,
-                                              mark3: _cubit.myProgressData?.data
-                                                  ?.target?.allTime,
+                                              mark3: _cubit.filterType == FilterType.all ? _cubit.myProgressData?.data
+                                                  ?.target?.allTime : _cubit.myProgressData?.data
+                                                  ?.target?.inTime,
                                               messageStream:
                                                   _messageController.stream,
                                               onTap: () {
@@ -238,8 +239,9 @@ class _MyProgressPageState extends State<MyProgressPage> {
                                                   ?.coach11?.inTimeCompleted,
                                               mark2: _cubit.myProgressData?.data
                                                   ?.coach11?.inTime,
-                                              mark3: _cubit.myProgressData?.data
-                                                  ?.coach11?.allTime,
+                                               mark3: _cubit.filterType == FilterType.all ? _cubit.myProgressData?.data
+                                                  ?.coach11?.allTime : _cubit.myProgressData?.data
+                                                  ?.coach11?.inTime,
                                               messageStream:
                                                   _messageController.stream,
                                               onTap: () {
@@ -253,8 +255,9 @@ class _MyProgressPageState extends State<MyProgressPage> {
                                                   ?.coach1N?.inTimeCompleted,
                                               mark2: _cubit.myProgressData?.data
                                                   ?.coach1N?.inTime,
-                                              mark3: _cubit.myProgressData?.data
-                                                  ?.coach1N?.allTime,
+                                              mark3: _cubit.filterType == FilterType.all ? _cubit.myProgressData?.data
+                                                  ?.coach1N?.allTime : _cubit.myProgressData?.data
+                                                  ?.coach1N?.inTime,
                                               messageStream:
                                                   _messageController.stream,
                                               onTap: () {
@@ -290,7 +293,7 @@ class _MyProgressPageState extends State<MyProgressPage> {
                                                   ?.lesson?.inTime ??
                                               0,
                                           mark3: _cubit.myProgressData?.data
-                                                  ?.lesson?.allTime ??
+                                                  ?.lesson?.inTime ??
                                               0,
                                           messageStream:
                                               _messageController.stream,
@@ -319,7 +322,7 @@ class _MyProgressPageState extends State<MyProgressPage> {
                                                   ?.inTime ??
                                               0,
                                           mark3: _cubit.myProgressData?.data
-                                                  ?.exerciseMovement?.allTime ??
+                                                  ?.exerciseMovement?.inTime ??
                                               0,
                                           messageStream:
                                               _messageController.stream,

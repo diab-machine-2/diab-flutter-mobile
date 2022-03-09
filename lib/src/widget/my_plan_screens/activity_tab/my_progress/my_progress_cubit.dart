@@ -14,7 +14,7 @@ class MyProgressCubit extends Cubit<MyProgressState> {
 
   final AppRepository repository;
 
-  FilterType? filterType = FilterType.week2;
+  FilterType? filterType = FilterType.all;
 
   MyProgressResponse? myProgressData;
   List<ReportModel> reports = [];
@@ -37,9 +37,10 @@ class MyProgressCubit extends Cubit<MyProgressState> {
     await Future.delayed(Duration.zero);
     if (!isRefresh) emit(const MyProgressLoading());
     final ApiResult<MyProgressResponse> apiResult =
-        await repository.getMyProgress(type: filterType?.index ?? 0);
+        await repository.getMyProgress(type: filterType?.typeIndex ?? 0);
     apiResult.when(success: (MyProgressResponse response) {
-      myProgressData = response;
+       myProgressData = response;
+
       emit(const MyProgressSuccess());
     }, failure: (NetworkExceptions error) {
       emit(MyProgressFailure(NetworkExceptions.getErrorMessage(error)));
