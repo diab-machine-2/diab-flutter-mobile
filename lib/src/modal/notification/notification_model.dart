@@ -43,7 +43,7 @@ class NotificationModel {
       topic: notification['topic'],
       imageUrl: notification['imageUrl'] is Map ? notification['imageUrl']['url'] : notification['imageUrl'],
       sentDateTime: notification['sentDateTime'],
-      isRead: notification['isRead'],
+      isRead: notification['isRead'] ?? false,
       hyperText: notification['hyperText'],
       hyperLink: notification['hyperLink'],
       data: dataNoti == null ? null : NotificationData.fromJson(dataNoti),

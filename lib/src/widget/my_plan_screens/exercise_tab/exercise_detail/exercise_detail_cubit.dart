@@ -60,7 +60,7 @@ class ExerciseDetailCubit extends Cubit<ExerciseDetailState> {
     emit(const ExerciseDetailLoading());
     final CompleteExerciseRequest request = CompleteExerciseRequest(
       exerciseMovementId: exerciseMovementId,
-      roadmapid: exerciseData.roadmapId,
+      roadmapid: exerciseData.agendaId,
     );
     final ApiResult<CommonResponse> apiResult =
         await repository.completeExercise(request);

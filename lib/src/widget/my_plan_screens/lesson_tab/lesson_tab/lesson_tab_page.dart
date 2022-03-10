@@ -2,6 +2,8 @@ import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_observer/Observable.dart';
+import 'package:flutter_observer/Observer.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
@@ -31,7 +33,7 @@ class LessonTabPage extends StatefulWidget {
   _LessonTabPageState createState() => _LessonTabPageState();
 }
 
-class _LessonTabPageState extends State<LessonTabPage> with AutomaticKeepAliveClientMixin<LessonTabPage> {
+class _LessonTabPageState extends State<LessonTabPage> with AutomaticKeepAliveClientMixin<LessonTabPage>, Observer {
   late final LessonTabCubit _cubit;
   final RefreshController _controller = RefreshController();
   final ScrollController _lessonScrollController = ScrollController();
@@ -40,10 +42,24 @@ class _LessonTabPageState extends State<LessonTabPage> with AutomaticKeepAliveCl
   @override
   void initState() {
     super.initState();
+    Observable.instance.addObserver(this);
     final MyPlanCubit _myPlanCubit = BlocProvider.of<MyPlanCubit>(context);
     final AppRepository appRepository = AppRepository();
     _cubit = LessonTabCubit(appRepository, _myPlanCubit);
     _cubit.getInitData();
+  }
+
+  @override
+  void dispose() {
+    Observable.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void update(Observable observable, String? notifyName, Map<dynamic, dynamic>? map) {
+    if (notifyName == 'switch_lesson_tab') {
+      _cubit.scrollToLesson();
+    }
   }
 
   @override

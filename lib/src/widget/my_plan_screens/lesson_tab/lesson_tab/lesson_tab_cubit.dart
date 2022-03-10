@@ -8,6 +8,7 @@ import 'package:medical/src/model/response/week_states_response.dart';
 import 'package:medical/src/model/service/api_result.dart';
 import 'package:medical/src/model/service/network_exceptions.dart';
 
+import '../../../../utils/const.dart';
 import '../../my_plan/my_plan.dart';
 import '../lesson_filter/models/filter_data.dart';
 import 'lesson_tab.dart';
@@ -106,6 +107,22 @@ class LessonTabCubit extends Cubit<LessonTabState> {
       emit(LessonTabFailure(NetworkExceptions.getErrorMessage(error)));
     });
     emit(const LessonTabInitial());
+  }
+
+  Future<void> scrollToLesson() async {
+    emit(const LessonTabInitial());
+    emit(LessonTabScrollToLesson(firstLessonIndex));
+  }
+
+  int get firstLessonIndex {
+    if (lessonsList?.isNotEmpty != true) return 0;
+    for (int index = 0; index < (lessonsList?.length ?? 0); index++) {
+      if (lessonsList?[index]?.learningStatus != null &&
+          lessonsList?[index]?.learningStatus != Const.LESSON_LEARNT) {
+        return index;
+      }
+    }
+    return 0;
   }
 
   Future<void> getLessonWeekStates({bool isRefresh = false}) async {

@@ -89,7 +89,12 @@ class _MyPlanPageState extends State<MyPlanPage> with Observer {
                       selectedIndex: _cubit.currentPlanTypeIndex,
                       onChange: (index) {
                         Observable.instance.notifyObservers([], notifyName: Const.HIDE_OVERLAY_KEY);
+                        if(index == 1){
+                          Observable.instance.notifyObservers([], notifyName: "switch_lesson_tab");
+                        }
+                       
                         _cubit.changePlanType(index);
+
                       },
                     ),
                   ),
