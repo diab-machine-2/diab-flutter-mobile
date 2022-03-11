@@ -758,11 +758,11 @@ class _ActivityTabPageState extends State<ActivityTabPage>
             ),
           if((smartGoal?.calendar?.goal != null && smartGoal!.calendar!.goal!.isNotEmpty))
             const SizedBox(height: 16),
-          if(smartGoal?.calendar?.coaches != null && smartGoal!.calendar!.coaches!.isNotEmpty)
+          if(smartGoal?.calendar?.performer != null)
             Row(
               children: [
-                NetWorkImageWidget(imageUrl: smartGoal.calendar!.coaches!.first.avatar?.url ?? "", width: 44, height: 44),
-                const SizedBox(width: 8),
+                NetWorkImageWidget(imageUrl: smartGoal!.calendar!.performer!.avatar?.url ?? "", width: 44, height: 44),
+                const SizedBox(width: 10),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -772,7 +772,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      smartGoal.calendar!.coaches!.first.fullName ?? "",
+                      smartGoal.calendar!.performer!.fullName ?? "",
                       style: TextStyle(color: R.color.main_1, fontSize: 16, fontWeight: FontWeight.w700),
                     ),
                   ],

@@ -29,7 +29,7 @@ class _CustomProgressBarWidgetState extends State<CustomProgressBarWidget> {
   void initState() {
     _cubit = context.read<SurveyQuestionCubit>();
     WidgetsBinding.instance!.addPostFrameCallback((_) {
-      showOverlay();
+     showOverlay();
     });
     super.initState();
   }
@@ -98,11 +98,12 @@ class _CustomProgressBarWidgetState extends State<CustomProgressBarWidget> {
   void showOverlay() {
     checkOverlayStatus();
     late final int progress;
+    print("${_cubit.listAnsweredQuestionId.length} - ${_cubit.listAllQuestionId.length}");
     if (_cubit.progress >= 0.9 && !showed90Message) {
       progress = 90;
       showed90Message = true;
       disposeOverlay();
-    } else if (_cubit.progress >= 0.5 && !showed50Message) {
+    } else if (_cubit.progress >= 0.5 && _cubit.progress < 0.9 && !showed50Message) {
       progress = 50;
       showed50Message = true;
       disposeOverlay();

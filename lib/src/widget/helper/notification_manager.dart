@@ -67,7 +67,8 @@ class NotificationManager {
         ShareProfilePopup.instance.onHasSharedCode(requestFromDoctor: true, code: '123456');
         return;
       }
-      
+      Observable.instance.notifyObservers([], notifyName: "reload_notification");
+
       // if(model.body != null){
       //   model.body = parseHtmlString(model.body!);
       // }

@@ -2,6 +2,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/modal/base/images.dart';
+import 'package:medical/src/modal/home/package_account_home_model.dart';
 
 class HomeModel {
   final GloucoseIndexModel glucoseIndex;
@@ -13,7 +14,7 @@ class HomeModel {
   final HbA1CIndexModel hbA1CIndex;
   final EnergyExerciseCardModel? energyExerciseCard;
   final ProcessCardModel? processCard;
-  final bool isDisplayedWelcome;
+  final PackageAccountHomeModel? packageAccount;
 
   HomeModel({
     required this.glucoseIndex,
@@ -25,7 +26,7 @@ class HomeModel {
     required this.energyCard,
     required this.energyExerciseCard,
     required this.processCard,
-    required this.isDisplayedWelcome,
+    required this.packageAccount,
   });
 
   factory HomeModel.fromJson(Map<String, dynamic> json) {
@@ -43,7 +44,8 @@ class HomeModel {
               json['energyExerciseCard'],
             ),
       processCard: json['processCard'] == null ? null : ProcessCardModel.fromJson(json['processCard']),
-      isDisplayedWelcome: json['isDisplayedWelcome'] ?? false,
+      packageAccount: json['packageAccount'] == null ? null : PackageAccountHomeModel.fromJson(json['packageAccount']),
+      
     );
   }
 

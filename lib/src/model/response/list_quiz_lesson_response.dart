@@ -88,6 +88,7 @@ class QuizData {
     for (final AnswerData answer in answers ?? []) {
       if (answer.isAnswered) return true;
     }
+    if(answers?.isEmpty == true) return true;
     return false;
   }
 

@@ -14,22 +14,27 @@ class MyProgressResponseChartData {
   int? inTimeCompleted;
   int? inTime;
   int? allTime;
+  int? allTimeCompleted;
 
   MyProgressResponseChartData({
     this.inTimeCompleted,
     this.inTime,
     this.allTime,
+    this.allTimeCompleted,
   });
+
   MyProgressResponseChartData.fromJson(Map<String, dynamic> json) {
-    inTimeCompleted = json['inTimeCompleted']?.toInt();
-    inTime = json['inTime']?.toInt();
+    inTimeCompleted = json['inTimeCompleted']?.toInt() ?? 0;
+    inTime = json['inTime']?.toInt() ?? 0;
     allTime = json['allTime']?.toInt() ?? 0;
+    allTimeCompleted = json['allTimeCompleted'] ?? 0;
   }
   Map<String, dynamic> toJson() {
     final data = <String, dynamic>{};
     data['inTimeCompleted'] = inTimeCompleted;
     data['inTime'] = inTime;
     data['allTime'] = allTime;
+    data['allTimeCompleted'] = allTimeCompleted;
     return data;
   }
 }

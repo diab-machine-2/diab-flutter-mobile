@@ -111,20 +111,21 @@ class SmartGoalItem extends StatelessWidget {
                   ),
                 ),
                 state == ScheduleState.in_progress.stateIndex 
-                  ? Image.asset(R.drawable.ic_learning, width: 24, height: 24, color: R.color.mainColor) : Container(
-                  width: 24,
-                  height: 24,
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                    color: isDone ? R.color.greenGradientBottom : R.color.white,
-                    border: isDone ? null : Border.all(color: R.color.grey_2, width: 1.5),
-                    shape: BoxShape.circle,
-                  ),
-                  child: Icon(
-                    Icons.check_rounded,
-                    color: isDone ? R.color.white : R.color.grey_2,
-                    size: 20,
-                  ),
+                  ? Image.asset(R.drawable.ic_learning, width: 24, height: 24, color: R.color.mainColor) 
+                  : Container(
+                    width: 24,
+                    height: 24,
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      color: isDone ? R.color.greenGradientBottom : R.color.white,
+                      border: isDone ? null : Border.all(color: R.color.grey_2, width: 1.5),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(
+                      Icons.check_rounded,
+                      color: isDone ? R.color.white : R.color.grey_2,
+                      size: 20,
+                    ),
                 ),
               ],
             ),

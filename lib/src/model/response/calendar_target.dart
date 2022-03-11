@@ -24,6 +24,7 @@ class CalendarTarget {
   String? roomId;
   CalendarScheduler? calendarScheduler;
   CalendarTraining? calendarTraining;
+  UserCoach? performer;
   List<UserCoach>? coaches;
 
   CalendarTarget(
@@ -46,6 +47,7 @@ class CalendarTarget {
       this.roomId,
       this.calendarScheduler,
       this.calendarTraining,
+      this.performer,
       this.coaches,
       });
 
@@ -73,6 +75,9 @@ class CalendarTarget {
     calendarTraining = json['calendarTraining'] != null
         ? new CalendarTraining.fromJson(json['calendarTraining'])
         : null;
+    performer = json['performer'] != null
+      ? new UserCoach.fromJson(json['performer'])
+      : null;
     if (json['coaches'] != null) {
       final v = json['coaches'];
       final arr0 = <UserCoach>[];
@@ -102,6 +107,9 @@ class CalendarTarget {
     data['complete'] = this.complete;
     data['calendarId'] = this.calendarId;
     data['roomId'] = this.roomId;
+    if (this.performer != null) {
+      data['performer'] = this.performer!.toJson();
+    }
     if (this.calendarScheduler != null) {
       data['calendarScheduler'] = this.calendarScheduler!.toJson();
     }

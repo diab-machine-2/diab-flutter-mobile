@@ -155,7 +155,7 @@ class UserCoach {
   String? creatorId;
   String? updaterId;
   String? email;
-  int? dateOfBirth;
+  String? dateOfBirth;
   String? address;
   String? level;
   String? typeOfWork;
@@ -240,7 +240,7 @@ class UserCoach {
     creatorId = json['creatorId']?.toString();
     updaterId = json['updaterId']?.toString();
     email = json['email']?.toString();
-    dateOfBirth = json['dateOfBirth']?.toInt();
+    dateOfBirth = json['dateOfBirth']?.toString();
     address = json['address']?.toString();
     level = json['level']?.toString();
     typeOfWork = json['typeOfWork']?.toString();

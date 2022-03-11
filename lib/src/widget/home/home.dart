@@ -7,6 +7,7 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/bloc/home/home_bloc.dart';
 import 'package:medical/src/modal/home/home_model.dart';
+import 'package:medical/src/modal/home/package_account_home_model.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/navigator_name.dart';
@@ -187,9 +188,9 @@ class _HomeControllerState extends State<HomeController> with Observer {
           }
           if (state is HomeLoaded) {
             model = state.model;
-            if(model?.isDisplayedWelcome ?? false){
+            if(false == model?.packageAccount?.isDisplayedWelcome){
               Future.delayed(Duration.zero, () async {
-                showWelcomeDialog();
+                showWelcomeDialog(model?.packageAccount);
               });
             }
 
@@ -354,13 +355,14 @@ class _HomeControllerState extends State<HomeController> with Observer {
         }));
   }
 
-  showWelcomeDialog() async {
+  showWelcomeDialog(PackageAccountHomeModel? packageAccount) async {
+    bool isRoadmap = packageAccount?.package?.isRoadmap ?? false;
     final result = await NavigationUtil.navigatePage(
       context,
       WelcomePackageScreenPage(
-        icon: R.drawable.ic_package_experience,
-        title: R.string.package_experience.tr(),
-        subTitle: R.string.package_experience_subtitle.tr(),
+        icon: isRoadmap ? R.drawable.ic_package_roadmap : R.drawable.ic_package_experience,
+        title: isRoadmap ? R.string.package_roadmap.tr() : R.string.package_experience.tr(),
+        subTitle: isRoadmap ? R.string.package_roadmap_subtitle.tr() : R.string.package_experience_subtitle.tr(),
         onSkip: () async {      
           
         },
