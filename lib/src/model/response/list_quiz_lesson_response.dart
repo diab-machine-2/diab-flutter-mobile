@@ -1,3 +1,5 @@
+import 'package:medical/src/app_setting/app_setting.dart';
+
 /// id : "00000000-0000-0000-0000-000000000000"
 /// statusCode : 200
 /// message : "Success"
@@ -88,7 +90,16 @@ class QuizData {
     for (final AnswerData answer in answers ?? []) {
       if (answer.isAnswered) return true;
     }
-    if(answers?.isEmpty == true) return true;
+    if(answers?.isEmpty == true){
+      String? accountIdCurrentUser = AppSettings.userInfo?.accountId;
+      if(results != null && results!.isNotEmpty){
+        for(var result in results!){
+          if(result.accountId == accountIdCurrentUser){
+            return true;
+          }
+        }
+      }
+    }
     return false;
   }
 
