@@ -27,6 +27,7 @@ import 'package:medical/src/widgets/pdf_viewer_widget.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:visibility_detector/visibility_detector.dart';
+import '../../../../model/response/report_model.dart';
 import '../../../booking_coach/booking_coach.dart';
 import '../../../helper/helper.dart';
 
@@ -838,19 +839,27 @@ class _ActivityTabPageState extends State<ActivityTabPage>
   }
 
   Future<void> _showSelectActionPopup() async {
+    await _cubit.getReports();
+    List<ReportModel> reportsFromPreferences = await _cubit.getReportsFromPreferences();
+    _cubit.hasNewReports = reportsFromPreferences.length < _cubit.reports.length;
+    await _cubit.saveHasNewReportsFromPreferences(_cubit.hasNewReports);
+
     final action = await showDialog(
       barrierColor: R.color.color0xff003F38.withOpacity(0.9),
       useSafeArea: true,
       barrierDismissible: true,
       context: context,
       builder: (_) {
-        return StatisticalPopup(hasRoadmapUser: _cubit.myPlanCubit.isHasRoadmapUser);
+        return StatisticalPopup(
+          hasRoadmapUser: _cubit.myPlanCubit.isHasRoadmapUser, 
+          hasNewReports: _cubit.hasNewReports,
+        );
       },
     );
     if (action is StatisticalAction) {
       switch (action) {
         case StatisticalAction.my_progress:
-          final result = await NavigationUtil.navigatePage(context, const MyProgressPage());
+          final result = await NavigationUtil.navigatePage(context, MyProgressPage(reports: _cubit.reports, hasNewReports: _cubit.hasNewReports));
           if (result is int) {
             if (result == 1) {
               _cubit.goToLessonTab();
@@ -860,7 +869,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
           }
           break;
         case StatisticalAction.my_report:
-          _showReportBottomSheet();
+          await _showReportBottomSheet();
           break;
         case StatisticalAction.chatting:
           final result = await NavigationUtil.navigatePage(context, const ExpertCommentPage());
@@ -870,7 +879,11 @@ class _ActivityTabPageState extends State<ActivityTabPage>
     }
   }
 
-  _showReportBottomSheet() {
+  _showReportBottomSheet() async {
+    await _cubit.saveHasNewReportsFromPreferences(false);
+    _cubit.hasNewReports = false;
+    await _cubit.saveReportsFromPreferences(_cubit.reports);
+
     showModalBottomSheet(
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(

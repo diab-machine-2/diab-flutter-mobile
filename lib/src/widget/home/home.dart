@@ -21,6 +21,7 @@ import 'package:medical/src/widget/list_service/list_service_page.dart';
 import 'package:medical/src/widget/my_plan_screens/activity_tab/create_goal/create_goal_page.dart';
 import 'package:medical/src/widgets/network_image_widget.dart';
 
+import '../my_plan_screens/activity_tab/my_progress/my_progress.dart';
 import 'welcome_package_screen/welcome_package_screen.dart';
 
 class HomeController extends StatefulWidget {
@@ -899,7 +900,7 @@ class _HomeControllerState extends State<HomeController> with Observer {
             Observable.instance.notifyObservers([], notifyName: Const.NAVIGATE_TO_MY_PLAN_TAB);
           } else {
             if(user!.isUserHasRoadmap) {
-              await Navigator.pushNamed(context, NavigatorName.my_progress);
+              final result = await NavigationUtil.navigatePage(context, MyProgressPage());
             } else {
               Observable.instance.notifyObservers([], notifyName: Const.NAVIGATE_TO_MY_PLAN_TAB);
             }

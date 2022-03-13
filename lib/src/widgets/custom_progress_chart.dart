@@ -221,6 +221,7 @@ class MyPainter extends CustomPainter {
         text: _completedPercent,
         style: textStyle.copyWith(
           color: R.color.white,
+          fontSize: 12,
           fontWeight: FontWeight.w400,
         ),
       ),
@@ -312,7 +313,10 @@ class MyPainter extends CustomPainter {
     // _text1Painter.paint(canvas, _mark1TextPosition);
     // _text2Painter.paint(canvas, _mark2TextPosition);
     // _text3Painter.paint(canvas, mark3TextPosition);
-    _percentTextPainter.paint(canvas, _percentTextPosition);
+
+ //   if((_mark3Position / _mark1Position <= 10 && _mark3Position / mark2Position <= 6) || _mark1Position == 0.0){
+      _percentTextPainter.paint(canvas, _percentTextPosition);
+ //   }
   }
 
   @override

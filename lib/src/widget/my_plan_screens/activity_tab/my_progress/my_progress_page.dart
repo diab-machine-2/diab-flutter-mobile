@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
+import 'package:medical/src/model/response/report_model.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widgets/common_page.dart';
@@ -20,7 +21,11 @@ import 'my_progress.dart';
 import 'widgets/report_list_widget.dart';
 
 class MyProgressPage extends StatefulWidget {
-  const MyProgressPage();
+
+  List<ReportModel>? reports;
+  bool? hasNewReports;
+
+  MyProgressPage({this.reports, this.hasNewReports});
 
   @override
   _MyProgressPageState createState() => _MyProgressPageState();
@@ -36,7 +41,7 @@ class _MyProgressPageState extends State<MyProgressPage> {
   void initState() {
     super.initState();
     final AppRepository appRepository = AppRepository();
-    _cubit = MyProgressCubit(appRepository);
+    _cubit = MyProgressCubit(appRepository, widget.reports, widget.hasNewReports);
     _cubit.initData();
   }
 
@@ -91,14 +96,19 @@ class _MyProgressPageState extends State<MyProgressPage> {
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
                           InkWell(
-                            onTap: () {
+                            onTap: () async {
                               _messageController.sink.add(true);
+                              await _cubit.saveHasNewReportsFromPreferences(false);
+                              _cubit.hasNewReports = false;
+                              await _cubit.saveReportsFromPreferences(_cubit.reports ?? []);
+                              _cubit.refresh();
+
                               showActionFilter(
                                   context: context,
                                   builder: (context) {
                                     return ReportListWidget(
                                       title: R.string.report.tr(),
-                                      reportList: _cubit.reports,
+                                      reportList: _cubit.reports ?? [],
                                       onSelected: (url) {
                                         NavigationUtil.navigatePage(
                                             context, PDFViewerWidget(url: url));
@@ -108,10 +118,27 @@ class _MyProgressPageState extends State<MyProgressPage> {
                             },
                             child: Row(
                               children: [
-                                Image.asset(
-                                  R.drawable.ic_report,
-                                  width: 20,
-                                  height: 20,
+                                Stack(
+                                  children: [
+                                    Image.asset(
+                                        R.drawable.ic_report,
+                                        width: 20,
+                                        height: 20,
+                                    ),
+                                    Visibility(
+                                      visible: _cubit.hasNewReports ?? false,
+                                      child: Positioned(
+                                        top: 0,
+                                        right: 0,
+                                        child: Container(
+                                          width: 8,
+                                          height: 8,
+                                          decoration: BoxDecoration(
+                                              shape: BoxShape.circle,
+                                              color: R.color.greenGradientTop)),
+                                      ),
+                                    ),
+                                  ],
                                 ),
                                 const SizedBox(width: 4),
                                 Text(

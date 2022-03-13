@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_observer/Observable.dart';
@@ -16,6 +17,7 @@ import 'package:medical/src/model/service/network_exceptions.dart';
 import 'package:medical/src/utils/date_utils.dart';
 import 'package:medical/src/widget/my_plan_screens/activity_tab/activity_tab/models/schedule_type.dart';
 import 'package:medical/src/widgets/day_in_week_widget.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../../model/response/report_model.dart';
 import '../../../../model/response/report_response.dart';
@@ -36,6 +38,7 @@ class ActivityTabCubit extends Cubit<ActivityTabState> {
   int currentDayIndex = 0;
 
   List<ReportModel> reports = [];
+  bool hasNewReports = false;
 
   CongratulationState congratulationState = CongratulationState(currentDate: DateTime.now());
 
@@ -73,7 +76,7 @@ class ActivityTabCubit extends Cubit<ActivityTabState> {
 
   Future<void> initData() async {
     await myPlanCubit.checkUserInfo();
-    await getReports();
+
     if (myPlanCubit.isHasRoadmapUser) {
       currentWeekIndex = myPlanCubit.currentStudyWeek! - 1;
       if (currentWeekIndex == -1) currentWeekIndex = 0;
@@ -212,11 +215,47 @@ class ActivityTabCubit extends Cubit<ActivityTabState> {
 
  Future<void> getReports({bool isRefresh = false}) async {
     await Future.delayed(Duration.zero);
+    emit(const ActivityTabLoading());
     final ApiResult<ReportListResponse> apiResult =
         await repository.getReports();
     apiResult.when(success: (ReportListResponse response) {
       reports = response.data ?? [];
+      emit(const ActivityTabSuccess());
     }, failure: (NetworkExceptions error) {
+      emit(const ActivityTabSuccess());
     });
+  }
+
+  Future<void> saveReportsFromPreferences(List<ReportModel> reports) async {
+    final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
+    final SharedPreferences prefs = await _prefs;
+    var json = jsonEncode(reports.map((e) => e.toJson()).toList());
+    prefs.setString('reports', json);
+  }
+
+  Future<void> saveHasNewReportsFromPreferences(bool hasNewReports) async {
+    final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
+    final SharedPreferences prefs = await _prefs;
+    prefs.setBool('hasNewReports', hasNewReports);
+  }
+
+   Future<bool> getHasNewReportsFromPreferences() async {
+    final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
+    final SharedPreferences prefs = await _prefs;
+    final hasNewReports = prefs.getBool('hasNewReports') ?? false;
+    return hasNewReports;
+  }
+
+  Future<List<ReportModel>> getReportsFromPreferences() async {
+    final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
+    final SharedPreferences prefs = await _prefs;
+    final reportsString = prefs.getString('reports');
+    List<ReportModel> reports = [];
+
+    if(reportsString != null){
+      Iterable l = json.decode(reportsString);
+      reports = List<ReportModel>.from(l.map((model)=> ReportModel.fromJson(model)));
+    }
+    return reports;
   }
 }

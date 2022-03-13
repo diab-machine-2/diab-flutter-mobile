@@ -394,8 +394,6 @@ class _AppState extends State<App> {
                   return _buildRoute(settings, ScheduleActivityController());
                 case NavigatorName.manual:
                   return _buildRoute(settings, ManualController());
-                case NavigatorName.my_progress:
-                  return _buildRoute(settings, MyProgressPage());
                 case NavigatorName.manual_detail:
                   final data = settings.arguments as Map<String, dynamic>?;
                   return _buildRoute(settings, ManualDetailController(model: data?['manual']));

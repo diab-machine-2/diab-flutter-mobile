@@ -124,6 +124,8 @@ class AppSettings {
       await deleteHomeData();
       await clearToken();
       await clearRefreshToken();
+      appPreference.removeData("hasNewReports");
+      appPreference.removeData("reports");
       final GoogleSignIn _googleSignIn = GoogleSignIn();
       _googleSignIn.signOut();
       final facebookLogin = FacebookLogin();
