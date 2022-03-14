@@ -60,7 +60,7 @@ class NotificationClient extends FetchClient {
     }
   }
 
-  Future<bool?> readNotification(String? communicationId, String? notificationId, String? patientId, int? notificationType, bool isRead) async {
+  Future<bool?> readNotification(String? communicationId, String? notificationId, String? patientId, String? notificationType, bool isRead) async {
     try {
       final Response response = await super.putData(url: '/App/Communication/MarkReadUnread', params: {
         'notificationId': notificationId,

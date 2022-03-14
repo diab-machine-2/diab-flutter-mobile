@@ -24,20 +24,20 @@ enum NotificationType {
 }
 
 extension NotificationActionExtend on NotificationActionType {
-  static NotificationActionType getNotificationActionTypeFromIndex(int? index) {
+  static NotificationActionType getNotificationActionTypeFromIndex(String? index) {
     if (index != null) {
       switch (index) {
-        case 0:
+        case "0":
           return NotificationActionType.redirect_to_activity_tab;
-        case 1:
+        case "1":
           return NotificationActionType.redirect_to_url;
-        case 2:
+        case "2":
           return NotificationActionType.add_reminder;
-        case 3:
+        case "3":
           return NotificationActionType.add_blood_sugar;
-        case 4:
+        case "4":
           return NotificationActionType.none;
-        case 5:
+        case "5":
           return NotificationActionType.share_profile;
         default:
           return NotificationActionType.redirect_to_url;

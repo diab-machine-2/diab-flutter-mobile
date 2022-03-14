@@ -12,7 +12,7 @@ class NotificationModel {
   final String? hyperText;
   final String? hyperLink;
   final NotificationData? data;
-  final int? notificationType;
+  final String? notificationType;
 
   NotificationModel(
       {this.id,
@@ -63,9 +63,9 @@ class NotificationModel {
 class NotificationData {
   final String? communicationId;
   final String? remindId;
-  final int notificationType;
+  final String notificationType;
   final String? notificationId;
-  final String referralCode;
+  final String? referralCode;
 
   NotificationData({required this.notificationId, required this.communicationId, required this.remindId, required this.notificationType, required this.referralCode});
 
@@ -76,7 +76,7 @@ class NotificationData {
         communicationId: json['communicationId'],
         remindId: json['remindId'],
         referralCode: json['referralCode'],
-        notificationType: int.parse(json['notificationType']));
+        notificationType: json['notificationType']);
   }
 
   static List<NotificationData> toList(List<dynamic> items) {
