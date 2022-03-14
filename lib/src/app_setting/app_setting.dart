@@ -20,6 +20,7 @@ class AppSettings {
   static List<SmartGoalList?> smartGoalDayList = [];
   static CategoryUserModel? categoryUserModel;
   static int? currentDateTime;
+  static bool isDisplayedWelcome = false;
 
   static Future<bool> saveToken(String? token) async {
     appPreference.setData(Const.TOKEN, token);

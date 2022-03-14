@@ -126,6 +126,7 @@ class ExerciseMovementResponseDataSections {
   String? id;
   String? code;
   String? name;
+  String? description;
   String? exerciseCategoryId;
   int? replayTime;
   String? videoUrl;
@@ -134,6 +135,7 @@ class ExerciseMovementResponseDataSections {
     this.id,
     this.code,
     this.name,
+    this.description,
     this.exerciseCategoryId,
     this.replayTime,
     this.videoUrl,
@@ -142,6 +144,7 @@ class ExerciseMovementResponseDataSections {
     id = json['id']?.toString();
     code = json['code']?.toString();
     name = json['name']?.toString();
+    description = json['description']?.toString();
     exerciseCategoryId = json['exerciseCategoryId']?.toString();
     replayTime = json['replayTime']?.toInt();
     videoUrl = json['videoUrl']?.toString();
@@ -151,6 +154,7 @@ class ExerciseMovementResponseDataSections {
     data['id'] = id;
     data['code'] = code;
     data['name'] = name;
+    data['description'] = description;
     data['exerciseCategoryId'] = exerciseCategoryId;
     data['replayTime'] = replayTime;
     data['videoUrl'] = videoUrl;

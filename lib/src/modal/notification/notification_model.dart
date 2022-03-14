@@ -65,8 +65,9 @@ class NotificationData {
   final String? remindId;
   final int notificationType;
   final String? notificationId;
+  final String referralCode;
 
-  NotificationData({required this.notificationId, required this.communicationId, required this.remindId, required this.notificationType});
+  NotificationData({required this.notificationId, required this.communicationId, required this.remindId, required this.notificationType, required this.referralCode});
 
   @override
   factory NotificationData.fromJson(dynamic json) {
@@ -74,6 +75,7 @@ class NotificationData {
         notificationId: json['notificationId'],
         communicationId: json['communicationId'],
         remindId: json['remindId'],
+        referralCode: json['referralCode'],
         notificationType: int.parse(json['notificationType']));
   }
 

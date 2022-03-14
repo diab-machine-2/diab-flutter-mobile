@@ -56,7 +56,7 @@ class VideoManager {
           expandToFill: false,
           allowedScreenSleep: false,
           fit: BoxFit.fitHeight,
-          deviceOrientationsOnFullScreen: [
+          deviceOrientationsAfterFullScreen: [
             DeviceOrientation.portraitUp,
             DeviceOrientation.portraitDown,
           ],

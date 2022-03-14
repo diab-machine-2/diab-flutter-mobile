@@ -79,14 +79,14 @@ class SurveyQuestionCubit extends Cubit<SurveyQuestionState> {
     if (answerResult.surveyAnswerIdList?.isNotEmpty != true &&
         answerResult.content?.isNotEmpty != true) {
       answer.remove(questionId);
-      isShowed = true;
-      emit(SurveyQuestionHideProgressMessage());
+   //   isShowed = true;
+   //   emit(SurveyQuestionHideProgressMessage());
       return;
     }
-    if (isShowed) {
-      emit(SurveyQuestionProgressChanged());
-      isShowed = false;
-    }
+    // if (isShowed) {
+    //   emit(SurveyQuestionProgressChanged());
+    //   isShowed = false;
+    // }
 
     for (int index = 0;
         index < (currentQuestion?.answers?.length ?? 0);
@@ -178,6 +178,7 @@ class SurveyQuestionCubit extends Cubit<SurveyQuestionState> {
     required String surveyId,
     required String sectionId,
     required String questionId,
+    required bool isRelatedQuestion,
   }) async {
     emit(SurveyQuestionLoading());
     final List<QuestionAnswerResults> list = [];
@@ -189,13 +190,28 @@ class SurveyQuestionCubit extends Cubit<SurveyQuestionState> {
             .where((element) => element.surveyQuestionId == questionId)
             .toList();
 
+    QuestionAnswerResults? answerResult = listAnswer.isNotEmpty ? listAnswer.first : null;
+
     final PostSurveyRequest request = PostSurveyRequest(
-        questionAnswerResults: listAnswer.isNotEmpty ? listAnswer.first : null);
+        questionAnswerResults: answerResult);
     final ApiResult<CommonResponse> apiResult =
         await repository.submitSurvey(request);
     apiResult.when(success: (CommonResponse response) {
-      if(!listAnsweredQuestionId.contains(questionId)){
+      if(
+      //  !listAnsweredQuestionId.contains(questionId) && 
+          isRelatedQuestion == false){
         listAnsweredQuestionId.add(questionId);
+      }
+      if (answerResult?.surveyAnswerIdList?.isNotEmpty != true &&
+        answerResult?.content?.isNotEmpty != true) {
+    //  answer.remove(questionId);
+        isShowed = true;
+        emit(SurveyQuestionHideProgressMessage());
+        return;
+      }
+      if (isShowed) {
+        emit(SurveyQuestionProgressChanged());
+        isShowed = false;
       }
       emit(SubmitSurveySuccess());
     }, failure: (NetworkExceptions error) {

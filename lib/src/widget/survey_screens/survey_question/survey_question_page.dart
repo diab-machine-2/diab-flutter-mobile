@@ -240,13 +240,14 @@ class _SurveyQuestionPageState extends State<SurveyQuestionPage> {
   Widget buildNextButton() {
     final bool isEnable = _cubit.nextButtonEnable;
     final VoidCallback? onTap = isEnable
-        ? () {
+        ? () async {
             if (widget.surveyData.id != null &&
                 _cubit.sectionSurvey?.id != null)
-              _cubit.submitAnswer(
+              await _cubit.submitAnswer(
                 surveyId: widget.surveyData.id!,
                 sectionId: _cubit.sectionSurvey!.id!,
                 questionId: _cubit.currentQuestion?.id ?? '',
+                isRelatedQuestion: _cubit.currentQuestion?.isRelatedQuestions ?? false,
               );
             FocusScope.of(context).unfocus();
             if (_cubit.selectedCourseIndex == _cubit.lengthQuiz - 1) {

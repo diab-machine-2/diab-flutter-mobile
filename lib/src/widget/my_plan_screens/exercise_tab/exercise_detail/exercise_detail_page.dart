@@ -69,15 +69,38 @@ class _ExerciseDetailState extends State<ExerciseDetail> {
                 }
               },
               builder: (context, state) {
-                return Container(
-                  alignment: Alignment.center,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                  ),
-                  child: _cubit.videoManager.controller != null
-                      ? BetterPlayer(
-                          controller: _cubit.videoManager.controller!)
-                      : const SizedBox.shrink(),
+                return Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox(height: 120),
+                      Container(
+                        alignment: Alignment.center,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                        ),
+                        child: _cubit.videoManager.controller != null
+                            ? BetterPlayer(
+                                controller: _cubit.videoManager.controller!)
+                            : const SizedBox.shrink(),
+                      ),
+                      SizedBox(height: 2),
+                      Expanded(
+                        child: Padding(
+                          padding: EdgeInsets.all(16.0),
+                          child: SingleChildScrollView(
+                            child: Text(
+                              _cubit.exerciseData.description ?? '',
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: R.color.white,
+                                height: 1.4,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
                 );
               },
             ),
