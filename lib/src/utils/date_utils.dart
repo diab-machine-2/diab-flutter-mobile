@@ -6,7 +6,7 @@ class DateUtil {
     DateTime? date1;
     DateTime? date2;
     if (dateTime1 != null) {
-      date1 = DateTime.fromMillisecondsSinceEpoch(dateTime1 * 1000);
+      date1 = DateTime.fromMillisecondsSinceEpoch(dateTime1 * 1000).toUtc();
       date1 = DateTime(date1.year, date1.month, date1.day);
     }
     if (dateTime2 != null) {
@@ -24,7 +24,7 @@ class DateUtil {
     DateTime? date1;
     DateTime? date2;
     if (dateTime1 != null) {
-      date1 = DateTime.fromMillisecondsSinceEpoch(dateTime1 * 1000);
+      date1 = DateTime.fromMillisecondsSinceEpoch(dateTime1 * 1000).toUtc();
       date1 = DateTime(date1.year, date1.month, date1.day);
     }
     if (dateTime2 != null) {
