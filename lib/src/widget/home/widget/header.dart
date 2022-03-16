@@ -26,6 +26,8 @@ import 'package:medical/src/widgets/share_profile_popup.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:external_app_launcher/external_app_launcher.dart';
 
+import '../../../widgets/button_widget.dart';
+
 class HomeHeader extends StatefulWidget {
   const HomeHeader({this.sharedCode});
   final String? sharedCode;
@@ -171,6 +173,10 @@ class _HomeHeaderState extends State<HomeHeader> with Observer {
                       children: [
                         InkWell(
                           onTap: () async {
+                            if(user.ownPackage == null) {
+                              showUpdateRequirePopup(context: context);
+                              return;
+                            }
                             showChatMenu();
                           },
                           child: Container(
@@ -292,5 +298,77 @@ class _HomeHeaderState extends State<HomeHeader> with Observer {
         Message.showToastMessage(context, e.toString());
       }
     }
+  }
+
+void showUpdateRequirePopup({
+    required BuildContext context,
+  }) {
+    showDialog(
+      barrierColor: R.color.color0xff003F38.withOpacity(0.5),
+      context: context,
+      barrierDismissible: true,
+      builder: (_) => GestureDetector(
+        onTap: () {
+          NavigationUtil.pop(context);
+        },
+        child: Scaffold(
+          backgroundColor: R.color.transparent,
+          body: Center(
+            child: GestureDetector(
+              onTap: () {},
+              child: Container(
+                margin: const EdgeInsets.symmetric(horizontal: 24),
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      R.color.white,
+                      R.color.main_6,
+                    ],
+                  ),
+                ),
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 50.0, vertical: 30),
+                        child: Image.asset(R.drawable.img_upgrade_package),
+                      ),
+                      Text(
+                        R.string.chat_with_coach.tr(),
+                        textAlign: TextAlign.center,
+                        style: TextStyle(color: R.color.textDark, fontSize: 20, fontWeight: FontWeight.w700),
+                      ),
+                      const SizedBox(height: 12),
+                      Text(
+                        R.string.tai_khoan_can_nang_cap.tr(),
+                        textAlign: TextAlign.center,
+                        style: TextStyle(color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w400),
+                      ),
+                      const SizedBox(height: 8),
+                      Container(
+                        margin: const EdgeInsets.only(top: 8),
+                        padding: const EdgeInsets.symmetric(horizontal: 50),
+                        child: ButtonWidget(
+                          height: 43,
+                          title: R.string.agree.tr(),
+                          onPressed: () {
+                            NavigationUtil.pop(context);
+                          },
+                          textSize: 14,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
   }
 }
