@@ -884,17 +884,17 @@ class _AppApi implements AppApi {
   Future<ExpertCommentListResponse> getCommentProfessorByAccountId(
       accountId) async {
     const _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{r'accountId': accountId};
+    final queryParameters = <String, dynamic>{r'patientId': accountId};
     queryParameters.removeWhere((k, v) => v == null);
     final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
     final _result = await _dio.fetch<Map<String, dynamic>>(
-        _setStreamType<ExpertCommentListResponse>(Options(
-                method: 'GET', headers: _headers, extra: _extra)
-            .compose(_dio.options,
-                'App/CalendarTrainingComment/GetCommentProfessorByAccountId',
-                queryParameters: queryParameters, data: _data)
-            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+        _setStreamType<ExpertCommentListResponse>(
+            Options(method: 'GET', headers: _headers, extra: _extra)
+                .compose(
+                    _dio.options, 'App/UserDashboard/Calendar-Training-Comment',
+                    queryParameters: queryParameters, data: _data)
+                .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
     final value = ExpertCommentListResponse.fromJson(_result.data!);
     return value;
   }

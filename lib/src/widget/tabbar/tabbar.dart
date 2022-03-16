@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
@@ -29,6 +31,7 @@ class TabbarController extends StatefulWidget {
   const TabbarController({this.sharedCode, this.isRedirectFromNotification = false});
   final String? sharedCode;
   final bool isRedirectFromNotification;
+
   @override
   _TabbarControllerState createState() => _TabbarControllerState();
   static _TabbarControllerState? of(BuildContext context) {
@@ -42,6 +45,7 @@ class _TabbarControllerState extends State<TabbarController> with SingleTickerPr
   BottomTabbar? _bottomTabbar;
 
   late final List<Widget> tabs;
+  bool isNavigateToStepList = false;
 
   @override
   void initState() {
@@ -67,6 +71,14 @@ class _TabbarControllerState extends State<TabbarController> with SingleTickerPr
         });
 
     getNewVersion();
+
+ //   startTimer();
+  }
+
+  Future startTimer() async {
+    Future.delayed(Duration(seconds: 30), (){
+      Observable.instance.notifyObservers([], notifyName : "unauthorized");
+    });
   }
 
   @override
@@ -78,8 +90,11 @@ class _TabbarControllerState extends State<TabbarController> with SingleTickerPr
   @override
   Future<void> update(Observable observable, String? notifyName, Map<dynamic, dynamic>? map) async {
     if (notifyName == 'unauthorized') {
-      Message.showToastMessage(context, R.string.phien_dang_nhap_het_han_vui_long_dang_nhap_lai.tr());
-      AppSettings.logout();
+      if(!isNavigateToStepList){
+        Message.showToastMessage(context, R.string.phien_dang_nhap_het_han_vui_long_dang_nhap_lai.tr());
+        AppSettings.logout();
+        isNavigateToStepList = true;
+      }
     }
     if (notifyName == Const.NAVIGATE_TO_MY_PLAN_TAB) {
       NavigationUtil.popToFirst(context);

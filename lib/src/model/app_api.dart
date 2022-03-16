@@ -307,8 +307,8 @@ abstract class AppApi {
   @GET("App/MyProgress")
   Future<MyProgressResponse> getMyProgress({@Query('type') int? type});
 
-  @GET("App/CalendarTrainingComment/GetCommentProfessorByAccountId")
-  Future<ExpertCommentListResponse> getCommentProfessorByAccountId(@Query('accountId') String? accountId);
+  @GET("App/UserDashboard/Calendar-Training-Comment")
+  Future<ExpertCommentListResponse> getCommentProfessorByAccountId(@Query('patientId') String? accountId);
 
   @GET("App/CalendarTrainingComment/{id}")
   Future<ExpertCommentResponse> getCommentById(@Path('id') String id);

@@ -15,6 +15,7 @@ import 'package:medical/src/model/response/week_states_response.dart';
 import 'package:medical/src/model/service/api_result.dart';
 import 'package:medical/src/model/service/network_exceptions.dart';
 import 'package:medical/src/utils/date_utils.dart';
+import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/my_plan_screens/activity_tab/activity_tab/models/schedule_type.dart';
 import 'package:medical/src/widgets/day_in_week_widget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -52,7 +53,17 @@ class ActivityTabCubit extends Cubit<ActivityTabState> {
 
   int? get currentWeek => currentWeekIndex == null ? null : currentWeekIndex!;
 
-  int? get currentDay => dayStatesList.isEmpty ? 0 : dayStatesList[currentDayIndex]?.day;
+  int? get currentDay { 
+    if(dayStatesList.isEmpty) { 
+      return 0;
+    } else { 
+      if(currentWeek == 0) {
+        return convertToGMT(dayStatesList[currentDayIndex]?.day);
+      } else {
+        return dayStatesList[currentDayIndex]?.day;
+      }
+    }
+  }
 
   List<DayInWeekData> get dayInWeekList => statistic?.dayInWeekList ?? [];
 

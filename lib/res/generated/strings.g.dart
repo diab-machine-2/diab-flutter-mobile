@@ -433,6 +433,7 @@ class Strings {
 	String get mat_khau_khong_chinh_xac => 'mat_khau_khong_chinh_xac';
 	String get so_dien_thoai_khong_chinh_xac => 'so_dien_thoai_khong_chinh_xac';
 	String get tai_khoan_het_hieu_luc => 'tai_khoan_het_hieu_luc';
+	String get tai_khoan_can_nang_cap => 'tai_khoan_can_nang_cap';
 	String get so_dien_thoai_da_ton_tai => 'so_dien_thoai_da_ton_tai';
 	String get user_name_default => 'user_name_default';
 	String get xac_nhan_mat_khau => 'xac_nhan_mat_khau';

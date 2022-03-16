@@ -30,6 +30,7 @@ class ShareProfilePopup {
     final bool requestFromDoctor = false,
     required final String code,
   }) async {
+    if(code.isEmpty) return;
     final BuildContext currentContext = context ?? navigatorKey.currentState!.context;
     final UserInfoReferralCodeResponse? userInfo = await _getSharedProfile(currentContext, code: code);
     if (userInfo?.isUserExists != true) {

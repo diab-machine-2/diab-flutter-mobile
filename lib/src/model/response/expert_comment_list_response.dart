@@ -2,11 +2,6 @@ import 'package:medical/src/model/response/my_progress_response.dart';
 import 'package:medical/src/widget/my_plan_screens/activity_tab/expert_comment/model/expert_comment_model.dart';
 
 class ExpertCommentResponseMeta {
-/*
-{
-  "success": true
-} 
-*/
 
   bool? success;
 
@@ -23,9 +18,34 @@ class ExpertCommentResponseMeta {
   }
 }
 
+class ExpertCommentResponseData {
+
+  List<ExpertCommentModel>? items;
+
+  ExpertCommentResponseData({
+    this.items,
+  });
+  ExpertCommentResponseData.fromJson(Map<String, dynamic> json) {
+    if (json['items'] != null) {
+      items = [];
+      json['items'].forEach((v) {
+        items!.add(ExpertCommentModel.fromJson(v));
+      });
+    }
+  }
+  Map<String, dynamic> toJson() {
+    final map = <String, dynamic>{};
+    if (items != null) {
+      map['items'] = items!.map((v) => v.toJson()).toList();
+    }
+    return map;
+  }
+}
+
 class ExpertCommentListResponse {
   ExpertCommentResponseMeta? meta;
-  List<ExpertCommentModel>? data;
+
+  ExpertCommentResponseData? data;
 
   ExpertCommentListResponse({
     this.meta,
@@ -35,12 +55,9 @@ class ExpertCommentListResponse {
     meta = (json['meta'] != null)
         ? ExpertCommentResponseMeta.fromJson(json['meta'])
         : null;
-    if (json['data'] != null) {
-      data = [];
-      json['data'].forEach((v) {
-        data!.add(ExpertCommentModel.fromJson(v));
-      });
-    }
+    data = (json['data'] != null)
+        ? ExpertCommentResponseData.fromJson(json['data'])
+        : null;
   }
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
@@ -48,7 +65,7 @@ class ExpertCommentListResponse {
       map['meta'] = meta!.toJson();
     }
     if (data != null) {
-      map['data'] = data!.map((v) => v.toJson()).toList();
+      map['data'] = data!.toJson();
     }
     return map;
   }

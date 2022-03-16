@@ -602,6 +602,8 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
                 builder: (_) => CustomDatePicker(
                   initDate: initDate,
                   callback: (DateTime date) {
+                    date = DateTime(date.year, date.month, date.day);
+                    date = date.add(Duration(hours: 23, minutes: 59));
                     onPickDate(date);
                     _cubit.emit(CreateGoalPickedDate(date));
                   },

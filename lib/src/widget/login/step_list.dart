@@ -140,8 +140,10 @@ class _StepListControllerState extends State<StepListController> {
                     margin: EdgeInsets.only(bottom: 16),
                     child: Padding(
                       padding: const EdgeInsets.only(left: 16, right: 16),
-                      child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                        GestureDetector(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                        Expanded(
+                            child: GestureDetector(
                           onTap: () {
                             Navigator.pushNamed(
                               context,
@@ -150,34 +152,36 @@ class _StepListControllerState extends State<StepListController> {
                             );
                           },
                           child: Container(
-                              height: 48,
-                              width: 164,
-                              decoration: BoxDecoration(
-                                  color: R.color.mainColor,
-                                  borderRadius: BorderRadius.circular(200),
-                                  gradient: LinearGradient(
-                                      begin: Alignment.topLeft,
-                                      end: Alignment.centerRight,
-                                      colors: [R.color.greenGradientTop, R.color.greenGradientBottom])),
-                              child: Center(
-                                child: Text(R.string.tao_tai_khoan.tr(),
-                                    style: TextStyle(color: R.color.white, fontSize: 16, fontWeight: FontWeight.w600)),
-                              )),
+                                height: 48,
+                                decoration: BoxDecoration(
+                                    color: R.color.mainColor,
+                                    borderRadius: BorderRadius.circular(200),
+                                    gradient: LinearGradient(
+                                        begin: Alignment.topLeft,
+                                        end: Alignment.centerRight,
+                                        colors: [R.color.greenGradientTop, R.color.greenGradientBottom])),
+                                child: Center(
+                                  child: Text(R.string.tao_tai_khoan.tr(),
+                                      style: TextStyle(color: R.color.white, fontSize: 16, fontWeight: FontWeight.w600)),
+                                )),
+                          ),
                         ),
-                        GestureDetector(
-                          onTap: () {
-                            Navigator.pushNamed(context, NavigatorName.login, arguments: sharedCode,);
-                          },
-                          child: Container(
-                            height: 48,
-                            width: 164,
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(200),
-                                border: Border.all(color: R.color.mainColor, width: 2)),
-                            child: Center(
-                              child: Text(R.string.da_co_tai_khoan.tr(),
-                                  style:
-                                      TextStyle(color: R.color.mainColor, fontSize: 16, fontWeight: FontWeight.w600)),
+                        SizedBox(width: 16),
+                        Expanded(
+                          child: GestureDetector(
+                            onTap: () {
+                              Navigator.pushNamed(context, NavigatorName.login, arguments: sharedCode,);
+                            },
+                            child: Container(
+                              height: 48,
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(200),
+                                  border: Border.all(color: R.color.mainColor, width: 2)),
+                              child: Center(
+                                child: Text(R.string.da_co_tai_khoan.tr(),
+                                    style:
+                                        TextStyle(color: R.color.mainColor, fontSize: 16, fontWeight: FontWeight.w600)),
+                              ),
                             ),
                           ),
                         ),

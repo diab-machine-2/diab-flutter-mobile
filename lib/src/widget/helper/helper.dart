@@ -67,6 +67,16 @@ DateTime toDate(int timeStamp) {
   return DateTime(date.year, date.month, date.day);
 }
 
+int convertToGMT(int? timeStamp){
+  if(timeStamp != null){
+    var date = DateTime.fromMillisecondsSinceEpoch(timeStamp * 1000);
+    date = date.add(Duration(hours: 7));
+    return date.millisecondsSinceEpoch ~/ 1000;
+  } else {
+    return 0;
+  }
+}
+
 String getWeekDay(int timeStamp){
   final date = DateTime.fromMillisecondsSinceEpoch(timeStamp * 1000);
   var dateTime = DateTime(date.year, date.month, date.day);

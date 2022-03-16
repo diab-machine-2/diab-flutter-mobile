@@ -244,8 +244,7 @@ class _ExerciseTabPageState extends State<ExerciseTabPage> with AutomaticKeepAli
                   showUpdateRequirePopup(context: context);
                   return;
                 }
-                if (exerciseItem?.exerciseMovementStates == Const.LESSON_LOCKED ||
-                    exerciseItem?.exerciseMovementStates == Const.LESSON_CAN_NOT_LEARN) {
+                if (exerciseItem?.exerciseMovementStates == Const.LESSON_LOCKED) {
                   _showLockedDialog();
                   return;
                 }
@@ -299,21 +298,21 @@ class _ExerciseTabPageState extends State<ExerciseTabPage> with AutomaticKeepAli
                               _cubit.onRefresh(keepSelectedDayIndex: true);
                             },
                           ),
-                          _buildCustomIconButton(
-                            title: R.string.show_instruction.tr(),
-                            icon: R.drawable.ic_play,
-                            borderColor: R.color.greenGradientBottom,
-                            backgroundColor: R.color.white,
-                            textColor: R.color.greenGradientBottom,
-                            onTap: () {
-                              NavigationUtil.navigatePage(
-                                context,
-                                VideoPlayerWidget(
-                                  videoUrl: exerciseItem.videoUrl ?? '',
-                                ),
-                              );
-                            },
-                          ),
+                          // _buildCustomIconButton(
+                          //   title: R.string.show_instruction.tr(),
+                          //   icon: R.drawable.ic_play,
+                          //   borderColor: R.color.greenGradientBottom,
+                          //   backgroundColor: R.color.white,
+                          //   textColor: R.color.greenGradientBottom,
+                          //   onTap: () {
+                          //     NavigationUtil.navigatePage(
+                          //       context,
+                          //       VideoPlayerWidget(
+                          //         videoUrl: exerciseItem.videoUrl ?? '',
+                          //       ),
+                          //     );
+                          //   },
+                          // ),
                         ],
                       ),
                     ),
@@ -560,7 +559,7 @@ class _ExerciseTabPageState extends State<ExerciseTabPage> with AutomaticKeepAli
                       fontWeight: FontWeight.w700,
                     ),
                   ),
-                  const SizedBox(height: 6),
+                  const SizedBox(height: 12),
                   Text(
                     R.string.exercise_lesson_locked_warning.tr(),
                     textAlign: TextAlign.center,
@@ -629,9 +628,9 @@ class _ExerciseTabPageState extends State<ExerciseTabPage> with AutomaticKeepAli
                         textAlign: TextAlign.center,
                         style: TextStyle(color: R.color.textDark, fontSize: 20, fontWeight: FontWeight.w700),
                       ),
-                      const SizedBox(height: 6),
+                      const SizedBox(height: 12),
                       Text(
-                        'Vui lòng nâng cấp tài khoản để tập các bài tiếp theo.',
+                        'Vui lòng nâng cấp tài khoản để tiếp tục học!',
                         textAlign: TextAlign.center,
                         style: TextStyle(color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w400),
                       ),

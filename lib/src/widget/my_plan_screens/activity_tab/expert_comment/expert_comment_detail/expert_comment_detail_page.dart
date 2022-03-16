@@ -3,6 +3,7 @@ import 'package:easy_localization/src/public_ext.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_html/flutter_html.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/my_plan_screens/activity_tab/expert_comment/model/expert_comment_model.dart';
@@ -136,13 +137,13 @@ class _ExpertCommentDetailPageState extends State<ExpertCommentDetailPage> {
                     R.string.comment.tr(),
                     style: TextStyle(color: R.color.captionColorGray, fontSize: 14, fontWeight: FontWeight.w400),
                   ),
-                  SizedBox(height: 6),
+                  SizedBox(height: 0),
                   Flexible(
                     child: SingleChildScrollView(
-                      child: Text(
-                        _cubit.expertCommentModel?.comment ?? '',
-                        style: TextStyle(color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w400),
-                      ),
+                      child: Html(
+                          data: _cubit.expertCommentModel?.comment ?? '',
+                          style: {"body": Style(padding: EdgeInsets.zero, margin: EdgeInsets.zero),},
+                        ),
                     ),
                   ),
                   SizedBox(height: 8),

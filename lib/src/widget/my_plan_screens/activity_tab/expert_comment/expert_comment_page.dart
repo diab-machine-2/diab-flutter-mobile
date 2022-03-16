@@ -4,6 +4,8 @@ import 'package:easy_localization/src/public_ext.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_html/flutter_html.dart';
+import 'package:html/parser.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/utils/navigation_util.dart';
@@ -114,6 +116,7 @@ class _ExpertCommentPageState extends State<ExpertCommentPage> {
       child: Container(
         padding: EdgeInsets.all(8),
         child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Container(
               clipBehavior: Clip.hardEdge,
@@ -160,12 +163,15 @@ class _ExpertCommentPageState extends State<ExpertCommentPage> {
                       ),
                     ],
                   ),
-                  SizedBox(height: 4),
+                  SizedBox(height: 5),
+                  // Html(
+                  //   data: item.comment ?? '',
+                  //   style: {"body": Style(padding: EdgeInsets.zero, margin: EdgeInsets.zero),}
+                  // ),
                   Text(
-                    item.comment ?? '',
+                    _parseHtmlString(item.comment ?? ''),
                     style: TextStyle(color: R.color.captionColorGray, fontSize: 12, fontWeight: FontWeight.w400),
                     overflow: TextOverflow.ellipsis,
-                    maxLines: 1,
                   ),
                 ],
               ),
@@ -174,6 +180,14 @@ class _ExpertCommentPageState extends State<ExpertCommentPage> {
         ),
       ),
     );
+  }
+
+  String _parseHtmlString(String htmlString) {
+    String document = parse(htmlString).body!.text;
+    if(document.length > 41){
+      document = "${document.substring(0, 41)}...";
+    }
+    return document;
   }
 
   _buildEmpty() {

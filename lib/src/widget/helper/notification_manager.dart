@@ -64,7 +64,7 @@ class NotificationManager {
           data: NotificationData.fromJson(message.data));
 
       if (model.actionType == NotificationActionType.share_profile) {
-        ShareProfilePopup.instance.onHasSharedCode(requestFromDoctor: true, code: model.data?.referralCode ?? "");
+        ShareProfilePopup.instance.onHasSharedCode(requestFromDoctor: true, code: model.data?.referalCode ?? "");
         return;
       }
       Observable.instance.notifyObservers([], notifyName: "reload_notification");
@@ -125,7 +125,7 @@ class NotificationManager {
     }
 
     if (model.actionType == NotificationActionType.share_profile) {
-      ShareProfilePopup.instance.onHasSharedCode(requestFromDoctor: true, code: model.data?.referralCode ?? "");
+      ShareProfilePopup.instance.onHasSharedCode(requestFromDoctor: true, code: model.data?.referalCode ?? "");
       return;
     }
 

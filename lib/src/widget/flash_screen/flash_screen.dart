@@ -15,6 +15,8 @@ class FlashScreenController extends StatefulWidget {
 }
 
 class _FlashScreenControllerState extends State<FlashScreenController> {
+  bool isNavigateToStepList = false;
+
   @override
   void initState() {
     super.initState();
@@ -35,13 +37,16 @@ class _FlashScreenControllerState extends State<FlashScreenController> {
         });
         var user = await UserClient().fetchUser();
         if (user == null) {
-          Message.showToastMessage(context, R.string.phien_dang_nhap_het_han_vui_long_dang_nhap_lai.tr());
-          AppSettings.logout();
-          Navigator.pushReplacementNamed(
-            context,
-            NavigatorName.step_list,
-            arguments: sharedCode,
-          );
+          if(!isNavigateToStepList) {
+              Message.showToastMessage(context, R.string.phien_dang_nhap_het_han_vui_long_dang_nhap_lai.tr());
+              AppSettings.logout();
+              // Navigator.pushReplacementNamed(
+              //   context,
+              //   NavigatorName.step_list,
+              //   arguments: sharedCode,
+              // );
+              isNavigateToStepList = true;
+          }
         } else {
           Navigator.pushReplacementNamed(
             context,
@@ -57,8 +62,11 @@ class _FlashScreenControllerState extends State<FlashScreenController> {
         );
       }
     } catch (e) {
-      Message.showToastMessage(context, R.string.phien_dang_nhap_het_han_vui_long_dang_nhap_lai.tr());
-      AppSettings.logout();
+      if(!isNavigateToStepList) {
+        Message.showToastMessage(context, R.string.phien_dang_nhap_het_han_vui_long_dang_nhap_lai.tr());
+        AppSettings.logout();
+        isNavigateToStepList = true;
+      }
     }
   }
 

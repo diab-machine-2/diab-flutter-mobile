@@ -16,12 +16,12 @@ class DayStatesResponseData {
 */
 
   int? day;
-  String? dayTitle;
+//  String? dayTitle;
   int? state;
 
   DayStatesResponseData({
     this.day,
-    this.dayTitle,
+ //   this.dayTitle,
     this.state,
   });
 
@@ -34,13 +34,13 @@ class DayStatesResponseData {
 
   DayStatesResponseData.fromJson(Map<String, dynamic> json) {
     day = json['day']?.toInt();
-    dayTitle = json['dayTitle']?.toString();
+//    dayTitle = json['dayTitle']?.toString();
     state = json['state']?.toInt();
   }
   Map<String, dynamic> toJson() {
     final data = <String, dynamic>{};
     data['day'] = day;
-    data['dayTitle'] = dayTitle;
+ //   data['dayTitle'] = dayTitle;
     data['state'] = state;
     return data;
   }

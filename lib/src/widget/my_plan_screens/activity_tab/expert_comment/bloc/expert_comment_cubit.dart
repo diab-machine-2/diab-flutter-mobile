@@ -21,10 +21,9 @@ class ExpertCommentCubit extends Cubit<ExpertCommentState> {
     await Future.delayed(Duration(microseconds: 50));
     emit(ExpertCommentLoading());
     final ApiResult<ExpertCommentListResponse> apiResult =
-        await repository.getCommentProfessorByAccountId(user.accountId!);
+        await repository.getCommentProfessorByAccountId(user.id!);
     apiResult.when(success: (ExpertCommentListResponse response) {
-      commentList = [];
-      commentList = response.data!;
+      commentList = response.data?.items ?? [];
       emit(const ExpertCommentSuccess());
     }, failure: (NetworkExceptions error) {
       commentList = [];

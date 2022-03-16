@@ -41,17 +41,17 @@ extension ScheduleTypeExtend on ScheduleType {
       case ScheduleType.book_1_1:
         return R.drawable.ic_schedule_book_1_1;
       case ScheduleType.book_1_n:
-        return R.drawable.ic_schedule_book_1_n;
+        return R.drawable.ic_schedule_bool_1_1;
       case ScheduleType.survey:
         return R.drawable.ic_schedule_survey;
       case ScheduleType.lesson:
         return R.drawable.ic_schedule_exercise;
       case ScheduleType.io_evaluate:
-        return R.drawable.ic_schedule_book_1_1;
+        return R.drawable.ic_schedule_io_evaluate;
       case ScheduleType.update_profile:
         return R.drawable.ic_schedule_update_profile;
         case ScheduleType.output_assessment:
-        return R.drawable.ic_schedule_book_1_1;
+        return R.drawable.ic_schedule_io_evaluate;
     }
   }
 
