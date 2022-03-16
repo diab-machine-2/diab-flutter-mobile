@@ -56,7 +56,7 @@ class _LoginControllerState extends State<LoginController> {
                 padding: const EdgeInsets.all(16),
                 child: Column(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
                   const Padding(
-                    padding: EdgeInsets.only(top: 30),
+                    padding: EdgeInsets.only(top: 24),
                   ),
                   Column(children: [
                     Row(children: [
@@ -65,7 +65,7 @@ class _LoginControllerState extends State<LoginController> {
                         style: TextStyle(color: R.color.textDark, fontSize: 28, fontWeight: FontWeight.w600),
                       ),
                     ]),
-                    const SizedBox(height: 28),
+                    const SizedBox(height: 24),
                     TextFieldCustom(
                         key: phoneKey,
                         title: R.string.so_dien_thoai.tr(),
@@ -175,7 +175,7 @@ class _LoginControllerState extends State<LoginController> {
                                 style: TextStyle(color: R.color.mainColor, fontWeight: FontWeight.w600)),
                           )),
                     ),
-                    const SizedBox(height: 30),
+                    const SizedBox(height: 20),
                   ])
                 ]),
               )),

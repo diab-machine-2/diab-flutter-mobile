@@ -61,18 +61,24 @@ class _BottomTabbar extends State<BottomTabbar> {
       child: GestureDetector(
           child: Container(
             color: Colors.transparent,
-            padding: const EdgeInsets.only(left: 8, right: 8),
+            padding: const EdgeInsets.only(left: 7, right: 7),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Image.asset(image, height: 20, color: index == screenIndex ? R.color.accentColor : R.color.gray),
-                const SizedBox(height: 4),
-                Text(title,
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                        color: index == screenIndex ? R.color.accentColor : R.color.gray,
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold))
+                const SizedBox(height: 3),
+                FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text(title,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                          color: index == screenIndex ? R.color.accentColor : R.color.gray,
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        maxLines: 1,
+                      ),
+                ),
               ],
             ),
           ),
