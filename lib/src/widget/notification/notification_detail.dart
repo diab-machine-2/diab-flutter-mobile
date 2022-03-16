@@ -9,6 +9,8 @@ import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widgets/network_image_widget.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../modal/notification/notification_list_model.dart';
+
 class NotificationDetailController extends StatefulWidget {
   const NotificationDetailController({this.id, this.communicationId});
 
@@ -20,7 +22,7 @@ class NotificationDetailController extends StatefulWidget {
 }
 
 class _NotificationDetailControllerState extends State<NotificationDetailController> {
-  NotificationModel? notification;
+  NotificationListModel? notification;
 
   @override
   void initState() {

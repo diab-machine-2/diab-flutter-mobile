@@ -8,6 +8,8 @@ import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:easy_localization/easy_localization.dart';
 
+import '../../../widgets/network_image_widget.dart';
+
 class EmotionActivityChart extends StatefulWidget {
   EmotionActivityChart({Key? key}) : super(key: key);
   @override
@@ -133,7 +135,7 @@ class EmotionActivityChartState extends State<EmotionActivityChart>
         children: [
           Row(
             children: [
-              Image.network('$icon', width: 24, height: 24),
+              NetWorkImageWidget(imageUrl: '$icon', width: 24, height: 24),
               SizedBox(
                 width: 8,
               ),

@@ -15,6 +15,8 @@ import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:easy_localization/easy_localization.dart';
 
+import '../../../widgets/network_image_widget.dart';
+
 typedef SympoCallback = Function(List<SymptomModel>?, String?);
 
 class AddSymboController extends StatefulWidget {
@@ -276,7 +278,7 @@ class _AddSymboControllerState extends BaseState<AddSymboController> {
               : Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Image.network(symptomModel.icon.url ?? '',
+                    NetWorkImageWidget(imageUrl: symptomModel.icon.url ?? '',
                         width: 40, height: 40),
                     SizedBox(height: 8),
                     Text(symptomModel.name!,

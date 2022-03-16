@@ -28,6 +28,8 @@ import 'package:image_picker/image_picker.dart';
 import 'package:medical/src/modal/error/error_model.dart';
 import 'package:easy_localization/easy_localization.dart';
 
+import '../../../widgets/network_image_widget.dart';
+
 class AddBmiController extends StatefulWidget {
   final String? type;
   final String? id;
@@ -597,7 +599,7 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                                                             File(files[index].path),
                                                             fit: BoxFit.cover,
                                                           )
-                                                        : Image.network(files[index].url, fit: BoxFit.cover),
+                                                        : NetWorkImageWidget(imageUrl: files[index].url, fit: BoxFit.cover),
                                                   ),
                                                   IconButton(
                                                       icon: Image.asset(R.drawable.ic_trash),

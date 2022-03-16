@@ -46,4 +46,27 @@ extension NotificationActionExtend on NotificationActionType {
       return NotificationActionType.none;
     }
   }
+
+  static NotificationActionType getNotificationActionTypeFromIndexInteger(int? index) {
+    if (index != null) {
+      switch (index) {
+        case 0:
+          return NotificationActionType.redirect_to_activity_tab;
+        case 1:
+          return NotificationActionType.redirect_to_url;
+        case 2:
+          return NotificationActionType.add_reminder;
+        case 3:
+          return NotificationActionType.add_blood_sugar;
+        case 4:
+          return NotificationActionType.none;
+        case 5:
+          return NotificationActionType.share_profile;
+        default:
+          return NotificationActionType.redirect_to_url;
+      }
+    } else {
+      return NotificationActionType.none;
+    }
+  }
 }

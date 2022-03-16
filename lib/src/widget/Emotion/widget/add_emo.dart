@@ -16,6 +16,8 @@ import 'package:medical/src/widget/components/card_horizontal/card_item.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:easy_localization/easy_localization.dart';
 
+import '../../../widgets/network_image_widget.dart';
+
 typedef EmotionCallback = Function(EmotionModel?);
 
 class AddEmoController extends StatefulWidget {
@@ -182,7 +184,7 @@ class _AddEmoControllerState extends BaseState<AddEmoController> {
                                                     ? 0
                                                     : 12),
                                             //color: R.color.red,
-                                            child: Image.network(
+                                            child: NetWorkImageWidget(imageUrl:
                                               model[index].imageUrl ?? '',
                                               // width: selectedEmotion.id ==
                                               //         model[index].id

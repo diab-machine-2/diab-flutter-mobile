@@ -5,6 +5,8 @@ import 'package:medical/src/repo/learning/learning_client.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:easy_localization/easy_localization.dart';
 
+import '../../../widgets/network_image_widget.dart';
+
 class CourseSuggest extends StatefulWidget {
   final int position;
   CourseSuggest({required this.position});
@@ -66,7 +68,7 @@ class _CourseSuggestState extends State<CourseSuggest>
                               children: [
                                 ClipRRect(
                                   borderRadius: BorderRadius.circular(8.0),
-                                  child: Image.network(
+                                  child: NetWorkImageWidget(imageUrl: 
                                     models[index].imageUrl.url ?? '',
                                     width: 223,
                                     height: 112,

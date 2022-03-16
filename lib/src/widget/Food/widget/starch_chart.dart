@@ -10,6 +10,8 @@ import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
 import 'package:easy_localization/easy_localization.dart';
 
+import '../../../widgets/network_image_widget.dart';
+
 class StarchChart extends StatefulWidget {
   StarchChart({Key? key}) : super(key: key);
   @override
@@ -176,7 +178,7 @@ class StarchChartState extends State<StarchChart>
                                 children: List.generate(
                                     model.mealDetails.length,
                                     (index) => Row(children: [
-                                          Image.network(
+                                          NetWorkImageWidget(imageUrl: 
                                               model!.mealDetails[index].icon
                                                       .url ??
                                                   '',
@@ -216,7 +218,7 @@ class StarchChartState extends State<StarchChart>
                         right: 16,
                         child: Row(
                           children: [
-                            Image.network(model.image!.url ?? '',
+                            NetWorkImageWidget(imageUrl: model.image!.url ?? '',
                                 width: 77, height: 102),
                             SizedBox(width: 25),
                             Expanded(

@@ -16,6 +16,6 @@ class NotificationError extends NotificationState {
 class NotificationLoading extends NotificationState {}
 
 class NotificationLoaded extends NotificationState {
-  final NotificationDataModel? model;
+  final NotificationDataListModel? model;
   NotificationLoaded({required this.model});
 }

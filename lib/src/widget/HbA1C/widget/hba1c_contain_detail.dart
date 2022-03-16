@@ -8,6 +8,8 @@ import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:easy_localization/easy_localization.dart';
 
+import '../../../widgets/network_image_widget.dart';
+
 class HbA1CDetail extends StatefulWidget {
   HbA1CDetail({Key? key}) : super(key: key);
   @override
@@ -216,7 +218,7 @@ class HbA1CDetailState extends State<HbA1CDetail>
                                       padding: EdgeInsets.only(right: 16),
                                       child: model.imageUrl == null
                                           ? SizedBox()
-                                          : Image.network(model.imageUrl!.url!,
+                                          : NetWorkImageWidget(imageUrl: model.imageUrl!.url!,
                                               fit: BoxFit.fill))
                                 ]),
                           ]),

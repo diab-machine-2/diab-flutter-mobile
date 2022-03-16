@@ -13,6 +13,8 @@ import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:easy_localization/easy_localization.dart';
 
+import '../../widgets/network_image_widget.dart';
+
 typedef ExercrisesCategorycallback = Function(
     List<ExercrisesCategoryModel>?, int?);
 
@@ -433,7 +435,7 @@ class _SearchExercrisesControllerState
                                           R.drawable.bg_activity_empty,
                                           width: 50,
                                           height: 50),
-                                      Image.network(
+                                      NetWorkImageWidget(imageUrl: 
                                           model[index].cover!.url ?? '',
                                           width: 35,
                                           height: 35)

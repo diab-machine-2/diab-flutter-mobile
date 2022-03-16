@@ -3,6 +3,8 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
+import '../../widgets/network_image_widget.dart';
+
 class PhotoView extends StatefulWidget {
   final List<dynamic> files;
   final int index;
@@ -39,7 +41,7 @@ class _PhotoViewState extends State<PhotoView> {
                           File(widget.files[index].path),
                           fit: BoxFit.fitWidth,
                         )
-                      : Image.network(widget.files[index].url,
+                      : NetWorkImageWidget(imageUrl: widget.files[index].url,
                           fit: BoxFit.fitWidth);
                 }),
           ),

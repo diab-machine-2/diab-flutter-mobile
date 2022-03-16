@@ -22,6 +22,8 @@ import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:permission_handler/permission_handler.dart';
 
+import '../../widgets/network_image_widget.dart';
+
 class AddHBA1CController extends StatefulWidget {
   final String? type;
   final String? id;
@@ -381,7 +383,7 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
                                                                     fit: BoxFit
                                                                         .cover,
                                                                   )
-                                                                : Image.network(
+                                                                : NetWorkImageWidget(imageUrl: 
                                                                     files[index]
                                                                         .url,
                                                                     fit: BoxFit

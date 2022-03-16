@@ -28,6 +28,8 @@ import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:permission_handler/permission_handler.dart';
 
+import '../../widgets/network_image_widget.dart';
+
 class AddExercrisesController extends StatefulWidget {
   final String? type;
   final String? id;
@@ -464,7 +466,7 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
                                                                   .bg_activity_empty,
                                                               width: 50,
                                                               height: 50),
-                                                          Image.network(
+                                                          NetWorkImageWidget(imageUrl: 
                                                             selectedCategory[
                                                                         index]
                                                                     .cover!
@@ -598,7 +600,7 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
                                                                   .bg_activity_empty,
                                                               width: 50,
                                                               height: 50),
-                                                          Image.network(
+                                                          NetWorkImageWidget(imageUrl: 
                                                             exercriseRegularly[
                                                                         index]
                                                                     .cover!
@@ -835,7 +837,7 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
                                                                     fit: BoxFit
                                                                         .cover,
                                                                   )
-                                                                : Image.network(
+                                                                : NetWorkImageWidget(imageUrl: 
                                                                     files[index]
                                                                         .url,
                                                                     fit: BoxFit

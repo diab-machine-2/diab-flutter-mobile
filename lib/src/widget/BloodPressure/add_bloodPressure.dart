@@ -24,6 +24,7 @@ import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
+import 'package:medical/src/widgets/network_image_widget.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class AddBloodPressureController extends StatefulWidget {
@@ -667,7 +668,7 @@ class _AddBloodPressureControllerState
                                                                     fit: BoxFit
                                                                         .cover,
                                                                   )
-                                                                : Image.network(
+                                                                : NetWorkImageWidget(imageUrl:
                                                                     files[index]
                                                                         .url,
                                                                     fit: BoxFit

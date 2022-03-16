@@ -17,6 +17,8 @@ import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:easy_localization/easy_localization.dart';
 
+import '../../../widgets/network_image_widget.dart';
+
 typedef ActivityCallback = Function(List<ActivityModel>?, String?);
 
 class AddWorkController extends StatefulWidget {
@@ -278,7 +280,7 @@ class _AddWorkControllerState extends BaseState<AddWorkController> {
               : Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Image.network(activityModel.icon.url ?? '',
+                    NetWorkImageWidget(imageUrl: activityModel.icon.url ?? '',
                         width: 40, height: 40),
                     SizedBox(height: 8),
                     Text(activityModel.name!,

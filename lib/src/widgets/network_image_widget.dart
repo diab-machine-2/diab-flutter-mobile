@@ -10,12 +10,14 @@ class NetWorkImageWidget extends StatelessWidget {
     this.showLoading = true,
     this.width,
     this.height,
+    this.fit = BoxFit.fill,
   });
 
   final String? imageUrl;
   final double? width;
   final double? height;
   final bool showLoading;
+  final BoxFit fit;
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +35,7 @@ class NetWorkImageWidget extends StatelessWidget {
               width: width,
               height: height,
               imageUrl: imageUrl!,
-              fit: BoxFit.fill,
+              fit: fit,
               placeholder: showLoading
                   ? (_, __) {
                       return Container(color: R.color.grayBorder);

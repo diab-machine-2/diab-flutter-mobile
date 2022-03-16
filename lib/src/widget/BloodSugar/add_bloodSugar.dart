@@ -26,6 +26,8 @@ import 'package:image_picker/image_picker.dart';
 import 'package:medical/src/modal/error/error_model.dart';
 import 'package:easy_localization/easy_localization.dart';
 
+import '../../widgets/network_image_widget.dart';
+
 class AddBloodSugarController extends StatefulWidget {
   final String? type;
   final String? id;
@@ -554,7 +556,7 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
                                                                     fit: BoxFit
                                                                         .cover,
                                                                   )
-                                                                : Image.network(
+                                                                : NetWorkImageWidget(imageUrl:
                                                                     files[index]
                                                                         .url,
                                                                     fit: BoxFit
