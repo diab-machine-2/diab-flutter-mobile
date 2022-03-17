@@ -4,6 +4,7 @@ import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_observer/Observable.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/response/report_model.dart';
@@ -15,6 +16,7 @@ import 'package:medical/src/widgets/pdf_viewer_widget.dart';
 import 'package:medical/src/widgets/select_bottom_sheet_widget.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
+import '../../../../utils/const.dart';
 import 'models/filter_type.dart';
 import 'models/report_data.dart';
 import 'my_progress.dart';
@@ -24,8 +26,9 @@ class MyProgressPage extends StatefulWidget {
 
   List<ReportModel>? reports;
   bool? hasNewReports;
+  bool isFromHomePage;
 
-  MyProgressPage({this.reports, this.hasNewReports});
+  MyProgressPage({this.reports, this.hasNewReports, this.isFromHomePage = false});
 
   @override
   _MyProgressPageState createState() => _MyProgressPageState();
@@ -239,8 +242,16 @@ class _MyProgressPageState extends State<MyProgressPage> {
                                         title: R.string.hoat_dong.tr(),
                                         onTapShowDetail: () {
                                           _messageController.sink.add(true);
-                                          NavigationUtil.pop(context,
+                                          if(widget.isFromHomePage){
+                                            Observable.instance.notifyObservers([], 
+                                            notifyName : Const.NAVIGATE_TO_MY_PLAN_TAB, 
+                                            map: {
+                                              "position": 0
+                                            });
+                                          } else {
+                                            NavigationUtil.pop(context,
                                               result: 0);
+                                          }
                                         },
                                         child: Column(
                                           children: [
@@ -309,8 +320,16 @@ class _MyProgressPageState extends State<MyProgressPage> {
                                         title: R.string.title_lesson.tr(),
                                         onTapShowDetail: () {
                                           _messageController.sink.add(true);
-                                          NavigationUtil.pop(context,
+                                          if(widget.isFromHomePage){
+                                            Observable.instance.notifyObservers([], 
+                                            notifyName : Const.NAVIGATE_TO_MY_PLAN_TAB, 
+                                            map: {
+                                              "position": 1
+                                            });
+                                          } else {
+                                            NavigationUtil.pop(context,
                                               result: 1);
+                                          }
                                         },
                                         child: CustomProgressChart(
                                           mark1: _cubit.myProgressData?.data
@@ -332,8 +351,16 @@ class _MyProgressPageState extends State<MyProgressPage> {
                                       _buildCustomCardLayout(
                                         title: R.string.title_exercise.tr(),
                                         onTapShowDetail: () {
-                                          NavigationUtil.pop(context,
+                                          if(widget.isFromHomePage){
+                                            Observable.instance.notifyObservers([], 
+                                            notifyName : Const.NAVIGATE_TO_MY_PLAN_TAB, 
+                                            map: {
+                                              "position": 2
+                                            });
+                                          } else {
+                                            NavigationUtil.pop(context,
                                               result: 2);
+                                          }
                                         },
                                         child: CustomProgressChart(
                                           mark1: _cubit

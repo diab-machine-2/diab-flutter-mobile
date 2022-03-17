@@ -8,7 +8,7 @@ class NotificationListModel {
   String? topic;
   final String? imageUrl;
   final int? sentDateTime;
-  final bool? isRead;
+  bool? isRead;
   final String? hyperText;
   final String? hyperLink;
   final int? notificationType;

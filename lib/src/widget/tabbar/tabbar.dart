@@ -97,12 +97,24 @@ class _TabbarControllerState extends State<TabbarController> with SingleTickerPr
       }
     }
     if (notifyName == Const.NAVIGATE_TO_MY_PLAN_TAB) {
+      int position = 0;
+      if(map != null){
+        position = map['position'] ?? 0;
+      }
       NavigationUtil.popToFirst(context);
       jumpTo(1);
       await Future.delayed(
-        const Duration(milliseconds: 100),
+        const Duration(milliseconds: 10),
       );
-      Observable.instance.notifyObservers([], notifyName: Const.NAVIGATE_TO_ACTIVITY_TAB);
+
+      if(position == 0){
+        Observable.instance.notifyObservers([], notifyName: Const.NAVIGATE_TO_ACTIVITY_TAB);
+      } else if(position == 1){
+        Observable.instance.notifyObservers([], notifyName: Const.NAVIGATE_TO_LESSON_TAB);
+      } else if(position == 2){
+        Observable.instance.notifyObservers([], notifyName: Const.NAVIGATE_TO_EXERCISE_TAB);
+      }
+      
     }
   }
 

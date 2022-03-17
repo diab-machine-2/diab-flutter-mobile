@@ -406,7 +406,7 @@ class _QuestionDetailPageState extends State<QuestionDetailPage> with WidgetsBin
               // },
               itemCount: _cubit.questionModel.answers?.length ?? 0,
               shrinkWrap: true,
-              controller: _cubit.commentScrollController,
+            //  controller: _cubit.commentScrollController,
               padding: EdgeInsets.zero,
               physics: AlwaysScrollableScrollPhysics(),
               itemBuilder: (context, position) {

@@ -189,6 +189,7 @@ class _HomeControllerState extends State<HomeController> with Observer {
           }
           if (state is HomeLoaded) {
             model = state.model;
+
             if(false == model?.packageAccount?.isDisplayedWelcome){
               if(AppSettings.isDisplayedWelcome == false){
                 Future.delayed(Duration.zero, () async {
@@ -902,7 +903,7 @@ class _HomeControllerState extends State<HomeController> with Observer {
             Observable.instance.notifyObservers([], notifyName: Const.NAVIGATE_TO_MY_PLAN_TAB);
           } else {
             if(user!.isUserHasRoadmap) {
-              final result = await NavigationUtil.navigatePage(context, MyProgressPage());
+              final result = await NavigationUtil.navigatePage(context, MyProgressPage(isFromHomePage: true,));
             } else {
               Observable.instance.notifyObservers([], notifyName: Const.NAVIGATE_TO_MY_PLAN_TAB);
             }

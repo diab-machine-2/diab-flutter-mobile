@@ -133,6 +133,8 @@ class Const {
 
   static const String NAVIGATE_TO_MY_PLAN_TAB = 'Navigate_to_my_plan_tab';
   static const String NAVIGATE_TO_ACTIVITY_TAB = 'Navigate_to_activity_tab';
+  static const String NAVIGATE_TO_LESSON_TAB = 'Navigate_to_lesson_tab';
+  static const String NAVIGATE_TO_EXERCISE_TAB = 'Navigate_to_exercise_tab';
 
   static const List<int> hourList = [
     0,

@@ -22,18 +22,18 @@ import 'package:medical/src/widgets/network_image_widget.dart';
 
 import '../../modal/notification/notification_list_model.dart';
 
-class NotificationController extends StatefulWidget {
-  const NotificationController({required this.isRemovealbe});
+class NotificationReadController extends StatefulWidget {
+  const NotificationReadController({required this.isRemovealbe});
 
   final bool? isRemovealbe;
 
   @override
-  NotificationControllerState createState() => NotificationControllerState();
+  NotificationReadControllerState createState() => NotificationReadControllerState();
 }
 
-class NotificationControllerState extends State<NotificationController>
-    with AutomaticKeepAliveClientMixin<NotificationController>, Observer {
-
+class NotificationReadControllerState extends State<NotificationReadController>
+    with AutomaticKeepAliveClientMixin<NotificationReadController>, Observer {
+      
   @override
   bool get wantKeepAlive => true;
 
@@ -49,9 +49,9 @@ class NotificationControllerState extends State<NotificationController>
   @override
   void initState() {
     super.initState();
-  //  if (widget.isRemovealbe != true) {
+   // if (widget.isRemovealbe != true) {
       Observable.instance.addObserver(this);
-  //  }
+   // }
   }
 
   @override

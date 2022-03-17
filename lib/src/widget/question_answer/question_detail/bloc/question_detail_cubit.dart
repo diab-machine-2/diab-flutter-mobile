@@ -58,9 +58,12 @@ class QuestionDetailCubit extends Cubit<QuestionDetailState> {
           professor: response.data!.professor,
           answers: response.data!.answers,
         );
-        if (questionModel.answers != null && questionModel.answers!.isNotEmpty) {
-          commentScrollController.jumpTo(questionModel.answers!.length - 1);
-        }
+        emit(const QuestionDetailSuccess());
+
+        //if (questionModel.answers != null && questionModel.answers!.isNotEmpty) {
+        //   commentScrollController.jumpTo(questionModel.answers!.length - 1);
+        //}
+        
         // if (isAll) {
         //   if (questionModel.status == 0) {
         //     if (questionModel.answers != null && questionModel.answers!.isNotEmpty) {
@@ -78,7 +81,6 @@ class QuestionDetailCubit extends Cubit<QuestionDetailState> {
         //   }
         // }
       }
-      emit(const QuestionDetailSuccess());
     }, failure: (NetworkExceptions error) {
       emit(QuestionDetailFailure(NetworkExceptions.getErrorMessage(error)));
     });
