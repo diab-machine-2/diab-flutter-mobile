@@ -204,6 +204,7 @@ extension ScheduleTypeExtend on ScheduleType {
     if (index == ScheduleType.weight.typeIndex) return ScheduleType.weight;
     if (index == ScheduleType.emotion.typeIndex) return ScheduleType.emotion;
     if (index == ScheduleType.food.typeIndex) return ScheduleType.food;
+    if (index == ScheduleType.update_profile.typeIndex) return ScheduleType.update_profile;
     if (index == ScheduleType.exercise_movement.typeIndex)
       return ScheduleType.exercise_movement;
     if (index == ScheduleType.book_1_1.typeIndex) return ScheduleType.book_1_1;

@@ -15,6 +15,8 @@ import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 
+import '../../app_setting/app_setting.dart';
+import '../../widgets/button_widget.dart';
 import '../blood_sugar_survey_screens/blood_sugar_start_survey/blood_sugar_start_survey.dart';
 
 class ScheduleGlucoseController extends StatefulWidget {
@@ -31,6 +33,7 @@ class _ScheduleGlucoseControllerState extends State<ScheduleGlucoseController> w
   ScheduleGlucoseTimeModel? timeModel;
 
   List<bool> hasData = [false, false, false, false, false, false, false];
+  var userInfo = AppSettings.userInfo!;
 
   @override
   void initState() {
@@ -389,6 +392,10 @@ class _ScheduleGlucoseControllerState extends State<ScheduleGlucoseController> w
   }
 
   Future<void> doSurvey() async {
+    if(userInfo.isUserFree) {
+      NavigationUtil.showUpdateRequirePopup(context: context, title: R.string.testing_schedule_suggest.tr());
+      return;
+    }
     await Future.delayed(Duration.zero);
     await NavigationUtil.navigatePage(
       context,
@@ -579,3 +586,4 @@ Widget _buildButton({
     ),
   );
 }
+

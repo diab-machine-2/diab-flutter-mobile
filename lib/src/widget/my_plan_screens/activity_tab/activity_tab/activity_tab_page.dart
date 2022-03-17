@@ -581,7 +581,8 @@ class _ActivityTabPageState extends State<ActivityTabPage>
         break;
       case ScheduleType.lesson:
         final LessonSectionListResponseData? lessonDetail = smartGoal?.lessonData;
-        if (lessonDetail?.learningStatus == null || lessonDetail?.learningStatus == Const.LESSON_LOCKED) {
+        if(smartGoal?.state == Const.LESSON_LOCKED){
+        // if (lessonDetail?.learningStatus == null || lessonDetail?.learningStatus == Const.LESSON_LOCKED) {
           _showLockedDialog(
               title: R.string.exercise_lesson_locked.tr(), description: R.string.exercise_lesson_locked_warning.tr());
           return;

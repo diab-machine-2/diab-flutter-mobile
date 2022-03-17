@@ -116,10 +116,13 @@ class AppSettings {
     }
   }
 
-  static Future<bool> logout() async {
+  static Future<bool> logout({bool isNavigateToStepListScreen = true}) async {
     try {
-      navigatorKey.currentState!.popUntil((route) => route.isFirst);
-      navigatorKey.currentState!.pushReplacementNamed(NavigatorName.step_list);
+      if(isNavigateToStepListScreen){
+        navigatorKey.currentState!.popUntil((route) => route.isFirst);
+        navigatorKey.currentState!.pushReplacementNamed(NavigatorName.step_list);
+      }
+      
       await FetchClient().checkNetwork();
       await LoginClient().logout();
       await deleteHomeData();

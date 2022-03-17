@@ -20,6 +20,7 @@ class _FlashScreenControllerState extends State<FlashScreenController> {
   @override
   void initState() {
     super.initState();
+    isNavigateToStepList = false;
     getData();
   }
 
@@ -39,12 +40,12 @@ class _FlashScreenControllerState extends State<FlashScreenController> {
         if (user == null) {
           if(!isNavigateToStepList) {
               Message.showToastMessage(context, R.string.phien_dang_nhap_het_han_vui_long_dang_nhap_lai.tr());
-              AppSettings.logout();
-              // Navigator.pushReplacementNamed(
-              //   context,
-              //   NavigatorName.step_list,
-              //   arguments: sharedCode,
-              // );
+              AppSettings.logout(isNavigateToStepListScreen: false);
+              Navigator.pushReplacementNamed(
+                context,
+                NavigatorName.step_list,
+                arguments: sharedCode,
+              );
               isNavigateToStepList = true;
           }
         } else {

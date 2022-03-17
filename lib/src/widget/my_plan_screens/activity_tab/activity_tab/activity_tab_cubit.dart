@@ -57,11 +57,11 @@ class ActivityTabCubit extends Cubit<ActivityTabState> {
     if(dayStatesList.isEmpty) { 
       return 0;
     } else { 
-      if(currentWeek == 0) {
-        return convertToGMT(dayStatesList[currentDayIndex]?.day);
-      } else {
+      // if(currentWeek == 0) {
+      //   return convertToGMT(dayStatesList[currentDayIndex]?.day);
+      // } else {
         return dayStatesList[currentDayIndex]?.day;
-      }
+      //}
     }
   }
 
