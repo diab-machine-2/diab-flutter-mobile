@@ -22,6 +22,7 @@ class SurveyQuestionCubit extends Cubit<SurveyQuestionState> {
   final AppRepository repository;
   final SectionSurvey? sectionSurvey;
   List<QuizData> questions = [];
+  String currentText = '';
 
   Map<String, QuestionAnswerResults> answer = {};
   int selectedCourseIndex = 0;
@@ -40,7 +41,7 @@ class SurveyQuestionCubit extends Cubit<SurveyQuestionState> {
   bool get nextButtonEnable {
     if(questions[selectedCourseIndex].answers == null 
       || questions[selectedCourseIndex].answers?.isEmpty == true){
-        return questions[selectedCourseIndex].results != null;
+        return currentText.isNotEmpty;
     } else {
       return answer.containsKey(questions[selectedCourseIndex].id);
     }

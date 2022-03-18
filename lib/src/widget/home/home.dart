@@ -931,7 +931,7 @@ class _HomeControllerState extends State<HomeController> with Observer {
                     Text(model.targetCompeleted!.round().toString(),
                         style: TextStyle(
                             fontFamily: 'Viga',
-                            color: toColor(model.color),
+                            color: getProgressColor(model),
                             fontSize: 26,
                             fontWeight: FontWeight.w400)),
                     SizedBox(width: 2),
@@ -978,6 +978,14 @@ class _HomeControllerState extends State<HomeController> with Observer {
     } else {
       return 'Đã hoàn thành\nbài tập vận động';
     } 
+  }
+
+  Color getProgressColor(ProcessCardModel model){
+    if (model.exerciseCompeleted! == model.exercise!) {
+      return R.color.greenGradientBottom;
+    } else {
+      return R.color.red;
+    }
   }
 
   String getPercentExercise(ExerciseIndexModel model) {

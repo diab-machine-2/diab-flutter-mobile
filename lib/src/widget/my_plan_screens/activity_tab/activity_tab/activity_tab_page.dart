@@ -564,6 +564,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
         await NavigationUtil.navigatePage(context, ExerciseDetail(exerciseData: smartGoal?.exerciseData));
         _cubit.refreshData();
         Observable.instance.notifyObservers([], notifyName: "refresh_exercise_tab");
+        Observable.instance.notifyObservers([], notifyName : "refresh_home");
         break;
       case ScheduleType.custom:
         _showCustomGoalPopup(
@@ -592,6 +593,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
             context, LessonDetailPage(lessonType: lessonDetail?.type, lessonId: lessonDetail?.id ?? ''));
         _cubit.refreshData();
         Observable.instance.notifyObservers([], notifyName: "refresh_lesson_tab");
+        Observable.instance.notifyObservers([], notifyName : "refresh_home");
         break;
       case ScheduleType.io_evaluate:
         _showCoachingPopup(smartGoal);

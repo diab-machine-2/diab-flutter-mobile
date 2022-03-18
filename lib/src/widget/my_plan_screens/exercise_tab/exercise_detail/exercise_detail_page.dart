@@ -3,6 +3,7 @@ import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_observer/Observable.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/response/exercise_movement_response.dart';
@@ -216,6 +217,8 @@ class _ExerciseDetailState extends State<ExerciseDetail> {
   }
 
   Future<void> _showDonePopup(BuildContext context) async {
+    Observable.instance.notifyObservers([], notifyName : "goal_calo_changed");
+    
     await showDialog(
       barrierColor: R.color.color0xff003F38.withOpacity(0.5),
       context: context,

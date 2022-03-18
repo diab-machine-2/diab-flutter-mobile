@@ -185,7 +185,7 @@ class CardCourseQuizSurveyPageState extends State<CardCourseQuizSurveyPage>
           borderColor: R.color.accentColor,
           maxLength: 1000,
           onChanged: (text) {
-            if (widget.onSubmitAnswer != null && text != null) {
+            if (text != null) {
               widget.onSubmitAnswer(QuestionAnswerResults(
                   surveyQuestionId: quizData.id, content: text.trim()));
             }
