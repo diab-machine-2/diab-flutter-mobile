@@ -56,9 +56,13 @@ class _LessonTabPageState extends State<LessonTabPage> with AutomaticKeepAliveCl
   }
 
   @override
-  void update(Observable observable, String? notifyName, Map<dynamic, dynamic>? map) {
+  void update(Observable observable, String? notifyName, Map<dynamic, dynamic>? map) async {
     if (notifyName == 'switch_lesson_tab') {
       _cubit.scrollToLesson();
+    }
+
+    if(notifyName == 'refresh_lesson_tab'){
+      await _cubit.getInitData(isRefresh: true, showCurrentWeek: false);
     }
   }
 
@@ -195,7 +199,8 @@ class _LessonTabPageState extends State<LessonTabPage> with AutomaticKeepAliveCl
                                                   lessonId: _cubit.lessonsList![index]!.id!,
                                                 ),
                                               );
-                                              _cubit.getInitData(
+                                              _controller.requestRefresh();
+                                              _cubit.getInitData(isRefresh: true,
                                                   showCurrentWeek: false, currentWeek: _cubit.filterData.currentWeek);
                                             }
                                           }),

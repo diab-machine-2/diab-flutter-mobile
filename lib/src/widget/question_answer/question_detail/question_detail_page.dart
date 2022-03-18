@@ -470,6 +470,10 @@ class _QuestionDetailPageState extends State<QuestionDetailPage> with WidgetsBin
       if (_controller.text.isNotEmpty) {
         Utils.hideKeyboard(context);
         await _cubit.sendComment(_controller.text);
+        Future.delayed(Duration(milliseconds: 400), (){
+           _cubit.getQuestionById();
+        });
+        
         _controller.clear();
       } else {
         Message.showToastMessage(context, R.string.input_comment_required.tr());

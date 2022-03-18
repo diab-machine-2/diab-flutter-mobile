@@ -2,6 +2,8 @@ import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_observer/Observable.dart';
+import 'package:flutter_observer/Observer.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
@@ -32,7 +34,7 @@ class ExerciseTabPage extends StatefulWidget {
   _ExerciseTabPageState createState() => _ExerciseTabPageState();
 }
 
-class _ExerciseTabPageState extends State<ExerciseTabPage> with AutomaticKeepAliveClientMixin<ExerciseTabPage> {
+class _ExerciseTabPageState extends State<ExerciseTabPage> with AutomaticKeepAliveClientMixin<ExerciseTabPage>, Observer {
   late final ExerciseTabCubit _cubit;
   final RefreshController _controller = RefreshController();
   final ScrollController _scrollController = ScrollController();
@@ -41,10 +43,24 @@ class _ExerciseTabPageState extends State<ExerciseTabPage> with AutomaticKeepAli
   @override
   void initState() {
     super.initState();
+    Observable.instance.addObserver(this);
     final MyPlanCubit _myPlanCubit = BlocProvider.of<MyPlanCubit>(context);
     final AppRepository appRepository = AppRepository();
     _cubit = ExerciseTabCubit(appRepository, _myPlanCubit);
     _cubit.initData();
+  }
+
+  @override
+  void update(Observable observable, String? notifyName, Map<dynamic, dynamic>? map) async {
+    if (notifyName == 'refresh_exercise_tab') {
+      await _cubit.onRefresh(isRefresh: true);
+    }
+  }
+
+  @override
+  void dispose() {
+    Observable.instance.removeObserver(this);
+    super.dispose();
   }
 
   @override
@@ -295,7 +311,8 @@ class _ExerciseTabPageState extends State<ExerciseTabPage> with AutomaticKeepAli
                                   exerciseData: exerciseItem,
                                 ),
                               );
-                              _cubit.onRefresh(keepSelectedDayIndex: true);
+                              _controller.requestRefresh();
+                              _cubit.onRefresh(isRefresh: true, keepSelectedDayIndex: true);
                             },
                           ),
                           // _buildCustomIconButton(

@@ -7,6 +7,7 @@ import 'package:medical/src/model/response/survey_data.dart';
 import 'package:medical/src/model/service/api_result.dart';
 import 'package:medical/src/model/service/network_exceptions.dart';
 
+import '../../../app_setting/app_setting.dart';
 import 'survey_question.dart';
 
 class SurveyQuestionCubit extends Cubit<SurveyQuestionState> {
@@ -36,16 +37,38 @@ class SurveyQuestionCubit extends Cubit<SurveyQuestionState> {
 
  double get progress => listAnsweredQuestionId.length / listAllQuestionId.length;
 
-  bool get nextButtonEnable =>
-      answer.containsKey(questions[selectedCourseIndex].id);
+  bool get nextButtonEnable {
+    if(questions[selectedCourseIndex].answers == null 
+      || questions[selectedCourseIndex].answers?.isEmpty == true){
+        return questions[selectedCourseIndex].results != null;
+    } else {
+      return answer.containsKey(questions[selectedCourseIndex].id);
+    }
+  }
 
   QuizData? get currentQuestion => questions[selectedCourseIndex];
 
   void calculateProgress() {
+    String? accountIdCurrentUser = AppSettings.userInfo?.accountId;
     if(surveyData.sections != null){
       for(var section in surveyData.sections!){
         for (int index = 0; index < section.questionList.length; index++) {
           if(section.questionList[index].id != null){
+            // if(section.questionList[index].answers == null || section.questionList[index].answers?.isEmpty == true){
+            //   List<AnswerData> listAnswers = [];
+            //   if(section.questionList[index].results != null){
+            //     if(section.questionList[index].results!.accountId == accountIdCurrentUser){
+            //       listAnswers.add(
+            //         AnswerData(
+            //           id: section.questionList[index].results!.surveyAnswerId, 
+            //           content: section.questionList[index].results!.content, name: section.questionList[index].results!.content, 
+            //           isCorrectAnswer: true, 
+            //           textAnswer: section.questionList[index].results!.content)
+            //         );
+            //     }
+            //   }
+            //   section.questionList[index].setAnswers(listAnswers);
+            // }
             listAllQuestionId.add(section.questionList[index].id!);
             if (section.questionList[index].hasUserAnswer && isRecalculateListAnsweredQuestion) {
               listAnsweredQuestionId.add(section.questionList[index].id!);
@@ -197,9 +220,8 @@ class SurveyQuestionCubit extends Cubit<SurveyQuestionState> {
     final ApiResult<CommonResponse> apiResult =
         await repository.submitSurvey(request);
     apiResult.when(success: (CommonResponse response) {
-      if(
+      if(isRelatedQuestion == false && progress < 1){
       //  !listAnsweredQuestionId.contains(questionId) && 
-          isRelatedQuestion == false){
         listAnsweredQuestionId.add(questionId);
       }
       if (answerResult?.surveyAnswerIdList?.isNotEmpty != true &&

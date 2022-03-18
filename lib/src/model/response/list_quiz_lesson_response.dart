@@ -70,7 +70,7 @@ class QuizData {
     String? explain,
     dynamic minCompletePercent,
     List<AnswerData>? answers,
-    List<ResultData>? results,
+    ResultData? results,
   }) {
     _id = id;
     _code = code;
@@ -92,11 +92,9 @@ class QuizData {
     }
     if(answers?.isEmpty == true){
       String? accountIdCurrentUser = AppSettings.userInfo?.accountId;
-      if(results != null && results!.isNotEmpty){
-        for(var result in results!){
-          if(result.accountId == accountIdCurrentUser){
-            return true;
-          }
+      if(results != null){
+        if(results!.accountId == accountIdCurrentUser){
+          return true;
         }
       }
     }
@@ -120,11 +118,8 @@ class QuizData {
         _answers?.add(AnswerData.fromJson(v));
       });
     }
-    if (json['results'] != null) {
-      _results = [];
-      json['results'].forEach((v) {
-        _results?.add(ResultData.fromJson(v));
-      });
+    if (json['result'] != null) {
+      _results = ResultData.fromJson(json['result']);
     }
   }
   String? _id;
@@ -138,7 +133,7 @@ class QuizData {
   String? _explain;
   dynamic _minCompletePercent;
   List<AnswerData>? _answers;
-  List<ResultData>? _results;
+  ResultData? _results;
 
   String? get id => _id;
   String? get code => _code;
@@ -151,7 +146,11 @@ class QuizData {
   String? get explain => _explain;
   dynamic get minCompletePercent => _minCompletePercent;
   List<AnswerData>? get answers => _answers;
-  List<ResultData>? get results => _results;
+  ResultData? get results => _results;
+
+  void setAnswers(List<AnswerData> listAnswer){
+    _answers = listAnswer;
+  }
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
@@ -169,7 +168,7 @@ class QuizData {
       map['answers'] = _answers?.map((v) => v.toJson()).toList();
     }
     if (_results != null) {
-      map['results'] = _results?.map((v) => v.toJson()).toList();
+      map['result'] = _results?.toJson();
     }
     return map;
   }

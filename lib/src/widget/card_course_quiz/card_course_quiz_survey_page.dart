@@ -50,6 +50,14 @@ class CardCourseQuizSurveyPageState extends State<CardCourseQuizSurveyPage>
         surveyAnswerIdList: _cubit.listAnswerChoosing,
       ),
     );
+    if(widget.quizData.results != null && widget.quizData.answers?.isEmpty == true){
+      String text = widget.quizData.results!.content ?? '';
+      _textController.text = text;
+      if(text.isNotEmpty){
+        widget.onSubmitAnswer(QuestionAnswerResults(
+            surveyQuestionId: widget.quizData.id, content: text.trim()));
+      }
+    }
     super.initState();
   }
 
@@ -66,9 +74,18 @@ class CardCourseQuizSurveyPageState extends State<CardCourseQuizSurveyPage>
           create: (context) => _cubit,
           child: BlocConsumer<CardCourseQuizCubit, CardCourseQuizState>(
             listener: (context, state) {
-              if (state is CardCourseQuizFailure)
+              if (state is CardCourseQuizFailure){
                 Message.showToastMessage(context, state.error);
+              }
               if (state is CardCourseQuizFillText) {
+                _textController.text = state.text;
+                if (widget.onSubmitAnswer != null && state.text != null) {
+                  widget.onSubmitAnswer(QuestionAnswerResults(
+                      surveyQuestionId: widget.quizData.id,
+                      content: state.text.trim()));
+                }
+              }
+              if (state is CardCourseQuizFillTextField) {
                 _textController.text = state.text;
                 if (widget.onSubmitAnswer != null && state.text != null) {
                   widget.onSubmitAnswer(QuestionAnswerResults(

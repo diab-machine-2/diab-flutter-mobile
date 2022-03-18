@@ -113,8 +113,6 @@ class QuestionDetailCubit extends Cubit<QuestionDetailState> {
     final ApiResult<CommonResponse> apiResult = await repository.makeComment(request);
     apiResult.when(success: (CommonResponse response) async {
       canRefreshScreen = true;
-      await Future.delayed(Duration(milliseconds: 100));
-      await getQuestionById();
     }, failure: (NetworkExceptions error) {
       canRefreshScreen = true;
       emit(MakeCommentFailure(NetworkExceptions.getErrorMessage(error)));

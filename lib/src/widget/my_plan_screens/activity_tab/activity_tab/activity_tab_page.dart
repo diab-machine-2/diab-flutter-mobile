@@ -554,15 +554,16 @@ class _ActivityTabPageState extends State<ActivityTabPage>
       case ScheduleType.exercise_movement:
         if (smartGoal?.exerciseData == null) break;
         if (smartGoal?.exerciseData?.exerciseMovementStates == null ||
-            smartGoal?.exerciseData?.exerciseMovementStates == Const.LESSON_LOCKED) {
+            smartGoal?.state == Const.LESSON_LOCKED) {
           _showLockedDialog(
-            title: R.string.lesson_locked.tr(),
-            description: R.string.lesson_locked_warning.tr(),
+            title: R.string.exercise_lesson_locked.tr(),
+            description: R.string.exercise_lesson_locked_warning.tr(),
           );
           break;
         }
         await NavigationUtil.navigatePage(context, ExerciseDetail(exerciseData: smartGoal?.exerciseData));
         _cubit.refreshData();
+        Observable.instance.notifyObservers([], notifyName: "refresh_exercise_tab");
         break;
       case ScheduleType.custom:
         _showCustomGoalPopup(
@@ -584,12 +585,13 @@ class _ActivityTabPageState extends State<ActivityTabPage>
         if(smartGoal?.state == Const.LESSON_LOCKED){
         // if (lessonDetail?.learningStatus == null || lessonDetail?.learningStatus == Const.LESSON_LOCKED) {
           _showLockedDialog(
-              title: R.string.exercise_lesson_locked.tr(), description: R.string.exercise_lesson_locked_warning.tr());
+              title: R.string.lesson_locked.tr(), description: R.string.lesson_locked_warning.tr());
           return;
         }
         await NavigationUtil.navigatePage(
             context, LessonDetailPage(lessonType: lessonDetail?.type, lessonId: lessonDetail?.id ?? ''));
         _cubit.refreshData();
+        Observable.instance.notifyObservers([], notifyName: "refresh_lesson_tab");
         break;
       case ScheduleType.io_evaluate:
         _showCoachingPopup(smartGoal);
