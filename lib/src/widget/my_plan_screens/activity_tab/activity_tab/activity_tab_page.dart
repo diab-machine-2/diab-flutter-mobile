@@ -562,7 +562,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
           break;
         }
         await NavigationUtil.navigatePage(context, ExerciseDetail(exerciseData: smartGoal?.exerciseData));
-        _cubit.refreshData();
+        _cubit.refreshData(isRefresh: true);
         Observable.instance.notifyObservers([], notifyName: "refresh_exercise_tab");
         Observable.instance.notifyObservers([], notifyName : "refresh_home");
         break;
@@ -591,7 +591,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
         }
         await NavigationUtil.navigatePage(
             context, LessonDetailPage(lessonType: lessonDetail?.type, lessonId: lessonDetail?.id ?? ''));
-        _cubit.refreshData();
+        _cubit.refreshData(isRefresh: true);
         Observable.instance.notifyObservers([], notifyName: "refresh_lesson_tab");
         Observable.instance.notifyObservers([], notifyName : "refresh_home");
         break;

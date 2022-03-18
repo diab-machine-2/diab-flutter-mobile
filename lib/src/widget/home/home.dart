@@ -981,7 +981,7 @@ class _HomeControllerState extends State<HomeController> with Observer {
   }
 
   Color getProgressColor(ProcessCardModel model){
-    if (model.exerciseCompeleted! == model.exercise!) {
+    if (model.targetCompeleted! == model.target!) {
       return R.color.greenGradientBottom;
     } else {
       return R.color.red;

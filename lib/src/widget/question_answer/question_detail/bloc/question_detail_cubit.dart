@@ -58,6 +58,7 @@ class QuestionDetailCubit extends Cubit<QuestionDetailState> {
           professor: response.data!.professor,
           answers: response.data!.answers,
         );
+        canRefreshScreen = true;
         emit(const QuestionDetailSuccess());
 
         //if (questionModel.answers != null && questionModel.answers!.isNotEmpty) {
@@ -112,9 +113,7 @@ class QuestionDetailCubit extends Cubit<QuestionDetailState> {
         body: body?.trim() ?? '', questionId: questionModel.id, accountId: userInfo.accountId, isComment: true);
     final ApiResult<CommonResponse> apiResult = await repository.makeComment(request);
     apiResult.when(success: (CommonResponse response) async {
-      canRefreshScreen = true;
     }, failure: (NetworkExceptions error) {
-      canRefreshScreen = true;
       emit(MakeCommentFailure(NetworkExceptions.getErrorMessage(error)));
     });
   }
