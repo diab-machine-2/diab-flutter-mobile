@@ -695,6 +695,7 @@ class Strings {
 	String get smart_goal_record_type_description => 'smart_goal_record_type_description';
 	String get frequency_per_day => 'frequency_per_day';
 	String get enter_smart_goal_name => 'enter_smart_goal_name';
+	String get please_select_roadmap => 'please_select_roadmap';
 	String get select_frequency => 'select_frequency';
 	String get my_progress => 'my_progress';
 	String get report => 'report';

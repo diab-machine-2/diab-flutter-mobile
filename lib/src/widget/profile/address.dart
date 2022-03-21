@@ -50,12 +50,12 @@ class _AddressControllerState extends State<AddressController> {
                 Navigator.pop(context);
               })
         ]),
-        SizedBox(height: 26),
+        SizedBox(height: 14),
         Text(R.string.specific_address.tr(),
             style: TextStyle(color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w600)),
         SizedBox(height: 8),
         Container(
-            height: 54,
+            height: 50,
             width: width - 36,
             child: TextField(
                 controller: _textEditingController,
@@ -104,7 +104,7 @@ class _AddressControllerState extends State<AddressController> {
             );
           },
           child: Container(
-              height: 48,
+              height: 44,
               padding: EdgeInsets.only(left: 16, right: 16),
               decoration: BoxDecoration(
                   color: R.color.transparent,
@@ -122,7 +122,7 @@ class _AddressControllerState extends State<AddressController> {
                 ],
               ))),
         ),
-        SizedBox(height: 16),
+        SizedBox(height: 12),
         Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
           Expanded(
             child: GestureDetector(
@@ -159,7 +159,7 @@ class _AddressControllerState extends State<AddressController> {
                       style: TextStyle(color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w600)),
                   SizedBox(height: 8),
                   Container(
-                      height: 48,
+                      height: 44,
                       //width: 200,
                       padding: EdgeInsets.only(left: 16, right: 16),
                       decoration: BoxDecoration(
@@ -182,7 +182,7 @@ class _AddressControllerState extends State<AddressController> {
               ),
             ),
           ),
-          SizedBox(width: 16),
+          SizedBox(width: 12),
           Expanded(
             child: GestureDetector(
               onTap: () {
@@ -222,7 +222,7 @@ class _AddressControllerState extends State<AddressController> {
                       style: TextStyle(color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w600)),
                   SizedBox(height: 8),
                   Container(
-                      height: 48,
+                      height: 44,
                       //width: 200,
                       padding: EdgeInsets.only(left: 16, right: 16),
                       decoration: BoxDecoration(
@@ -247,7 +247,7 @@ class _AddressControllerState extends State<AddressController> {
           )
         ]),
         Container(
-          margin: EdgeInsets.only(top: 16),
+          margin: EdgeInsets.only(top: 12),
           child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
             Expanded(
               flex: 1,
@@ -256,7 +256,7 @@ class _AddressControllerState extends State<AddressController> {
                   Navigator.pop(context);
                 },
                 child: Container(
-                    height: 48,
+                    height: 44,
                     width: 119,
                     decoration: BoxDecoration(borderRadius: BorderRadius.circular(200), color: R.color.grayBorder),
                     child: Center(
@@ -292,7 +292,7 @@ class _AddressControllerState extends State<AddressController> {
                   Navigator.pop(context);
                 },
                 child: Container(
-                  height: 48,
+                  height: 44,
                   width: 119,
                   decoration: BoxDecoration(
                       color: R.color.red,

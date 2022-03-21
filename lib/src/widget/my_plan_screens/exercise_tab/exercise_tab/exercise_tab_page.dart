@@ -132,7 +132,7 @@ class _ExerciseTabPageState extends State<ExerciseTabPage> with AutomaticKeepAli
                     controller: _controller,
                     onRefresh: () => _cubit.onRefresh(isRefresh: true),
                     child: _cubit.exerciseMovementResponse?.data?.isEmpty == null
-                        ? const SizedBox.shrink()
+                        ? Center(child: Container(padding: EdgeInsets.all(8), child: Text(R.string.please_select_roadmap.tr(), style: TextStyle(fontSize: 14, color: R.color.black), textAlign: TextAlign.center,)),)
                         : ListView.separated(
                             controller: _exerciseScrollController,
                             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
@@ -499,11 +499,11 @@ class _ExerciseTabPageState extends State<ExerciseTabPage> with AutomaticKeepAli
         height: 32,
         decoration: BoxDecoration(
           color: isSelected && state.completionStatus == CompletionStatus.not_start_yet
-              ? R.color.greenbg
+              ? R.color.grey_6
               : state.completionStatus.statusBackgroundColor,
           border: isSelected && state.completionStatus != CompletionStatus.not_start_yet
               ? Border.all(color: state.completionStatus.statusIconColor)
-              : null,
+              : (isSelected && state.completionStatus == CompletionStatus.not_start_yet) ? Border.all(color: R.color.mainColor) :null,
           borderRadius: BorderRadius.circular(200),
         ),
         child: Row(
@@ -513,7 +513,7 @@ class _ExerciseTabPageState extends State<ExerciseTabPage> with AutomaticKeepAli
               state.weekTitle ?? '',
               style: TextStyle(
                 color: isSelected && state.completionStatus == CompletionStatus.not_start_yet
-                    ? R.color.green
+                    ? R.color.mainColor
                     : state.completionStatus.statusIconColor,
                 fontSize: 14,
                 fontWeight: FontWeight.w700,

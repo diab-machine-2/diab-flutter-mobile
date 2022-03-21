@@ -302,13 +302,13 @@ class _LessonTabPageState extends State<LessonTabPage> with AutomaticKeepAliveCl
     VoidCallback? onSelect,
   }) {
     final Color background = isSelected && state.completionStatus == CompletionStatus.not_start_yet
-        ? R.color.greenbg
+        ? R.color.grey_6
         : state.completionStatus.statusBackgroundColor;
     final BoxBorder? border = isSelected && state.completionStatus != CompletionStatus.not_start_yet
         ? Border.all(color: state.completionStatus.statusIconColor)
-        : null;
+        : (isSelected && state.completionStatus == CompletionStatus.not_start_yet) ? Border.all(color: R.color.mainColor) :null;
     final Color textColor = isSelected && state.completionStatus == CompletionStatus.not_start_yet
-        ? R.color.green
+        ? R.color.mainColor
         : state.completionStatus.statusIconColor;
     final bool showIcon = !(isSelected && state.completionStatus == CompletionStatus.not_start_yet);
 

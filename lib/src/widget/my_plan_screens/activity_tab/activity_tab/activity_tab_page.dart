@@ -391,12 +391,12 @@ class _ActivityTabPageState extends State<ActivityTabPage>
         height: 32,
         decoration: BoxDecoration(
           color: isSelected && state?.completionStatus == CompletionStatus.not_start_yet
-              ? R.color.greenbg
+              ? R.color.grey_6
               : state?.completionStatus.statusBackgroundColor,
           border:
-              isSelected && state?.completionStatus != null && state?.completionStatus != CompletionStatus.not_start_yet
+              (isSelected && state?.completionStatus != null && state?.completionStatus != CompletionStatus.not_start_yet)
                   ? Border.all(color: state!.completionStatus.statusIconColor)
-                  : null,
+                  : (isSelected && state?.completionStatus != null && state?.completionStatus == CompletionStatus.not_start_yet) ? Border.all(color: R.color.mainColor) :null,
           borderRadius: BorderRadius.circular(200),
         ),
         child: Row(
@@ -406,7 +406,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
               state?.weekTitle ?? '',
               style: TextStyle(
                 color: isSelected && state?.completionStatus == CompletionStatus.not_start_yet
-                    ? R.color.green
+                    ? R.color.mainColor
                     : state?.completionStatus.statusIconColor,
                 fontSize: 14,
                 fontWeight: FontWeight.w700,

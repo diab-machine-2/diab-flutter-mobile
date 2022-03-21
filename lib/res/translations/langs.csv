@@ -693,6 +693,7 @@ smart_goal_record_type_title,Tính mục tiêu đề ra,
 smart_goal_record_type_description,(Vui lòng chọn 1 trong 2 cách),
 frequency_per_day,Số lần <thực hiện hoạt động> trong ngày,
 enter_smart_goal_name,"Đọc sách mỗi ngày, thư giãn...",
+please_select_roadmap,"Vui lòng lựa chọn một lộ trình phù hợp\nđể bắt đầu trải nghiệm các bài tập cùng diaB!"
 select_frequency,Độ thường xuyên của mục tiêu,
 my_progress,Tiến độ của tôi,
 report,Báo cáo,

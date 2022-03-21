@@ -221,8 +221,7 @@ class SurveyQuestionCubit extends Cubit<SurveyQuestionState> {
     final ApiResult<CommonResponse> apiResult =
         await repository.submitSurvey(request);
     apiResult.when(success: (CommonResponse response) {
-      if(isRelatedQuestion == false && progress < 1){
-      //  !listAnsweredQuestionId.contains(questionId) && 
+      if(isRelatedQuestion == false && !listAnsweredQuestionId.contains(questionId) && progress < 1){
         listAnsweredQuestionId.add(questionId);
       }
       if (answerResult?.surveyAnswerIdList?.isNotEmpty != true &&

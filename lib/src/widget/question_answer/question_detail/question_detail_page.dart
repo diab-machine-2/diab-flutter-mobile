@@ -426,6 +426,8 @@ class _QuestionDetailPageState extends State<QuestionDetailPage> with WidgetsBin
         children: [
           Expanded(
             child: TextField(
+                minLines: 1,
+                maxLines: 6,
                 style: TextStyle(
                   fontSize: 18.0,
                   color: R.color.black,                 
