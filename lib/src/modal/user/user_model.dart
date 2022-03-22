@@ -81,6 +81,8 @@ class UserModel {
   final String? nameOfAgency;
   final String? nameOfDoctor;
   final UserInfoResponseDataOwnPackage? ownPackage;
+  final bool? isShare;
+  final String? shareRefCode;
 
   bool get isUserFree {
     return ownPackage == null;
@@ -174,6 +176,8 @@ class UserModel {
     required this.nameOfAgency,
     required this.nameOfDoctor,
     required this.ownPackage,
+    required this.isShare,
+    required this.shareRefCode,
   });
 
   UserModel copyWith({
@@ -247,6 +251,8 @@ class UserModel {
     String? nameOfAgency,
     String? nameOfDoctor,
     UserInfoResponseDataOwnPackage? ownPackage,
+    bool? isShare,
+    String? shareRefCode,
   }) =>
       UserModel(
         id: id ?? this.id,
@@ -318,6 +324,8 @@ class UserModel {
         nameOfAgency: nameOfAgency ?? this.nameOfAgency,
         nameOfDoctor: nameOfDoctor ?? this.nameOfDoctor,
         ownPackage: ownPackage ?? this.ownPackage,
+        isShare: isShare ?? this.isShare,
+        shareRefCode: shareRefCode ?? this.shareRefCode,
       );
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
@@ -396,6 +404,8 @@ class UserModel {
       nameOfAgency: json['nameOfAgency'],
       nameOfDoctor: json['nameOfDoctor'],
       ownPackage: json['ownPackage'] == null ? null : UserInfoResponseDataOwnPackage.fromJson(json['ownPackage']),
+      isShare: json['isShare'],
+      shareRefCode: json['shareRefCode'],
     );
   }
 

@@ -9,6 +9,7 @@ import 'package:medical/src/model/request/ios_receipt_request.dart';
 import 'package:medical/src/model/request/lesson_filter_request.dart';
 import 'package:medical/src/model/request/make_comment_request.dart';
 import 'package:medical/src/model/request/make_question_request.dart';
+import 'package:medical/src/model/request/mark_share_request.dart';
 import 'package:medical/src/model/request/post_survey_request.dart';
 import 'package:medical/src/model/request/send_feedback_course_request.dart';
 import 'package:medical/src/model/request/send_interest_request.dart';
@@ -491,6 +492,15 @@ class AppRepository {
   Future<ApiResult<CommonResponse>> markCompletedCalendar(String id) async {
     try {
       final CommonResponse response = await appClient.markCompletedCalendar(id);
+      return ApiResult.success(data: response);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
+  Future<ApiResult<CommonResponse>> markIsShare(MarkShareRequest request) async {
+    try {
+      final CommonResponse response = await appClient.markIsShare(request);
       return ApiResult.success(data: response);
     } catch (e) {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));

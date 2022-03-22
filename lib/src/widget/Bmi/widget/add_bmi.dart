@@ -911,6 +911,8 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
       nameOfAgency: userInfo.nameOfAgency,
       nameOfDoctor: userInfo.nameOfDoctor,
       ownPackage: userInfo.ownPackage,
+      isShare: userInfo.isShare,
+      shareRefCode: userInfo.shareRefCode,
     );
     try {
       BotToast.showLoading();

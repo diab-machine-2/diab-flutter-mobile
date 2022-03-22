@@ -20,6 +20,7 @@ import 'package:medical/src/widget/home/widget/header.dart';
 import 'package:medical/src/widget/list_service/list_service_page.dart';
 import 'package:medical/src/widget/my_plan_screens/activity_tab/create_goal/create_goal_page.dart';
 import 'package:medical/src/widgets/network_image_widget.dart';
+import 'package:medical/src/widgets/share_profile_popup.dart';
 
 import '../my_plan_screens/activity_tab/my_progress/my_progress.dart';
 import 'welcome_package_screen/welcome_package_screen.dart';
@@ -102,6 +103,10 @@ class _HomeControllerState extends State<HomeController> with Observer {
     super.initState();
     Observable.instance.addObserver(this);
     TrackingManager.analytics.setCurrentScreen(screenName: 'Home');
+
+    if(user?.isShare == true){
+      ShareProfilePopup.instance.onHasSharedCode(requestFromDoctor: true, code: user?.shareRefCode ?? '');
+    }
   }
 
   @override

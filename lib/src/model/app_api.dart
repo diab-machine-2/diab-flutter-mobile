@@ -20,6 +20,7 @@ import 'request/exercise_feedback_request.dart';
 import 'request/food_change_request.dart';
 import 'request/ios_receipt_request.dart';
 import 'request/lesson_filter_request.dart';
+import 'request/mark_share_request.dart';
 import 'request/post_survey_request.dart';
 import 'request/send_feedback_course_request.dart';
 import 'request/send_interest_request.dart';
@@ -234,6 +235,11 @@ abstract class AppApi {
   @POST("App/Calendar/MarkCompletedCalendar")
   Future<CommonResponse> markCompletedCalendar(
     @Query("id") String id,
+  );
+
+  @POST("App/Patient/ChangeIsShare")
+  Future<CommonResponse> markIsShare(
+    @Body() MarkShareRequest request,
   );
 
   @POST("App/Home/MarkDisplayedWelcome")
