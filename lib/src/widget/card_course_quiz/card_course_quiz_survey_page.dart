@@ -18,12 +18,15 @@ class CardCourseQuizSurveyPage extends StatefulWidget {
   final int index;
   final QuizData quizData;
   final ValueChanged<QuestionAnswerResults> onSubmitAnswer;
+  final String surveySectionId;
 
   const CardCourseQuizSurveyPage(
       {Key? key,
       required this.quizData,
       required this.index,
-      required this.onSubmitAnswer})
+      required this.onSubmitAnswer,
+      required this.surveySectionId,
+      })
       : super(key: key);
 
   @override
@@ -47,6 +50,7 @@ class CardCourseQuizSurveyPageState extends State<CardCourseQuizSurveyPage>
     widget.onSubmitAnswer(
       QuestionAnswerResults(
         surveyQuestionId: widget.quizData.id,
+        surveySectionId: widget.surveySectionId,
         surveyAnswerIdList: _cubit.listAnswerChoosing,
       ),
     );
@@ -55,7 +59,11 @@ class CardCourseQuizSurveyPageState extends State<CardCourseQuizSurveyPage>
       _textController.text = text;
       if(text.isNotEmpty){
         widget.onSubmitAnswer(QuestionAnswerResults(
-            surveyQuestionId: widget.quizData.id, content: text.trim()));
+            surveyQuestionId: widget.quizData.id, 
+            surveySectionId: widget.surveySectionId,
+            content: text.trim(),
+          ),
+        );
       }
     }
     super.initState();
@@ -82,6 +90,7 @@ class CardCourseQuizSurveyPageState extends State<CardCourseQuizSurveyPage>
                 if (widget.onSubmitAnswer != null && state.text != null) {
                   widget.onSubmitAnswer(QuestionAnswerResults(
                       surveyQuestionId: widget.quizData.id,
+                      surveySectionId: widget.surveySectionId,
                       content: state.text.trim()));
                 }
               }
@@ -90,6 +99,7 @@ class CardCourseQuizSurveyPageState extends State<CardCourseQuizSurveyPage>
                 if (widget.onSubmitAnswer != null && state.text != null) {
                   widget.onSubmitAnswer(QuestionAnswerResults(
                       surveyQuestionId: widget.quizData.id,
+                      surveySectionId: widget.surveySectionId,
                       content: state.text.trim()));
                 }
               }
@@ -98,6 +108,7 @@ class CardCourseQuizSurveyPageState extends State<CardCourseQuizSurveyPage>
                   widget.onSubmitAnswer(
                     QuestionAnswerResults(
                       surveyQuestionId: widget.quizData.id,
+                      surveySectionId: widget.surveySectionId,
                       surveyAnswerIdList: _cubit.listAnswerChoosing,
                     ),
                   );
@@ -187,7 +198,11 @@ class CardCourseQuizSurveyPageState extends State<CardCourseQuizSurveyPage>
           onChanged: (text) {
             if (text != null) {
               widget.onSubmitAnswer(QuestionAnswerResults(
-                  surveyQuestionId: quizData.id, content: text.trim()));
+                  surveyQuestionId: quizData.id, 
+                  surveySectionId: widget.surveySectionId,
+                  content: text.trim(),
+                ),
+              );
             }
           },
         ),

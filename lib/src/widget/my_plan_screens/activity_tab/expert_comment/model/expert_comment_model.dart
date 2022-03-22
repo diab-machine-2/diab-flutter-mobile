@@ -8,26 +8,32 @@ import '../../../../helper/helper.dart';
 
 class ExpertCommentModel {
   ExpertCommentModel({
+    required this.id,
     required this.calendarTrainingId,
     required this.accountId,
     required this.comment,
     required this.creatorId,
     required this.creator,
+    required this.nextActivity,
     required this.type,
     required this.updateDateTime,
     required this.calendarTraining,
     required this.creatorUrl,
+    required this.reviewerUrl,
   });
 
+  final String? id;
   final String? calendarTrainingId;
   final String? accountId;
   final String? comment;
   final String? creatorId;
   final String? creator;
+  final String? nextActivity;
   final int? type;
   final int? updateDateTime;
   final CalendarTraining? calendarTraining;
   final Avatar? creatorUrl;
+  final Avatar? reviewerUrl;
 
   String get name {
     if (creator != null) {
@@ -74,12 +80,16 @@ class ExpertCommentModel {
     if (creatorUrl != null) {
       return creatorUrl!.url;
     } else {
-      return null;
+      if(reviewerUrl != null){
+        return reviewerUrl!.url;
+      } else {
+        return null;
+      }
     }
   }
 
   String get nextAction {
-    return '';
+    return nextActivity ?? '';
   }
 
   Color getColor() {
@@ -106,6 +116,8 @@ class ExpertCommentModel {
   @override
   factory ExpertCommentModel.fromJson(Map<String, dynamic> json) {
     return ExpertCommentModel(
+      nextActivity: json['nextActivity'],
+      id: json['id'],
       accountId: json['accountId'],
       calendarTrainingId: json['calendarTrainingId'],
       comment: json['comment'],
@@ -114,17 +126,20 @@ class ExpertCommentModel {
       type: json['type'],
       updateDateTime: json['updateDateTime'],
       creatorUrl: json['creatorUrl'] == null ? null : Avatar.fromJson(json['creatorUrl']),
+      reviewerUrl: json['reviewerUrl'] == null ? null : Avatar.fromJson(json['reviewerUrl']),
       calendarTraining: json['calendarTraining'] == null ? null : CalendarTraining.fromJson(json['calendarTraining']),
     );
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = Map<String, dynamic>();
+    data["id"] = id;
     data["accountId"] = accountId;
     data["calendarTrainingId"] = calendarTrainingId;
     data["comment"] = comment;
     data["creatorId"] = creatorId;
     data["creator"] = creator;
+    data["nextActivity"] = nextActivity;
     data['type'] = type;
     data["updateDateTime"] = updateDateTime;
     if (calendarTraining != null) {
@@ -132,6 +147,9 @@ class ExpertCommentModel {
     }
     if (creatorUrl != null) {
       data["creatorUrl"] = creatorUrl!.toJson();
+    }
+    if (reviewerUrl != null) {
+      data["reviewerUrl"] = reviewerUrl!.toJson();
     }
     return data;
   }

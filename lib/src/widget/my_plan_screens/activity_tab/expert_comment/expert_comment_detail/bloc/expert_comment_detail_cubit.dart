@@ -15,11 +15,12 @@ class ExpertCommentDetailCubit extends Cubit<ExpertCommentDetailState> {
   }
 
   getCommentById(String id) async {
+    await Future.delayed(Duration(microseconds: 100));
     emit(ExpertCommentDetailLoading());
     final ApiResult<ExpertCommentResponse> apiResult = await repository.getCommentById(id);
     apiResult.when(success: (ExpertCommentResponse response) {
       expertCommentModel = response.data;
-      emit(const ExpertCommentDetailSuccess());
+      emit(ExpertCommentDetailSuccess());
     }, failure: (NetworkExceptions error) {
       emit(ExpertCommentDetailFailure(NetworkExceptions.getErrorMessage(error)));
     });

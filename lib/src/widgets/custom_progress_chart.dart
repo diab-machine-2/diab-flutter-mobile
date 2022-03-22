@@ -52,7 +52,7 @@ class CustomProgressChartState extends State<CustomProgressChart> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
+    return (widget.mark2 != null && widget.mark2 != 0) ? Padding(
       padding: const EdgeInsets.only(top: 24),
       child: CompositedTransformTarget(
         link: layerLink,
@@ -92,7 +92,7 @@ class CustomProgressChartState extends State<CustomProgressChart> {
           ),
         ),
       ),
-    );
+    ) : Container();
   }
 
   void _showOverlay() {

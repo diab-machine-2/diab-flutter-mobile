@@ -310,7 +310,7 @@ abstract class AppApi {
   @GET("App/UserDashboard/Calendar-Training-Comment")
   Future<ExpertCommentListResponse> getCommentProfessorByAccountId(@Query('patientId') String? accountId);
 
-  @GET("App/CalendarTrainingComment/{id}")
+  @GET("App/UserDashboard/Calendar-Training-Comment/{id}")
   Future<ExpertCommentResponse> getCommentById(@Path('id') String id);
 
   @GET("App/CalendarTraining")

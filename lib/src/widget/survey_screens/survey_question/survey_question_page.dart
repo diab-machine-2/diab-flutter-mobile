@@ -163,6 +163,7 @@ class _SurveyQuestionPageState extends State<SurveyQuestionPage> {
                       key: listGlobal[index],
                       index: index,
                       quizData: data,
+                      surveySectionId: _cubit.sectionSurvey?.id ?? '',
                       onSubmitAnswer: (listAnswer) {
                         _cubit.currentText = listAnswer.content ?? '';
                         _cubit.recordAnswer(

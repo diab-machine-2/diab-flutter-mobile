@@ -22,6 +22,8 @@ class MyProgressCubit extends Cubit<MyProgressState> {
   MyProgressResponse? myProgressData;
   List<ReportModel>? reports = [];
   bool? hasNewReports = false;
+  bool isHiddenAll = false;
+  bool isHiddenActivity = false;
 
   void onChangeFilter(String filterText) {
     filterType = FilterTypeExtends.getTypeFromString(filterText);
@@ -56,6 +58,20 @@ class MyProgressCubit extends Cubit<MyProgressState> {
         await repository.getMyProgress(type: filterType?.typeIndex ?? 0);
     apiResult.when(success: (MyProgressResponse response) {
        myProgressData = response;
+
+       if(myProgressData?.data?.target?.inTime == 0 &&
+          myProgressData?.data?.coach11?.inTime == 0 &&
+          myProgressData?.data?.coach1N?.inTime == 0 &&
+          myProgressData?.data?.lesson?.inTime == 0 &&
+          myProgressData?.data?.exerciseMovement?.inTime == 0) {
+            isHiddenAll = true;
+        }
+
+        if(myProgressData?.data?.target?.inTime == 0 &&
+          myProgressData?.data?.coach11?.inTime == 0 &&
+          myProgressData?.data?.coach1N?.inTime == 0) {
+            isHiddenActivity = true;
+        }
 
       emit(const MyProgressSuccess());
     }, failure: (NetworkExceptions error) {

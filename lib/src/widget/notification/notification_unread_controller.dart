@@ -111,6 +111,8 @@ class NotificationUnreadControllerState extends State<NotificationUnreadControll
           currentContext = context;
           
           if (state is NotificationInitial) {
+            Future.delayed(Duration(milliseconds: 10));
+            BotToast.showLoading();
             BlocProvider.of<NotificationBloc>(context).add(
               FetchNotification(isRead: widget.isRemovealbe, page: page),
             );
@@ -119,6 +121,7 @@ class NotificationUnreadControllerState extends State<NotificationUnreadControll
             Message.showToastMessage(context, state.message);
           }
           if (state is NotificationLoaded) {
+            BotToast.closeAllLoading();
             model = state.model?.models ?? [];
             hasMore = state.model?.hasMore ?? false;
             if (hasMore) {
@@ -133,7 +136,7 @@ class NotificationUnreadControllerState extends State<NotificationUnreadControll
                   ? const Center(
                       child: CircularProgressIndicator(),
                     )
-                  : _buildNotificationList(model),
+                  : _buildNotificationList(model, state),
             ),
           );
         },
@@ -141,7 +144,7 @@ class NotificationUnreadControllerState extends State<NotificationUnreadControll
     );
   }
 
-  Widget _buildNotificationList(List<NotificationListModel> model) {
+  Widget _buildNotificationList(List<NotificationListModel> model, NotificationState state) {
     return LoadMore(
       onLoadMore: _loadMore,
       isFinish: !hasMore,
@@ -159,7 +162,9 @@ class NotificationUnreadControllerState extends State<NotificationUnreadControll
           );
         },
         itemBuilder: (BuildContext context, int index) {
-          if (model.isNotEmpty != true) {
+          if(state is NotificationInitial){
+            return Container();
+          } else if (model.isNotEmpty != true) {
             return Container(
               height: MediaQuery.of(context).size.height - 190,
               child: Center(

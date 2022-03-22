@@ -990,6 +990,7 @@ class Strings {
 	String get confirm_delete_comment_subtitle => 'confirm_delete_comment_subtitle';
 	String get delete_comment => 'delete_comment';
 	String get question_answer_title => 'question_answer_title';
+	String get no_data => 'no_data';
 	String get closed => 'closed';
 	String get waiting => 'waiting';
 	String get question_empty => 'question_empty';

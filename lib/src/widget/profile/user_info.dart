@@ -1591,6 +1591,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                       state: diabetesStatus,
                       onChanged: (data) {
                         diabetesStatus = data;
+                        print('diabetesStatus = $diabetesStatus');
                       },
                     )),
                 Container(

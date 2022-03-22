@@ -1,3 +1,4 @@
+import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:easy_localization/src/public_ext.dart';
 import 'package:flutter/cupertino.dart';
@@ -28,6 +29,7 @@ class _ExpertCommentDetailPageState extends State<ExpertCommentDetailPage> {
     super.initState();
     final AppRepository appRepository = AppRepository();
     _cubit = ExpertCommentDetailCubit(appRepository, widget.item);
+    _cubit.getCommentById(widget.item?.id ?? '');
   }
 
   @override
@@ -36,7 +38,13 @@ class _ExpertCommentDetailPageState extends State<ExpertCommentDetailPage> {
       body: BlocProvider(
         create: (context) => _cubit,
         child: BlocListener<ExpertCommentDetailCubit, ExpertCommentDetailState>(
-          listener: (context, state) {},
+          listener: (context, state) {
+            if(state is ExpertCommentDetailLoading){
+              BotToast.showLoading();
+            } else {
+              BotToast.closeAllLoading();
+            }
+          },
           child: BlocBuilder<ExpertCommentDetailCubit, ExpertCommentDetailState>(
             builder: (context, state) {
               return _buildPage(context, state);
@@ -52,12 +60,13 @@ class _ExpertCommentDetailPageState extends State<ExpertCommentDetailPage> {
       body: Container(
         color: R.color.greenbg,
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildAppBar(context),
-            _buildBody(),
-          ],
-        ),
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildAppBar(context),
+              _buildBody(),
+            ],
+          ),
       ),
     );
   }
@@ -159,10 +168,14 @@ class _ExpertCommentDetailPageState extends State<ExpertCommentDetailPage> {
                           R.string.next_action.tr(),
                           style: TextStyle(color: R.color.captionColorGray, fontSize: 14, fontWeight: FontWeight.w400),
                         ),
-                        SizedBox(height: 4),
-                        Text(
-                          _cubit.expertCommentModel?.nextAction ?? '',
-                          style: TextStyle(color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w400),
+                        SizedBox(height: 0),
+                        Flexible(
+                          child: SingleChildScrollView(
+                            child: Html(
+                                data: _cubit.expertCommentModel?.nextAction ?? '',
+                                style: {"body": Style(padding: EdgeInsets.zero, margin: EdgeInsets.zero),},
+                              ),
+                          ),
                         ),
                         SizedBox(height: 8),
                       ],
