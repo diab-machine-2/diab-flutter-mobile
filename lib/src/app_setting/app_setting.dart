@@ -22,6 +22,9 @@ class AppSettings {
   static int? currentDateTime;
   static bool isDisplayedWelcome = false;
 
+  static bool showed50Message = false;
+  static bool showed90Message = false;
+
   static Future<bool> saveToken(String? token) async {
     appPreference.setData(Const.TOKEN, token);
     return true;

@@ -4,10 +4,13 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
+import '../../../../app_setting/app_setting.dart';
 import '../survey_question.dart';
 
 class CustomProgressBarWidget extends StatefulWidget {
-  const CustomProgressBarWidget();
+  bool isLastPart;
+
+  CustomProgressBarWidget({required this.isLastPart});
 
   @override
   State<CustomProgressBarWidget> createState() =>
@@ -22,8 +25,6 @@ class _CustomProgressBarWidgetState extends State<CustomProgressBarWidget> {
   Timer? _timer;
 
   bool isShowing = false;
-  bool showed50Message = false;
-  bool showed90Message = false;
 
   @override
   void initState() {
@@ -45,7 +46,9 @@ class _CustomProgressBarWidgetState extends State<CustomProgressBarWidget> {
     return BlocConsumer<SurveyQuestionCubit, SurveyQuestionState>(
       listener: (context, state) {
         if (state is SurveyQuestionProgressChanged) {
-          showOverlay();
+          if (!widget.isLastPart) {
+            showOverlay();
+          }
         }
         if (state is SurveyQuestionHideProgressMessage) {
           disposeOverlay();
@@ -88,10 +91,10 @@ class _CustomProgressBarWidgetState extends State<CustomProgressBarWidget> {
 
   void checkOverlayStatus() {
     if (_cubit.progress < 0.9) {
-      showed90Message = false;
+      AppSettings.showed90Message = false;
     }
     if (_cubit.progress < 0.5) {
-      showed50Message = false;
+      AppSettings.showed50Message = false;
     }
   }
 
@@ -99,13 +102,13 @@ class _CustomProgressBarWidgetState extends State<CustomProgressBarWidget> {
     checkOverlayStatus();
     late final int progress;
     print("${_cubit.listAnsweredQuestionId.length} - ${_cubit.listAllQuestionId.length}");
-    if (_cubit.progress >= 0.9 && !showed90Message) {
+    if (_cubit.progress >= 0.9 && !AppSettings.showed90Message) {
       progress = 90;
-      showed90Message = true;
+      AppSettings.showed90Message = true;
       disposeOverlay();
-    } else if (_cubit.progress >= 0.5 && _cubit.progress < 0.9 && !showed50Message) {
+    } else if (_cubit.progress >= 0.5 && _cubit.progress < 0.9 && !AppSettings.showed50Message) {
       progress = 50;
-      showed50Message = true;
+      AppSettings.showed50Message = true;
       disposeOverlay();
     } else {
       return;

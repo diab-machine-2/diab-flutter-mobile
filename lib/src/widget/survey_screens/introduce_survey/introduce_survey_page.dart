@@ -3,6 +3,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
@@ -35,6 +36,8 @@ class _IntroduceSurveyPageState extends State<IntroduceSurveyPage> {
     final AppRepository repository = AppRepository();
     _cubit = IntroduceSurveyCubit(repository);
     _cubit.getDetailSurvey(surveyId);
+    AppSettings.showed50Message = false;
+    AppSettings.showed90Message = false;
   }
 
   @override

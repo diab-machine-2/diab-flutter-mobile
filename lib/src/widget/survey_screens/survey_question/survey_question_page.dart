@@ -117,6 +117,11 @@ class _SurveyQuestionPageState extends State<SurveyQuestionPage> {
   }
 
   Widget buildPage(BuildContext context, SurveyQuestionState state) {
+    bool isLastPart = false;
+    if (_cubit.selectedCourseIndex == _cubit.lengthQuiz - 1) {
+      isLastPart = true;
+    }
+
     return Container(
       decoration: BoxDecoration(color: R.color.color0xffB1DDDB),
       child: Column(
@@ -177,7 +182,7 @@ class _SurveyQuestionPageState extends State<SurveyQuestionPage> {
               },
             ),
           ),
-          const CustomProgressBarWidget(),
+          CustomProgressBarWidget(isLastPart: isLastPart),
           Container(
             color: R.color.white,
             padding: EdgeInsets.only(
