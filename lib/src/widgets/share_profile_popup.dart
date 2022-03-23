@@ -35,6 +35,7 @@ class ShareProfilePopup {
     required final String code,
   }) async {
     if(code.isEmpty) return;
+    bool isCancel = false;
     final BuildContext currentContext = context ?? navigatorKey.currentState!.context;
     final UserInfoReferralCodeResponse? userInfo = await _getSharedProfile(currentContext, code: code);
     if (userInfo?.isUserExists != true) {
@@ -51,8 +52,14 @@ class ShareProfilePopup {
         title: requestFromDoctor
             ? R.string.doctor_request_share_profile.tr(args: [userInfo?.data?.fullName ?? ''])
             : R.string.share_profile_for_doctor.tr(args: [userInfo?.data?.fullName ?? '']),
-        description: R.string.share_profile_description.tr(), onTapCancel: () {
-      NavigationUtil.pop(currentContext);
+        description: R.string.share_profile_description.tr(), 
+        onTapCancel: () async {
+          if(!isCancel){
+            await markIsShare();
+            NavigationUtil.pop(currentContext);
+            isCancel = true;
+          }
+      
     }, onTapYes: () async {
       final bool sharingSuccessed = await _shareProfile(currentContext, code: code);
       if (!sharingSuccessed) return;
@@ -85,7 +92,11 @@ class ShareProfilePopup {
       barrierDismissible: true,
       builder: (_) => GestureDetector(
         onTap: () {
-          NavigationUtil.pop(context);
+          if(onTapCancel != null){
+            onTapCancel();
+          } else {
+            NavigationUtil.pop(context);
+          }
         },
         child: Scaffold(
           backgroundColor: R.color.transparent,
@@ -115,7 +126,11 @@ class ShareProfilePopup {
                           SizedBox(width: 20),
                           GestureDetector(
                             onTap: () {
-                              Navigator.pop(context);
+                              if(onTapCancel != null){
+                                onTapCancel();
+                              } else {
+                                NavigationUtil.pop(context);
+                              }
                             },
                             child: Image.asset(R.drawable.ic_close, width: 28, height: 28),
                           ),

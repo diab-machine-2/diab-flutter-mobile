@@ -381,7 +381,7 @@ class _LessonTabPageState extends State<LessonTabPage> with AutomaticKeepAliveCl
   Widget _buildEmptyLessonList() {
     return Column(
       children: [
-        SizedBox(height: 116.h),
+        SizedBox(height: 70.h),
         if (_cubit.isFiltering)
           Image.asset(
             R.drawable.img_lesson_locked,

@@ -71,10 +71,11 @@ class ExerciseTabCubit extends Cubit<ExerciseTabState> {
     }
   }
 
-  void roadmapChanged(String newRoadmapId) {
+  Future roadmapChanged(String newRoadmapId) async {
     roadmapId = newRoadmapId;
-    myPlanCubit.getCurrentUserInfo();
-    getExerciseMovement();
+    await myPlanCubit.getCurrentUserInfo();
+    await onRefresh(isRefresh: true);
+  //  await getExerciseMovement();
   }
 
   Future<void> onRefresh({bool isRefresh = false, bool keepSelectedDayIndex = false}) async {

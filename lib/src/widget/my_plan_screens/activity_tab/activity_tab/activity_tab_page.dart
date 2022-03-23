@@ -76,7 +76,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
     if (notifyName == 'refresh_activity_tab') {
       Future.delayed(Duration(milliseconds: 1000), () {
         if (_cubit != null && isVisible) {
-          _cubit.refreshData();
+          _cubit.refreshData(isRefresh: true);
         }
       });
     }
@@ -208,14 +208,14 @@ class _ActivityTabPageState extends State<ActivityTabPage>
                                     if(DateUtil.isSameDay(_cubit.currentDay, DateTime.now().millisecondsSinceEpoch ~/ 1000) ?? false){
                                       Observable.instance.notifyObservers([], notifyName: Const.HIDE_OVERLAY_KEY);
                                       await NavigationUtil.navigatePage(context, CreateGoalPage(_cubit.smartGoalDayList));
-                                      _cubit.refreshData(keepCurrentDay: false);
+                                      _cubit.refreshData(isRefresh: true, keepCurrentDay: false);
                                     } else {
                                       _showDialogConfirmCreateGoal(context, 
                                       'Mục tiêu sẽ hiệu lực từ ngày ${convertToUTC(DateTime.now().millisecondsSinceEpoch ~/ 1000, 'dd/MM/yyyy')}, bạn có muốn tiếp tục?',
                                        () async {
                                           Observable.instance.notifyObservers([], notifyName: Const.HIDE_OVERLAY_KEY);
                                           await NavigationUtil.navigatePage(context, CreateGoalPage(_cubit.smartGoalDayList));
-                                          _cubit.refreshData(keepCurrentDay: false);
+                                          _cubit.refreshData(isRefresh: true, keepCurrentDay: false);
                                        },);
                                     }
                                   }),
@@ -526,30 +526,30 @@ class _ActivityTabPageState extends State<ActivityTabPage>
     switch (type) {
       case ScheduleType.blood_sugar:
         await Navigator.pushNamed(context, NavigatorName.add_blood_sugar, arguments: {'type': 'input'});
-        _cubit.refreshData();
+        _cubit.refreshData(isRefresh: true);
         break;
       case ScheduleType.blood_pressure:
         await Navigator.pushNamed(context, NavigatorName.add_blood_pressure, arguments: {'type': 'input'});
-        _cubit.refreshData();
+        _cubit.refreshData(isRefresh: true);
         break;
       case ScheduleType.weight:
         await Navigator.pushNamed(context, NavigatorName.add_bmi, arguments: {'type': 'input'});
-        _cubit.refreshData();
+        _cubit.refreshData(isRefresh: true);
         break;
       case ScheduleType.emotion:
         await Navigator.pushNamed(context, NavigatorName.add_emo, arguments: {'type': 'input'});
-        //    _cubit.refreshData();
+        //    _cubit.refreshData(isRefresh: true);
         break;
       case ScheduleType.food:
         await NavigationUtil.navigatePage(
           context,
           const DailyNutritionPage(type: 'input', id: null),
         );
-        _cubit.refreshData();
+        _cubit.refreshData(isRefresh: true);
         break;
       case ScheduleType.exercise:
         await Navigator.pushNamed(context, NavigatorName.add_exercrises, arguments: {'type': 'input'});
-        _cubit.refreshData();
+        _cubit.refreshData(isRefresh: true);
         break;
       case ScheduleType.exercise_movement:
         if (smartGoal?.exerciseData == null) break;

@@ -353,7 +353,7 @@ class _ExerciseTabPageState extends State<ExerciseTabPage> with AutomaticKeepAli
       child: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.symmetric(vertical: 24),
+            padding: const EdgeInsets.symmetric(vertical: 8),
             child: Image.asset(R.drawable.img_activity_empty),
           ),
           Padding(
@@ -386,7 +386,7 @@ class _ExerciseTabPageState extends State<ExerciseTabPage> with AutomaticKeepAli
       child: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.symmetric(vertical: 24),
+            padding: const EdgeInsets.symmetric(vertical: 8),
             child: Image.asset(R.drawable.img_day_no_exercise),
           ),
           Padding(
@@ -530,7 +530,7 @@ class _ExerciseTabPageState extends State<ExerciseTabPage> with AutomaticKeepAli
   Future<void> changeRoadMap() async {
     final newRoadmapId = await NavigationUtil.navigatePage(context, const SelectRoadMapPage());
     if (newRoadmapId is String && newRoadmapId.isNotEmpty && newRoadmapId != _cubit.roadmapId) {
-      _cubit.roadmapChanged(newRoadmapId);
+      await _cubit.roadmapChanged(newRoadmapId);
     }
   }
 
