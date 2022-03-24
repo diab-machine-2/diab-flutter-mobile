@@ -199,10 +199,10 @@ class _ProfileControllerState extends State<ProfileController> with Observer {
                           title: R.string.food_menu.tr(),
                           image: R.drawable.ic_food_menu,
                           onTap: () {
-                            if(userInfo?.ownPackage == null) {
-                              NavigationUtil.showUpdateRequirePopup(context: context, title: R.string.food_menu.tr());
-                              return;
-                            }
+                            // if(userInfo?.ownPackage == null) {
+                            //   NavigationUtil.showUpdateRequirePopup(context: context, title: R.string.food_menu.tr());
+                            //   return;
+                            // }
                             NavigationUtil.navigatePage(context, const FoodMenuPage());
                           }),
                     )

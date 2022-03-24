@@ -392,10 +392,10 @@ class _ScheduleGlucoseControllerState extends State<ScheduleGlucoseController> w
   }
 
   Future<void> doSurvey() async {
-    if(userInfo.isUserFree) {
-      NavigationUtil.showUpdateRequirePopup(context: context, title: R.string.testing_schedule_suggest.tr());
-      return;
-    }
+    // if(userInfo.isUserFree) {
+    //   NavigationUtil.showUpdateRequirePopup(context: context, title: R.string.testing_schedule_suggest.tr());
+    //   return;
+    // }
     await Future.delayed(Duration.zero);
     await NavigationUtil.navigatePage(
       context,

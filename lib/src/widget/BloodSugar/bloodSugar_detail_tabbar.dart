@@ -212,10 +212,10 @@ class CustomTabbarImageState extends State<CustomTabbarImage> {
               title: R.string.testing_schedule_suggest.tr(),
               icon: R.drawable.ic_blood_sugar_testing_suggest,
               onTap: () async {
-                if(userInfo.isUserFree) {
-                  NavigationUtil.showUpdateRequirePopup(context: context, title: R.string.testing_schedule_suggest.tr());
-                  return;
-                }
+                // if(userInfo.isUserFree) {
+                //   NavigationUtil.showUpdateRequirePopup(context: context, title: R.string.testing_schedule_suggest.tr());
+                //   return;
+                // }
                 await NavigationUtil.navigatePage(
                     context,
                     const BloodSugarStartSurveyPage(

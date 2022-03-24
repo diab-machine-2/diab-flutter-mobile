@@ -162,7 +162,7 @@ class ExerciseIndexModel {
 
 class HbA1CIndexModel {
   final double? index;
-  final double? indexChange;
+  double? indexChange;
   final int? createDateTime;
   final String? color;
   final ImagesModel? icon;

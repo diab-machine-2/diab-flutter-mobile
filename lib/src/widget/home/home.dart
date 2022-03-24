@@ -707,7 +707,7 @@ class _HomeControllerState extends State<HomeController> with Observer {
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Text(model == null ? '0' : formatNumber(model.consumedEnergy),
+                    Text(model == null ? '0' : roundNumberToInt(model.consumedEnergy ?? 0),
                         style: TextStyle(
                             fontFamily: 'Viga', color: R.color.black, fontSize: 26, fontWeight: FontWeight.w400)),
                     const SizedBox(width: 4),
@@ -882,7 +882,7 @@ class _HomeControllerState extends State<HomeController> with Observer {
                               padding: const EdgeInsets.only(top: 8),
                               child: Text(
                                   (model.indexChange! > 0 ? '+' : '') +
-                                      roundNumber(model.indexChange!) +
+                                      formatNumber(model.indexChange!) +
                                       R.string.ti_le_so_voi_lan_truoc.tr(),
                                   style: TextStyle(
                                       color: R.color.captionColorGray, fontSize: 12, fontWeight: FontWeight.w400)),
@@ -1058,8 +1058,8 @@ class _HomeControllerState extends State<HomeController> with Observer {
                                   : model.indexChange! == 0
                                       ? ''
                                       : 'Giảm ') +
-                              model.indexChange!.round().toString() +
-                              '%',
+                              model.indexChange!.toStringAsFixed(1) +
+                              ' %',
                           style: TextStyle(color: R.color.captionColorGray, fontSize: 12, fontWeight: FontWeight.w400)),
                     )
                   ],

@@ -58,7 +58,7 @@ class ExerciseTabCubit extends Cubit<ExerciseTabState> {
 
   void onSelectWeek(int newIndex) {
     currentWeekIndex = newIndex;
-    getExerciseMovement();
+    getExerciseMovement(isShowLoading: true);
   }
 
   void onSelectDay(int newDayIndex) {
@@ -106,10 +106,15 @@ class ExerciseTabCubit extends Cubit<ExerciseTabState> {
     });
   }
 
-  Future<void> getExerciseMovement({bool isRefresh = false, bool keepSelectedDayIndex = false}) async {
+  Future<void> getExerciseMovement({bool isRefresh = false, bool keepSelectedDayIndex = false, bool isShowLoading = false}) async {
     if (!isRefresh) {
       await Future.delayed(Duration.zero);
     }
+
+    if(isShowLoading){
+      emit(ExerciseTabLoading());
+    }
+
     final ApiResult<ExerciseMovementResponse> apiResult = await repository.getExerciseMovement(week: week);
     apiResult.when(success: (ExerciseMovementResponse response) {
       exerciseMovementResponse = response;

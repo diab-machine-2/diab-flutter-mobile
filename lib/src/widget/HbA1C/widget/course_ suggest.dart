@@ -1,3 +1,4 @@
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/learning/learning_post_model.dart';
@@ -9,7 +10,9 @@ import '../../../widgets/network_image_widget.dart';
 
 class CourseSuggest extends StatefulWidget {
   final int position;
+
   CourseSuggest({required this.position});
+
   @override
   _CourseSuggestState createState() => _CourseSuggestState();
 }
@@ -28,6 +31,10 @@ class _CourseSuggestState extends State<CourseSuggest>
 
   loadData() async {
     models = await LearningClient().fetchLearningPost(widget.position);
+    if(widget.position == 1){
+      models.removeWhere((item) => item.status == 0);
+    }
+
     setState(() {});
   }
 
@@ -48,31 +55,36 @@ class _CourseSuggestState extends State<CourseSuggest>
               ),
               Container(
                 height: 180,
-                child: ListView.separated(
-                    padding: EdgeInsets.only(left: 16, right: 16),
-                    itemCount: models.length,
-                    scrollDirection: Axis.horizontal,
-                    separatorBuilder: (BuildContext context, int index) {
-                      return SizedBox(width: 16);
-                    },
-                    itemBuilder: (BuildContext context, int index) {
-                      return GestureDetector(
+                alignment: Alignment.center,
+                child: CarouselSlider.builder(
+                  options: CarouselOptions(
+                    autoPlay: true,
+                 //   aspectRatio: 16/9,
+                 //   enlargeCenterPage: true,
+                    autoPlayInterval: Duration(seconds: 3),
+                    viewportFraction: 0.65,
+                    initialPage: 0,
+                  ),
+                  itemCount: models.length,
+                  itemBuilder: (BuildContext context, int index, int pageViewIndex) =>
+                    GestureDetector(
                         onTap: () {
                           _launchInBrowser(models[index].link!);
                         },
                         child: Container(
+                          padding: EdgeInsets.only(left: 12, right: 12),
                           color: R.color.transparent,
                           width: 223,
                           child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                ClipRRect(
+                                 ClipRRect(
                                   borderRadius: BorderRadius.circular(8.0),
                                   child: NetWorkImageWidget(imageUrl: 
                                     models[index].imageUrl.url ?? '',
-                                    width: 223,
+                                    width: 223, 
                                     height: 112,
-                                    fit: BoxFit.fitWidth,
+                                    fit: BoxFit.cover,
                                   ),
                                 ),
                                 SizedBox(height: 8),
@@ -84,8 +96,47 @@ class _CourseSuggestState extends State<CourseSuggest>
                                     overflow: TextOverflow.ellipsis),
                               ]),
                         ),
-                      );
-                    }),
+                      ),
+                ),
+                
+                // ListView.separated(
+                //     padding: EdgeInsets.only(left: 16, right: 16),
+                //     itemCount: models.length,
+                //     scrollDirection: Axis.horizontal,
+                //     separatorBuilder: (BuildContext context, int index) {
+                //       return SizedBox(width: 16);
+                //     },
+                //     itemBuilder: (BuildContext context, int index) {
+                //       return GestureDetector(
+                //         onTap: () {
+                //           _launchInBrowser(models[index].link!);
+                //         },
+                //         child: Container(
+                //           color: R.color.transparent,
+                //           width: 223,
+                //           child: Column(
+                //               crossAxisAlignment: CrossAxisAlignment.start,
+                //               children: [
+                //                 ClipRRect(
+                //                   borderRadius: BorderRadius.circular(8.0),
+                //                   child: NetWorkImageWidget(imageUrl: 
+                //                     models[index].imageUrl.url ?? '',
+                //                     width: 223,
+                //                     height: 112,
+                //                     fit: BoxFit.fitWidth,
+                //                   ),
+                //                 ),
+                //                 SizedBox(height: 8),
+                //                 Text(models[index].title!,
+                //                     style: TextStyle(
+                //                         fontWeight: FontWeight.w600,
+                //                         fontSize: 16),
+                //                     maxLines: 2,
+                //                     overflow: TextOverflow.ellipsis),
+                //               ]),
+                //         ),
+                //       );
+                //     }),
               )
             ]),
           );

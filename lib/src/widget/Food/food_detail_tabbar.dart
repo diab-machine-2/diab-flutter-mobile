@@ -132,10 +132,10 @@ class _FoodDetailTabbarControllerState extends State<FoodDetailTabbarController>
         body: Column(children: [
           GestureDetector(
             onTap: () async {
-              if(userInfo?.ownPackage == null) {
-                NavigationUtil.showUpdateRequirePopup(context: context, title: R.string.food_menu.tr());
-                return;
-              }
+              // if(userInfo?.ownPackage == null) {
+              //   NavigationUtil.showUpdateRequirePopup(context: context, title: R.string.food_menu.tr());
+              //   return;
+              // }
 
               await NavigationUtil.navigatePage(context, const FoodMenuPage());
               overviewKey.currentState!.reloadData(periodFilterType);

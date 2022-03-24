@@ -138,6 +138,11 @@ Color getColorExercise(ExerciseIndexModel model) {
   }
 }
 
+String roundNumberToInt(double number){
+  final round = number.round();
+  return round.toString();
+}
+
 String roundNumber(double number) {
   final round = number.round();
   final result = round - number;

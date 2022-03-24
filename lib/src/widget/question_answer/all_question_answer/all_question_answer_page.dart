@@ -16,6 +16,7 @@ import 'package:medical/src/widget/question_answer/all_question_answer/widget/ma
 import 'package:medical/src/widget/question_answer/all_question_answer/widget/question_item.dart';
 import 'package:medical/src/widgets/network_image_widget.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
+import '../../../utils/navigation_util.dart';
 import '../question_answer_utils.dart';
 import 'all_question_answer.dart';
 
@@ -30,6 +31,8 @@ class _AllQuestionAnswerPageState extends State<AllQuestionAnswerPage> with Auto
   late AllQuestionAnswerCubit _cubit;
   final ScrollController _scrollController = ScrollController();
   final ScrollController _questionScrollController = ScrollController();
+
+  var userInfo = AppSettings.userInfo;
 
   @override
   void initState() {
@@ -253,6 +256,11 @@ class _AllQuestionAnswerPageState extends State<AllQuestionAnswerPage> with Auto
   _buildMakeQuestion() {
     return MakeQuestionHeader(
       callback: () async {
+        if(userInfo?.isUserFree == true) {
+          NavigationUtil.showUpdateRequirePopup(context: context, title: R.string.ask_doctor.tr());
+          return;
+        }
+
         var result = await Navigator.pushNamed(context, NavigatorName.make_question,
             arguments: {'lessonModuleItems': _cubit.allLessonModules});
         if (result != null) {

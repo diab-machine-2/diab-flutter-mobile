@@ -76,6 +76,7 @@ dependencies:
   flutter_html: ^2.2.1
   html: ^0.15.0
   image_cropper: ^1.4.1
+  carousel_slider: ^4.0.0
   flutter_facebook_login:
     git:
       url: https://github.com/samlythemanly/flutter_facebook_login.git

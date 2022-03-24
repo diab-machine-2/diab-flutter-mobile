@@ -38,7 +38,7 @@ class LessonTabCubit extends Cubit<LessonTabState> {
   void onSelectWeek(int newIndex) {
     filterData.currentWeek = newIndex;
     if (filterData.filterWithWeek) {
-      getLessonsList();
+      getLessonsList(isShowLoading: true);
     } else {
       refresh();
     }
@@ -75,6 +75,7 @@ class LessonTabCubit extends Cubit<LessonTabState> {
       }
     }
 
+    await Future.delayed(Duration(milliseconds: 10));
     if (!isRefresh) emit(const LessonTabLoading());
     await getLessonWeekStates(isRefresh: isRefresh);
     await getLessonsList(isRefresh: isRefresh);
@@ -92,8 +93,11 @@ class LessonTabCubit extends Cubit<LessonTabState> {
     }
   }
 
-  Future<void> getLessonsList({bool isRefresh = false}) async {
-    //   await Future.delayed(Duration.zero);
+  Future<void> getLessonsList({bool isRefresh = false, bool isShowLoading = false}) async {
+    await Future.delayed(Duration.zero);
+    if(isShowLoading){
+      emit(const LessonTabLoading());
+    }
 
     final LessonFilterRequest request = filterData.getRequest(type: currentLessonTypeIndex + 1);
     final ApiResult<MyLessonResponse> apiResult = await repository.getLessonsList(request);
