@@ -55,6 +55,7 @@ import 'package:medical/src/model/response/week_states_response.dart';
 import 'package:medical/src/model/service/api_result.dart';
 import 'package:medical/src/model/service/network_exceptions.dart';
 
+import '../request/SelectRoadmapRequest.dart';
 import '../request/complete_video_request.dart';
 import '../request/mark_completed_calendar_request.dart';
 import '../request/read_welcome_request.dart';
@@ -386,9 +387,9 @@ class AppRepository {
     }
   }
 
-  Future<ApiResult<CommonResponse>> selectRoadmap(String roadmapId) async {
+  Future<ApiResult<CommonResponse>> selectRoadmap(SelectRoadmapRequest request) async {
     try {
-      final CommonResponse response = await appClient.selectRoadmap('"$roadmapId"');
+      final CommonResponse response = await appClient.selectRoadmap(request);
       return ApiResult.success(data: response);
     } catch (e) {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));
@@ -601,9 +602,9 @@ class AppRepository {
     }
   }
 
-  Future<ApiResult<SmartGoalStatisticResponse>> getSmartGoalStatistics({int? week}) async {
+  Future<ApiResult<SmartGoalStatisticResponse>> getSmartGoalStatistics({int? day, int? week}) async {
     try {
-      final SmartGoalStatisticResponse response = await appClient.getSmartGoalStatistics(week: week);
+      final SmartGoalStatisticResponse response = await appClient.getSmartGoalStatistics(day: day, week: week);
       return ApiResult.success(data: response);
     } catch (e) {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));

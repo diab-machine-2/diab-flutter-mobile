@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:medical/src/model/request/SelectRoadmapRequest.dart';
 import 'package:medical/src/model/request/make_comment_request.dart';
 import 'package:medical/src/model/request/make_question_request.dart';
 import 'package:medical/src/model/request/mark_completed_calendar_request.dart';
@@ -192,7 +193,7 @@ abstract class AppApi {
 
   @POST("App/Patient/Roadmap")
   Future<CommonResponse> selectRoadmap(
-    @Body() String roadmapId,
+    @Body() SelectRoadmapRequest request,
   );
 
   @GET("App/ExerciseMovement/All")
@@ -286,6 +287,7 @@ abstract class AppApi {
 
   @GET("App/Target/GetTargetWeekStatistics")
   Future<SmartGoalStatisticResponse> getSmartGoalStatistics({
+    @Query('day') int? day,
     @Query('week') int? week,
   });
 

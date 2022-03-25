@@ -85,8 +85,8 @@ class SurveyQuestionCubit extends Cubit<SurveyQuestionState> {
   Future<void> scrollToNotAnsweredQuiz() async {
     int scrollIndex = 0;
     for (int index = 0; index < questions.length; index++) {
-      scrollIndex = index;
       if (!questions[index].hasUserAnswer) {
+        scrollIndex = index;
         break;
       }
     }

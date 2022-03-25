@@ -155,8 +155,11 @@ class ActivityTabCubit extends Cubit<ActivityTabState> {
     bool keepCurrentDay = false,
   }) async {
     await Future.delayed(Duration.zero);
+    DateTime dateTime0 = DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day, 0, 0, 0);
+    int startDate = (dateTime0.millisecondsSinceEpoch ~/ 1000).toInt();
+
 //    if (!isRefresh) emit(const ActivityTabLoading());
-    final ApiResult<SmartGoalStatisticResponse> apiResult = await repository.getSmartGoalStatistics(week: currentWeek);
+    final ApiResult<SmartGoalStatisticResponse> apiResult = await repository.getSmartGoalStatistics(day: startDate, week: currentWeek);
     apiResult.when(success: (SmartGoalStatisticResponse response) {
       statistic = response.data;
       

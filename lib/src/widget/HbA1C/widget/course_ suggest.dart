@@ -59,10 +59,10 @@ class _CourseSuggestState extends State<CourseSuggest>
                 child: CarouselSlider.builder(
                   options: CarouselOptions(
                     autoPlay: true,
-                 //   aspectRatio: 16/9,
+                    aspectRatio: 2.0,
                  //   enlargeCenterPage: true,
                     autoPlayInterval: Duration(seconds: 3),
-                    viewportFraction: 0.65,
+                    viewportFraction: 0.6,
                     initialPage: 0,
                   ),
                   itemCount: models.length,
@@ -72,7 +72,7 @@ class _CourseSuggestState extends State<CourseSuggest>
                           _launchInBrowser(models[index].link!);
                         },
                         child: Container(
-                          padding: EdgeInsets.only(left: 12, right: 12),
+                          padding: EdgeInsets.only(left: 6, right: 6),
                           color: R.color.transparent,
                           width: 223,
                           child: Column(

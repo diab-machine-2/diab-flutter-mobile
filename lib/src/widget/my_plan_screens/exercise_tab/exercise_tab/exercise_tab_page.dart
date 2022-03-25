@@ -150,7 +150,7 @@ class _ExerciseTabPageState extends State<ExerciseTabPage> with AutomaticKeepAli
                                       : SizedBox(height: 20.h));
                             },
                             separatorBuilder: (context, index) {
-                              return Container(
+                              return (_cubit.exerciseMovementResponse?.data?[index]?.isBlank == true) ? Container() : Container(
                                 height: 1,
                                 color: R.color.grayBorder,
                               );

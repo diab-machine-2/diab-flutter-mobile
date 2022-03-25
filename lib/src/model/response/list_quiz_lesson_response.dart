@@ -91,11 +91,11 @@ class QuizData {
       if (answer.isAnswered) return true;
     }
     if(answers?.isEmpty == true){
-      String? accountIdCurrentUser = AppSettings.userInfo?.accountId;
+     // String? accountIdCurrentUser = AppSettings.userInfo?.accountId;
       if(results != null){
-        if(results!.accountId == accountIdCurrentUser){
+     //   if(results!.accountId == accountIdCurrentUser){
           return true;
-        }
+     //   }
       }
     }
     return false;

@@ -52,19 +52,19 @@ extension DayInWeekExtend on DayInWeek {
 
   int get index {
     switch (this) {
-      case DayInWeek.sun:
-        return 0;
       case DayInWeek.mon:
-        return 1;
+        return 0;
       case DayInWeek.tue:
-        return 2;
+        return 1;
       case DayInWeek.wed:
-        return 3;
+        return 2;
       case DayInWeek.thu:
-        return 4;
+        return 3;
       case DayInWeek.fri:
-        return 5;
+        return 4;
       case DayInWeek.sat:
+        return 5;
+      case DayInWeek.sun:
         return 6;
     }
   }
@@ -81,14 +81,14 @@ extension DayInWeekExtend on DayInWeek {
   }
 
   static DayInWeek getDayInWeekFromIndex(int? index) {
-    if (index == 1) return DayInWeek.mon;
-    if (index == 2) return DayInWeek.tue;
-    if (index == 3) return DayInWeek.wed;
-    if (index == 4) return DayInWeek.thu;
-    if (index == 5) return DayInWeek.fri;
-    if (index == 6) return DayInWeek.sat;
-    if (index == 7) return DayInWeek.sun;
-    if (index == 0) return DayInWeek.sun;
+    if (index == 0) return DayInWeek.mon;
+    if (index == 1) return DayInWeek.tue;
+    if (index == 2) return DayInWeek.wed;
+    if (index == 3) return DayInWeek.thu;
+    if (index == 4) return DayInWeek.fri;
+    if (index == 5) return DayInWeek.sat;
+    if (index == 6) return DayInWeek.sun;
+    if (index == -1) return DayInWeek.sun;
     return DayInWeek.mon;
   }
 

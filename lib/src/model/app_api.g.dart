@@ -446,11 +446,12 @@ class _AppApi implements AppApi {
   }
 
   @override
-  Future<CommonResponse> selectRoadmap(roadmapId) async {
+  Future<CommonResponse> selectRoadmap(request) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
-    final _data = roadmapId;
+    final _data = <String, dynamic>{};
+    _data.addAll(request.toJson());
     final _result = await _dio.fetch<Map<String, dynamic>>(
         _setStreamType<CommonResponse>(
             Options(method: 'POST', headers: _headers, extra: _extra)
@@ -799,9 +800,9 @@ class _AppApi implements AppApi {
   }
 
   @override
-  Future<SmartGoalStatisticResponse> getSmartGoalStatistics({week}) async {
+  Future<SmartGoalStatisticResponse> getSmartGoalStatistics({day, week}) async {
     const _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{r'week': week};
+    final queryParameters = <String, dynamic>{r'day': day, r'week': week};
     queryParameters.removeWhere((k, v) => v == null);
     final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
