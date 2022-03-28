@@ -28,14 +28,16 @@ class IntroduceSurveyPage extends StatefulWidget {
 class _IntroduceSurveyPageState extends State<IntroduceSurveyPage> {
   late IntroduceSurveyCubit _cubit;
   late String surveyId;
+  late int state;
 
   @override
   void initState() {
     super.initState();
     surveyId = widget.survey?.surveyId ?? "";
+    state = widget.survey?.state ?? 0;
     final AppRepository repository = AppRepository();
     _cubit = IntroduceSurveyCubit(repository);
-    _cubit.getDetailSurvey(surveyId);
+    _cubit.getDetailSurvey(surveyId, state);
     AppSettings.showed50Message = false;
     AppSettings.showed90Message = false;
   }

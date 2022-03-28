@@ -162,11 +162,11 @@ class AppRepository {
   Future<ApiResult<SaveSurveyResultResponse>> saveSurveyResult(String templateId) async {
     try {
       final SaveSurveyResultResponse response = await appClient.saveSurveyResult(templateId);
-      if (response.statusCode == 200) {
+    //  if (response.statusCode == 200) {
         return ApiResult.success(data: response);
-      } else {
-        return const ApiResult.failure(error: NetworkExceptions.defaultError("Save schedule failed"));
-      }
+    //  } else {
+    //    return const ApiResult.failure(error: NetworkExceptions.defaultError("Save schedule failed"));
+    //  }
     } catch (e) {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));
     }

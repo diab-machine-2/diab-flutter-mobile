@@ -89,7 +89,7 @@ class ActivityTabCubit extends Cubit<ActivityTabState> {
     await myPlanCubit.checkUserInfo();
 
     if (myPlanCubit.isHasRoadmapUser) {
-      currentWeekIndex = myPlanCubit.currentStudyWeek! - 1;
+      currentWeekIndex = myPlanCubit.currentStudyWeek!;
       if (currentWeekIndex == -1) currentWeekIndex = 0;
     } else {
       currentWeekIndex = 0;

@@ -17,6 +17,7 @@ import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widgets/button_widget.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
 
+import '../../my_plan_screens/activity_tab/activity_tab/models/schedule_state.dart';
 import '../survey/survey.dart';
 import '../survey_result/survey_result_page.dart';
 import 'survey_question.dart';
@@ -165,6 +166,7 @@ class _SurveyQuestionPageState extends State<SurveyQuestionPage> {
                         vertical: 16, horizontal: 16),
                     width: ScreenUtil().screenWidth - 32,
                     child: CardCourseQuizSurveyPage(
+                      status: widget.surveyData.status,
                       key: listGlobal[index],
                       index: index,
                       quizData: data,
@@ -249,13 +251,17 @@ class _SurveyQuestionPageState extends State<SurveyQuestionPage> {
     final VoidCallback? onTap = isEnable
         ? () async {
             if (widget.surveyData.id != null &&
-                _cubit.sectionSurvey?.id != null)
-              await _cubit.submitAnswer(
-                surveyId: widget.surveyData.id!,
-                sectionId: _cubit.sectionSurvey!.id!,
-                questionId: _cubit.currentQuestion?.id ?? '',
-                isRelatedQuestion: _cubit.currentQuestion?.isRelatedQuestions ?? false,
-              );
+                _cubit.sectionSurvey?.id != null) {
+            //    if(_cubit.currentQuestion?.hasUserAnswer != true){
+              if(widget.surveyData.status != ScheduleState.completed.stateIndex) {
+                await _cubit.submitAnswer(
+                  surveyId: widget.surveyData.id!,
+                  sectionId: _cubit.sectionSurvey!.id!,
+                  questionId: _cubit.currentQuestion?.id ?? '',
+                  isRelatedQuestion: _cubit.currentQuestion?.isRelatedQuestions ?? false,
+                );
+              }
+            }
             FocusScope.of(context).unfocus();
             if (_cubit.selectedCourseIndex == _cubit.lengthQuiz - 1) {
               final bool isLastPart =

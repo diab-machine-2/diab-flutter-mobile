@@ -94,7 +94,7 @@ class ExerciseTabCubit extends Cubit<ExerciseTabState> {
 
     emit(const ExerciseTabLoading());
     if (myPlanCubit.isHasRoadmapUser) {
-      currentWeekIndex = myPlanCubit.currentStudyWeek! - 1;
+      currentWeekIndex = myPlanCubit.currentStudyWeek!;
       if (currentWeekIndex == -1) currentWeekIndex = 0;
       await getWeekStates();
     } else {

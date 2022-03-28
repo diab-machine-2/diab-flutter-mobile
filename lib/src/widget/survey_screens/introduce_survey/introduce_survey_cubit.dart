@@ -12,13 +12,14 @@ class IntroduceSurveyCubit extends Cubit<IntroduceSurveyState> {
 
   IntroduceSurveyCubit(this.repository) : super(InitialIntroduceSurveyState());
 
-  Future<void> getDetailSurvey(String surveyId) async {
+  Future<void> getDetailSurvey(String surveyId, int state) async {
     emit(IntroduceSurveyLoading());
     final ApiResult<SurveyData> apiResult =
         await repository.getDetailSurvey(surveyId);
     apiResult.when(success: (SurveyData response) {
       surveyData = response;
-      
+      surveyData?.setStatus(state);
+
       if(surveyData?.sections != null){
         surveyData!.sections!.sort((a, b) { 
           if(a.order != null && b.order != null){

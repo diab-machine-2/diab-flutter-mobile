@@ -68,7 +68,7 @@ class LessonTabCubit extends Cubit<LessonTabState> {
       filterData.currentWeek = currentWeek;
     } else {
       if (showCurrentWeek && myPlanCubit.isHasRoadmapUser) {
-        filterData.currentWeek = myPlanCubit.currentStudyWeek! - 1;
+        filterData.currentWeek = myPlanCubit.currentStudyWeek!;
         if (filterData.currentWeek == -1) filterData.currentWeek = 0;
       } else {
         filterData.currentWeek = 0;

@@ -45,7 +45,7 @@ extension ScheduleTypeExtend on ScheduleType {
       case ScheduleType.survey:
         return R.drawable.ic_schedule_survey;
       case ScheduleType.lesson:
-        return R.drawable.ic_schedule_exercise;
+        return R.drawable.ic_schedule_lesson;
       case ScheduleType.io_evaluate:
         return R.drawable.ic_schedule_io_evaluate;
       case ScheduleType.update_profile:

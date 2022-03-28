@@ -92,10 +92,15 @@ class SurveyData {
   bool? get isBeta => _isBeta;
   int? get questionCount => _questionCount;
   int? get status => _status;
+  int? get state => _state;
   String? get updateDatetime => _updateDatetime;
   String? get updaterName => _updaterName;
   ImagesModel? get updaterImage => _updaterImage;
   List<SectionSurvey>? get sections => _sections;
+
+  setStatus(int status){
+    _status = status;
+  }
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
