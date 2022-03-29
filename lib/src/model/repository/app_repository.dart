@@ -9,6 +9,7 @@ import 'package:medical/src/model/request/ios_receipt_request.dart';
 import 'package:medical/src/model/request/lesson_filter_request.dart';
 import 'package:medical/src/model/request/make_comment_request.dart';
 import 'package:medical/src/model/request/make_question_request.dart';
+import 'package:medical/src/model/request/mark_completed_target_request.dart';
 import 'package:medical/src/model/request/mark_share_request.dart';
 import 'package:medical/src/model/request/post_survey_request.dart';
 import 'package:medical/src/model/request/send_feedback_course_request.dart';
@@ -484,6 +485,15 @@ class AppRepository {
   Future<ApiResult<CommonResponse>> completeSmartGoal(CompleteSmartGoalRequest request) async {
     try {
       final CommonResponse response = await appClient.completeSmartGoal(request);
+      return ApiResult.success(data: response);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
+  Future<ApiResult<CommonResponse>> completeGoal(MarkCompletedTargetRequest request) async {
+    try {
+      final CommonResponse response = await appClient.completeGoal(request);
       return ApiResult.success(data: response);
     } catch (e) {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));

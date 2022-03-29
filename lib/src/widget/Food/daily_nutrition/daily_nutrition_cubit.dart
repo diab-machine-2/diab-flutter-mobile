@@ -18,10 +18,12 @@ import 'package:medical/src/repo/HbA1C/HbA1C_client.dart';
 import 'package:medical/src/repo/food/food_client.dart';
 import 'package:medical/src/utils/const.dart';
 
+import '../../../repo/home/home_client.dart';
+import '../../my_plan_screens/activity_tab/activity_tab/models/schedule_type.dart';
 import 'daily_nutrition.dart';
 
 class DailyNutritionCubit extends Cubit<DailyNutritionState> {
-  DailyNutritionCubit(this.repository) : super(const DailyNutritionInitial());
+  DailyNutritionCubit(this.repository, this.goalId) : super(const DailyNutritionInitial());
 
   final AppRepository repository;
   final FoodClient foodClient = FoodClient();
@@ -54,6 +56,8 @@ class DailyNutritionCubit extends Cubit<DailyNutritionState> {
   double? totalKcalInFoodMenu;
 
   bool addTotalCalo = false;
+
+  String? goalId;
 
   String otherFoodId = '7e8c6d8e-5d34-4c86-b15e-7ffe2e156999';
 
@@ -314,6 +318,9 @@ class DailyNutritionCubit extends Cubit<DailyNutritionState> {
               : selectedFoods,
           paths);
       if (result == true) {
+        if(goalId != null && goalId?.isNotEmpty == true){
+          await HomeClient().completeSmartGoal(selectedDate, goalId ?? '', 1, ScheduleType.food.typeIndex);
+        }
         Observable.instance.notifyObservers([], notifyName: "food_change_data");
         emit(const DailyNutritionSubmitSuccess());
       }

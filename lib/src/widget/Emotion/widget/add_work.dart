@@ -29,6 +29,7 @@ class AddWorkController extends StatefulWidget {
   final String? otherSymptom;
   final String? otherActivity;
   final ActivityCallback? callback;
+  final String? goalId;
 
   AddWorkController(
       {this.type,
@@ -37,7 +38,9 @@ class AddWorkController extends StatefulWidget {
       this.activities,
       this.callback,
       this.otherSymptom,
-      this.otherActivity});
+      this.otherActivity,
+      this.goalId,
+      });
   @override
   _AddWorkControllerState createState() => _AddWorkControllerState();
 }
@@ -193,6 +196,7 @@ class _AddWorkControllerState extends BaseState<AddWorkController> {
                       'activities': selectedModel,
                       'otherSymptom': widget.otherSymptom,
                       'otherActivity': otherActivity,
+                      'goalId': widget.goalId,
                     });
                   } else {
                     widget.callback!(selectedModel, otherActivity);

@@ -33,6 +33,9 @@ import 'package:image_picker/image_picker.dart';
 import 'package:medical/src/modal/error/error_model.dart';
 import 'package:easy_localization/easy_localization.dart';
 
+import '../../../repo/home/home_client.dart';
+import '../../my_plan_screens/activity_tab/activity_tab/models/schedule_type.dart';
+
 class AddInsightController extends StatefulWidget {
   final String? type;
   final String? id;
@@ -41,6 +44,7 @@ class AddInsightController extends StatefulWidget {
   final List<ActivityModel>? activities;
   final String? otherSymptom;
   final String? otherActivity;
+  final String? goalId;
 
   AddInsightController(
       {this.type,
@@ -49,7 +53,9 @@ class AddInsightController extends StatefulWidget {
       this.symptoms,
       this.activities,
       this.otherSymptom,
-      this.otherActivity});
+      this.otherActivity,
+      this.goalId,
+      });
 
   @override
   _AddInsightControllerState createState() => _AddInsightControllerState();
@@ -1014,6 +1020,9 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
           note,
           paths);
       if (result == true) {
+        if(widget.goalId != null && widget.goalId?.isNotEmpty == true){
+          await HomeClient().completeSmartGoal(selectedDate, widget.goalId ?? '', 1, ScheduleType.emotion.typeIndex);
+        }
         Observable.instance
             .notifyObservers([], notifyName: "Emotion_change_data");
       }

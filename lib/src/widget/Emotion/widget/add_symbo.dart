@@ -25,13 +25,15 @@ class AddSymboController extends StatefulWidget {
   final List<SymptomModel>? symptoms;
   final String? otherSymptom;
   final SympoCallback? callback;
+  final String? goalId;
 
   AddSymboController(
       {this.type,
       this.emotion,
       this.symptoms,
       this.otherSymptom,
-      this.callback});
+      this.callback,
+      this.goalId});
   @override
   _AddSymboControllerState createState() => _AddSymboControllerState();
 }
@@ -184,6 +186,7 @@ class _AddSymboControllerState extends BaseState<AddSymboController> {
                       'emotion': widget.emotion,
                       'symptoms': selectedModel,
                       'otherSymptom': otherSymptom,
+                      'goalId': widget.goalId,
                     });
                   } else {
                     widget.callback!(selectedModel, otherSymptom);

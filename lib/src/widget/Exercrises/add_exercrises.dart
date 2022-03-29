@@ -26,15 +26,23 @@ import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
+import 'package:medical/src/widget/my_plan_screens/activity_tab/activity_tab/models/schedule_type.dart';
 import 'package:permission_handler/permission_handler.dart';
 
+import '../../model/repository/app_repository.dart';
+import '../../model/request/complete_smart_goal_request.dart';
+import '../../model/response/common_response.dart';
+import '../../model/service/api_result.dart';
+import '../../model/service/network_exceptions.dart';
+import '../../repo/home/home_client.dart';
 import '../../widgets/network_image_widget.dart';
 
 class AddExercrisesController extends StatefulWidget {
   final String? type;
   final String? id;
+  final String? goalId;
 
-  AddExercrisesController({this.type, this.id});
+  AddExercrisesController({this.type, this.id, this.goalId});
 
   @override
   _AddExercrisesControllerState createState() =>
@@ -56,6 +64,7 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
 
   InputDetailExercriseModel? model;
   List<String?> removeIDs = [];
+  final AppRepository repository = AppRepository();
 
   ShortGuiModel? des;
 
@@ -1172,6 +1181,13 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
           selectedCategory,
           paths);
       if (result == true) {
+        if(widget.goalId != null && widget.goalId?.isNotEmpty == true){
+          // var totalDuration = 0.0;
+          // for(var item in selectedCategory){
+          //   totalDuration += item.duration ?? 0;
+          // }
+          await HomeClient().completeSmartGoal(selectedDate, widget.goalId ?? '', 1, ScheduleType.exercise.typeIndex);
+        }
         Observable.instance
             .notifyObservers([], notifyName: "active_change_data");
       }

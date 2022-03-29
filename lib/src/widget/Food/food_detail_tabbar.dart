@@ -184,7 +184,7 @@ class _FoodDetailTabbarControllerState extends State<FoodDetailTabbarController>
         floatingActionButton: FloatingActionButton(
           onPressed: () {
             NavigationUtil.navigatePage(
-                context, const DailyNutritionPage(type: 'input', id: null));
+                context, DailyNutritionPage(type: 'input', id: null));
           },
           child: Image.asset(R.drawable.ic_button_plus, width: 80, height: 80),
         ));

@@ -234,6 +234,7 @@ class _AppState extends State<App> {
                       AddBloodSugarController(
                         type: data?['type'],
                         id: data?['id'],
+                        goalId: data?['goalId'],
                       ));
                 case NavigatorName.add_exercrises:
                   final data = settings.arguments as Map<String, dynamic>?;
@@ -242,6 +243,7 @@ class _AppState extends State<App> {
                       AddExercrisesController(
                         type: data?['type'],
                         id: data?['id'],
+                        goalId: data?['goalId'],
                       ));
                 case NavigatorName.search_exercrises:
                   final data = settings.arguments as Map<String, dynamic>?;
@@ -259,6 +261,7 @@ class _AppState extends State<App> {
                       AddBloodPressureController(
                         type: data?['type'],
                         id: data?['id'],
+                        goalId: data?['goalId'],
                       ));
                 case NavigatorName.input_detail_exercrise:
                   final data = settings.arguments as Map<String, dynamic>?;
@@ -315,6 +318,7 @@ class _AppState extends State<App> {
                       AddBmiController(
                         type: data?['type'],
                         id: data?['id'],
+                        goalId: data?['goalId'],
                       ));
                 case NavigatorName.add_emo:
                   final data = settings.arguments as Map<String, dynamic>?;
@@ -323,6 +327,7 @@ class _AppState extends State<App> {
                       AddEmoController(
                         type: data?['type'],
                         emotion: data?['emotion'],
+                        goalId: data?['goalId'],
                       ));
                 case NavigatorName.add_symbo:
                   final data = settings.arguments as Map<String, dynamic>?;
@@ -333,6 +338,7 @@ class _AppState extends State<App> {
                         emotion: data?['emotion'],
                         symptoms: data?['symptoms'],
                         otherSymptom: data?['otherSymptom'],
+                        goalId: data?['goalId'],
                       ));
                 case NavigatorName.add_work:
                   final data = settings.arguments as Map<String, dynamic>?;
@@ -344,7 +350,8 @@ class _AppState extends State<App> {
                           symptoms: data?['symptoms'],
                           activities: data?['activities'],
                           otherSymptom: data?['otherSymptom'],
-                          otherActivity: data?['otherActivity']));
+                          otherActivity: data?['otherActivity'],
+                          goalId: data?['goalId'],));
 
                 case NavigatorName.add_insight:
                   final data = settings.arguments as Map<String, dynamic>?;
@@ -357,7 +364,8 @@ class _AppState extends State<App> {
                           symptoms: data?['symptoms'],
                           activities: data?['activities'],
                           otherSymptom: data?['otherSymptom'],
-                          otherActivity: data?['otherActivity']));
+                          otherActivity: data?['otherActivity'],
+                          goalId: data?['goalId'],));
                 case NavigatorName.detail_food:
                   return _buildRoute(settings, FoodDetailTabbarController(), isPresent: true);
                 case NavigatorName.detail_emotion:

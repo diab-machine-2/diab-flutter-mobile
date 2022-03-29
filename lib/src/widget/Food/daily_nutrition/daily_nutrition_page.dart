@@ -26,10 +26,11 @@ import '../search_food_controller.dart';
 import 'daily_nutrition.dart';
 
 class DailyNutritionPage extends StatefulWidget {
-  const DailyNutritionPage({required this.type, required this.id});
+  DailyNutritionPage({required this.type, required this.id, this.goalId});
 
   final String? type;
   final String? id;
+  final String? goalId;
 
   @override
   _DailyNutritionPageState createState() => _DailyNutritionPageState();
@@ -44,7 +45,7 @@ class _DailyNutritionPageState extends State<DailyNutritionPage> {
   @override
   void initState() {
     final AppRepository appRepository = AppRepository();
-    _cubit = DailyNutritionCubit(appRepository);
+    _cubit = DailyNutritionCubit(appRepository, widget.goalId ?? '');
     _cubit.getInitialData(type: widget.type, id: widget.id);
     super.initState();
   }

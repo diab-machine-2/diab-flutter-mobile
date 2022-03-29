@@ -28,13 +28,22 @@ import 'package:image_picker/image_picker.dart';
 import 'package:medical/src/modal/error/error_model.dart';
 import 'package:easy_localization/easy_localization.dart';
 
+import '../../../model/repository/app_repository.dart';
+import '../../../model/request/complete_smart_goal_request.dart';
+import '../../../model/request/mark_completed_target_request.dart';
+import '../../../model/response/common_response.dart';
+import '../../../model/service/api_result.dart';
+import '../../../model/service/network_exceptions.dart';
+import '../../../repo/home/home_client.dart';
 import '../../../widgets/network_image_widget.dart';
+import '../../my_plan_screens/activity_tab/activity_tab/models/schedule_type.dart';
 
 class AddBmiController extends StatefulWidget {
   final String? type;
   final String? id;
+  final String? goalId;
 
-  AddBmiController({this.type, this.id});
+  AddBmiController({this.type, this.id, this.goalId,});
 
   @override
   _AddBmiControllerState createState() => _AddBmiControllerState();
@@ -60,6 +69,7 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
   double? bmiNumber = 0;
 
   ShortGuiModel? des;
+  final AppRepository repository = AppRepository();
 
   @override
   void initState() {
@@ -826,6 +836,9 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
           selectedTimeFrame!.id);
       BotToast.closeAllLoading();
       if (result == true) {
+        if(widget.goalId != null && widget.goalId?.isNotEmpty == true){
+          await HomeClient().completeSmartGoal(selectedDate, widget.goalId ?? '', 1, ScheduleType.weight.typeIndex);
+        }
         updateHeightProfile();
         Observable.instance.notifyObservers([], notifyName: "Weight_change_data");
       }

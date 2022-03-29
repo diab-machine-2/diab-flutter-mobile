@@ -24,8 +24,9 @@ class AddEmoController extends StatefulWidget {
   final String? type;
   final EmotionModel? emotion;
   final EmotionCallback? callback;
+  final String? goalId;
 
-  AddEmoController({this.type, this.emotion, this.callback});
+  AddEmoController({this.type, this.emotion, this.callback, this.goalId});
   @override
   _AddEmoControllerState createState() => _AddEmoControllerState();
 }
@@ -221,6 +222,7 @@ class _AddEmoControllerState extends BaseState<AddEmoController> {
                     Navigator.pushNamed(context, NavigatorName.add_symbo, arguments: {
                       'type': 'input',
                       'emotion': selectedEmotion,
+                      'goalId': widget.goalId,
                     });
                   } else {
                     widget.callback!(selectedEmotion);

@@ -123,7 +123,7 @@ class FunkyOverlayState extends State<FunkyOverlay> with SingleTickerProviderSta
                             await onClose();
                             NavigationUtil.navigatePage(
                               context,
-                              const DailyNutritionPage(
+                              DailyNutritionPage(
                                 type: 'input',
                                 id: null,
                               ),

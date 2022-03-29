@@ -525,30 +525,30 @@ class _ActivityTabPageState extends State<ActivityTabPage>
     Observable.instance.notifyObservers([], notifyName: Const.HIDE_OVERLAY_KEY);
     switch (type) {
       case ScheduleType.blood_sugar:
-        await Navigator.pushNamed(context, NavigatorName.add_blood_sugar, arguments: {'type': 'input'});
+        await Navigator.pushNamed(context, NavigatorName.add_blood_sugar, arguments: {'type': 'input', 'goalId': smartGoal?.id});
         _cubit.refreshData(isRefresh: true);
         break;
       case ScheduleType.blood_pressure:
-        await Navigator.pushNamed(context, NavigatorName.add_blood_pressure, arguments: {'type': 'input'});
+        await Navigator.pushNamed(context, NavigatorName.add_blood_pressure, arguments: {'type': 'input', 'goalId': smartGoal?.id});
         _cubit.refreshData(isRefresh: true);
         break;
       case ScheduleType.weight:
-        await Navigator.pushNamed(context, NavigatorName.add_bmi, arguments: {'type': 'input'});
+        await Navigator.pushNamed(context, NavigatorName.add_bmi, arguments: {'type': 'input', 'goalId': smartGoal?.id});
         _cubit.refreshData(isRefresh: true);
         break;
       case ScheduleType.emotion:
-        await Navigator.pushNamed(context, NavigatorName.add_emo, arguments: {'type': 'input'});
+        await Navigator.pushNamed(context, NavigatorName.add_emo, arguments: {'type': 'input', 'goalId': smartGoal?.id});
         //    _cubit.refreshData(isRefresh: true);
         break;
       case ScheduleType.food:
         await NavigationUtil.navigatePage(
           context,
-          const DailyNutritionPage(type: 'input', id: null),
+          DailyNutritionPage(type: 'input', id: null, goalId: smartGoal?.id),
         );
         _cubit.refreshData(isRefresh: true);
         break;
       case ScheduleType.exercise:
-        await Navigator.pushNamed(context, NavigatorName.add_exercrises, arguments: {'type': 'input'});
+        await Navigator.pushNamed(context, NavigatorName.add_exercrises, arguments: {'type': 'input', 'goalId': smartGoal?.id});
         _cubit.refreshData(isRefresh: true);
         break;
       case ScheduleType.exercise_movement:
