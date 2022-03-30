@@ -9,15 +9,18 @@ class ScheduleGlucoseModel {
   final ScheduleModel? friday;
   final ScheduleModel? saturday;
   final ScheduleModel? sunday;
+  int? currentDate;
 
-  const ScheduleGlucoseModel(
+  ScheduleGlucoseModel(
       {required this.monday,
       required this.tuesday,
       required this.wednesday,
       required this.thursday,
       required this.friday,
       required this.saturday,
-      required this.sunday});
+      required this.sunday,
+      required this.currentDate,
+      });
 
   ScheduleGlucoseModel copyWith({
     ScheduleModel? monday,
@@ -36,6 +39,7 @@ class ScheduleGlucoseModel {
         friday: friday ?? this.friday,
         saturday: saturday ?? this.saturday,
         sunday: sunday ?? this.sunday,
+        currentDate: currentDate ?? this.currentDate,
       );
 
   factory ScheduleGlucoseModel.fromJson(Map<String, dynamic> json) {
@@ -47,6 +51,7 @@ class ScheduleGlucoseModel {
       friday: ScheduleModel.fromJson(json['friday']),
       saturday: ScheduleModel.fromJson(json['saturday']),
       sunday: ScheduleModel.fromJson(json['sunday']),
+      currentDate: json['currentDate'],
     );
   }
 
@@ -61,7 +66,8 @@ class ScheduleGlucoseModel {
         'thursday': thursday!.toJson(),
         'friday': friday!.toJson(),
         'saturday': saturday!.toJson(),
-        'sunday': sunday!.toJson()
+        'sunday': sunday!.toJson(),
+        'currentDate': currentDate,
       };
 }
 

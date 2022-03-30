@@ -180,11 +180,11 @@ class ActivityTabCubit extends Cubit<ActivityTabState> {
     //   if (hideLoadingAfterDone) emit(const ActivityTabInitial());
   }
 
-  Future<void> completeSmartGoal(String? smartGoalId, int? executeDayTimes, int? type) async {
+  Future<void> completeSmartGoal(String? smartGoalId, int? executeDayTimes, int? type, int? appointmentDate) async {
     if (smartGoalId == null) return;
     emit(const ActivityTabLoading());
     final CompleteSmartGoalRequest request =
-        CompleteSmartGoalRequest(id: smartGoalId, executeTimes: executeDayTimes, type: type);
+        CompleteSmartGoalRequest(id: smartGoalId, executeTimes: executeDayTimes, type: type, appointmentDate: appointmentDate);
     final ApiResult<CommonResponse> apiResult = await repository.completeSmartGoal(request);
     apiResult.when(success: (CommonResponse response) {
       Observable.instance

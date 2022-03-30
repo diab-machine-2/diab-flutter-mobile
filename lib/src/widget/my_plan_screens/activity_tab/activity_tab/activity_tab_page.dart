@@ -702,7 +702,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
       onTap: smartGoal?.isCompleted == true
           ? null
           : () {
-              _cubit.completeSmartGoal(smartGoal?.id, smartGoal?.executeDayTimes, smartGoal?.type);
+              _cubit.completeSmartGoal(smartGoal?.id, smartGoal?.executeDayTimes, smartGoal?.type, smartGoal?.appointmentDate);
               NavigationUtil.pop(context);
             },
       child: Column(

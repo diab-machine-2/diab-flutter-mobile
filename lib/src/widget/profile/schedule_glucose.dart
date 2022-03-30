@@ -545,6 +545,8 @@ class _ScheduleGlucoseControllerState extends State<ScheduleGlucoseController> w
   submitData() async {
     try {
       BotToast.showLoading();
+      DateTime dateTime0 = DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day, 0, 0, 0);
+      model!.currentDate = (dateTime0.millisecondsSinceEpoch ~/ 1000).toInt();
       await UserClient().updateScheduleGlucose(model!);
       BotToast.closeAllLoading();
       Navigator.pop(context);

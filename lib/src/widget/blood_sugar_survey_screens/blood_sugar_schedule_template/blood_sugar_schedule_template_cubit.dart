@@ -73,6 +73,8 @@ class BloodSugarScheduleTemplateCubit extends Cubit<BloodSugarScheduleTemplateSt
     if (scheduleGlucoseModel == null) return;
     try {
       await showLoading();
+      DateTime dateTime0 = DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day, 0, 0, 0);
+      scheduleGlucoseModel.currentDate = (dateTime0.millisecondsSinceEpoch ~/ 1000).toInt();
       await Future.wait([
         UserClient().updateScheduleGlucose(scheduleGlucoseModel),
         saveSurveyResult(),
