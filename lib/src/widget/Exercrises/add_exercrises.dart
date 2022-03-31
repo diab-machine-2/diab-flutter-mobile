@@ -1181,13 +1181,13 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
           selectedCategory,
           paths);
       if (result == true) {
-        if(widget.goalId != null && widget.goalId?.isNotEmpty == true){
+      //  if(widget.goalId != null && widget.goalId?.isNotEmpty == true){
           // var totalDuration = 0.0;
           // for(var item in selectedCategory){
           //   totalDuration += item.duration ?? 0;
           // }
           await HomeClient().completeSmartGoal(selectedDate, widget.goalId ?? '', 1, ScheduleType.exercise.typeIndex);
-        }
+      //  }
         Observable.instance
             .notifyObservers([], notifyName: "active_change_data");
       }

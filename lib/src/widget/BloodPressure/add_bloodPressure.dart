@@ -9,6 +9,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_observer/Observable.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/modal/HbA1C/short_gui.dart';
 import 'package:medical/src/modal/blood_pressure/blood_pressure.dart';
 import 'package:medical/src/modal/error/error_model.dart';
@@ -972,9 +973,9 @@ class _AddBloodPressureControllerState
           reason,
           paths);
       if (result == true) {
-        if(widget.goalId != null && widget.goalId?.isNotEmpty == true){
+       // if(widget.goalId != null && widget.goalId?.isNotEmpty == true){
           await HomeClient().completeSmartGoal(selectedDate, widget.goalId ?? '', 1, ScheduleType.blood_pressure.typeIndex);
-        }
+       // }
         Observable.instance.notifyObservers([], notifyName : "BloodPressure_change_data");
       }
 

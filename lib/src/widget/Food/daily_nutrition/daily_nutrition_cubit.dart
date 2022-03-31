@@ -318,9 +318,9 @@ class DailyNutritionCubit extends Cubit<DailyNutritionState> {
               : selectedFoods,
           paths);
       if (result == true) {
-        if(goalId != null && goalId?.isNotEmpty == true){
+      //  if(goalId != null && goalId?.isNotEmpty == true){
           await HomeClient().completeSmartGoal(selectedDate, goalId ?? '', 1, ScheduleType.food.typeIndex);
-        }
+      //  }
         Observable.instance.notifyObservers([], notifyName: "food_change_data");
         emit(const DailyNutritionSubmitSuccess());
       }

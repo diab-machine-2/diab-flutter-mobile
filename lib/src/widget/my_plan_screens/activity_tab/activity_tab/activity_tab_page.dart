@@ -205,7 +205,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
                                   borderColor: R.color.greenGradientBottom,
                                   backgroundColor: R.color.white,
                                   onPressed: () async {
-                                    if(DateUtil.isSameDay(_cubit.currentDay, DateTime.now().millisecondsSinceEpoch ~/ 1000) ?? false){
+                                    if(DateUtil.isSameDay(_cubit.currentDay, DateTime.now().millisecondsSinceEpoch ~/ 1000)){
                                       Observable.instance.notifyObservers([], notifyName: Const.HIDE_OVERLAY_KEY);
                                       await NavigationUtil.navigatePage(context, CreateGoalPage(_cubit.smartGoalDayList));
                                       _cubit.refreshData(isRefresh: true, keepCurrentDay: false);
@@ -731,7 +731,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
     return _showPopup(
       context: context,
       buttonTitle: R.string.join.tr(),
-      isDisableCompleteButton: (((DateUtil.isSameDay(DateTime.now().millisecondsSinceEpoch ~/ 1000, smartGoal?.appointmentDate) ?? false) == false) || (smartGoal?.progress == 1)),
+      isDisableCompleteButton: ((DateUtil.isSameDay(DateTime.now().millisecondsSinceEpoch ~/ 1000, smartGoal?.appointmentDate) == false) || (smartGoal?.progress == 1)),
       onTap: () async {
         await _cubit.markCompletedCalendar(smartGoal?.calendarId);
         Navigator.pop(context);

@@ -1020,9 +1020,9 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
           note,
           paths);
       if (result == true) {
-        if(widget.goalId != null && widget.goalId?.isNotEmpty == true){
+      //  if(widget.goalId != null && widget.goalId?.isNotEmpty == true){
           await HomeClient().completeSmartGoal(selectedDate, widget.goalId ?? '', 1, ScheduleType.emotion.typeIndex);
-        }
+      //  }
         Observable.instance
             .notifyObservers([], notifyName: "Emotion_change_data");
       }

@@ -836,9 +836,9 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
           selectedTimeFrame!.id);
       BotToast.closeAllLoading();
       if (result == true) {
-        if(widget.goalId != null && widget.goalId?.isNotEmpty == true){
+      //  if(widget.goalId != null && widget.goalId?.isNotEmpty == true){
           await HomeClient().completeSmartGoal(selectedDate, widget.goalId ?? '', 1, ScheduleType.weight.typeIndex);
-        }
+      //  }
         updateHeightProfile();
         Observable.instance.notifyObservers([], notifyName: "Weight_change_data");
       }

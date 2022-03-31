@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_observer/Observable.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
@@ -52,6 +53,8 @@ class ActivityTabCubit extends Cubit<ActivityTabState> {
   int currentWeekStudying = 0;
 
   int? get currentWeek => currentWeekIndex == null ? null : currentWeekIndex!;
+
+  int? get currentDate => DateUtil.getCurrentDayInMillis();
 
   int? get currentDay { 
     if(dayStatesList.isEmpty) { 
@@ -155,11 +158,8 @@ class ActivityTabCubit extends Cubit<ActivityTabState> {
     bool keepCurrentDay = false,
   }) async {
     await Future.delayed(Duration.zero);
-    DateTime dateTime0 = DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day, 0, 0, 0);
-    int startDate = (dateTime0.millisecondsSinceEpoch ~/ 1000).toInt();
-
 //    if (!isRefresh) emit(const ActivityTabLoading());
-    final ApiResult<SmartGoalStatisticResponse> apiResult = await repository.getSmartGoalStatistics(day: startDate, week: currentWeek);
+    final ApiResult<SmartGoalStatisticResponse> apiResult = await repository.getSmartGoalStatistics(day: currentDate, week: currentWeek);
     apiResult.when(success: (SmartGoalStatisticResponse response) {
       statistic = response.data;
       

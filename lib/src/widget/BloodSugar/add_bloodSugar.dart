@@ -804,9 +804,9 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
           note,
           paths);
       if (result == true) {
-        if(widget.goalId != null && widget.goalId?.isNotEmpty == true){
+       // if(widget.goalId != null && widget.goalId?.isNotEmpty == true){
           await HomeClient().completeSmartGoal(selectedDate, widget.goalId ?? '', 1, ScheduleType.blood_sugar.typeIndex);
-        }
+       // }
         Observable.instance.notifyObservers([], notifyName : "glucose_change_data");
       }
 

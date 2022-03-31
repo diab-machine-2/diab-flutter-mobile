@@ -20,6 +20,12 @@ class DateUtil {
     }
   }
 
+  static int getCurrentDayInMillis() {
+    DateTime dateTime0 = DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day, 0, 0, 0);
+    int startDate = (dateTime0.millisecondsSinceEpoch ~/ 1000).toInt();
+    return startDate;
+  }
+
   static bool? isBefore(int? dateTime1, int? dateTime2) {
     DateTime? date1;
     DateTime? date2;
@@ -38,7 +44,7 @@ class DateUtil {
     }
   }
 
-  static bool? isSameDay(int? dateTime1, int? dateTime2) {
+  static bool isSameDay(int? dateTime1, int? dateTime2) {
     DateTime? date1;
     DateTime? date2;
     if (dateTime1 != null) {
@@ -52,7 +58,7 @@ class DateUtil {
     if (date1 != null && date2 != null) {
       return date1.year == date2.year && date1.month == date2.month && date1.day == date2.day;
     } else {
-      return null;
+      return false;
     }
   }
 
