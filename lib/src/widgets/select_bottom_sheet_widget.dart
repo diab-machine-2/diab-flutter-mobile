@@ -105,25 +105,33 @@ class _SelectBottomSheetWidgetState extends State<SelectBottomSheetWidget> {
               child: Center(
                 child: GestureDetector(
                   onTap: () {
-                    if (selectedList.length > 0) {
-                      if (!isClickSave) {
-                        isClickSave = true;
-                        widget.onSelected(selectedList);
-                        Navigator.pop(context);
-                      }
-                    } else {
-                      if (!isClickSave) {
-                        if (widget.isRequiredSelection) {
-                          Message.showToastMessage(context, 'Bạn hãy hoàn thành các thông tin bắt buộc nhé!');
-                        } else {
+                    if(widget.isMultipleChoice){
+                        if (!isClickSave) {
+                          isClickSave = true;
+                          widget.onSelected(selectedList);
                           Navigator.pop(context);
                         }
+                    } else {
+                      if (selectedList.length > 0) {
+                        if (!isClickSave) {
+                          isClickSave = true;
+                          widget.onSelected(selectedList);
+                          Navigator.pop(context);
+                        }
+                      } else {
+                        if (!isClickSave) {
+                          if (widget.isRequiredSelection) {
+                            Message.showToastMessage(context, 'Bạn hãy hoàn thành các thông tin bắt buộc nhé!');
+                          } else {
+                            Navigator.pop(context);
+                          }
+                        }
+                        isClickSave = true;
+                        if (_timer != null) _timer!.cancel();
+                        _timer = Timer(Duration(seconds: 3), () {
+                          isClickSave = false;
+                        });
                       }
-                      isClickSave = true;
-                      if (_timer != null) _timer!.cancel();
-                      _timer = Timer(Duration(seconds: 3), () {
-                        isClickSave = false;
-                      });
                     }
                   },
                   child: Container(

@@ -1027,4 +1027,5 @@ class Strings {
 	String get coaching_1n => 'coaching_1n';
 	String get input_evaluate => 'input_evaluate';
 	String get output_evaluate => 'output_evaluate';
+	String get other => 'other';
 }

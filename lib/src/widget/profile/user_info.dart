@@ -315,7 +315,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                           ),
                           _buildItemProfile(
                             image: R.drawable.ic_gender,
-                            title: user.gender == null || user.gender!.isEmpty ? R.string.updating.tr() : user.gender!,
+                            title: user.gender == null || user.gender!.isEmpty ? R.string.other.tr() : user.gender!,
                             subTitle: R.string.gioi_tinh.tr(),
                             isTitleFromSelectedCategory: false,
                             subIcon: Image.asset(R.drawable.ic_right, width: 18, height: 18),
@@ -1488,7 +1488,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
   _showDialogUpdateGender() {
     final width = MediaQuery.of(context).size.width;
     final FixedExtentScrollController controller =
-        FixedExtentScrollController(initialItem: AppSettings.userInfo!.genderType == 1 ? 0 : 1);
+        FixedExtentScrollController(initialItem: AppSettings.userInfo!.genderType == 1 ? 0 : AppSettings.userInfo!.genderType == 2 ? 1 : 2);
     showDialog(
         context: context,
         builder: (context) => AlertDialog(
@@ -1535,7 +1535,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                           final UserModel userInfo = AppSettings.userInfo!;
                           updateUserInfo(
                             userInfo.copyWith(
-                              genderType: controller.selectedItem == 0 ? 1 : 2,
+                              genderType: controller.selectedItem + 1,
                             ),
                           );
                           Navigator.pop(context);
