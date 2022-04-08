@@ -75,8 +75,12 @@ class _ContactControllerState extends State<ContactController> {
                         final Uri _emailLaunchUri = Uri(
                           scheme: 'mailto',
                           path: widget.model!.email,
-                          query:
-                              'subject=Hỗ trợ diaB&body=Version app: $appVersion\nModel: $model\nVersion OS: $systemVersion\n',
+                          // queryParameters: {
+                          //   'subject': 'Hỗ trợ diaB',
+                          //   'body': 'Version app: $appVersion\nModel: $model\nVersion OS: $systemVersion\n'
+                          // },
+                         query:
+                             'subject=Hỗ trợ diaB&body=Version app: $appVersion\nModel: $model\nVersion OS: $systemVersion\n',
                         );
                         final String _url = _emailLaunchUri.toString();
                         await canLaunch(_url)

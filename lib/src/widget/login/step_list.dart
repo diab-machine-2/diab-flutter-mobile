@@ -9,6 +9,9 @@ import 'package:medical/src/utils/navigator_name.dart';
 import 'package:package_info/package_info.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
+import '../../modal/user/secure.dart';
+import '../../repo/user/user_client.dart';
+
 // ignore: must_be_immutable
 class StepListController extends StatefulWidget {
   const StepListController(this.sharedCode);
@@ -47,6 +50,7 @@ class _StepListControllerState extends State<StepListController> {
   String version = '';
   String buildNumber = '';
   String sharedCode = '';
+  SecureModel? secureModel;
 
   @override
   void initState() {
@@ -62,7 +66,17 @@ class _StepListControllerState extends State<StepListController> {
         // );
       }
     });
-    getVersion();
+    getSecuredModel();
+  //  getVersion();
+
+    if (widget.sharedCode.isNotEmpty) {
+      sharedCode = widget.sharedCode;
+      // Navigator.pushNamed(
+      //   context,
+      //   NavigatorName.register,
+      //   arguments: widget.sharedCode,
+      // );
+    }
   }
 
   void startTimer() {
@@ -76,19 +90,24 @@ class _StepListControllerState extends State<StepListController> {
     });
   }
 
+  getSecuredModel() async {
+    // try{
+    //   secureModel = await UserClient().fetchInfoSecure();
+    // } catch(exception){
+      secureModel = SecureModel(
+        email: "lienhe@diab.com.vn", 
+        support: "Supporter", 
+        hotline: "0768 07 07 27", 
+        security: "security"
+      );
+    //}
+  }
+
   getVersion() async {
     PackageInfo packageInfo = await PackageInfo.fromPlatform();
     version = packageInfo.version;
     buildNumber = packageInfo.buildNumber;
     setState(() {});
-    if (widget.sharedCode.isNotEmpty) {
-      sharedCode = widget.sharedCode;
-      // Navigator.pushNamed(
-      //   context,
-      //   NavigatorName.register,
-      //   arguments: widget.sharedCode,
-      // );
-    }
   }
 
   @override
@@ -188,8 +207,25 @@ class _StepListControllerState extends State<StepListController> {
                       ]),
                     ),
                   ),
-                  Text('${R.string.version.tr()} $version ($buildNumber)', style: TextStyle(color: R.color.grey)),
-                  SizedBox(height: 16)
+                  SizedBox(
+                    height: 12,
+                  ),
+                  GestureDetector(
+                    onTap: () async {
+                      if(secureModel != null) {
+                        Navigator.pushNamed(context, NavigatorName.contact, arguments: {'contact': secureModel});
+                      }
+                    },
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Image.asset(R.drawable.ic_contact, width: 19, height: 19,),
+                        SizedBox(width: 8,),
+                        Text(R.string.contact_diab_info.tr(), style: TextStyle(fontSize: 15, color: R.color.captionColorGray)),
+                      ],
+                    ),
+                  ),
+                  SizedBox(height: 12)
                 ],
               )
             ]),

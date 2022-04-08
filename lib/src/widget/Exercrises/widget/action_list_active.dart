@@ -69,7 +69,7 @@ class ActionListActiveState extends State<ActionListActive> {
                 children: [
                   Padding(
                     padding: const EdgeInsets.all(16),
-                    child: Text('${R.string.chon_hinh_thuc} ${widget.title}',
+                    child: Text('${R.string.chon_hinh_thuc.tr()} ${widget.title}',
                         style: TextStyle(
                             fontSize: 18, fontWeight: FontWeight.w700)),
                   ),

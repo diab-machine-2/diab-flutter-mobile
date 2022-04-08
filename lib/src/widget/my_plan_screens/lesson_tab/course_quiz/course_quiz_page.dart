@@ -211,6 +211,7 @@ class _CourseQuizPageState extends State<CourseQuizPage> {
                 onDoneQuiz();
                 return;
               }
+          
               if (_cubit.canComplete == true) {
                 if (_cubit.isShowResult) {
                   // onDoneQuiz();

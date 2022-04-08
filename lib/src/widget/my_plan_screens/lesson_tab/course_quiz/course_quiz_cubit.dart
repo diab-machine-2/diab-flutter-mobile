@@ -8,6 +8,7 @@ import 'package:medical/src/model/response/quiz_lesson.dart';
 import 'package:medical/src/model/service/api_result.dart';
 import 'package:medical/src/model/service/network_exceptions.dart';
 
+import '../../../../model/request/quiz_answer_request.dart';
 import 'course_quiz.dart';
 
 class CourseQuizCubit extends Cubit<CourseQuizState> {
@@ -22,6 +23,8 @@ class CourseQuizCubit extends Cubit<CourseQuizState> {
   Map<int, List<String>> answer = {};
   int selectedCourseIndex = 0;
   double minCompletePercent = 100;
+
+  List<QuizAnswerRequest> quizAnswerId = [];
 
   String quizName = '';
 
@@ -94,6 +97,7 @@ class CourseQuizCubit extends Cubit<CourseQuizState> {
     if (listAnswerId.isEmpty) {
       answer.remove(index);
     }
+    setQuizAnswerEachQuiz(listAnswerId);
     emit(InitialCourseQuizState());
   }
 
@@ -167,11 +171,29 @@ class CourseQuizCubit extends Cubit<CourseQuizState> {
     emit(InitialCourseQuizState());
   }
 
+  void setQuizAnswerEachQuiz(List<String> listAnswerId){
+    String? newQuizId = listQuiz[selectedCourseIndex]?.quiz?.id;
+    for(var quiz in quizAnswerId){
+      if(quiz.quizId == newQuizId){
+        quizAnswerId.remove(quiz);
+        break;
+      }
+    }
+
+    quizAnswerId.add(
+      QuizAnswerRequest(
+        quizId: newQuizId, 
+        quizAnswerId: listAnswerId.isNotEmpty ? listAnswerId.first : null,
+      ),
+    );
+  }
+
   Future<void> setCompletedLessonQuiz() async {
     await Future.delayed(Duration.zero);
     emit(const CourseQuizLoading());
     final ApiResult<CommonResponse> apiResult = await repository.setCompletedLessonQuiz(UpdateQuizLessonRequest(
       lessonId: lessonId,
+      quizAnswers: quizAnswerId,
     ));
     apiResult.when(success: (CommonResponse response) {
       emit(const CourseQuizSuccess());

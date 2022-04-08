@@ -187,7 +187,7 @@ extension ScheduleTypeExtend on ScheduleType {
       case ScheduleType.lesson:
         return false;
       case ScheduleType.survey:
-        return false;
+        return true;
       case ScheduleType.update_profile:
         return false;
       case ScheduleType.output_assessment:

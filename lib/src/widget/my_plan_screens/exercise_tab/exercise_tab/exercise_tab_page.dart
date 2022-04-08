@@ -131,7 +131,7 @@ class _ExerciseTabPageState extends State<ExerciseTabPage> with AutomaticKeepAli
                   child: SmartRefresher(
                     controller: _controller,
                     onRefresh: () => _cubit.onRefresh(isRefresh: true),
-                    child: _cubit.exerciseMovementResponse?.data?.isEmpty == null
+                    child: (_cubit.exerciseMovementResponse?.data?.isEmpty == null || _cubit.exerciseMovementResponse?.data?.isEmpty == true)
                         ? Center(child: Container(padding: EdgeInsets.all(8), child: Text(R.string.please_select_roadmap.tr(), style: TextStyle(fontSize: 14, color: R.color.black), textAlign: TextAlign.center,)),)
                         : ListView.separated(
                             controller: _exerciseScrollController,
@@ -651,35 +651,17 @@ class _ExerciseTabPageState extends State<ExerciseTabPage> with AutomaticKeepAli
                         textAlign: TextAlign.center,
                         style: TextStyle(color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w400),
                       ),
-                      const SizedBox(height: 16),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          SizedBox(
-                            width: 140.w,
-                            height: 43,
-                            child: ButtonWidget(
-                              title: 'Để sau',
-                              textSize: 16,
-                              backgroundColor: R.color.grayBorder,
-                              textColor: R.color.textDark,
-                              onPressed: () {
-                                NavigationUtil.pop(context);
-                              },
-                            ),
-                          ),
-                          SizedBox(
-                            width: 140.w,
-                            height: 43,
-                            child: ButtonWidget(
-                              title: 'Tìm hiểu thêm',
-                              textSize: 16,
-                              onPressed: () {
-                                NavigationUtil.pop(context);
-                              },
-                            ),
-                          ),
-                        ],
+                      Container(
+                        margin: const EdgeInsets.only(top: 16),
+                        padding: const EdgeInsets.symmetric(horizontal: 50),
+                        child: ButtonWidget(
+                          height: 43,
+                          title: R.string.agree.tr(),
+                          onPressed: () {
+                            NavigationUtil.pop(context);
+                          },
+                          textSize: 14,
+                        ),
                       ),
                     ],
                   ),

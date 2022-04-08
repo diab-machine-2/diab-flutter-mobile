@@ -22,7 +22,7 @@ class FoodModel {
   final String? mealId;
   final int? timeCode;
 
-  const FoodModel({
+  FoodModel({
     required this.id,
     this.code,
     this.name,

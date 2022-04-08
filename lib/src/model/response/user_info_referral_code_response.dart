@@ -438,7 +438,7 @@ class UserInfoReferralCodeResponse {
   });
 
   bool get isUserExists =>
-      data?.fullName != null && data?.username != null && data?.phoneNumber != null || data?.secondPhoneNumber != null;
+      data?.fullName != null && data?.username != null && data?.phoneNumber != null;
 
   bool get notValidPosition {
     if (data?.accountPositionMappings != null) {

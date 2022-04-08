@@ -17,6 +17,7 @@ import 'package:medical/src/repo/HbA1C/HbA1C_client.dart';
 import 'package:medical/src/repo/food/food_client.dart';
 import 'package:medical/src/widget/BloodSugar/add_bloodSugar.dart';
 import 'package:medical/src/widget/Food/search_food_controller.dart';
+import 'package:medical/src/widget/Food/widget/food_info.dart';
 import 'package:medical/src/widget/Food/widget/time_frame_food.dart';
 import 'package:medical/src/widget/HbA1C/widget/description/description.dart';
 import 'package:medical/src/widget/base/base_state.dart';
@@ -26,6 +27,8 @@ import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widgets/network_image_widget.dart';
 import 'package:permission_handler/permission_handler.dart';
+
+import '../../model/response/menu_response.dart';
 
 class AddFoodController extends StatefulWidget {
   final String type;
@@ -427,93 +430,98 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
                                               itemBuilder:
                                                   (BuildContext context,
                                                       int index) {
-                                                return Container(
-                                                  color: Colors.transparent,
-                                                  padding: EdgeInsets.only(
-                                                      bottom: 12, top: 12),
-                                                  child: Row(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment
-                                                            .spaceBetween,
-                                                    children: [
-                                                      Expanded(
-                                                        child: Row(
-                                                          children: [
-                                                            SizedBox(
-                                                              width: 50,
-                                                              height: 50,
-                                                              child:
-                                                                  NetWorkImageWidget(imageUrl: 
-                                                                selectedFoods[
-                                                                            index]
-                                                                        .image!
-                                                                        .url ??
-                                                                    '',
+                                                return GestureDetector(
+                                                  onTap: () {
+                                                //    showFoodInfo(context, selectedFoods[index]);
+                                                  },
+                                                  child: Container(
+                                                    color: Colors.transparent,
+                                                    padding: EdgeInsets.only(
+                                                        bottom: 12, top: 12),
+                                                    child: Row(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .spaceBetween,
+                                                      children: [
+                                                        Expanded(
+                                                          child: Row(
+                                                            children: [
+                                                              SizedBox(
                                                                 width: 50,
                                                                 height: 50,
-                                                              ),
-                                                            ),
-                                                            SizedBox(
-                                                              width: 8,
-                                                            ),
-                                                            Expanded(
-                                                              child: Column(
-                                                                crossAxisAlignment:
-                                                                    CrossAxisAlignment
-                                                                        .start,
-                                                                children: [
-                                                                  Text(
-                                                                      selectedFoods[
+                                                                child:
+                                                                    NetWorkImageWidget(imageUrl: 
+                                                                  selectedFoods[
                                                                               index]
-                                                                          .name ?? "",
-                                                                      style: TextStyle(
-                                                                          color:
-                                                                          R.color.textDark,
-                                                                          fontSize:
-                                                                              16,
-                                                                          fontWeight:
-                                                                              FontWeight.w700)),
-                                                                  SizedBox(
-                                                                    height: 4,
-                                                                  ),
-                                                                  Text(
-                                                                      selectedFoods[index]
-                                                                                  .code ==
-                                                                              'OtherUneditable'
-                                                                          ? 'Đã ăn ${formatNumber((selectedFoods[index].quantity ?? 0) * (selectedFoods[index].calorie ?? 0))} kcal'
-                                                                          : 'Đã ăn ${roundAsFixed((selectedFoods[index].portion ?? 0) * (selectedFoods[index].quantity ?? 0))} ${selectedFoods[index].unit}, ${formatNumber((selectedFoods[index].quantity ?? 0) * (selectedFoods[index].calorie ?? 0))} kcal',
-                                                                      style: TextStyle(
-                                                                          color:
-                                                                          R.color.textDark,
-                                                                          fontSize:
-                                                                              16,
-                                                                          fontWeight:
-                                                                              FontWeight.w400))
-                                                                ],
+                                                                          .image!
+                                                                          .url ??
+                                                                      '',
+                                                                  width: 50,
+                                                                  height: 50,
+                                                                ),
                                                               ),
-                                                            ),
-                                                          ],
+                                                              SizedBox(
+                                                                width: 8,
+                                                              ),
+                                                              Expanded(
+                                                                child: Column(
+                                                                  crossAxisAlignment:
+                                                                      CrossAxisAlignment
+                                                                          .start,
+                                                                  children: [
+                                                                    Text(
+                                                                        selectedFoods[
+                                                                                index]
+                                                                            .name ?? "",
+                                                                        style: TextStyle(
+                                                                            color:
+                                                                            R.color.textDark,
+                                                                            fontSize:
+                                                                                16,
+                                                                            fontWeight:
+                                                                                FontWeight.w700)),
+                                                                    SizedBox(
+                                                                      height: 4,
+                                                                    ),
+                                                                    Text(
+                                                                        selectedFoods[index]
+                                                                                    .code ==
+                                                                                'OtherUneditable'
+                                                                            ? 'Đã ăn ${formatNumber((selectedFoods[index].quantity ?? 0) * (selectedFoods[index].calorie ?? 0))} kcal'
+                                                                            : 'Đã ăn ${roundAsFixed((selectedFoods[index].portion ?? 0) * (selectedFoods[index].quantity ?? 0))} ${selectedFoods[index].unit}, ${formatNumber((selectedFoods[index].quantity ?? 0) * (selectedFoods[index].calorie ?? 0))} kcal',
+                                                                        style: TextStyle(
+                                                                            color:
+                                                                            R.color.textDark,
+                                                                            fontSize:
+                                                                                16,
+                                                                            fontWeight:
+                                                                                FontWeight.w400))
+                                                                  ],
+                                                                ),
+                                                              ),
+                                                            ],
+                                                          ),
                                                         ),
-                                                      ),
-                                                      SizedBox(
-                                                        width: 8,
-                                                      ),
-                                                      GestureDetector(
-                                                        onTap: () {
-                                                          setState(() {
-                                                            selectedFoods
-                                                                .removeAt(
-                                                                    index);
-                                                            calculatorCalo();
-                                                          });
-                                                        },
-                                                        child: Image.asset(
-                                                          R.drawable.ic_trash,
-                                                          width: 20,
-                                                          height: 20,
+                                                        SizedBox(
+                                                          width: 8,
                                                         ),
-                                                      ),
-                                                    ],
+                                                        GestureDetector(
+                                                          onTap: () {
+                                                            setState(() {
+                                                              selectedFoods
+                                                                  .removeAt(
+                                                                      index);
+                                                              calculatorCalo();
+                                                            });
+                                                          },
+                                                          child: Image.asset(
+                                                            R.drawable.ic_trash,
+                                                            width: 20,
+                                                            height: 20,
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
                                                   ),
                                                 );
                                               })
@@ -791,6 +799,19 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
           ),
         ),
       ),
+    );
+  }
+
+  showFoodInfo(BuildContext context, FoodModel? model) {
+    showDialog(
+      barrierColor: R.color.color0xff003F38.withOpacity(0.5),
+      context: context,
+      builder: (_) => FoodInfo(
+          model: model,
+        //  selectedModel: selectedModel,
+          callback: (value) {},
+          kcalLeft: null,
+          ),
     );
   }
 
