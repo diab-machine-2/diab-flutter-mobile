@@ -8,6 +8,7 @@ import 'package:medical/src/model/response/week_states_response.dart';
 import 'package:medical/src/model/service/api_result.dart';
 import 'package:medical/src/model/service/network_exceptions.dart';
 
+import '../../../../app_setting/app_setting.dart';
 import '../../../../utils/const.dart';
 import '../../my_plan/my_plan.dart';
 import '../lesson_filter/models/filter_data.dart';
@@ -61,7 +62,7 @@ class LessonTabCubit extends Cubit<LessonTabState> {
   }
 
   Future<void> getInitData({bool isRefresh = false, bool showCurrentWeek = true, int? currentWeek}) async {
-    if (myPlanCubit.userInfo == null) {
+    if (myPlanCubit.userInfo == null || AppSettings.isReloadCurrentUserInfo) {
       await myPlanCubit.getCurrentUserInfo();
     }
     if (currentWeek != null) {

@@ -184,6 +184,7 @@ class _HomeControllerState extends State<HomeController> with Observer {
     page = 1;
     BlocProvider.of<HomeBloc>(currentContext).add(FetchHome());
     user = await UserClient().fetchUser();
+    AppSettings.isReloadCurrentUserInfo = true;
     return true;
   }
 

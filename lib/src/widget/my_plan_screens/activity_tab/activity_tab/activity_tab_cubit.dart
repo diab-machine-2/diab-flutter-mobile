@@ -89,7 +89,7 @@ class ActivityTabCubit extends Cubit<ActivityTabState> {
   }
 
   Future<void> initData() async {
-    await myPlanCubit.checkUserInfo();
+    await myPlanCubit.checkUserInfo(isRequired: AppSettings.isReloadCurrentUserInfo);
 
     if (myPlanCubit.isHasRoadmapUser) {
       currentWeekIndex = myPlanCubit.currentStudyWeek!;

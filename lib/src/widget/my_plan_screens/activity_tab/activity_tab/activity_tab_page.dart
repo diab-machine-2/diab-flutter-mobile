@@ -182,7 +182,9 @@ class _ActivityTabPageState extends State<ActivityTabPage>
                 Expanded(
                   child: SmartRefresher(
                     controller: _controller,
-                    onRefresh: () => _cubit.refreshData(isRefresh: true),
+                    onRefresh: () async { 
+                      await _cubit.initData();
+                    },
                     child: SingleChildScrollView(
                       controller: _scrollSmartGoalListController,
                       child: Padding(
