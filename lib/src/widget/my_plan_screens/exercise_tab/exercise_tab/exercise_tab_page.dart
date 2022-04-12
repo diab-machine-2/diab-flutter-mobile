@@ -132,7 +132,32 @@ class _ExerciseTabPageState extends State<ExerciseTabPage> with AutomaticKeepAli
                     controller: _controller,
                     onRefresh: () => _cubit.onRefresh(isRefresh: true),
                     child: (_cubit.exerciseMovementResponse?.data?.isEmpty == null || _cubit.exerciseMovementResponse?.data?.isEmpty == true)
-                        ? Center(child: Container(padding: EdgeInsets.all(8), child: Text(R.string.please_select_roadmap.tr(), style: TextStyle(fontSize: 14, color: R.color.black), textAlign: TextAlign.center,)),)
+                        ? GestureDetector(
+                          onTap: () {
+                            changeRoadMap();
+                          },
+                          child: Center(
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Container(padding: EdgeInsets.all(8), child: Text(R.string.please_select_roadmap.tr(), style: TextStyle(fontSize: 14, color: R.color.black), textAlign: TextAlign.center,)),
+                                  Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        Text(
+                                          R.string.select_road_map.tr(),
+                                          style: TextStyle(
+                                            color: R.color.greenGradientBottom,
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w700,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                ],
+                            ),),
+                        )
                         : ListView.separated(
                             controller: _exerciseScrollController,
                             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),

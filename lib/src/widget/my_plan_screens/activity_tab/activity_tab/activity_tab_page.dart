@@ -599,6 +599,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
         _showCoachingPopup(smartGoal);
         break;
       case ScheduleType.update_profile:
+        await Navigator.pushNamed(context, NavigatorName.profile_info);
         break;
       case ScheduleType.output_assessment:
         _showCoachingPopup(smartGoal);

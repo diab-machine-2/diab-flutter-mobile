@@ -100,7 +100,7 @@ class _HomeHeaderState extends State<HomeHeader> with Observer {
     return SafeArea(
         bottom: false,
         child: Container(
-            padding: const EdgeInsets.only(top: 16, left: 16, right: 16, bottom: 16),
+            padding: const EdgeInsets.only(top: 10, left: 16, right: 16, bottom: 16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -224,7 +224,7 @@ class _HomeHeaderState extends State<HomeHeader> with Observer {
                 // else
                 (motivation != null && motivation!.content != null && motivation!.content!.isNotEmpty)
                     ? Padding(
-                        padding: const EdgeInsets.only(top: 16),
+                        padding: const EdgeInsets.only(top: 12),
                         child: Text(motivation!.content!,
                             style: TextStyle(color: R.color.white, fontSize: 14, fontWeight: FontWeight.w400)),
                       )

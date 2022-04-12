@@ -22,6 +22,7 @@ import 'package:medical/src/widget/my_plan_screens/activity_tab/create_goal/crea
 import 'package:medical/src/widgets/network_image_widget.dart';
 import 'package:medical/src/widgets/share_profile_popup.dart';
 
+import '../../repo/user/user_client.dart';
 import '../my_plan_screens/activity_tab/my_progress/my_progress.dart';
 import 'welcome_package_screen/welcome_package_screen.dart';
 
@@ -179,6 +180,13 @@ class _HomeControllerState extends State<HomeController> with Observer {
     return true;
   }
 
+  Future<bool> _pullToRefresh() async {
+    page = 1;
+    BlocProvider.of<HomeBloc>(currentContext).add(FetchHome());
+    user = await UserClient().fetchUser();
+    return true;
+  }
+
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width - 32;
@@ -203,11 +211,10 @@ class _HomeControllerState extends State<HomeController> with Observer {
                 });
               }
             }
-
             isLoading = false;
           }
           return RefreshIndicator(
-            onRefresh: _refresh,
+            onRefresh: _pullToRefresh,
             child: Scaffold(
               body: Container(
                 decoration: BoxDecoration(
@@ -1031,7 +1038,7 @@ class _HomeControllerState extends State<HomeController> with Observer {
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Text(model.index!.round().toString(),
+                    Text(model.index!.toStringAsFixed(1),
                         style: TextStyle(
                             fontFamily: 'Viga',
                             color: toColor(model.color),
@@ -1051,7 +1058,7 @@ class _HomeControllerState extends State<HomeController> with Observer {
                     NetWorkImageWidget(imageUrl: model.icon?.url ?? '', width: 25, height: 25),
                     const SizedBox(width: 4),
                     Padding(
-                      padding: const EdgeInsets.only(top: 8),
+                      padding: const EdgeInsets.only(top: 8, left: 2),
                       child: Text(
                           (model.indexChange! > 0
                                   ? ' Tăng '
