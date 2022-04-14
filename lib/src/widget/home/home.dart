@@ -615,7 +615,7 @@ class _HomeControllerState extends State<HomeController> with Observer {
                     const SizedBox(width: 4),
                     Padding(
                       padding: const EdgeInsets.only(top: 8),
-                      child: Text('/ ${model.goalWeight!.round()} kg',
+                      child: Text('/ ${model.goalWeight! == 0 ? "--" : model.goalWeight!.round()} kg',
                           style: TextStyle(color: R.color.captionColorGray, fontSize: 12, fontWeight: FontWeight.w400)),
                     )
                   ],

@@ -180,12 +180,14 @@ class CourseQuizCubit extends Cubit<CourseQuizState> {
       }
     }
 
-    quizAnswerId.add(
-      QuizAnswerRequest(
-        quizId: newQuizId, 
-        quizAnswerId: listAnswerId.isNotEmpty ? listAnswerId.first : null,
-      ),
-    );
+    for(var answerId in listAnswerId){
+      quizAnswerId.add(
+        QuizAnswerRequest(
+          quizId: newQuizId, 
+          quizAnswerId: answerId,
+        ),
+      );
+    }
   }
 
   Future<void> setCompletedLessonQuiz() async {
