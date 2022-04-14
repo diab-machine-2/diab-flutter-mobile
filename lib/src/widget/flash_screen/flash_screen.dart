@@ -32,10 +32,6 @@ class _FlashScreenControllerState extends State<FlashScreenController> {
     try{
       secureModel = await UserClient().fetchInfoSecure();
    //   secureModel!.environment = "production";
-      await AppSettings.saveEnvironment(secureModel?.environment);
-      AppSettings.environment = secureModel?.environment ?? "";
-      AppSettings.secureModel = secureModel;
-      AppClient();
     } catch(exception){
       secureModel = SecureModel(
         email: "lienhe@diab.com.vn",
@@ -44,8 +40,11 @@ class _FlashScreenControllerState extends State<FlashScreenController> {
         security: "security",
         environment: "production",
       );
-      AppClient();
     }
+    await AppSettings.saveEnvironment(secureModel?.environment);
+    AppSettings.environment = secureModel?.environment ?? "";
+    AppSettings.secureModel = secureModel;
+    AppClient();
   }
 
   getData() async {

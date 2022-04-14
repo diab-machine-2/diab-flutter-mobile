@@ -179,17 +179,18 @@ class _TabbarControllerState extends State<TabbarController> with SingleTickerPr
       if (status.storeVersion != 'Varies with device') {
         showDialog(
             context: context,
+            barrierDismissible: false,
             builder: (BuildContext context) => CupertinoAlertDialog(
                   title: Text(R.string.cap_nhat.tr()),
                   content: Text(R.string.mes_new_version_available.tr(args: ['${status.storeVersion}']),
                       textAlign: TextAlign.center),
                   actions: <Widget>[
-                    CupertinoDialogAction(
-                      child: Text(R.string.cancel.tr()),
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                    ),
+                    // CupertinoDialogAction(
+                    //   child: Text(R.string.cancel.tr()),
+                    //   onPressed: () {
+                    //     Navigator.pop(context);
+                    //   },
+                    // ),
                     CupertinoDialogAction(
                       isDefaultAction: true,
                       child: Text(R.string.cap_nhat.tr()),

@@ -3,8 +3,8 @@ import '../app_setting/app_setting.dart';
 class Const {
 //  static const String HOST_URL = "https://api.savvycom.asia/";
 
-  static const String HOST_URL = "https://api.savvycom.asia/";
-  static const String HOST_URL_STAGING = "https://api.stg.savvycom.asia/";
+  static const String HOST_URL = "https://api.diab.com.vn/";
+  static const String HOST_URL_STAGING = "https://api.savvycom.asia/";
 
   // ignore: non_constant_identifier_names
   static String API_URL = "${HOST_URL}api/";

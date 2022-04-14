@@ -52,7 +52,7 @@ class _StepListControllerState extends State<StepListController> {
   String version = '';
   String buildNumber = '';
   String sharedCode = '';
-  SecureModel? secureModel;
+  //SecureModel? secureModel;
 
   @override
   void initState() {
@@ -220,8 +220,8 @@ class _StepListControllerState extends State<StepListController> {
                   ),
                   GestureDetector(
                     onTap: () async {
-                      if(secureModel != null) {
-                        Navigator.pushNamed(context, NavigatorName.contact, arguments: {'contact': secureModel});
+                      if(AppSettings.secureModel != null) {
+                        Navigator.pushNamed(context, NavigatorName.contact, arguments: {'contact': AppSettings.secureModel});
                       }
                     },
                     child: Row(
