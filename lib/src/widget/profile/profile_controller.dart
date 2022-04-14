@@ -58,7 +58,12 @@ class _ProfileControllerState extends State<ProfileController> with Observer {
   loadData() async {
     try {
       BotToast.showLoading();
+      if(AppSettings.secureModel == null) {
       secureModel = await UserClient().fetchInfoSecure();
+      AppSettings.secureModel = secureModel;
+      } else {
+        secureModel = AppSettings.secureModel;
+      }
       // await checkPackage();
       BotToast.closeAllLoading();
       setState(() {});

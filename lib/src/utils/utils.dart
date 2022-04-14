@@ -11,6 +11,7 @@ import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:path/path.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -290,7 +291,7 @@ class Utils {
 
   static String? getImageUrl(String? path, {String? host}) {
     if (isEmpty(path)) return null;
-    return (host ?? Const.HOST_URL) + path!;
+    return (host ?? getHostUrl()) + path!;
   }
 
   static Future<Map<String, dynamic>?> parseJson(String fileName) async {
@@ -319,7 +320,15 @@ class Utils {
 
   static String getMediaUrl(String url, String token) {
     if (isEmpty(url)) return url;
-    return Const.API_URL + url + "token=$token";
+    return getHostUrl() + "api/" + url + "token=$token";
+  }
+
+  static String getHostUrl(){
+    if(AppSettings.environment == "staging"){
+      return Const.HOST_URL_STAGING;
+    } else {
+      return Const.HOST_URL;
+    }
   }
 
   static Color getColorByCode(String? code) {

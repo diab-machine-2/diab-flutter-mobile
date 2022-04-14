@@ -12,7 +12,7 @@ class FetchClient {
   static String get identifyBaseURL {
     // return 'is.diab.com.vn';
     //return 'id.savvycom.asia';
-    return 'is.savvycom.asia';
+    return AppSettings.environment == "staging" ? 'is.stg.savvycom.asia' : 'is.savvycom.asia';
     // return 'diab-id-staging.savvycom.vn';
     // return 'is.stg.diab.cptech.vn';
     // return 'is.dev.diab.cptech.vn';
@@ -22,7 +22,7 @@ class FetchClient {
   static String get baseURL {
     // return 'api.diab.com.vn';
     // return 'diab-api-staging.savvycom.vn';
-    return 'api.savvycom.asia';
+    return AppSettings.environment == "staging" ? 'api.stg.savvycom.asia' : 'api.savvycom.asia';
     //return 'api.savvycom.asia';
     // return 'api.stg.diab.cptech.vn';
     // return 'api.mobile.dev.diab.cptech.vn';
@@ -85,9 +85,6 @@ class FetchClient {
 
   Future<Options> options3() async {
     await checkNetwork();
-    final token = await AppSettings.getToken();
-    final user_agent = await userAgent();
-
     final Options option = Options(
         // headers: {
         //   'Authorization': 'Bearer $token',
@@ -114,6 +111,15 @@ class FetchClient {
       {bool baseIdentify = false, required String url, Map<String, String?>? params}) async {
     final option = await options3();
     final domain = baseIdentify ? identifyBaseURL : baseURL;
+    final Dio dio = Dio();
+    logRequest(dio);
+    return dio.getUri(Uri.https(domain, url, params), options: option);
+  }
+
+  Future<Response> fetchDataProdNoHeaders(
+      {bool baseIdentify = false, required String url, Map<String, String?>? params}) async {
+    final option = await options3();
+    final domain = "api.savvycom.asia";
     final Dio dio = Dio();
     logRequest(dio);
     return dio.getUri(Uri.https(domain, url, params), options: option);

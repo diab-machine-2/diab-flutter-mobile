@@ -4,12 +4,14 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/app_setting/deep_link_config.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:package_info/package_info.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 import '../../modal/user/secure.dart';
+import '../../model/service/app_client.dart';
 import '../../repo/user/user_client.dart';
 
 // ignore: must_be_immutable
@@ -66,7 +68,7 @@ class _StepListControllerState extends State<StepListController> {
         // );
       }
     });
-    getSecuredModel();
+  //  getSecuredModel();
   //  getVersion();
 
     if (widget.sharedCode.isNotEmpty) {
@@ -90,18 +92,24 @@ class _StepListControllerState extends State<StepListController> {
     });
   }
 
-  getSecuredModel() async {
-    // try{
-    //   secureModel = await UserClient().fetchInfoSecure();
-    // } catch(exception){
-      secureModel = SecureModel(
-        email: "lienhe@diab.com.vn", 
-        support: "Supporter", 
-        hotline: "0768 07 07 27", 
-        security: "security"
-      );
-    //}
-  }
+  // getSecuredModel() async {
+  //   try{
+  //     secureModel = await UserClient().fetchInfoSecure();
+  //     await AppSettings.saveEnvironment(secureModel?.environment);
+  //     AppSettings.environment = secureModel?.environment;
+  //     AppSettings.secureModel = secureModel;
+  //     AppClient();
+  //   } catch(exception){
+  //     secureModel = SecureModel(
+  //       email: "lienhe@diab.com.vn", 
+  //       support: "Supporter", 
+  //       hotline: "0768 07 07 27", 
+  //       security: "security",
+  //       environment: "staging",
+  //     );
+  //     AppClient();
+  //   }
+  // }
 
   getVersion() async {
     PackageInfo packageInfo = await PackageInfo.fromPlatform();

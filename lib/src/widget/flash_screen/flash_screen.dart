@@ -9,6 +9,9 @@ import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 
+import '../../modal/user/secure.dart';
+import '../../model/service/app_client.dart';
+
 class FlashScreenController extends StatefulWidget {
   @override
   _FlashScreenControllerState createState() => _FlashScreenControllerState();
@@ -16,6 +19,7 @@ class FlashScreenController extends StatefulWidget {
 
 class _FlashScreenControllerState extends State<FlashScreenController> {
   bool isNavigateToStepList = false;
+  SecureModel? secureModel;
 
   @override
   void initState() {
@@ -24,10 +28,32 @@ class _FlashScreenControllerState extends State<FlashScreenController> {
     getData();
   }
 
+   getSecuredModel() async {
+    try{
+      secureModel = await UserClient().fetchInfoSecure();
+   //   secureModel!.environment = "production";
+      await AppSettings.saveEnvironment(secureModel?.environment);
+      AppSettings.environment = secureModel?.environment ?? "";
+      AppSettings.secureModel = secureModel;
+      AppClient();
+    } catch(exception){
+      secureModel = SecureModel(
+        email: "lienhe@diab.com.vn",
+        support: "Supporter",
+        hotline: "0768 07 07 27",
+        security: "security",
+        environment: "production",
+      );
+      AppClient();
+    }
+  }
+
   getData() async {
     final String? sharedCode = await DeepLinkConfig.instance.getInitLink();
     try {
+      await getSecuredModel();
       final token = await AppSettings.getToken();
+      AppSettings.environment = await AppSettings.getEnvironment();
       if (token.isNotEmpty) {
         final refreshToken = await AppSettings.getRefreshToken();
         await LoginClient().login({

@@ -125,7 +125,7 @@ class UserClient extends FetchClient {
 
   Future<SecureModel?> fetchInfoSecure() async {
     try {
-      final Response response = await super.fetchData(url: '/App/Profile/Information');
+      final Response response = await super.fetchDataProdNoHeaders(url: '/App/Profile/Information');
       if (response.statusCode == 200) {
         if (response.data['data'] == null) {
           return null;
