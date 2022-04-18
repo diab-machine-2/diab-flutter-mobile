@@ -19,6 +19,8 @@ import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/notice_change/notice_change_page.dart';
 
+import '../../../widgets/network_image_widget.dart';
+
 class EnergyChart extends StatefulWidget {
   const EnergyChart({Key? key}) : super(key: key);
   @override
@@ -215,7 +217,7 @@ class EnergyChartState extends State<EnergyChart>
                                 children: List.generate(
                                     model.mealDetails.length,
                                     (index) => Row(children: [
-                                          Image.network(
+                                          NetWorkImageWidget(imageUrl: 
                                               model!.mealDetails[index].icon
                                                       .url ??
                                                   '',
@@ -289,7 +291,7 @@ class EnergyChartState extends State<EnergyChart>
                         right: 16,
                         child: Row(
                           children: [
-                            Image.network(model.image!.url ?? '',
+                            NetWorkImageWidget(imageUrl: model.image!.url ?? '',
                                 width: 65, height: 110),
                             const SizedBox(width: 25),
                             Expanded(

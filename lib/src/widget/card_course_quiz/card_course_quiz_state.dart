@@ -52,3 +52,12 @@ class CardCourseQuizFillText extends CardCourseQuizState {
   @override
   String toString() => 'CardCourseQuizFillText { text: $text }';
 }
+
+class CardCourseQuizFillTextField extends CardCourseQuizState {
+  const CardCourseQuizFillTextField(this.text);
+
+  final String text;
+
+  @override
+  String toString() => 'CardCourseQuizFillTextField { text: $text }';
+}

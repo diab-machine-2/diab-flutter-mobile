@@ -172,6 +172,7 @@ class _CourseFeedbackPageState extends State<CourseFeedbackPage> {
                             hintText: R.string.enter_your_feeling.tr(),
                             hintStyle:
                                 TextStyle(color: R.color.gray, fontSize: 16),
+                            counterText: '',
                             focusColor: R.color.accentColor,
                             enabledBorder: UnderlineInputBorder(
                               borderSide: BorderSide(color: R.color.gray),

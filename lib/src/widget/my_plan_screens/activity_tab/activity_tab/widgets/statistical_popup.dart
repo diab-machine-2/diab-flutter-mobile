@@ -9,8 +9,9 @@ enum StatisticalAction {
 }
 
 class StatisticalPopup extends StatelessWidget {
-  const StatisticalPopup({Key? key, required this.hasRoadmapUser}) : super(key: key);
+  const StatisticalPopup({Key? key, required this.hasRoadmapUser, required this.hasNewReports}) : super(key: key);
   final bool hasRoadmapUser;
+  final bool hasNewReports;
 
   @override
   Widget build(BuildContext context) {
@@ -29,6 +30,7 @@ class StatisticalPopup extends StatelessWidget {
         _buildSingleButton(
           title: 'Báo cáo của tôi',
           icon: R.drawable.ic_report,
+          hasNewReports: hasNewReports,
           onTap: () {
             NavigationUtil.pop(context, result: StatisticalAction.my_report);
           },
@@ -54,6 +56,7 @@ class StatisticalPopup extends StatelessWidget {
     String? title,
     String? icon,
     required VoidCallback onTap,
+    bool hasNewReports = false,
   }) {
     return GestureDetector(
       onTap: onTap,
@@ -90,11 +93,28 @@ class StatisticalPopup extends StatelessWidget {
                     color: R.color.white,
                     size: 32,
                   )
-                : Image.asset(
-                    icon ?? '',
-                    width: 32,
-                    height: 32,
-                  ),
+                : Stack(
+                  children: [
+                    Image.asset(
+                        icon ?? '',
+                        width: 32,
+                        height: 32,
+                    ),
+                    Visibility(
+                      visible: hasNewReports,
+                      child: Positioned(
+                        top: 0,
+                        right: 0,
+                        child: Container(
+                          width: 14,
+                          height: 14,
+                          decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: R.color.greenGradientTop)),
+                      ),
+                    ),
+                  ],
+                ),
           ),
         ],
       ),

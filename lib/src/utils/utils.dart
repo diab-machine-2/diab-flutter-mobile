@@ -11,6 +11,7 @@ import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:path/path.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -84,6 +85,10 @@ class Utils {
 
   static bool isEmptyArray(List list) {
     return list == null || list.isEmpty;
+  }
+
+  static void hideKeyboard(BuildContext context) {
+    FocusScope.of(context).unfocus();
   }
 
   static bool isInteger(num value) => value is int || value == value.roundToDouble();
@@ -286,7 +291,7 @@ class Utils {
 
   static String? getImageUrl(String? path, {String? host}) {
     if (isEmpty(path)) return null;
-    return (host ?? Const.HOST_URL) + path!;
+    return (host ?? getHostUrl()) + path!;
   }
 
   static Future<Map<String, dynamic>?> parseJson(String fileName) async {
@@ -315,7 +320,15 @@ class Utils {
 
   static String getMediaUrl(String url, String token) {
     if (isEmpty(url)) return url;
-    return Const.API_URL + url + "token=$token";
+    return getHostUrl() + "api/" + url + "token=$token";
+  }
+
+  static String getHostUrl(){
+    if(AppSettings.environment == "staging"){
+      return Const.HOST_URL_STAGING;
+    } else {
+      return Const.HOST_URL;
+    }
   }
 
   static Color getColorByCode(String? code) {
@@ -336,6 +349,13 @@ class Utils {
     if (index >= 0 && index < 6) return 'T${index + 2}';
     if (index == 6) return 'CN';
     return '';
+  }
+
+  static String getBMI({required double height, required double weight}) {
+    if (height == 0) return '0';
+    final double bmi = weight / pow(height / 100, 2);
+    final num mod = pow(10.0, 1);
+    return ((bmi * mod).round().toDouble() / mod).toString();
   }
 
   static int parseStringToInt(String text) {

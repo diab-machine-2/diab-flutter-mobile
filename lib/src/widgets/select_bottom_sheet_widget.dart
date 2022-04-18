@@ -1,6 +1,9 @@
+import 'dart:async';
+
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/widget/helper/show_message.dart';
 
 class SelectBottomSheetWidget extends StatefulWidget {
   const SelectBottomSheetWidget({
@@ -9,6 +12,7 @@ class SelectBottomSheetWidget extends StatefulWidget {
     this.elementList = const [],
     required this.onSelected,
     this.isMultipleChoice = false,
+    this.isRequiredSelection = true,
   });
 
   final String title;
@@ -16,13 +20,16 @@ class SelectBottomSheetWidget extends StatefulWidget {
   final List<String> elementList;
   final Function(List<String>) onSelected;
   final bool isMultipleChoice;
+  final bool isRequiredSelection;
+
   @override
-  _SelectBottomSheetWidgetState createState() =>
-      _SelectBottomSheetWidgetState();
+  _SelectBottomSheetWidgetState createState() => _SelectBottomSheetWidgetState();
 }
 
 class _SelectBottomSheetWidgetState extends State<SelectBottomSheetWidget> {
   List<String> selectedList = [];
+  bool isClickSave = false;
+  Timer? _timer;
 
   @override
   void initState() {
@@ -60,10 +67,11 @@ class _SelectBottomSheetWidgetState extends State<SelectBottomSheetWidget> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    widget.title,
-                    style: const TextStyle(
-                        fontSize: 20, fontWeight: FontWeight.w700),
+                  Expanded(
+                    child: Text(
+                      widget.title,
+                      style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
+                    ),
                   ),
                   GestureDetector(
                     onTap: () {
@@ -78,20 +86,17 @@ class _SelectBottomSheetWidgetState extends State<SelectBottomSheetWidget> {
                 ],
               ),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 6),
             Expanded(
               child: ListView.builder(
                   physics: countHight > height
                       ? const AlwaysScrollableScrollPhysics()
                       : const NeverScrollableScrollPhysics(),
                   shrinkWrap: true,
-                  padding: const EdgeInsets.only(
-                      left: 10, right: 10, bottom: 8, top: 10),
+                  padding: const EdgeInsets.only(left: 0, right: 0, bottom: 8, top: 10),
                   itemCount: widget.elementList.length,
                   itemBuilder: (BuildContext context, int index) {
-                    return _buildItem(
-                        title: widget.elementList[index],
-                        isLast: index == widget.elementList.length - 1);
+                    return _buildItem(title: widget.elementList[index], isLast: index == widget.elementList.length - 1);
                   }),
             ),
             const SizedBox(height: 8),
@@ -100,8 +105,34 @@ class _SelectBottomSheetWidgetState extends State<SelectBottomSheetWidget> {
               child: Center(
                 child: GestureDetector(
                   onTap: () {
-                    widget.onSelected(selectedList);
-                    Navigator.pop(context);
+                    if(widget.isMultipleChoice){
+                        if (!isClickSave) {
+                          isClickSave = true;
+                          widget.onSelected(selectedList);
+                          Navigator.pop(context);
+                        }
+                    } else {
+                      if (selectedList.length > 0) {
+                        if (!isClickSave) {
+                          isClickSave = true;
+                          widget.onSelected(selectedList);
+                          Navigator.pop(context);
+                        }
+                      } else {
+                        if (!isClickSave) {
+                          if (widget.isRequiredSelection) {
+                            Message.showToastMessage(context, 'Bạn hãy hoàn thành các thông tin bắt buộc nhé!');
+                          } else {
+                            Navigator.pop(context);
+                          }
+                        }
+                        isClickSave = true;
+                        if (_timer != null) _timer!.cancel();
+                        _timer = Timer(Duration(seconds: 3), () {
+                          isClickSave = false;
+                        });
+                      }
+                    }
                   },
                   child: Container(
                     height: 48,
@@ -110,19 +141,13 @@ class _SelectBottomSheetWidgetState extends State<SelectBottomSheetWidget> {
                       gradient: LinearGradient(
                           begin: Alignment.topLeft,
                           end: Alignment.centerRight,
-                          colors: [
-                            R.color.greenGradientTop,
-                            R.color.greenGradientBottom
-                          ]),
+                          colors: [R.color.greenGradientTop, R.color.greenGradientBottom]),
                       borderRadius: BorderRadius.circular(200),
                     ),
                     child: Center(
                       child: Text(
                         R.string.save.tr(),
-                        style: TextStyle(
-                            color: R.color.white,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600),
+                        style: TextStyle(color: R.color.white, fontSize: 16, fontWeight: FontWeight.w600),
                       ),
                     ),
                   ),
@@ -142,6 +167,7 @@ class _SelectBottomSheetWidgetState extends State<SelectBottomSheetWidget> {
         GestureDetector(
           onTap: () {
             setState(() {
+              isClickSave = false;
               if (!isSelected) {
                 if (!widget.isMultipleChoice) {
                   selectedList.clear();
@@ -153,7 +179,7 @@ class _SelectBottomSheetWidgetState extends State<SelectBottomSheetWidget> {
             });
           },
           child: Container(
-            color: isSelected ? R.color.greenbg : R.color.white,
+            color: (isSelected && !widget.isMultipleChoice) ? R.color.greenbg : R.color.white,
             child: Column(
               children: [
                 Padding(
@@ -168,30 +194,60 @@ class _SelectBottomSheetWidgetState extends State<SelectBottomSheetWidget> {
                             title,
                             style: TextStyle(
                                 fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                                color: R.color.mainColor),
+                                fontWeight: FontWeight.w400,
+                                color: widget.isMultipleChoice ? R.color.mainColor : R.color.black),
                           )
                         else
                           Text(
                             title,
-                            style: const TextStyle(
-                                fontSize: 16, fontWeight: FontWeight.w400),
+                            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w400),
                           ),
-                        if (isSelected)
-                          Image.asset(R.drawable.ic_check_mark,
-                              width: 24, height: 24)
-                        else
-                          const SizedBox()
+                        if (isSelected && widget.isMultipleChoice)
+                          Image.asset(R.drawable.ic_check_mark, width: 24, height: 24),
+                        if (isSelected && !widget.isMultipleChoice)
+                          Container(
+                            width: 24,
+                            height: 24,
+                            alignment: Alignment.center,
+                            decoration: BoxDecoration(
+                              color: R.color.white,
+                              border: Border.all(
+                                width: 2,
+                                color: R.color.greenGradientBottom,
+                              ),
+                              shape: BoxShape.circle,
+                            ),
+                            child: Container(
+                              width: 14,
+                              height: 14,
+                              decoration: BoxDecoration(
+                                color: R.color.greenGradientBottom,
+                                shape: BoxShape.circle,
+                              ),
+                            ),
+                          ),
+                        if (!isSelected && !widget.isMultipleChoice)
+                          Container(
+                            width: 24,
+                            height: 24,
+                            decoration: BoxDecoration(
+                              border: Border.all(
+                                width: 2,
+                                color: R.color.primaryGreyColor,
+                              ),
+                              shape: BoxShape.circle,
+                            ),
+                          )
                       ],
                     ),
                   ),
                 ),
                 const SizedBox(height: 16),
                 Container(
-                    height: 1,
-                    width: 373,
-                    color:
-                        isSelected ? R.color.greenbg : R.color.color0xffD6D8E0)
+                  height: 1,
+                  width: 373,
+                  color: isSelected ? R.color.greenbg : R.color.color0xffD6D8E0,
+                )
               ],
             ),
           ),

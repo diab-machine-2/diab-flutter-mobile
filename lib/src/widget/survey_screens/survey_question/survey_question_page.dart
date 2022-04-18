@@ -17,6 +17,7 @@ import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widgets/button_widget.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
 
+import '../../my_plan_screens/activity_tab/activity_tab/models/schedule_state.dart';
 import '../survey/survey.dart';
 import '../survey_result/survey_result_page.dart';
 import 'survey_question.dart';
@@ -25,9 +26,10 @@ import 'widgets/custom_progress_bar_widget.dart';
 class SurveyQuestionPage extends StatefulWidget {
   final int index;
   final SurveyData surveyData;
+  List<String> listAnsweredQuestionId;
 
-  const SurveyQuestionPage(
-      {Key? key, required this.index, required this.surveyData})
+  SurveyQuestionPage(
+      {Key? key, required this.index, required this.surveyData, required this.listAnsweredQuestionId,})
       : super(key: key);
 
   @override
@@ -46,7 +48,7 @@ class _SurveyQuestionPageState extends State<SurveyQuestionPage> {
     final AppRepository repository = AppRepository();
     final SectionSurvey? _sectionSurvey =
         widget.surveyData.sections?[widget.index];
-    _cubit = SurveyQuestionCubit(repository, _sectionSurvey);
+    _cubit = SurveyQuestionCubit(repository, _sectionSurvey, widget.surveyData, widget.listAnsweredQuestionId);
     if (widget.surveyData.sections != null) {
       _sectionSurvey?.questions?.forEach((element) {
         listGlobal.add(GlobalKey<CardCourseQuizPageState>());
@@ -63,6 +65,17 @@ class _SurveyQuestionPageState extends State<SurveyQuestionPage> {
       });
     });
   }
+
+  // SurveyData? reOrderSectionQuestion(SurveyData? surveyData){
+  //   if(surveyData == null) return null;
+  //   surveyData.sections?.sort((a, b) => a.order.compareTo(b.order));
+  //   if(surveyData.sections != null) {
+  //     for(var section in surveyData.sections!){
+  //       section.questions?.sort((a, b) => a.order.compareTo(b.order));
+  //     }
+  //   }
+  //   return surveyData;
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -105,6 +118,11 @@ class _SurveyQuestionPageState extends State<SurveyQuestionPage> {
   }
 
   Widget buildPage(BuildContext context, SurveyQuestionState state) {
+    bool isLastPart = false;
+    if (_cubit.selectedCourseIndex == _cubit.lengthQuiz - 1) {
+      isLastPart = true;
+    }
+
     return Container(
       decoration: BoxDecoration(color: R.color.color0xffB1DDDB),
       child: Column(
@@ -148,10 +166,13 @@ class _SurveyQuestionPageState extends State<SurveyQuestionPage> {
                         vertical: 16, horizontal: 16),
                     width: ScreenUtil().screenWidth - 32,
                     child: CardCourseQuizSurveyPage(
+                      status: widget.surveyData.status,
                       key: listGlobal[index],
                       index: index,
                       quizData: data,
+                      surveySectionId: _cubit.sectionSurvey?.id ?? '',
                       onSubmitAnswer: (listAnswer) {
+                        _cubit.currentText = listAnswer.content ?? '';
                         _cubit.recordAnswer(
                           questionId: data.id!,
                           answerResult: listAnswer,
@@ -163,7 +184,7 @@ class _SurveyQuestionPageState extends State<SurveyQuestionPage> {
               },
             ),
           ),
-          const CustomProgressBarWidget(),
+          CustomProgressBarWidget(isLastPart: isLastPart),
           Container(
             color: R.color.white,
             padding: EdgeInsets.only(
@@ -228,14 +249,19 @@ class _SurveyQuestionPageState extends State<SurveyQuestionPage> {
   Widget buildNextButton() {
     final bool isEnable = _cubit.nextButtonEnable;
     final VoidCallback? onTap = isEnable
-        ? () {
+        ? () async {
             if (widget.surveyData.id != null &&
-                _cubit.sectionSurvey?.id != null)
-              _cubit.submitAnswer(
-                surveyId: widget.surveyData.id!,
-                sectionId: _cubit.sectionSurvey!.id!,
-                questionId: _cubit.currentQuestion?.id ?? '',
-              );
+                _cubit.sectionSurvey?.id != null) {
+            //    if(_cubit.currentQuestion?.hasUserAnswer != true){
+              if(widget.surveyData.status != ScheduleState.completed.stateIndex) {
+                await _cubit.submitAnswer(
+                  surveyId: widget.surveyData.id!,
+                  sectionId: _cubit.sectionSurvey!.id!,
+                  questionId: _cubit.currentQuestion?.id ?? '',
+                  isRelatedQuestion: _cubit.currentQuestion?.isRelatedQuestions ?? false,
+                );
+              }
+            }
             FocusScope.of(context).unfocus();
             if (_cubit.selectedCourseIndex == _cubit.lengthQuiz - 1) {
               final bool isLastPart =
@@ -249,6 +275,7 @@ class _SurveyQuestionPageState extends State<SurveyQuestionPage> {
                     SurveyPage(
                       index: widget.index + 1,
                       surveyData: widget.surveyData,
+                      listAnsweredQuestionId: _cubit.listAnsweredQuestionId,
                     ));
               }
             } else {
@@ -306,7 +333,7 @@ class _SurveyQuestionPageState extends State<SurveyQuestionPage> {
   }
 
   void jumpToQuiz(int newIndex) {
-    if (newIndex == _cubit.lengthQuiz - 1) {
+    if (newIndex == _cubit.lengthQuiz) {
       final bool isLastPart =
           widget.index + 1 == (widget.surveyData.sections?.length ?? 0);
       _cubit.emit(SurveyQuestionHideProgressMessage());
@@ -318,6 +345,7 @@ class _SurveyQuestionPageState extends State<SurveyQuestionPage> {
             SurveyPage(
               index: widget.index + 1,
               surveyData: widget.surveyData,
+              listAnsweredQuestionId: _cubit.listAnsweredQuestionId,
             ));
       }
     } else {

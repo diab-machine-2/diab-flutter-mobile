@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_observer/Observable.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/request/update_lesson_section_request.dart';
 import 'package:medical/src/model/response/common_response.dart';
@@ -55,6 +56,7 @@ class LessonDetailCubit extends Cubit<LessonDetailState> {
     if (isAllSectionCompleted && newSection > currentSection && !alreadyDoneLesson) {
       checkSectionComplete();
       if (isAllSectionCompleted && currentSection == (sectionList.length - 1)) {
+        Observable.instance.notifyObservers([], notifyName : "goal_calo_changed");
         emit(const LessonDetailCompleted());
         return;
       }

@@ -4,7 +4,7 @@ import 'package:medical/res/R.dart';
 class UserIconWidget extends StatelessWidget {
   const UserIconWidget({
     required this.icon,
-    required this.backgroundColor,
+    this.backgroundColor,
   });
 
   final String icon;
@@ -18,6 +18,9 @@ class UserIconWidget extends StatelessWidget {
       child: Stack(
         children: [
           Positioned.fill(
+            child: Image.asset(R.drawable.bg_user_icon),
+          ),
+          Center(
             child: Image.asset(
               R.drawable.bg_user_icon,
               color: backgroundColor,

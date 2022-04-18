@@ -1,15 +1,28 @@
 import 'package:dio/dio.dart';
+import 'package:medical/src/model/request/SelectRoadmapRequest.dart';
+import 'package:medical/src/model/request/make_comment_request.dart';
+import 'package:medical/src/model/request/make_question_request.dart';
+import 'package:medical/src/model/request/mark_completed_calendar_request.dart';
+import 'package:medical/src/model/request/mark_completed_target_request.dart';
+import 'package:medical/src/model/request/read_welcome_request.dart';
+import 'package:medical/src/model/response/calendar_training_response.dart';
+import 'package:medical/src/model/response/expert_comment_list_response.dart';
+import 'package:medical/src/model/response/lesson_module_response.dart';
+import 'package:medical/src/model/response/question_answer_response.dart';
+import 'package:medical/src/model/response/report_response.dart';
 import 'package:retrofit/http.dart';
 import 'package:retrofit/retrofit.dart';
 
 import 'request/complete_exercise_request.dart';
 import 'request/complete_smart_goal_request.dart';
+import 'request/complete_video_request.dart';
 import 'request/create_menu_request.dart';
 import 'request/create_smart_goal_request.dart';
 import 'request/exercise_feedback_request.dart';
 import 'request/food_change_request.dart';
 import 'request/ios_receipt_request.dart';
 import 'request/lesson_filter_request.dart';
+import 'request/mark_share_request.dart';
 import 'request/post_survey_request.dart';
 import 'request/send_feedback_course_request.dart';
 import 'request/send_interest_request.dart';
@@ -25,6 +38,7 @@ import 'response/detail_package_response.dart';
 import 'response/detail_survey_response.dart';
 import 'response/diabetes_status_response.dart';
 import 'response/exercise_movement_response.dart';
+import 'response/expert_comment_response.dart';
 import 'response/filter_data_response.dart';
 import 'response/food_suggest_response.dart';
 import 'response/latest_hba1c_input_response.dart';
@@ -175,12 +189,12 @@ abstract class AppApi {
 
   //Exercise
 
-  @GET("App/Roadmap/MyRoadmap")
+  @GET("App/Agenda/MyRoadmap")
   Future<ListRoadmapResponse> getRoadMap();
 
   @POST("App/Patient/Roadmap")
   Future<CommonResponse> selectRoadmap(
-    @Body() String roadmapId,
+    @Body() SelectRoadmapRequest request,
   );
 
   @GET("App/ExerciseMovement/All")
@@ -198,7 +212,12 @@ abstract class AppApi {
     @Body() CompleteExerciseRequest request,
   );
 
-  @GET("App/Roadmap/GetWeekStates")
+  @POST("App/ExerciseMovementAccount/Input")
+  Future<CommonResponse> completeVideo(
+    @Body() CompleteVideoRequest request,
+  );
+
+  @GET("App/Agenda/GetWeekStates")
   Future<WeekStatesResponse> getExerciseWeekStates();
 
   @GET("App/Lesson/GetWeekStates")
@@ -215,14 +234,66 @@ abstract class AppApi {
     @Body() CompleteSmartGoalRequest request,
   );
 
+  @POST("App/Target/MarkCompletedTarget")
+  Future<CommonResponse> completeGoal(
+    @Body() MarkCompletedTargetRequest request,
+  );
+
+  @POST("App/Calendar/MarkCompletedCalendar")
+  Future<CommonResponse> markCompletedCalendar(
+    @Query("id") String id,
+  );
+
+  @POST("App/Patient/ChangeIsShare")
+  Future<CommonResponse> markIsShare(
+    @Body() MarkShareRequest request,
+  );
+
+  @POST("App/Home/MarkDisplayedWelcome")
+  Future<CommonResponse> markDisplayedWelcome();
+
+  @GET("App/MyProgress/Reports")
+  Future<ReportListResponse> getReports();
+
   @GET("App/Target")
   Future<SmartGoalListReponse> getListSmartGoal({
     @Query('week') int? week,
     @Query('day') int? day,
   });
 
+  @GET("App/Question")
+  Future<QuestionAnswerResponse> getListQuestion(@Query('page') int page, @Query('size') int size,
+      @Query("lessonModuleIds") List<String>? lessonModuleIds, @Query("accountIds") List<String>? accountIds);
+
+  @GET("App/Question/{id}")
+  Future<QuestionResponse> getQuestionById(@Path('id') String id);
+
+  @GET("App/LessonModule")
+  Future<LessonModuleResponse> getListLessonModule(@Query('page') int page, @Query('size') int size);
+
+  @POST("App/Question/Input")
+  Future<CommonResponse> makeQuestion(
+    @Body() MakeQuestionRequest request,
+  );
+
+   @POST("App/Question/CreateAnswer")
+  Future<CommonResponse> makeComment(
+    @Body() MakeCommentRequest request,
+  );
+
+  @DELETE("App/Question/Input/{id}")
+  Future<CommonResponse> deleteQuestion(
+    @Path('id') String id,
+  );
+
+  @DELETE("App/Question/DeleteAnswer/{id}")
+  Future<CommonResponse> deleteComment(
+    @Path('id') String id,
+  );
+
   @GET("App/Target/GetTargetWeekStatistics")
   Future<SmartGoalStatisticResponse> getSmartGoalStatistics({
+    @Query('day') int? day,
     @Query('week') int? week,
   });
 
@@ -249,6 +320,15 @@ abstract class AppApi {
   // My Progress
   @GET("App/MyProgress")
   Future<MyProgressResponse> getMyProgress({@Query('type') int? type});
+
+  @GET("App/UserDashboard/Calendar-Training-Comment")
+  Future<ExpertCommentListResponse> getCommentProfessorByAccountId(@Query('patientId') String? accountId);
+
+  @GET("App/UserDashboard/Calendar-Training-Comment/{id}")
+  Future<ExpertCommentResponse> getCommentById(@Path('id') String id);
+
+  @GET("App/CalendarTraining")
+  Future<CalendarTrainingListResponse> getCalendarTraining(@Query('calendarId') String calendarId);
 
   //Referral, Share Profile
   @GET("App/Patient/GetAccountInfoWithReferalOfCurrentPatient")

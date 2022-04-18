@@ -5,16 +5,47 @@ import 'package:flutter_observer/Observable.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:medical/src/app.dart';
 import 'package:medical/src/modal/home/home_model.dart';
+import 'package:medical/src/modal/user/category_user_model.dart';
 import 'package:medical/src/modal/user/user_model.dart';
 import 'package:medical/src/model/preference/app_preference.dart';
+import 'package:medical/src/model/response/smart_goal_list_reponse.dart';
 import 'package:medical/src/repo/login/login_client.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/helper/http_helper.dart';
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
+
+import '../modal/user/secure.dart';
 
 class AppSettings {
   static UserModel? userInfo;
+  static List<SmartGoalList?> smartGoalDayList = [];
+  static CategoryUserModel? categoryUserModel;
   static int? currentDateTime;
+  static String environment = "";
+  static SecureModel? secureModel;
+  static bool isDisplayedWelcome = false;
+
+  static bool showed50Message = false;
+  static bool showed90Message = false;
+
+  static bool isReloadCurrentUserInfo = false;
+
+  static Future<bool> saveEnvironment(String? token) async {
+    appPreference.setData(Const.ENVIRONMENT, token);
+    return true;
+  }
+
+  static Future<String> getEnvironment() async {
+    final token = appPreference.getData(Const.ENVIRONMENT) ?? '';
+    print(token);
+    return token;
+  }
+
+  static Future<bool> clearEnvironment() async {
+    appPreference.removeData(Const.ENVIRONMENT);
+    return true;
+  }
 
   static Future<bool> saveToken(String? token) async {
     appPreference.setData(Const.TOKEN, token);
@@ -110,14 +141,20 @@ class AppSettings {
     }
   }
 
-  static Future<bool> logout() async {
+  static Future<bool> logout({bool isNavigateToStepListScreen = true}) async {
     try {
-      navigatorKey.currentState!.popUntil((route) => route.isFirst);
-      navigatorKey.currentState!.pushReplacementNamed(NavigatorName.step_list);
+      if(isNavigateToStepListScreen){
+        navigatorKey.currentState!.popUntil((route) => route.isFirst);
+        navigatorKey.currentState!.pushReplacementNamed(NavigatorName.step_list);
+      }
+      
       await FetchClient().checkNetwork();
       await LoginClient().logout();
+      await deleteHomeData();
       await clearToken();
       await clearRefreshToken();
+      appPreference.removeData("hasNewReports");
+      appPreference.removeData("reports");
       final GoogleSignIn _googleSignIn = GoogleSignIn();
       _googleSignIn.signOut();
       final facebookLogin = FacebookLogin();

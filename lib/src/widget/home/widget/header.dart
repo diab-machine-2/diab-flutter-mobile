@@ -1,20 +1,32 @@
+import 'dart:io';
+
 import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_observer/Observable.dart';
 import 'package:flutter_observer/Observer.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
+import 'package:medical/src/app_setting/deep_link_config.dart';
 import 'package:medical/src/modal/error/error_model.dart';
 import 'package:medical/src/modal/user/motivation_model.dart';
 import 'package:medical/src/repo/notification/notification_client.dart';
 import 'package:medical/src/repo/user/user_client.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/navigator_name.dart';
+import 'package:medical/src/widget/components/HomeButton/main.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
+import 'package:medical/src/widget/home/welcome_package_screen/bloc/welcome_package_screen_cubit.dart';
+import 'package:medical/src/widget/home/welcome_package_screen/welcome_package_screen_page.dart';
 import 'package:medical/src/widget/profile/user_info.dart';
+import 'package:medical/src/widget/profile/widgets/motivation_popup_widget.dart';
 import 'package:medical/src/widgets/qr_scan_widget.dart';
 import 'package:medical/src/widgets/share_profile_popup.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:external_app_launcher/external_app_launcher.dart';
+
+import '../../../widgets/button_widget.dart';
 
 class HomeHeader extends StatefulWidget {
   const HomeHeader({this.sharedCode});
@@ -28,11 +40,17 @@ class _HomeHeaderState extends State<HomeHeader> with Observer {
 
   int? notificationCount = 0;
   MotivationModel? motivation;
+  var user = AppSettings.userInfo;
 
   @override
   void initState() {
     super.initState();
     Observable.instance.addObserver(this);
+    DeepLinkConfig.setUpHandleDeepLink(onHaveLink: (code) {
+      if (code?.isNotEmpty == true) {
+        ShareProfilePopup.instance.onHasSharedCode(context: context, code: code!);
+      }
+    });
     initData();
   }
 
@@ -82,7 +100,7 @@ class _HomeHeaderState extends State<HomeHeader> with Observer {
     return SafeArea(
         bottom: false,
         child: Container(
-            padding: const EdgeInsets.only(top: 16, left: 16, right: 16, bottom: 16),
+            padding: const EdgeInsets.only(top: 10, left: 16, right: 16, bottom: 16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -106,7 +124,14 @@ class _HomeHeaderState extends State<HomeHeader> with Observer {
                                         BoxDecoration(color: R.color.white, borderRadius: BorderRadius.circular(21)),
                                     child: user.imageUrl!.url == null
                                         ? Icon(Icons.person, size: 42, color: R.color.mainColor)
-                                        : Image.network(user.imageUrl!.url!, width: 42, height: 42)),
+                                        : Image.network(
+                                            user.imageUrl!.url ?? '',
+                                            width: 42,
+                                            height: 42,
+                                            errorBuilder: (BuildContext context, Object error, StackTrace? stackTrace) {
+                                              return Icon(Icons.person, size: 42, color: R.color.mainColor);
+                                            },
+                                          )),
                               ),
                               Container(
                                 width: 20,
@@ -123,14 +148,20 @@ class _HomeHeaderState extends State<HomeHeader> with Observer {
                             const SizedBox(width: 8),
                             Expanded(
                               child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                                Text(user.fullName!.trim(),
-                                    style: TextStyle(
-                                      color: R.color.white,
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w700,
-                                    )),
+                                FittedBox(
+                                  fit: BoxFit.scaleDown,
+                                  child: Text(user.fullName!.trim(),
+                                      style: TextStyle(
+                                        color: R.color.white,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w700,
+                                      ),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      ),
+                                ),
                                 const SizedBox(height: 4),
-                                Text(R.string.thanh_vien_co_ban.tr(),
+                                Text((user.packageName != null && user.packageName!.isNotEmpty) ? user.packageName! : R.string.thanh_vien_co_ban.tr(),
                                     style: TextStyle(color: R.color.white, fontSize: 14, fontWeight: FontWeight.w400))
                               ]),
                             ),
@@ -140,20 +171,40 @@ class _HomeHeaderState extends State<HomeHeader> with Observer {
                     ),
                     Row(
                       children: [
-                        GestureDetector(
-                          onTap: () {
-                            //showAction(context);
-                            setState(() {
-                              isChoose = !isChoose;
-                            });
+                        InkWell(
+                          onTap: () async {
+                            if(user.isUserHasRoadmap) {
+                              showChatMenu();
+                            } else {
+                              NavigationUtil.showUpdateRequirePopup(context: context, title: R.string.chat_with_coach.tr());
+                            }
                           },
-                          child: isChoose
-                              ? Image.asset(R.drawable.ic_book_question_selected, width: 24, height: 24)
-                              : Image.asset(R.drawable.ic_book_question, width: 24, height: 24),
+                          child: Container(
+                            padding: EdgeInsets.only(bottom: 4, top: 4, right: 4, left: 16),
+                            color: R.color.transparent,
+                            child: Image.asset(R.drawable.ic_direct_chat, color: R.color.white, width: 24, height: 24),
+                          ),
                         ),
-                        const SizedBox(width: 8),
-                        GestureDetector(
-                          onTap: () {
+                        const SizedBox(width: 10),
+                        InkWell(
+                          onTap: () async {
+                            final scanedResult = await NavigationUtil.navigatePage(
+                              context,
+                              const QRScanWidget(),
+                            );
+                            if (scanedResult is String) {
+                              ShareProfilePopup.instance.onHasSharedCode(context: context, code: scanedResult);
+                            }
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.all(4),
+                            color: R.color.transparent,
+                            child: Image.asset(R.drawable.ic_qr_scan, color: R.color.white, width: 24, height: 24),
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        InkWell(
+                          onTap: () async {
                             Navigator.pushNamed(context, NavigatorName.notification);
                           },
                           child: Container(
@@ -163,73 +214,59 @@ class _HomeHeaderState extends State<HomeHeader> with Observer {
                                 width: 24, height: 24),
                           ),
                         ),
-                        //const SizedBox(width: 8),
-                        // InkWell(
-                        //   onTap: () async {
-                        //     final scanedResult =
-                        //         await NavigationUtil.navigatePage(
-                        //       context,
-                        //       const QRScanWidget(),
-                        //     );
-                        //     if (scanedResult is String) {
-                        //       ShareProfilePopup.instance.onHasSharedCode(
-                        //           context: context, code: scanedResult);
-                        //     }
-                        //   },
-                        //   child: Container(
-                        //     padding: const EdgeInsets.all(4),
-                        //     color: R.color.transparent,
-                        //     child: Image.asset(
-                        //       R.drawable.ic_qr_scan,
-                        //       color: R.color.white,
-                        //       width: 24,
-                        //       height: 24,
-                        //     ),
-                        //   ),
-                        // ),
                       ],
                     )
                   ],
                 ),
                 // SizedBox(height: 30),
-                if (!isChoose)
-                  const SizedBox()
-                else
-                  motivation != null
-                      ? Padding(
-                          padding: const EdgeInsets.only(top: 16),
-                          child: Text(motivation!.content!,
-                              style: TextStyle(color: R.color.white, fontSize: 14, fontWeight: FontWeight.w400)),
-                        )
-                      : Column(children: [
-                          Padding(
-                            padding: const EdgeInsets.only(top: 16),
-                            child: Text(R.string.share_with_diab.tr(),
-                                style: TextStyle(color: R.color.white, fontSize: 14, fontWeight: FontWeight.w400)),
-                          ),
-                          const SizedBox(height: 8),
-                          Center(
-                            child: GestureDetector(
-                              onTap: () {
-                                _showDialogUpdateMotivation(null);
-                              },
-                              child: Container(
-                                  height: 32,
-                                  decoration:
-                                      BoxDecoration(color: R.color.white, borderRadius: BorderRadius.circular(16)),
-                                  padding: const EdgeInsets.only(left: 16, right: 16),
-                                  child: Row(mainAxisSize: MainAxisSize.min, children: [
-                                    Text(R.string.viet_dong_luc.tr(),
-                                        style: TextStyle(
-                                            color: R.color.mainColor, fontSize: 15, fontWeight: FontWeight.w600)),
-                                    const SizedBox(width: 4),
-                                    Image.asset(R.drawable.ic_arrow_right, width: 24, height: 24)
-                                  ])),
-                            ),
-                          )
-                        ])
+                // if (!isChoose)
+                //   const SizedBox()
+                // else
+                (motivation != null && motivation!.content != null && motivation!.content!.isNotEmpty)
+                    ? Padding(
+                        padding: const EdgeInsets.only(top: 12),
+                        child: Text(motivation!.content!,
+                            style: TextStyle(color: R.color.white, fontSize: 14, fontWeight: FontWeight.w400)),
+                      )
+                    : Container()
+                      // Column(children: [
+                      //     Padding(
+                      //       padding: const EdgeInsets.only(top: 16),
+                      //       child: Text(R.string.share_with_diab.tr(),
+                      //           style: TextStyle(color: R.color.white, fontSize: 14, fontWeight: FontWeight.w400)),
+                      //     ),
+                      //     const SizedBox(height: 8),
+                      //     Center(
+                      //       child: GestureDetector(
+                      //         onTap: () {
+                      //           _showDialogUpdateMotivation(null);
+                      //         },
+                      //         child: Container(
+                      //             height: 32,
+                      //             decoration:
+                      //                 BoxDecoration(color: R.color.white, borderRadius: BorderRadius.circular(16)),
+                      //             padding: const EdgeInsets.only(left: 16, right: 16),
+                      //             child: Row(mainAxisSize: MainAxisSize.min, children: [
+                      //               Text(R.string.viet_dong_luc.tr(),
+                      //                   style: TextStyle(
+                      //                       color: R.color.mainColor, fontSize: 15, fontWeight: FontWeight.w600)),
+                      //               const SizedBox(width: 4),
+                      //               Image.asset(R.drawable.ic_arrow_right, width: 24, height: 24)
+                      //             ])),
+                      //       ),
+                      //     )
+                      //   ])
               ],
             )));
+  }
+
+  showChatMenu() {
+    showDialog(
+      barrierColor: R.color.color0xff003F38.withOpacity(0.8),
+      useSafeArea: false,
+      context: context,
+      builder: (_) => FunkyOverlay(isCircular: false),
+    );
   }
 
   _showDialogUpdateMotivation(MotivationModel? model) {

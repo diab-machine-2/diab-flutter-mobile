@@ -1,10 +1,13 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_observer/Observable.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/modal/user/goal_info.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/request/create_smart_goal_request.dart';
 import 'package:medical/src/model/response/create_smart_goal_response.dart';
 import 'package:medical/src/model/response/smart_goal_list_reponse.dart';
+import 'package:medical/src/model/response/smart_goal_statistic_response.dart';
 import 'package:medical/src/model/service/api_result.dart';
 import 'package:medical/src/model/service/network_exceptions.dart';
 import 'package:medical/src/repo/user/user_client.dart';
@@ -18,16 +21,30 @@ import 'models/goal_record_type.dart';
 import 'models/repeat_type.dart';
 
 class CreateGoalCubit extends Cubit<CreateGoalState> {
-  CreateGoalCubit(this.repository, {required this.smartGoalDayList}) : super(const CreateGoalInitial());
+  CreateGoalCubit(this.repository, {required this.smartGoalDayList}) : super(const CreateGoalInitial()) {
+    if (smartGoalDayList.isEmpty) {
+      getSmartGoal();
+    }
+  }
 
   final AppRepository repository;
-  final List<SmartGoalList?> smartGoalDayList;
+  List<SmartGoalList?> smartGoalDayList = [];
 
   GoalInfoModel? goalInfoModel;
 
   CreateSmartGoalData dataModel = CreateSmartGoalData();
 
   CreateGoalStatus currentStatus = CreateGoalStatus.select_type;
+
+  int currentWeekIndex = 0;
+  int currentDayIndex = 0;
+  SmartGoalStatisticResponseData? statistic;
+
+  List<DayStatesResponseData?> get dayStatesList => statistic?.daysInCurrentWeek ?? [];
+
+  int? get currentWeek => currentWeekIndex == null ? null : currentWeekIndex + 1;
+
+  int? get currentDay => dayStatesList.isEmpty ? 0 : dayStatesList[currentDayIndex]?.day;
 
   bool get isValid {
     final String errorMessage = dataModel.checkValid;
@@ -163,9 +180,28 @@ class CreateGoalCubit extends Cubit<CreateGoalState> {
 
   Future<void> createSmartGoal() async {
     late final ApiResult<CreateSmartGoalResponse> apiResult;
-    apiResult = await repository.createSmartGoal(dataModel.request ?? CreateSmartGoalRequest());
+
+    int appointmentDate = dataModel.request?.appointmentDate ?? (DateTime.now().millisecondsSinceEpoch ~/ 1000).toInt();
+    DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(appointmentDate * 1000);
+    DateTime dateTime0 = DateTime(dateTime.year, dateTime.month, dateTime.day, 0, 0, 0);
+    int newAppointmentDate = (dateTime0.millisecondsSinceEpoch ~/ 1000).toInt();
+
+    var creatGoalRequest = CreateSmartGoalRequest(
+      id: dataModel.request?.id,
+      targetScheduler: dataModel.request?.targetScheduler,
+      targetSchedulerId: dataModel.request?.targetSchedulerId,
+      name: dataModel.request?.name,
+      type: dataModel.request?.type,
+      executeType: dataModel.request?.executeType,
+      executeDayTimes: dataModel.request?.executeDayTimes
+    );
+    creatGoalRequest.appointmentDate = newAppointmentDate;
+
+    apiResult = await repository.createSmartGoal(creatGoalRequest);
     apiResult.when(success: (CreateSmartGoalResponse response) {
       if (response.meta?.success ?? false) {
+        Observable.instance
+            .notifyObservers([], notifyName: "food_change_data");
         emit(const CreateGoalSuccess());
       } else {
         emit(CreateGoalFailure(response.error?.message ?? R.string.error));
@@ -174,5 +210,40 @@ class CreateGoalCubit extends Cubit<CreateGoalState> {
       emit(CreateGoalFailure(NetworkExceptions.getErrorMessage(error)));
     });
     emit(const CreateGoalInitial());
+  }
+
+  Future<void> getSmartGoal({bool isRefresh = false, bool keepCurrentDay = true}) async {
+    await Future.delayed(Duration(microseconds: 50));
+    emit(const CreateGoalLoading());
+    await getSmartGoalStatistics(isRefresh: isRefresh, hideLoadingAfterDone: true, keepCurrentDay: keepCurrentDay);
+    await getListSmartGoal(isRefresh: isRefresh);
+    emit(const CreateGoalInitial());
+  }
+
+  Future<void> getListSmartGoal({bool isRefresh = false, bool isShowLoading = false}) async {
+    final ApiResult<SmartGoalListReponse> apiResult =
+        await repository.getListSmartGoal(day: currentDay, week: currentWeek);
+    apiResult.when(
+        success: (SmartGoalListReponse response) {
+          smartGoalDayList = response.data?.daily ?? [];
+
+          AppSettings.smartGoalDayList = response.data?.daily ?? [];
+        },
+        failure: (NetworkExceptions error) {});
+  }
+
+  Future<void> getSmartGoalStatistics({
+    bool isRefresh = false,
+    bool hideLoadingAfterDone = true,
+    bool keepCurrentDay = false,
+  }) async {
+    await Future.delayed(Duration.zero);
+    final ApiResult<SmartGoalStatisticResponse> apiResult = await repository.getSmartGoalStatistics(week: currentWeek);
+    apiResult.when(
+        success: (SmartGoalStatisticResponse response) {
+          statistic = response.data;
+          if (!keepCurrentDay) currentDayIndex = response.initDayIndex;
+        },
+        failure: (NetworkExceptions error) {});
   }
 }

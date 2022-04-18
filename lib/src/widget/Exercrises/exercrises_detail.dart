@@ -12,6 +12,8 @@ import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:easy_localization/easy_localization.dart';
 
+import '../../widgets/network_image_widget.dart';
+
 class ExercrisesDetailController extends StatefulWidget {
   ExercrisesDetailController({Key? key}) : super(key: key);
   @override
@@ -285,7 +287,7 @@ class ExercrisesDetailControllerState extends State<ExercrisesDetailController>
                                                                                 50,
                                                                             height:
                                                                                 50),
-                                                                        Image.network(
+                                                                        NetWorkImageWidget(imageUrl: 
                                                                             itemInput.exercise[index].imageUrl.url ??
                                                                                 '',
                                                                             width:

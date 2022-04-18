@@ -73,6 +73,7 @@ class _ChangeMenuPageState extends State<ChangeMenuPage> {
                   _buildSearchBar(),
                   Expanded(
                     child: _buildPage(
+                      state: state,
                       foods: _cubit.suggestFoods,
                       emptyImage: R.drawable.img_empty_food_suggestion,
                       emptyText: R.string.suggest_food_empty.tr(),
@@ -147,6 +148,7 @@ class _ChangeMenuPageState extends State<ChangeMenuPage> {
   }
 
   Widget _buildPage({
+    required ChangeMenuState state,
     required List<FoodModel> foods,
     required String emptyImage,
     String? emptyText,
@@ -164,7 +166,7 @@ class _ChangeMenuPageState extends State<ChangeMenuPage> {
         },
         itemBuilder: (BuildContext context, int index) {
           if (foods.isEmpty) {
-            return Padding(
+            return (state is ChangeMenuLoading) ? Container() : Padding(
               padding: const EdgeInsets.only(left: 84, right: 84, top: 100),
               child: Column(
                 children: [

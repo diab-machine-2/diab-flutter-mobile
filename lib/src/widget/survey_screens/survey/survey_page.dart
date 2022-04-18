@@ -19,10 +19,13 @@ import 'widgets/custom_progress_bar_widget.dart';
 class SurveyPage extends StatefulWidget {
   final int index;
   final SurveyData surveyData;
-  const SurveyPage({
+  List<String> listAnsweredQuestionId;
+
+  SurveyPage({
     Key? key,
     required this.index,
     required this.surveyData,
+    required this.listAnsweredQuestionId,
   }) : super(key: key);
 
   @override
@@ -87,7 +90,7 @@ class _SurveyPageState extends State<SurveyPage> {
                 Container(
                   alignment: Alignment.centerLeft,
                   child: Text(
-                    _sectionSurvey?.name ?? '',
+                    "Phần ${widget.index + 1}. ${_sectionSurvey?.name ?? ''}",
                     style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
@@ -126,6 +129,7 @@ class _SurveyPageState extends State<SurveyPage> {
                     SurveyQuestionPage(
                       index: widget.index,
                       surveyData: widget.surveyData,
+                      listAnsweredQuestionId: widget.listAnsweredQuestionId,
                     ),
                   );
                 },

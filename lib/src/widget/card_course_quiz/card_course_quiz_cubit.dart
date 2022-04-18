@@ -24,6 +24,12 @@ class CardCourseQuizCubit extends Cubit<CardCourseQuizState> {
     }
   }
 
+  void fillTextField(QuizData quizData){
+    if(quizData.results != null && quizData.answers?.isEmpty == true){
+      emit(CardCourseQuizFillTextField(quizData.results!.content ?? ''));
+    }
+  }
+
   void checkBox(String answerId, bool isSingleChoice) {
     emit(CardCourseQuizLoading());
     if (isSingleChoice) {

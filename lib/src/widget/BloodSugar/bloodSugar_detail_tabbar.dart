@@ -16,6 +16,8 @@ import 'package:medical/src/widget/tabbar/action_list_panel.dart';
 import 'package:medical/src/widget/tabbar/fillter_bloodSugar_panel.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../app_setting/app_setting.dart';
+import '../../widgets/button_widget.dart';
 import '../blood_sugar_survey_screens/blood_sugar_start_survey/blood_sugar_start_survey.dart';
 
 class BloodSugarDetailTabbarController extends StatefulWidget {
@@ -184,6 +186,8 @@ class CustomTabbarImage extends StatefulWidget {
 class CustomTabbarImageState extends State<CustomTabbarImage> {
   bool showDes = false;
 
+  var userInfo = AppSettings.userInfo!;
+
   showDescription() {
     print(showDes);
     showDes = !showDes;
@@ -208,6 +212,10 @@ class CustomTabbarImageState extends State<CustomTabbarImage> {
               title: R.string.testing_schedule_suggest.tr(),
               icon: R.drawable.ic_blood_sugar_testing_suggest,
               onTap: () async {
+                // if(userInfo.isUserFree) {
+                //   NavigationUtil.showUpdateRequirePopup(context: context, title: R.string.testing_schedule_suggest.tr());
+                //   return;
+                // }
                 await NavigationUtil.navigatePage(
                     context,
                     const BloodSugarStartSurveyPage(

@@ -18,12 +18,17 @@ class CardCourseQuizSurveyPage extends StatefulWidget {
   final int index;
   final QuizData quizData;
   final ValueChanged<QuestionAnswerResults> onSubmitAnswer;
+  final String surveySectionId;
+  final int? status;
 
   const CardCourseQuizSurveyPage(
       {Key? key,
       required this.quizData,
       required this.index,
-      required this.onSubmitAnswer})
+      required this.onSubmitAnswer,
+      required this.surveySectionId,
+      this.status = 0,
+      })
       : super(key: key);
 
   @override
@@ -47,9 +52,22 @@ class CardCourseQuizSurveyPageState extends State<CardCourseQuizSurveyPage>
     widget.onSubmitAnswer(
       QuestionAnswerResults(
         surveyQuestionId: widget.quizData.id,
+        surveySectionId: widget.surveySectionId,
         surveyAnswerIdList: _cubit.listAnswerChoosing,
       ),
     );
+    if(widget.quizData.results != null && widget.quizData.answers?.isEmpty == true){
+      String text = widget.quizData.results!.content ?? '';
+      _textController.text = text;
+      if(text.isNotEmpty){
+        widget.onSubmitAnswer(QuestionAnswerResults(
+            surveyQuestionId: widget.quizData.id, 
+            surveySectionId: widget.surveySectionId,
+            content: text.trim(),
+          ),
+        );
+      }
+    }
     super.initState();
   }
 
@@ -66,13 +84,24 @@ class CardCourseQuizSurveyPageState extends State<CardCourseQuizSurveyPage>
           create: (context) => _cubit,
           child: BlocConsumer<CardCourseQuizCubit, CardCourseQuizState>(
             listener: (context, state) {
-              if (state is CardCourseQuizFailure)
+              if (state is CardCourseQuizFailure){
                 Message.showToastMessage(context, state.error);
+              }
               if (state is CardCourseQuizFillText) {
                 _textController.text = state.text;
                 if (widget.onSubmitAnswer != null && state.text != null) {
                   widget.onSubmitAnswer(QuestionAnswerResults(
                       surveyQuestionId: widget.quizData.id,
+                      surveySectionId: widget.surveySectionId,
+                      content: state.text.trim()));
+                }
+              }
+              if (state is CardCourseQuizFillTextField) {
+                _textController.text = state.text;
+                if (widget.onSubmitAnswer != null && state.text != null) {
+                  widget.onSubmitAnswer(QuestionAnswerResults(
+                      surveyQuestionId: widget.quizData.id,
+                      surveySectionId: widget.surveySectionId,
                       content: state.text.trim()));
                 }
               }
@@ -81,6 +110,7 @@ class CardCourseQuizSurveyPageState extends State<CardCourseQuizSurveyPage>
                   widget.onSubmitAnswer(
                     QuestionAnswerResults(
                       surveyQuestionId: widget.quizData.id,
+                      surveySectionId: widget.surveySectionId,
                       surveyAnswerIdList: _cubit.listAnswerChoosing,
                     ),
                   );
@@ -142,11 +172,11 @@ class CardCourseQuizSurveyPageState extends State<CardCourseQuizSurveyPage>
           Text(
             quizData.name ?? "",
             style: TextStyle(
-                fontSize: 20,
+                fontSize: 18,
                 fontWeight: FontWeight.w700,
                 color: R.color.textDark,
                 height: 1.4),
-            maxLines: 2,
+        //    maxLines: 2,
           ),
           SizedBox(height: 20.h),
           Expanded(
@@ -159,6 +189,9 @@ class CardCourseQuizSurveyPageState extends State<CardCourseQuizSurveyPage>
 
   Widget buildAnswerByType(QuizData quizData) {
     final SurveyQuestionTypes type = getTypeQuestion(quizData.type);
+//    bool isAnsweredQuestion = quizData.hasUserAnswer;
+    bool isCompletedSurvey = widget.status == 1;
+
     if (type == SurveyQuestionTypes.Text) {
       return Container(
         alignment: Alignment.topCenter,
@@ -167,10 +200,15 @@ class CardCourseQuizSurveyPageState extends State<CardCourseQuizSurveyPage>
           controller: _textController,
           borderColor: R.color.accentColor,
           maxLength: 1000,
+          readOnly: isCompletedSurvey,
           onChanged: (text) {
-            if (widget.onSubmitAnswer != null && text != null) {
+            if (text != null) {
               widget.onSubmitAnswer(QuestionAnswerResults(
-                  surveyQuestionId: quizData.id, content: text.trim()));
+                  surveyQuestionId: quizData.id, 
+                  surveySectionId: widget.surveySectionId,
+                  content: text.trim(),
+                ),
+              );
             }
           },
         ),
@@ -185,7 +223,7 @@ class CardCourseQuizSurveyPageState extends State<CardCourseQuizSurveyPage>
               ),
           itemBuilder: (context, indexQuestion) {
             final AnswerData data = (quizData.answers ?? [])[indexQuestion];
-            return buildRange(indexQuestion, data);
+            return buildRange(isCompletedSurvey, indexQuestion, data);
           });
     } else {
       return ListView.separated(
@@ -198,14 +236,20 @@ class CardCourseQuizSurveyPageState extends State<CardCourseQuizSurveyPage>
           itemBuilder: (context, indexQuestion) {
             final AnswerData data = (quizData.answers ?? [])[indexQuestion];
             return buildQuestion(
+              isCompletedSurvey: isCompletedSurvey,
                 data: data,
+      //          isAnsweredQuestion: isAnsweredQuestion,
                 isSingleChoice: getTypeQuestion(quizData.type) ==
                     SurveyQuestionTypes.SingleChoice);
           });
     }
   }
 
-  Widget buildQuestion({required AnswerData data, bool isSingleChoice = true}) {
+  Widget buildQuestion({
+    required AnswerData data,
+    bool isCompletedSurvey = false,
+ // bool isAnsweredQuestion = false, 
+  bool isSingleChoice = true}) {
     final String id = data.id ?? "";
     final bool isSelected = _cubit.listAnswerChoosing.contains(id);
     return Container(
@@ -221,7 +265,9 @@ class CardCourseQuizSurveyPageState extends State<CardCourseQuizSurveyPage>
       child: GestureDetector(
         behavior: HitTestBehavior.translucent,
         onTap: () {
-          _cubit.checkBox(id, isSingleChoice);
+          if(!isCompletedSurvey){
+            _cubit.checkBox(id, isSingleChoice);
+          }
         },
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -239,7 +285,9 @@ class CardCourseQuizSurveyPageState extends State<CardCourseQuizSurveyPage>
                         activeColor: R.color.accentColor,
                         splashRadius: 20,
                         onChanged: (value) {
-                          _cubit.checkBox(id, isSingleChoice);
+                          if(!isCompletedSurvey){
+                            _cubit.checkBox(id, isSingleChoice);
+                          }
                         },
                         groupValue: true,
                       )
@@ -248,7 +296,9 @@ class CardCourseQuizSurveyPageState extends State<CardCourseQuizSurveyPage>
                         activeColor: R.color.accentColor,
                         splashRadius: 20,
                         onChanged: (value) {
-                          _cubit.checkBox(id, isSingleChoice);
+                          if(!isCompletedSurvey){
+                            _cubit.checkBox(id, isSingleChoice);
+                          }
                         }),
               ),
             ),
@@ -272,14 +322,14 @@ class CardCourseQuizSurveyPageState extends State<CardCourseQuizSurveyPage>
     );
   }
 
-  Widget buildRange(int index, AnswerData data) {
+  Widget buildRange(bool isCompletedSurvey, int index, AnswerData data) {
     final String id = data.id ?? "";
     final bool isSelected = _cubit.listAnswerChoosing.contains(id);
     return Row(
       children: [
         GestureDetector(
           behavior: HitTestBehavior.translucent,
-          onTap: () => _cubit.checkBox(id, true),
+          onTap: () => isCompletedSurvey ? null : _cubit.checkBox(id, true),
           child: Container(
             padding: EdgeInsets.all(16.h),
             decoration: BoxDecoration(

@@ -30,6 +30,14 @@
           }
         },
         {
+          "client_id": "116899682757-fmhclbvch5vr8f9opqpf46hnjqi5cq7k.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.vbhc.diab",
+            "certificate_hash": "cb24668cbb092eb9dd2a889debba52234e217cac"
+          }
+        },
+        {
           "client_id": "116899682757-g67f9qfvd5rto58clbp9bil9sm2veam3.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {

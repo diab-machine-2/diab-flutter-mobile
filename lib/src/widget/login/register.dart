@@ -123,16 +123,17 @@ class _RegisterControllerState extends State<RegisterController> {
                               onChanged: (value) {
                                 confirmPassword = value;
                               }),
-                          // const SizedBox(height: 20),
-                          // TextFieldCustom(
-                          //     key: referralCodeKey,
-                          //     initText: referralCode,
-                          //     title: R.string.references_code.tr(),
-                          //     placeholder: R.string.input_references_code.tr(),
-                          //     isSharedCode: true,
-                          //     onChanged: (value) {
-                          //       referralCode = value;
-                          //     }),
+                          const SizedBox(height: 20),
+                          TextFieldCustom(
+                              key: referralCodeKey,
+                              initText: referralCode,
+                              maxLength: 6,
+                              title: R.string.references_code.tr(),
+                              placeholder: R.string.input_references_code.tr(),
+                              isSharedCode: true,
+                              onChanged: (value) {
+                                referralCode = value.trim();
+                              }),
                           const SizedBox(height: 32),
                           GestureDetector(
                             onTap: () {
@@ -161,40 +162,40 @@ class _RegisterControllerState extends State<RegisterController> {
                         ],
                       ),
                     ),
-                    // Row(
-                    //   mainAxisAlignment: MainAxisAlignment.center,
-                    //   children: [
-                    //     InkWell(
-                    //       onTap: () async {
-                    //         final dynamic scanResult = await NavigationUtil.navigatePage(context, const QRScanWidget());
-                    //         if (scanResult is String) {
-                    //           referralCode = scanResult;
-                    //           referralCodeKey.currentState?.textEditingController.text = referralCode;
-                    //           referralCodeKey.currentState?.valideReferralCode(referralCode);
-                    //         }
-                    //       },
-                    //       child: Row(
-                    //         mainAxisAlignment: MainAxisAlignment.center,
-                    //         children: [
-                    //           Image.asset(
-                    //             R.drawable.ic_qr_scan,
-                    //             width: 26,
-                    //             height: 26,
-                    //           ),
-                    //           const SizedBox(width: 12),
-                    //           Text(
-                    //             R.string.scan_references_code.tr(),
-                    //             style: TextStyle(
-                    //               color: R.color.mainColor,
-                    //               fontSize: 16,
-                    //               fontWeight: FontWeight.w700,
-                    //             ),
-                    //           ),
-                    //         ],
-                    //       ),
-                    //     ),
-                    //   ],
-                    // ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        InkWell(
+                          onTap: () async {
+                            final dynamic scanResult = await NavigationUtil.navigatePage(context, const QRScanWidget());
+                            if (scanResult is String) {
+                              referralCode = scanResult;
+                              referralCodeKey.currentState?.textEditingController.text = referralCode;
+                              referralCodeKey.currentState?.valideReferralCode(referralCode);
+                            }
+                          },
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Image.asset(
+                                R.drawable.ic_qr_scan,
+                                width: 26,
+                                height: 26,
+                              ),
+                              const SizedBox(width: 12),
+                              Text(
+                                R.string.scan_references_code.tr(),
+                                style: TextStyle(
+                                  color: R.color.mainColor,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
                     SafeArea(
                       child: Column(
                         children: [
@@ -462,7 +463,8 @@ class _RegisterControllerState extends State<RegisterController> {
       BotToast.closeAllLoading();
       if (user == null) {
         registerAccount(
-            account.id, authen.accessToken, 'Google', account.displayName ?? R.string.user_name_default.tr(), true);
+            account.id, authen.accessToken, 'Google', account.displayName ?? R.string.user_name_default.tr(), true,
+            googleAccount: account, appleCredential: null);
         // Navigator.pushReplacementNamed(context, NavigatorName.update_info,
         //     arguments: {'type': 'google', 'googleAccount': account});
       } else {
@@ -472,7 +474,8 @@ class _RegisterControllerState extends State<RegisterController> {
     } catch (error) {
       if (error is Error && error.code == '5' && account != null) {
         registerAccount(
-            account.id, authen.accessToken, 'Google', account.displayName ?? R.string.user_name_default.tr(), false);
+            account.id, authen.accessToken, 'Google', account.displayName ?? R.string.user_name_default.tr(), false,
+            googleAccount: account, appleCredential: null);
       } else if (error is PlatformException && error.code == 'network_error') {
         Message.showToastMessage(context, R.string.error_can_not_connect_to_server.tr());
       } else {
@@ -515,7 +518,8 @@ class _RegisterControllerState extends State<RegisterController> {
         // Navigator.pushReplacementNamed(context, NavigatorName.update_info,
         //     arguments: {'type': 'apple', 'appleAccount': credential});
         registerAccount(credential.userIdentifier, credential.identityToken, 'Apple',
-            credential.givenName ?? R.string.user_name_default.tr(), true);
+            credential.givenName ?? R.string.user_name_default.tr(), true,
+            googleAccount: null, appleCredential: credential);
       } else {
         Navigator.popUntil(context, (route) => route.isFirst);
         Navigator.pushReplacementNamed(context, NavigatorName.tabbar);
@@ -524,7 +528,8 @@ class _RegisterControllerState extends State<RegisterController> {
       BotToast.closeAllLoading();
       if (error is Error && error.code == '5' && credential != null) {
         registerAccount(credential.userIdentifier, credential.identityToken, 'Apple',
-            credential.givenName ?? R.string.user_name_default.tr(), false);
+            credential.givenName ?? R.string.user_name_default.tr(), false,
+            googleAccount: null, appleCredential: credential);
       } else if (error is PlatformException && error.code == 'network_error') {
         Message.showToastMessage(context, R.string.error_can_not_connect_to_server.tr());
       } else {
@@ -533,33 +538,52 @@ class _RegisterControllerState extends State<RegisterController> {
     }
   }
 
-  registerAccount(String? providerKey, String? externalToken, String provider, String userName, bool update) async {
+  registerAccount(
+    String? providerKey,
+    String? externalToken,
+    String provider,
+    String userName,
+    bool update, {
+    GoogleSignInAccount? googleAccount,
+    AuthorizationCredentialAppleID? appleCredential,
+  }) async {
     try {
       BotToast.showLoading();
-      if (!update) {
-        await LoginClient().registerWithSocial({'providerName': provider, 'providerKey': providerKey ?? ''});
+      // if (!update) {
+      //   await LoginClient().registerWithSocial({'providerName': provider, 'providerKey': providerKey ?? ''});
 
-        await LoginClient().login({
-          "client_id": Const.CLIENT_ID,
-          "client_secret": Const.CLIENT_SECRET,
-          "grant_type": "external",
-          "external_token": externalToken ?? '',
-          "provider": provider
-        });
-      }
+      //   await LoginClient().login({
+      //     "client_id": Const.CLIENT_ID,
+      //     "client_secret": Const.CLIENT_SECRET,
+      //     "grant_type": "external",
+      //     "external_token": externalToken ?? '',
+      //     "provider": provider
+      //   });
+      // }
 
-      final diabeteStates = await (UserClient().fetchDiabeteStates() as Future<List<dynamic>>);
+      final diabeteStates = await UserClient().fetchDiabeteStatesNoHeader();
 
-      final result = await LoginClient().createPatient({
-        'fullName': userName,
-        'dateOfBirth': '0',
-        'gender': '1',
-        'diabetesStatus': diabeteStates.isEmpty ? '1' : diabeteStates.first['key'].toString(),
-        'diabetesDate': (DateTime.now().millisecondsSinceEpoch ~/ 1000).toString()
+      // final result = await LoginClient().createPatient({
+      //   'fullName': userName,
+      //   'dateOfBirth': '0',
+      //   'gender': '1',
+      //   'diabetesStatus': diabeteStates?.isEmpty ?? true ? '1' : diabeteStates?.first.key.toString().toString() ?? '1',
+      //   //  'diabetesStatus': '1',
+      //   'diabetesDate': (DateTime.now().millisecondsSinceEpoch ~/ 1000).toString()
+      // });
+      // if (result == true) {
+      // Navigator.pushReplacementNamed(context, NavigatorName.rules,
+      //     arguments: {'googleAccount': googleAccount, 'appleCredential': appleCredential});
+      //}
+
+     // Message.showToastMessage(context, 'Name: ${appleCredential?.givenName}, ${appleCredential?.familyName}\n userIdentifier: ${appleCredential?.userIdentifier}\n identityToken: ${appleCredential?.identityToken}');
+
+      Navigator.pushReplacementNamed(context, NavigatorName.register_success, arguments: {
+        'type': provider.toLowerCase(),
+        'googleAccount': googleAccount,
+        'appleAccount': appleCredential,
+        'diabeteStates': diabeteStates
       });
-      if (result == true) {
-        Navigator.pushReplacementNamed(context, NavigatorName.rules);
-      }
       BotToast.closeAllLoading();
     } catch (error) {
       BotToast.closeAllLoading();

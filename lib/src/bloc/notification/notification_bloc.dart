@@ -7,6 +7,8 @@ import 'package:meta/meta.dart';
 import 'package:medical/src/modal/error/error_model.dart';
 import 'package:easy_localization/easy_localization.dart';
 
+import '../../modal/notification/notification_data_list_model.dart';
+
 part 'notification_bloc_event.dart';
 part 'notification_bloc_state.dart';
 

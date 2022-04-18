@@ -53,9 +53,17 @@ class _VerifyPhoneControllerState extends State<VerifyPhoneController> {
   @override
   void initState() {
     super.initState();
-    otpCount = widget.remainingRequestCount;
+    otpCount = widget.remainingRequestCount ?? 0;
     otpTemp = widget.otp;
+
+    // if(otpCount == 0 && otpTemp == null){
+    //   timeCount = 0;
+    //   Future.delayed(Duration.zero, () {
+    //     _showDialogError();
+    //   });
+    // } else {
     startTimer();
+    //}
   }
 
   void startTimer() {
@@ -96,182 +104,149 @@ class _VerifyPhoneControllerState extends State<VerifyPhoneController> {
                 )),
                 child: Padding(
                   padding: EdgeInsets.only(top: 140),
-                  child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Column(children: [
-                          Image.asset(R.drawable.img_check_phone,
-                              width: 90, height: 74),
-                          SizedBox(height: 20),
-                          Text(R.string.nhap_otp.tr(),
-                              style: TextStyle(
-                                  fontSize: 16, fontWeight: FontWeight.w400),
-                              textAlign: TextAlign.center),
-                          SizedBox(height: 8),
-                          Text('+84 ${widget.phone!.split('+84').join()}',
-                              style: TextStyle(
-                                  fontFamily: 'Viga',
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.w400),
-                              textAlign: TextAlign.center),
-                          SizedBox(height: 32),
-                          SizedBox(
-                            width: 224,
-                            height: 44,
-                            child: PinCodeTextField(
-                              appContext: context,
-                              length: 4,
-                              autoFocus: true,
-                              keyboardType: TextInputType.number,
-                              animationType: AnimationType.none,
-                              showCursor: false,
-                              textStyle: TextStyle(
-                                  fontFamily: 'Viga',
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.w400),
-                              pinTheme: PinTheme(
-                                  shape: PinCodeFieldShape.box,
-                                  borderRadius: BorderRadius.circular(8),
-                                  fieldHeight: 44,
-                                  fieldWidth: 44,
-                                  activeFillColor: R.color.white,
-                                  inactiveFillColor: R.color.white,
-                                  selectedFillColor: R.color.white,
-                                  activeColor:
-                                      error ? R.color.red : R.color.notActiveGreen,
-                                  selectedColor: R.color.mainColor,
-                                  disabledColor:
-                                      error ? R.color.red : R.color.notActiveGreen,
-                                  inactiveColor:
-                                      error ? R.color.red : R.color.notActiveGreen),
-                              backgroundColor: R.color.transparent,
-                              enableActiveFill: true,
-                              onCompleted: (value) {
-                                setState(() {
-                                  error = false;
-                                });
-                                otpCode = value;
-                                submitOtp();
-                              },
-                              onChanged: (value) {
-                                otpCode = value;
-                                setState(() {
-                                  error = false;
-                                });
-                              },
-                              beforeTextPaste: (text) {
-                                return true;
-                              },
+                  child: Column(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                    Column(children: [
+                      Image.asset(R.drawable.img_check_phone, width: 90, height: 74),
+                      SizedBox(height: 20),
+                      Text(R.string.nhap_otp.tr(),
+                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400), textAlign: TextAlign.center),
+                      SizedBox(height: 8),
+                      Text('+84 ${widget.phone!.split('+84').join()}',
+                          style: TextStyle(fontFamily: 'Viga', fontSize: 20, fontWeight: FontWeight.w400),
+                          textAlign: TextAlign.center),
+                      SizedBox(height: 32),
+                      SizedBox(
+                        width: 224,
+                        height: 44,
+                        child: PinCodeTextField(
+                          appContext: context,
+                          length: 4,
+                          autoFocus: true,
+                          keyboardType: TextInputType.number,
+                          animationType: AnimationType.none,
+                          showCursor: false,
+                          textStyle: TextStyle(fontFamily: 'Viga', fontSize: 20, fontWeight: FontWeight.w400),
+                          pinTheme: PinTheme(
+                              shape: PinCodeFieldShape.box,
+                              borderRadius: BorderRadius.circular(8),
+                              fieldHeight: 44,
+                              fieldWidth: 44,
+                              activeFillColor: R.color.white,
+                              inactiveFillColor: R.color.white,
+                              selectedFillColor: R.color.white,
+                              activeColor: error ? R.color.red : R.color.notActiveGreen,
+                              selectedColor: R.color.mainColor,
+                              disabledColor: error ? R.color.red : R.color.notActiveGreen,
+                              inactiveColor: error ? R.color.red : R.color.notActiveGreen),
+                          backgroundColor: R.color.transparent,
+                          enableActiveFill: true,
+                          onCompleted: (value) {
+                            setState(() {
+                              error = false;
+                            });
+                            otpCode = value;
+                            submitOtp();
+                          },
+                          onChanged: (value) {
+                            otpCode = value;
+                            setState(() {
+                              error = false;
+                            });
+                          },
+                          beforeTextPaste: (text) {
+                            return true;
+                          },
+                        ),
+                      ),
+                      SizedBox(height: 8),
+                      error
+                          ? Padding(
+                              padding: EdgeInsets.only(left: 32, right: 32),
+                              child: Text(
+                                R.string.otp_khong_chinh_xac.tr(),
+                                style: TextStyle(color: R.color.red),
+                                textAlign: TextAlign.center,
+                              ),
+                            )
+                          : SizedBox(),
+                      // Padding(
+                      //   padding: const EdgeInsets.all(16),
+                      //   child: Text(
+                      //       'Số xác thực được nhân viên diaB cung cấp theo chương trình thử nghiệm',
+                      //       style: TextStyle(
+                      //           fontSize: 16, fontWeight: FontWeight.w400),
+                      //       textAlign: TextAlign.center),
+                      // ),
+                    ]),
+                    Container(
+                      margin: EdgeInsets.only(bottom: 16),
+                      child: Column(
+                        children: [
+                          GestureDetector(
+                            onTap: () {
+                              resendOTP();
+                            },
+                            child: Container(
+                              height: 48,
+                              width: 227,
+                              decoration: BoxDecoration(
+                                  color: R.color.mainColor,
+                                  borderRadius: BorderRadius.circular(21.5),
+                                  gradient: LinearGradient(
+                                      begin: Alignment.topLeft,
+                                      end: Alignment.centerRight,
+                                      colors: [R.color.greenGradientTop, R.color.greenGradientBottom])),
+                              child: Center(
+                                  child: Text('${R.string.gui_lai_ma.tr()} (Còn ${timeCount}s)',
+                                      style:
+                                          TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: R.color.white))),
                             ),
                           ),
                           SizedBox(height: 8),
-                          error
-                              ? Padding(
-                                  padding: EdgeInsets.only(left: 32, right: 32),
-                                  child: Text(
-                                    R.string.otp_khong_chinh_xac.tr(),
-                                    style: TextStyle(color: R.color.red),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                )
-                              : SizedBox(),
-                          // Padding(
-                          //   padding: const EdgeInsets.all(16),
-                          //   child: Text(
-                          //       'Số xác thực được nhân viên diaB cung cấp theo chương trình thử nghiệm',
-                          //       style: TextStyle(
-                          //           fontSize: 16, fontWeight: FontWeight.w400),
-                          //       textAlign: TextAlign.center),
-                          // ),
-                        ]),
-                        Container(
-                          margin: EdgeInsets.only(bottom: 16),
-                          child: Column(
-                            children: [
-                              GestureDetector(
-                                onTap: () {
-                                  resendOTP();
-                                },
-                                child: Container(
-                                  height: 48,
-                                  width: 227,
-                                  decoration: BoxDecoration(
-                                      color: R.color.mainColor,
-                                      borderRadius: BorderRadius.circular(21.5),
-                                      gradient: LinearGradient(
-                                          begin: Alignment.topLeft,
-                                          end: Alignment.centerRight,
-                                          colors: [
-                                            R.color.greenGradientTop,
-                                            R.color.greenGradientBottom
-                                          ])),
-                                  child: Center(
-                                      child: Text(
-                                          '${R.string.gui_lai_ma.tr()} (Còn ${timeCount}s)',
-                                          style: TextStyle(
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.w500,
-                                              color: R.color.white))),
-                                ),
-                              ),
-                              SizedBox(height: 8),
-                              Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Container(
-                                        height: 1,
-                                        width: 36,
-                                        color: R.color.color0xffD6D8E0),
-                                    SizedBox(width: 8),
-                                    Text(R.string.or.tr(),
-                                        style: TextStyle(
-                                            color: R.color.color0xff232527)),
-                                    SizedBox(width: 8),
-                                    Container(
-                                        height: 1,
-                                        width: 36,
-                                        color: R.color.color0xffD6D8E0)
-                                  ]),
-                              SizedBox(height: 8),
-                              GestureDetector(
-                                onTap: () {
-                                  Navigator.pop(context);
-                                },
-                                child: Container(
-                                  height: 48,
-                                  width: 227,
-                                  decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(200),
-                                      border: Border.all(
-                                          color: R.color.mainColor, width: 1)),
-                                  child: Center(
-                                      child: Text(R.string.thay_doi_so_dien_thoai.tr(),
-                                          style: TextStyle(
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.w600,
-                                              color: R.color.mainColor))),
-                                ),
-                              ),
-                              SizedBox(
-                                height: 16,
-                              )
-                              // Container(
-                              //   height: 48,
-                              //   width: 227,
-                              //   decoration: BoxDecoration(
-                              //       color: main,
-                              //       borderRadius: BorderRadius.circular(200)),
-                              //   child: Center(
-                              //       child: Text('Gửi lại mã (Còn 60s)',
-                              //           style: TextStyle(
-                              //               fontSize: 16,
-                              //               fontWeight: FontWeight.w500,
-                              //               color: R.color.white))),
-                              // ),
-                            ],
+                          Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                            Container(height: 1, width: 36, color: R.color.color0xffD6D8E0),
+                            SizedBox(width: 8),
+                            Text(R.string.or.tr(), style: TextStyle(color: R.color.color0xff232527)),
+                            SizedBox(width: 8),
+                            Container(height: 1, width: 36, color: R.color.color0xffD6D8E0)
+                          ]),
+                          SizedBox(height: 8),
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.pop(context);
+                            },
+                            child: Container(
+                              height: 48,
+                              width: 227,
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(200),
+                                  border: Border.all(color: R.color.mainColor, width: 1)),
+                              child: Center(
+                                  child: Text(R.string.thay_doi_so_dien_thoai.tr(),
+                                      style: TextStyle(
+                                          fontSize: 16, fontWeight: FontWeight.w600, color: R.color.mainColor))),
+                            ),
                           ),
-                        ),
-                      ]),
+                          SizedBox(
+                            height: 16,
+                          )
+                          // Container(
+                          //   height: 48,
+                          //   width: 227,
+                          //   decoration: BoxDecoration(
+                          //       color: main,
+                          //       borderRadius: BorderRadius.circular(200)),
+                          //   child: Center(
+                          //       child: Text('Gửi lại mã (Còn 60s)',
+                          //           style: TextStyle(
+                          //               fontSize: 16,
+                          //               fontWeight: FontWeight.w500,
+                          //               color: R.color.white))),
+                          // ),
+                        ],
+                      ),
+                    ),
+                  ]),
                 )),
             new Positioned(
                 //Place it at the top, and not use the entire screen
@@ -318,9 +293,10 @@ class _VerifyPhoneControllerState extends State<VerifyPhoneController> {
 
         final result = await LoginClient().createPatient(widget.userInfo);
         if (result == true) {
+          final user = await UserClient().fetchUser();
+          BotToast.closeAllLoading();
           Navigator.pushReplacementNamed(context, NavigatorName.rules);
         }
-        BotToast.closeAllLoading();
       } else if (widget.type == 'facebook') {
         await LoginClient().verifyOTP(widget.phone, otpCode);
         await LoginClient().login({
@@ -332,6 +308,8 @@ class _VerifyPhoneControllerState extends State<VerifyPhoneController> {
         });
         final result = await LoginClient().createPatient(widget.userInfo);
         if (result == true) {
+          final user = await UserClient().fetchUser();
+          BotToast.closeAllLoading();
           Navigator.pushReplacementNamed(context, NavigatorName.rules);
         }
         BotToast.closeAllLoading();
@@ -341,14 +319,15 @@ class _VerifyPhoneControllerState extends State<VerifyPhoneController> {
           "client_id": Const.CLIENT_ID,
           "client_secret": Const.CLIENT_SECRET,
           "grant_type": "external",
-          "external_token": widget.appleAccount!.identityToken,
+          "external_token": widget.appleAccount?.identityToken,
           "provider": 'Apple'
         });
         final result = await LoginClient().createPatient(widget.userInfo);
         if (result == true) {
+          final user = await UserClient().fetchUser();
+          BotToast.closeAllLoading();
           Navigator.pushReplacementNamed(context, NavigatorName.rules);
         }
-        BotToast.closeAllLoading();
       } else if (widget.type == 'linked_google') {
         final result = await LoginClient().linkedAccount({
           'providerName': 'Google',
@@ -385,8 +364,7 @@ class _VerifyPhoneControllerState extends State<VerifyPhoneController> {
         BotToast.closeAllLoading();
         Navigator.pop(context);
       } else if (widget.type == 'forgot_password') {
-        final result =
-            await LoginClient().verifyOTPRecover(widget.phone, otpCode);
+        final result = await LoginClient().verifyOTPRecover(widget.phone, otpCode);
         print(result);
         Navigator.pushReplacementNamed(context, NavigatorName.new_password,
             arguments: {'phone': widget.phone, 'token': otpCode});
@@ -394,12 +372,11 @@ class _VerifyPhoneControllerState extends State<VerifyPhoneController> {
       } else {
         final result = await LoginClient().verifyOTP(widget.phone, otpCode);
         print(result);
-        Navigator.pushReplacementNamed(context, NavigatorName.register_success,
-            arguments: {
-              'phone': widget.phone,
-              'password': widget.password,
-              'referalCode': widget.referalCode,
-            });
+        Navigator.pushReplacementNamed(context, NavigatorName.register_success, arguments: {
+          'phone': widget.phone,
+          'password': widget.password,
+          'referalCode': widget.referalCode,
+        });
         BotToast.closeAllLoading();
       }
     } catch (e, _) {
@@ -428,11 +405,8 @@ class _VerifyPhoneControllerState extends State<VerifyPhoneController> {
     BotToast.showLoading();
     try {
       if (widget.type == 'google') {
-        final result = await LoginClient().registerWithSocial({
-          'providerName': 'Google',
-          'providerKey': widget.googleAccount!.id,
-          'phoneNumber': widget.phone
-        });
+        final result = await LoginClient().registerWithSocial(
+            {'providerName': 'Google', 'providerKey': widget.googleAccount!.id, 'phoneNumber': widget.phone});
         otpCount = result.remainingRequestCount;
         otpTemp = result.token;
       } else if (widget.type == 'facebook') {
@@ -461,13 +435,11 @@ class _VerifyPhoneControllerState extends State<VerifyPhoneController> {
         otpCount = result.remainingRequestCount;
         otpTemp = result.token;
       } else if (widget.type == 'forgot_password') {
-        final result = await LoginClient()
-            .requestOTPRecover({"phoneNumber": widget.phone});
+        final result = await LoginClient().requestOTPRecover({"phoneNumber": widget.phone});
         otpCount = result.remainingRequestCount;
         otpTemp = result.token;
       } else {
-        final result = await LoginClient().requestOTP(
-            {"password": widget.password, "phoneNumber": widget.phone});
+        final result = await LoginClient().requestOTP({"password": widget.password, "phoneNumber": widget.phone});
         otpCount = result.remainingRequestCount;
         otpTemp = result.token;
       }
@@ -494,10 +466,8 @@ class _VerifyPhoneControllerState extends State<VerifyPhoneController> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Image.asset(R.drawable.ic_check_success,
-                  width: 64, height: 64),
-              Text(R.string.da_gui_lai_otp.tr(),
-                  textAlign: TextAlign.center)
+              Image.asset(R.drawable.ic_check_success, width: 64, height: 64),
+              Text(R.string.da_gui_lai_otp.tr(), textAlign: TextAlign.center)
             ],
           ),
         ));
@@ -515,8 +485,7 @@ class _VerifyPhoneControllerState extends State<VerifyPhoneController> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Image.asset(R.drawable.ic_check_error,
-                  width: 64, height: 64),
+              Image.asset(R.drawable.ic_check_error, width: 64, height: 64),
               SizedBox(height: 8),
               RichText(
                 textAlign: TextAlign.center,
@@ -524,15 +493,10 @@ class _VerifyPhoneControllerState extends State<VerifyPhoneController> {
                   text: R.string.da_gui_otp_5_lan_cho_so_dien_thoai.tr(),
                   style: TextStyle(color: R.color.textDark, fontSize: 16),
                   children: <TextSpan>[
+                    TextSpan(text: widget.phone, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
                     TextSpan(
-                        text: widget.phone,
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 16)),
-                    TextSpan(
-                        text:
-                            R.string.dang_ky_lai_hom_sau.tr(),
-                        style:
-                            TextStyle(color: R.color.textDark, fontSize: 16)),
+                        text: R.string.dang_ky_lai_hom_sau.tr(),
+                        style: TextStyle(color: R.color.textDark, fontSize: 16)),
                   ],
                 ),
               )

@@ -12,6 +12,7 @@ import 'package:medical/src/widget/BloodPressure/bloodPressure_detail_tabbar.dar
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:visibility_detector/visibility_detector.dart';
 
 class HeartChart extends StatefulWidget {
   HeartChart({Key? key}) : super(key: key);
@@ -29,6 +30,7 @@ class HeartChartState extends State<HeartChart>
 
   int periodFilterType = 1;
   late BuildContext currentContext;
+  int? previousDate = 0;
 
   @override
   void initState() {
@@ -77,55 +79,64 @@ class HeartChartState extends State<HeartChart>
               ? Container(
                   height: 240,
                   child: Center(child: CircularProgressIndicator()))
-              : Container(
-                  color: R.color.transparent,
-                  padding: EdgeInsets.only(left: 18, right: 18),
-                  child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Row(
-                              children: [
-                                Text(R.string.heart_rate_trend.tr(),
-                                    style: TextStyle(
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.w700)),
-                              ],
-                            ),
-                          ],
-                        ),
-                        SizedBox(height: 14),
-                        model.trendItems.items.length == 0
-                            ? GestureDetector(
-                                onTap: () {
-                                  Navigator.pushNamed(
-                                      context, NavigatorName.add_blood_pressure,
-                                      arguments: {'type': 'input', 'id': null});
-                                },
-                                child: Image.asset(
-                                    R.drawable.img_blood_pressure_trend_empty),
-                              )
-                            : Container(
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(16),
-                                  color: R.color.white,
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: R.color.grey.withOpacity(0.5),
-                                      spreadRadius: 1,
-                                      blurRadius: 7,
-                                      offset: Offset(0, 2),
-                                    ),
-                                  ],
-                                ),
-                                child: Padding(
-                                    padding: const EdgeInsets.all(16.0),
-                                    child: buildChart(model))),
-                        SizedBox(height: 26),
-                      ]),
-                );
+              : VisibilityDetector(
+                key: Key('heart_chart'),
+                onVisibilityChanged: (visibilityInfo) {
+                  var visiblePercentage = visibilityInfo.visibleFraction * 100;
+                  if(visiblePercentage == 0){
+                    previousDate = 0;
+                  }
+                },
+                child: Container(
+                    color: R.color.transparent,
+                    padding: EdgeInsets.only(left: 18, right: 18),
+                    child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Row(
+                                children: [
+                                  Text(R.string.heart_rate_trend.tr(),
+                                      style: TextStyle(
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.w700)),
+                                ],
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: 14),
+                          model.trendItems.items.length == 0
+                              ? GestureDetector(
+                                  onTap: () {
+                                    Navigator.pushNamed(
+                                        context, NavigatorName.add_blood_pressure,
+                                        arguments: {'type': 'input', 'id': null});
+                                  },
+                                  child: Image.asset(
+                                      R.drawable.img_blood_pressure_trend_empty),
+                                )
+                              : Container(
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(16),
+                                    color: R.color.white,
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: R.color.grey.withOpacity(0.5),
+                                        spreadRadius: 1,
+                                        blurRadius: 7,
+                                        offset: Offset(0, 2),
+                                      ),
+                                    ],
+                                  ),
+                                  child: Padding(
+                                      padding: const EdgeInsets.all(16.0),
+                                      child: buildChart(model))),
+                          SizedBox(height: 26),
+                        ]),
+                  ),
+              );
         }));
   }
 
@@ -241,14 +252,15 @@ class HeartChartState extends State<HeartChart>
                                 ),
                                 touchCallback: (FlTouchEvent event,
                                     LineTouchResponse? lineTouch) {
+                                  previousDate = 0;
                                   if (event is! FlLongPressEnd &&
                                       event is! FlPanEndEvent) {
                                     if (lineTouch?.lineBarSpots?.isNotEmpty == true) {
                                       final double value =
                                           lineTouch!.lineBarSpots!.first.x;
-                                      setState(() {
+                                   //   setState(() {
                                         touchIndex = value.toInt();
-                                      });
+                                  //    });
                                     }
                                   } else {
                                     touchIndex = -1;
@@ -264,9 +276,11 @@ class HeartChartState extends State<HeartChart>
                                 reservedSize: -16,
                                 getTextStyles: (context, value) {
                                   return TextStyle(
-                                      color: touchIndex == value.toInt()
-                                          ? R.color.black
-                                          : R.color.color0xffC0C2C5,
+                                      color: 
+                                      touchIndex == value.toInt() ? 
+                                      R.color.black
+                                          : R.color.color0xffC0C2C5
+                                          ,
                                       fontSize: 14,
                                       fontWeight: FontWeight.normal);
                                 },
@@ -275,10 +289,17 @@ class HeartChartState extends State<HeartChart>
                                     return '';
                                   }
                                   final date = dates[value.toInt()];
+                                  if(previousDate == date) return '';
+                                  previousDate = date;
                                   if (date == null) {
                                     return '';
                                   } else {
-                                    return convertToUTC(date, 'dd/MM');
+                                    final dateTime = DateTime.fromMillisecondsSinceEpoch(date * 1000);
+                                    if(dateTime.hour > 0 && dateTime.hour < 7){
+                                      return convertToGMT0(date, 'dd/MM');
+                                    } else {
+                                      return convertToUTC(date, 'dd/MM');
+                                    }
                                   }
                                 },
                               ),

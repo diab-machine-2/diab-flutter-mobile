@@ -22,6 +22,8 @@ import 'package:medical/src/modal/error/error_model.dart';
 import 'package:medical/src/widget/tabbar/tabbar.dart';
 import 'package:easy_localization/easy_localization.dart';
 
+import '../../../widgets/network_image_widget.dart';
+
 class ExercrisesTrendCaloChart extends StatefulWidget {
   ExercrisesTrendCaloChart({Key? key}) : super(key: key);
 
@@ -208,7 +210,7 @@ class ExercrisesTrendCaloChartState extends State<ExercrisesTrendCaloChart>
                                       padding: const EdgeInsets.only(top: 0, left: 16.0, bottom: 16),
                                       child: Row(
                                         children: [
-                                          Image.network(
+                                          NetWorkImageWidget(imageUrl: 
                                             touchIndex == null
                                                 ? model.trendItems.items[model.trendItems.items.length - 1]
                                                         .targetIconUrl!.url ??
@@ -216,16 +218,6 @@ class ExercrisesTrendCaloChartState extends State<ExercrisesTrendCaloChart>
                                                 : model.trendItems.items[touchIndex!].targetIconUrl!.url ?? '',
                                             width: 24,
                                             height: 24,
-                                            errorBuilder:
-                                                (BuildContext context, Object exception, StackTrace? stackTrace) {
-                                              return Container(
-                                                  decoration: BoxDecoration(
-                                                    shape: BoxShape.circle,
-                                                    color: R.color.grayBorder,
-                                                  ),
-                                                  width: 24,
-                                                  height: 24);
-                                            },
                                           ),
                                           SizedBox(
                                             width: 8,

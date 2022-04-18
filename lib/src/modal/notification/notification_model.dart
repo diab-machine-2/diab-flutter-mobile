@@ -2,19 +2,21 @@ import 'notification_type.dart';
 
 class NotificationModel {
   final String? id;
-  final String? title;
-  final String? body;
-  final String? topic;
+  String? notificationId;
+  String? title;
+  String? body;
+  String? topic;
   final String? imageUrl;
   final int? sentDateTime;
   final bool? isRead;
   final String? hyperText;
   final String? hyperLink;
   final NotificationData? data;
-  final int? notificationType;
+  final String? notificationType;
 
   NotificationModel(
       {this.id,
+      this.notificationId,
       required this.title,
       required this.body,
       this.topic,
@@ -27,27 +29,30 @@ class NotificationModel {
       this.notificationType});
 
   NotificationActionType get actionType =>
-      NotificationActionExtend.getNotificationActionTypeFromIndex(
-          notificationType);
+      NotificationActionExtend.getNotificationActionTypeFromIndex(data?.notificationType ?? notificationType);
 
   @override
   factory NotificationModel.fromJson(Map<String, dynamic> json) {
     final notification = json['notification'] ?? json;
     final dataNoti = json['data'];
     return NotificationModel(
-        id: notification['id'],
-        title: notification['title'],
-        body: notification['body'],
-        topic: notification['topic'],
-        imageUrl: notification['imageUrl'] is Map
-            ? notification['imageUrl']['url']
-            : notification['imageUrl'],
-        sentDateTime: notification['sentDateTime'],
-        isRead: notification['isRead'],
-        hyperText: notification['hyperText'],
-        hyperLink: notification['hyperLink'],
-        data: dataNoti == null ? null : NotificationData.fromJson(dataNoti),
-        notificationType: notification['notificationType']);
+      id: notification['id'],
+      notificationId: notification['notificationId'],
+      title: notification['title'],
+      body: notification['body'],
+      topic: notification['topic'],
+      imageUrl: notification['imageUrl'] is Map ? notification['imageUrl']['url'] : notification['imageUrl'],
+      sentDateTime: notification['sentDateTime'],
+      isRead: notification['isRead'] ?? false,
+      hyperText: notification['hyperText'],
+      hyperLink: notification['hyperLink'],
+      data: dataNoti == null ? null : NotificationData.fromJson(dataNoti),
+      notificationType: notification['data'] is Map
+          ? notification['data']['notificationType'] != null
+              ? notification['data']['notificationType']
+              : notification['notificationType']
+          : notification['notificationType'],
+    );
   }
 
   static List<NotificationModel> toList(List<dynamic> items) {
@@ -58,19 +63,20 @@ class NotificationModel {
 class NotificationData {
   final String? communicationId;
   final String? remindId;
-  final int notificationType;
+  final String notificationType;
+  final String? notificationId;
+  final String? referalCode;
 
-  NotificationData(
-      {required this.communicationId,
-      required this.remindId,
-      required this.notificationType});
+  NotificationData({required this.notificationId, required this.communicationId, required this.remindId, required this.notificationType, required this.referalCode});
 
   @override
   factory NotificationData.fromJson(dynamic json) {
     return NotificationData(
+        notificationId: json['notificationId'],
         communicationId: json['communicationId'],
         remindId: json['remindId'],
-        notificationType: int.parse(json['notificationType']));
+        referalCode: json['referalCode'],
+        notificationType: json['notificationType']);
   }
 
   static List<NotificationData> toList(List<dynamic> items) {

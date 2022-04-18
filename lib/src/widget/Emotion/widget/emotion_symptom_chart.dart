@@ -7,6 +7,8 @@ import 'package:medical/src/widget/Emotion/emotion_detail_tabbar.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:easy_localization/easy_localization.dart';
+
+import '../../../widgets/network_image_widget.dart';
 class EmotionSymptomChart extends StatefulWidget {
   EmotionSymptomChart({Key? key}) : super(key: key);
   @override
@@ -132,7 +134,7 @@ class EmotionSymptomChartState extends State<EmotionSymptomChart>
         children: [
           Row(
             children: [
-              Image.network('$icon', width: 24, height: 24),
+              NetWorkImageWidget(imageUrl: '$icon', width: 24, height: 24),
               SizedBox(
                 width: 8,
               ),

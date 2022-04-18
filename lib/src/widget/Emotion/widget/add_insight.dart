@@ -26,11 +26,15 @@ import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
+import 'package:medical/src/widgets/network_image_widget.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:medical/src/modal/error/error_model.dart';
 import 'package:easy_localization/easy_localization.dart';
+
+import '../../../repo/home/home_client.dart';
+import '../../my_plan_screens/activity_tab/activity_tab/models/schedule_type.dart';
 
 class AddInsightController extends StatefulWidget {
   final String? type;
@@ -40,6 +44,7 @@ class AddInsightController extends StatefulWidget {
   final List<ActivityModel>? activities;
   final String? otherSymptom;
   final String? otherActivity;
+  final String? goalId;
 
   AddInsightController(
       {this.type,
@@ -48,7 +53,9 @@ class AddInsightController extends StatefulWidget {
       this.symptoms,
       this.activities,
       this.otherSymptom,
-      this.otherActivity});
+      this.otherActivity,
+      this.goalId,
+      });
 
   @override
   _AddInsightControllerState createState() => _AddInsightControllerState();
@@ -228,7 +235,7 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
                             color: R.color.transparent,
                             child: Column(
                               children: [
-                                Image.network(
+                                NetWorkImageWidget(imageUrl: 
                                     emotion == null
                                         ? ''
                                         : emotion!.imageUrl ?? '',
@@ -324,7 +331,7 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
                                           key: Key(index.toString()),
                                           index: index,
                                           image: ItemTagsImage(
-                                            child: Image.network(
+                                            child: NetWorkImageWidget(imageUrl: 
                                                 item.icon.url ?? '',
                                                 width: 24,
                                                 height: 24),
@@ -468,7 +475,7 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
                                                   right: 8),
                                               index: index,
                                               image: ItemTagsImage(
-                                                child: Image.network(
+                                                child: NetWorkImageWidget(imageUrl: 
                                                     item.icon.url ?? '',
                                                     width: 24,
                                                     height: 24),
@@ -687,6 +694,7 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
                                           hintText: R
                                               .string.nhap_ghi_chu_cua_ban
                                               .tr(),
+                                          counterText: '',
                                           contentPadding:
                                               EdgeInsets.only(bottom: 8),
                                           border: InputBorder.none,
@@ -746,7 +754,7 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
                                                                     fit: BoxFit
                                                                         .cover,
                                                                   )
-                                                                : Image.network(
+                                                                : NetWorkImageWidget(imageUrl: 
                                                                     files[index]
                                                                         .url,
                                                                     fit: BoxFit
@@ -1012,6 +1020,9 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
           note,
           paths);
       if (result == true) {
+      //  if(widget.goalId != null && widget.goalId?.isNotEmpty == true){
+          await HomeClient().completeSmartGoal(selectedDate, widget.goalId ?? '', 1, ScheduleType.emotion.typeIndex);
+      //  }
         Observable.instance
             .notifyObservers([], notifyName: "Emotion_change_data");
       }

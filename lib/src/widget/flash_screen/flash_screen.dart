@@ -9,22 +9,50 @@ import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 
+import '../../modal/user/secure.dart';
+import '../../model/service/app_client.dart';
+
 class FlashScreenController extends StatefulWidget {
   @override
   _FlashScreenControllerState createState() => _FlashScreenControllerState();
 }
 
 class _FlashScreenControllerState extends State<FlashScreenController> {
+  bool isNavigateToStepList = false;
+  SecureModel? secureModel;
+
   @override
   void initState() {
     super.initState();
+    isNavigateToStepList = false;
     getData();
+  }
+
+   getSecuredModel() async {
+    try{
+      secureModel = await UserClient().fetchInfoSecure();
+   //   secureModel!.environment = "production";
+    } catch(exception){
+      secureModel = SecureModel(
+        email: "lienhe@diab.com.vn",
+        support: "Supporter",
+        hotline: "0768 07 07 27",
+        security: "security",
+        environment: "production",
+      );
+    }
+    await AppSettings.saveEnvironment(secureModel?.environment);
+    AppSettings.environment = secureModel?.environment ?? "";
+    AppSettings.secureModel = secureModel;
+    AppClient();
   }
 
   getData() async {
     final String? sharedCode = await DeepLinkConfig.instance.getInitLink();
     try {
+      await getSecuredModel();
       final token = await AppSettings.getToken();
+      AppSettings.environment = await AppSettings.getEnvironment();
       if (token.isNotEmpty) {
         final refreshToken = await AppSettings.getRefreshToken();
         await LoginClient().login({
@@ -33,15 +61,18 @@ class _FlashScreenControllerState extends State<FlashScreenController> {
           "grant_type": "refresh_token",
           "refresh_token": refreshToken
         });
-        final user = await UserClient().fetchUser();
+        var user = await UserClient().fetchUser();
         if (user == null) {
-          Message.showToastMessage(context, R.string.phien_dang_nhap_het_han_vui_long_dang_nhap_lai.tr());
-          AppSettings.logout();
-          Navigator.pushReplacementNamed(
-            context,
-            NavigatorName.step_list,
-            arguments: sharedCode,
-          );
+          if(!isNavigateToStepList) {
+              Message.showToastMessage(context, R.string.phien_dang_nhap_het_han_vui_long_dang_nhap_lai.tr());
+              AppSettings.logout(isNavigateToStepListScreen: false);
+              Navigator.pushReplacementNamed(
+                context,
+                NavigatorName.step_list,
+                arguments: sharedCode,
+              );
+              isNavigateToStepList = true;
+          }
         } else {
           Navigator.pushReplacementNamed(
             context,
@@ -57,8 +88,11 @@ class _FlashScreenControllerState extends State<FlashScreenController> {
         );
       }
     } catch (e) {
-      Message.showToastMessage(context, R.string.phien_dang_nhap_het_han_vui_long_dang_nhap_lai.tr());
-      AppSettings.logout();
+      if(!isNavigateToStepList) {
+        Message.showToastMessage(context, R.string.phien_dang_nhap_het_han_vui_long_dang_nhap_lai.tr());
+        AppSettings.logout();
+        isNavigateToStepList = true;
+      }
     }
   }
 

@@ -15,6 +15,8 @@ import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:easy_localization/easy_localization.dart';
 
+import '../../../widgets/network_image_widget.dart';
+
 class EmotionDetailController extends StatefulWidget {
   EmotionDetailController({Key? key}) : super(key: key);
   @override
@@ -224,7 +226,7 @@ class EmotionDetailControllerState extends State<EmotionDetailController>
                                                                             FontWeight.w700)),
                                                               ],
                                                             ),
-                                                            Image.network(
+                                                            NetWorkImageWidget(imageUrl: 
                                                               element.emotionIcon
                                                                       .url ??
                                                                   '',
@@ -295,7 +297,7 @@ class EmotionDetailControllerState extends State<EmotionDetailController>
                                                                   index: index,
                                                                   image:
                                                                       ItemTagsImage(
-                                                                    child: Image.network(
+                                                                    child: NetWorkImageWidget(imageUrl: 
                                                                         item.icon.url ??
                                                                             '',
                                                                         width:
@@ -428,7 +430,7 @@ class EmotionDetailControllerState extends State<EmotionDetailController>
                                                                   index: index,
                                                                   image:
                                                                       ItemTagsImage(
-                                                                    child: Image.network(
+                                                                    child: NetWorkImageWidget(imageUrl: 
                                                                         item.icon.url ??
                                                                             '',
                                                                         width:

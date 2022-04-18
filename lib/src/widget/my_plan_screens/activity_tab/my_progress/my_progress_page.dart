@@ -4,8 +4,10 @@ import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_observer/Observable.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
+import 'package:medical/src/model/response/report_model.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widgets/common_page.dart';
@@ -14,13 +16,19 @@ import 'package:medical/src/widgets/pdf_viewer_widget.dart';
 import 'package:medical/src/widgets/select_bottom_sheet_widget.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
+import '../../../../utils/const.dart';
 import 'models/filter_type.dart';
 import 'models/report_data.dart';
 import 'my_progress.dart';
 import 'widgets/report_list_widget.dart';
 
 class MyProgressPage extends StatefulWidget {
-  const MyProgressPage();
+
+  List<ReportModel>? reports;
+  bool? hasNewReports;
+  bool isFromHomePage;
+
+  MyProgressPage({this.reports, this.hasNewReports, this.isFromHomePage = false});
 
   @override
   _MyProgressPageState createState() => _MyProgressPageState();
@@ -36,7 +44,7 @@ class _MyProgressPageState extends State<MyProgressPage> {
   void initState() {
     super.initState();
     final AppRepository appRepository = AppRepository();
-    _cubit = MyProgressCubit(appRepository);
+    _cubit = MyProgressCubit(appRepository, widget.reports, widget.hasNewReports);
     _cubit.initData();
   }
 
@@ -91,38 +99,19 @@ class _MyProgressPageState extends State<MyProgressPage> {
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
                           InkWell(
-                            onTap: () {
+                            onTap: () async {
                               _messageController.sink.add(true);
+                              await _cubit.saveHasNewReportsFromPreferences(false);
+                              _cubit.hasNewReports = false;
+                              await _cubit.saveReportsFromPreferences(_cubit.reports ?? []);
+                              _cubit.refresh();
+
                               showActionFilter(
                                   context: context,
                                   builder: (context) {
                                     return ReportListWidget(
                                       title: R.string.report.tr(),
-                                      reportList: [
-                                        ReportData(
-                                          title: 'Báo cáo đầu vào',
-                                          dateTime: DateTime.now(),
-                                          url:
-                                              'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
-                                        ),
-                                        ReportData(
-                                          title: 'Báo cáo tiến độ chung',
-                                          dateTime: DateTime.now().subtract(
-                                            const Duration(days: 1, hours: 2),
-                                          ),
-                                          url:
-                                              'http://www.africau.edu/images/default/sample.pdf',
-                                        ),
-                                        ReportData(
-                                          title:
-                                              'Báo cáo tiến độ 6 tháng gần đây',
-                                          dateTime: DateTime.now().subtract(
-                                            const Duration(days: 1, hours: 7),
-                                          ),
-                                          url:
-                                              'https://www.clickdimensions.com/links/TestPDFfile.pdf',
-                                        ),
-                                      ],
+                                      reportList: _cubit.reports ?? [],
                                       onSelected: (url) {
                                         NavigationUtil.navigatePage(
                                             context, PDFViewerWidget(url: url));
@@ -132,10 +121,27 @@ class _MyProgressPageState extends State<MyProgressPage> {
                             },
                             child: Row(
                               children: [
-                                Image.asset(
-                                  R.drawable.ic_report,
-                                  width: 20,
-                                  height: 20,
+                                Stack(
+                                  children: [
+                                    Image.asset(
+                                        R.drawable.ic_report,
+                                        width: 20,
+                                        height: 20,
+                                    ),
+                                    Visibility(
+                                      visible: _cubit.hasNewReports ?? false,
+                                      child: Positioned(
+                                        top: 0,
+                                        right: 0,
+                                        child: Container(
+                                          width: 8,
+                                          height: 8,
+                                          decoration: BoxDecoration(
+                                              shape: BoxShape.circle,
+                                              color: R.color.greenGradientTop)),
+                                      ),
+                                    ),
+                                  ],
                                 ),
                                 const SizedBox(width: 4),
                                 Text(
@@ -226,135 +232,170 @@ class _MyProgressPageState extends State<MyProgressPage> {
                                 _messageController.sink.add(true);
                                 _cubit.getMyProgress(isRefresh: true);
                               },
-                              child: SingleChildScrollView(
+                              child: _cubit.isHiddenAll == false ? SingleChildScrollView(
                                 child: Padding(
                                   padding: const EdgeInsets.symmetric(
                                       horizontal: 16, vertical: 24),
                                   child: Column(
                                     children: [
-                                      _buildCustomCardLayout(
-                                        title: R.string.hoat_dong.tr(),
-                                        onTapShowDetail: () {
-                                          _messageController.sink.add(true);
-                                          NavigationUtil.pop(context,
-                                              result: 0);
-                                        },
-                                        child: Column(
-                                          children: [
-                                            CustomProgressChart(
-                                              title: R.string.goal.tr(),
-                                              mark1: _cubit.myProgressData?.data
-                                                  ?.target?.completed,
-                                              mark2: _cubit.myProgressData?.data
-                                                  ?.target?.unlocked,
-                                              mark3: _cubit.myProgressData?.data
-                                                  ?.target?.total,
-                                              messageStream:
-                                                  _messageController.stream,
-                                              onTap: () {
-                                                _messageController.sink
-                                                    .add(true);
-                                              },
-                                            ),
-                                            CustomProgressChart(
-                                              title: R.string.coach11.tr(),
-                                              mark1: _cubit.myProgressData?.data
-                                                  ?.coach11?.completed,
-                                              mark2: _cubit.myProgressData?.data
-                                                  ?.coach11?.unlocked,
-                                              mark3: _cubit.myProgressData?.data
-                                                  ?.coach11?.total,
-                                              messageStream:
-                                                  _messageController.stream,
-                                              onTap: () {
-                                                _messageController.sink
-                                                    .add(true);
-                                              },
-                                            ),
-                                            CustomProgressChart(
-                                              title: R.string.coach1n.tr(),
-                                              mark1: _cubit.myProgressData?.data
-                                                  ?.coach1N?.completed,
-                                              mark2: _cubit.myProgressData?.data
-                                                  ?.coach1N?.unlocked,
-                                              mark3: _cubit.myProgressData?.data
-                                                  ?.coach1N?.total,
-                                              messageStream:
-                                                  _messageController.stream,
-                                              onTap: () {
-                                                _messageController.sink
-                                                    .add(true);
-                                              },
-                                            ),
-                                          ],
-                                        ),
-                                        gradient: LinearGradient(
-                                          begin: Alignment.bottomLeft,
-                                          end: Alignment.topRight,
-                                          colors: <Color>[
-                                            const Color(0xffF7F0C0)
-                                                .withOpacity(0.8),
-                                            const Color(0xffFEDABA)
-                                                .withOpacity(0.8),
-                                          ],
-                                        ),
-                                      ),
-                                      _buildCustomCardLayout(
-                                        title: R.string.title_lesson.tr(),
-                                        onTapShowDetail: () {
-                                          _messageController.sink.add(true);
-                                          NavigationUtil.pop(context,
-                                              result: 1);
-                                        },
-                                        child: CustomProgressChart(
-                                          mark1: _cubit.myProgressData?.data
-                                                  ?.lesson?.completed ??
-                                              0,
-                                          mark2: _cubit.myProgressData?.data
-                                                  ?.lesson?.unlocked ??
-                                              0,
-                                          mark3: _cubit.myProgressData?.data
-                                                  ?.lesson?.total ??
-                                              0,
-                                          messageStream:
-                                              _messageController.stream,
-                                          onTap: () {
+                                      if(_cubit.isHiddenActivity == false)
+                                        _buildCustomCardLayout(
+                                          title: R.string.hoat_dong.tr(),
+                                          onTapShowDetail: () {
                                             _messageController.sink.add(true);
+                                            if(widget.isFromHomePage){
+                                              Observable.instance.notifyObservers([], 
+                                              notifyName : Const.NAVIGATE_TO_MY_PLAN_TAB, 
+                                              map: {
+                                                "position": 0
+                                              });
+                                            } else {
+                                              NavigationUtil.pop(context,
+                                                result: 0);
+                                            }
                                           },
+                                          child: Column(
+                                            children: [
+                                              CustomProgressChart(
+                                                title: R.string.goal.tr(),
+                                                mark1: _cubit.myProgressData?.data
+                                                    ?.target?.inTimeCompleted,
+                                                mark2: _cubit.myProgressData?.data
+                                                    ?.target?.inTime,
+                                                mark3: _cubit.filterType == FilterType.all ? _cubit.myProgressData?.data
+                                                    ?.target?.allTime : _cubit.myProgressData?.data
+                                                    ?.target?.inTime,
+                                                messageStream:
+                                                    _messageController.stream,
+                                                onTap: () {
+                                                  _messageController.sink
+                                                      .add(true);
+                                                },
+                                              ),
+                                              CustomProgressChart(
+                                                title: R.string.coach11.tr(),
+                                                mark1: _cubit.myProgressData?.data
+                                                    ?.coach11?.inTimeCompleted,
+                                                mark2: _cubit.myProgressData?.data
+                                                    ?.coach11?.inTime,
+                                                mark3: _cubit.filterType == FilterType.all ? _cubit.myProgressData?.data
+                                                    ?.coach11?.allTime : _cubit.myProgressData?.data
+                                                    ?.coach11?.inTime,
+                                                messageStream:
+                                                    _messageController.stream,
+                                                onTap: () {
+                                                  _messageController.sink
+                                                      .add(true);
+                                                },
+                                              ),
+                                              CustomProgressChart(
+                                                title: R.string.coach1n.tr(),
+                                                mark1: _cubit.myProgressData?.data
+                                                    ?.coach1N?.inTimeCompleted,
+                                                mark2: _cubit.myProgressData?.data
+                                                    ?.coach1N?.inTime,
+                                                mark3: _cubit.filterType == FilterType.all ? _cubit.myProgressData?.data
+                                                    ?.coach1N?.allTime : _cubit.myProgressData?.data
+                                                    ?.coach1N?.inTime,
+                                                messageStream:
+                                                    _messageController.stream,
+                                                onTap: () {
+                                                  _messageController.sink
+                                                      .add(true);
+                                                },
+                                              ),
+                                            ],
+                                          ),
+                                          gradient: LinearGradient(
+                                            begin: Alignment.bottomLeft,
+                                            end: Alignment.topRight,
+                                            colors: <Color>[
+                                              const Color(0xffF7F0C0)
+                                                  .withOpacity(0.8),
+                                              const Color(0xffFEDABA)
+                                                  .withOpacity(0.8),
+                                            ],
+                                          ),
                                         ),
-                                      ),
-                                      _buildCustomCardLayout(
-                                        title: R.string.title_exercise.tr(),
-                                        onTapShowDetail: () {
-                                          NavigationUtil.pop(context,
-                                              result: 2);
-                                        },
-                                        child: CustomProgressChart(
-                                          mark1: _cubit
-                                                  .myProgressData
-                                                  ?.data
-                                                  ?.exerciseMovement
-                                                  ?.completed ??
-                                              0,
-                                          mark2: _cubit
-                                                  .myProgressData
-                                                  ?.data
-                                                  ?.exerciseMovement
-                                                  ?.unlocked ??
-                                              0,
-                                          mark3: _cubit.myProgressData?.data
-                                                  ?.exerciseMovement?.total ??
-                                              0,
-                                          messageStream:
-                                              _messageController.stream,
-                                          onTap: () {
+                                      if((_cubit.myProgressData?.data
+                                                  ?.lesson?.inTime ?? 0) != 0)
+                                        _buildCustomCardLayout(
+                                          title: R.string.title_lesson.tr(),
+                                          onTapShowDetail: () {
                                             _messageController.sink.add(true);
+                                            if(widget.isFromHomePage){
+                                              Observable.instance.notifyObservers([], 
+                                              notifyName : Const.NAVIGATE_TO_MY_PLAN_TAB, 
+                                              map: {
+                                                "position": 1
+                                              });
+                                            } else {
+                                              NavigationUtil.pop(context,
+                                                result: 1);
+                                            }
                                           },
+                                          child: CustomProgressChart(
+                                            mark1: _cubit.myProgressData?.data
+                                                    ?.lesson?.inTimeCompleted ??
+                                                0,
+                                            mark2: _cubit.myProgressData?.data
+                                                    ?.lesson?.inTime ??
+                                                0,
+                                            mark3: _cubit.myProgressData?.data
+                                                    ?.lesson?.inTime ??
+                                                0,
+                                            messageStream:
+                                                _messageController.stream,
+                                            onTap: () {
+                                              _messageController.sink.add(true);
+                                            },
+                                          ),
                                         ),
-                                      ),
+                                      if((_cubit.myProgressData?.data
+                                          ?.exerciseMovement?.inTime ?? 0) != 0)
+                                        _buildCustomCardLayout(
+                                          title: R.string.title_exercise.tr(),
+                                          onTapShowDetail: () {
+                                            if(widget.isFromHomePage){
+                                            Observable.instance.notifyObservers([], 
+                                              notifyName : Const.NAVIGATE_TO_MY_PLAN_TAB, 
+                                              map: {
+                                                "position": 2
+                                              });
+                                            } else {
+                                              NavigationUtil.pop(context,
+                                                result: 2);
+                                            }
+                                          },
+                                          child: CustomProgressChart(
+                                            mark1: _cubit
+                                                    .myProgressData
+                                                    ?.data
+                                                    ?.exerciseMovement
+                                                    ?.inTimeCompleted ??
+                                                0,
+                                            mark2: _cubit
+                                                    .myProgressData
+                                                    ?.data
+                                                    ?.exerciseMovement
+                                                    ?.inTime ??
+                                                0,
+                                            mark3: _cubit.myProgressData?.data
+                                                    ?.exerciseMovement?.inTime ??
+                                                0,
+                                            messageStream:
+                                                _messageController.stream,
+                                            onTap: () {
+                                              _messageController.sink.add(true);
+                                            },
+                                          ),
+                                        ),
                                     ],
                                   ),
                                 ),
+                              ) : Center(
+                                child: Text(R.string.no_data.tr(),
+                                  style: TextStyle(color: R.color.black, fontSize: 14),),
                               ),
                             ),
                     )
@@ -443,4 +484,5 @@ class _MyProgressPageState extends State<MyProgressPage> {
       builder: builder,
     );
   }
+
 }

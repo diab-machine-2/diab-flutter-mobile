@@ -15,7 +15,8 @@ enum ScheduleType {
   survey,
   lesson,
   io_evaluate,
-  update_profile
+  update_profile,
+  output_assessment
 }
 
 extension ScheduleTypeExtend on ScheduleType {
@@ -40,15 +41,17 @@ extension ScheduleTypeExtend on ScheduleType {
       case ScheduleType.book_1_1:
         return R.drawable.ic_schedule_book_1_1;
       case ScheduleType.book_1_n:
-        return R.drawable.ic_schedule_book_1_n;
+        return R.drawable.ic_schedule_bool_1_1;
       case ScheduleType.survey:
         return R.drawable.ic_schedule_survey;
       case ScheduleType.lesson:
-        return R.drawable.ic_schedule_exercise;
+        return R.drawable.ic_schedule_lesson;
       case ScheduleType.io_evaluate:
         return R.drawable.ic_schedule_io_evaluate;
       case ScheduleType.update_profile:
         return R.drawable.ic_schedule_update_profile;
+        case ScheduleType.output_assessment:
+        return R.drawable.ic_schedule_io_evaluate;
     }
   }
 
@@ -71,17 +74,19 @@ extension ScheduleTypeExtend on ScheduleType {
       case ScheduleType.custom:
         return '';
       case ScheduleType.book_1_1:
-        return '';
+        return R.string.coaching_11.tr();
       case ScheduleType.book_1_n:
-        return '';
+        return R.string.coaching_1n.tr();
       case ScheduleType.survey:
-        return '';
+        return R.string.survey.tr();
       case ScheduleType.lesson:
         return R.string.smart_goal_lesson.tr();
       case ScheduleType.io_evaluate:
-        return '';
+        return R.string.input_evaluate;
       case ScheduleType.update_profile:
-        return '';
+        return R.string.update_profile_type.tr();
+      case ScheduleType.output_assessment:
+        return R.string.output_evaluate.tr();
     }
   }
 
@@ -114,6 +119,8 @@ extension ScheduleTypeExtend on ScheduleType {
       case ScheduleType.io_evaluate:
         return -1;
       case ScheduleType.update_profile:
+        return -1;
+      case ScheduleType.output_assessment:
         return -1;
     }
   }
@@ -148,6 +155,8 @@ extension ScheduleTypeExtend on ScheduleType {
         return 12;
       case ScheduleType.update_profile:
         return 13;
+      case ScheduleType.output_assessment:
+        return 14;
     }
   }
 
@@ -178,8 +187,10 @@ extension ScheduleTypeExtend on ScheduleType {
       case ScheduleType.lesson:
         return false;
       case ScheduleType.survey:
-        return false;
+        return true;
       case ScheduleType.update_profile:
+        return false;
+      case ScheduleType.output_assessment:
         return false;
     }
   }
@@ -193,12 +204,15 @@ extension ScheduleTypeExtend on ScheduleType {
     if (index == ScheduleType.weight.typeIndex) return ScheduleType.weight;
     if (index == ScheduleType.emotion.typeIndex) return ScheduleType.emotion;
     if (index == ScheduleType.food.typeIndex) return ScheduleType.food;
+    if (index == ScheduleType.update_profile.typeIndex) return ScheduleType.update_profile;
     if (index == ScheduleType.exercise_movement.typeIndex)
       return ScheduleType.exercise_movement;
     if (index == ScheduleType.book_1_1.typeIndex) return ScheduleType.book_1_1;
     if (index == ScheduleType.book_1_n.typeIndex) return ScheduleType.book_1_n;
     if (index == ScheduleType.survey.typeIndex) return ScheduleType.survey;
     if (index == ScheduleType.lesson.typeIndex) return ScheduleType.lesson;
+    if (index == ScheduleType.io_evaluate.typeIndex) return ScheduleType.io_evaluate;
+    if (index == ScheduleType.output_assessment.typeIndex) return ScheduleType.output_assessment;
     return ScheduleType.custom;
   }
 }

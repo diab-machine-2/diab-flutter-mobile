@@ -6,12 +6,15 @@ class SecureModel {
   final String? support;
   final String? hotline;
   final String? security;
+  String? environment;
 
   SecureModel(
       {required this.email,
       required this.support,
       required this.hotline,
-      required this.security});
+      required this.security,
+      required this.environment,
+      });
 
   factory SecureModel.fromJson(Map<String, dynamic> json) {
     return SecureModel(
@@ -19,6 +22,7 @@ class SecureModel {
       support: json['DiaB.Information.Contact.Supporter'],
       hotline: json['DiaB.Information.Contact.Hotline'],
       security: json['DiaB.Information.Security'],
+      environment: json['environment'],
     );
   }
 

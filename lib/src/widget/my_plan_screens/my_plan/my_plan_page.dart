@@ -19,7 +19,8 @@ import 'models/plan_type.dart';
 import 'my_plan.dart';
 
 class MyPlanPage extends StatefulWidget {
-  const MyPlanPage();
+  final int index;
+  MyPlanPage({this.index = 0});
 
   @override
   State<MyPlanPage> createState() => _MyPlanPageState();
@@ -27,14 +28,15 @@ class MyPlanPage extends StatefulWidget {
 
 class _MyPlanPageState extends State<MyPlanPage> with Observer {
   late final MyPlanCubit _cubit;
-  final PageController _pageController = PageController(initialPage: 1);
+  late PageController _pageController;
 
   @override
   void initState() {
     super.initState();
     Observable.instance.addObserver(this);
+    _pageController = PageController(initialPage: widget.index);
     final AppRepository appRepository = AppRepository();
-    _cubit = MyPlanCubit(appRepository);
+    _cubit = MyPlanCubit(appRepository, widget.index);
   }
 
   @override
@@ -42,6 +44,14 @@ class _MyPlanPageState extends State<MyPlanPage> with Observer {
     if (notifyName == Const.NAVIGATE_TO_ACTIVITY_TAB) {
       if (_cubit.currentPlanType != PlanType.goal) {
         _cubit.changePlanType(0);
+      }
+    } else if (notifyName == Const.NAVIGATE_TO_LESSON_TAB) {
+      if (_cubit.currentPlanType != PlanType.lesson) {
+        _cubit.changePlanType(1);
+      }
+    } else if (notifyName == Const.NAVIGATE_TO_EXERCISE_TAB) {
+      if (_cubit.currentPlanType != PlanType.activity) {
+        _cubit.changePlanType(2);
       }
     }
   }
@@ -83,13 +93,16 @@ class _MyPlanPageState extends State<MyPlanPage> with Observer {
                     color: R.color.white,
                     padding: const EdgeInsets.fromLTRB(16, 0, 16, 20),
                     child: CustomMultiSelectToggle(
-                      toggleList:
-                          _cubit.planTypeList.map((e) => e.title).toList(),
+                      toggleList: _cubit.planTypeList.map((e) => e.title).toList(),
                       selectedIndex: _cubit.currentPlanTypeIndex,
                       onChange: (index) {
-                        Observable.instance.notifyObservers([],
-                            notifyName: Const.HIDE_OVERLAY_KEY);
+                        Observable.instance.notifyObservers([], notifyName: Const.HIDE_OVERLAY_KEY);
+                        if(index == 1){
+                          Observable.instance.notifyObservers([], notifyName: "switch_lesson_tab");
+                        }
+                       
                         _cubit.changePlanType(index);
+
                       },
                     ),
                   ),

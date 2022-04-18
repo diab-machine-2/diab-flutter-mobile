@@ -1,3 +1,5 @@
+import 'package:medical/src/app_setting/app_setting.dart';
+
 /// id : "00000000-0000-0000-0000-000000000000"
 /// statusCode : 200
 /// message : "Success"
@@ -68,6 +70,7 @@ class QuizData {
     String? explain,
     dynamic minCompletePercent,
     List<AnswerData>? answers,
+    ResultData? results,
   }) {
     _id = id;
     _code = code;
@@ -80,11 +83,20 @@ class QuizData {
     _explain = explain;
     _minCompletePercent = minCompletePercent;
     _answers = answers;
+    _results = results;
   }
 
   bool get hasUserAnswer {
     for (final AnswerData answer in answers ?? []) {
       if (answer.isAnswered) return true;
+    }
+    if(answers?.isEmpty == true){
+     // String? accountIdCurrentUser = AppSettings.userInfo?.accountId;
+      if(results != null){
+     //   if(results!.accountId == accountIdCurrentUser){
+          return true;
+     //   }
+      }
     }
     return false;
   }
@@ -106,6 +118,9 @@ class QuizData {
         _answers?.add(AnswerData.fromJson(v));
       });
     }
+    if (json['result'] != null) {
+      _results = ResultData.fromJson(json['result']);
+    }
   }
   String? _id;
   String? _code;
@@ -118,6 +133,7 @@ class QuizData {
   String? _explain;
   dynamic _minCompletePercent;
   List<AnswerData>? _answers;
+  ResultData? _results;
 
   String? get id => _id;
   String? get code => _code;
@@ -130,6 +146,11 @@ class QuizData {
   String? get explain => _explain;
   dynamic get minCompletePercent => _minCompletePercent;
   List<AnswerData>? get answers => _answers;
+  ResultData? get results => _results;
+
+  void setAnswers(List<AnswerData> listAnswer){
+    _answers = listAnswer;
+  }
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
@@ -145,6 +166,9 @@ class QuizData {
     map['minCompletePercent'] = _minCompletePercent;
     if (_answers != null) {
       map['answers'] = _answers?.map((v) => v.toJson()).toList();
+    }
+    if (_results != null) {
+      map['result'] = _results?.toJson();
     }
     return map;
   }
@@ -230,6 +254,51 @@ class AnswerData {
     map['mappedQuestionId'] = _mappedQuestionId;
     map['isCorrectAnswer'] = _isCorrectAnswer;
     map['textAnswer'] = _textAnswer;
+    return map;
+  }
+}
+
+class ResultData {
+  ResultData({
+    String? id,
+    String? accountId,
+    String? surveyQuestionId,
+    String? surveyAnswerId,
+    String? content,
+  }) {
+    _id = id;
+    _content = content;
+    _accountId = accountId;
+    _surveyQuestionId = surveyQuestionId;
+    _surveyAnswerId = surveyAnswerId;
+  }
+
+  ResultData.fromJson(dynamic json) {
+    _id = json['id'];
+    _content = json['content'];
+    _accountId = json['accountId'];
+    _surveyQuestionId = json['surveyQuestionId'];
+    _surveyAnswerId = json['surveyAnswerId'];
+  }
+  String? _id;
+  String? _content;
+  String? _accountId;
+  String? _surveyQuestionId;
+  String? _surveyAnswerId;
+
+  String? get id => _id;
+  String? get content => _content;
+  String? get accountId => _accountId;
+  String? get surveyQuestionId => _surveyQuestionId;
+  String? get surveyAnswerId => _surveyAnswerId;
+
+  Map<String, dynamic> toJson() {
+    final map = <String, dynamic>{};
+    map['id'] = _id;
+    map['content'] = _content;
+    map['accountId'] = _accountId;
+    map['surveyQuestionId'] = _surveyQuestionId;
+    map['surveyAnswerId'] = _surveyAnswerId;
     return map;
   }
 }

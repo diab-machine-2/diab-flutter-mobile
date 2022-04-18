@@ -2,6 +2,8 @@ import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_observer/Observable.dart';
+import 'package:flutter_observer/Observer.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
@@ -32,7 +34,7 @@ class ExerciseTabPage extends StatefulWidget {
   _ExerciseTabPageState createState() => _ExerciseTabPageState();
 }
 
-class _ExerciseTabPageState extends State<ExerciseTabPage> with AutomaticKeepAliveClientMixin<ExerciseTabPage> {
+class _ExerciseTabPageState extends State<ExerciseTabPage> with AutomaticKeepAliveClientMixin<ExerciseTabPage>, Observer {
   late final ExerciseTabCubit _cubit;
   final RefreshController _controller = RefreshController();
   final ScrollController _scrollController = ScrollController();
@@ -41,10 +43,24 @@ class _ExerciseTabPageState extends State<ExerciseTabPage> with AutomaticKeepAli
   @override
   void initState() {
     super.initState();
+    Observable.instance.addObserver(this);
     final MyPlanCubit _myPlanCubit = BlocProvider.of<MyPlanCubit>(context);
     final AppRepository appRepository = AppRepository();
     _cubit = ExerciseTabCubit(appRepository, _myPlanCubit);
     _cubit.initData();
+  }
+
+  @override
+  void update(Observable observable, String? notifyName, Map<dynamic, dynamic>? map) async {
+    if (notifyName == 'refresh_exercise_tab') {
+      await _cubit.onRefresh(isRefresh: true);
+    }
+  }
+
+  @override
+  void dispose() {
+    Observable.instance.removeObserver(this);
+    super.dispose();
   }
 
   @override
@@ -115,8 +131,33 @@ class _ExerciseTabPageState extends State<ExerciseTabPage> with AutomaticKeepAli
                   child: SmartRefresher(
                     controller: _controller,
                     onRefresh: () => _cubit.onRefresh(isRefresh: true),
-                    child: _cubit.exerciseMovementResponse?.data?.isEmpty == null
-                        ? const SizedBox.shrink()
+                    child: (_cubit.exerciseMovementResponse?.data?.isEmpty == null || _cubit.exerciseMovementResponse?.data?.isEmpty == true)
+                        ? GestureDetector(
+                          onTap: () {
+                            changeRoadMap();
+                          },
+                          child: Center(
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Container(padding: EdgeInsets.all(8), child: Text(R.string.please_select_roadmap.tr(), style: TextStyle(fontSize: 14, color: R.color.black), textAlign: TextAlign.center,)),
+                                  Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        Text(
+                                          R.string.select_road_map.tr(),
+                                          style: TextStyle(
+                                            color: R.color.greenGradientBottom,
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w700,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                ],
+                            ),),
+                        )
                         : ListView.separated(
                             controller: _exerciseScrollController,
                             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
@@ -134,7 +175,7 @@ class _ExerciseTabPageState extends State<ExerciseTabPage> with AutomaticKeepAli
                                       : SizedBox(height: 20.h));
                             },
                             separatorBuilder: (context, index) {
-                              return Container(
+                              return (_cubit.exerciseMovementResponse?.data?[index]?.isBlank == true) ? Container() : Container(
                                 height: 1,
                                 color: R.color.grayBorder,
                               );
@@ -244,8 +285,7 @@ class _ExerciseTabPageState extends State<ExerciseTabPage> with AutomaticKeepAli
                   showUpdateRequirePopup(context: context);
                   return;
                 }
-                if (exerciseItem?.exerciseMovementStates == Const.LESSON_LOCKED ||
-                    exerciseItem?.exerciseMovementStates == Const.LESSON_CAN_NOT_LEARN) {
+                if (exerciseItem?.exerciseMovementStates == Const.LESSON_LOCKED) {
                   _showLockedDialog();
                   return;
                 }
@@ -296,24 +336,25 @@ class _ExerciseTabPageState extends State<ExerciseTabPage> with AutomaticKeepAli
                                   exerciseData: exerciseItem,
                                 ),
                               );
-                              _cubit.onRefresh(keepSelectedDayIndex: true);
+                              _controller.requestRefresh();
+                              _cubit.onRefresh(isRefresh: true, keepSelectedDayIndex: true);
                             },
                           ),
-                          _buildCustomIconButton(
-                            title: R.string.show_instruction.tr(),
-                            icon: R.drawable.ic_play,
-                            borderColor: R.color.greenGradientBottom,
-                            backgroundColor: R.color.white,
-                            textColor: R.color.greenGradientBottom,
-                            onTap: () {
-                              NavigationUtil.navigatePage(
-                                context,
-                                VideoPlayerWidget(
-                                  videoUrl: exerciseItem.videoUrl ?? '',
-                                ),
-                              );
-                            },
-                          ),
+                          // _buildCustomIconButton(
+                          //   title: R.string.show_instruction.tr(),
+                          //   icon: R.drawable.ic_play,
+                          //   borderColor: R.color.greenGradientBottom,
+                          //   backgroundColor: R.color.white,
+                          //   textColor: R.color.greenGradientBottom,
+                          //   onTap: () {
+                          //     NavigationUtil.navigatePage(
+                          //       context,
+                          //       VideoPlayerWidget(
+                          //         videoUrl: exerciseItem.videoUrl ?? '',
+                          //       ),
+                          //     );
+                          //   },
+                          // ),
                         ],
                       ),
                     ),
@@ -337,7 +378,7 @@ class _ExerciseTabPageState extends State<ExerciseTabPage> with AutomaticKeepAli
       child: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.symmetric(vertical: 24),
+            padding: const EdgeInsets.symmetric(vertical: 8),
             child: Image.asset(R.drawable.img_activity_empty),
           ),
           Padding(
@@ -370,7 +411,7 @@ class _ExerciseTabPageState extends State<ExerciseTabPage> with AutomaticKeepAli
       child: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.symmetric(vertical: 24),
+            padding: const EdgeInsets.symmetric(vertical: 8),
             child: Image.asset(R.drawable.img_day_no_exercise),
           ),
           Padding(
@@ -483,11 +524,11 @@ class _ExerciseTabPageState extends State<ExerciseTabPage> with AutomaticKeepAli
         height: 32,
         decoration: BoxDecoration(
           color: isSelected && state.completionStatus == CompletionStatus.not_start_yet
-              ? R.color.greenbg
+              ? R.color.grey_6
               : state.completionStatus.statusBackgroundColor,
           border: isSelected && state.completionStatus != CompletionStatus.not_start_yet
               ? Border.all(color: state.completionStatus.statusIconColor)
-              : null,
+              : (isSelected && state.completionStatus == CompletionStatus.not_start_yet) ? Border.all(color: R.color.mainColor) :null,
           borderRadius: BorderRadius.circular(200),
         ),
         child: Row(
@@ -497,7 +538,7 @@ class _ExerciseTabPageState extends State<ExerciseTabPage> with AutomaticKeepAli
               state.weekTitle ?? '',
               style: TextStyle(
                 color: isSelected && state.completionStatus == CompletionStatus.not_start_yet
-                    ? R.color.green
+                    ? R.color.mainColor
                     : state.completionStatus.statusIconColor,
                 fontSize: 14,
                 fontWeight: FontWeight.w700,
@@ -514,7 +555,7 @@ class _ExerciseTabPageState extends State<ExerciseTabPage> with AutomaticKeepAli
   Future<void> changeRoadMap() async {
     final newRoadmapId = await NavigationUtil.navigatePage(context, const SelectRoadMapPage());
     if (newRoadmapId is String && newRoadmapId.isNotEmpty && newRoadmapId != _cubit.roadmapId) {
-      _cubit.roadmapChanged(newRoadmapId);
+      await _cubit.roadmapChanged(newRoadmapId);
     }
   }
 
@@ -560,7 +601,7 @@ class _ExerciseTabPageState extends State<ExerciseTabPage> with AutomaticKeepAli
                       fontWeight: FontWeight.w700,
                     ),
                   ),
-                  const SizedBox(height: 6),
+                  const SizedBox(height: 12),
                   Text(
                     R.string.exercise_lesson_locked_warning.tr(),
                     textAlign: TextAlign.center,
@@ -629,41 +670,23 @@ class _ExerciseTabPageState extends State<ExerciseTabPage> with AutomaticKeepAli
                         textAlign: TextAlign.center,
                         style: TextStyle(color: R.color.textDark, fontSize: 20, fontWeight: FontWeight.w700),
                       ),
-                      const SizedBox(height: 6),
+                      const SizedBox(height: 12),
                       Text(
-                        'Vui lòng nâng cấp tài khoản để tập các bài tiếp theo.',
+                        'Vui lòng nâng cấp tài khoản để tiếp tục học!',
                         textAlign: TextAlign.center,
                         style: TextStyle(color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w400),
                       ),
-                      const SizedBox(height: 16),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          SizedBox(
-                            width: 140.w,
-                            height: 43,
-                            child: ButtonWidget(
-                              title: 'Để sau',
-                              textSize: 16,
-                              backgroundColor: R.color.grayBorder,
-                              textColor: R.color.textDark,
-                              onPressed: () {
-                                NavigationUtil.pop(context);
-                              },
-                            ),
-                          ),
-                          SizedBox(
-                            width: 140.w,
-                            height: 43,
-                            child: ButtonWidget(
-                              title: 'Tìm hiểu thêm',
-                              textSize: 16,
-                              onPressed: () {
-                                NavigationUtil.pop(context);
-                              },
-                            ),
-                          ),
-                        ],
+                      Container(
+                        margin: const EdgeInsets.only(top: 16),
+                        padding: const EdgeInsets.symmetric(horizontal: 50),
+                        child: ButtonWidget(
+                          height: 43,
+                          title: R.string.agree.tr(),
+                          onPressed: () {
+                            NavigationUtil.pop(context);
+                          },
+                          textSize: 14,
+                        ),
                       ),
                     ],
                   ),

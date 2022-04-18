@@ -9,6 +9,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_observer/Observable.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/modal/HbA1C/short_gui.dart';
 import 'package:medical/src/modal/blood_pressure/blood_pressure.dart';
 import 'package:medical/src/modal/error/error_model.dart';
@@ -24,13 +25,18 @@ import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
+import 'package:medical/src/widgets/network_image_widget.dart';
 import 'package:permission_handler/permission_handler.dart';
+
+import '../../repo/home/home_client.dart';
+import '../my_plan_screens/activity_tab/activity_tab/models/schedule_type.dart';
 
 class AddBloodPressureController extends StatefulWidget {
   final String? type;
   final String? id;
+  final String? goalId;
 
-  AddBloodPressureController({this.type, this.id});
+  AddBloodPressureController({this.type, this.id, this.goalId});
   @override
   _AddBloodPressureControllerState createState() =>
       _AddBloodPressureControllerState();
@@ -238,6 +244,7 @@ class _AddBloodPressureControllerState
                                                             FontWeight.w500),
                                                     decoration: InputDecoration(
                                                         hintText: '-',
+                                                        counterText: '',
                                                         contentPadding:
                                                             EdgeInsets.only(
                                                                 bottom: 8),
@@ -666,7 +673,7 @@ class _AddBloodPressureControllerState
                                                                     fit: BoxFit
                                                                         .cover,
                                                                   )
-                                                                : Image.network(
+                                                                : NetWorkImageWidget(imageUrl:
                                                                     files[index]
                                                                         .url,
                                                                     fit: BoxFit
@@ -966,6 +973,9 @@ class _AddBloodPressureControllerState
           reason,
           paths);
       if (result == true) {
+       // if(widget.goalId != null && widget.goalId?.isNotEmpty == true){
+          await HomeClient().completeSmartGoal(selectedDate, widget.goalId ?? '', 1, ScheduleType.blood_pressure.typeIndex);
+       // }
         Observable.instance.notifyObservers([], notifyName : "BloodPressure_change_data");
       }
 

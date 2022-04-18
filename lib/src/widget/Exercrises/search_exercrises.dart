@@ -13,6 +13,8 @@ import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:easy_localization/easy_localization.dart';
 
+import '../../widgets/network_image_widget.dart';
+
 typedef ExercrisesCategorycallback = Function(
     List<ExercrisesCategoryModel>?, int?);
 
@@ -171,6 +173,7 @@ class _SearchExercrisesControllerState
                                           onChanged: _search,
                                           decoration: InputDecoration(
                                               border: InputBorder.none,
+                                              counterText: '',
                                               contentPadding:
                                                   EdgeInsets.only(top: -20),
                                               hintText: R.string.tim_kiem_hoat_dong.tr(),
@@ -432,7 +435,7 @@ class _SearchExercrisesControllerState
                                           R.drawable.bg_activity_empty,
                                           width: 50,
                                           height: 50),
-                                      Image.network(
+                                      NetWorkImageWidget(imageUrl: 
                                           model[index].cover!.url ?? '',
                                           width: 35,
                                           height: 35)

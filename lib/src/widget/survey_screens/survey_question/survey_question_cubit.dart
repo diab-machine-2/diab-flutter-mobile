@@ -7,37 +7,86 @@ import 'package:medical/src/model/response/survey_data.dart';
 import 'package:medical/src/model/service/api_result.dart';
 import 'package:medical/src/model/service/network_exceptions.dart';
 
+import '../../../app_setting/app_setting.dart';
 import 'survey_question.dart';
 
 class SurveyQuestionCubit extends Cubit<SurveyQuestionState> {
-  SurveyQuestionCubit(this.repository, this.sectionSurvey)
+  SurveyQuestionCubit(this.repository, this.sectionSurvey, this.surveyData, this.listAnsweredQuestionId,)
       : super(InitialSurveyQuestionState()) {
     questions = sectionSurvey?.questionList ?? [];
+    isRecalculateListAnsweredQuestion = this.listAnsweredQuestionId.isEmpty;
+    calculateProgress();
   }
 
+  final SurveyData surveyData;
   final AppRepository repository;
   final SectionSurvey? sectionSurvey;
   List<QuizData> questions = [];
+  String currentText = '';
 
   Map<String, QuestionAnswerResults> answer = {};
   int selectedCourseIndex = 0;
 
   bool isShowed = true;
+  List<String> listAnsweredQuestionId = [];
+  List<String> listAllQuestionId = [];
+  bool isRecalculateListAnsweredQuestion = true;
 
   int get lengthQuiz => questions.length;
 
-  double get progress => answer.length / lengthQuiz;
+ // double get progress => answer.length / lengthQuiz;
 
-  bool get nextButtonEnable =>
-      answer.containsKey(questions[selectedCourseIndex].id);
+ double get progress => listAnsweredQuestionId.length / listAllQuestionId.length;
+
+  bool get nextButtonEnable {
+    if(questions[selectedCourseIndex].answers == null 
+      || questions[selectedCourseIndex].answers?.isEmpty == true){
+        return currentText.isNotEmpty;
+    } else {
+      return answer.containsKey(questions[selectedCourseIndex].id);
+    }
+  }
 
   QuizData? get currentQuestion => questions[selectedCourseIndex];
+
+  void calculateProgress() {
+    String? accountIdCurrentUser = AppSettings.userInfo?.accountId;
+    if(surveyData.sections != null){
+      for(var section in surveyData.sections!){
+        for (int index = 0; index < section.questionList.length; index++) {
+          if(section.questionList[index].id != null){
+            // if(section.questionList[index].answers == null || section.questionList[index].answers?.isEmpty == true){
+            //   List<AnswerData> listAnswers = [];
+            //   if(section.questionList[index].results != null){
+            //     if(section.questionList[index].results!.accountId == accountIdCurrentUser){
+            //       listAnswers.add(
+            //         AnswerData(
+            //           id: section.questionList[index].results!.surveyAnswerId, 
+            //           content: section.questionList[index].results!.content, name: section.questionList[index].results!.content, 
+            //           isCorrectAnswer: true, 
+            //           textAnswer: section.questionList[index].results!.content)
+            //         );
+            //     }
+            //   }
+            //   section.questionList[index].setAnswers(listAnswers);
+            // }
+            listAllQuestionId.add(section.questionList[index].id!);
+            if (section.questionList[index].hasUserAnswer && isRecalculateListAnsweredQuestion) {
+              listAnsweredQuestionId.add(section.questionList[index].id!);
+            }
+          }
+        }
+      }
+    }
+    
+    print('countAnsweredQuestion = ${listAnsweredQuestionId.length}, countAllQuestion = ${listAllQuestionId.length}');
+  }
 
   Future<void> scrollToNotAnsweredQuiz() async {
     int scrollIndex = 0;
     for (int index = 0; index < questions.length; index++) {
-      scrollIndex = index;
       if (!questions[index].hasUserAnswer) {
+        scrollIndex = index;
         break;
       }
     }
@@ -54,14 +103,14 @@ class SurveyQuestionCubit extends Cubit<SurveyQuestionState> {
     if (answerResult.surveyAnswerIdList?.isNotEmpty != true &&
         answerResult.content?.isNotEmpty != true) {
       answer.remove(questionId);
-      isShowed = true;
-      emit(SurveyQuestionHideProgressMessage());
+   //   isShowed = true;
+   //   emit(SurveyQuestionHideProgressMessage());
       return;
     }
-    if (isShowed) {
-      emit(SurveyQuestionProgressChanged());
-      isShowed = false;
-    }
+    // if (isShowed) {
+    //   emit(SurveyQuestionProgressChanged());
+    //   isShowed = false;
+    // }
 
     for (int index = 0;
         index < (currentQuestion?.answers?.length ?? 0);
@@ -153,6 +202,7 @@ class SurveyQuestionCubit extends Cubit<SurveyQuestionState> {
     required String surveyId,
     required String sectionId,
     required String questionId,
+    required bool isRelatedQuestion,
   }) async {
     emit(SurveyQuestionLoading());
     final List<QuestionAnswerResults> list = [];
@@ -160,13 +210,31 @@ class SurveyQuestionCubit extends Cubit<SurveyQuestionState> {
       list.add(value);
     });
 
-    final PostSurveyRequest request = PostSurveyRequest(
-        questionAnswerResults: list
+    var listAnswer = list
             .where((element) => element.surveyQuestionId == questionId)
-            .toList());
+            .toList();
+
+    QuestionAnswerResults? answerResult = listAnswer.isNotEmpty ? listAnswer.first : null;
+
+    final PostSurveyRequest request = PostSurveyRequest(
+        questionAnswerResults: answerResult);
     final ApiResult<CommonResponse> apiResult =
         await repository.submitSurvey(request);
     apiResult.when(success: (CommonResponse response) {
+      if(isRelatedQuestion == false && !listAnsweredQuestionId.contains(questionId) && progress < 1){
+        listAnsweredQuestionId.add(questionId);
+      }
+      if (answerResult?.surveyAnswerIdList?.isNotEmpty != true &&
+        answerResult?.content?.isNotEmpty != true) {
+    //  answer.remove(questionId);
+        isShowed = true;
+        emit(SurveyQuestionHideProgressMessage());
+        return;
+      }
+      if (isShowed) {
+        emit(SurveyQuestionProgressChanged());
+        isShowed = false;
+      }
       emit(SubmitSurveySuccess());
     }, failure: (NetworkExceptions error) {
       emit(SurveyQuestionFailure(NetworkExceptions.getErrorMessage(error)));

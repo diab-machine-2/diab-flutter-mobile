@@ -15,6 +15,8 @@ import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:easy_localization/easy_localization.dart';
 
+import '../../../widgets/network_image_widget.dart';
+
 typedef SympoCallback = Function(List<SymptomModel>?, String?);
 
 class AddSymboController extends StatefulWidget {
@@ -23,13 +25,15 @@ class AddSymboController extends StatefulWidget {
   final List<SymptomModel>? symptoms;
   final String? otherSymptom;
   final SympoCallback? callback;
+  final String? goalId;
 
   AddSymboController(
       {this.type,
       this.emotion,
       this.symptoms,
       this.otherSymptom,
-      this.callback});
+      this.callback,
+      this.goalId});
   @override
   _AddSymboControllerState createState() => _AddSymboControllerState();
 }
@@ -182,6 +186,7 @@ class _AddSymboControllerState extends BaseState<AddSymboController> {
                       'emotion': widget.emotion,
                       'symptoms': selectedModel,
                       'otherSymptom': otherSymptom,
+                      'goalId': widget.goalId,
                     });
                   } else {
                     widget.callback!(selectedModel, otherSymptom);
@@ -276,7 +281,7 @@ class _AddSymboControllerState extends BaseState<AddSymboController> {
               : Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Image.network(symptomModel.icon.url ?? '',
+                    NetWorkImageWidget(imageUrl: symptomModel.icon.url ?? '',
                         width: 40, height: 40),
                     SizedBox(height: 8),
                     Text(symptomModel.name!,
@@ -325,6 +330,7 @@ class _AddSymboControllerState extends BaseState<AddSymboController> {
                       obscureText: false,
                       decoration: InputDecoration(
                         fillColor: R.color.textDark,
+                        counterText: '',
                         enabledBorder: OutlineInputBorder(
                           borderSide:
                               BorderSide(color: R.color.grayComponentBorder, width: 1.0),

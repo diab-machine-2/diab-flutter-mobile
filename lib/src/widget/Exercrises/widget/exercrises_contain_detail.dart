@@ -13,6 +13,8 @@ import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/modal/error/error_model.dart';
 import 'package:easy_localization/easy_localization.dart';
 
+import '../../../widgets/network_image_widget.dart';
+
 class ExercrisesDetail extends StatefulWidget {
   ExercrisesDetail({Key? key}) : super(key: key);
 
@@ -232,21 +234,12 @@ class ExercrisesDetailState extends State<ExercrisesDetail> with AutomaticKeepAl
                                   padding: EdgeInsets.only(left: 32),
                                   child: Row(
                                     children: [
-                                      Image.network(
+                                      NetWorkImageWidget(imageUrl: 
                                         exercriseSummaryModel.mainExerciseIconUrl == null
                                             ? ''
                                             : exercriseSummaryModel.mainExerciseIconUrl!.url ?? '',
                                         width: 24,
                                         height: 24,
-                                        errorBuilder: (BuildContext context, Object exception, StackTrace? stackTrace) {
-                                          return Container(
-                                              decoration: BoxDecoration(
-                                                shape: BoxShape.circle,
-                                                color: R.color.grayBorder,
-                                              ),
-                                              width: 24,
-                                              height: 24);
-                                        },
                                       ),
                                       SizedBox(
                                         width: 8,
@@ -293,21 +286,12 @@ class ExercrisesDetailState extends State<ExercrisesDetail> with AutomaticKeepAl
                                   padding: EdgeInsets.only(left: 32),
                                   child: Row(
                                     children: [
-                                      Image.network(
+                                      NetWorkImageWidget(imageUrl: 
                                         exercriseSummaryModel.otherExerciseIconUrl == null
                                             ? ''
                                             : exercriseSummaryModel.otherExerciseIconUrl!.url ?? '',
                                         width: 24,
                                         height: 24,
-                                        errorBuilder: (BuildContext context, Object exception, StackTrace? stackTrace) {
-                                          return Container(
-                                              decoration: BoxDecoration(
-                                                shape: BoxShape.circle,
-                                                color: R.color.grayBorder,
-                                              ),
-                                              width: 24,
-                                              height: 24);
-                                        },
                                       ),
                                       SizedBox(
                                         width: 8,
@@ -503,20 +487,10 @@ class ExercrisesDetailState extends State<ExercrisesDetail> with AutomaticKeepAl
                                                     Row(
                                                       mainAxisAlignment: MainAxisAlignment.start,
                                                       children: [
-                                                        Image.network(
+                                                        NetWorkImageWidget(imageUrl: 
                                                           exercriseWalkSummaryModel.targetIconUrl!.url ?? '',
                                                           width: 24,
                                                           height: 34,
-                                                          errorBuilder: (BuildContext context, Object exception,
-                                                              StackTrace? stackTrace) {
-                                                            return Container(
-                                                                decoration: BoxDecoration(
-                                                                  shape: BoxShape.circle,
-                                                                  color: R.color.grayBorder,
-                                                                ),
-                                                                width: 24,
-                                                                height: 24);
-                                                          },
                                                         ),
                                                         SizedBox(
                                                           width: 8,

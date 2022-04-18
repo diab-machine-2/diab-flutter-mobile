@@ -44,6 +44,7 @@ import 'package:medical/src/widget/login/rules.dart';
 import 'package:medical/src/widget/login/step_list.dart';
 import 'package:medical/src/widget/login/update_info.dart';
 import 'package:medical/src/widget/login/verify_phone.dart';
+import 'package:medical/src/widget/my_plan_screens/activity_tab/my_progress/my_progress.dart';
 import 'package:medical/src/widget/notification/notification_detail.dart';
 import 'package:medical/src/widget/notification/notification_tabbar.dart';
 import 'package:medical/src/widget/profile/add_reminder.dart';
@@ -57,6 +58,9 @@ import 'package:medical/src/widget/profile/schedule_activities.dart';
 import 'package:medical/src/widget/profile/schedule_glucose.dart';
 import 'package:medical/src/widget/profile/setting_schedule_glucose.dart';
 import 'package:medical/src/widget/profile/user_info.dart';
+import 'package:medical/src/widget/question_answer/make_question/make_question_page.dart';
+import 'package:medical/src/widget/question_answer/question_detail/bloc/question_detail_cubit.dart';
+import 'package:medical/src/widget/question_answer/question_detail/question_detail_page.dart';
 import 'package:medical/src/widget/tabbar/tabbar.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
@@ -78,7 +82,7 @@ class _AppState extends State<App> {
   @override
   void initState() {
     super.initState();
-    AppClient();
+
     // DeepLinkConfig.instance.handleDeepLink();
   }
 
@@ -114,16 +118,27 @@ class _AppState extends State<App> {
               switch (settings.name) {
                 case NavigatorName.tabbar:
                   String sharedCode = '';
+                  bool isRedirectFromNotification = false;
                   if (settings.arguments != null) {
-                    sharedCode = settings.arguments! as String;
+                    if (settings.arguments is String) {
+                      sharedCode = settings.arguments! as String;
+                    } else if (settings.arguments is Map<String, dynamic>) {
+                      final data = settings.arguments as Map<String, dynamic>?;
+                      isRedirectFromNotification = data!['isRedirectFromNotification'];
+                    }
                   }
                   return _buildRoute(
                       settings,
                       TabbarController(
                         sharedCode: sharedCode,
+                        isRedirectFromNotification: isRedirectFromNotification,
                       ));
                 case NavigatorName.login:
-                  return _buildRoute(settings, LoginController(), isPresent: true);
+                  String sharedCode = '';
+                  if (settings.arguments != null) {
+                    sharedCode = settings.arguments! as String;
+                  }
+                  return _buildRoute(settings, LoginController(sharedCode), isPresent: true);
                 case NavigatorName.register:
                   String sharedCode = '';
                   if (settings.arguments != null) {
@@ -135,18 +150,27 @@ class _AppState extends State<App> {
                   return _buildRoute(
                       settings,
                       RegisterSuccess(
-                          phone: data?['phone'], password: data?['password'], referalCode: data?['referalCode']));
+                        phone: data?['phone'],
+                        password: data?['password'],
+                        referalCode: data?['referalCode'],
+                        type: data?['type'],
+                        googleAccount: data?['googleAccount'],
+                        appleAccount: data?['appleAccount'],
+                        diabeteStates: data?['diabeteStates'],
+                      ));
                 case NavigatorName.update_info:
                   final data = settings.arguments as Map<String, dynamic>?;
                   return _buildRoute(
                       settings,
                       UpdateInfoController(
-                          type: data?['type'],
-                          googleAccount: data?['googleAccount'],
-                          facebookAccount: data?['facebookAccount'],
-                          appleAccount: data?['appleAccount'],
-                          userInfo: data?['userInfo'],
-                          referalCode: data?['referalCode']));
+                        type: data?['type'],
+                        googleAccount: data?['googleAccount'],
+                        facebookAccount: data?['facebookAccount'],
+                        appleAccount: data?['appleAccount'],
+                        userInfo: data?['userInfo'],
+                        referalCode: data?['referalCode'],
+                        diabeteStates: data?['diabeteStates'],
+                      ));
                 case NavigatorName.forgot_password:
                   return _buildRoute(settings, ForgotPasswordController());
                 case NavigatorName.new_password:
@@ -180,7 +204,13 @@ class _AppState extends State<App> {
                   }
                   return _buildRoute(settings, StepListController(sharedCode), isPresent: true);
                 case NavigatorName.rules:
-                  return _buildRoute(settings, RulesController());
+                  final data = settings.arguments as Map<String, dynamic>?;
+                  return _buildRoute(
+                      settings,
+                      RulesController(
+                        googleAccount: data?['googleAccount'],
+                        appleCredential: data?['appleCredential'],
+                      ));
                 case NavigatorName.add_hba1c:
                   final data = settings.arguments as Map<String, dynamic>?;
                   return _buildRoute(
@@ -204,6 +234,7 @@ class _AppState extends State<App> {
                       AddBloodSugarController(
                         type: data?['type'],
                         id: data?['id'],
+                        goalId: data?['goalId'],
                       ));
                 case NavigatorName.add_exercrises:
                   final data = settings.arguments as Map<String, dynamic>?;
@@ -212,6 +243,7 @@ class _AppState extends State<App> {
                       AddExercrisesController(
                         type: data?['type'],
                         id: data?['id'],
+                        goalId: data?['goalId'],
                       ));
                 case NavigatorName.search_exercrises:
                   final data = settings.arguments as Map<String, dynamic>?;
@@ -229,6 +261,7 @@ class _AppState extends State<App> {
                       AddBloodPressureController(
                         type: data?['type'],
                         id: data?['id'],
+                        goalId: data?['goalId'],
                       ));
                 case NavigatorName.input_detail_exercrise:
                   final data = settings.arguments as Map<String, dynamic>?;
@@ -285,6 +318,7 @@ class _AppState extends State<App> {
                       AddBmiController(
                         type: data?['type'],
                         id: data?['id'],
+                        goalId: data?['goalId'],
                       ));
                 case NavigatorName.add_emo:
                   final data = settings.arguments as Map<String, dynamic>?;
@@ -293,6 +327,7 @@ class _AppState extends State<App> {
                       AddEmoController(
                         type: data?['type'],
                         emotion: data?['emotion'],
+                        goalId: data?['goalId'],
                       ));
                 case NavigatorName.add_symbo:
                   final data = settings.arguments as Map<String, dynamic>?;
@@ -303,6 +338,7 @@ class _AppState extends State<App> {
                         emotion: data?['emotion'],
                         symptoms: data?['symptoms'],
                         otherSymptom: data?['otherSymptom'],
+                        goalId: data?['goalId'],
                       ));
                 case NavigatorName.add_work:
                   final data = settings.arguments as Map<String, dynamic>?;
@@ -314,7 +350,8 @@ class _AppState extends State<App> {
                           symptoms: data?['symptoms'],
                           activities: data?['activities'],
                           otherSymptom: data?['otherSymptom'],
-                          otherActivity: data?['otherActivity']));
+                          otherActivity: data?['otherActivity'],
+                          goalId: data?['goalId'],));
 
                 case NavigatorName.add_insight:
                   final data = settings.arguments as Map<String, dynamic>?;
@@ -327,7 +364,8 @@ class _AppState extends State<App> {
                           symptoms: data?['symptoms'],
                           activities: data?['activities'],
                           otherSymptom: data?['otherSymptom'],
-                          otherActivity: data?['otherActivity']));
+                          otherActivity: data?['otherActivity'],
+                          goalId: data?['goalId'],));
                 case NavigatorName.detail_food:
                   return _buildRoute(settings, FoodDetailTabbarController(), isPresent: true);
                 case NavigatorName.detail_emotion:
@@ -359,7 +397,7 @@ class _AppState extends State<App> {
                   return _buildRoute(settings, NotificationTabbarController());
                 case NavigatorName.notification_detail:
                   final data = settings.arguments as Map<String, dynamic>?;
-                  return _buildRoute(settings, NotificationDetailController(id: data?['id']));
+                  return _buildRoute(settings, NotificationDetailController(id: data?['id'], communicationId: data?['communicationId']));
                 case NavigatorName.schedule_activity:
                   return _buildRoute(settings, ScheduleActivityController());
                 case NavigatorName.manual:
@@ -384,6 +422,15 @@ class _AppState extends State<App> {
                 case '/photo_view':
                   final data = settings.arguments as Map<String, dynamic>?;
                   return _buildRoute(settings, PhotoView(files: data?['files'], index: data?['index']),
+                      isPresent: true);
+                case NavigatorName.make_question:
+                  final data = settings.arguments as Map<String, dynamic>?;
+                  return _buildRoute(settings, MakeQuestionPage(lessonModuleItems: data!['lessonModuleItems']),
+                      isPresent: true);
+                case NavigatorName.question_detail:
+                  final data = settings.arguments as Map<String, dynamic>?;
+                  return _buildRoute(
+                      settings, QuestionDetailPage(questionModel: data!['questionModel'], isAll: data['isAll']),
                       isPresent: true);
                 default:
                   return null;

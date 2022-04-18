@@ -10,11 +10,14 @@ import 'models/plan_type.dart';
 import 'my_plan.dart';
 
 class MyPlanCubit extends Cubit<MyPlanState> {
-  MyPlanCubit(this.repository) : super(const MyPlanInitial());
+  MyPlanCubit(this.repository, this.index) : super(const MyPlanInitial()) {
+    currentPlanType = index == 0 ? PlanType.goal : PlanType.lesson;
+  }
 
+  final int index;
   final AppRepository repository;
 
-  PlanType currentPlanType = PlanType.lesson;
+  late PlanType currentPlanType;
 
   List<PlanType> planTypeList = [PlanType.goal, PlanType.lesson, PlanType.activity];
 
@@ -39,8 +42,8 @@ class MyPlanCubit extends Cubit<MyPlanState> {
     emit(const MyPlanInitial());
   }
 
-  Future<void> checkUserInfo() async {
-    if (userInfo == null) {
+  Future<void> checkUserInfo({bool isRequired = false}) async {
+    if (userInfo == null || isRequired) {
       await getCurrentUserInfo();
     }
   }
@@ -53,6 +56,7 @@ class MyPlanCubit extends Cubit<MyPlanState> {
       userInfo = response;
       if (userInfo?.data?.currentDateTime != null) {
         AppSettings.currentDateTime = userInfo!.data!.currentDateTime!;
+        AppSettings.isReloadCurrentUserInfo = false;
       }
 
       emit(const MyPlanSuccess());
