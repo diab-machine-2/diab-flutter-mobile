@@ -11,6 +11,7 @@ import 'package:medical/src/widgets/common_page.dart';
 import 'package:medical/src/widgets/update_required_widget.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../../utils/navigator_name.dart';
 import '../blood_sugar_schedule_template/blood_sugar_schedule_template.dart';
 import '../blood_sugar_survey/blood_sugar_survey.dart';
 import 'blood_sugar_start_survey.dart';
@@ -117,13 +118,18 @@ class _BloodSugarStartSurveyPageState extends State<BloodSugarStartSurveyPage> {
                                     ));
                               },
                               onShowResult: () {
-                                NavigationUtil.navigatePage(
-                                  context,
-                                  BloodSugarScheduleTemplatePage(
-                                    templateCode: _cubit.surveyCode,
-                                    comeFromBloodSugarScreen: widget.comeFromBloodSugarScreen,
-                                  ),
-                                );
+                                if(widget.comeFromBloodSugarScreen){
+                                  Navigator.pushNamed(context, NavigatorName.schedule_glucose);
+                                } else {
+                                  Navigator.pop(context);
+                                }
+                                // NavigationUtil.navigatePage(
+                                //   context,
+                                //   BloodSugarScheduleTemplatePage(
+                                //     templateCode: _cubit.surveyCode,
+                                //     comeFromBloodSugarScreen: widget.comeFromBloodSugarScreen,
+                                //   ),
+                                // );
                               },
                             ),
                           ],

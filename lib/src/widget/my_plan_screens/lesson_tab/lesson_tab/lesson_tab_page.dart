@@ -2,6 +2,8 @@ import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_observer/Observable.dart';
+import 'package:flutter_observer/Observer.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
@@ -31,7 +33,7 @@ class LessonTabPage extends StatefulWidget {
   _LessonTabPageState createState() => _LessonTabPageState();
 }
 
-class _LessonTabPageState extends State<LessonTabPage> with AutomaticKeepAliveClientMixin<LessonTabPage> {
+class _LessonTabPageState extends State<LessonTabPage> with AutomaticKeepAliveClientMixin<LessonTabPage>, Observer {
   late final LessonTabCubit _cubit;
   final RefreshController _controller = RefreshController();
   final ScrollController _lessonScrollController = ScrollController();
@@ -40,10 +42,28 @@ class _LessonTabPageState extends State<LessonTabPage> with AutomaticKeepAliveCl
   @override
   void initState() {
     super.initState();
+    Observable.instance.addObserver(this);
     final MyPlanCubit _myPlanCubit = BlocProvider.of<MyPlanCubit>(context);
     final AppRepository appRepository = AppRepository();
     _cubit = LessonTabCubit(appRepository, _myPlanCubit);
     _cubit.getInitData();
+  }
+
+  @override
+  void dispose() {
+    Observable.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void update(Observable observable, String? notifyName, Map<dynamic, dynamic>? map) async {
+    if (notifyName == 'switch_lesson_tab') {
+      _cubit.scrollToLesson();
+    }
+
+    if(notifyName == 'refresh_lesson_tab'){
+      await _cubit.getInitData(isRefresh: true, showCurrentWeek: false);
+    }
   }
 
   @override
@@ -70,7 +90,7 @@ class _LessonTabPageState extends State<LessonTabPage> with AutomaticKeepAliveCl
               if(_cubit.lessonsList != null && _cubit.lessonsList!.length > 5){
                  _lessonScrollController.animateTo(
                   127.0 * state.newIndex,
-                  duration: const Duration(milliseconds: 0),
+                  duration: const Duration(milliseconds: 10),
                   curve: Curves.ease,
                 );
               }
@@ -179,7 +199,8 @@ class _LessonTabPageState extends State<LessonTabPage> with AutomaticKeepAliveCl
                                                   lessonId: _cubit.lessonsList![index]!.id!,
                                                 ),
                                               );
-                                              _cubit.getInitData(
+                                              _controller.requestRefresh();
+                                              _cubit.getInitData(isRefresh: true,
                                                   showCurrentWeek: false, currentWeek: _cubit.filterData.currentWeek);
                                             }
                                           }),
@@ -281,13 +302,13 @@ class _LessonTabPageState extends State<LessonTabPage> with AutomaticKeepAliveCl
     VoidCallback? onSelect,
   }) {
     final Color background = isSelected && state.completionStatus == CompletionStatus.not_start_yet
-        ? R.color.greenbg
+        ? R.color.grey_6
         : state.completionStatus.statusBackgroundColor;
     final BoxBorder? border = isSelected && state.completionStatus != CompletionStatus.not_start_yet
         ? Border.all(color: state.completionStatus.statusIconColor)
-        : null;
+        : (isSelected && state.completionStatus == CompletionStatus.not_start_yet) ? Border.all(color: R.color.mainColor) :null;
     final Color textColor = isSelected && state.completionStatus == CompletionStatus.not_start_yet
-        ? R.color.green
+        ? R.color.mainColor
         : state.completionStatus.statusIconColor;
     final bool showIcon = !(isSelected && state.completionStatus == CompletionStatus.not_start_yet);
 
@@ -360,7 +381,7 @@ class _LessonTabPageState extends State<LessonTabPage> with AutomaticKeepAliveCl
   Widget _buildEmptyLessonList() {
     return Column(
       children: [
-        SizedBox(height: 116.h),
+        SizedBox(height: 70.h),
         if (_cubit.isFiltering)
           Image.asset(
             R.drawable.img_lesson_locked,
@@ -443,11 +464,11 @@ class _LessonTabPageState extends State<LessonTabPage> with AutomaticKeepAliveCl
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          if (lessonDetail?.tagName.isNotEmpty == true)
+                          if (lessonDetail?.module?.isNotEmpty == true)
                             Row(
                               children: [
                                 Text(
-                                  lessonDetail?.tagName ?? '',
+                                  lessonDetail?.module ?? '',
                                   style: TextStyle(
                                     color: R.color.greenGradientBottom,
                                     fontSize: 14,
@@ -615,34 +636,17 @@ class _LessonTabPageState extends State<LessonTabPage> with AutomaticKeepAliveCl
                         textAlign: TextAlign.center,
                         style: TextStyle(color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w400),
                       ),
-                      const SizedBox(height: 16),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Expanded(
-                            flex: 1,
-                            child: ButtonWidget(
-                              title: 'Để sau',
-                              textSize: 16,
-                              backgroundColor: R.color.grayBorder,
-                              textColor: R.color.textDark,
-                              onPressed: () {
-                                NavigationUtil.pop(context);
-                              },
-                            ),
-                          ),
-                          SizedBox(width: 8),
-                          Expanded(
-                            flex: 1,
-                            child: ButtonWidget(
-                              title: 'Tìm hiểu thêm',
-                              textSize: 16,
-                              onPressed: () {
-                                NavigationUtil.pop(context);
-                              },
-                            ),
-                          ),
-                        ],
+                      Container(
+                        margin: const EdgeInsets.only(top: 16),
+                        padding: const EdgeInsets.symmetric(horizontal: 50),
+                        child: ButtonWidget(
+                          height: 43,
+                          title: R.string.agree.tr(),
+                          onPressed: () {
+                            NavigationUtil.pop(context);
+                          },
+                          textSize: 14,
+                        ),
                       ),
                     ],
                   ),

@@ -53,9 +53,17 @@ class _VerifyPhoneControllerState extends State<VerifyPhoneController> {
   @override
   void initState() {
     super.initState();
-    otpCount = widget.remainingRequestCount;
+    otpCount = widget.remainingRequestCount ?? 0;
     otpTemp = widget.otp;
+
+    // if(otpCount == 0 && otpTemp == null){
+    //   timeCount = 0;
+    //   Future.delayed(Duration.zero, () {
+    //     _showDialogError();
+    //   });
+    // } else {
     startTimer();
+    //}
   }
 
   void startTimer() {
@@ -282,15 +290,13 @@ class _VerifyPhoneControllerState extends State<VerifyPhoneController> {
           "external_token": authen.accessToken,
           "provider": 'Google'
         });
-        BotToast.closeAllLoading();
-        Navigator.popUntil(context, (route) => route.isFirst);
-        Navigator.pushReplacementNamed(context, NavigatorName.tabbar);
-        // final result = await LoginClient().createPatient(widget.userInfo);
-        // if (result == true) {
-        //   Navigator.pushReplacementNamed(context, NavigatorName.rules,
-        //       arguments: {'googleAccount': widget.googleAccount, 'appleAccount': null});
-        // }
 
+        final result = await LoginClient().createPatient(widget.userInfo);
+        if (result == true) {
+          final user = await UserClient().fetchUser();
+          BotToast.closeAllLoading();
+          Navigator.pushReplacementNamed(context, NavigatorName.rules);
+        }
       } else if (widget.type == 'facebook') {
         await LoginClient().verifyOTP(widget.phone, otpCode);
         await LoginClient().login({
@@ -302,6 +308,8 @@ class _VerifyPhoneControllerState extends State<VerifyPhoneController> {
         });
         final result = await LoginClient().createPatient(widget.userInfo);
         if (result == true) {
+          final user = await UserClient().fetchUser();
+          BotToast.closeAllLoading();
           Navigator.pushReplacementNamed(context, NavigatorName.rules);
         }
         BotToast.closeAllLoading();
@@ -311,17 +319,15 @@ class _VerifyPhoneControllerState extends State<VerifyPhoneController> {
           "client_id": Const.CLIENT_ID,
           "client_secret": Const.CLIENT_SECRET,
           "grant_type": "external",
-          "external_token": widget.appleAccount!.identityToken,
+          "external_token": widget.appleAccount?.identityToken,
           "provider": 'Apple'
         });
-        // final result = await LoginClient().createPatient(widget.userInfo);
-        // if (result == true) {
-        //   Navigator.pushReplacementNamed(context, NavigatorName.rules,
-        //       arguments: {'googleAccount': null, 'appleAccount': widget.appleAccount});
-        // }
-        BotToast.closeAllLoading();
-        Navigator.popUntil(context, (route) => route.isFirst);
-        Navigator.pushReplacementNamed(context, NavigatorName.tabbar);
+        final result = await LoginClient().createPatient(widget.userInfo);
+        if (result == true) {
+          final user = await UserClient().fetchUser();
+          BotToast.closeAllLoading();
+          Navigator.pushReplacementNamed(context, NavigatorName.rules);
+        }
       } else if (widget.type == 'linked_google') {
         final result = await LoginClient().linkedAccount({
           'providerName': 'Google',

@@ -328,6 +328,7 @@ class _LessonFilterPageState extends State<LessonFilterPage> {
                             decoration: InputDecoration(
                               border: InputBorder.none,
                               hintText: hintText,
+                              counterText: '',
                             ),
                             style: TextStyle(
                               color: R.color.grey_2,

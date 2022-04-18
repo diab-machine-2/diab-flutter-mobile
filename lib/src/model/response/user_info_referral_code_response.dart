@@ -173,6 +173,7 @@ class UserInfoReferralCodeResponseData {
   String? accountRule;
   String? accountRoles;
   List<UserPositionMappings?>? accountPositionMappings;
+  Avatar? creatorUrl;
 
   UserInfoReferralCodeResponseData({
     this.id,
@@ -215,6 +216,7 @@ class UserInfoReferralCodeResponseData {
     this.accountRule,
     this.accountRoles,
     this.accountPositionMappings,
+    this.creatorUrl,
   });
   UserInfoReferralCodeResponseData.fromJson(Map<String, dynamic> json) {
     id = json['id']?.toString();
@@ -264,6 +266,7 @@ class UserInfoReferralCodeResponseData {
       });
       accountPositionMappings = arr0;
     }
+    creatorUrl = json['creatorUrl'] == null ? null : Avatar.fromJson(json['creatorUrl']);
   }
   Map<String, dynamic> toJson() {
     final data = <String, dynamic>{};
@@ -314,6 +317,10 @@ class UserInfoReferralCodeResponseData {
       });
       data['accountPositionMappings'] = arr0;
     }
+    if (creatorUrl != null) {
+      data['creatorUrl'] = creatorUrl!.toJson();
+    }
+
     return data;
   }
 }
@@ -338,6 +345,26 @@ class UserInfoReferralCodeResponseMeta {
     data['success'] = success;
     return data;
   }
+}
+
+class Avatar {
+  Avatar({
+    this.id,
+    this.url,
+  });
+
+  String? id;
+  String? url;
+
+  factory Avatar.fromJson(Map<String, dynamic> json) => Avatar(
+        id: json["id"],
+        url: json["url"],
+      );
+
+  Map<String, dynamic> toJson() => {
+        "id": id,
+        "url": url,
+      };
 }
 
 class UserInfoReferralCodeResponse {
@@ -411,7 +438,7 @@ class UserInfoReferralCodeResponse {
   });
 
   bool get isUserExists =>
-      data?.fullName != null && data?.username != null && data?.phoneNumber != null || data?.secondPhoneNumber != null;
+      data?.fullName != null && data?.username != null && data?.phoneNumber != null;
 
   bool get notValidPosition {
     if (data?.accountPositionMappings != null) {

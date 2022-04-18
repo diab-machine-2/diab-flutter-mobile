@@ -162,6 +162,10 @@ class TextFieldCustomState extends State<TextFieldCustom> {
                                 focusNode: focusNode,
                                 keyboardType: TextInputType.number,
                                 autofocus: widget.autoFocus,
+                                inputFormatters: [
+                                  LengthLimitingTextInputFormatter(widget.maxLength),
+                                ],
+                                maxLength: widget.maxLength,
                                 style: TextStyle(
                                     fontFamily: 'Viga',
                                     color: R.color.textDark,
@@ -171,6 +175,7 @@ class TextFieldCustomState extends State<TextFieldCustom> {
                                     border: InputBorder.none,
                                     contentPadding: const EdgeInsets.only(top: -22),
                                     hintText: widget.placeholder,
+                                    counterText: "",
                                     hintStyle: TextStyle(
                                         fontFamily: 'roboto',
                                         color: R.color.textDark,

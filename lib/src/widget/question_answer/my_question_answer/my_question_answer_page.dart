@@ -16,6 +16,7 @@ import 'package:medical/src/widget/question_answer/all_question_answer/widget/ma
 import 'package:medical/src/widget/question_answer/all_question_answer/widget/question_item.dart';
 import 'package:medical/src/widgets/network_image_widget.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
+import '../../../utils/navigation_util.dart';
 import '../question_answer_utils.dart';
 import 'my_question_answer.dart';
 
@@ -31,6 +32,8 @@ class _MyQuestionAnswerPageState extends State<MyQuestionAnswerPage> with Automa
   final ScrollController _scrollController = ScrollController();
   final ScrollController _questionScrollController = ScrollController();
 
+  var userInfo = AppSettings.userInfo;
+
   @override
   void initState() {
     super.initState();
@@ -40,27 +43,26 @@ class _MyQuestionAnswerPageState extends State<MyQuestionAnswerPage> with Automa
     _questionScrollController.addListener(_scrollListener);
   }
 
-   @override
-  void update(Observable observable, String? notifyName, Map<dynamic, dynamic>? map) {
+  @override
+  void update(Observable observable, String? notifyName, Map<dynamic, dynamic>? map) async {
     if (notifyName == 'update_my_question') {
-      if(map != null){
-        String? id = map['id'];
-        String? commentId = map['commentId'];
-        QuestionModel? question = map['question'];
-        if(id != null && commentId != null){
-          _cubit.deleteCommentLocal(id, commentId);
-        } else if(id != null && commentId == null){
-          _cubit.deleteQuestionLocal(id);
-        } else if(question != null){
-          _cubit.updateQuestionsLocal(question);
-        } else {
-          _cubit.controller.requestRefresh();
-          _cubit.refreshData();
-        }
-      } else {
-        _cubit.controller.requestRefresh();
-        _cubit.refreshData();
-      }
+      // if (map != null) {
+      //   String? id = map['id'];
+      //   String? commentId = map['commentId'];
+      //   QuestionModel? question = map['question'];
+      //   if (id != null && commentId != null) {
+      //     _cubit.deleteCommentLocal(id, commentId);
+      //   } else if (id != null && commentId == null) {
+      //     _cubit.deleteQuestionLocal(id);
+      //   } else if (question != null) {
+      //     _cubit.updateQuestionsLocal(question);
+      //   } else {
+      //     _cubit.controller.requestRefresh();
+      //     _cubit.refreshData();
+      //   }
+      // } else {
+      await refresh();
+      //}
     }
   }
 
@@ -254,11 +256,17 @@ class _MyQuestionAnswerPageState extends State<MyQuestionAnswerPage> with Automa
   _buildMakeQuestion() {
     return MakeQuestionHeader(
       callback: () async {
+        if(userInfo?.isUserFree == true) {
+          NavigationUtil.showUpdateRequirePopup(context: context, title: R.string.ask_doctor.tr());
+          return;
+        }
+        
         var result = await Navigator.pushNamed(context, NavigatorName.make_question,
             arguments: {'lessonModuleItems': _cubit.allLessonModules});
         if (result != null) {
-          await _cubit.getQuestions(isShowLoading: true);
-          Observable.instance.notifyObservers([], notifyName : "update_all_question", map: {'question': _cubit.questions.first});
+          await refresh();
+          Observable.instance
+              .notifyObservers([], notifyName: "update_all_question", map: {'question': _cubit.questions.first});
         }
       },
     );
@@ -287,7 +295,7 @@ class _MyQuestionAnswerPageState extends State<MyQuestionAnswerPage> with Automa
 
   _buildEmpty() {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 64, vertical: 32),
+      padding: const EdgeInsets.symmetric(horizontal: 64, vertical: 20),
       child: Column(
         children: [
           Image.asset(R.drawable.img_question_empty),
@@ -321,20 +329,23 @@ class _MyQuestionAnswerPageState extends State<MyQuestionAnswerPage> with Automa
         var result = await Navigator.pushNamed(context, NavigatorName.question_detail,
             arguments: {'questionModel': questionModel, 'isAll': false});
         if (result != null) {
-          if (result is Map) {
-            var type = result['type'];
-            var id = result['id'];
-            if (type == 'question') {
-              _cubit.deleteQuestionLocal(id);
-              Observable.instance.notifyObservers([], notifyName : "update_all_question", map: {'id': id});
-            } else if (type == 'comment') {
-              _cubit.deleteCommentLocal(questionModel.id!, id);
-              Observable.instance.notifyObservers([], notifyName : "update_all_question", map: {'id': questionModel.id!, 'commentId': id});
-            }
-          } else if (result is QuestionModel) {
-            _cubit.updateQuestionsLocal(result);
-            Observable.instance.notifyObservers([], notifyName : "update_all_question", map: {'question': result});
-          }
+          await refresh();
+          Observable.instance.notifyObservers([], notifyName: "update_all_question");
+
+          // if (result is Map) {
+          //   var type = result['type'];
+          //   var id = result['id'];
+          //   if (type == 'question') {
+          //     _cubit.deleteQuestionLocal(id);
+          //     Observable.instance.notifyObservers([], notifyName : "update_all_question", map: {'id': id});
+          //   } else if (type == 'comment') {
+          //     _cubit.deleteCommentLocal(questionModel.id!, id);
+          //     Observable.instance.notifyObservers([], notifyName : "update_all_question", map: {'id': questionModel.id!, 'commentId': id});
+          //   }
+          // } else if (result is QuestionModel) {
+          //   _cubit.updateQuestionsLocal(result);
+          //   Observable.instance.notifyObservers([], notifyName : "update_all_question", map: {'question': result});
+          // }
         }
       },
       callbackDelete: (id) async {
@@ -342,6 +353,12 @@ class _MyQuestionAnswerPageState extends State<MyQuestionAnswerPage> with Automa
         Navigator.pop(context);
       },
     );
+  }
+
+  refresh() async {
+    _cubit.controller.requestRefresh();
+    await _cubit.refreshData();
+    _questionScrollController.jumpTo(0);
   }
 
   @override

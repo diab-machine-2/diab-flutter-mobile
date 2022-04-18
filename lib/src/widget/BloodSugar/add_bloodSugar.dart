@@ -11,6 +11,7 @@ import 'package:medical/src/modal/glucose/glucose_input.dart';
 import 'package:medical/src/modal/glucose/glucose_timeFrame.dart';
 import 'package:medical/src/repo/HbA1C/HbA1C_client.dart';
 import 'package:medical/src/repo/glucose/glucose_client.dart';
+import 'package:medical/src/repo/home/home_client.dart';
 import 'package:medical/src/widget/BloodSugar/widget/action_list_trend.dart';
 import 'package:medical/src/widget/HbA1C/widget/CalendarPicker/custom_date_picker.dart';
 import 'package:medical/src/widget/HbA1C/widget/description/description.dart';
@@ -26,10 +27,16 @@ import 'package:image_picker/image_picker.dart';
 import 'package:medical/src/modal/error/error_model.dart';
 import 'package:easy_localization/easy_localization.dart';
 
+import '../../model/repository/app_repository.dart';
+import '../../widgets/network_image_widget.dart';
+import '../my_plan_screens/activity_tab/activity_tab/models/schedule_type.dart';
+
 class AddBloodSugarController extends StatefulWidget {
   final String? type;
   final String? id;
-  AddBloodSugarController({this.type, this.id});
+  final String? goalId;
+
+  AddBloodSugarController({this.type, this.id, this.goalId});
 
   @override
   _AddBloodSugarControllerState createState() =>
@@ -554,7 +561,7 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
                                                                     fit: BoxFit
                                                                         .cover,
                                                                   )
-                                                                : Image.network(
+                                                                : NetWorkImageWidget(imageUrl:
                                                                     files[index]
                                                                         .url,
                                                                     fit: BoxFit
@@ -797,6 +804,9 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
           note,
           paths);
       if (result == true) {
+       // if(widget.goalId != null && widget.goalId?.isNotEmpty == true){
+          await HomeClient().completeSmartGoal(selectedDate, widget.goalId ?? '', 1, ScheduleType.blood_sugar.typeIndex);
+       // }
         Observable.instance.notifyObservers([], notifyName : "glucose_change_data");
       }
 

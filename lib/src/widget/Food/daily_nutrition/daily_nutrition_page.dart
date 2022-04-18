@@ -23,13 +23,15 @@ import 'package:medical/src/widgets/network_image_widget.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 import '../search_food_controller.dart';
+import '../widget/food_info.dart';
 import 'daily_nutrition.dart';
 
 class DailyNutritionPage extends StatefulWidget {
-  const DailyNutritionPage({required this.type, required this.id});
+  DailyNutritionPage({required this.type, required this.id, this.goalId});
 
   final String? type;
   final String? id;
+  final String? goalId;
 
   @override
   _DailyNutritionPageState createState() => _DailyNutritionPageState();
@@ -44,7 +46,7 @@ class _DailyNutritionPageState extends State<DailyNutritionPage> {
   @override
   void initState() {
     final AppRepository appRepository = AppRepository();
-    _cubit = DailyNutritionCubit(appRepository);
+    _cubit = DailyNutritionCubit(appRepository, widget.goalId ?? '');
     _cubit.getInitialData(type: widget.type, id: widget.id);
     super.initState();
   }
@@ -366,7 +368,11 @@ class _DailyNutritionPageState extends State<DailyNutritionPage> {
                                                           .calorie!);
                                               final String detail =
                                                   '${R.string.da_an.tr()} $quantity ${_cubit.selectedFoods[index].unit}, $kcal ${R.string.kcal.tr()}';
-                                              return Container(
+                                              return GestureDetector(
+                                                  onTap: () {
+                                                //    showFoodInfo(context, _cubit.selectedFoods[index]);
+                                                  },
+                                                  child: Container(
                                                 color: R.color.transparent,
                                                 padding:
                                                     const EdgeInsets.symmetric(
@@ -496,6 +502,7 @@ class _DailyNutritionPageState extends State<DailyNutritionPage> {
                                                     ),
                                                   ],
                                                 ),
+                                                  ),
                                               );
                                             })
                                       ]),
@@ -529,6 +536,7 @@ class _DailyNutritionPageState extends State<DailyNutritionPage> {
                                                   'Nhập lượng calo bạn đã nạp',
                                               contentPadding:
                                                   EdgeInsets.only(bottom: 8),
+                                              counterText: '',
                                               border: InputBorder.none,
                                               hintStyle: TextStyle(
                                                   fontSize: 16,
@@ -750,6 +758,19 @@ class _DailyNutritionPageState extends State<DailyNutritionPage> {
           ),
         ),
       ),
+    );
+  }
+
+  showFoodInfo(BuildContext context, FoodModel? model) {
+    showDialog(
+      barrierColor: R.color.color0xff003F38.withOpacity(0.5),
+      context: context,
+      builder: (_) => FoodInfo(
+          model: model,
+        //  selectedModel: selectedModel,
+          callback: (value) {},
+          kcalLeft: null,
+          ),
     );
   }
 

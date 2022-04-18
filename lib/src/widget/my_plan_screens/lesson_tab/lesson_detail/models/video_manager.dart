@@ -98,8 +98,14 @@ class VideoManager {
       if (Platform.isIOS) {
         if ((newController.videoPlayerController!.value.position.inMilliseconds) ==
             newController.videoPlayerController!.value.duration!.inMilliseconds) {
-          await newController.pause();
-          print('newController.pause()');
+              if(Platform.isIOS){
+                try{
+                  await newController.pause();
+                } catch(e){
+                  print("${e.toString()}");
+                }
+              }
+              print('newController.pause()');
         }
       }
       if (newController.videoPlayerController?.value != null &&
@@ -107,8 +113,8 @@ class VideoManager {
           newController.videoPlayerController!.value.initialized &&
           (newController.videoPlayerController!.value.duration ==
               newController.videoPlayerController!.value.position)) {
-        onCompleted?.call();
-        finishedVideo = true;
+                onCompleted?.call();
+                finishedVideo = true;
       }
     });
     hasVideo = true;

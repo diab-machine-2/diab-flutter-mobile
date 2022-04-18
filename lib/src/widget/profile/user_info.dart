@@ -37,6 +37,7 @@ import 'package:medical/src/widgets/select_bottom_sheet_widget.dart';
 import 'package:medical/src/widgets/user_icon_widget.dart';
 import 'package:permission_handler/permission_handler.dart';
 
+import '../../widgets/select_interests_bottom_sheet_widget.dart';
 import 'widgets/birth_day_picker.dart';
 import 'widgets/diabetes_status_date_picker.dart';
 import 'widgets/diabetes_status_picker.dart';
@@ -62,12 +63,14 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
     super.initState();
     Observable.instance.addObserver(this);
 
-    isHasRoadMap = user.roadMapId != null;
+    isHasRoadMap = user.ownPackage?.ownRoadmap != null;
 
-    for (int i = 0; i < user.levelOfDiabetesRuleList!.length; i++) {
-      if (user.levelOfDiabetesRuleList![i].selected!) {
-        diabetesName = user.levelOfDiabetesRuleList![i].text!;
-        break;
+    if (user.levelOfDiabetesRuleList != null) {
+      for (int i = 0; i < user.levelOfDiabetesRuleList!.length; i++) {
+        if (user.levelOfDiabetesRuleList![i].selected!) {
+          diabetesName = user.levelOfDiabetesRuleList![i].text!;
+          break;
+        }
       }
     }
     diabetesStatus = getSelectedIndexDiabetes();
@@ -312,7 +315,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                           ),
                           _buildItemProfile(
                             image: R.drawable.ic_gender,
-                            title: user.gender == null || user.gender!.isEmpty ? R.string.updating.tr() : user.gender!,
+                            title: user.gender == null || user.gender!.isEmpty ? R.string.other.tr() : user.gender!,
                             subTitle: R.string.gioi_tinh.tr(),
                             isTitleFromSelectedCategory: false,
                             subIcon: Image.asset(R.drawable.ic_right, width: 18, height: 18),
@@ -355,7 +358,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                         _buildCardLayout(title: R.string.pathological_info.tr(), children: [
                           _buildItemProfile(
                             image: R.drawable.ic_folder,
-                            title: user.diabetesName == null ? R.string.updating.tr() : user.diabetesName!,
+                            title: getSelectedDiabetes(),
                             subTitle: R.string.loai_benh.tr(),
                             isTitleFromSelectedCategory: false,
                             callback: (selectedIndexList) {
@@ -397,7 +400,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                               icon: R.drawable.ic_user_bmi,
                               title: user.height == null
                                   ? R.string.not_updated_yet.tr()
-                                  : Utils.getBMI(height: user.height!, weight: user.weight!),
+                                  : Utils.getBMI(height: user.height ?? 0, weight: user.weight ?? 0),
                               subTitle: 'BMI',
                               isTitleFromSelectedCategory: false,
                               callback: (selectedIndexList) {},
@@ -414,7 +417,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                               showActionFilter(
                                   context: context,
                                   builder: (context) {
-                                    return SelectBottomSheetWidget(
+                                    return SelectInterestsBottomSheetWidget(
                                       title: 'Chọn chủ đề quan tâm',
                                       elementList: user.lessonTagList!.map((e) => e.text ?? '').toList(),
                                       selectedList: user.lessonTagList!
@@ -422,6 +425,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                                           .map((e) => e.text ?? '')
                                           .toList(),
                                       isMultipleChoice: true,
+                                      isRequiredSelection: false,
                                       onSelected: (typeList) {
                                         var selectedIndexList = getSelectedIndexList(
                                             user.lessonTagList!.map((e) => e.text ?? '').toList(), typeList);
@@ -625,7 +629,8 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                             _buildItemProfile(
                               image: R.drawable.ic_email,
                               title: user.isLinkedGoogle == true
-                                  ? (user.googleEmail ?? '')
+                                  ? (user.googleEmail == null || user.googleEmail!.isEmpty ? R.string.not_updated_yet.tr()
+                                      : user.googleEmail!)
                                   : (user.email == null || user.email!.isEmpty
                                       ? R.string.not_updated_yet.tr()
                                       : user.email!),
@@ -978,7 +983,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
       BotToast.showLoading();
       await UserClient().inputMotivationDiary(model.content);
       Observable.instance.notifyObservers([], notifyName: "motivation_change");
-      //   await loadMotivation();
+      await loadMotivation();
       BotToast.closeAllLoading();
     } catch (e, _) {
       BotToast.closeAllLoading();
@@ -995,7 +1000,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
       BotToast.showLoading();
       await UserClient().editMotivationDiary(model.id, model.content);
       Observable.instance.notifyObservers([], notifyName: "motivation_change");
-      //     await loadMotivation();
+      await loadMotivation();
       BotToast.closeAllLoading();
     } catch (e, _) {
       BotToast.closeAllLoading();
@@ -1315,6 +1320,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                         obscureText: false,
                         decoration: InputDecoration(
                             fillColor: R.color.textDark,
+                            counterText: '',
                             enabledBorder: OutlineInputBorder(
                               borderSide: BorderSide(color: R.color.grayComponentBorder, width: 1.0),
                               borderRadius: BorderRadius.circular(10),
@@ -1390,7 +1396,13 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
 
   _showDialogUpdateBirthday() {
     final width = MediaQuery.of(context).size.width;
-    DateTime selectedDate = DateTime.fromMillisecondsSinceEpoch(AppSettings.userInfo!.dateOfBirth! * 1000);
+    DateTime selectedDate;
+    int dateOfBirth = AppSettings.userInfo!.dateOfBirth!;
+    if(dateOfBirth <= 0){
+      dateOfBirth = DateTime.now().millisecondsSinceEpoch ~/ 1000;
+    }
+    selectedDate = DateTime.fromMillisecondsSinceEpoch(dateOfBirth * 1000);
+    
     showDialog(
         context: context,
         builder: (context) => AlertDialog(
@@ -1412,7 +1424,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                     height: 250,
                     width: width - 36,
                     child: BirthDayPicker(
-                      selectedDate: DateTime.fromMillisecondsSinceEpoch(AppSettings.userInfo!.dateOfBirth! * 1000),
+                      selectedDate: selectedDate,
                       onChanged: (date) {
                         selectedDate = date;
                       },
@@ -1476,7 +1488,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
   _showDialogUpdateGender() {
     final width = MediaQuery.of(context).size.width;
     final FixedExtentScrollController controller =
-        FixedExtentScrollController(initialItem: AppSettings.userInfo!.genderType == 1 ? 0 : 1);
+        FixedExtentScrollController(initialItem: AppSettings.userInfo!.genderType == 1 ? 0 : AppSettings.userInfo!.genderType == 2 ? 1 : 2);
     showDialog(
         context: context,
         builder: (context) => AlertDialog(
@@ -1523,7 +1535,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                           final UserModel userInfo = AppSettings.userInfo!;
                           updateUserInfo(
                             userInfo.copyWith(
-                              genderType: controller.selectedItem == 0 ? 1 : 2,
+                              genderType: controller.selectedItem + 1,
                             ),
                           );
                           Navigator.pop(context);
@@ -1579,6 +1591,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                       state: diabetesStatus,
                       onChanged: (data) {
                         diabetesStatus = data;
+                        print('diabetesStatus = $diabetesStatus');
                       },
                     )),
                 Container(
@@ -1827,6 +1840,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                         obscureText: false,
                         decoration: InputDecoration(
                           fillColor: R.color.textDark,
+                          counterText: '',
                           enabledBorder: OutlineInputBorder(
                             borderSide: BorderSide(color: R.color.grayComponentBorder, width: 1.0),
                             borderRadius: BorderRadius.circular(10),
@@ -2115,5 +2129,21 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
       }
     }
     return 0;
+  }
+
+  String getSelectedDiabetes(){
+    if(user.levelOfDiabetesRuleList != null){
+      for(var item in user.levelOfDiabetesRuleList!){
+        if(item.selected ?? false){
+          return item.text ?? R.string.updating.tr();
+        }
+      }
+    }
+    if(user.diabetes != null){
+      if(user.diabetes?.name != null && user.diabetes!.name!.isNotEmpty){
+        return user.diabetes!.name!;
+      }
+    }
+    return R.string.updating.tr();
   }
 }

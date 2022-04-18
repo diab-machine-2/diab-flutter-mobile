@@ -45,6 +45,7 @@ class MenuResponseListdayfoodTimeGroupsDefaultFood {
   String? foodUnitId;
   String? foodUnitName;
   String? foodName;
+  String? description;
   double? portion;
   double? calorie;
   double? glucose;
@@ -68,6 +69,7 @@ class MenuResponseListdayfoodTimeGroupsDefaultFood {
     this.foodUnitId,
     this.foodUnitName,
     this.foodName,
+    this.description,
     this.portion,
     this.calorie,
     this.glucose,
@@ -98,7 +100,7 @@ class MenuResponseListdayfoodTimeGroupsDefaultFood {
         image: this.image,
         liked: false,
         text: null,
-        description: null,
+        description: this.description,
         foodCategoryId: this.foodCategoryId,
         quantity: 0.0,
         mealId: this.id,
@@ -122,6 +124,7 @@ class MenuResponseListdayfoodTimeGroupsDefaultFood {
     protein = json["protein"]?.toDouble();
     fibre = json["fibre"]?.toDouble();
     note = json["note"]?.toString();
+    description = json["description"]?.toString();
     foodType = json["foodType"]?.toInt();
     foodTemplateId = json["foodTemplateId"]?.toString();
     accountId = json["accountId"]?.toString();
@@ -140,6 +143,7 @@ class MenuResponseListdayfoodTimeGroupsDefaultFood {
     data["foodUnitId"] = foodUnitId;
     data["foodUnitName"] = foodUnitName;
     data["foodName"] = foodName;
+    data["description"] = description;
     data["portion"] = portion;
     data["calorie"] = calorie;
     data["glucose"] = glucose;

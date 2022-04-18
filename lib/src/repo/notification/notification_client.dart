@@ -7,8 +7,11 @@ import 'package:medical/src/widget/helper/http_helper.dart';
 import 'package:medical/src/modal/error/error_model.dart';
 import 'package:easy_localization/easy_localization.dart';
 
+import '../../modal/notification/notification_data_list_model.dart';
+import '../../modal/notification/notification_list_model.dart';
+
 class NotificationClient extends FetchClient {
-  Future<NotificationDataModel?> fetchNotifications(bool? isRead, int page) async {
+  Future<NotificationDataListModel?> fetchNotifications(bool? isRead, int page) async {
     try {
       Map<String, String> params = {'page': page.toString(), 'size': '1000'};
       if (isRead != null) {
@@ -19,8 +22,8 @@ class NotificationClient extends FetchClient {
         if (response.data['data'] == null) {
           return null;
         } else {
-          return NotificationDataModel(
-              models: NotificationModel.toList(response.data['data']), hasMore: response.data['meta']['canNext']);
+          return NotificationDataListModel(
+              models: NotificationListModel.toList(response.data['data']), hasMore: response.data['meta']['canNext']);
         }
       } else {
         final error = Error.fromJson(response);
@@ -31,11 +34,12 @@ class NotificationClient extends FetchClient {
     }
   }
 
-  Future<NotificationModel> fetchNotificationDetail(String? id) async {
+  Future<NotificationListModel> fetchNotificationDetail(String? id, String? communicationId) async {
     try {
-      final Response response = await super.fetchData(url: '/App/Communication/$id');
+      Map<String, String> params = {'notificationId': id ?? '', 'communicationId': communicationId ?? ''};
+      final Response response = await super.fetchData(url: '/App/Communication/NotiDetail', params: params);
       if (response.statusCode == 200) {
-        return NotificationModel.fromJson(response.data['data']);
+        return NotificationListModel.fromJson(response.data['data']);
       } else {
         final error = Error.fromJson(response);
         throw error;
@@ -59,10 +63,11 @@ class NotificationClient extends FetchClient {
     }
   }
 
-  Future<bool?> readNotification(String? communicationId, String? patientId, int? notificationType, bool isRead) async {
+  Future<bool?> readNotification(String? communicationId, String? notificationId, String? patientId, String? notificationType, bool isRead) async {
     try {
       final Response response = await super.putData(url: '/App/Communication/MarkReadUnread', params: {
-        'notificationId': communicationId,
+        'notificationId': notificationId,
+        'communicationId': communicationId,
         'notificationType': notificationType,
         'patientId': patientId,
         'isRead': isRead

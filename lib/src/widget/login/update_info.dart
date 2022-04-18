@@ -19,6 +19,8 @@ import 'package:medical/src/widget/profile/widgets/diabetes_status_picker.dart';
 import 'package:medical/src/widget/profile/widgets/gender_picker.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
+import '../../repo/user/user_client.dart';
+
 class UpdateInfoController extends StatefulWidget {
   final String? type;
   final GoogleSignInAccount? googleAccount;
@@ -59,7 +61,9 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
             ? (widget.googleAccount?.displayName ?? '')
             : widget.type == 'facebook'
                 ? widget.userInfo['name']
-                : widget.appleAccount?.givenName!);
+                : widget.type == 'apple'
+                    ? '${widget.appleAccount?.familyName ?? ''} ${widget.appleAccount?.givenName ?? ''}'
+                    : '');
   }
 
   void dispose() {
@@ -105,7 +109,7 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
                                 child: Text(
                                     widget.type == 'phone'
                                         ? R.string.hay_de_diab_thau_hieu_ban_hon.tr()
-                                        : '${R.string.chao_mung.tr()} ${widget.type == 'google' ? widget.googleAccount!.displayName!.split(' ').last : widget.type == 'facebook' ? widget.userInfo['name'].split(' ').last : widget.appleAccount!.givenName ?? R.string.ban.tr()},\n${R.string.hay_de_diab_thau_hieu_ban_hon_single_line.tr()}',
+                                        : '${R.string.chao_mung.tr()} ${widget.type == 'google' ? widget.googleAccount!.displayName!.split(' ').last : widget.type == 'facebook' ? widget.userInfo['name'].split(' ').last : widget.appleAccount?.givenName ?? R.string.ban.tr()},\n${R.string.hay_de_diab_thau_hieu_ban_hon_single_line.tr()}',
                                     style: TextStyle(
                                         height: 1.5,
                                         color: R.color.mainColor,
@@ -128,6 +132,7 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
                                                 placeholder: R.string.nhap_so_dien_thoai.tr(),
                                                 autoFocus: false,
                                                 showStar: true,
+                                                maxLength: 10,
                                                 onChanged: (value) {
                                                   phone = value;
                                                 }),
@@ -576,6 +581,11 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
       phoneKey.currentState!.validate(R.string.ban_chua_nhap_so_dien_thoai.tr());
       return;
     }
+    if (phone.length < 9 && widget.type != 'phone') {
+      phoneKey.currentState!.validate(R.string.wrong_phone_number.tr());
+      return;
+    }
+
     if (name.isEmpty) {
       Message.showToastMessage(context, R.string.ban_chua_nhap_ho_ten.tr());
       return;
@@ -621,6 +631,10 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
       }
 
       if (widget.type == 'google') {
+        if (widget.googleAccount?.email != null) {
+          params['email'] = widget.googleAccount!.email;
+          params['googleEmail'] = widget.googleAccount!.email;
+        }
         final result = await LoginClient().registerWithSocial({
           'providerName': 'Google',
           'providerKey': widget.googleAccount!.id,
@@ -640,6 +654,7 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
           'providerKey': widget.facebookAccount!.accessToken?.userId,
           'phoneNumber': phone
         });
+        //   final resultCreatePatient = await LoginClient().createPatient(params);
         Navigator.pushNamed(context, NavigatorName.verify, arguments: {
           'type': 'facebook',
           'otp': result.token,
@@ -649,8 +664,16 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
           'userInfo': params
         });
       } else if (widget.type == 'apple') {
-        final result = await LoginClient().registerWithSocial(
-            {'providerName': 'Apple', 'providerKey': widget.appleAccount!.userIdentifier, 'phoneNumber': phone});
+        if (widget.appleAccount?.email != null) {
+          params['email'] = widget.appleAccount!.email!;
+          params['googleEmail'] = widget.appleAccount!.email!;
+        }
+        final result = await LoginClient().registerWithSocial({
+          'providerName': 'Apple',
+          'providerKey': widget.appleAccount?.userIdentifier,
+          'phoneNumber': phone,
+        });
+        //     final resultCreatePatient = await LoginClient().createPatient(params);
         Navigator.pushNamed(context, NavigatorName.verify, arguments: {
           'type': 'apple',
           'otp': result.token,
@@ -662,6 +685,7 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
       } else {
         final result = await LoginClient().createPatient(params);
         if (result == true) {
+          await UserClient().fetchUser();
           Navigator.pushReplacementNamed(context, NavigatorName.rules);
         }
       }

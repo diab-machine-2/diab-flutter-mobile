@@ -8,6 +8,8 @@ import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:easy_localization/easy_localization.dart';
 
+import '../../../widgets/network_image_widget.dart';
+
 class EmotionTableController extends StatefulWidget {
   final String? title;
   final String? emotionId;
@@ -178,7 +180,7 @@ class _EmotionTableControllerState extends State<EmotionTableController> {
                       Container(
                         width: width - width / 4,
                         child: Center(
-                            child: Image.network(icon, width: 30, height: 30)),
+                            child: NetWorkImageWidget(imageUrl: icon, width: 30, height: 30)),
                       )
                     ],
                   ),

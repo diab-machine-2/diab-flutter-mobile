@@ -125,6 +125,7 @@ class _ExerciseTimeWidgetState extends State<ExerciseTimeWidget> {
                   focusedBorder: InputBorder.none,
                   enabledBorder: InputBorder.none,
                   hintText: '-',
+                  counterText: '',
                   contentPadding: EdgeInsets.only(
                     left: 0,
                     bottom: 0,

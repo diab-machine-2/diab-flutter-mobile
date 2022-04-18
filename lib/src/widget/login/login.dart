@@ -20,6 +20,11 @@ import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 class LoginController extends StatefulWidget {
+
+  const LoginController(this.sharedCode);
+
+  final String sharedCode;
+
   @override
   _LoginControllerState createState() => _LoginControllerState();
 }
@@ -51,7 +56,7 @@ class _LoginControllerState extends State<LoginController> {
                 padding: const EdgeInsets.all(16),
                 child: Column(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
                   const Padding(
-                    padding: EdgeInsets.only(top: 30),
+                    padding: EdgeInsets.only(top: 24),
                   ),
                   Column(children: [
                     Row(children: [
@@ -60,7 +65,7 @@ class _LoginControllerState extends State<LoginController> {
                         style: TextStyle(color: R.color.textDark, fontSize: 28, fontWeight: FontWeight.w600),
                       ),
                     ]),
-                    const SizedBox(height: 28),
+                    const SizedBox(height: 24),
                     TextFieldCustom(
                         key: phoneKey,
                         title: R.string.so_dien_thoai.tr(),
@@ -170,7 +175,7 @@ class _LoginControllerState extends State<LoginController> {
                                 style: TextStyle(color: R.color.mainColor, fontWeight: FontWeight.w600)),
                           )),
                     ),
-                    const SizedBox(height: 30),
+                    const SizedBox(height: 20),
                   ])
                 ]),
               )),
@@ -218,7 +223,7 @@ class _LoginControllerState extends State<LoginController> {
         Navigator.pushReplacementNamed(context, NavigatorName.update_info, arguments: {'type': 'phone'});
       } else {
         Navigator.popUntil(context, (route) => route.isFirst);
-        Navigator.pushReplacementNamed(context, NavigatorName.tabbar);
+        Navigator.pushReplacementNamed(context, NavigatorName.tabbar, arguments: widget.sharedCode,);
       }
     } catch (e, _) {
       BotToast.closeAllLoading();
@@ -334,7 +339,7 @@ class _LoginControllerState extends State<LoginController> {
             // });
           } else {
             Navigator.popUntil(context, (route) => route.isFirst);
-            Navigator.pushReplacementNamed(context, NavigatorName.tabbar);
+            Navigator.pushReplacementNamed(context, NavigatorName.tabbar, arguments: widget.sharedCode,);
           }
         } catch (error) {
           BotToast.closeAllLoading();
@@ -396,7 +401,7 @@ class _LoginControllerState extends State<LoginController> {
         //     arguments: {'type': 'google', 'googleAccount': account});
       } else {
         Navigator.popUntil(context, (route) => route.isFirst);
-        Navigator.pushReplacementNamed(context, NavigatorName.tabbar);
+        Navigator.pushReplacementNamed(context, NavigatorName.tabbar, arguments: widget.sharedCode,);
       }
     } catch (error) {
       if (error is Error && error.code == '5' && account != null) {
@@ -449,7 +454,7 @@ class _LoginControllerState extends State<LoginController> {
             googleAccount: null, appleCredential: credential);
       } else {
         Navigator.popUntil(context, (route) => route.isFirst);
-        Navigator.pushReplacementNamed(context, NavigatorName.tabbar);
+        Navigator.pushReplacementNamed(context, NavigatorName.tabbar, arguments: widget.sharedCode,);
       }
     } catch (error) {
       BotToast.closeAllLoading();
@@ -476,32 +481,38 @@ class _LoginControllerState extends State<LoginController> {
   }) async {
     try {
       BotToast.showLoading();
-      if (!update) {
-        await LoginClient().registerWithSocial({'providerName': provider, 'providerKey': providerKey});
+      // if (!update) {
+      //   await LoginClient().registerWithSocial({'providerName': provider, 'providerKey': providerKey});
 
-        await LoginClient().login({
-          "client_id": Const.CLIENT_ID,
-          "client_secret": Const.CLIENT_SECRET,
-          "grant_type": "external",
-          "external_token": externalToken,
-          "provider": provider
-        });
-      }
+      //   await LoginClient().login({
+      //     "client_id": Const.CLIENT_ID,
+      //     "client_secret": Const.CLIENT_SECRET,
+      //     "grant_type": "external",
+      //     "external_token": externalToken,
+      //     "provider": provider
+      //   });
+      // }
 
-      //  final diabeteStates = await UserClient().fetchDiabeteStatesNoHeader();
+      final diabeteStates = await UserClient().fetchDiabeteStatesNoHeader();
 
-      final result = await LoginClient().createPatient({
-        'fullName': userName,
-        'dateOfBirth': '0',
-        'gender': '1',
-        //   'diabetesStatus': diabeteStates?.isEmpty ?? true ? '1' : diabeteStates?.first['key'].toString() ?? '',
-        'diabetesStatus': '1',
-        'diabetesDate': (DateTime.now().millisecondsSinceEpoch ~/ 1000).toString()
+      // final result = await LoginClient().createPatient({
+      //   'fullName': userName,
+      //   'dateOfBirth': '0',
+      //   'gender': '1',
+      //   'diabetesStatus': diabeteStates?.isEmpty ?? true ? '1' : diabeteStates?.first.key.toString() ?? '1',
+      //   // 'diabetesStatus': '1',
+      //   'diabetesDate': (DateTime.now().millisecondsSinceEpoch ~/ 1000).toString()
+      // });
+      // if (result == true) {
+      // Navigator.pushReplacementNamed(context, NavigatorName.rules,
+      //     arguments: {'googleAccount': googleAccount, 'appleCredential': appleCredential});
+      //}
+      Navigator.pushReplacementNamed(context, NavigatorName.register_success, arguments: {
+        'type': provider.toLowerCase(),
+        'googleAccount': googleAccount,
+        'appleAccount': appleCredential,
+        'diabeteStates': diabeteStates
       });
-      if (result == true) {
-        Navigator.pushReplacementNamed(context, NavigatorName.rules,
-            arguments: {'googleAccount': googleAccount, 'appleCredential': appleCredential});
-      }
       BotToast.closeAllLoading();
     } catch (error) {
       BotToast.closeAllLoading();

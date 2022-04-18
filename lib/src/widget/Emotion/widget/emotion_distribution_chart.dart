@@ -9,6 +9,8 @@ import 'package:medical/src/widget/Emotion/emotion_detail_tabbar.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:easy_localization/easy_localization.dart';
+
+import '../../../widgets/network_image_widget.dart';
 class EmotionDistributionChart extends StatefulWidget {
   EmotionDistributionChart({Key? key}) : super(key: key);
   @override
@@ -134,7 +136,7 @@ class EmotionDistributionChartState extends State<EmotionDistributionChart>
                                                     padding:
                                                         const EdgeInsets.only(
                                                             bottom: 12.0),
-                                                    child: Image.network(
+                                                    child: NetWorkImageWidget(imageUrl: 
                                                       model.noteIcon!.url ?? '',
                                                       width: 20,
                                                       height: 20,
@@ -156,7 +158,7 @@ class EmotionDistributionChartState extends State<EmotionDistributionChart>
                                             Padding(
                                               padding: const EdgeInsets.only(
                                                   top: 10.0),
-                                              child: Image.network(
+                                              child: NetWorkImageWidget(imageUrl: 
                                                 model.noteImage!.url ?? '',
                                                 width: 130,
                                                 height: 100,
@@ -254,7 +256,7 @@ class EmotionDistributionChartState extends State<EmotionDistributionChart>
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    Image.network(
+                                    NetWorkImageWidget(imageUrl: 
                                       model.emotions[index].icon.url ?? '',
                                       width: 30,
                                       height: 30,

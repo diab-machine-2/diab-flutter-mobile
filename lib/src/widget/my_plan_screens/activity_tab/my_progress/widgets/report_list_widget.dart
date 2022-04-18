@@ -1,6 +1,8 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/model/response/report_model.dart';
+import '../../../../helper/helper.dart';
 import '../models/report_data.dart';
 
 class ReportListWidget extends StatelessWidget {
@@ -11,7 +13,7 @@ class ReportListWidget extends StatelessWidget {
   });
 
   final String title;
-  final List<ReportData> reportList;
+  final List<ReportModel> reportList;
   final Function(String) onSelected;
 
   @override
@@ -66,21 +68,23 @@ class ReportListWidget extends StatelessWidget {
               const SizedBox(height: 8),
             Expanded(
               child: reportList.isEmpty ? Center(child: Container(padding: EdgeInsets.symmetric(horizontal: 20), child: Text(R.string.no_report.tr(), style: TextStyle(color: R.color.textDark, fontSize: 14, fontWeight: FontWeight.w600), textAlign: TextAlign.center,),),) : 
-                ListView.builder(
-                physics: countHight > height
-                    ? const AlwaysScrollableScrollPhysics()
-                    : const NeverScrollableScrollPhysics(),
-                shrinkWrap: true,
-                padding: const EdgeInsets.only(
-                    left: 10, right: 10, bottom: 8, top: 10),
-                itemCount: reportList.length,
-                itemBuilder: (BuildContext context, int index) {
-                  return _buildItem(
-                      data: reportList[index],
-                      isLast: index == reportList.length - 1,
-                      onSelected: onSelected);
-                },
+                SingleChildScrollView(
+                  child: ListView.builder(
+                  physics: countHight > height
+                      ? const AlwaysScrollableScrollPhysics()
+                      : const NeverScrollableScrollPhysics(),
+                  shrinkWrap: true,
+                  padding: const EdgeInsets.only(
+                      left: 10, right: 10, bottom: 8, top: 10),
+                  itemCount: reportList.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    return _buildItem(
+                        data: reportList[index],
+                        isLast: index == reportList.length - 1,
+                        onSelected: onSelected);
+                  },
               ),
+                ),
             ),
           ],
         ),
@@ -89,7 +93,7 @@ class ReportListWidget extends StatelessWidget {
   }
 
   Widget _buildItem({
-    required ReportData data,
+    required ReportModel data,
     bool isLast = false,
     required Function(String) onSelected,
   }) {
@@ -110,7 +114,7 @@ class ReportListWidget extends StatelessWidget {
                       children: [
                         Expanded(
                           child: Text(
-                            data.title,
+                            data.reportName ?? '',
                             style: const TextStyle(
                                 fontSize: 16, fontWeight: FontWeight.w400),
                           ),
@@ -118,7 +122,7 @@ class ReportListWidget extends StatelessWidget {
                         const SizedBox(width: 28),
                         Expanded(
                           child: Text(
-                            data.time,
+                            convertToUTC(data.createDatetime ?? 0, 'dd/MM/yyyy'),
                             style: const TextStyle(
                                 fontSize: 16, fontWeight: FontWeight.w400),
                           ),
@@ -126,7 +130,7 @@ class ReportListWidget extends StatelessWidget {
                         const SizedBox(width: 28),
                         InkWell(
                           onTap: () {
-                            onSelected(data.url);
+                            onSelected(data.virtualFilePath ?? '');
                           },
                           child: Image.asset(R.drawable.ic_show,
                               width: 24, height: 24),

@@ -97,16 +97,16 @@ class _MotivationPopupState extends State<MotivationPopup> {
                 onTap: () {
                   FocusScope.of(context).unfocus();
                   final content = textEditingController.text;
-                  if (content.isEmpty) {
-                    Message.showToastMessage(context, R.string.mes_motivation_content_empty.tr());
-                    return;
-                  } else {
+             //     if (content.isEmpty) {
+             //       Message.showToastMessage(context, R.string.mes_motivation_content_empty.tr());
+             //       return;
+             //     } else {
                     widget.callback!(widget.model == null
                         ? MotivationModel(content: content, id: null, createDateTime: null)
                         : MotivationModel(
                             content: content, id: widget.model!.id, createDateTime: widget.model!.createDateTime));
                     Navigator.pop(context);
-                  }
+             //     }
                 },
                 child: Container(
                   height: 48,

@@ -14,6 +14,8 @@ import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:easy_localization/easy_localization.dart';
 
+import '../../widgets/network_image_widget.dart';
+
 typedef DataCallback = Function(ExercrisesCategoryModel);
 
 class InputDetailExercrisesController extends StatefulWidget {
@@ -135,7 +137,7 @@ class _InputDetailExercrisesControllerState
                             padding: const EdgeInsets.only(top: 16, bottom: 16),
                             child: Column(
                               children: [
-                                Image.network(widget.model!.cover!.url ?? '',
+                                NetWorkImageWidget(imageUrl: widget.model!.cover!.url ?? '',
                                     width: 50, height: 50),
                                 SizedBox(height: 6),
                                 Row(

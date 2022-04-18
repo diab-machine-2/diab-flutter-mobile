@@ -45,7 +45,7 @@ class UserClient extends FetchClient {
         if (response.data['data'] == null) {
           return null;
         } else {
-          final user = UserModel.fromJson(response.data['data']);
+          var user = UserModel.fromJson(response.data['data']);
           AppSettings.userInfo = user;
 
           //await fetchUserInfo(user.patientId);
@@ -125,7 +125,7 @@ class UserClient extends FetchClient {
 
   Future<SecureModel?> fetchInfoSecure() async {
     try {
-      final Response response = await super.fetchData(url: '/App/Profile/Information');
+      final Response response = await super.fetchDataProdNoHeaders(url: '/App/Profile/Information');
       if (response.statusCode == 200) {
         if (response.data['data'] == null) {
           return null;
@@ -469,7 +469,7 @@ class UserClient extends FetchClient {
     }
   }
 
-   Future<List<CategoryItemUserModel>?> fetchDiabeteStatesNoHeader() async {
+  Future<List<CategoryItemUserModel>?> fetchDiabeteStatesNoHeader() async {
     try {
       final Response response = await super.fetchDataNoHeaders(url: '/App/Patient/DiabeteStates');
       if (response.statusCode == 200) {

@@ -50,6 +50,14 @@ class ExerciseDetailAllCompleted extends ExerciseDetailState {
   }
 }
 
+class ExerciseDetailVideoCompleted extends ExerciseDetailState {
+  const ExerciseDetailVideoCompleted();
+  @override
+  String toString() {
+    return 'ExerciseDetailVideoCompleted{}';
+  }
+}
+
 class ExerciseDetailMakeFeedback extends ExerciseDetailState {
   const ExerciseDetailMakeFeedback();
   @override

@@ -12,6 +12,9 @@ import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widgets/common_page.dart';
 import 'package:medical/src/widgets/widget_custom_multi_select_toggle.dart';
 
+import '../../app_setting/app_setting.dart';
+import '../../utils/navigation_util.dart';
+import '../../widgets/button_widget.dart';
 import 'all_question_answer/all_question_answer.dart';
 import 'my_question_answer/my_question_answer.dart';
 
@@ -33,6 +36,8 @@ class _QuestionAnswerPageState extends State<QuestionAnswerPage> with Observer {
     return index == -1 ? 0 : index;
   }
 
+  var userInfo = AppSettings.userInfo;
+
   @override
   void initState() {
     super.initState();
@@ -47,12 +52,20 @@ class _QuestionAnswerPageState extends State<QuestionAnswerPage> with Observer {
         bottom: true,
         child: Container(
           child: Column(
+            mainAxisSize: MainAxisSize.min,
             children: [
               _buildTitleAppBar(),
-              SizedBox(height: 16),
-              _buildTabBar(),
-              SizedBox(height: 16),
-              _buildPageView(),
+              Expanded(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    SizedBox(height: 16),
+                    _buildTabBar(),
+                    SizedBox(height: 16),
+                    _buildPageView(),
+                  ],
+                ),
+              ),
             ],
           ),
         ),

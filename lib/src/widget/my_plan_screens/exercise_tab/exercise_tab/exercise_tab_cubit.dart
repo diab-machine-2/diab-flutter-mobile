@@ -25,7 +25,7 @@ class ExerciseTabCubit extends Cubit<ExerciseTabState> {
   List<WeekStatesResponseData> weekStatesList = [];
   ExerciseMovementResponse? exerciseMovementResponse;
 
-  int? get week => !isHasRoadmapUser || currentWeekIndex == null ? null : weekStatesList[currentWeekIndex!].week;
+  int? get week => !isHasRoadmapUser ? null : currentWeekIndex == null ? 0 : weekStatesList[currentWeekIndex!].week;
 
   int get dataLength => exerciseMovementResponse?.data?.length ?? 0;
 
@@ -58,7 +58,7 @@ class ExerciseTabCubit extends Cubit<ExerciseTabState> {
 
   void onSelectWeek(int newIndex) {
     currentWeekIndex = newIndex;
-    getExerciseMovement();
+    getExerciseMovement(isShowLoading: true);
   }
 
   void onSelectDay(int newDayIndex) {
@@ -71,10 +71,11 @@ class ExerciseTabCubit extends Cubit<ExerciseTabState> {
     }
   }
 
-  void roadmapChanged(String newRoadmapId) {
+  Future roadmapChanged(String newRoadmapId) async {
     roadmapId = newRoadmapId;
-    myPlanCubit.getCurrentUserInfo();
-    getExerciseMovement();
+    await myPlanCubit.getCurrentUserInfo();
+    await onRefresh(isRefresh: true);
+  //  await getExerciseMovement();
   }
 
   Future<void> onRefresh({bool isRefresh = false, bool keepSelectedDayIndex = false}) async {
@@ -93,7 +94,7 @@ class ExerciseTabCubit extends Cubit<ExerciseTabState> {
 
     emit(const ExerciseTabLoading());
     if (myPlanCubit.isHasRoadmapUser) {
-      currentWeekIndex = myPlanCubit.currentStudyWeek! - 1;
+      currentWeekIndex = myPlanCubit.currentStudyWeek!;
       if (currentWeekIndex == -1) currentWeekIndex = 0;
       await getWeekStates();
     } else {
@@ -105,10 +106,15 @@ class ExerciseTabCubit extends Cubit<ExerciseTabState> {
     });
   }
 
-  Future<void> getExerciseMovement({bool isRefresh = false, bool keepSelectedDayIndex = false}) async {
+  Future<void> getExerciseMovement({bool isRefresh = false, bool keepSelectedDayIndex = false, bool isShowLoading = false}) async {
     if (!isRefresh) {
       await Future.delayed(Duration.zero);
     }
+
+    if(isShowLoading){
+      emit(ExerciseTabLoading());
+    }
+
     final ApiResult<ExerciseMovementResponse> apiResult = await repository.getExerciseMovement(week: week);
     apiResult.when(success: (ExerciseMovementResponse response) {
       exerciseMovementResponse = response;

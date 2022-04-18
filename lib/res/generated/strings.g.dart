@@ -433,6 +433,7 @@ class Strings {
 	String get mat_khau_khong_chinh_xac => 'mat_khau_khong_chinh_xac';
 	String get so_dien_thoai_khong_chinh_xac => 'so_dien_thoai_khong_chinh_xac';
 	String get tai_khoan_het_hieu_luc => 'tai_khoan_het_hieu_luc';
+	String get tai_khoan_can_nang_cap => 'tai_khoan_can_nang_cap';
 	String get so_dien_thoai_da_ton_tai => 'so_dien_thoai_da_ton_tai';
 	String get user_name_default => 'user_name_default';
 	String get xac_nhan_mat_khau => 'xac_nhan_mat_khau';
@@ -694,6 +695,7 @@ class Strings {
 	String get smart_goal_record_type_description => 'smart_goal_record_type_description';
 	String get frequency_per_day => 'frequency_per_day';
 	String get enter_smart_goal_name => 'enter_smart_goal_name';
+	String get please_select_roadmap => 'please_select_roadmap';
 	String get select_frequency => 'select_frequency';
 	String get my_progress => 'my_progress';
 	String get report => 'report';
@@ -988,6 +990,7 @@ class Strings {
 	String get confirm_delete_comment_subtitle => 'confirm_delete_comment_subtitle';
 	String get delete_comment => 'delete_comment';
 	String get question_answer_title => 'question_answer_title';
+	String get no_data => 'no_data';
 	String get closed => 'closed';
 	String get waiting => 'waiting';
 	String get question_empty => 'question_empty';
@@ -1010,4 +1013,20 @@ class Strings {
 	String get today => 'today';
 	String get chua_hoan_thanh => 'chua_hoan_thanh';
 	String get hoan_thanh => 'hoan_thanh';
+	String get install_zalo => 'install_zalo';
+	String get phone_not_available => 'phone_not_available';
+	String get group_not_available => 'group_not_available';
+	String get error_redirect_zalo => 'error_redirect_zalo';
+	String get wrong_phone_number => 'wrong_phone_number';
+	String get package_experience => 'package_experience';
+	String get package_experience_subtitle => 'package_experience_subtitle';
+	String get package_roadmap => 'package_roadmap';
+	String get package_roadmap_subtitle => 'package_roadmap_subtitle';
+	String get update_profile_type => 'update_profile_type';
+	String get coaching_11 => 'coaching_11';
+	String get coaching_1n => 'coaching_1n';
+	String get input_evaluate => 'input_evaluate';
+	String get output_evaluate => 'output_evaluate';
+	String get other => 'other';
+	String get contact_diab_info => 'contact_diab_info';
 }

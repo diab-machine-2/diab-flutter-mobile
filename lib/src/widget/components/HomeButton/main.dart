@@ -12,6 +12,7 @@ import 'package:medical/src/widget/Food/daily_nutrition/daily_nutrition.dart';
 import 'package:medical/src/widget/components/HomeButton/widget/circular_menu.dart';
 import 'package:medical/src/widget/components/HomeButton/widget/circular_menu_item.dart';
 import 'package:medical/src/widget/components/HomeButton/widget/horizontal_menu.dart';
+import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/tabbar/tabbar.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -122,7 +123,7 @@ class FunkyOverlayState extends State<FunkyOverlay> with SingleTickerProviderSta
                             await onClose();
                             NavigationUtil.navigatePage(
                               context,
-                              const DailyNutritionPage(
+                              DailyNutritionPage(
                                 type: 'input',
                                 id: null,
                               ),
@@ -161,13 +162,12 @@ class FunkyOverlayState extends State<FunkyOverlay> with SingleTickerProviderSta
                         label: 'Chat với huấn luyện viên',
                         ontap: () async {
                           if (user?.trainingGroups != null && user!.trainingGroups!.isNotEmpty) {
-                            if (user!.trainingGroups!.first.trainingGroup?.account != null) {
-                              String? phone = user!.trainingGroups!.first.trainingGroup!.account!.phoneNumber;
-                              if (phone != null && phone.isNotEmpty) {
-                                goToZaloCoach(phone);
-                              }
+                            if (user!.trainingGroups!.first.coachPhoneNumber != null && user!.trainingGroups!.first.coachPhoneNumber!.isNotEmpty) {
+                              goToZaloCoach(user!.trainingGroups!.first.coachPhoneNumber!);
+                              return;
                             }
                           }
+                          Message.showToastMessage(context, R.string.phone_not_available.tr());
                         },
                         icon: Image.asset(R.drawable.ic_chat_coach, width: 32, height: 32),
                         labelColor: Colors.white,
@@ -177,13 +177,12 @@ class FunkyOverlayState extends State<FunkyOverlay> with SingleTickerProviderSta
                         label: 'Chat nhóm',
                         ontap: () {
                           if (user?.trainingGroups != null && user!.trainingGroups!.isNotEmpty) {
-                            if (user!.trainingGroups!.first.trainingGroup?.account != null) {
-                              String? linkZalo = user!.trainingGroups!.first.trainingGroup!.linkZalo;
-                              if (linkZalo != null && linkZalo.isNotEmpty) {
-                                goToZaloGroup(linkZalo);
-                              }
+                            if (user!.trainingGroups!.first.zaloUrl != null && user!.trainingGroups!.first.zaloUrl!.isNotEmpty) {
+                              goToZaloGroup(user!.trainingGroups!.first.zaloUrl!);
+                              return;
                             }
                           }
+                          Message.showToastMessage(context, R.string.group_not_available.tr());
                         },
                         icon: Image.asset(R.drawable.ic_chat_group, width: 32, height: 32),
                         labelColor: Colors.white,
@@ -197,25 +196,119 @@ class FunkyOverlayState extends State<FunkyOverlay> with SingleTickerProviderSta
   }
 
   goToZaloCoach(String phone) async {
-    try {
+    var isZaloAppExisted = await checkZaloAppExisted();
+    if (isZaloAppExisted) {
+      try {
       // await LaunchApp.openApp(
       //   androidPackageName: 'com.zing.zalo',
       //   iosUrlScheme: 'zalo://',
       //   appStoreLink: 'https://apps.apple.com/vn/app/zalo/id579523206',
       //   // openStore: false
       // );
+      Navigator.pop(context);
+      phone = phone.replaceAll('+84', '0');
       launch("https://zalo.me/" + phone);
     } on PlatformException catch (e) {
-      goToStore();
+      Message.showToastMessage(context, R.string.error_redirect_zalo.tr());
+    }
+    } else {
+      showDialogConfirmZalo();
     }
   }
 
   goToZaloGroup(String linkZalo) async {
-    try {
-      launch(linkZalo);
-    } on PlatformException catch (e) {
-      goToStore();
+    var isZaloAppExisted = await checkZaloAppExisted();
+    if (isZaloAppExisted) {
+      try {
+        Navigator.pop(context);
+        linkZalo = linkZalo.replaceAll('+84', '0');
+        launch(linkZalo);
+      } on PlatformException catch (e) {
+        Message.showToastMessage(context, R.string.error_redirect_zalo.tr());
+      }
+    } else {
+      showDialogConfirmZalo();
     }
+  }
+
+  showDialogConfirmZalo() {
+    showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+            contentPadding: const EdgeInsets.all(0),
+            content: Stack(children: [
+              Container(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(top: 16.0),
+                      child: Text(R.string.install_zalo.tr(),
+                          textAlign: TextAlign.center,
+                          style: TextStyle(color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w600)),
+                    ),
+                    Container(
+                      margin: const EdgeInsets.only(top: 24),
+                      child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                        Expanded(
+                          child: GestureDetector(
+                            onTap: () {
+                              Navigator.pop(context);
+                            },
+                            child: Container(
+                                height: 43,
+                                decoration:
+                                    BoxDecoration(borderRadius: BorderRadius.circular(200), color: R.color.grayBorder),
+                                child: Center(
+                                  child: Text(R.string.close.tr(),
+                                      style: TextStyle(
+                                          color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w600)),
+                                )),
+                          ),
+                        ),
+                        const SizedBox(width: 14),
+                        Expanded(
+                          child: GestureDetector(
+                            onTap: () {
+                              Navigator.pop(context);
+                              goToStore();
+                            },
+                            child: Container(
+                              height: 43,
+                              decoration: BoxDecoration(
+                                  color: R.color.red,
+                                  borderRadius: BorderRadius.circular(200),
+                                  gradient: LinearGradient(
+                                      begin: Alignment.topLeft,
+                                      end: Alignment.centerRight,
+                                      colors: [R.color.greenGradientTop, R.color.greenGradientBottom])),
+                              child: Center(
+                                child: Text(R.string.tiep_tuc.tr(),
+                                    style: TextStyle(color: R.color.white, fontSize: 16, fontWeight: FontWeight.w600)),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ]),
+                    ),
+                  ],
+                ),
+              ),
+            ])));
+  }
+
+  Future<bool> checkZaloAppExisted() async {
+    var isInstalled = await LaunchApp.isAppInstalled(
+      androidPackageName: 'com.zing.zalo',
+      iosUrlScheme: 'zalo://',
+    );
+    if (isInstalled is bool) return isInstalled;
+    if (isInstalled is int) {
+    //  Message.showToastMessage(context, 'isInstalled = $isInstalled');
+      return isInstalled == 1 ? true : false;
+    }
+    return false;
   }
 
   goToStore() {

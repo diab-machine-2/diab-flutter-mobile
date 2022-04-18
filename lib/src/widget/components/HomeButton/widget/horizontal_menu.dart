@@ -168,7 +168,7 @@ class _HorizontalMenuState extends State<HorizontalMenu> with TickerProviderStat
 
     return Positioned(
       bottom: 34,
-      left: MediaQuery.of(context).size.width / 2 - 28,
+      left: MediaQuery.of(context).size.width / 2 - 24,
       child: FloatingActionButton(
         child: iconWidget,
         heroTag: widget.heroTag ?? '_HawkFabMenu_$hashCode',
@@ -194,7 +194,7 @@ class _MenuItemWidget extends StatelessWidget {
 
   /// Closes the menu and calls the function for a particular menu item
   void onTap() {
-    toggleMenu();
+   // toggleMenu();
     item.ontap();
   }
 

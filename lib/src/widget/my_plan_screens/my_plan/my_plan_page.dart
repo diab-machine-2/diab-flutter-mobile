@@ -45,6 +45,14 @@ class _MyPlanPageState extends State<MyPlanPage> with Observer {
       if (_cubit.currentPlanType != PlanType.goal) {
         _cubit.changePlanType(0);
       }
+    } else if (notifyName == Const.NAVIGATE_TO_LESSON_TAB) {
+      if (_cubit.currentPlanType != PlanType.lesson) {
+        _cubit.changePlanType(1);
+      }
+    } else if (notifyName == Const.NAVIGATE_TO_EXERCISE_TAB) {
+      if (_cubit.currentPlanType != PlanType.activity) {
+        _cubit.changePlanType(2);
+      }
     }
   }
 
@@ -89,7 +97,12 @@ class _MyPlanPageState extends State<MyPlanPage> with Observer {
                       selectedIndex: _cubit.currentPlanTypeIndex,
                       onChange: (index) {
                         Observable.instance.notifyObservers([], notifyName: Const.HIDE_OVERLAY_KEY);
+                        if(index == 1){
+                          Observable.instance.notifyObservers([], notifyName: "switch_lesson_tab");
+                        }
+                       
                         _cubit.changePlanType(index);
+
                       },
                     ),
                   ),

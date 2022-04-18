@@ -16,6 +16,7 @@ import 'package:medical/src/widgets/custom_date_picker.dart';
 import 'package:medical/src/widgets/popup_window_widget.dart';
 
 import '../../../../widgets/select_bottom_sheet_widget.dart';
+import '../../../helper/helper.dart';
 import '../activity_tab/models/schedule_type.dart';
 import 'create_goal.dart';
 import 'models/create_goal_status.dart';
@@ -28,7 +29,8 @@ import 'widgets/exercise_time_widget.dart';
 import 'widgets/select_type_widget.dart';
 
 class CreateGoalPage extends StatefulWidget {
-  const CreateGoalPage(this.smartGoalDayList);
+  CreateGoalPage(this.smartGoalDayList);
+
   final List<SmartGoalList?> smartGoalDayList;
 
   @override
@@ -252,6 +254,10 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
               ? 'Hàng ngày'
               : 'Hàng tuần vào ${_cubit.dataModel.repeatDayList.map((e) => e.shortTitle).toList().join(',')}',
         ),
+       _buildSingleResultDetail(
+          title: 'Ngày bắt đầu',
+          description: convertToUTC(DateTime.now().millisecondsSinceEpoch ~/ 1000, 'dd/MM/yyyy'),
+        ),
       if (_cubit.dataModel.isRepeat)
         _buildSingleResultDetail(
           title: 'Ngày kết thúc',
@@ -264,6 +270,7 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
     return [
       _buildSingleResultDetail(title: 'Mục tiêu', description: 'Vận động trong ngày'),
       _buildSingleResultDetail(title: 'Thời lượng', description: '${_cubit.dataModel.dailyTargetDurationNumber} phút'),
+      _buildSingleResultDetail(title: 'Ngày bắt đầu', description: convertToUTC(DateTime.now().millisecondsSinceEpoch ~/ 1000, 'dd/MM/yyyy')),
     ];
   }
 
@@ -595,6 +602,8 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
                 builder: (_) => CustomDatePicker(
                   initDate: initDate,
                   callback: (DateTime date) {
+                    date = DateTime(date.year, date.month, date.day);
+                    date = date.add(Duration(hours: 23, minutes: 59));
                     onPickDate(date);
                     _cubit.emit(CreateGoalPickedDate(date));
                   },

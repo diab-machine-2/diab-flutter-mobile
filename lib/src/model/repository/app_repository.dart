@@ -9,6 +9,8 @@ import 'package:medical/src/model/request/ios_receipt_request.dart';
 import 'package:medical/src/model/request/lesson_filter_request.dart';
 import 'package:medical/src/model/request/make_comment_request.dart';
 import 'package:medical/src/model/request/make_question_request.dart';
+import 'package:medical/src/model/request/mark_completed_target_request.dart';
+import 'package:medical/src/model/request/mark_share_request.dart';
 import 'package:medical/src/model/request/post_survey_request.dart';
 import 'package:medical/src/model/request/send_feedback_course_request.dart';
 import 'package:medical/src/model/request/send_interest_request.dart';
@@ -24,6 +26,7 @@ import 'package:medical/src/model/response/detail_package_response.dart';
 import 'package:medical/src/model/response/detail_survey_response.dart';
 import 'package:medical/src/model/response/diabetes_status_response.dart';
 import 'package:medical/src/model/response/exercise_movement_response.dart';
+import 'package:medical/src/model/response/expert_comment_list_response.dart';
 import 'package:medical/src/model/response/filter_data_response.dart';
 import 'package:medical/src/model/response/food_suggest_response.dart';
 import 'package:medical/src/model/response/latest_hba1c_input_response.dart';
@@ -38,6 +41,7 @@ import 'package:medical/src/model/response/my_lesson_response.dart';
 import 'package:medical/src/model/response/my_progress_response.dart';
 import 'package:medical/src/model/response/question_answer_response.dart';
 import 'package:medical/src/model/response/patient_info_response.dart';
+import 'package:medical/src/model/response/report_response.dart';
 import 'package:medical/src/model/response/save_survey_result_response.dart';
 import 'package:medical/src/model/response/smart_goal_detail_response.dart';
 import 'package:medical/src/model/response/smart_goal_list_reponse.dart';
@@ -52,6 +56,12 @@ import 'package:medical/src/model/response/week_states_response.dart';
 import 'package:medical/src/model/service/api_result.dart';
 import 'package:medical/src/model/service/network_exceptions.dart';
 
+import '../request/SelectRoadmapRequest.dart';
+import '../request/complete_video_request.dart';
+import '../request/mark_completed_calendar_request.dart';
+import '../request/read_welcome_request.dart';
+import '../response/calendar_training_response.dart';
+import '../response/expert_comment_response.dart';
 import '../service/app_client.dart';
 
 class AppRepository {
@@ -153,11 +163,11 @@ class AppRepository {
   Future<ApiResult<SaveSurveyResultResponse>> saveSurveyResult(String templateId) async {
     try {
       final SaveSurveyResultResponse response = await appClient.saveSurveyResult(templateId);
-      if (response.statusCode == 200) {
+    //  if (response.statusCode == 200) {
         return ApiResult.success(data: response);
-      } else {
-        return const ApiResult.failure(error: NetworkExceptions.defaultError("Save schedule failed"));
-      }
+    //  } else {
+    //    return const ApiResult.failure(error: NetworkExceptions.defaultError("Save schedule failed"));
+    //  }
     } catch (e) {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));
     }
@@ -378,9 +388,9 @@ class AppRepository {
     }
   }
 
-  Future<ApiResult<CommonResponse>> selectRoadmap(String roadmapId) async {
+  Future<ApiResult<CommonResponse>> selectRoadmap(SelectRoadmapRequest request) async {
     try {
-      final CommonResponse response = await appClient.selectRoadmap('"$roadmapId"');
+      final CommonResponse response = await appClient.selectRoadmap(request);
       return ApiResult.success(data: response);
     } catch (e) {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));
@@ -422,6 +432,19 @@ class AppRepository {
     }
   }
 
+  Future<ApiResult<CommonResponse>> completeVideo(CompleteVideoRequest request) async {
+    try {
+      final CommonResponse response = await appClient.completeVideo(request);
+      if (response.meta?.success == true) {
+        return ApiResult.success(data: response);
+      } else {
+        return ApiResult.failure(error: NetworkExceptions.defaultError(response.message ?? ''));
+      }
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
   Future<ApiResult<WeekStatesResponse>> getExerciseWeekStates() async {
     try {
       final WeekStatesResponse response = await appClient.getExerciseWeekStates();
@@ -434,6 +457,15 @@ class AppRepository {
   Future<ApiResult<WeekStatesResponse>> getLessonWeekStates() async {
     try {
       final WeekStatesResponse response = await appClient.getLessonWeekStates();
+      return ApiResult.success(data: response);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
+  Future<ApiResult<ReportListResponse>> getReports() async {
+    try {
+      final ReportListResponse response = await appClient.getReports();
       return ApiResult.success(data: response);
     } catch (e) {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));
@@ -453,6 +485,42 @@ class AppRepository {
   Future<ApiResult<CommonResponse>> completeSmartGoal(CompleteSmartGoalRequest request) async {
     try {
       final CommonResponse response = await appClient.completeSmartGoal(request);
+      return ApiResult.success(data: response);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
+  Future<ApiResult<CommonResponse>> completeGoal(MarkCompletedTargetRequest request) async {
+    try {
+      final CommonResponse response = await appClient.completeGoal(request);
+      return ApiResult.success(data: response);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
+  Future<ApiResult<CommonResponse>> markCompletedCalendar(String id) async {
+    try {
+      final CommonResponse response = await appClient.markCompletedCalendar(id);
+      return ApiResult.success(data: response);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
+  Future<ApiResult<CommonResponse>> markIsShare(MarkShareRequest request) async {
+    try {
+      final CommonResponse response = await appClient.markIsShare(request);
+      return ApiResult.success(data: response);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
+    Future<ApiResult<CommonResponse>> markDisplayedWelcome() async {
+    try {
+      final CommonResponse response = await appClient.markDisplayedWelcome();
       return ApiResult.success(data: response);
     } catch (e) {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));
@@ -544,9 +612,9 @@ class AppRepository {
     }
   }
 
-  Future<ApiResult<SmartGoalStatisticResponse>> getSmartGoalStatistics({int? week}) async {
+  Future<ApiResult<SmartGoalStatisticResponse>> getSmartGoalStatistics({int? day, int? week}) async {
     try {
-      final SmartGoalStatisticResponse response = await appClient.getSmartGoalStatistics(week: week);
+      final SmartGoalStatisticResponse response = await appClient.getSmartGoalStatistics(day: day, week: week);
       return ApiResult.success(data: response);
     } catch (e) {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));
@@ -566,6 +634,33 @@ class AppRepository {
   Future<ApiResult<MyProgressResponse>> getMyProgress({int? type}) async {
     try {
       final MyProgressResponse response = await appClient.getMyProgress(type: type);
+      return ApiResult.success(data: response);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
+  Future<ApiResult<ExpertCommentListResponse>> getCommentProfessorByAccountId(String accountId) async {
+    try {
+      final ExpertCommentListResponse response = await appClient.getCommentProfessorByAccountId(accountId);
+      return ApiResult.success(data: response);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
+  Future<ApiResult<ExpertCommentResponse>> getCommentById(String id) async {
+    try {
+      final ExpertCommentResponse response = await appClient.getCommentById(id);
+      return ApiResult.success(data: response);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
+  Future<ApiResult<CalendarTrainingListResponse>> getCalendarTraining(String calendarId) async {
+    try {
+      final CalendarTrainingListResponse response = await appClient.getCalendarTraining(calendarId);
       return ApiResult.success(data: response);
     } catch (e) {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));

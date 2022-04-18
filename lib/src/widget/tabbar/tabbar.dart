@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
@@ -29,6 +31,7 @@ class TabbarController extends StatefulWidget {
   const TabbarController({this.sharedCode, this.isRedirectFromNotification = false});
   final String? sharedCode;
   final bool isRedirectFromNotification;
+
   @override
   _TabbarControllerState createState() => _TabbarControllerState();
   static _TabbarControllerState? of(BuildContext context) {
@@ -42,6 +45,7 @@ class _TabbarControllerState extends State<TabbarController> with SingleTickerPr
   BottomTabbar? _bottomTabbar;
 
   late final List<Widget> tabs;
+  bool isNavigateToStepList = false;
 
   @override
   void initState() {
@@ -67,6 +71,14 @@ class _TabbarControllerState extends State<TabbarController> with SingleTickerPr
         });
 
     getNewVersion();
+
+ //   startTimer();
+  }
+
+  Future startTimer() async {
+    Future.delayed(Duration(seconds: 30), (){
+      Observable.instance.notifyObservers([], notifyName : "unauthorized");
+    });
   }
 
   @override
@@ -78,16 +90,31 @@ class _TabbarControllerState extends State<TabbarController> with SingleTickerPr
   @override
   Future<void> update(Observable observable, String? notifyName, Map<dynamic, dynamic>? map) async {
     if (notifyName == 'unauthorized') {
-      Message.showToastMessage(context, R.string.phien_dang_nhap_het_han_vui_long_dang_nhap_lai.tr());
-      AppSettings.logout();
+      if(!isNavigateToStepList){
+        Message.showToastMessage(context, R.string.phien_dang_nhap_het_han_vui_long_dang_nhap_lai.tr());
+        AppSettings.logout();
+        isNavigateToStepList = true;
+      }
     }
     if (notifyName == Const.NAVIGATE_TO_MY_PLAN_TAB) {
+      int position = 0;
+      if(map != null){
+        position = map['position'] ?? 0;
+      }
       NavigationUtil.popToFirst(context);
       jumpTo(1);
       await Future.delayed(
-        const Duration(milliseconds: 100),
+        const Duration(milliseconds: 10),
       );
-      Observable.instance.notifyObservers([], notifyName: Const.NAVIGATE_TO_ACTIVITY_TAB);
+
+      if(position == 0){
+        Observable.instance.notifyObservers([], notifyName: Const.NAVIGATE_TO_ACTIVITY_TAB);
+      } else if(position == 1){
+        Observable.instance.notifyObservers([], notifyName: Const.NAVIGATE_TO_LESSON_TAB);
+      } else if(position == 2){
+        Observable.instance.notifyObservers([], notifyName: Const.NAVIGATE_TO_EXERCISE_TAB);
+      }
+      
     }
   }
 
@@ -152,17 +179,18 @@ class _TabbarControllerState extends State<TabbarController> with SingleTickerPr
       if (status.storeVersion != 'Varies with device') {
         showDialog(
             context: context,
+            barrierDismissible: false,
             builder: (BuildContext context) => CupertinoAlertDialog(
                   title: Text(R.string.cap_nhat.tr()),
                   content: Text(R.string.mes_new_version_available.tr(args: ['${status.storeVersion}']),
                       textAlign: TextAlign.center),
                   actions: <Widget>[
-                    CupertinoDialogAction(
-                      child: Text(R.string.cancel.tr()),
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                    ),
+                    // CupertinoDialogAction(
+                    //   child: Text(R.string.cancel.tr()),
+                    //   onPressed: () {
+                    //     Navigator.pop(context);
+                    //   },
+                    // ),
                     CupertinoDialogAction(
                       isDefaultAction: true,
                       child: Text(R.string.cap_nhat.tr()),

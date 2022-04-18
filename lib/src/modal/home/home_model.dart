@@ -2,6 +2,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/modal/base/images.dart';
+import 'package:medical/src/modal/home/package_account_home_model.dart';
 
 class HomeModel {
   final GloucoseIndexModel glucoseIndex;
@@ -13,6 +14,7 @@ class HomeModel {
   final HbA1CIndexModel hbA1CIndex;
   final EnergyExerciseCardModel? energyExerciseCard;
   final ProcessCardModel? processCard;
+  final PackageAccountHomeModel? packageAccount;
 
   HomeModel({
     required this.glucoseIndex,
@@ -24,6 +26,7 @@ class HomeModel {
     required this.energyCard,
     required this.energyExerciseCard,
     required this.processCard,
+    required this.packageAccount,
   });
 
   factory HomeModel.fromJson(Map<String, dynamic> json) {
@@ -41,6 +44,8 @@ class HomeModel {
               json['energyExerciseCard'],
             ),
       processCard: json['processCard'] == null ? null : ProcessCardModel.fromJson(json['processCard']),
+      packageAccount: json['packageAccount'] == null ? null : PackageAccountHomeModel.fromJson(json['packageAccount']),
+      
     );
   }
 
@@ -120,6 +125,8 @@ class BloodPressureIndexModel {
 class ExerciseIndexModel {
   final double? index;
   final double? indexChange;
+  final double? facExercise;
+  final double? targetExercise;
   final String? unit;
   final int? createDateTime;
   final String? color;
@@ -128,6 +135,8 @@ class ExerciseIndexModel {
   ExerciseIndexModel(
       {required this.index,
       required this.indexChange,
+      required this.facExercise,
+      required this.targetExercise,
       required this.unit,
       required this.createDateTime,
       required this.color,
@@ -137,6 +146,8 @@ class ExerciseIndexModel {
     return ExerciseIndexModel(
       index: json['index'],
       indexChange: json['indexChange'],
+      facExercise: json['facExercise'] ?? 0,
+      targetExercise: json['targetExercise'] ?? 0,
       unit: json['unit'],
       createDateTime: json['createDateTime'],
       color: json['color'],
@@ -151,7 +162,7 @@ class ExerciseIndexModel {
 
 class HbA1CIndexModel {
   final double? index;
-  final double? indexChange;
+  double? indexChange;
   final int? createDateTime;
   final String? color;
   final ImagesModel? icon;
@@ -307,7 +318,7 @@ class ProcessCardModel {
       lessonCompeleted: json['lessonCompeleted'] ?? 0,
       userFree: json['userFree'] ?? true,
       createDateTime: json['createDateTime'] ?? 0,
-      color: json['color'],
+      color: json['color'] ?? '',
       icon: json['icon'] == null ? null : ImagesModel.fromJson(json['icon']),
     );
   }

@@ -3,6 +3,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_observer/Observable.dart';
 import 'package:flutter_observer/Observer.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/modal/error/error_model.dart';
@@ -23,6 +24,7 @@ import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/my_package/my_package_page.dart';
 import 'package:medical/src/widget/shared_profile/shared_profile.dart';
 
+import '../../widgets/button_widget.dart';
 import '../food_menu_screens/food_menu/food_menu_page.dart';
 
 class ProfileController extends StatefulWidget {
@@ -36,6 +38,7 @@ class _ProfileControllerState extends State<ProfileController> with Observer {
   bool isPro = true;
   SecureModel? secureModel;
   final AppRepository _appRepository = AppRepository();
+  var userInfo = AppSettings.userInfo;
 
   @override
   void initState() {
@@ -55,7 +58,12 @@ class _ProfileControllerState extends State<ProfileController> with Observer {
   loadData() async {
     try {
       BotToast.showLoading();
+      if(AppSettings.secureModel == null) {
       secureModel = await UserClient().fetchInfoSecure();
+      AppSettings.secureModel = secureModel;
+      } else {
+        secureModel = AppSettings.secureModel;
+      }
       // await checkPackage();
       BotToast.closeAllLoading();
       setState(() {});
@@ -142,7 +150,7 @@ class _ProfileControllerState extends State<ProfileController> with Observer {
                                   Image.asset(isPro ? R.drawable.ic_pro : R.drawable.ic_crown_green,
                                       width: 20, height: 20),
                                   const SizedBox(width: 8),
-                                  Text(R.string.coaching_package.tr(),
+                                  Text((userInfo?.packageName != null && userInfo!.packageName!.isNotEmpty) ? userInfo!.packageName! : R.string.thanh_vien_co_ban.tr(),
                                       style:
                                           TextStyle(color: R.color.textDark, fontSize: 14, fontWeight: FontWeight.w700))
                                 ],
@@ -196,6 +204,10 @@ class _ProfileControllerState extends State<ProfileController> with Observer {
                           title: R.string.food_menu.tr(),
                           image: R.drawable.ic_food_menu,
                           onTap: () {
+                            // if(userInfo?.ownPackage == null) {
+                            //   NavigationUtil.showUpdateRequirePopup(context: context, title: R.string.food_menu.tr());
+                            //   return;
+                            // }
                             NavigationUtil.navigatePage(context, const FoodMenuPage());
                           }),
                     )
@@ -363,6 +375,7 @@ class _ProfileControllerState extends State<ProfileController> with Observer {
                         obscureText: false,
                         decoration: InputDecoration(
                           fillColor: R.color.textDark,
+                          counterText: '',
                           enabledBorder: OutlineInputBorder(
                             borderSide: BorderSide(color: R.color.grayComponentBorder, width: 1.0),
                             borderRadius: BorderRadius.circular(10),

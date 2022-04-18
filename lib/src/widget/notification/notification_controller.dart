@@ -18,6 +18,9 @@ import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/components/load_more.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
+import 'package:medical/src/widgets/network_image_widget.dart';
+
+import '../../modal/notification/notification_list_model.dart';
 
 class NotificationController extends StatefulWidget {
   const NotificationController({required this.isRemovealbe});
@@ -30,6 +33,7 @@ class NotificationController extends StatefulWidget {
 
 class NotificationControllerState extends State<NotificationController>
     with AutomaticKeepAliveClientMixin<NotificationController>, Observer {
+
   @override
   bool get wantKeepAlive => true;
 
@@ -40,22 +44,34 @@ class NotificationControllerState extends State<NotificationController>
   bool isLoading = false;
 
   List<String?> readIds = [];
+  List<NotificationListModel> model = [];
 
   @override
   void initState() {
     super.initState();
-    if (widget.isRemovealbe != true) {
+  //  if (widget.isRemovealbe != true) {
       Observable.instance.addObserver(this);
-    }
+  //  }
   }
 
   @override
   void update(Observable observable, String? notifyName, Map<dynamic, dynamic>? map) {
     if (notifyName == 'read_notification') {
-      final firstValue = map?.values.first;
-      setState(() {
-        readIds.add(firstValue);
-      });
+      NotificationListModel notification = map?['notification'];
+      if(widget.isRemovealbe == null){
+        setState(() {
+          readIds.add(notification.id);
+        });
+      } else if(widget.isRemovealbe == false){
+        setState(() {
+          model.removeWhere((element) => element.id == notification.id);
+        });
+      } else if(widget.isRemovealbe == true){
+          setState(() {
+            notification.isRead = true;
+            model.add(notification);
+          });
+      }
     }
   }
 
@@ -93,8 +109,10 @@ class NotificationControllerState extends State<NotificationController>
       child: BlocBuilder<NotificationBloc, NotificationState>(
         builder: (BuildContext context, NotificationState state) {
           currentContext = context;
-          List<NotificationModel>? model;
+          
           if (state is NotificationInitial) {
+            Future.delayed(Duration(milliseconds: 10));
+            BotToast.showLoading();
             BlocProvider.of<NotificationBloc>(context).add(
               FetchNotification(isRead: widget.isRemovealbe, page: page),
             );
@@ -103,7 +121,8 @@ class NotificationControllerState extends State<NotificationController>
             Message.showToastMessage(context, state.message);
           }
           if (state is NotificationLoaded) {
-            model = state.model?.models;
+            BotToast.closeAllLoading();
+            model = state.model?.models ?? [];
             hasMore = state.model?.hasMore ?? false;
             if (hasMore) {
               page += 1;
@@ -117,7 +136,7 @@ class NotificationControllerState extends State<NotificationController>
                   ? const Center(
                       child: CircularProgressIndicator(),
                     )
-                  : _buildNotificationList(model),
+                  : _buildNotificationList(model, state),
             ),
           );
         },
@@ -125,7 +144,7 @@ class NotificationControllerState extends State<NotificationController>
     );
   }
 
-  Widget _buildNotificationList(List<NotificationModel> model) {
+  Widget _buildNotificationList(List<NotificationListModel> model, NotificationState state) {
     return LoadMore(
       onLoadMore: _loadMore,
       isFinish: !hasMore,
@@ -143,7 +162,9 @@ class NotificationControllerState extends State<NotificationController>
           );
         },
         itemBuilder: (BuildContext context, int index) {
-          if (model.isNotEmpty != true) {
+          if(state is NotificationInitial){
+            return Container();
+          } else if (model.isNotEmpty != true) {
             return Container(
               height: MediaQuery.of(context).size.height - 190,
               child: Center(
@@ -157,7 +178,7 @@ class NotificationControllerState extends State<NotificationController>
               ),
             );
           } else {
-            final NotificationModel notificationModel = model[index];
+            final NotificationListModel notificationModel = model[index];
             bool? isRead = notificationModel.isRead;
             if (!notificationModel.isRead! && (widget.isRemovealbe != true)) {
               final selected = readIds.indexWhere((element) => element == notificationModel.id);
@@ -198,7 +219,7 @@ class NotificationControllerState extends State<NotificationController>
     );
   }
 
-  Widget _buildSingleNotification(NotificationModel model, bool? isRead) {
+  Widget _buildSingleNotification(NotificationListModel model, bool? isRead) {
     return Container(
       color: R.color.transparent,
       child: Padding(
@@ -208,7 +229,7 @@ class NotificationControllerState extends State<NotificationController>
           children: [
             ClipRRect(
               borderRadius: BorderRadius.circular(20),
-              child: Image.network(model.imageUrl!, width: 40, height: 40, fit: BoxFit.fill),
+              child: NetWorkImageWidget(imageUrl: model.imageUrl!, width: 40, height: 40),
             ),
             const SizedBox(width: 8),
             Expanded(
@@ -256,17 +277,17 @@ class NotificationControllerState extends State<NotificationController>
     );
   }
 
-  void _onTapNotify(NotificationModel notificationModel) {
+  void _onTapNotify(NotificationListModel notificationModel) {
     if ((widget.isRemovealbe != true) && !notificationModel.isRead!) {
-      Observable.instance.notifyObservers([], notifyName: "read_notification", map: {'id': notificationModel.id});
+      Observable.instance.notifyObservers([], notifyName: "read_notification", map: {'notification': notificationModel});
       NotificationClient()
-          .readNotification(notificationModel.id, AppSettings.userInfo!.id, notificationModel.notificationType, true);
+          .readNotification(notificationModel.id, notificationModel.notificationId, AppSettings.userInfo!.id, notificationModel.notificationType.toString(), true);
     }
     switch (notificationModel.actionType) {
       case NotificationActionType.redirect_to_activity_tab:
         break;
       case NotificationActionType.redirect_to_url:
-        Navigator.pushNamed(context, NavigatorName.notification_detail, arguments: {'id': notificationModel.id});
+        Navigator.pushNamed(context, NavigatorName.notification_detail, arguments: {'id': notificationModel.notificationId ?? '', 'communicationId': notificationModel.id});
         break;
       case NotificationActionType.add_reminder:
         Navigator.pushNamed(context, NavigatorName.add_reminder,
@@ -285,7 +306,7 @@ class NotificationControllerState extends State<NotificationController>
     }
   }
 
-  _showDialogDelete(BuildContext context, NotificationModel model) {
+  _showDialogDelete(BuildContext context, NotificationListModel model) {
     showDialog(
       context: context,
       builder: (context) {
@@ -376,7 +397,7 @@ class NotificationControllerState extends State<NotificationController>
     );
   }
 
-  _delete(NotificationModel model) async {
+  _delete(NotificationListModel model) async {
     try {
       BotToast.showLoading();
       await NotificationClient().deleteNotification(model.id);

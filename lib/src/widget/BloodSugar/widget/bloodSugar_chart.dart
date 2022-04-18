@@ -15,6 +15,7 @@ import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/modal/glucose/glucose_trend.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:visibility_detector/visibility_detector.dart';
 
 class BloodSugarChart extends StatefulWidget {
   BloodSugarChart({Key? key}) : super(key: key);
@@ -32,6 +33,7 @@ class BloodSugarChartState extends State<BloodSugarChart>
   String trendType = R.string.all.tr();
   int trendTypeIndex = 1;
   int periodFilterType = 1;
+  int? previousDate = 0;
 
   @override
   void initState() {
@@ -71,118 +73,127 @@ class BloodSugarChartState extends State<BloodSugarChart>
               ? Container(
                   height: 450,
                   child: Center(child: CircularProgressIndicator()))
-              : Padding(
-                  padding: EdgeInsets.all(18),
-                  child: Column(
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Row(
-                            children: [
-                              Text(R.string.blood_sugar_trend.tr(),
-                                  style: TextStyle(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.w600)),
-                            ],
-                          ),
-                          Container(
-                              decoration: BoxDecoration(
-                                  color: R.color.white,
-                                  borderRadius: BorderRadius.circular(200.0),
-                                  border: Border.all(color: R.color.grayBorder)),
-                              child: GestureDetector(
+              : VisibilityDetector(
+                key: Key('blood_sugar_chart'),
+                onVisibilityChanged: (visibilityInfo) {
+                  var visiblePercentage = visibilityInfo.visibleFraction * 100;
+                  if(visiblePercentage == 0){
+                    previousDate = 0;
+                  }
+                },
+                child: Padding(
+                    padding: EdgeInsets.all(18),
+                    child: Column(
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Row(
+                              children: [
+                                Text(R.string.blood_sugar_trend.tr(),
+                                    style: TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.w600)),
+                              ],
+                            ),
+                            Container(
+                                decoration: BoxDecoration(
+                                    color: R.color.white,
+                                    borderRadius: BorderRadius.circular(200.0),
+                                    border: Border.all(color: R.color.grayBorder)),
+                                child: GestureDetector(
+                                  onTap: () {
+                                    showActionTrendFilter(context);
+                                  },
+                                  child: Align(
+                                      alignment: Alignment.center,
+                                      child: Container(
+                                        color: R.color.transparent,
+                                        padding: const EdgeInsets.only(
+                                            top: 4,
+                                            bottom: 4,
+                                            left: 12,
+                                            right: 8),
+                                        child: Row(
+                                          children: [
+                                            Text(trendType != null
+                                                ? trendType
+                                                : R.string.all.tr()),
+                                            SizedBox(width: 4),
+                                            Image.asset(
+                                                R.drawable.ic_chevron_down,
+                                                width: 24,
+                                                height: 24)
+                                          ],
+                                        ),
+                                      )),
+                                )),
+                          ],
+                        ),
+                        SizedBox(height: 23),
+                        model.trendItems.items.length == 0
+                            ? GestureDetector(
                                 onTap: () {
-                                  showActionTrendFilter(context);
+                                  Navigator.pushNamed(context, NavigatorName.add_blood_sugar,
+                                      arguments: {'type': 'input', 'id': null});
                                 },
-                                child: Align(
-                                    alignment: Alignment.center,
+                                child: Image.asset(
+                                    R.drawable.img_glucose_trend),
+                              )
+                            : Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(16),
+                                  color: R.color.white,
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: R.color.grey.withOpacity(0.5),
+                                      spreadRadius: 1,
+                                      blurRadius: 7,
+                                      offset: Offset(
+                                          0, 2), // changes position of shadow
+                                    ),
+                                  ],
+                                ),
+                                //padding: EdgeInsets.all(16),
+                                child: Column(children: [
+                                  //SizedBox(height: 32),
+                                  buildChart(model),
+
+                                  GestureDetector(
+                                    onTap: () {
+                                      Navigator.pushNamed(
+                                          context, NavigatorName.blood_sugar_table,
+                                          arguments: {
+                                            'title': trendType,
+                                            'timeFrameType': trendTypeIndex,
+                                            'periodFilterType': periodFilterType,
+                                            'glucoseDistributionType': null
+                                          });
+                                    },
                                     child: Container(
                                       color: R.color.transparent,
-                                      padding: const EdgeInsets.only(
-                                          top: 4,
-                                          bottom: 4,
-                                          left: 12,
-                                          right: 8),
                                       child: Row(
-                                        children: [
-                                          Text(trendType != null
-                                              ? trendType
-                                              : R.string.all.tr()),
-                                          SizedBox(width: 4),
-                                          Image.asset(
-                                              R.drawable.ic_chevron_down,
-                                              width: 24,
-                                              height: 24)
-                                        ],
-                                      ),
-                                    )),
-                              )),
-                        ],
-                      ),
-                      SizedBox(height: 23),
-                      model.trendItems.items.length == 0
-                          ? GestureDetector(
-                              onTap: () {
-                                Navigator.pushNamed(context, NavigatorName.add_blood_sugar,
-                                    arguments: {'type': 'input', 'id': null});
-                              },
-                              child: Image.asset(
-                                  R.drawable.img_glucose_trend),
-                            )
-                          : Container(
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(16),
-                                color: R.color.white,
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: R.color.grey.withOpacity(0.5),
-                                    spreadRadius: 1,
-                                    blurRadius: 7,
-                                    offset: Offset(
-                                        0, 2), // changes position of shadow
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            Text(R.string.xem_chi_tiet.tr(),
+                                                style:
+                                                    TextStyle(color: R.color.mainColor)),
+                                            Image.asset(
+                                                R.drawable.ic_arrow_right,
+                                                width: 20,
+                                                height: 20)
+                                          ]),
+                                    ),
                                   ),
-                                ],
-                              ),
-                              //padding: EdgeInsets.all(16),
-                              child: Column(children: [
-                                //SizedBox(height: 32),
-                                buildChart(model),
-
-                                GestureDetector(
-                                  onTap: () {
-                                    Navigator.pushNamed(
-                                        context, NavigatorName.blood_sugar_table,
-                                        arguments: {
-                                          'title': trendType,
-                                          'timeFrameType': trendTypeIndex,
-                                          'periodFilterType': periodFilterType,
-                                          'glucoseDistributionType': null
-                                        });
-                                  },
-                                  child: Container(
-                                    color: R.color.transparent,
-                                    child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          Text(R.string.xem_chi_tiet.tr(),
-                                              style:
-                                                  TextStyle(color: R.color.mainColor)),
-                                          Image.asset(
-                                              R.drawable.ic_arrow_right,
-                                              width: 20,
-                                              height: 20)
-                                        ]),
-                                  ),
-                                ),
-                                SizedBox(
-                                  height: 16,
-                                )
-                              ])),
-                    ],
+                                  SizedBox(
+                                    height: 16,
+                                  )
+                                ])),
+                      ],
+                    ),
                   ),
-                );
+              );
         }));
   }
 
@@ -352,14 +363,15 @@ class BloodSugarChartState extends State<BloodSugarChart>
                             ),
                             touchCallback: (FlTouchEvent event,
                                 LineTouchResponse? lineTouch) {
+                              previousDate = 0;
                               if (lineTouch?.lineBarSpots?.length == 1 &&
                                   event is! FlLongPressEnd &&
                                   event is! FlPanEndEvent) {
                                 final value = lineTouch?.lineBarSpots?[0].x;
                                 if (value != null) {
-                                  setState(() {
+                              //    setState(() {
                                     touchIndex = value.toInt();
-                                  });
+                              //    });
                                 }
                               } else {
                                 touchIndex = -1;
@@ -377,9 +389,11 @@ class BloodSugarChartState extends State<BloodSugarChart>
                             reservedSize: -16,
                             getTextStyles: (context, value) {
                               return TextStyle(
-                                  color: touchIndex == value.toInt()
-                                      ? R.color.black
-                                      : R.color.color0xffC0C2C5,
+                                  color: 
+                                        touchIndex == value.toInt() ? 
+                                        R.color.black
+                                           : R.color.color0xffC0C2C5
+                                        ,
                                   fontSize: 14,
                                   fontWeight: FontWeight.normal);
                             },
@@ -388,10 +402,19 @@ class BloodSugarChartState extends State<BloodSugarChart>
                                 return '';
                               }
                               final date = dates[value.toInt()];
+                               print('duc2111 previousDate = $previousDate date = $date');
+                              if(previousDate == date) return '';
+                              previousDate = date;
                               if (date == null) {
                                 return '';
                               } else {
-                                return convertToUTC(date, 'dd/MM');
+                                final dateTime = DateTime.fromMillisecondsSinceEpoch(date * 1000);
+                            //    print('duc2111 dateTime = ${convertToUTC(date, 'dd/MM/yyyy HH:mm')}, hour = ${dateTime.hour}');
+                                if(dateTime.hour > 0 && dateTime.hour < 7){
+                                  return convertToGMT0(date, 'dd/MM');
+                                } else {
+                                  return convertToUTC(date, 'dd/MM');
+                                }
                               }
                               // if (value.toInt() > dates.length - 1) {
                               //       return '';

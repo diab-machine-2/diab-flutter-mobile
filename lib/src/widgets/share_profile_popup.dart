@@ -3,7 +3,9 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
+import 'package:medical/src/model/request/mark_share_request.dart';
 import 'package:medical/src/model/request/update_shared_profile_request.dart';
 import 'package:medical/src/model/response/update_shared_profile_response.dart';
 import 'package:medical/src/model/response/user_info_referral_code_response.dart';
@@ -14,6 +16,7 @@ import 'package:medical/src/widget/shared_profile/shared_profile.dart';
 import 'package:medical/src/widgets/button_widget.dart';
 
 import '../app.dart';
+import '../model/response/common_response.dart';
 import '../utils/navigation_util.dart';
 
 class ShareProfilePopup {
@@ -24,21 +27,24 @@ class ShareProfilePopup {
   static final ShareProfilePopup instance = ShareProfilePopup._privateConstructor();
 
   late final AppRepository appRepository;
+  final user = AppSettings.userInfo;
 
   Future<void> onHasSharedCode({
     BuildContext? context,
     final bool requestFromDoctor = false,
     required final String code,
   }) async {
+    if(code.isEmpty) return;
+    bool isCancel = false;
     final BuildContext currentContext = context ?? navigatorKey.currentState!.context;
     final UserInfoReferralCodeResponse? userInfo = await _getSharedProfile(currentContext, code: code);
     if (userInfo?.isUserExists != true) {
-      Message.showToastMessage(context!, R.string.qr_not_available.tr());
+      Message.showToastMessage(currentContext, R.string.qr_not_available.tr());
       return;
     }
     if (userInfo?.notValidPosition == true) {
       Message.showToastMessage(
-          context!, R.string.unable_share_doctor_profile.tr(args: [userInfo?.data?.fullName ?? '']));
+          currentContext, R.string.unable_share_doctor_profile.tr(args: [userInfo?.data?.fullName ?? '']));
       return;
     }
     showPopup(currentContext,
@@ -46,11 +52,18 @@ class ShareProfilePopup {
         title: requestFromDoctor
             ? R.string.doctor_request_share_profile.tr(args: [userInfo?.data?.fullName ?? ''])
             : R.string.share_profile_for_doctor.tr(args: [userInfo?.data?.fullName ?? '']),
-        description: R.string.share_profile_description.tr(), onTapCancel: () {
-      NavigationUtil.pop(currentContext);
+        description: R.string.share_profile_description.tr(), 
+        onTapCancel: () async {
+          if(!isCancel){
+            await markIsShare();
+            NavigationUtil.pop(currentContext);
+            isCancel = true;
+          }
+      
     }, onTapYes: () async {
       final bool sharingSuccessed = await _shareProfile(currentContext, code: code);
       if (!sharingSuccessed) return;
+      await markIsShare();
       NavigationUtil.pop(currentContext);
       showPopup(currentContext,
           image: R.drawable.img_survey_completed,
@@ -79,7 +92,11 @@ class ShareProfilePopup {
       barrierDismissible: true,
       builder: (_) => GestureDetector(
         onTap: () {
-          NavigationUtil.pop(context);
+          if(onTapCancel != null){
+            onTapCancel();
+          } else {
+            NavigationUtil.pop(context);
+          }
         },
         child: Scaffold(
           backgroundColor: R.color.transparent,
@@ -109,7 +126,11 @@ class ShareProfilePopup {
                           SizedBox(width: 20),
                           GestureDetector(
                             onTap: () {
-                              Navigator.pop(context);
+                              if(onTapCancel != null){
+                                onTapCancel();
+                              } else {
+                                NavigationUtil.pop(context);
+                              }
                             },
                             child: Image.asset(R.drawable.ic_close, width: 28, height: 28),
                           ),
@@ -186,6 +207,16 @@ class ShareProfilePopup {
     });
     BotToast.closeAllLoading();
     return data;
+  }
+
+  Future<void> markIsShare() async {
+  //  BotToast.showLoading();
+    MarkShareRequest markShareRequest = MarkShareRequest(patientId: user?.id ?? '', isShare: false);
+    final ApiResult<CommonResponse> apiResult = await appRepository.markIsShare(markShareRequest);
+    apiResult.when(success: (CommonResponse response) {
+    }, failure: (NetworkExceptions error) {
+    });
+  //  BotToast.closeAllLoading();
   }
 
   Future<bool> _shareProfile(BuildContext context, {String? code}) async {

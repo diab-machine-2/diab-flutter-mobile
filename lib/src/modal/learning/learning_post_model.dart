@@ -6,18 +6,21 @@ class LearningPostModel {
   final String? title;
   final String? link;
   final ImagesModel imageUrl;
+  final int? status;
 
   const LearningPostModel(
       {required this.id,
       required this.title,
       required this.link,
-      required this.imageUrl});
+      required this.imageUrl,
+      required this.status});
   @override
   factory LearningPostModel.fromJson(Map<String, dynamic> json) {
     return LearningPostModel(
         id: json['id'],
         title: json['title'],
         link: json['link'],
+        status: json['status'],
         imageUrl: ImagesModel.fromJson(json['imageUrl']));
   }
 

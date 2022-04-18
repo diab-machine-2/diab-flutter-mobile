@@ -1,8 +1,13 @@
+import '../app_setting/app_setting.dart';
+
 class Const {
 //  static const String HOST_URL = "https://api.savvycom.asia/";
-  static const String HOST_URL = "https://diab-api-dev.savvycom.vn/";
 
-  static const String API_URL = "${HOST_URL}api/";
+  static const String HOST_URL = "https://api.diab.com.vn/";
+  static const String HOST_URL_STAGING = "https://api.savvycom.asia/";
+
+  // ignore: non_constant_identifier_names
+  static String API_URL = "${HOST_URL}api/";
 
   static const String HOST_GOOGLE_MAP_URL = "https://maps.googleapis.com/maps/api/";
   static const String ANDROID_KEY = "AIzaSyAVRrZKBfIphjlPiua9y5Pk4CJ3oaddGp0";
@@ -29,6 +34,7 @@ class Const {
   static const String REFRESH = "Refresh";
   static const String REFRESH_TOKEN = "refresh_token";
   static const String TOKEN = "token";
+  static const String ENVIRONMENT = "environment";
   static const String PHONE = "Phone";
   static const String CITY_ID = "CITY_ID";
   static const String CITY_NAME = "CITY_NAME";
@@ -133,6 +139,8 @@ class Const {
 
   static const String NAVIGATE_TO_MY_PLAN_TAB = 'Navigate_to_my_plan_tab';
   static const String NAVIGATE_TO_ACTIVITY_TAB = 'Navigate_to_activity_tab';
+  static const String NAVIGATE_TO_LESSON_TAB = 'Navigate_to_lesson_tab';
+  static const String NAVIGATE_TO_EXERCISE_TAB = 'Navigate_to_exercise_tab';
 
   static const List<int> hourList = [
     0,

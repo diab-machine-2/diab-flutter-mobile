@@ -1,10 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/modal/home/home_model.dart';
 
 String convertToUTC(int timeStamp, String fotmat) {
   final date = DateTime.fromMillisecondsSinceEpoch(timeStamp * 1000);
   String formattedDate = DateFormat(fotmat).format(date);
+  return formattedDate;
+}
+
+String convertToGMT0(int timeStamp, String fotmat) {
+  final date = DateTime.fromMillisecondsSinceEpoch(timeStamp * 1000);
+  String formattedDate = DateFormat(fotmat).format(date.toUtc());
   return formattedDate;
 }
 
@@ -17,8 +24,7 @@ String convertToTicketDate(int timeStamp, String format) {
 String convertToSectionTicketDate(int timeStamp, String format) {
   final date = DateTime.fromMillisecondsSinceEpoch(timeStamp * 1000);
   // String languageCode = Localizations.localeOf(context).languageCode;
-  String formattedDate =
-      DateFormat('dd/MMMM/yyyy, $format', 'vi_VN').format(date);
+  String formattedDate = DateFormat('dd/MMMM/yyyy, $format', 'vi_VN').format(date);
   final now = DateTime.now();
   final today = DateTime(now.year, now.month, now.day);
   final aDate = DateTime(date.year, date.month, date.day);
@@ -34,9 +40,7 @@ String getStringToday(int timeStamp) {
   final date = DateTime.fromMillisecondsSinceEpoch(timeStamp * 1000);
   if (now.day == date.day && now.month == date.month && now.year == date.year) {
     return 'Hôm nay';
-  } else if (now.day - 1 == date.day &&
-      now.month == date.month &&
-      now.year == date.year) {
+  } else if (now.day - 1 == date.day && now.month == date.month && now.year == date.year) {
     return 'Hôm qua';
   } else {
     return '';
@@ -63,6 +67,28 @@ DateTime toDate(int timeStamp) {
   return DateTime(date.year, date.month, date.day);
 }
 
+int convertToGMT(int? timeStamp){
+  if(timeStamp != null){
+    var date = DateTime.fromMillisecondsSinceEpoch(timeStamp * 1000);
+    date = date.add(Duration(hours: 7));
+    return date.millisecondsSinceEpoch ~/ 1000;
+  } else {
+    return 0;
+  }
+}
+
+String getWeekDay(int timeStamp){
+  final date = DateTime.fromMillisecondsSinceEpoch(timeStamp * 1000);
+  var dateTime = DateTime(date.year, date.month, date.day);
+  if(dateTime.weekday + 1 >= 2 && dateTime.weekday + 1 <=7){
+    return "Thứ ${dateTime.weekday + 1}";
+  } else if(dateTime.weekday + 1 == 8){
+    return "Chủ Nhật";
+  } else {
+    return "";
+  }
+}
+
 String toStringDate(DateTime date) {
   return '${date.day} tháng ${date.month} năm ${date.year}';
 }
@@ -86,6 +112,35 @@ Color toColor(String? hex) {
       return R.color.mainColor;
     }
   }
+}
+
+Color getColorExercise(ExerciseIndexModel model) {
+  if (model.targetExercise != 0) {
+    double percent = model.facExercise! / model.targetExercise! * 100;
+    percent = 10;
+    if (percent > 0 && percent <= 10) {
+      return toColor('#fdd6b4');
+    } else if (percent > 10 && percent <= 25) {
+      return toColor('#f78d1c');
+    } else if (percent > 25 && percent <= 50) {
+      return toColor('#ffacaf');
+    } else if (percent > 50 && percent <= 75) {
+      return toColor('#f24744');
+    } else if (percent > 75 && percent <= 90) {
+      return toColor('#d3eedf');
+    } else if (percent > 90 && percent <= 100) {
+      return toColor('#3bb479');
+    } else {
+      return R.color.transparent;
+    }
+  } else {
+    return R.color.transparent;
+  }
+}
+
+String roundNumberToInt(double number){
+  final round = number.round();
+  return round.toString();
 }
 
 String roundNumber(double number) {

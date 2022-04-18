@@ -29,9 +29,9 @@ class _GenderPickerState extends State<GenderPicker> {
           });
         },
         itemExtent: 47.0,
-        children: List<int>.generate(2, (i) => i)
+        children: List<int>.generate(3, (i) => i)
             .map((e) => Center(
-                  child: Text(e == 0 ? R.string.nam.tr() : R.string.nu.tr(),
+                  child: Text(e == 0 ? R.string.nam.tr() : e == 1 ? R.string.nu.tr() : R.string.other.tr(),
                       style: TextStyle(
                           color: selectedItem == e
                               ? R.color.mainColor

@@ -17,6 +17,8 @@ import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:easy_localization/easy_localization.dart';
 
+import '../../../widgets/network_image_widget.dart';
+
 typedef ActivityCallback = Function(List<ActivityModel>?, String?);
 
 class AddWorkController extends StatefulWidget {
@@ -27,6 +29,7 @@ class AddWorkController extends StatefulWidget {
   final String? otherSymptom;
   final String? otherActivity;
   final ActivityCallback? callback;
+  final String? goalId;
 
   AddWorkController(
       {this.type,
@@ -35,7 +38,9 @@ class AddWorkController extends StatefulWidget {
       this.activities,
       this.callback,
       this.otherSymptom,
-      this.otherActivity});
+      this.otherActivity,
+      this.goalId,
+      });
   @override
   _AddWorkControllerState createState() => _AddWorkControllerState();
 }
@@ -191,6 +196,7 @@ class _AddWorkControllerState extends BaseState<AddWorkController> {
                       'activities': selectedModel,
                       'otherSymptom': widget.otherSymptom,
                       'otherActivity': otherActivity,
+                      'goalId': widget.goalId,
                     });
                   } else {
                     widget.callback!(selectedModel, otherActivity);
@@ -278,7 +284,7 @@ class _AddWorkControllerState extends BaseState<AddWorkController> {
               : Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Image.network(activityModel.icon.url ?? '',
+                    NetWorkImageWidget(imageUrl: activityModel.icon.url ?? '',
                         width: 40, height: 40),
                     SizedBox(height: 8),
                     Text(activityModel.name!,
@@ -337,6 +343,7 @@ class _AddWorkControllerState extends BaseState<AddWorkController> {
                       obscureText: false,
                       decoration: InputDecoration(
                         fillColor: R.color.textDark,
+                        counterText: '',
                         enabledBorder: OutlineInputBorder(
                           borderSide:
                               BorderSide(color: R.color.grayComponentBorder, width: 1.0),

@@ -117,6 +117,8 @@ class BloodSugarTemplateResponseData {
   });
 
   ScheduleGlucoseModel get scheduleGlucoseModel {
+    DateTime dateTime0 = DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day, 0, 0, 0);
+    int currentDate = (dateTime0.millisecondsSinceEpoch ~/ 1000).toInt();
     if (this.isWeekTemplate == true) {
       return ScheduleGlucoseModel(
         monday: getScheduleModelByIndex(1),
@@ -126,6 +128,7 @@ class BloodSugarTemplateResponseData {
         friday: getScheduleModelByIndex(5),
         saturday: getScheduleModelByIndex(6),
         sunday: getScheduleModelByIndex(7),
+        currentDate: currentDate,
       );
     } else {
       final ScheduleModel? scheduleModel = this.schedules?.first?.scheduleModel;
@@ -137,6 +140,7 @@ class BloodSugarTemplateResponseData {
         friday: scheduleModel,
         saturday: scheduleModel,
         sunday: scheduleModel,
+        currentDate: currentDate,
       );
     }
   }

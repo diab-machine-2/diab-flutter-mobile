@@ -1,21 +1,16 @@
 import 'dart:async';
 
-import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/request/make_comment_request.dart';
 import 'package:medical/src/model/response/common_response.dart';
-import 'package:medical/src/model/response/lesson_module_response.dart';
 import 'package:medical/src/model/response/question_answer_response.dart';
 import 'package:medical/src/model/service/api_result.dart';
 import 'package:medical/src/model/service/network_exceptions.dart';
-import 'package:medical/src/repo/question_answer/question_answer_client.dart';
 import 'package:medical/src/widget/question_answer/all_question_answer/model/question_model.dart';
 import '../question_detail.dart';
-import 'package:medical/src/modal/error/error_model.dart';
 
 class QuestionDetailCubit extends Cubit<QuestionDetailState> {
   QuestionModel questionModel;
@@ -26,10 +21,9 @@ class QuestionDetailCubit extends Cubit<QuestionDetailState> {
   bool canRefreshScreen = true;
   final userInfo = AppSettings.userInfo;
   double titleHeight = 280;
+  final ScrollController commentScrollController = ScrollController();
 
-  QuestionDetailCubit(this.repository, this.isAll, this.questionModel) : super(QuestionDetailInitial()) {
-    // TODO
-  }
+  QuestionDetailCubit(this.repository, this.isAll, this.questionModel) : super(QuestionDetailInitial()) {}
 
   Future<bool> get keyboardHidden async {
     final check = () => (WidgetsBinding.instance?.window.viewInsets.bottom ?? 0) <= 0;
@@ -64,24 +58,30 @@ class QuestionDetailCubit extends Cubit<QuestionDetailState> {
           professor: response.data!.professor,
           answers: response.data!.answers,
         );
-        if (isAll) {
-          if (questionModel.status == 0) {
-            if (questionModel.answers != null && questionModel.answers!.isNotEmpty) {
-              bool isReplied = false;
-              for (var answer in questionModel.answers!) {
-                if (answer.accountId != userInfo?.accountId) {
-                  isReplied = true;
-                  break;
-                }
-              }
-              questionModel.status = isReplied ? 2 : 1;
-            } else {
-              questionModel.status = 1;
-            }
-          }
-        }
+        canRefreshScreen = true;
+        emit(const QuestionDetailSuccess());
+
+        //if (questionModel.answers != null && questionModel.answers!.isNotEmpty) {
+        //   commentScrollController.jumpTo(questionModel.answers!.length - 1);
+        //}
+        
+        // if (isAll) {
+        //   if (questionModel.status == 0) {
+        //     if (questionModel.answers != null && questionModel.answers!.isNotEmpty) {
+        //       bool isReplied = false;
+        //       for (var answer in questionModel.answers!) {
+        //         if (answer.accountId != userInfo?.accountId) {
+        //           isReplied = true;
+        //           break;
+        //         }
+        //       }
+        //       questionModel.status = isReplied ? 2 : 1;
+        //     } else {
+        //       questionModel.status = 1;
+        //     }
+        //   }
+        // }
       }
-      emit(const QuestionDetailSuccess());
     }, failure: (NetworkExceptions error) {
       emit(QuestionDetailFailure(NetworkExceptions.getErrorMessage(error)));
     });
@@ -113,10 +113,7 @@ class QuestionDetailCubit extends Cubit<QuestionDetailState> {
         body: body?.trim() ?? '', questionId: questionModel.id, accountId: userInfo.accountId, isComment: true);
     final ApiResult<CommonResponse> apiResult = await repository.makeComment(request);
     apiResult.when(success: (CommonResponse response) async {
-      canRefreshScreen = true;
-      await getQuestionById();
     }, failure: (NetworkExceptions error) {
-      canRefreshScreen = true;
       emit(MakeCommentFailure(NetworkExceptions.getErrorMessage(error)));
     });
   }

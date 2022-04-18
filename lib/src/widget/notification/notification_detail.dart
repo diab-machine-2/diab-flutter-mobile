@@ -6,18 +6,23 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/notification/notification_model.dart';
 import 'package:medical/src/repo/notification/notification_client.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
+import 'package:medical/src/widgets/network_image_widget.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../modal/notification/notification_list_model.dart';
+
 class NotificationDetailController extends StatefulWidget {
-  const NotificationDetailController({this.id});
+  const NotificationDetailController({this.id, this.communicationId});
 
   final String? id;
+  final String? communicationId;
+
   @override
   _NotificationDetailControllerState createState() => _NotificationDetailControllerState();
 }
 
 class _NotificationDetailControllerState extends State<NotificationDetailController> {
-  NotificationModel? notification;
+  NotificationListModel? notification;
 
   @override
   void initState() {
@@ -26,7 +31,7 @@ class _NotificationDetailControllerState extends State<NotificationDetailControl
   }
 
   _loadData() async {
-    notification = await NotificationClient().fetchNotificationDetail(widget.id);
+    notification = await NotificationClient().fetchNotificationDetail(widget.id, widget.communicationId);
     setState(() {});
   }
 
@@ -42,7 +47,7 @@ class _NotificationDetailControllerState extends State<NotificationDetailControl
                     children: [
                       Expanded(
                         child: ListView(padding: const EdgeInsets.all(0), children: [
-                          Image.network(notification?.imageUrl ?? ''),
+                          NetWorkImageWidget(imageUrl: notification?.imageUrl ?? ''),
                           Padding(
                             padding: const EdgeInsets.all(16.0),
                             child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -60,26 +65,29 @@ class _NotificationDetailControllerState extends State<NotificationDetailControl
                           )
                         ]),
                       ),
-                      GestureDetector(
-                        onTap: () {
-                          _launchInBrowser(notification?.hyperLink ?? '');
-                        },
-                        child: Container(
-                            margin: const EdgeInsets.all(16),
-                            width: 195,
-                            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                            decoration: BoxDecoration(
-                                color: R.color.mainColor,
-                                borderRadius: BorderRadius.circular(20),
-                                gradient: LinearGradient(
-                                    begin: Alignment.topLeft,
-                                    end: Alignment.centerRight,
-                                    colors: [R.color.greenGradientTop, R.color.greenGradientBottom])),
-                            child: Center(
-                                child: Text(notification?.hyperText ?? '',
-                                    textAlign: TextAlign.center,
-                                    style:
-                                        TextStyle(color: R.color.white, fontWeight: FontWeight.w600, fontSize: 14)))),
+                      Visibility(
+                        visible: (notification?.hyperLink != null && notification!.hyperLink!.isNotEmpty),
+                        child: GestureDetector(
+                          onTap: () {
+                            _launchInBrowser(notification?.hyperLink ?? '');
+                          },
+                          child: Container(
+                              margin: const EdgeInsets.all(16),
+                              width: 195,
+                              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                              decoration: BoxDecoration(
+                                  color: R.color.mainColor,
+                                  borderRadius: BorderRadius.circular(20),
+                                  gradient: LinearGradient(
+                                      begin: Alignment.topLeft,
+                                      end: Alignment.centerRight,
+                                      colors: [R.color.greenGradientTop, R.color.greenGradientBottom])),
+                              child: Center(
+                                  child: Text(notification?.hyperText ?? '',
+                                      textAlign: TextAlign.center,
+                                      style:
+                                          TextStyle(color: R.color.white, fontWeight: FontWeight.w600, fontSize: 14)))),
+                        ),
                       )
                     ],
                   ),

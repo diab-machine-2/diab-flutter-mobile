@@ -2,6 +2,7 @@ import 'package:medical/src/modal/base/images.dart';
 import 'package:medical/src/modal/user/update_profile_request.dart';
 import 'package:meta/meta.dart';
 
+import '../../model/response/user_info_response.dart';
 import 'category_item_user_model.dart';
 
 @immutable
@@ -12,6 +13,8 @@ class UserModel {
   final String? userName;
   final String? fullName;
   final int? age;
+  final PackageAccountModel? packageAccount;
+  final String? packageName;
   final String? phoneNumber;
   final String? secondPhoneNumber;
   final String? gender;
@@ -77,6 +80,31 @@ class UserModel {
 
   final String? nameOfAgency;
   final String? nameOfDoctor;
+  final UserInfoResponseDataOwnPackage? ownPackage;
+  final bool? isShare;
+  final String? shareRefCode;
+
+  bool get isUserFree {
+    return ownPackage == null;
+  }
+
+  bool get isUserSubcription {
+    if(ownPackage != null){
+      if(ownPackage!.ownRoadmap == null){
+        return true;
+      }
+    }
+    return false;
+  }
+
+  bool get isUserHasRoadmap {
+    if(ownPackage != null){
+      if(ownPackage!.ownRoadmap != null){
+        return true;
+      }
+    }
+    return false;
+  }
 
   const UserModel({
     required this.id,
@@ -97,6 +125,8 @@ class UserModel {
     required this.height,
     required this.weight,
     required this.ward,
+    required this.packageAccount,
+    required this.packageName,
     required this.trainingGroups,
     required this.dateOfBirth,
     required this.diabetesStatus,
@@ -145,6 +175,9 @@ class UserModel {
     required this.accountRule,
     required this.nameOfAgency,
     required this.nameOfDoctor,
+    required this.ownPackage,
+    required this.isShare,
+    required this.shareRefCode,
   });
 
   UserModel copyWith({
@@ -163,6 +196,7 @@ class UserModel {
     String? email,
     double? height,
     double? weight,
+    String? package,
     int? dateOfBirth,
     int? diabetesStatus,
     String? diabetesName,
@@ -173,6 +207,8 @@ class UserModel {
     ProvinceModel? province,
     ProvinceModel? district,
     ProvinceModel? ward,
+    PackageAccountModel? packageAccount,
+    String? packageName,
     String? address,
     double? goalWaist,
     double? goalWeight,
@@ -214,6 +250,9 @@ class UserModel {
     AccountRule? accountRule,
     String? nameOfAgency,
     String? nameOfDoctor,
+    UserInfoResponseDataOwnPackage? ownPackage,
+    bool? isShare,
+    String? shareRefCode,
   }) =>
       UserModel(
         id: id ?? this.id,
@@ -222,6 +261,8 @@ class UserModel {
         userName: username ?? this.userName,
         fullName: fullName ?? this.fullName,
         age: age ?? this.age,
+        packageAccount: packageAccount ?? this.packageAccount,
+        packageName: packageName ?? this.packageName,
         phoneNumber: phoneNumber ?? this.phoneNumber,
         secondPhoneNumber: secondPhoneNumber ?? this.secondPhoneNumber,
         gender: gender ?? this.gender,
@@ -282,6 +323,9 @@ class UserModel {
         accountRule: accountRule ?? this.accountRule,
         nameOfAgency: nameOfAgency ?? this.nameOfAgency,
         nameOfDoctor: nameOfDoctor ?? this.nameOfDoctor,
+        ownPackage: ownPackage ?? this.ownPackage,
+        isShare: isShare ?? this.isShare,
+        shareRefCode: shareRefCode ?? this.shareRefCode,
       );
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
@@ -290,6 +334,8 @@ class UserModel {
       accountId: json['accountId'],
       creatorId: json['creatorId'],
       userName: json['userName'],
+      packageAccount: json['packageAccount'] == null ? null : PackageAccountModel.fromJson(json['packageAccount']),
+      packageName: json['packageName'],
       fullName: json['fullName'],
       age: json['age'],
       phoneNumber: json['phoneNumber'],
@@ -343,7 +389,7 @@ class UserModel {
       favouriteSports: json['favouriteSports'],
       workingHourss: json['workingHourss'],
       jobList: CategoryItemUserModel.toList(json['jobList']),
-      trainingGroups: TrainingGroupModel.toList(json['trainingGroups']),
+      trainingGroups: json['trainingGroups'] == null ? [] : TrainingGroupModel.toList(json['trainingGroups']),
       educationLevelList: CategoryItemUserModel.toList(json['educationLevelList']),
       lessonTagList: CategoryItemUserModel.toList(json['lessonTagList']),
       interestRuleList: CategoryItemUserModel.toList(json['interestRuleList']),
@@ -357,6 +403,9 @@ class UserModel {
       personalityRuleList: CategoryItemUserModel.toList(json['personalityRuleList']),
       nameOfAgency: json['nameOfAgency'],
       nameOfDoctor: json['nameOfDoctor'],
+      ownPackage: json['ownPackage'] == null ? null : UserInfoResponseDataOwnPackage.fromJson(json['ownPackage']),
+      isShare: json['isShare'],
+      shareRefCode: json['shareRefCode'],
     );
   }
 
@@ -437,18 +486,30 @@ class DiabeteModel {
 class TrainingGroupModel {
   final String? trainingGroupId;
   final String? patientId;
+  final String? id;
+  final String? coachPhoneNumber;
+  final String? zaloUrl;
+  final String? nameTrainingGroup;
   final TrainingGroup? trainingGroup;
 
   TrainingGroupModel({
     required this.trainingGroupId,
     required this.patientId,
     required this.trainingGroup,
+    required this.nameTrainingGroup,
+    required this.id,
+    required this.coachPhoneNumber,
+    required this.zaloUrl,
   });
 
   factory TrainingGroupModel.fromJson(Map<String, dynamic> json) {
     return TrainingGroupModel(
       trainingGroupId: json['trainingGroupId'],
       patientId: json['patientId'],
+      id: json['id'],
+      coachPhoneNumber: json['coachPhoneNumber'],
+      nameTrainingGroup: json['nameTrainingGroup'],
+      zaloUrl: json['zaloUrl'],
       trainingGroup: json['trainingGroup'] == null ? null : TrainingGroup.fromJson(json['trainingGroup']),
     );
   }

@@ -89,35 +89,8 @@ class _RulesControllerState extends State<RulesController> {
                     margin: EdgeInsets.all(16),
                     child: GestureDetector(
                       onTap: () async {
-                        BotToast.showLoading();
-                        final user = await UserClient().fetchUser();
-                        if (user?.phoneNumber != null && user!.phoneNumber!.isNotEmpty) {
-                          if (user.phoneNumber!.contains('User')) {
-                            if (widget.googleAccount != null || widget.appleCredential != null) {
-                              List<CategoryItemUserModel>? diabeteStates;
-                              try {
-                                diabeteStates = await UserClient().fetchDiabeteStatesNoHeader();
-                              } catch (e) {
-                                BotToast.closeAllLoading();
-                              }
-                              BotToast.closeAllLoading();
-                              Navigator.pushReplacementNamed(context, NavigatorName.update_info, arguments: {
-                                'type': 'google',
-                                'googleAccount': widget.googleAccount,
-                                'appleAccount': widget.appleCredential,
-                                'diabeteStates': diabeteStates
-                              });
-                            } else {
-                              BotToast.closeAllLoading();
-                              Navigator.popUntil(context, (route) => route.isFirst);
-                              Navigator.pushReplacementNamed(context, NavigatorName.tabbar);
-                            }
-                          } else {
-                            BotToast.closeAllLoading();
-                            Navigator.popUntil(context, (route) => route.isFirst);
-                            Navigator.pushReplacementNamed(context, NavigatorName.tabbar);
-                          }
-                        }
+                        Navigator.popUntil(context, (route) => route.isFirst);
+                        Navigator.pushReplacementNamed(context, NavigatorName.tabbar);
                       },
                       child: Container(
                           height: 48,

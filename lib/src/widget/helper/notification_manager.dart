@@ -5,6 +5,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_observer/Observable.dart';
+import 'package:html/parser.dart';
 import 'package:medical/src/app.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/modal/notification/notification_model.dart';
@@ -63,9 +64,14 @@ class NotificationManager {
           data: NotificationData.fromJson(message.data));
 
       if (model.actionType == NotificationActionType.share_profile) {
-        ShareProfilePopup.instance.onHasSharedCode(requestFromDoctor: true, code: '123456');
+        ShareProfilePopup.instance.onHasSharedCode(requestFromDoctor: true, code: model.data?.referalCode ?? "");
         return;
       }
+      Observable.instance.notifyObservers([], notifyName: "reload_notification");
+
+      // if(model.body != null){
+      //   model.body = parseHtmlString(model.body!);
+      // }
       Message.showNotificationMessage(
           model: model,
           callback: (model) {
@@ -89,20 +95,42 @@ class NotificationManager {
   navigateNotification(RemoteMessage? message) {
     if (message == null) return;
     Observable.instance.notifyObservers([], notifyName: "reload_notification");
+    var user = AppSettings.userInfo;
 
-    final NotificationModel model = NotificationModel(
+    NotificationModel model = NotificationModel(
       title: message.notification?.title,
       body: message.notification?.body ?? '',
+      notificationType: message.data['notificationType'],
       data: NotificationData.fromJson(message.data),
     );
 
+    if (user?.fullName != null) {
+      if (model.title != null) {
+        model.title = model.title!.replaceAll('{Username}}', user!.fullName!);
+      }
+      if (model.body != null) {
+        model.body = model.body!.replaceAll('{Username}}', user!.fullName!);
+      }
+      if (model.topic != null) {
+        model.topic = model.topic!.replaceAll('{Username}}', user!.fullName!);
+      }
+    }
+
+    // if(model.body != null){
+    //   model.body = parseHtmlString(model.body!);
+    // }
+
+    if (user?.packageName != null && user!.packageName!.isNotEmpty) {
+      model.body = model.body!.replaceAll('{Packagename}}', user.packageName!);
+    }
+
     if (model.actionType == NotificationActionType.share_profile) {
-      ShareProfilePopup.instance.onHasSharedCode(requestFromDoctor: true, code: '123456');
+      ShareProfilePopup.instance.onHasSharedCode(requestFromDoctor: true, code: model.data?.referalCode ?? "");
       return;
     }
 
     NotificationClient().readNotification(
-        model.id ?? model.data?.communicationId, AppSettings.userInfo?.id, model.data?.notificationType, true);
+      model.data?.communicationId, model.id ?? model.data?.notificationId, AppSettings.userInfo?.id, model.data?.notificationType, true);
 
     switch (model.actionType) {
       case NotificationActionType.redirect_to_activity_tab:
@@ -113,7 +141,7 @@ class NotificationManager {
         break;
       case NotificationActionType.redirect_to_url:
         Navigator.pushNamed(navigatorKey.currentState!.context, NavigatorName.notification_detail,
-            arguments: {'id': model.data?.communicationId});
+            arguments: {'id': model.data?.notificationId, 'communicationId': model.data?.communicationId});
         break;
       case NotificationActionType.add_reminder:
         Navigator.pushNamed(navigatorKey.currentState!.context, NavigatorName.add_reminder,
@@ -130,6 +158,12 @@ class NotificationManager {
       case NotificationActionType.redirect_date_detail:
         break;
     }
+  }
+
+  String parseHtmlString(String htmlString) {
+    final document = parse(htmlString);
+    final String parsedString = parse(document.body!.text).documentElement!.text;
+    return parsedString;  
   }
 
   Future<Map<String, dynamic>?> getDeviceInformation() async {

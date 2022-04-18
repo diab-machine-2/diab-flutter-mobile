@@ -549,32 +549,41 @@ class _RegisterControllerState extends State<RegisterController> {
   }) async {
     try {
       BotToast.showLoading();
-      if (!update) {
-        await LoginClient().registerWithSocial({'providerName': provider, 'providerKey': providerKey ?? ''});
+      // if (!update) {
+      //   await LoginClient().registerWithSocial({'providerName': provider, 'providerKey': providerKey ?? ''});
 
-        await LoginClient().login({
-          "client_id": Const.CLIENT_ID,
-          "client_secret": Const.CLIENT_SECRET,
-          "grant_type": "external",
-          "external_token": externalToken ?? '',
-          "provider": provider
-        });
-      }
+      //   await LoginClient().login({
+      //     "client_id": Const.CLIENT_ID,
+      //     "client_secret": Const.CLIENT_SECRET,
+      //     "grant_type": "external",
+      //     "external_token": externalToken ?? '',
+      //     "provider": provider
+      //   });
+      // }
 
-      //   final diabeteStates = await (UserClient().fetchDiabeteStates() as Future<List<dynamic>>);
+      final diabeteStates = await UserClient().fetchDiabeteStatesNoHeader();
 
-      final result = await LoginClient().createPatient({
-        'fullName': userName,
-        'dateOfBirth': '0',
-        'gender': '1',
-        //    'diabetesStatus': diabeteStates.isEmpty ? '1' : diabeteStates.first['key'].toString(),
-        'diabetesStatus': '1',
-        'diabetesDate': (DateTime.now().millisecondsSinceEpoch ~/ 1000).toString()
+      // final result = await LoginClient().createPatient({
+      //   'fullName': userName,
+      //   'dateOfBirth': '0',
+      //   'gender': '1',
+      //   'diabetesStatus': diabeteStates?.isEmpty ?? true ? '1' : diabeteStates?.first.key.toString().toString() ?? '1',
+      //   //  'diabetesStatus': '1',
+      //   'diabetesDate': (DateTime.now().millisecondsSinceEpoch ~/ 1000).toString()
+      // });
+      // if (result == true) {
+      // Navigator.pushReplacementNamed(context, NavigatorName.rules,
+      //     arguments: {'googleAccount': googleAccount, 'appleCredential': appleCredential});
+      //}
+
+     // Message.showToastMessage(context, 'Name: ${appleCredential?.givenName}, ${appleCredential?.familyName}\n userIdentifier: ${appleCredential?.userIdentifier}\n identityToken: ${appleCredential?.identityToken}');
+
+      Navigator.pushReplacementNamed(context, NavigatorName.register_success, arguments: {
+        'type': provider.toLowerCase(),
+        'googleAccount': googleAccount,
+        'appleAccount': appleCredential,
+        'diabeteStates': diabeteStates
       });
-      if (result == true) {
-        Navigator.pushReplacementNamed(context, NavigatorName.rules,
-            arguments: {'googleAccount': googleAccount, 'appleCredential': appleCredential});
-      }
       BotToast.closeAllLoading();
     } catch (error) {
       BotToast.closeAllLoading();

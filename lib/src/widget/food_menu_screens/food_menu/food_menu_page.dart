@@ -9,6 +9,7 @@ import 'package:medical/src/model/request/create_menu_request.dart';
 import 'package:medical/src/model/response/menu_response.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/utils.dart';
+import 'package:medical/src/widget/Food/widget/food_info.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widgets/common_page.dart';
 import 'package:medical/src/widgets/network_image_widget.dart';
@@ -296,66 +297,66 @@ class _FoodMenuPageState extends State<FoodMenuPage> {
     Function(MenuResponseListdayfoodTimeGroupsDefaultFood? foodDetail)? onChangeFood,
   }) {
     return Container(
-      margin: const EdgeInsets.only(top: 20),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16),
-        color: R.color.white,
-        boxShadow: [
-          BoxShadow(
-            color: R.color.greenGradientBottom.withOpacity(0.08),
-            spreadRadius: 3,
-            blurRadius: 5,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    mealData?.mealName ?? '',
+        margin: const EdgeInsets.only(top: 20),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(16),
+          color: R.color.white,
+          boxShadow: [
+            BoxShadow(
+              color: R.color.greenGradientBottom.withOpacity(0.08),
+              spreadRadius: 3,
+              blurRadius: 5,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      mealData?.mealName ?? '',
+                      style: TextStyle(
+                        color: R.color.greenGradientBottom,
+                        fontSize: 20,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                  Text(
+                    R.string.total_kcals.tr(args: ['${num.parse(mealData?.totalKcal?.toStringAsFixed(1) ?? '0')}']),
                     style: TextStyle(
-                      color: R.color.greenGradientBottom,
-                      fontSize: 20,
+                      color: R.color.textDark,
+                      fontSize: 16,
                       fontWeight: FontWeight.w700,
                     ),
                   ),
-                ),
-                Text(
-                  R.string.total_kcals.tr(args: ['${num.parse(mealData?.totalKcal?.toStringAsFixed(1) ?? '0')}']),
-                  style: TextStyle(
-                    color: R.color.textDark,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w700,
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    child: Icon(Icons.brightness_1, size: 4, color: R.color.greenGradientBottom),
                   ),
-                ),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8),
-                  child: Icon(Icons.brightness_1, size: 4, color: R.color.greenGradientBottom),
-                ),
-                Text(
-                  R.string.total_starch.tr(args: ['${num.parse(mealData?.totalGlucose?.toStringAsFixed(1) ?? '0')}']),
-                  style: TextStyle(
-                    color: R.color.textDark,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w700,
+                  Text(
+                    R.string.total_starch.tr(args: ['${num.parse(mealData?.totalGlucose?.toStringAsFixed(1) ?? '0')}']),
+                    style: TextStyle(
+                      color: R.color.textDark,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-          Visibility(
-            visible: mealData?.defaultFood?.isNotEmpty ?? false,
-            child:
-                Container(margin: const EdgeInsets.symmetric(horizontal: 16), height: 1, color: R.color.notActiveGreen),
-          ),
-          ..._buildListFoodWidget(foods: mealData?.defaultFood, onChangeFood: onChangeFood),
-        ],
-      ),
+            Visibility(
+              visible: mealData?.defaultFood?.isNotEmpty ?? false,
+              child:
+                  Container(margin: const EdgeInsets.symmetric(horizontal: 16), height: 1, color: R.color.notActiveGreen),
+            ),
+            ..._buildListFoodWidget(foods: mealData?.defaultFood, onChangeFood: onChangeFood),
+          ],
+        ),
     );
   }
 
@@ -383,7 +384,11 @@ class _FoodMenuPageState extends State<FoodMenuPage> {
     required bool isSingleFoodMeal,
     Function(MenuResponseListdayfoodTimeGroupsDefaultFood? foodDetail)? onChangeFood,
   }) {
-    return Padding(
+    return GestureDetector(
+      onTap: () async {
+   //     showFoodInfo(context, foodDetail?.foodModel);
+      },
+      child: Padding(
       padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -528,6 +533,20 @@ class _FoodMenuPageState extends State<FoodMenuPage> {
           )
         ],
       ),
+      ),
+    );
+  }
+
+  showFoodInfo(BuildContext context, FoodModel? model) {
+    showDialog(
+      barrierColor: R.color.color0xff003F38.withOpacity(0.5),
+      context: context,
+      builder: (_) => FoodInfo(
+          model: model,
+        //  selectedModel: selectedModel,
+          callback: (value) {},
+          kcalLeft: null,
+          ),
     );
   }
 

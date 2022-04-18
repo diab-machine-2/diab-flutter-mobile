@@ -1,12 +1,16 @@
+import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:easy_localization/src/public_ext.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_html/flutter_html.dart';
+import 'package:html/parser.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
+import '../../../../widgets/network_image_widget.dart';
 import 'expert_comment.dart';
 import 'expert_comment_detail/expert_comment_detail_page.dart';
 import 'model/expert_comment_model.dart';
@@ -34,7 +38,13 @@ class _ExpertCommentPageState extends State<ExpertCommentPage> {
       body: BlocProvider(
         create: (context) => _cubit,
         child: BlocListener<ExpertCommentCubit, ExpertCommentState>(
-          listener: (context, state) {},
+          listener: (context, state) {
+            if (state is ExpertCommentLoading) {
+              BotToast.showLoading();
+            } else {
+              BotToast.closeAllLoading();
+            }
+          },
           child: BlocBuilder<ExpertCommentCubit, ExpertCommentState>(
             builder: (context, state) {
               return _buildPage(context, state);
@@ -79,19 +89,21 @@ class _ExpertCommentPageState extends State<ExpertCommentPage> {
     return Expanded(
       child: Container(
         padding: EdgeInsets.only(left: 8, right: 8, bottom: 8),
-        child: _cubit.commentList.length > 0
-            ? ListView.builder(
-                padding: EdgeInsets.zero,
-                itemCount: _cubit.commentList.length,
-                shrinkWrap: true,
-                itemBuilder: (context, position) {
-                  return _buildItem(_cubit.commentList[position]);
-                },
-                // separatorBuilder: (context, position) {
-                //   return Divider(height: 0);
-                // },
-              )
-            : _buildEmpty(),
+        child: _cubit.commentList == null
+            ? Container()
+            : _cubit.commentList!.length > 0
+                ? ListView.builder(
+                    padding: EdgeInsets.zero,
+                    itemCount: _cubit.commentList!.length,
+                    shrinkWrap: true,
+                    itemBuilder: (context, position) {
+                      return _buildItem(_cubit.commentList![position]);
+                    },
+                    // separatorBuilder: (context, position) {
+                    //   return Divider(height: 0);
+                    // },
+                  )
+                : _buildEmpty(),
       ),
     );
   }
@@ -104,14 +116,14 @@ class _ExpertCommentPageState extends State<ExpertCommentPage> {
       child: Container(
         padding: EdgeInsets.all(8),
         child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Container(
               clipBehavior: Clip.hardEdge,
               decoration: BoxDecoration(color: R.color.mainColor, borderRadius: BorderRadius.circular(52)),
-              child: Icon(Icons.person, size: 56, color: R.color.white),
-              // item.url == null
-              //     ? Icon(Icons.person, size: 56, color: R.color.white)
-              //     : Image.network(user.imageUrl!.url!, width: 56, height: 56)),
+              child: item.url == null
+                  ? Icon(Icons.person, size: 56, color: R.color.white)
+                  : NetWorkImageWidget(imageUrl: item.url ?? '', width: 56, height: 56),
             ),
             SizedBox(width: 12),
             Expanded(
@@ -119,17 +131,25 @@ class _ExpertCommentPageState extends State<ExpertCommentPage> {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    item.name,
-                    style: TextStyle(color: R.color.textDark, fontSize: 14, fontWeight: FontWeight.w700),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          item.name,
+                          style: TextStyle(color: R.color.textDark, fontSize: 14, fontWeight: FontWeight.w700),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
                   ),
-                  SizedBox(height: 2),
+                  SizedBox(height: 4),
                   Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
-                        item.role,
-                        style: TextStyle(color: getColor(0), fontSize: 12, fontWeight: FontWeight.w700),
+                        item.typeString,
+                        style: TextStyle(color: item.getColor(), fontSize: 12, fontWeight: FontWeight.w700),
                       ),
                       SizedBox(width: 4),
                       Container(
@@ -138,17 +158,20 @@ class _ExpertCommentPageState extends State<ExpertCommentPage> {
                           decoration: BoxDecoration(shape: BoxShape.circle, color: R.color.notActiveGreen)),
                       SizedBox(width: 4),
                       Text(
-                        item.dateTime,
-                        style: TextStyle(color: R.color.textDark, fontSize: 12, fontWeight: FontWeight.w400),
+                        item.dateTimeFormatted,
+                        style: TextStyle(color: R.color.captionColorGray, fontSize: 12, fontWeight: FontWeight.w400),
                       ),
                     ],
                   ),
-                  SizedBox(height: 2),
+                  SizedBox(height: 5),
+                  // Html(
+                  //   data: item.comment ?? '',
+                  //   style: {"body": Style(padding: EdgeInsets.zero, margin: EdgeInsets.zero),}
+                  // ),
                   Text(
-                    item.comment,
-                    style: TextStyle(color: R.color.textDark, fontSize: 12, fontWeight: FontWeight.w400),
+                    _parseHtmlString(item.comment ?? ''),
+                    style: TextStyle(color: R.color.captionColorGray, fontSize: 12, fontWeight: FontWeight.w400),
                     overflow: TextOverflow.ellipsis,
-                    maxLines: 1,
                   ),
                 ],
               ),
@@ -157,6 +180,14 @@ class _ExpertCommentPageState extends State<ExpertCommentPage> {
         ),
       ),
     );
+  }
+
+  String _parseHtmlString(String htmlString) {
+    String document = parse(htmlString).body!.text;
+    if(document.length > 41){
+      document = "${document.substring(0, 41)}...";
+    }
+    return document;
   }
 
   _buildEmpty() {
@@ -173,20 +204,5 @@ class _ExpertCommentPageState extends State<ExpertCommentPage> {
         ],
       ),
     );
-  }
-
-  Color getColor(int index) {
-    switch (index) {
-      case 0:
-        return R.color.main_1;
-      case 1:
-        return R.color.orange_1;
-      case 2:
-        return R.color.accentColor;
-      case 3:
-        return R.color.yellow;
-      default:
-        return R.color.green;
-    }
   }
 }

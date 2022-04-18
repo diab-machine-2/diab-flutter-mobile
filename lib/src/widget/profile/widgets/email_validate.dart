@@ -42,6 +42,7 @@ class _EmailValidateState extends State<EmailValidate> {
                 maxLines: 1,
                 obscureText: false,
                 decoration: InputDecoration(
+                  counterText: '',
                   fillColor: R.color.textDark,
                   enabledBorder: OutlineInputBorder(
                     borderSide: BorderSide(color: R.color.grayComponentBorder, width: 1.0),

@@ -23,7 +23,7 @@ class Message {
     BotToast.showCustomNotification(
         animationDuration: const Duration(milliseconds: 200),
         animationReverseDuration: const Duration(milliseconds: 200),
-        duration: const Duration(seconds: 3),
+        duration: const Duration(seconds: 5),
         toastBuilder: (cancel) {
           return NotificationMessage(
             model: model,

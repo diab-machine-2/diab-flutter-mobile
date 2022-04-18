@@ -2,6 +2,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_observer/Observable.dart';
 import 'package:flutter_observer/Observer.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/HbA1C/short_gui.dart';
 import 'package:medical/src/repo/HbA1C/HbA1C_client.dart';
@@ -16,6 +17,8 @@ import 'package:medical/src/widget/tabbar/action_list_panel.dart';
 import 'package:medical/src/widget/tabbar/fillter_bloodSugar_panel.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../app_setting/app_setting.dart';
+import '../../widgets/button_widget.dart';
 import 'daily_nutrition/daily_nutrition.dart';
 
 class FoodDetailTabbarController extends StatefulWidget {
@@ -40,6 +43,7 @@ class _FoodDetailTabbarControllerState extends State<FoodDetailTabbarController>
   GlobalKey<FoodDetailControllerState> detailKey = GlobalKey();
 
   bool isClicked = false;
+  var userInfo = AppSettings.userInfo;
 
   int periodFilterType = 1;
 
@@ -128,6 +132,11 @@ class _FoodDetailTabbarControllerState extends State<FoodDetailTabbarController>
         body: Column(children: [
           GestureDetector(
             onTap: () async {
+              // if(userInfo?.ownPackage == null) {
+              //   NavigationUtil.showUpdateRequirePopup(context: context, title: R.string.food_menu.tr());
+              //   return;
+              // }
+
               await NavigationUtil.navigatePage(context, const FoodMenuPage());
               overviewKey.currentState!.reloadData(periodFilterType);
             },
@@ -175,7 +184,7 @@ class _FoodDetailTabbarControllerState extends State<FoodDetailTabbarController>
         floatingActionButton: FloatingActionButton(
           onPressed: () {
             NavigationUtil.navigatePage(
-                context, const DailyNutritionPage(type: 'input', id: null));
+                context, DailyNutritionPage(type: 'input', id: null));
           },
           child: Image.asset(R.drawable.ic_button_plus, width: 80, height: 80),
         ));

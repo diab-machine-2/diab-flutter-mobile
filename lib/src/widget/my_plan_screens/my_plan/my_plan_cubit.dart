@@ -42,8 +42,8 @@ class MyPlanCubit extends Cubit<MyPlanState> {
     emit(const MyPlanInitial());
   }
 
-  Future<void> checkUserInfo() async {
-    if (userInfo == null) {
+  Future<void> checkUserInfo({bool isRequired = false}) async {
+    if (userInfo == null || isRequired) {
       await getCurrentUserInfo();
     }
   }
@@ -56,6 +56,7 @@ class MyPlanCubit extends Cubit<MyPlanState> {
       userInfo = response;
       if (userInfo?.data?.currentDateTime != null) {
         AppSettings.currentDateTime = userInfo!.data!.currentDateTime!;
+        AppSettings.isReloadCurrentUserInfo = false;
       }
 
       emit(const MyPlanSuccess());

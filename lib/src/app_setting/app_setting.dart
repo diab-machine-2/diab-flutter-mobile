@@ -15,11 +15,37 @@ import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/helper/http_helper.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
+import '../modal/user/secure.dart';
+
 class AppSettings {
   static UserModel? userInfo;
   static List<SmartGoalList?> smartGoalDayList = [];
   static CategoryUserModel? categoryUserModel;
   static int? currentDateTime;
+  static String environment = "";
+  static SecureModel? secureModel;
+  static bool isDisplayedWelcome = false;
+
+  static bool showed50Message = false;
+  static bool showed90Message = false;
+
+  static bool isReloadCurrentUserInfo = false;
+
+  static Future<bool> saveEnvironment(String? token) async {
+    appPreference.setData(Const.ENVIRONMENT, token);
+    return true;
+  }
+
+  static Future<String> getEnvironment() async {
+    final token = appPreference.getData(Const.ENVIRONMENT) ?? '';
+    print(token);
+    return token;
+  }
+
+  static Future<bool> clearEnvironment() async {
+    appPreference.removeData(Const.ENVIRONMENT);
+    return true;
+  }
 
   static Future<bool> saveToken(String? token) async {
     appPreference.setData(Const.TOKEN, token);
@@ -115,14 +141,20 @@ class AppSettings {
     }
   }
 
-  static Future<bool> logout() async {
+  static Future<bool> logout({bool isNavigateToStepListScreen = true}) async {
     try {
-      navigatorKey.currentState!.popUntil((route) => route.isFirst);
-      navigatorKey.currentState!.pushReplacementNamed(NavigatorName.step_list);
+      if(isNavigateToStepListScreen){
+        navigatorKey.currentState!.popUntil((route) => route.isFirst);
+        navigatorKey.currentState!.pushReplacementNamed(NavigatorName.step_list);
+      }
+      
       await FetchClient().checkNetwork();
       await LoginClient().logout();
+      await deleteHomeData();
       await clearToken();
       await clearRefreshToken();
+      appPreference.removeData("hasNewReports");
+      appPreference.removeData("reports");
       final GoogleSignIn _googleSignIn = GoogleSignIn();
       _googleSignIn.signOut();
       final facebookLogin = FacebookLogin();

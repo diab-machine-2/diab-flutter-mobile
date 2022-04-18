@@ -3,6 +3,7 @@ import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_observer/Observable.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/response/exercise_movement_response.dart';
@@ -29,7 +30,7 @@ class _ExerciseDetailState extends State<ExerciseDetail> {
     super.initState();
     final AppRepository appRepository = AppRepository();
     _cubit = ExerciseDetailCubit(appRepository);
-    _cubit.initData(widget.exerciseData);
+    _cubit.initData(widget.exerciseData, context);
   }
 
   @override
@@ -69,15 +70,38 @@ class _ExerciseDetailState extends State<ExerciseDetail> {
                 }
               },
               builder: (context, state) {
-                return Container(
-                  alignment: Alignment.center,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                  ),
-                  child: _cubit.videoManager.controller != null
-                      ? BetterPlayer(
-                          controller: _cubit.videoManager.controller!)
-                      : const SizedBox.shrink(),
+                return Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox(height: 120),
+                      Container(
+                        alignment: Alignment.center,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                        ),
+                        child: _cubit.videoManager.controller != null
+                            ? BetterPlayer(
+                                controller: _cubit.videoManager.controller!)
+                            : const SizedBox.shrink(),
+                      ),
+                      SizedBox(height: 2),
+                      Expanded(
+                        child: Padding(
+                          padding: EdgeInsets.all(16.0),
+                          child: SingleChildScrollView(
+                            child: Text(
+                              _cubit.exerciseData.description ?? '',
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: R.color.white,
+                                height: 1.4,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
                 );
               },
             ),
@@ -193,6 +217,8 @@ class _ExerciseDetailState extends State<ExerciseDetail> {
   }
 
   Future<void> _showDonePopup(BuildContext context) async {
+    Observable.instance.notifyObservers([], notifyName : "goal_calo_changed");
+    
     await showDialog(
       barrierColor: R.color.color0xff003F38.withOpacity(0.5),
       context: context,

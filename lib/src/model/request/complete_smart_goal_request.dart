@@ -13,22 +13,26 @@ class CompleteSmartGoalRequest {
   String? id;
   int? type;
   int? executeTimes;
+  int? appointmentDate;
 
   CompleteSmartGoalRequest({
     this.id,
     this.type,
     this.executeTimes,
+    this.appointmentDate,
   });
   CompleteSmartGoalRequest.fromJson(Map<String, dynamic> json) {
     id = json['id']?.toString();
     type = json['type']?.toInt();
     executeTimes = json['executeTimes']?.toInt();
+    appointmentDate = json['appointmentDate']?.toInt();
   }
   Map<String, dynamic> toJson() {
     final data = <String, dynamic>{};
     data['id'] = id;
     if (type != null) data['type'] = type;
     if (executeTimes != null) data['executeTimes'] = executeTimes;
+    if (appointmentDate != null) data['appointmentDate'] = appointmentDate;
     return data;
   }
 }

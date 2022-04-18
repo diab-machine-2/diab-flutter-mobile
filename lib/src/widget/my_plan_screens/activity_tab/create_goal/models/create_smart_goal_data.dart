@@ -182,7 +182,7 @@ class CreateSmartGoalData {
 
   List<CustomWeekList?> get targetSchedulerWeeks => List.generate(
         repeatDayList.length,
-        (index) => CustomWeekList(dayInWeek: repeatDayList[index].index + 1),
+        (index) => CustomWeekList(dayInWeek: repeatDayList[index].index),
       );
 
   int get repeatTypeIndex {
@@ -191,13 +191,22 @@ class CreateSmartGoalData {
     return 2;
   }
 
-  CustomScheduler? get schedule => isRepeat
-      ? CustomScheduler(
+  CustomScheduler? get schedule {
+    if(isRepeat){
+      var end = (endDate.millisecondsSinceEpoch ~/ 1000).toInt();
+      DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(end * 1000);
+      DateTime dateTime0 = DateTime(dateTime.year, dateTime.month, dateTime.day, 0, 0, 0);
+      int newEndDate = (dateTime0.millisecondsSinceEpoch ~/ 1000).toInt();
+
+      return CustomScheduler(
           repeatTime: 1,
           repeatType: repeatTypeIndex,
-          endDate: (endDate.millisecondsSinceEpoch ~/ 1000).toInt(),
-          targetSchedulerWeeks: targetSchedulerWeeks)
-      : null;
+          endDate: newEndDate,
+          targetSchedulerWeeks: targetSchedulerWeeks);
+    } else {
+      return null;
+    }
+  }
 
   CreateSmartGoalRequest? get request {
     if (type == ScheduleType.exercise) {

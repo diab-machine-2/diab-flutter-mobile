@@ -44,22 +44,22 @@ class _QuestionDetailPageState extends State<QuestionDetailPage> with WidgetsBin
     WidgetsBinding.instance?.removeObserver(this);
   }
 
-   @override
+  @override
   void didChangeMetrics() {
-    _cubit.keyboardHidden.then((value) { 
-      if(value){ 
+    _cubit.keyboardHidden.then((value) {
+      if (value) {
         _cubit.titleHeight = 280;
-      } else { 
+      } else {
         _cubit.titleHeight = 120;
       }
       _cubit.refreshScreen();
-     });
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-    //  resizeToAvoidBottomInset: false,
+      //  resizeToAvoidBottomInset: false,
       body: BlocProvider(
         create: (context) => _cubit,
         child: BlocListener<QuestionDetailCubit, QuestionDetailState>(
@@ -99,8 +99,8 @@ class _QuestionDetailPageState extends State<QuestionDetailPage> with WidgetsBin
     return WillPopScope(
       onWillPop: () => _backPressed(),
       child: GestureDetector(
-      onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
-      child: Column(
+        onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+        child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             _buildAppBar(context),
@@ -108,27 +108,27 @@ class _QuestionDetailPageState extends State<QuestionDetailPage> with WidgetsBin
               child: Container(
                 padding: EdgeInsets.only(top: 8, left: 16, right: 16, bottom: 8),
                 child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          _buildHeaderItem(),
-                          SizedBox(height: 12),
-                          _buildTitleItem(),
-                         // _cubit.questionModel.answers!.isEmpty ? Flexible(child: _buildTitleItem()) : _buildTitleItem(),
-                          SizedBox(height: 16),
-                          _buildAuthor(_cubit.questionModel),
-                          Visibility(
-                            visible: _cubit.questionModel.answers!.isNotEmpty,
-                            child: SizedBox(height: 16),
-                          ),
-                          Visibility(
-                              visible: _cubit.questionModel.answers!.isNotEmpty,
-                              child: Divider(height: 0.5, color: R.color.grayBorder)),
-                          SizedBox(height: 8),
-                          _buildListComment(),
-                        ],
-                      ),
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    _buildHeaderItem(),
+                    SizedBox(height: 12),
+                    _buildTitleItem(),
+                    // _cubit.questionModel.answers!.isEmpty ? Flexible(child: _buildTitleItem()) : _buildTitleItem(),
+                    SizedBox(height: 16),
+                    _buildAuthor(_cubit.questionModel),
+                    Visibility(
+                      visible: _cubit.questionModel.answers!.isNotEmpty,
+                      child: SizedBox(height: 16),
+                    ),
+                    Visibility(
+                        visible: _cubit.questionModel.answers!.isNotEmpty,
+                        child: Divider(height: 0.5, color: R.color.grayBorder)),
+                    SizedBox(height: 8),
+                    _buildListComment(),
+                  ],
                 ),
               ),
+            ),
             _buildCommentTextBox(),
           ],
         ),
@@ -150,7 +150,7 @@ class _QuestionDetailPageState extends State<QuestionDetailPage> with WidgetsBin
           highlightColor: R.color.transparent,
           icon: Icon(Icons.arrow_back, color: R.color.textDark),
           onPressed: () {
-            Navigator.pop(context, _cubit.questionModel);
+            _backPressed();
           }),
     );
   }
@@ -189,29 +189,28 @@ class _QuestionDetailPageState extends State<QuestionDetailPage> with WidgetsBin
   }
 
   _buildTitleItem() {
-    return 
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Expanded(
-              child: ConstrainedBox(
-                constraints: BoxConstraints(
-                  minHeight: 0.0,
-                  maxHeight: _cubit.questionModel.answers!.isEmpty ? double.infinity : _cubit.titleHeight,
-                ),
-                child: SingleChildScrollView(
-                      scrollDirection: Axis.vertical,
-                      child: Text(
-                        _cubit.questionModel.body ?? '',
-                        style: TextStyle(color: R.color.black, fontSize: 16, fontWeight: FontWeight.w700),
-                      ),
-                ),
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Expanded(
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              minHeight: 0.0,
+              maxHeight: _cubit.questionModel.answers!.isEmpty ? double.infinity : _cubit.titleHeight,
+            ),
+            child: SingleChildScrollView(
+              scrollDirection: Axis.vertical,
+              child: Text(
+                _cubit.questionModel.body ?? '',
+                style: TextStyle(color: R.color.black, fontSize: 16, fontWeight: FontWeight.w700),
               ),
             ),
-            SizedBox(width: 16),
-            _buildDeleteQuestion(),
-          ],
+          ),
+        ),
+        SizedBox(width: 16),
+        _buildDeleteQuestion(),
+      ],
       //  ),
       //   SizedBox(height: 16),
       //   _buildAuthor(_cubit.questionModel),
@@ -219,50 +218,51 @@ class _QuestionDetailPageState extends State<QuestionDetailPage> with WidgetsBin
     );
   }
 
-  _buildAuthor(QuestionModel questionModel){
+  _buildAuthor(QuestionModel questionModel) {
     return Row(
+      children: [
+        Container(
+          clipBehavior: Clip.hardEdge,
+          height: 40,
+          width: 40,
+          decoration: BoxDecoration(borderRadius: BorderRadius.circular(90), color: R.color.grayBorder),
+          child: questionModel.creatorUrl?.url == null
+              ? Icon(Icons.person, size: 24, color: R.color.white)
+              : NetWorkImageWidget(imageUrl: questionModel.creatorUrl!.url),
+        ),
+        SizedBox(width: 8),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
             children: [
-              Container(
-                clipBehavior: Clip.hardEdge,
-                height: 40,
-                width: 40,
-                decoration: BoxDecoration(borderRadius: BorderRadius.circular(90), color: R.color.grayBorder),
-                child: questionModel.creatorUrl?.url == null
-                    ? Icon(Icons.person, size: 24, color: R.color.white)
-                    : NetWorkImageWidget(imageUrl: questionModel.creatorUrl!.url),
+              Text(
+                questionModel.creator ?? '',
+                style: TextStyle(
+                  color: R.color.black,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w700,
+                ),
               ),
-              SizedBox(width: 8),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      questionModel.creator ?? '',
-                      style: TextStyle(
-                        color: R.color.black,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                    SizedBox(height: 3),
-                    Text(
-                      questionModel.createDateTime == null
-                          ? ''
-                          : DateUtil.parseDateToString(
-                              DateTime.fromMillisecondsSinceEpoch(questionModel.createDateTime! * 1000), 'dd/MM/yyyy - hh:mm'),
-                      style: TextStyle(
-                        color: R.color.gray,
-                        fontSize: 12,
-                        fontStyle: FontStyle.italic,
-                        fontWeight: FontWeight.w400,
-                      ),
-                    ),
-                  ],
+              SizedBox(height: 3),
+              Text(
+                questionModel.createDateTime == null
+                    ? ''
+                    : DateUtil.parseDateToString(
+                        DateTime.fromMillisecondsSinceEpoch(questionModel.createDateTime! * 1000),
+                        'dd/MM/yyyy - hh:mm'),
+                style: TextStyle(
+                  color: R.color.gray,
+                  fontSize: 12,
+                  fontStyle: FontStyle.italic,
+                  fontWeight: FontWeight.w400,
                 ),
               ),
             ],
-          );
+          ),
+        ),
+      ],
+    );
   }
 
   _buildDeleteQuestion() {
@@ -406,6 +406,7 @@ class _QuestionDetailPageState extends State<QuestionDetailPage> with WidgetsBin
               // },
               itemCount: _cubit.questionModel.answers?.length ?? 0,
               shrinkWrap: true,
+            //  controller: _cubit.commentScrollController,
               padding: EdgeInsets.zero,
               physics: AlwaysScrollableScrollPhysics(),
               itemBuilder: (context, position) {
@@ -420,34 +421,42 @@ class _QuestionDetailPageState extends State<QuestionDetailPage> with WidgetsBin
     if (_cubit.questionModel.status == 0) return Container();
     if (_cubit.questionModel.accountId != _cubit.userInfo?.accountId) return Container();
     return Container(
-      padding: EdgeInsets.only(left: 16, right: 16, bottom: 16),
+      padding: EdgeInsets.only(left: 16, right: 16, bottom: 24),
       child: Row(
         children: [
           Expanded(
             child: TextField(
-              decoration: InputDecoration(
-                  contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: R.color.grayBorder, width: 1),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  filled: true,
-                  hintStyle: TextStyle(color: R.color.gray),
-                  hintText: R.string.add_comment.tr(),
-                  fillColor: R.color.white),
-              controller: _controller,
+                minLines: 1,
+                maxLines: 6,
+                style: TextStyle(
+                  fontSize: 18.0,
+                  color: R.color.black,                 
+                ),
+                decoration: InputDecoration(
+                    counterText: '',
+                    isDense: true,
+                    contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 18),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: R.color.grayBorder, width: 1),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    filled: true,
+                    hintStyle: TextStyle(color: R.color.gray, fontSize: 18),
+                    hintText: R.string.add_comment.tr(),
+                    fillColor: R.color.white),
+                controller: _controller,
+              ),
             ),
-          ),
           SizedBox(width: 12),
           FloatingActionButton(
               backgroundColor: R.color.greenGradientBottom,
               child: Image.asset(
                 R.drawable.ic_send,
-                width: 28,
-                height: 28,
+                width: 30,
+                height: 30,
               ),
               onPressed: () async {
                 await _submitData();
@@ -463,6 +472,10 @@ class _QuestionDetailPageState extends State<QuestionDetailPage> with WidgetsBin
       if (_controller.text.isNotEmpty) {
         Utils.hideKeyboard(context);
         await _cubit.sendComment(_controller.text);
+        Future.delayed(Duration(milliseconds: 400), (){
+           _cubit.getQuestionById();
+        });
+        
         _controller.clear();
       } else {
         Message.showToastMessage(context, R.string.input_comment_required.tr());

@@ -35,6 +35,8 @@ class Drawables {
   String get bg_weight => "lib/res/drawables/bg_weight.png";
   String get bg_welcome => "lib/res/drawables/bg_welcome.png";
   String get ic_a1c => "lib/res/drawables/ic_a1c.png";
+  String get ic_package_experience => "lib/res/drawables/ic_package_experience.png";
+  String get ic_package_roadmap => "lib/res/drawables/ic_package_roadmap.png";
   String get ic_account => "lib/res/drawables/ic_account.png";
   String get ic_activity_1 => "lib/res/drawables/ic_activity_1.png";
   String get ic_activity_2 => "lib/res/drawables/ic_activity_2.png";
@@ -104,6 +106,11 @@ class Drawables {
   String get ic_close => "lib/res/drawables/ic_close.png";
   String get ic_close_border => "lib/res/drawables/ic_close_border.png";
   String get ic_coin => "lib/res/drawables/ic_coin.png";
+  String get ic_complete => "lib/res/drawables/ic_complete.png";
+  String get ic_complete_exercise => "lib/res/drawables/ic_complete_exercise.png";
+  String get ic_not_complete_exercise => "lib/res/drawables/ic_not_complete_exercise.png";
+  String get ic_not_complete1 => "lib/res/drawables/ic_not_complete1.png";
+  String get ic_not_complete2 => "lib/res/drawables/ic_not_complete2.png";
   String get ic_comment_checked => "lib/res/drawables/ic_comment_checked.png";
   String get ic_congratulation => "lib/res/drawables/ic_congratulation.png";
   String get ic_contact => "lib/res/drawables/ic_contact.png";
