@@ -187,8 +187,8 @@ class ActivityTabCubit extends Cubit<ActivityTabState> {
         CompleteSmartGoalRequest(id: smartGoalId, executeTimes: executeDayTimes, type: type, appointmentDate: appointmentDate);
     final ApiResult<CommonResponse> apiResult = await repository.completeSmartGoal(request);
     apiResult.when(success: (CommonResponse response) {
-      Observable.instance
-            .notifyObservers([], notifyName: "food_change_data");
+    //  Observable.instance
+    //       .notifyObservers([], notifyName: "food_change_data");
       refreshData(isRefresh: true);
       //   emit(const ActivityTabSuccess());
     }, failure: (NetworkExceptions error) {
@@ -202,8 +202,8 @@ class ActivityTabCubit extends Cubit<ActivityTabState> {
     emit(const ActivityTabLoading());
     final ApiResult<DeleteSmartGoalReponse> apiResult = await repository.deleteSmartGoal(smartGoalId);
     apiResult.when(success: (DeleteSmartGoalReponse response) {
-      Observable.instance
-            .notifyObservers([], notifyName: "food_change_data");
+    //  Observable.instance
+    //        .notifyObservers([], notifyName: "food_change_data");
       refreshData(isRefresh: true);
       //  emit(const ActivityTabSuccess());
     }, failure: (NetworkExceptions error) {
@@ -217,8 +217,8 @@ class ActivityTabCubit extends Cubit<ActivityTabState> {
     emit(const ActivityTabLoading());
     final ApiResult<CommonResponse> apiResult = await repository.markCompletedCalendar(calendarId);
     apiResult.when(success: (CommonResponse response) {
-      Observable.instance
-            .notifyObservers([], notifyName: "food_change_data");
+   //   Observable.instance
+   //         .notifyObservers([], notifyName: "food_change_data");
       refreshData(isRefresh: true);
       //   emit(const ActivityTabSuccess());
     }, failure: (NetworkExceptions error) {

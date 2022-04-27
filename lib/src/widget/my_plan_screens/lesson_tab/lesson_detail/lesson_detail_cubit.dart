@@ -63,7 +63,7 @@ class LessonDetailCubit extends Cubit<LessonDetailState> {
     }
 
     if (newSection < 0 || newSection >= sectionList.length) {
-      Navigator.pop(context);
+      Navigator.pop(context, 1);
       return;
     }
 

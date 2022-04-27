@@ -103,7 +103,7 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                                 ),
                                 GestureDetector(
                                   onTap: () {
-                                    NavigationUtil.pop(context);
+                                    NavigationUtil.pop(context, result: 0);
                                   },
                                   child: Icon(
                                     Icons.clear_rounded,

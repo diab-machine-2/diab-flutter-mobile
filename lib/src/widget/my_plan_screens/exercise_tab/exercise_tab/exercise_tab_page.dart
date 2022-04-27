@@ -130,7 +130,9 @@ class _ExerciseTabPageState extends State<ExerciseTabPage> with AutomaticKeepAli
                   top: false,
                   child: SmartRefresher(
                     controller: _controller,
-                    onRefresh: () => _cubit.onRefresh(isRefresh: true),
+                    onRefresh: () async {
+                       await _cubit.onRefresh(isRefresh: true);
+                    },
                     child: (_cubit.exerciseMovementResponse?.data?.isEmpty == null || _cubit.exerciseMovementResponse?.data?.isEmpty == true)
                         ? GestureDetector(
                           onTap: () {
@@ -337,7 +339,7 @@ class _ExerciseTabPageState extends State<ExerciseTabPage> with AutomaticKeepAli
                                 ),
                               );
                               _controller.requestRefresh();
-                              _cubit.onRefresh(isRefresh: true, keepSelectedDayIndex: true);
+                           //   _cubit.onRefresh(isRefresh: true, keepSelectedDayIndex: true);
                             },
                           ),
                           // _buildCustomIconButton(

@@ -88,8 +88,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
         notifyName == 'food_change_data' ||
         notifyName == 'hba1c_change_data' ||
         notifyName == 'goal_calo_changed') {
-      _controller.requestRefresh();
-      _cubit.refreshData(isRefresh: true);
+       _controller.requestRefresh();
     }
   }
 
@@ -183,7 +182,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
                   child: SmartRefresher(
                     controller: _controller,
                     onRefresh: () async { 
-                      await _cubit.initData();
+                      await _cubit.refreshData(isRefresh: true);
                     },
                     child: SingleChildScrollView(
                       controller: _scrollSmartGoalListController,
@@ -210,14 +209,14 @@ class _ActivityTabPageState extends State<ActivityTabPage>
                                     if(DateUtil.isSameDay(_cubit.currentDay, DateTime.now().millisecondsSinceEpoch ~/ 1000)){
                                       Observable.instance.notifyObservers([], notifyName: Const.HIDE_OVERLAY_KEY);
                                       await NavigationUtil.navigatePage(context, CreateGoalPage(_cubit.smartGoalDayList));
-                                      _cubit.refreshData(isRefresh: true, keepCurrentDay: false);
+                                 //     _cubit.refreshData(isRefresh: true, keepCurrentDay: false);
                                     } else {
                                       _showDialogConfirmCreateGoal(context, 
                                       'Mục tiêu sẽ hiệu lực từ ngày ${convertToUTC(DateTime.now().millisecondsSinceEpoch ~/ 1000, 'dd/MM/yyyy')}, bạn có muốn tiếp tục?',
                                        () async {
                                           Observable.instance.notifyObservers([], notifyName: Const.HIDE_OVERLAY_KEY);
                                           await NavigationUtil.navigatePage(context, CreateGoalPage(_cubit.smartGoalDayList));
-                                          _cubit.refreshData(isRefresh: true, keepCurrentDay: false);
+                                 //         _cubit.refreshData(isRefresh: true, keepCurrentDay: false);
                                        },);
                                     }
                                   }),

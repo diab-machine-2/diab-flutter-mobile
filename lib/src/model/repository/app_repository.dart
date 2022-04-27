@@ -5,6 +5,7 @@ import 'package:medical/src/model/request/create_menu_request.dart';
 import 'package:medical/src/model/request/create_smart_goal_request.dart';
 import 'package:medical/src/model/request/exercise_feedback_request.dart';
 import 'package:medical/src/model/request/food_change_request.dart';
+import 'package:medical/src/model/request/has_shared_profile_request.dart';
 import 'package:medical/src/model/request/ios_receipt_request.dart';
 import 'package:medical/src/model/request/lesson_filter_request.dart';
 import 'package:medical/src/model/request/make_comment_request.dart';
@@ -680,6 +681,15 @@ class AppRepository {
   Future<ApiResult<UpdateSharedProfileResponse>> updateSharedProfile(UpdateSharedProfileRequest request) async {
     try {
       final UpdateSharedProfileResponse response = await appClient.updateSharedProfile(request);
+      return ApiResult.success(data: response);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
+  Future<ApiResult<UpdateSharedProfileResponse>> hasSharedProfile(String code) async {
+    try {
+      final UpdateSharedProfileResponse response = await appClient.hasSharedProfile(code);
       return ApiResult.success(data: response);
     } catch (e) {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));

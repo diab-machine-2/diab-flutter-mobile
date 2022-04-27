@@ -211,7 +211,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                                         )
                                       ]),
                                       const SizedBox(height: 16),
-                                      Text('“${motivation!.content}”',
+                                      Text('${motivation!.content}',
                                           style: TextStyle(
                                               color: R.color.textDark, fontWeight: FontWeight.w400, fontSize: 16)),
                                     ]),

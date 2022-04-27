@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:medical/src/model/request/SelectRoadmapRequest.dart';
+import 'package:medical/src/model/request/has_shared_profile_request.dart';
 import 'package:medical/src/model/request/make_comment_request.dart';
 import 'package:medical/src/model/request/make_question_request.dart';
 import 'package:medical/src/model/request/mark_completed_calendar_request.dart';
@@ -337,6 +338,11 @@ abstract class AppApi {
   @PUT("App/Patient/UpdateReferalCodeFromPatient")
   Future<UpdateSharedProfileResponse> updateSharedProfile(
     @Body() UpdateSharedProfileRequest? request,
+  );
+
+  @GET("App/Patient/CheckHasShareProfile/{referalCode}")
+  Future<UpdateSharedProfileResponse> hasSharedProfile(
+    @Path('referalCode') String referalCode,
   );
 
   @GET("App/Patient/CheckDuplicateReferalAccount/{referalCode}")

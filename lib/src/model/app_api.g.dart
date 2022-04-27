@@ -1004,6 +1004,23 @@ class _AppApi implements AppApi {
   }
 
   @override
+  Future<UpdateSharedProfileResponse> hasSharedProfile(referalCode) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    final _result = await _dio.fetch<Map<String, dynamic>>(
+        _setStreamType<UpdateSharedProfileResponse>(Options(
+                method: 'GET', headers: _headers, extra: _extra)
+            .compose(
+                _dio.options, 'App/Patient/CheckHasShareProfile/$referalCode',
+                queryParameters: queryParameters, data: _data)
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = UpdateSharedProfileResponse.fromJson(_result.data!);
+    return value;
+  }
+
+  @override
   Future<UserInfoReferralCodeResponse> getUserFromReferralCode(
       referalCode) async {
     const _extra = <String, dynamic>{};

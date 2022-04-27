@@ -192,16 +192,18 @@ class _LessonTabPageState extends State<LessonTabPage> with AutomaticKeepAliveCl
                                           lessonDetail: _cubit.lessonsList?[index],
                                           onTap: () async {
                                             if (_cubit.lessonsList?[index]?.id?.isNotEmpty == true) {
-                                              await NavigationUtil.navigatePage(
+                                              var result = await NavigationUtil.navigatePage(
                                                 context,
                                                 LessonDetailPage(
                                                   lessonType: _cubit.lessonsList?[index]?.type,
                                                   lessonId: _cubit.lessonsList![index]!.id!,
                                                 ),
                                               );
-                                              _controller.requestRefresh();
-                                              _cubit.getInitData(isRefresh: true,
-                                                  showCurrentWeek: false, currentWeek: _cubit.filterData.currentWeek);
+                                              // if(result == 0) {
+                                              //   _controller.requestRefresh();
+                                              // }
+                                              _cubit.getInitData(isRefresh: false,
+                                                  showCurrentWeek: true, currentWeek: _cubit.filterData.currentWeek);
                                             }
                                           }),
                                     )

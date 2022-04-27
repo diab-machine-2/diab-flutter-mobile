@@ -174,6 +174,7 @@ class UserInfoReferralCodeResponseData {
   String? accountRoles;
   List<UserPositionMappings?>? accountPositionMappings;
   Avatar? creatorUrl;
+  bool? hasShare;
 
   UserInfoReferralCodeResponseData({
     this.id,
@@ -217,6 +218,7 @@ class UserInfoReferralCodeResponseData {
     this.accountRoles,
     this.accountPositionMappings,
     this.creatorUrl,
+    this.hasShare,
   });
   UserInfoReferralCodeResponseData.fromJson(Map<String, dynamic> json) {
     id = json['id']?.toString();
@@ -258,6 +260,7 @@ class UserInfoReferralCodeResponseData {
     manager = json['manager']?.toString();
     accountRule = json['accountRule']?.toString();
     accountRoles = json['accountRoles']?.toString();
+    hasShare = json['hasShare'] ?? false;
     if (json['accountPositionMappings'] != null) {
       final v = json['accountPositionMappings'];
       final arr0 = <UserPositionMappings>[];
@@ -301,6 +304,7 @@ class UserInfoReferralCodeResponseData {
     data['url'] = url;
     data['introduction'] = introduction;
     data['code'] = code;
+    data['hasShare'] = hasShare;
     data['education'] = education;
     data['managerId'] = managerId;
     data['referralCode'] = referralCode;
@@ -439,6 +443,8 @@ class UserInfoReferralCodeResponse {
 
   bool get isUserExists =>
       data?.fullName != null && data?.username != null && data?.phoneNumber != null;
+
+  bool get hasShare => data?.hasShare == true;
 
   bool get notValidPosition {
     if (data?.accountPositionMappings != null) {
