@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -29,9 +31,21 @@ class SimpleBlocObserver extends BlocObserver {
   }
 }
 
+// class MyHttpOverrides extends HttpOverrides{
+//   @override
+//   HttpClient createHttpClient(SecurityContext? context){
+//     return super.createHttpClient(context)
+//       ..badCertificateCallback = (X509Certificate cert, String host, int port)=> true;
+//   }
+// }
+
 Future<void> main() async {
+//  HttpOverrides.global = new MyHttpOverrides();
   Bloc.observer = SimpleBlocObserver();
   WidgetsFlutterBinding.ensureInitialized();
+
+  ByteData data = await PlatformAssetBundle().load('assets/ca/lets-encrypt-r3.pem');
+  SecurityContext.defaultContext.setTrustedCertificatesBytes(data.buffer.asUint8List());
 
   // SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
   //     statusBarColor: R.color.transparent,
