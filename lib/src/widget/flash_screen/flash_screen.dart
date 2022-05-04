@@ -101,44 +101,74 @@ class _FlashScreenControllerState extends State<FlashScreenController> {
     return Container(
       height: double.infinity,
       width: double.infinity,
-      child: FittedBox(
-        child: Image.asset(R.drawable.splash),
-        fit: BoxFit.fill,
-        // body: Container(
-        //   decoration: BoxDecoration(
-        //       gradient: LinearGradient(
-        //           colors: [
-        //             R.color.color0xFFFDC798.withOpacity(0.5),
-        //             R.color.greenbg.withOpacity(0.5),
-        //             R.color.greenbg.withOpacity(0.5),
-        //             R.color.color0xFFFDC798.withOpacity(0.5),
-        //           ],
-        //           begin: Alignment.topRight,
-        //           end: Alignment.bottomLeft, //FractionalOffset(1.0, 0.0),
-        //           stops: const [0.0, 0.3, 0.8, 1.0])),
-        //   child: Column(
-        //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        //     children: [
-        //       const SizedBox(),
-        //       Center(child: Image.asset(R.drawable.img_logo, width: 190, height: 95)),
-        //       Padding(
-        //         padding: const EdgeInsets.only(bottom: 16),
-        //         child: RichText(
-        //           text: TextSpan(
-        //             text: '${R.string.cong_ty_co_phan_cong_nghe_y_te.tr()} ',
-        //             style: TextStyle(color: R.color.mainColor, fontSize: 16, fontWeight: FontWeight.w400),
-        //             children: <TextSpan>[
-        //               TextSpan(
-        //                   style: TextStyle(color: R.color.mainColor, fontSize: 14, fontWeight: FontWeight.w700),
-        //                   text: 'dia-B'),
-        //             ],
-        //           ),
-        //         ),
-        //       )
-        //     ],
-        //   ),
-        // ),
+      decoration: new BoxDecoration(
+        shape: BoxShape.rectangle,
+        image: DecorationImage(
+          fit: BoxFit.fill,
+          image: AssetImage("assets/images/bg_splash.png"),
+        ),
       ),
+      child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const SizedBox(),
+                Center(child: Image.asset(R.drawable.img_logo, width: 190, height: 95)),
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 16),
+                  child: RichText(
+                    text: TextSpan(
+                      text: '${R.string.cong_ty_co_phan_cong_nghe_y_te.tr()} ',
+                      style: TextStyle(color: R.color.mainColor, fontSize: 16, fontWeight: FontWeight.w400),
+                      children: <TextSpan>[
+                        TextSpan(
+                            style: TextStyle(color: R.color.mainColor, fontSize: 14, fontWeight: FontWeight.w700),
+                            text: 'dia-B'),
+                      ],
+                    ),
+                  ),
+                )
+              ],
+            ),
+      
+      // FittedBox(
+      //     child: Image.asset(R.drawable.splash),
+      //     fit: BoxFit.fill,
+
+          // body: Container(
+          //   decoration: BoxDecoration(
+          //       gradient: LinearGradient(
+          //           colors: [
+          //             R.color.color0xFFFDC798.withOpacity(0.5),
+          //             R.color.greenbg.withOpacity(0.5),
+          //             R.color.greenbg.withOpacity(0.5),
+          //             R.color.color0xFFFDC798.withOpacity(0.5),
+          //           ],
+          //           begin: Alignment.topRight,
+          //           end: Alignment.bottomLeft, //FractionalOffset(1.0, 0.0),
+          //           stops: const [0.0, 0.3, 0.8, 1.0])),
+          //   child: Column(
+          //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          //     children: [
+          //       const SizedBox(),
+          //       Center(child: Image.asset(R.drawable.img_logo, width: 190, height: 95)),
+          //       Padding(
+          //         padding: const EdgeInsets.only(bottom: 16),
+          //         child: RichText(
+          //           text: TextSpan(
+          //             text: '${R.string.cong_ty_co_phan_cong_nghe_y_te.tr()} ',
+          //             style: TextStyle(color: R.color.mainColor, fontSize: 16, fontWeight: FontWeight.w400),
+          //             children: <TextSpan>[
+          //               TextSpan(
+          //                   style: TextStyle(color: R.color.mainColor, fontSize: 14, fontWeight: FontWeight.w700),
+          //                   text: 'dia-B'),
+          //             ],
+          //           ),
+          //         ),
+          //       )
+          //     ],
+          //   ),
+          // ),
+    //    ),
     );
   }
 }

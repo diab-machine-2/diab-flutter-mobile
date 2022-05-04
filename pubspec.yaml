@@ -146,6 +146,7 @@ flutter:
   assets:
     - assets/
     - assets/ca/
+    - assets/images/
     - lib/res/
     - lib/res/fonts/
     - lib/res/drawables/
