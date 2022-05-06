@@ -78,9 +78,9 @@ class _MyPlanPageState extends State<MyPlanPage> with Observer {
           },
           builder: (context, state) {
             if (state is MyPlanLoading) {
-              BotToast.showLoading();
+                BotToast.showLoading();
             } else {
-              BotToast.closeAllLoading();
+         //     BotToast.closeAllLoading();
             }
             return CommonPage(
               title: R.string.my_plan.tr(),

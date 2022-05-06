@@ -106,6 +106,12 @@ class UserModel {
     return false;
   }
 
+  PackageType get packageType {
+    if (this.ownPackage == null) return PackageType.free;
+    if (this.ownPackage?.ownRoadmap == null) return PackageType.no_road_map;
+    return PackageType.has_road_map;
+  }
+
   const UserModel({
     required this.id,
     required this.accountId,

@@ -87,13 +87,23 @@ class _LessonTabPageState extends State<LessonTabPage> with AutomaticKeepAliveCl
           }
           if (state is LessonTabScrollToLesson) {
             if (_lessonScrollController.hasClients) {
-              if(_cubit.lessonsList != null && _cubit.lessonsList!.length > 5){
-                 _lessonScrollController.animateTo(
-                  127.0 * state.newIndex,
-                  duration: const Duration(milliseconds: 10),
-                  curve: Curves.ease,
-                );
-              }
+           //   if(_cubit.currentLessonTypeIndex == 0){
+                if(_cubit.lessonsList != null && _cubit.lessonsList!.length > 5){
+                  _lessonScrollController.jumpTo(
+                    127.0 * state.newIndex,
+                //    duration: const Duration(milliseconds: 10),
+                //    curve: Curves.ease,
+                  );
+                }
+              // } else {
+              //   if(_cubit.lessonsListSuggest != null && _cubit.lessonsListSuggest!.length > 5){
+              //     _lessonScrollController.animateTo(
+              //       127.0 * state.newIndex,
+              //       duration: const Duration(milliseconds: 10),
+              //       curve: Curves.ease,
+              //     );
+              //   }
+              // }
             }
           }
         },
@@ -181,9 +191,9 @@ class _LessonTabPageState extends State<LessonTabPage> with AutomaticKeepAliveCl
                         child: SmartRefresher(
                           controller: _controller,
                           scrollController: _lessonScrollController,
-                          onRefresh: () => _cubit.getInitData(isRefresh: true, showCurrentWeek: false),
+                          onRefresh: () => _cubit.getInitData(isRefresh: true),
                           child: _cubit.lessonsList!.isEmpty
-                              ? _buildEmptyLessonList()
+                              ? state is LessonTabLoading ? Container() : _buildEmptyLessonList()
                               : SingleChildScrollView(
                                   child: Column(
                                     children: List.generate(
@@ -202,8 +212,10 @@ class _LessonTabPageState extends State<LessonTabPage> with AutomaticKeepAliveCl
                                               // if(result == 0) {
                                               //   _controller.requestRefresh();
                                               // }
-                                              _cubit.getInitData(isRefresh: false,
+                                              if(result != null){
+                                                _cubit.getInitData(isRefresh: false,
                                                   showCurrentWeek: true, currentWeek: _cubit.filterData.currentWeek);
+                                              }
                                             }
                                           }),
                                     )

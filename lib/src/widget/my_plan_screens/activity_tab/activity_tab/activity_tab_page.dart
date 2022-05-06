@@ -108,7 +108,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
           if (state is ActivityTabLoading) {
             BotToast.showLoading();
           } else {
-            BotToast.closeAllLoading();
+        //    BotToast.closeAllLoading();
             _controller.refreshCompleted();
           }
           if (state is ActivityTabSuccess) {

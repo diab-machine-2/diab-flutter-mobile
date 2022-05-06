@@ -64,7 +64,7 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
             Message.showToastMessage(context, state.error);
           }
           if (state is LessonDetailCompleted) {
-            NavigationUtil.pop(context);
+            NavigationUtil.pop(context, result: 0);
             BotToast.closeAllLoading();
           }
         },
@@ -103,7 +103,7 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                                 ),
                                 GestureDetector(
                                   onTap: () {
-                                    NavigationUtil.pop(context, result: 0);
+                                    NavigationUtil.pop(context);
                                   },
                                   child: Icon(
                                     Icons.clear_rounded,

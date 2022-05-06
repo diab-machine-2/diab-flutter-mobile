@@ -3,6 +3,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/modal/HbA1C/short_gui.dart';
 import 'package:medical/src/modal/food/food_model.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/request/create_menu_request.dart';
@@ -16,6 +17,7 @@ import 'package:medical/src/widgets/network_image_widget.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import '../../../widgets/update_required_widget.dart';
+import '../../HbA1C/widget/description/description_detail.dart';
 import '../change_menu/change_menu.dart';
 import '../intro_sample_menu/intro_sample_menu.dart';
 import '../kcal_parameter/kcal_parameter.dart';
@@ -78,6 +80,34 @@ class _FoodMenuPageState extends State<FoodMenuPage> {
             return CommonPage(
               title: R.string.food_menu.tr(),
               background: R.drawable.bg_detail_pro,
+              appBarAction: GestureDetector(
+                onTap: () async {
+                  showDialog(
+                  barrierColor: R.color.color0xff003F38.withOpacity(0.8),
+                  useSafeArea: false,
+                  context: context,
+                  builder: (_) => DetailDescription(
+                      input: false, isShowTitle: true, titleFontSize: 18, data: ShortGuiModel(content1: "", content2: "", content3: "", 
+                      content4: """<p></p>
+<ul style="list-style-type:disc">
+    <li style="margin-left: 0in;"><span style='font-size:15px;font-family: "Segoe UI", sans-serif;color: rgb(0, 26, 51);'>Hướng dẫn chẩn đo&aacute;n v&agrave; điều trị đ&aacute;i th&aacute;o đường t&iacute;p 2- Bộ Y tế (5481/QĐ-BYT)</span></li>
+    <li style="margin-left: 0in;"><span style='font-size:15px;font-family: "Segoe UI", sans-serif;color: rgb(0, 26, 51);'>Standards of Medical Care in Diabetes (2021). Diabetes Care 1 January 2021; 44 (Supplement_1): S1&ndash;S2. <a data-saferedirecturl="https://www.google.com/url?q=https://doi.org/10.2337/dc21-Sint&source=gmail&ust=1651830131900000&usg=AOvVaw1M_UQEFpp5Naj8xOf9mDd-" href="https://doi.org/10.2337/dc21-Sint" style='color: rgb(17, 85, 204);font-family: "Segoe UI", sans-serif;' target="_blank">https://doi.org/10.2337/dc21-Sint</a></span></li>
+    <li style="margin-left: 0in;"><span style='font-size:15px;font-family: "Segoe UI", sans-serif;color: rgb(0, 26, 51);'>Th&ocirc;ng tin dinh dưỡng m&oacute;n ăn được tham khảo từ:</span>
+        <ul style="list-style-type:circle">
+            <li style="margin-left: 0in;"><span style='font-size:15px;font-family: "Segoe UI", sans-serif;color: rgb(0, 26, 51);'>Bảng th&agrave;nh phần thực phẩm Việt Nam &ndash; Nh&agrave; xuất bản Y Học</span></li>
+            <li style="margin-left: 0in;"><span style='font-size:15px;font-family: "Segoe UI", sans-serif;color: rgb(0, 26, 51);'>United States Department of Agriculture (USDA) - <a data-saferedirecturl="https://www.google.com/url?q=https://fdc.nal.usda.gov/fdc-app.html%23/&source=gmail&ust=1651830131900000&usg=AOvVaw3BIpUJWlKkgFfr4_ml0hlJ" href="https://fdc.nal.usda.gov/fdc-app.html#/" style='color: rgb(17, 85, 204);font-family: "Segoe UI", sans-serif;' target="_blank">https://fdc.nal.usda.gov/fdc-app.html#/</a></span></li>
+        </ul>
+    </li>
+    <li style="margin-left: 0in; color: rgb(0, 26, 51);"><span style='font-size:15px;font-family: "Segoe UI", sans-serif;'>Kiến thức chuy&ecirc;n gia của BS CKI &amp; chuy&ecirc;n gia dinh dưỡng Trần Vũ Lan Hương v&agrave; c&aacute;c cộng sự.</span></li>
+</ul>"""
+                    ), title: "Thực đơn mẫu của chúng tôi được xây dựng dựa trên cơ sở"),
+                );
+                },
+                child: Padding(
+                  padding: const EdgeInsets.only(right: 12.0),
+                  child: Image.asset(R.drawable.ic_help_circle, width: 24, height: 24),
+                ),
+              ),
               child: state is FoodMenuLoading || _cubit.listDayFood == null
                   ? Center(
                       child: (state is FoodMenuLoading) ? const SizedBox() : const CircularProgressIndicator(),

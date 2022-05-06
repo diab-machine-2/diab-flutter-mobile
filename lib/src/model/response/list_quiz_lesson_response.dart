@@ -189,7 +189,7 @@ class AnswerData {
     int? point,
     int? flag,
     bool? isMappedToSurvey,
-    String? mappedQuestionId,
+    List<String>? mappedQuestionIds,
     bool? isCorrectAnswer,
     String? textAnswer,
   }) {
@@ -200,7 +200,7 @@ class AnswerData {
     _point = point;
     _flag = flag;
     _isMappedToSurvey = isMappedToSurvey;
-    _mappedQuestionId = mappedQuestionId;
+    _mappedQuestionIds = mappedQuestionIds;
     _isCorrectAnswer = isCorrectAnswer;
     _textAnswer = textAnswer;
   }
@@ -216,7 +216,15 @@ class AnswerData {
     _point = json['point'];
     _flag = json['flag'];
     _isMappedToSurvey = json['isMappedToSurvey'];
-    _mappedQuestionId = json['mappedQuestionId'];
+  //  _mappedQuestionIds = json['mappedQuestionIds'];
+
+    if (json['mappedQuestionIds'] != null) {
+      _mappedQuestionIds = [];
+      json['mappedQuestionIds'].forEach((v) {
+        _mappedQuestionIds?.add(v);
+      });
+    }
+
     _isCorrectAnswer = json['isCorrectAnswer'];
     _textAnswer = json['textAnswer'];
   }
@@ -227,7 +235,7 @@ class AnswerData {
   int? _point;
   int? _flag;
   bool? _isMappedToSurvey;
-  String? _mappedQuestionId;
+  List<String>? _mappedQuestionIds;
   bool? _isCorrectAnswer;
   String? _textAnswer;
 
@@ -238,7 +246,7 @@ class AnswerData {
   int? get point => _point;
   int? get flag => _flag;
   bool? get isMappedToSurvey => _isMappedToSurvey;
-  String? get mappedQuestionId => _mappedQuestionId;
+  List<String>? get mappedQuestionIds => _mappedQuestionIds;
   bool? get isCorrectAnswer => _isCorrectAnswer;
   String? get textAnswer => _textAnswer;
 
@@ -251,7 +259,12 @@ class AnswerData {
     map['point'] = _point;
     map['flag'] = _flag;
     map['isMappedToSurvey'] = _isMappedToSurvey;
-    map['mappedQuestionId'] = _mappedQuestionId;
+ //   map['mappedQuestionId'] = _mappedQuestionId;
+
+    if (_mappedQuestionIds != null) {
+      map['mappedQuestionIds'] = _mappedQuestionIds?.toList();
+    }
+
     map['isCorrectAnswer'] = _isCorrectAnswer;
     map['textAnswer'] = _textAnswer;
     return map;

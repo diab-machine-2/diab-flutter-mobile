@@ -1,3 +1,7 @@
+// GENERATED CODE - DO NOT MODIFY
+
+// ignore_for_file: non_constant_identifier_names
+
 class Dimens {
 	double get very_tiny_text_size => 8;
 	double get tiny_text_size => 10;

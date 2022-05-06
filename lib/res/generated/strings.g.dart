@@ -1,5 +1,9 @@
 // GENERATED CODE - DO NOT MODIFY
 
+// ignore_for_file: non_constant_identifier_names
+
+import 'package:easy_localization/easy_localization.dart';
+
 class Strings {
 	String get ok => 'ok';
 	String get cancel => 'cancel';

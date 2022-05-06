@@ -222,7 +222,7 @@ class _HomeHeaderState extends State<HomeHeader> with Observer {
                 // if (!isChoose)
                 //   const SizedBox()
                 // else
-                (motivation != null && motivation!.content != null && motivation!.content!.isNotEmpty)
+                (motivation != null && motivation!.content != null && motivation!.content!.trim().isNotEmpty)
                     ? Padding(
                         padding: const EdgeInsets.only(top: 12),
                         child: Text(motivation!.content!,

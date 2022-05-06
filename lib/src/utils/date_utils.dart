@@ -26,6 +26,11 @@ class DateUtil {
     return startDate;
   }
 
+  static int getCurrentNowInMillis() {
+    int startDate = (DateTime.now().millisecondsSinceEpoch ~/ 1000).toInt();
+    return startDate;
+  }
+
   static bool? isBefore(int? dateTime1, int? dateTime2) {
     DateTime? date1;
     DateTime? date2;

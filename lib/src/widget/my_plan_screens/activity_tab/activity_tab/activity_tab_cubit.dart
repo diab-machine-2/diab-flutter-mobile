@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_observer/Observable.dart';
@@ -99,7 +100,7 @@ class ActivityTabCubit extends Cubit<ActivityTabState> {
     }
 
     //  await getSmartGoalStatistics(hideLoadingAfterDone: false);
-    await refreshData(keepCurrentDay: false);
+    await refreshData(keepCurrentDay: false, isRefresh: false);
     Timer(const Duration(milliseconds: 100), () {
       emit(ActivityTabWeekChanged(currentWeekIndex ?? 0));
     });
@@ -108,6 +109,7 @@ class ActivityTabCubit extends Cubit<ActivityTabState> {
 
   Future<void> refreshData({bool isRefresh = false, bool keepCurrentDay = true}) async {
     if (!isRefresh) {
+      await Future.delayed(Duration(milliseconds: 1));
       emit(const ActivityTabLoading());
     }
     await getSmartGoalStatistics(isRefresh: isRefresh, hideLoadingAfterDone: true, keepCurrentDay: keepCurrentDay);
@@ -149,6 +151,7 @@ class ActivityTabCubit extends Cubit<ActivityTabState> {
     }, failure: (NetworkExceptions error) {
       emit(ActivityTabFailure(NetworkExceptions.getErrorMessage(error)));
     });
+    BotToast.closeAllLoading();
     emit(const ActivityTabInitial());
   }
 
@@ -234,8 +237,10 @@ class ActivityTabCubit extends Cubit<ActivityTabState> {
         await repository.getReports();
     apiResult.when(success: (ReportListResponse response) {
       reports = response.data ?? [];
+      BotToast.closeAllLoading();
       emit(const ActivityTabSuccess());
     }, failure: (NetworkExceptions error) {
+      BotToast.closeAllLoading();
       emit(const ActivityTabSuccess());
     });
   }

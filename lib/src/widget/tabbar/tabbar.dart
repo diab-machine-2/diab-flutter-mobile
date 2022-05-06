@@ -4,6 +4,7 @@ import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_observer/Observable.dart';
 import 'package:flutter_observer/Observer.dart';
 import 'package:medical/res/R.dart';
@@ -50,6 +51,7 @@ class _TabbarControllerState extends State<TabbarController> with SingleTickerPr
   @override
   void initState() {
     super.initState();
+    
     tabs = [
       HomeController(sharedCode: widget.sharedCode),
       //   MyPlanPage(index: widget.isRedirectFromNotification ? 0 : 1),
@@ -69,9 +71,10 @@ class _TabbarControllerState extends State<TabbarController> with SingleTickerPr
             jumpTo(index);
           }
         });
-
     getNewVersion();
-
+    Future.delayed(Duration(seconds: 1), () async {
+      FlutterNativeSplash.remove();
+    });
  //   startTimer();
   }
 
