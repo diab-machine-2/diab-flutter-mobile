@@ -11,7 +11,10 @@ import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 
 import '../../modal/user/secure.dart';
+import '../../model/repository/app_repository.dart';
+import '../../model/response/app_version_response.dart';
 import '../../model/service/app_client.dart';
+import '../helper/version.dart';
 
 class FlashScreenController extends StatefulWidget {
   @override
@@ -21,6 +24,7 @@ class FlashScreenController extends StatefulWidget {
 class _FlashScreenControllerState extends State<FlashScreenController> {
   bool isNavigateToStepList = false;
   SecureModel? secureModel;
+  AppVersionResponse? appVersion;
 
   @override
   void initState() {
@@ -30,9 +34,21 @@ class _FlashScreenControllerState extends State<FlashScreenController> {
   }
 
    getSecuredModel() async {
+    AppVersionResponse? appVersion;
+    try {
+      appVersion = await UserClient().getAppVersion(context);
+    } catch(error) {
+      appVersion = AppVersionResponse(
+        id: "cb110991-eb73-4dc7-92ce-50157c3ee359",
+        code: "123",
+        platform: "iOs",
+        enviroment: "production",
+        version: "1.1.5",
+      );
+    }
+
     try{
       secureModel = await UserClient().fetchInfoSecure();
-   //   secureModel!.environment = "production";
     } catch(exception){
       secureModel = SecureModel(
         email: "lienhe@diab.com.vn",
@@ -42,10 +58,12 @@ class _FlashScreenControllerState extends State<FlashScreenController> {
         environment: "production",
       );
     }
-    await AppSettings.saveEnvironment(secureModel?.environment);
-    AppSettings.environment = secureModel?.environment ?? "";
+
+    await AppSettings.saveEnvironment(appVersion?.enviroment);
+    AppSettings.environment = appVersion?.enviroment ?? "";
     AppSettings.secureModel = secureModel;
     AppClient();
+    appClient = AppClient().appClient;
   }
 
   getData() async {

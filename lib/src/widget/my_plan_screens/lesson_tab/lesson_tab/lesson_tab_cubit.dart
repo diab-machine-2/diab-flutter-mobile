@@ -105,6 +105,23 @@ class LessonTabCubit extends Cubit<LessonTabState> {
     }
   }
 
+  Future<void> onRefresh({bool isRefresh = false, bool showCurrentWeek = false, int? currentWeek}) async {
+    await getLessonWeekStates(isRefresh: isRefresh);
+    await getLessonsList(isRefresh: isRefresh);
+
+    if (currentWeek != null) {
+      Timer(const Duration(milliseconds: 100), () {
+        emit(LessonTabWeekChanged(filterData.currentWeek!));
+      });
+    } else {
+      if (showCurrentWeek && filterData.currentWeek != null) {
+        Timer(const Duration(milliseconds: 100), () {
+          emit(LessonTabWeekChanged(filterData.currentWeek!));
+        });
+      }
+    }    
+  }
+
   Future<void> getLessonsList({bool isRefresh = false, bool isShowLoading = false, bool isRefreshData = true,}) async {
     if(lessonsList?.isNotEmpty == true && !isRefreshData){
    //   Timer(const Duration(milliseconds: 0), () {
@@ -157,20 +174,29 @@ class LessonTabCubit extends Cubit<LessonTabState> {
 
   Future<void> getLessonWeekStates({bool isRefresh = false}) async {
     //  await Future.delayed(Duration.zero);
-
-    final ApiResult<WeekStatesResponse> apiResult = await repository.getLessonWeekStates();
-    apiResult.when(success: (WeekStatesResponse response) {
+    if(AppSettings.userInfo?.statistict?.lessons != null && !isRefresh) {
       weekStatesList.clear();
-      for (final state in response.data ?? []) {
+      for (final state in AppSettings.userInfo?.statistict?.lessons ?? []) {
         if (state != null) {
           weekStatesList.add(state);
         }
       }
       weekStatesList.sort((a, b) => (a.week ?? 0) - (b.week ?? 0));
-      //    emit(const LessonTabSuccess());
-    }, failure: (NetworkExceptions error) {
-      //    emit(LessonTabFailure(NetworkExceptions.getErrorMessage(error)));
-    });
+    } else {
+      final ApiResult<WeekStatesResponse> apiResult = await repository.getLessonWeekStates();
+      apiResult.when(success: (WeekStatesResponse response) {
+        weekStatesList.clear();
+        for (final state in response.data ?? []) {
+          if (state != null) {
+            weekStatesList.add(state);
+          }
+        }
+        weekStatesList.sort((a, b) => (a.week ?? 0) - (b.week ?? 0));
+        //    emit(const LessonTabSuccess());
+      }, failure: (NetworkExceptions error) {
+        //    emit(LessonTabFailure(NetworkExceptions.getErrorMessage(error)));
+      });
+    }
     //  emit(const LessonTabInitial());
   }
 }

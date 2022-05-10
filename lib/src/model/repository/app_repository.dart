@@ -57,19 +57,23 @@ import 'package:medical/src/model/response/week_states_response.dart';
 import 'package:medical/src/model/service/api_result.dart';
 import 'package:medical/src/model/service/network_exceptions.dart';
 
+import '../app_api.dart';
 import '../request/SelectRoadmapRequest.dart';
 import '../request/complete_video_request.dart';
 import '../request/mark_completed_calendar_request.dart';
 import '../request/read_welcome_request.dart';
+import '../response/app_version_response.dart';
 import '../response/calendar_training_response.dart';
 import '../response/expert_comment_response.dart';
 import '../service/app_client.dart';
+
+late AppApi appClient;
 
 class AppRepository {
   /**
    * Package flow
    */
-
+  
   Future<ApiResult<ListPackageResponse>> getListPackage() async {
     try {
       final ListPackageResponse response = await appClient.getListPackage();
@@ -203,6 +207,16 @@ class AppRepository {
   Future<ApiResult<MenuResponse>> getUserFoodMenu() async {
     try {
       final MenuResponse response = await appClient.getUserFoodMenu();
+      return ApiResult.success(data: response);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
+  Future<ApiResult<List<AppVersionResponse>>> getAppVersion() async {
+    appClient = AppClient().appClient;
+    try {
+      final List<AppVersionResponse> response = await appClient.getAppVersion();
       return ApiResult.success(data: response);
     } catch (e) {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));

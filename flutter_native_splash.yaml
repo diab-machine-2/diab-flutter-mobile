@@ -1,9 +1,13 @@
 flutter_native_splash:
-  background_image: "assets/images/bg_splash.png"
-  image: "assets/images/img_logo.png"
-  branding: "assets/images/img_branding.png"
+  background_image: "assets/images/bg_splash1.png"
+  image: "assets/images/img_logo1.png"
+  branding: "assets/images/img_branding1.png"
+  background_image_dark: "assets/images/bg_splash1.png"
+  image_dark: "assets/images/img_logo1.png"
+  branding_dark: "assets/images/img_branding1.png"
+  fill: true
   android_12:
-    image: "assets/images/img_logo.png"
+    image: "assets/images/img_logo1.png"
   android: true
   ios: true
   web: false

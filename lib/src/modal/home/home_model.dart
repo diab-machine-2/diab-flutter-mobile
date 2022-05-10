@@ -4,6 +4,8 @@ import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/modal/base/images.dart';
 import 'package:medical/src/modal/home/package_account_home_model.dart';
 
+import '../../model/response/statistic_data.dart';
+
 class HomeModel {
   final GloucoseIndexModel glucoseIndex;
   final BloodPressureIndexModel bloodPressureIndex;
@@ -45,7 +47,6 @@ class HomeModel {
             ),
       processCard: json['processCard'] == null ? null : ProcessCardModel.fromJson(json['processCard']),
       packageAccount: json['packageAccount'] == null ? null : PackageAccountHomeModel.fromJson(json['packageAccount']),
-      
     );
   }
 

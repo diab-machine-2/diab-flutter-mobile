@@ -8,6 +8,7 @@ import 'package:medical/src/model/service/api_result.dart';
 import 'package:medical/src/model/service/network_exceptions.dart';
 import 'package:medical/src/widgets/day_in_week_widget.dart';
 
+import '../../../../app_setting/app_setting.dart';
 import '../../my_plan/models/completion_status.dart';
 import '../../my_plan/my_plan.dart';
 import 'exercise_tab.dart';
@@ -136,21 +137,32 @@ class ExerciseTabCubit extends Cubit<ExerciseTabState> {
   }
 
   Future<void> getWeekStates({bool isRefresh = false}) async {
-    await Future.delayed(Duration.zero);
+    //await Future.delayed(Duration.zero);
     //   emit(const ExerciseTabLoading());
-    final ApiResult<WeekStatesResponse> apiResult = await repository.getExerciseWeekStates();
-    apiResult.when(success: (WeekStatesResponse response) {
+    
+     if(AppSettings.userInfo?.statistict?.exerciseMovements != null && !isRefresh) {
       weekStatesList.clear();
-      for (final state in response.data ?? []) {
+      for (final state in AppSettings.userInfo?.statistict?.exerciseMovements ?? []) {
         if (state != null) {
           weekStatesList.add(state);
         }
       }
       weekStatesList.sort((a, b) => (a.week ?? 0) - (b.week ?? 0));
-      //    emit(const ExerciseTabSuccess());
-    }, failure: (NetworkExceptions error) {
-      //    emit(ExerciseTabFailure(NetworkExceptions.getErrorMessage(error)));
-    });
+    } else {
+      final ApiResult<WeekStatesResponse> apiResult = await repository.getExerciseWeekStates();
+      apiResult.when(success: (WeekStatesResponse response) {
+        weekStatesList.clear();
+        for (final state in response.data ?? []) {
+          if (state != null) {
+            weekStatesList.add(state);
+          }
+        }
+        weekStatesList.sort((a, b) => (a.week ?? 0) - (b.week ?? 0));
+        //    emit(const ExerciseTabSuccess());
+      }, failure: (NetworkExceptions error) {
+        //    emit(ExerciseTabFailure(NetworkExceptions.getErrorMessage(error)));
+      });
+    }
     //  emit(const ExerciseTabInitial());
   }
 }

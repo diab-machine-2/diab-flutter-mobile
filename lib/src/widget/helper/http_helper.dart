@@ -13,7 +13,7 @@ class FetchClient {
   static String get identifyBaseURL {
     // return 'is.diab.com.vn';
     //return 'id.savvycom.asia';
-    return AppSettings.environment == "production" ? 'is.stg.savvycom.asia' : 'is.diab.com.vn';
+    return AppSettings.environment == "staging" ? 'is.savvycom.asia' : 'is.diab.com.vn';
     // return 'diab-id-staging.savvycom.vn';
     // return 'is.stg.diab.cptech.vn';
     // return 'is.dev.diab.cptech.vn';
@@ -23,7 +23,7 @@ class FetchClient {
   static String get baseURL {
     // return 'api.diab.com.vn';
     // return 'diab-api-staging.savvycom.vn';
-    return AppSettings.environment == "production" ? 'api.stg.savvycom.asia' : 'api.diab.com.vn';
+    return AppSettings.environment == "staging" ? 'api.savvycom.asia' : 'api.diab.com.vn';
     //return 'api.savvycom.asia';
     // return 'api.stg.diab.cptech.vn';
     // return 'api.mobile.dev.diab.cptech.vn';
@@ -120,7 +120,7 @@ class FetchClient {
   Future<Response> fetchDataProdNoHeaders(
       {bool baseIdentify = false, required String url, Map<String, String?>? params}) async {
     final option = await options3();
-    final domain = "api.savvycom.asia";
+    final domain = "api.diab.com.vn";
     final Dio dio = Dio();
     logRequest(dio);
     return dio.getUri(Uri.https(domain, url, params), options: option);

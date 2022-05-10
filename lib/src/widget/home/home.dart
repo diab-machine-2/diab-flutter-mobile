@@ -204,7 +204,6 @@ class _HomeControllerState extends State<HomeController> with Observer {
           }
           if (state is HomeLoaded) {
             model = state.model;
-
             if(false == model?.packageAccount?.isDisplayedWelcome){
               if(AppSettings.isDisplayedWelcome == false){
                 Future.delayed(Duration.zero, () async {

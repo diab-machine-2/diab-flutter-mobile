@@ -246,7 +246,7 @@ class WeightClient extends FetchClient {
   //============ calculate BMI =============/
 
   Future<CaculateBMIModel> fetchCaculateBMI(
-    int weight,
+    double weight,
     int height,
   ) async {
     try {

@@ -19,8 +19,8 @@ class AppClient {
 
   static final AppClient _instance = AppClient._privateConstructor();
 
-  factory AppClient() {
-    return _instance;
+  AppClient() {
+    _setupClient();
   }
 
   Future<void> _setupClient() async {
@@ -57,5 +57,3 @@ class AppClient {
     appClient = AppApi(_dio, baseUrl: Utils.getHostUrl());
   }
 }
-
-AppApi appClient = AppClient().appClient;

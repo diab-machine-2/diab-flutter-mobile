@@ -238,6 +238,25 @@ class _AppApi implements AppApi {
   }
 
   @override
+  Future<List<AppVersionResponse>> getAppVersion() async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    final _result = await _dio.fetch<List<dynamic>>(
+        _setStreamType<List<AppVersionResponse>>(
+            Options(method: 'GET', headers: _headers, extra: _extra)
+                .compose(_dio.options, 'App/Version',
+                    queryParameters: queryParameters, data: _data)
+                .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    var value = _result.data!
+        .map((dynamic i) =>
+            AppVersionResponse.fromJson(i as Map<String, dynamic>))
+        .toList();
+    return value;
+  }
+
+  @override
   Future<FoodSuggestResponse> getSuggestionFood(
       {foodMenuCode, foodId, dateCode, timeCode, isUseReplacedFood}) async {
     const _extra = <String, dynamic>{};

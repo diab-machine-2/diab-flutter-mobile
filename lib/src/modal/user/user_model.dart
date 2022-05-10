@@ -2,6 +2,7 @@ import 'package:medical/src/modal/base/images.dart';
 import 'package:medical/src/modal/user/update_profile_request.dart';
 import 'package:meta/meta.dart';
 
+import '../../model/response/statistic_data.dart';
 import '../../model/response/user_info_response.dart';
 import 'category_item_user_model.dart';
 
@@ -83,6 +84,7 @@ class UserModel {
   final UserInfoResponseDataOwnPackage? ownPackage;
   final bool? isShare;
   final String? shareRefCode;
+  final StatisticData? statistict;
 
   bool get isUserFree {
     return ownPackage == null;
@@ -184,6 +186,7 @@ class UserModel {
     required this.ownPackage,
     required this.isShare,
     required this.shareRefCode,
+    required this.statistict,
   });
 
   UserModel copyWith({
@@ -259,6 +262,7 @@ class UserModel {
     UserInfoResponseDataOwnPackage? ownPackage,
     bool? isShare,
     String? shareRefCode,
+    StatisticData? statistict,
   }) =>
       UserModel(
         id: id ?? this.id,
@@ -332,6 +336,7 @@ class UserModel {
         ownPackage: ownPackage ?? this.ownPackage,
         isShare: isShare ?? this.isShare,
         shareRefCode: shareRefCode ?? this.shareRefCode,
+        statistict: statistict ?? this.statistict,
       );
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
@@ -412,6 +417,7 @@ class UserModel {
       ownPackage: json['ownPackage'] == null ? null : UserInfoResponseDataOwnPackage.fromJson(json['ownPackage']),
       isShare: json['isShare'],
       shareRefCode: json['shareRefCode'],
+      statistict: json['statistict'] == null ? null : StatisticData.fromJson(json['statistict']),
     );
   }
 

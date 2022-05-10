@@ -191,7 +191,7 @@ class _LessonTabPageState extends State<LessonTabPage> with AutomaticKeepAliveCl
                         child: SmartRefresher(
                           controller: _controller,
                           scrollController: _lessonScrollController,
-                          onRefresh: () => _cubit.getInitData(isRefresh: true),
+                          onRefresh: () => _cubit.onRefresh(isRefresh: true),
                           child: _cubit.lessonsList!.isEmpty
                               ? state is LessonTabLoading ? Container() : _buildEmptyLessonList()
                               : SingleChildScrollView(

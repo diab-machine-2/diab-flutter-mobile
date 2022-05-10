@@ -6,6 +6,7 @@ import 'package:medical/src/model/request/make_question_request.dart';
 import 'package:medical/src/model/request/mark_completed_calendar_request.dart';
 import 'package:medical/src/model/request/mark_completed_target_request.dart';
 import 'package:medical/src/model/request/read_welcome_request.dart';
+import 'package:medical/src/model/response/app_version_response.dart';
 import 'package:medical/src/model/response/calendar_training_response.dart';
 import 'package:medical/src/model/response/expert_comment_list_response.dart';
 import 'package:medical/src/model/response/lesson_module_response.dart';
@@ -131,6 +132,9 @@ abstract class AppApi {
 
   @GET("App/PatientFoodMenu/GetUserFoodMenu")
   Future<MenuResponse> getUserFoodMenu();
+
+  @GET("App/Version")
+  Future<List<AppVersionResponse>> getAppVersion();
 
   @GET("App/PatientFoodMenu/SuggestionFood")
   Future<FoodSuggestResponse> getSuggestionFood({
