@@ -90,7 +90,6 @@ class LessonTabCubit extends Cubit<LessonTabState> {
     await Future.delayed(Duration(milliseconds: 10));
     if (!isRefresh) emit(const LessonTabLoading());
     await getLessonWeekStates(isRefresh: isRefresh);
-    await getLessonsList(isRefresh: isRefresh);
 
     if (currentWeek != null) {
       Timer(const Duration(milliseconds: 100), () {
@@ -103,13 +102,14 @@ class LessonTabCubit extends Cubit<LessonTabState> {
         });
       }
     }
+
+    await getLessonsList(isRefresh: isRefresh);
   }
 
   Future<void> onRefresh({bool isRefresh = false, bool showCurrentWeek = false, int? currentWeek}) async {
     await getLessonWeekStates(isRefresh: isRefresh);
-    await getLessonsList(isRefresh: isRefresh);
 
-    if (currentWeek != null) {
+     if (currentWeek != null) {
       Timer(const Duration(milliseconds: 100), () {
         emit(LessonTabWeekChanged(filterData.currentWeek!));
       });
@@ -120,6 +120,8 @@ class LessonTabCubit extends Cubit<LessonTabState> {
         });
       }
     }    
+
+    await getLessonsList(isRefresh: isRefresh);
   }
 
   Future<void> getLessonsList({bool isRefresh = false, bool isShowLoading = false, bool isRefreshData = true,}) async {

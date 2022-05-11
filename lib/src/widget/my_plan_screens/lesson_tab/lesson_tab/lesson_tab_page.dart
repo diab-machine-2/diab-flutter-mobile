@@ -76,7 +76,9 @@ class _LessonTabPageState extends State<LessonTabPage> with AutomaticKeepAliveCl
           if (state is LessonTabLoading) {
             BotToast.showLoading();
           } else {
-            BotToast.closeAllLoading();
+            if (state is! LessonTabWeekChanged) {
+              BotToast.closeAllLoading();
+            }
             _controller.refreshCompleted();
           }
           if (state is LessonTabFailure) {
@@ -193,7 +195,7 @@ class _LessonTabPageState extends State<LessonTabPage> with AutomaticKeepAliveCl
                           scrollController: _lessonScrollController,
                           onRefresh: () => _cubit.onRefresh(isRefresh: true),
                           child: _cubit.lessonsList!.isEmpty
-                              ? state is LessonTabLoading ? Container() : _buildEmptyLessonList()
+                              ? (state is LessonTabLoading || state is LessonTabWeekChanged) ? Container() : _buildEmptyLessonList()
                               : SingleChildScrollView(
                                   child: Column(
                                     children: List.generate(

@@ -101,9 +101,6 @@ class ActivityTabCubit extends Cubit<ActivityTabState> {
 
     //  await getSmartGoalStatistics(hideLoadingAfterDone: false);
     await refreshData(keepCurrentDay: false, isRefresh: false, isReloadStatistic: false);
-    Timer(const Duration(milliseconds: 100), () {
-      emit(ActivityTabWeekChanged(currentWeekIndex ?? 0));
-    });
     //  emit(const ActivityTabProgressChanged());
   }
 
@@ -194,6 +191,9 @@ class ActivityTabCubit extends Cubit<ActivityTabState> {
         //     emit(ActivityTabFailure(NetworkExceptions.getErrorMessage(error)));
       });
     }
+    Timer(const Duration(milliseconds: 100), () {
+      emit(ActivityTabWeekChanged(currentWeekIndex ?? 0));
+    });
     //   if (hideLoadingAfterDone) emit(const ActivityTabInitial());
   }
 

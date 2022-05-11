@@ -73,7 +73,9 @@ class _ExerciseTabPageState extends State<ExerciseTabPage> with AutomaticKeepAli
           if (state is ExerciseTabLoading) {
             BotToast.showLoading();
           } else {
-            BotToast.closeAllLoading();
+            if(state is! ExerciseTabWeekChanged) {
+              BotToast.closeAllLoading();
+            }
             _controller.refreshCompleted();
           }
           if (state is ExerciseTabFailure) {

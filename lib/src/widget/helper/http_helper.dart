@@ -13,7 +13,7 @@ class FetchClient {
   static String get identifyBaseURL {
     // return 'is.diab.com.vn';
     //return 'id.savvycom.asia';
-    return AppSettings.environment == "staging" ? 'is.savvycom.asia' : 'is.diab.com.vn';
+    return AppSettings.environment == "staging" ? 'is.stg.savvycom.asia' : 'is.diab.com.vn';
     // return 'diab-id-staging.savvycom.vn';
     // return 'is.stg.diab.cptech.vn';
     // return 'is.dev.diab.cptech.vn';
@@ -23,7 +23,7 @@ class FetchClient {
   static String get baseURL {
     // return 'api.diab.com.vn';
     // return 'diab-api-staging.savvycom.vn';
-    return AppSettings.environment == "staging" ? 'api.savvycom.asia' : 'api.diab.com.vn';
+    return AppSettings.environment == "staging" ? 'api.stg.savvycom.asia' : 'api.diab.com.vn';
     //return 'api.savvycom.asia';
     // return 'api.stg.diab.cptech.vn';
     // return 'api.mobile.dev.diab.cptech.vn';
