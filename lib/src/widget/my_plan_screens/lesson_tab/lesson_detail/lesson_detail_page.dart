@@ -195,7 +195,7 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                           onTapPrevious: () {
                             _cubit.onChangeSection(context, _cubit.currentSection - 1);
                           },
-                          isNextButtonActive: !_cubit.isLastSection,
+                          isNextButtonActive: (!_cubit.isLastSection && (_cubit.currentSectionDetail?.isComplete ?? false)),
                           onTapNext: () {
                             _cubit.onChangeSection(context, _cubit.currentSection + 1);
                           },

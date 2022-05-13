@@ -5,7 +5,6 @@ flutter_native_splash:
   background_image_dark: "assets/images/bg_splash1.png"
   image_dark: "assets/images/img_logo1.png"
   branding_dark: "assets/images/img_branding1.png"
-  fill: true
   android_12:
     image: "assets/images/img_logo1.png"
   android: true

@@ -212,12 +212,12 @@ class _LessonTabPageState extends State<LessonTabPage> with AutomaticKeepAliveCl
                                                 ),
                                               );
                                               // if(result == 0) {
-                                              //   _controller.requestRefresh();
+                                              _controller.requestRefresh();
                                               // }
-                                              if(result != null){
-                                                _cubit.getInitData(isRefresh: false,
-                                                  showCurrentWeek: true, currentWeek: _cubit.filterData.currentWeek);
-                                              }
+                                           //   if(result != null){
+                                           //     _cubit.getInitData(isRefresh: true,
+                                           //       showCurrentWeek: true, currentWeek: _cubit.filterData.currentWeek);
+                                           //   }
                                             }
                                           }),
                                     )

@@ -73,8 +73,8 @@ class AllQuestionAnswerCubit extends Cubit<AllQuestionAnswerState> {
       BotToast.showLoading();
     }
 
-    await getListLessonModule();
-    await getQuestions();
+    getListLessonModule();
+    getQuestions();
   }
 
   getListLessonModule() async {

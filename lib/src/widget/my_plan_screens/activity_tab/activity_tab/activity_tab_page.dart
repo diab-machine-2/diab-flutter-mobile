@@ -348,7 +348,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
         Expanded(
           child: Container(
             alignment: Alignment.centerRight,
-            padding: const EdgeInsets.symmetric(horizontal: 16),
+            padding: const EdgeInsets.symmetric(horizontal: 8),
             color: R.color.transparent,
             child: DayInWeekWidget(
               data: _cubit.dayInWeekList,

@@ -5,7 +5,7 @@ import 'package:medical/res/R.dart';
 import 'button_widget.dart';
 
 class CustomBottomBarWidget extends StatelessWidget {
-  const CustomBottomBarWidget({
+  CustomBottomBarWidget({
     required this.isPreviousButtonActive,
     required this.isNextButtonActive,
     required this.onTapPrevious,
@@ -25,7 +25,7 @@ class CustomBottomBarWidget extends StatelessWidget {
   final VoidCallback? onTapCenter;
   final String? previousButtonTitle;
   final String? nextButtonTitle;
-  final bool? isCompleted;
+  bool? isCompleted;
 
   @override
   Widget build(BuildContext context) {
@@ -125,7 +125,7 @@ class CustomBottomBarWidget extends StatelessWidget {
       );
     }
     return InkWell(
-      onTap: onTapNext,
+      onTap: isNextButtonActive ? onTapNext: null,
       child: Container(
         width: 140,
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
