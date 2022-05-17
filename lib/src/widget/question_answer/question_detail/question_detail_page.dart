@@ -35,6 +35,12 @@ class _QuestionDetailPageState extends State<QuestionDetailPage> with WidgetsBin
     WidgetsBinding.instance?.addObserver(this);
     _controller = TextEditingController(text: '');
     final AppRepository appRepository = AppRepository();
+
+    // if(widget.questionModel.answer != null){
+    //   widget.questionModel.answers = [];
+    //   widget.questionModel.answers!.add(widget.questionModel.answer!);
+    // }
+
     _cubit = QuestionDetailCubit(appRepository, widget.isAll, widget.questionModel);
   }
 
@@ -472,9 +478,9 @@ class _QuestionDetailPageState extends State<QuestionDetailPage> with WidgetsBin
       if (_controller.text.isNotEmpty) {
         Utils.hideKeyboard(context);
         await _cubit.sendComment(_controller.text);
-        Future.delayed(Duration(milliseconds: 400), (){
-           _cubit.getQuestionById();
-        });
+        // Future.delayed(Duration(milliseconds: 400), (){
+        //    _cubit.getQuestionById();
+        // });
         
         _controller.clear();
       } else {

@@ -12,9 +12,10 @@ class QuestionModel {
     this.lessonModuleId,
     this.lessonModule,
     this.professor,
-    this.answers,
+    this.answer,
     this.creatorId,
     this.creatorUrl,
+    this.answers,
   });
 
   String? id;
@@ -27,6 +28,7 @@ class QuestionModel {
   String? lessonModuleId;
   LessonModuleItem? lessonModule;
   Account? professor;
+  Answer? answer;
   List<Answer>? answers;
   String? creatorId;
   Avatar? creatorUrl;
@@ -42,9 +44,10 @@ class QuestionModel {
     String? lessonModuleId,
     LessonModuleItem? lessonModule,
     Account? professor,
-    List<Answer>? answers,
+    Answer? answer,
     String? creatorId,
     Avatar? creatorUrl,
+    List<Answer>? answers,
   }) {
     return QuestionModel(
       id: id ?? this.id,
@@ -57,9 +60,10 @@ class QuestionModel {
       lessonModule: lessonModule ?? this.lessonModule,
       lessonModuleId: lessonModuleId ?? this.lessonModuleId,
       professor: professor ?? this.professor,
-      answers: answers ?? this.answers,
+      answer: answer ?? this.answer,
       creatorId: creatorId ?? this.creatorId,
       creatorUrl: creatorUrl ?? this.creatorUrl,
+      answers: answers ?? this.answers,
     );
   }
 
@@ -77,7 +81,9 @@ class QuestionModel {
         creatorId: json["creatorId"],
         professor: json["professor"] != null ? Account.fromJson(json["professor"]) : null,
         creatorUrl: json["creatorUrl"] != null ? Avatar.fromJson(json["creatorUrl"]) : null,
+        answer: json["answer"] != null ? Answer.fromJson(json["answer"]) : null,
         answers: json["answers"] == null ? [] : List<Answer>.from(json["answers"].map((x) => Answer.fromJson(x))),
+
       );
 
   Map<String, dynamic> toJson() => {
@@ -92,7 +98,9 @@ class QuestionModel {
         "lessonModule": lessonModule == null ? null : lessonModule!.toJson(),
         "professor": professor == null ? null : professor!.toJson(),
         "creatorUrl": creatorUrl == null ? null : creatorUrl!.toJson(),
+        "answer": answer == null ? null : answer!.toJson(),
         "answers": answers == null ? null : List<dynamic>.from(answers!.map((x) => x.toJson())),
+
       };
 }
 

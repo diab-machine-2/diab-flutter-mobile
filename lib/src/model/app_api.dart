@@ -266,7 +266,7 @@ abstract class AppApi {
     @Query('day') int? day,
   });
 
-  @GET("App/Question")
+  @GET("App/Question/GetAllMobile")
   Future<QuestionAnswerResponse> getListQuestion(@Query('page') int page, @Query('size') int size,
       @Query("lessonModuleIds") List<String>? lessonModuleIds, @Query("accountIds") List<String>? accountIds);
 
