@@ -143,8 +143,9 @@ class _LessonTabPageState extends State<LessonTabPage> with AutomaticKeepAliveCl
                           if (result is FilterData) {
                             _cubit.filterData = result;
                             _cubit.getInitData();
+                          } else {
+                            _cubit.refresh();
                           }
-                          _cubit.refresh();
                         },
                         child: Padding(
                           padding: const EdgeInsets.only(bottom: 12),

@@ -209,6 +209,9 @@ class _FoodMenuPageState extends State<FoodMenuPage> {
                                         return _buildMealWidget(
                                             mealData: _cubit.listDayFood?[_cubit.currentDayInWeek]?.timeGroups?[index],
                                             onChangeFood: (foodDetail) async {
+                                              if(foodDetail?.foodMenuCode == null){
+                                                
+                                              }
                                               final dynamic result = await NavigationUtil.navigatePage(
                                                 context,
                                                 ChangeMenuPage(

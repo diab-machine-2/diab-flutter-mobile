@@ -19,6 +19,7 @@ class FoodMenuCubit extends Cubit<FoodMenuState> {
 
   MenuResponseFood? menuResponseFood;
   List<MenuResponseListdayfood?>? listDayFood;
+
   int currentDayInWeek = 0;
   UserInfoResponseData? userInfo;
 
