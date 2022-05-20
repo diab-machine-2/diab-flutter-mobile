@@ -392,7 +392,8 @@ class _AppState extends State<App> {
                 case NavigatorName.goal_setting:
                   return _buildRoute(settings, GoalSettingController());
                 case NavigatorName.profile_info:
-                  return _buildRoute(settings, ProfileInfoController());
+                  final data = settings.arguments as Map<String, dynamic>?;
+                  return _buildRoute(settings, ProfileInfoController(id: data?['id']));
                 case NavigatorName.notification:
                   return _buildRoute(settings, NotificationTabbarController());
                 case NavigatorName.notification_detail:

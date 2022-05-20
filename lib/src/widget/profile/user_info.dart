@@ -46,6 +46,10 @@ import 'widgets/gender_picker.dart';
 import 'widgets/motivation_popup_widget.dart';
 
 class ProfileInfoController extends StatefulWidget {
+  final String? id;
+
+  ProfileInfoController({required this.id});
+
   @override
   _ProfileInfoControllerState createState() => _ProfileInfoControllerState();
 }
@@ -62,6 +66,10 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
   void initState() {
     super.initState();
     Observable.instance.addObserver(this);
+
+    if(widget.id != null){
+      UserClient().markCompletedUpdateProfile(widget.id);
+    }
 
     isHasRoadMap = user.ownPackage?.ownRoadmap != null;
 

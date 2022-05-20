@@ -87,6 +87,11 @@ class _QuestionItemState extends State<QuestionItem> with AutomaticKeepAliveClie
   }
 
   _buildQuestionItemInCard(QuestionModel questionModel) {
+    if(questionModel.answer == null){
+      if(questionModel.answers != null && questionModel.answers?.isNotEmpty == true){
+        questionModel.answer = questionModel.answers!.last;
+      }
+    }
     return Card(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(8.0),

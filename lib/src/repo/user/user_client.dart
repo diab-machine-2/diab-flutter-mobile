@@ -1,3 +1,4 @@
+import 'package:bot_toast/bot_toast.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_observer/Observable.dart';
@@ -25,6 +26,7 @@ import 'package:medical/src/modal/error/error_model.dart';
 import 'package:easy_localization/easy_localization.dart';
 
 import '../../model/repository/app_repository.dart';
+import '../../model/response/common_response.dart';
 import '../../model/response/menu_response.dart';
 import '../../model/service/api_result.dart';
 import '../../model/service/network_exceptions.dart';
@@ -643,6 +645,17 @@ class UserClient extends FetchClient {
     } catch (e) {
       throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
     }
+  }
+
+  Future<void> markCompletedUpdateProfile(String? id) async {
+    BotToast.showLoading();
+    final ApiResult<CommonResponse> apiResult = await repository.markCompletedUpdateProfile(id ?? '');
+    apiResult.when(success: (CommonResponse response) {
+      Observable.instance.notifyObservers([], notifyName: "food_change_data");
+      BotToast.closeAllLoading();
+    }, failure: (NetworkExceptions error) {
+      BotToast.closeAllLoading();
+    });
   }
 
   Future<bool> inputMotivationDiary(String? content) async {

@@ -8,6 +8,7 @@ import 'package:flutter_observer/Observable.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/request/complete_smart_goal_request.dart';
+import 'package:medical/src/model/request/complete_update_profile_request.dart';
 import 'package:medical/src/model/request/mark_completed_calendar_request.dart';
 import 'package:medical/src/model/response/common_response.dart';
 import 'package:medical/src/model/response/delete_smart_goal_reponse.dart';
@@ -208,6 +209,20 @@ class ActivityTabCubit extends Cubit<ActivityTabState> {
     //       .notifyObservers([], notifyName: "food_change_data");
       refreshData(isRefresh: true);
       //   emit(const ActivityTabSuccess());
+    }, failure: (NetworkExceptions error) {
+      emit(ActivityTabFailure(NetworkExceptions.getErrorMessage(error)));
+    });
+    //   emit(const ActivityTabInitial());
+  }
+
+  Future<void> markCompletedUpdateProfile(String? id) async {
+    emit(const ActivityTabLoading());
+   //  final CompleteUpdateProfileRequest request =
+   //     CompleteUpdateProfileRequest(id: id ?? '');
+    final ApiResult<CommonResponse> apiResult = await repository.markCompletedUpdateProfile(id ?? '');
+    apiResult.when(success: (CommonResponse response) {
+      refreshData(isRefresh: true);
+    //   emit(const ActivityTabSuccess());
     }, failure: (NetworkExceptions error) {
       emit(ActivityTabFailure(NetworkExceptions.getErrorMessage(error)));
     });

@@ -1,3 +1,4 @@
+import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/request/post_survey_request.dart';
@@ -210,7 +211,9 @@ class SurveyQuestionCubit extends Cubit<SurveyQuestionState> {
     required String questionId,
     required bool isRelatedQuestion,
   }) async {
-    emit(SurveyQuestionLoading());
+    // await Future.delayed(Duration(milliseconds: 1));
+    // emit(SurveyQuestionLoading());
+    BotToast.showLoading();
     final List<QuestionAnswerResults> list = [];
     answer.forEach((key, value) {
       list.add(value);

@@ -172,7 +172,9 @@ class _SurveyQuestionPageState extends State<SurveyQuestionPage> {
                       quizData: data,
                       surveySectionId: _cubit.sectionSurvey?.id ?? '',
                       onSubmitAnswer: (listAnswer) {
-                        _cubit.currentText = listAnswer.content ?? '';
+                        if(listAnswer.content != null && listAnswer.content?.isNotEmpty == true) {
+                          _cubit.currentText = listAnswer.content!;
+                        }
                         _cubit.recordAnswer(
                           questionId: data.id!,
                           answerResult: listAnswer,

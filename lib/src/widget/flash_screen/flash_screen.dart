@@ -43,7 +43,7 @@ class _FlashScreenControllerState extends State<FlashScreenController> {
         code: "123",
         platform: "iOs",
         enviroment: "production",
-        version: "1.1.5",
+        version: "1.1.6",
       );
     }
 
@@ -59,8 +59,18 @@ class _FlashScreenControllerState extends State<FlashScreenController> {
       );
     }
 
-    await AppSettings.saveEnvironment(appVersion?.enviroment);
-    AppSettings.environment = appVersion?.enviroment ?? "";
+    if(appVersion == null){
+      appVersion = AppVersionResponse(
+        id: "cb110991-eb73-4dc7-92ce-50157c3ee359",
+        code: "123",
+        platform: "iOs",
+        enviroment: "production",
+        version: "1.1.6",
+      );
+    }
+
+    await AppSettings.saveEnvironment(appVersion.enviroment);
+    AppSettings.environment = appVersion.enviroment ?? "";
     AppSettings.secureModel = secureModel;
     AppClient();
     appClient = AppClient().appClient;

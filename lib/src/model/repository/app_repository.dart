@@ -59,6 +59,7 @@ import 'package:medical/src/model/service/network_exceptions.dart';
 
 import '../app_api.dart';
 import '../request/SelectRoadmapRequest.dart';
+import '../request/complete_update_profile_request.dart';
 import '../request/complete_video_request.dart';
 import '../request/mark_completed_calendar_request.dart';
 import '../request/read_welcome_request.dart';
@@ -500,6 +501,15 @@ class AppRepository {
   Future<ApiResult<CommonResponse>> completeSmartGoal(CompleteSmartGoalRequest request) async {
     try {
       final CommonResponse response = await appClient.completeSmartGoal(request);
+      return ApiResult.success(data: response);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
+  Future<ApiResult<CommonResponse>> markCompletedUpdateProfile(String id) async {
+    try {
+      final CommonResponse response = await appClient.markCompletedUpdateProfile(id);
       return ApiResult.success(data: response);
     } catch (e) {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));

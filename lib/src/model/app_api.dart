@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:medical/src/model/request/SelectRoadmapRequest.dart';
+import 'package:medical/src/model/request/complete_update_profile_request.dart';
 import 'package:medical/src/model/request/has_shared_profile_request.dart';
 import 'package:medical/src/model/request/make_comment_request.dart';
 import 'package:medical/src/model/request/make_question_request.dart';
@@ -237,6 +238,11 @@ abstract class AppApi {
   @POST("App/Target/MarkCompletedTarget")
   Future<CommonResponse> completeSmartGoal(
     @Body() CompleteSmartGoalRequest request,
+  );
+
+  @POST("App/Target/MarkCompletedUpdateProfile")
+  Future<CommonResponse> markCompletedUpdateProfile(
+    @Query("id") String id,
   );
 
   @POST("App/Target/MarkCompletedTarget")
