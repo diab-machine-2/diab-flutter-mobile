@@ -499,6 +499,24 @@ class _AppApi implements AppApi {
   }
 
   @override
+  Future<ContentWelcomeResponse> getContentWelcome(accountId) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{r'accountId': accountId};
+    queryParameters.removeWhere((k, v) => v == null);
+    final _headers = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    final _result = await _dio.fetch<Map<String, dynamic>>(
+        _setStreamType<ContentWelcomeResponse>(Options(
+                method: 'GET', headers: _headers, extra: _extra)
+            .compose(
+                _dio.options, 'App/PackageAccountTransaction/GetContentWelcome',
+                queryParameters: queryParameters, data: _data)
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = ContentWelcomeResponse.fromJson(_result.data!);
+    return value;
+  }
+
+  @override
   Future<CommonResponse> exerciseFeedback(request) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};

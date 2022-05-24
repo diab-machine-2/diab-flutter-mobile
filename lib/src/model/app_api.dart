@@ -9,6 +9,7 @@ import 'package:medical/src/model/request/mark_completed_target_request.dart';
 import 'package:medical/src/model/request/read_welcome_request.dart';
 import 'package:medical/src/model/response/app_version_response.dart';
 import 'package:medical/src/model/response/calendar_training_response.dart';
+import 'package:medical/src/model/response/content_welcome_response.dart';
 import 'package:medical/src/model/response/expert_comment_list_response.dart';
 import 'package:medical/src/model/response/lesson_module_response.dart';
 import 'package:medical/src/model/response/question_answer_response.dart';
@@ -206,6 +207,11 @@ abstract class AppApi {
   @GET("App/ExerciseMovement/All")
   Future<ExerciseMovementResponse> getExerciseMovement(
     @Query('week') int? week,
+  );
+
+  @GET("App/PackageAccountTransaction/GetContentWelcome")
+  Future<ContentWelcomeResponse> getContentWelcome(
+    @Query('accountId') String? accountId,
   );
 
   @POST("App/ExerciseMovementReview")

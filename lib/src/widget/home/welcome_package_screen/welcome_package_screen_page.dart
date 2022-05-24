@@ -1,6 +1,9 @@
+import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_html/flutter_html.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../../model/repository/app_repository.dart';
 import '../../../utils/const.dart';
 import 'welcome_package_screen.dart';
@@ -31,6 +34,7 @@ class _WelcomePackageScreenPageState extends State<WelcomePackageScreenPage> {
     super.initState();
     final AppRepository appRepository = AppRepository();
     _cubit = WelcomePackageScreenCubit(appRepository);
+    _cubit.getContentWelcome();
   }
 
   @override
@@ -39,7 +43,13 @@ class _WelcomePackageScreenPageState extends State<WelcomePackageScreenPage> {
       body: BlocProvider(
         create: (context) => _cubit,
         child: BlocListener<WelcomePackageScreenCubit, WelcomePackageScreenState>(
-          listener: (context, state) {},
+          listener: (context, state) {
+            if(state is WelcomePackageScreenLoading){
+              BotToast.showLoading();
+            } else {
+              BotToast.closeAllLoading();
+            }
+          },
           child: BlocBuilder<WelcomePackageScreenCubit, WelcomePackageScreenState>(
             builder: (context, state) {
               return _buildPage(context, state);
@@ -74,10 +84,31 @@ class _WelcomePackageScreenPageState extends State<WelcomePackageScreenPage> {
                         style: TextStyle(color: R.color.mainColor, fontSize: 24, fontWeight: FontWeight.w700)),
                     SizedBox(height: 16),
                     Padding(
-                      padding: EdgeInsets.only(left: 32, right: 32),
-                      child: Text(widget.subTitle ?? '',
-                          style: TextStyle(color: R.color.color0xff333333, fontSize: 16, fontWeight: FontWeight.w400),
-                          textAlign: TextAlign.center),
+                      padding: EdgeInsets.only(left: 8, right: 8),
+                      child: 
+                      // Text(widget.subTitle ?? '',
+                      //     style: TextStyle(color: R.color.color0xff333333, fontSize: 16, fontWeight: FontWeight.w400),
+                      //     textAlign: TextAlign.center),
+                      Html(
+                        data: '''<p style="line-height: 1;"><span style="font-family: Arial, Helvetica, sans-serif; font-size: 15px;line-height: 1">Ch&agrave;o mừng <strong>${_cubit.content?.fullName ?? ''}</strong> đ&atilde; đăng k&yacute; th&agrave;nh c&ocirc;ng g&oacute;i dịch vụ <strong>${_cubit.content?.packageName ?? ''}</strong> của diaB.</span></p>
+                          <p style="line-height: 1;"><span style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; line-height: 1;">Để chuẩn bị tốt nhất cho chương tr&igrave;nh của m&igrave;nh, <strong>${_cubit.getGender(_cubit.content?.gender)}</strong> h&atilde;y theo c&aacute;c hướng dẫn sau:</span></p>
+                          <ul>
+                              <li style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; line-height: 1;">Ho&agrave;n th&agrave;nh c&aacute;c việc trong &quot;Lịch tr&igrave;nh của t&ocirc;i&quot;.</li>
+                              <li style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; line-height: 1;">L&agrave;m theo c&aacute;c hướng dẫn từ diaB.</li>
+                          </ul>
+                          <p style="line-height: 1;"><span style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; line-height: 1;">Li&ecirc;n hệ với diaB khi cần:</span></p>
+                          <ul>
+                              <li style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; line-height: 1;">Hotline: <strong>${_cubit.content?.hotLine ?? ''}</strong></li>
+                              <li style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; line-height: 1;">Email: <a href="mailto:lienhe@diab.com.vn">lienhe@diab.com.vn</a></li>
+                          </ul>
+                          <p><br></p>''',
+                        style: {"body": Style(padding: EdgeInsets.zero, margin: EdgeInsets.zero),},
+                        onLinkTap: (url, context, attributes, element) async {
+                          await canLaunch(url!)
+                              ? await launch(url, forceSafariVC: false, forceWebView: false)
+                              : throw 'Could not launch $url';
+                        },
+                      ),
                     ),
                 ],  
               ),

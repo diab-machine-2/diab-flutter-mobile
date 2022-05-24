@@ -65,6 +65,7 @@ import '../request/mark_completed_calendar_request.dart';
 import '../request/read_welcome_request.dart';
 import '../response/app_version_response.dart';
 import '../response/calendar_training_response.dart';
+import '../response/content_welcome_response.dart';
 import '../response/expert_comment_response.dart';
 import '../service/app_client.dart';
 
@@ -416,6 +417,15 @@ class AppRepository {
   Future<ApiResult<ExerciseMovementResponse>> getExerciseMovement({int? week}) async {
     try {
       final ExerciseMovementResponse response = await appClient.getExerciseMovement(week);
+      return ApiResult.success(data: response);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
+  Future<ApiResult<ContentWelcomeResponse>> getContentWelcome(String accountId) async {
+    try {
+      final ContentWelcomeResponse response = await appClient.getContentWelcome(accountId);
       return ApiResult.success(data: response);
     } catch (e) {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));
