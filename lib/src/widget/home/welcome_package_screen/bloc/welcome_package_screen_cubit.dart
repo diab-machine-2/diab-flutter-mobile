@@ -17,8 +17,8 @@ class WelcomePackageScreenCubit extends Cubit<WelcomePackageScreenState> {
   WelcomePackageScreenCubit(this.repository): super(WelcomePackageScreenInitial()) {}
 
   Future<void> getContentWelcome() async {
-    await Future.delayed(Duration.zero);
-    emit(WelcomePackageScreenLoading());
+//    await Future.delayed(Duration.zero);
+//    emit(WelcomePackageScreenLoading());
 
     user = AppSettings.userInfo;
     content = ContentWelcomeResponseData(

@@ -57,7 +57,7 @@ class CardCourseQuizSurveyPageState extends State<CardCourseQuizSurveyPage>
       ),
     );
     if(widget.quizData.results != null && widget.quizData.answers?.isEmpty == true){
-      String text = widget.quizData.results!.content ?? '';
+      String text = widget.quizData.results!.isNotEmpty ? widget.quizData.results!.first.content ?? '' : '';
       _textController.text = text;
       if(text.isNotEmpty){
         widget.onSubmitAnswer(QuestionAnswerResults(

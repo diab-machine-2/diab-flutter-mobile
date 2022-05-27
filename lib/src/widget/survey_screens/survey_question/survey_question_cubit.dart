@@ -202,7 +202,11 @@ class SurveyQuestionCubit extends Cubit<SurveyQuestionState> {
     isShowed = true;
     emit(SurveyQuestionLoading());
     selectedCourseIndex = index;
-    currentText = questions[selectedCourseIndex].results?.content ?? '';
+    if(questions[selectedCourseIndex].results != null && questions[selectedCourseIndex].results?.isNotEmpty == true) {
+      currentText = questions[selectedCourseIndex].results!.first.content ?? '';
+    } else {
+      currentText = '';
+    }
     emit(InitialSurveyQuestionState());
   }
 

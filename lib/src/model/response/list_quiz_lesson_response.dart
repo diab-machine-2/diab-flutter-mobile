@@ -70,7 +70,7 @@ class QuizData {
     String? explain,
     dynamic minCompletePercent,
     List<AnswerData>? answers,
-    ResultData? results,
+    List<ResultData>? results,
   }) {
     _id = id;
     _code = code;
@@ -118,9 +118,16 @@ class QuizData {
         _answers?.add(AnswerData.fromJson(v));
       });
     }
+
     if (json['result'] != null) {
-      _results = ResultData.fromJson(json['result']);
+      _results = [];
+      json['result'].forEach((v) {
+        _results?.add(ResultData.fromJson(v));
+      });
     }
+    // if (json['result'] != null) {
+    //   _results = ResultData.fromJson(json['result']);
+    // }
   }
   String? _id;
   String? _code;
@@ -133,7 +140,7 @@ class QuizData {
   String? _explain;
   dynamic _minCompletePercent;
   List<AnswerData>? _answers;
-  ResultData? _results;
+  List<ResultData>? _results;
 
   String? get id => _id;
   String? get code => _code;
@@ -146,7 +153,7 @@ class QuizData {
   String? get explain => _explain;
   dynamic get minCompletePercent => _minCompletePercent;
   List<AnswerData>? get answers => _answers;
-  ResultData? get results => _results;
+  List<ResultData>? get results => _results;
 
   void setAnswers(List<AnswerData> listAnswer){
     _answers = listAnswer;
@@ -167,9 +174,13 @@ class QuizData {
     if (_answers != null) {
       map['answers'] = _answers?.map((v) => v.toJson()).toList();
     }
+
     if (_results != null) {
-      map['result'] = _results?.toJson();
+      map['result'] = _results?.map((v) => v.toJson()).toList();
     }
+    // if (_results != null) {
+    //   map['result'] = _results?.toJson();
+    // }
     return map;
   }
 }

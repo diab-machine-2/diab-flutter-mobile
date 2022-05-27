@@ -17,6 +17,12 @@ class SelectRoadMapCubit extends Cubit<SelectRoadMapState> {
 
   ListRoadmapResponseData? currentRoadMap;
 
+  String formatRoadmapName(String name) {
+    name = name.replaceAll("vận động ít", "<strong>vận động ít</strong>");
+    name = name.replaceAll("vận động nhiều", "<strong>vận động nhiều</strong>");
+    return name;
+  }
+
   Future<bool> getRoadAppRoadMap({
     bool isLoadMore = false,
   }) async {
