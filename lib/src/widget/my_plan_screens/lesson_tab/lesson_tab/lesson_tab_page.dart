@@ -17,6 +17,7 @@ import 'package:medical/src/widgets/lesson_status_widget.dart';
 import 'package:medical/src/widgets/network_image_widget.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
+import '../../../../utils/utils.dart';
 import '../../my_plan/models/completion_status.dart';
 import '../../my_plan/my_plan.dart';
 import '../../my_plan/widgets/app_bar_bottom.dart';
@@ -349,7 +350,7 @@ class _LessonTabPageState extends State<LessonTabPage> with AutomaticKeepAliveCl
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              state.weekTitle ?? '',
+              Utils.getNewTitle(state.weekTitle ?? ''),
               style: TextStyle(
                 color: isDisable ? R.color.grayCaption : textColor,
                 fontSize: 14,

@@ -30,6 +30,7 @@ class _FlashScreenControllerState extends State<FlashScreenController> {
   void initState() {
     super.initState();
     isNavigateToStepList = false;
+    getSecuredModel();
     getData();
   }
 
@@ -79,7 +80,6 @@ class _FlashScreenControllerState extends State<FlashScreenController> {
   getData() async {
     final String? sharedCode = await DeepLinkConfig.instance.getInitLink();
     try {
-      await getSecuredModel();
       final token = await AppSettings.getToken();
       AppSettings.environment = await AppSettings.getEnvironment();
       if (token.isNotEmpty) {
@@ -90,7 +90,8 @@ class _FlashScreenControllerState extends State<FlashScreenController> {
           "grant_type": "refresh_token",
           "refresh_token": refreshToken
         });
-        var user = await UserClient().fetchUser();
+        var user = await UserClient().getUserPreferences();
+        AppSettings.userInfo = user;
         if (user == null) {
           if(!isNavigateToStepList) {
               Message.showToastMessage(context, R.string.phien_dang_nhap_het_han_vui_long_dang_nhap_lai.tr());

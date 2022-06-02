@@ -20,6 +20,7 @@ import '../modal/user/secure.dart';
 
 class AppSettings {
   static UserModel? userInfo;
+  static bool isGetUser = false;
   static List<SmartGoalList?> smartGoalDayList = [];
   static CategoryUserModel? categoryUserModel;
   static int? currentDateTime;
@@ -156,6 +157,7 @@ class AppSettings {
       await clearRefreshToken();
       appPreference.removeData("hasNewReports");
       appPreference.removeData("reports");
+      appPreference.removeData("user");
       final GoogleSignIn _googleSignIn = GoogleSignIn();
       _googleSignIn.signOut();
       final facebookLogin = FacebookLogin();

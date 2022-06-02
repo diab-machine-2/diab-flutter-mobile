@@ -81,7 +81,7 @@ class ExerciseTabCubit extends Cubit<ExerciseTabState> {
   }
 
   Future<void> onRefresh({bool isRefresh = false, bool keepSelectedDayIndex = false}) async {
-    if (myPlanCubit.isHasRoadmapUser) await getWeekStates(isRefresh: isRefresh);
+ //   if (myPlanCubit.isHasRoadmapUser) await getWeekStates(isRefresh: isRefresh);
     getExerciseMovement(isRefresh: isRefresh, keepSelectedDayIndex: keepSelectedDayIndex);
   }
 

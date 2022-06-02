@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:bot_toast/bot_toast.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
@@ -24,6 +26,7 @@ import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/helper/http_helper.dart';
 import 'package:medical/src/modal/error/error_model.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../model/repository/app_repository.dart';
 import '../../model/response/common_response.dart';
@@ -59,6 +62,8 @@ class UserClient extends FetchClient {
         } else {
           var user = UserModel.fromJson(response.data['data']);
           AppSettings.userInfo = user;
+          AppSettings.isGetUser = true;
+          await saveUserPreferences(user);
 
           //await fetchUserInfo(user.patientId);
           Observable.instance.notifyObservers([], notifyName: "user_info_change");
@@ -73,6 +78,33 @@ class UserClient extends FetchClient {
       throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
     }
   }
+
+  Future<void> saveUserPreferences(UserModel userModel) async {
+    final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
+    final SharedPreferences prefs = await _prefs;
+    try {
+      var json = jsonEncode(userModel.toJson());
+      prefs.setString('user', json);
+    } catch(error){
+      print('${error.toString()}');
+    }
+  }
+
+  Future<UserModel?> getUserPreferences() async {
+    final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
+    final SharedPreferences prefs = await _prefs;
+    final userJson = prefs.getString('user');
+    UserModel? user;
+    if(userJson != null){
+      try {
+        user = UserModel.fromJson(jsonDecode(userJson));
+      } catch(error){
+        
+      }
+    }
+    return user;
+  }
+
 
   // Future<CategoryUserModel?> fetchCategoryItems() async {
   //   try {

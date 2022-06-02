@@ -18,6 +18,7 @@ import 'package:medical/src/model/response/week_states_response.dart';
 import 'package:medical/src/model/service/api_result.dart';
 import 'package:medical/src/model/service/network_exceptions.dart';
 import 'package:medical/src/utils/date_utils.dart';
+import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/my_plan_screens/activity_tab/activity_tab/models/schedule_type.dart';
 import 'package:medical/src/widgets/day_in_week_widget.dart';
@@ -58,15 +59,27 @@ class ActivityTabCubit extends Cubit<ActivityTabState> {
 
   int? get currentDate => DateUtil.getCurrentDayInMillis();
 
+  var user = AppSettings.userInfo!;
+
+  bool isChangeNewWeek = false;
+
   int? get currentDay { 
-    if(dayStatesList.isEmpty) { 
-      return 0;
-    } else { 
-      // if(currentWeek == 0) {
-      //   return convertToGMT(dayStatesList[currentDayIndex]?.day);
-      // } else {
+    if(isChangeNewWeek && user.ownPackage?.endDateFirst != null){
+      if(currentWeek == currentWeekStudying){
+        return DateUtil.getCurrentDayInMillis();
+      } else if(currentWeek == 0){
+        return user.ownPackage?.activationDate ?? DateUtil.getCurrentDayInMillis();
+      } else {
+        DateTime dateTime = DateUtil.parseTimespanToDateTime(user.ownPackage!.endDateFirst!);
+        dateTime = dateTime.add(Duration(days: (currentWeek! - 1) * 7));
+        return DateUtil.getDayInMillis(dateTime);
+      }
+    } else {
+      if(dayStatesList.isEmpty) { 
+        return 0;
+      } else { 
         return dayStatesList[currentDayIndex]?.day;
-      //}
+      }
     }
   }
 
@@ -82,15 +95,18 @@ class ActivityTabCubit extends Cubit<ActivityTabState> {
 
   Future<void> onSelectWeek(int newWeekIndex, {bool hideLoadingAfterDone = false}) async {
     currentWeekIndex = newWeekIndex;
+    isChangeNewWeek = true;
     refreshData(keepCurrentDay: false);
   }
 
   void onSelectDay(int newDayIndex) {
     currentDayIndex = newDayIndex;
+    isChangeNewWeek = false;
     getListSmartGoal(isShowLoading: true);
   }
 
   Future<void> initData() async {
+    isChangeNewWeek = false;
     await myPlanCubit.checkUserInfo(isRequired: AppSettings.isReloadCurrentUserInfo);
 
     if (myPlanCubit.isHasRoadmapUser) {
@@ -110,8 +126,8 @@ class ActivityTabCubit extends Cubit<ActivityTabState> {
       await Future.delayed(Duration(milliseconds: 1));
       emit(const ActivityTabLoading());
     }
-    await getSmartGoalStatistics(isReloadStatistic: isReloadStatistic, isRefresh: isRefresh, hideLoadingAfterDone: true, keepCurrentDay: keepCurrentDay);
-    await getListSmartGoal(isRefresh: isRefresh);
+    getSmartGoalStatistics(isReloadStatistic: isReloadStatistic, isRefresh: isRefresh, hideLoadingAfterDone: true, keepCurrentDay: keepCurrentDay);
+    getListSmartGoal(isRefresh: isRefresh);
   }
 
   Future<void> getListSmartGoal({bool isRefresh = false, bool isShowLoading = false}) async {
@@ -281,19 +297,6 @@ class ActivityTabCubit extends Cubit<ActivityTabState> {
     prefs.setString('reports', json);
   }
 
-  Future<void> saveHasNewReportsFromPreferences(bool hasNewReports) async {
-    final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
-    final SharedPreferences prefs = await _prefs;
-    prefs.setBool('hasNewReports', hasNewReports);
-  }
-
-   Future<bool> getHasNewReportsFromPreferences() async {
-    final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
-    final SharedPreferences prefs = await _prefs;
-    final hasNewReports = prefs.getBool('hasNewReports') ?? false;
-    return hasNewReports;
-  }
-
   Future<List<ReportModel>> getReportsFromPreferences() async {
     final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
     final SharedPreferences prefs = await _prefs;
@@ -305,5 +308,18 @@ class ActivityTabCubit extends Cubit<ActivityTabState> {
       reports = List<ReportModel>.from(l.map((model)=> ReportModel.fromJson(model)));
     }
     return reports;
+  }
+
+  Future<void> saveHasNewReportsFromPreferences(bool hasNewReports) async {
+    final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
+    final SharedPreferences prefs = await _prefs;
+    prefs.setBool('hasNewReports', hasNewReports);
+  }
+
+   Future<bool> getHasNewReportsFromPreferences() async {
+    final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
+    final SharedPreferences prefs = await _prefs;
+    final hasNewReports = prefs.getBool('hasNewReports') ?? false;
+    return hasNewReports;
   }
 }

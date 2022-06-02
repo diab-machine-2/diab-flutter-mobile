@@ -20,6 +20,7 @@ import 'package:medical/src/widgets/video_player_widget.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
 
+import '../../../../utils/utils.dart';
 import '../../my_plan/models/completion_status.dart';
 import '../../my_plan/my_plan.dart';
 import '../../my_plan/widgets/app_bar_bottom.dart';
@@ -539,7 +540,7 @@ class _ExerciseTabPageState extends State<ExerciseTabPage> with AutomaticKeepAli
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              state.weekTitle ?? '',
+              Utils.getNewTitle(state.weekTitle ?? ''),
               style: TextStyle(
                 color: isSelected && state.completionStatus == CompletionStatus.not_start_yet
                     ? R.color.mainColor

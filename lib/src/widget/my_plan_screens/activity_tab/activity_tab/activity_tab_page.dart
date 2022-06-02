@@ -15,6 +15,7 @@ import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/date_utils.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/navigator_name.dart';
+import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/Food/daily_nutrition/daily_nutrition.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/my_booking/my_booking.dart';
@@ -404,7 +405,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              state?.weekTitle ?? '',
+              Utils.getNewTitle(state?.weekTitle ?? ''),
               style: TextStyle(
                 color: isSelected && state?.completionStatus == CompletionStatus.not_start_yet
                     ? R.color.mainColor

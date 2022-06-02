@@ -31,6 +31,20 @@ class Utils {
     return false;
   }
 
+  static String getNewTitle(String title){
+    if(title.length > 1){
+      var temp = title.substring(title.length - 1, title.length);
+      var tempInt = 0;
+      try {
+        tempInt = int.parse(temp);
+        tempInt = tempInt + 1;
+      } catch(error){}
+      return title.substring(0, title.length - 1) + tempInt.toString();
+    } else {
+      return title;
+    }
+  }
+
   static void setStatusColor(Color color) {
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
         statusBarColor: color, statusBarBrightness: Brightness.light, statusBarIconBrightness: Brightness.dark));

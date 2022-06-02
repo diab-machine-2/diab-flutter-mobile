@@ -107,7 +107,7 @@ class LessonTabCubit extends Cubit<LessonTabState> {
   }
 
   Future<void> onRefresh({bool isRefresh = false, bool showCurrentWeek = false, int? currentWeek}) async {
-    await getLessonWeekStates(isRefresh: isRefresh);
+  //  await getLessonWeekStates(isRefresh: isRefresh);
 
      if (currentWeek != null) {
       Timer(const Duration(milliseconds: 100), () {
