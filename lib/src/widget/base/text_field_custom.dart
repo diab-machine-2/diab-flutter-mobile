@@ -6,6 +6,7 @@ import 'package:medical/res/R.dart';
 class TextFieldCustom extends StatefulWidget {
   final String title;
   final String placeholder;
+  final double hintTextSize;
   final bool isPassword;
   final bool isSharedCode;
   final bool autoFocus;
@@ -20,6 +21,7 @@ class TextFieldCustom extends StatefulWidget {
       {Key? key,
       this.title = '',
       this.placeholder = '',
+      this.hintTextSize = 15,
       this.isPassword = false,
       this.isSharedCode = false,
       this.autoFocus = false,
@@ -128,7 +130,7 @@ class TextFieldCustomState extends State<TextFieldCustom> {
                                   hintStyle: TextStyle(
                                       fontFamily: 'roboto',
                                       color: R.color.textDark,
-                                      fontSize: 15,
+                                      fontSize: widget.hintTextSize,
                                       fontWeight: FontWeight.w300)),
                               onChanged: (value) {
                                 if (!widget.isSharedCode) {
@@ -183,7 +185,7 @@ class TextFieldCustomState extends State<TextFieldCustom> {
                                     hintStyle: TextStyle(
                                         fontFamily: 'roboto',
                                         color: R.color.textDark,
-                                        fontSize: 15,
+                                        fontSize: widget.hintTextSize,
                                         fontWeight: FontWeight.w300),
                                     fillColor: R.color.textDark),
                                 onChanged: (value) {

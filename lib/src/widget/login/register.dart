@@ -130,6 +130,7 @@ class _RegisterControllerState extends State<RegisterController> {
                               maxLength: 6,
                               title: R.string.references_code.tr(),
                               placeholder: R.string.input_references_code.tr(),
+                              hintTextSize: 15,
                               isSharedCode: true,
                               rightIcon: R.drawable.ic_qr_scan,
                               onRightWidgetClick: () async {

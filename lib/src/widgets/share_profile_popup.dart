@@ -37,6 +37,7 @@ class ShareProfilePopup {
   }) async {
     if(code.isEmpty) return;
     bool isCancel = false;
+    bool isShared = false;
     final BuildContext currentContext = context ?? navigatorKey.currentState!.context;
     
     final bool hasShareProfile = await _hasShareProfile(currentContext, code: code);
@@ -65,24 +66,34 @@ class ShareProfilePopup {
         description: R.string.share_profile_description.tr(), 
         onTapCancel: () async {
           if(!isCancel){
-            await markIsShare();
-            NavigationUtil.pop(currentContext);
             isCancel = true;
+            BotToast.showLoading();
+            await markIsShare();
+            BotToast.closeAllLoading();
+            NavigationUtil.pop(currentContext);
           }
         }, onTapYes: () async {
-          final bool sharingSuccessed = await _shareProfile(currentContext, code: code);
-          if (!sharingSuccessed) return;
-          await markIsShare();
-          NavigationUtil.pop(currentContext);
-          showPopup(currentContext,
-              image: R.drawable.img_survey_completed,
-              title: R.string.share_profile_success.tr(),
-              description: R.string.share_profile_success_description.tr(args: [userInfo?.data?.fullName ?? '']),
-              onTapYes: () {
-            NavigationUtil.pop(currentContext, result: true);
-          }, afterShow: () {
-            NavigationUtil.navigatePage(currentContext, const SharedProfilePage());
-          });
+          if(!isShared){
+            isShared = true;
+            BotToast.showLoading();
+            final bool sharingSuccessed = await _shareProfile(currentContext, code: code);
+            if (!sharingSuccessed) {
+              BotToast.closeAllLoading();
+              return;
+            }
+            await markIsShare();
+            BotToast.closeAllLoading();
+            NavigationUtil.pop(currentContext);
+            showPopup(currentContext,
+                image: R.drawable.img_survey_completed,
+                title: R.string.share_profile_success.tr(),
+                description: R.string.share_profile_success_description.tr(args: [userInfo?.data?.fullName ?? '']),
+                onTapYes: () {
+              NavigationUtil.pop(currentContext, result: true);
+            }, afterShow: () {
+              NavigationUtil.navigatePage(currentContext, const SharedProfilePage());
+            });
+          }
         },
       );
   }
