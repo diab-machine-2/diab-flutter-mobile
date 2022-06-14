@@ -13,6 +13,8 @@ import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:easy_localization/easy_localization.dart';
 
+import '../../../utils/utils.dart';
+
 class BmiDetailController extends StatefulWidget {
   BmiDetailController({Key? key}) : super(key: key);
   @override
@@ -273,7 +275,7 @@ class BmiDetailControllerState extends State<BmiDetailController>
                                                                           .w400)),
                                                           SizedBox(width: 4),
                                                           Text(
-                                                              roundNumber(
+                                                              Utils.showValue(
                                                                   model[index]
                                                                       .weight ?? 0),
                                                               style: TextStyle(

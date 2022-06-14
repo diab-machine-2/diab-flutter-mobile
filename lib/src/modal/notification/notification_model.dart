@@ -3,6 +3,7 @@ import 'notification_type.dart';
 class NotificationModel {
   final String? id;
   String? notificationId;
+  String? calendarId;
   String? title;
   String? body;
   String? topic;
@@ -17,6 +18,7 @@ class NotificationModel {
   NotificationModel(
       {this.id,
       this.notificationId,
+      this.calendarId,
       required this.title,
       required this.body,
       this.topic,
@@ -38,6 +40,7 @@ class NotificationModel {
     return NotificationModel(
       id: notification['id'],
       notificationId: notification['notificationId'],
+      calendarId: notification['calendarId'],
       title: notification['title'],
       body: notification['body'],
       topic: notification['topic'],
@@ -63,11 +66,12 @@ class NotificationModel {
 class NotificationData {
   final String? communicationId;
   final String? remindId;
+  final String? calendarId;
   final String notificationType;
   final String? notificationId;
   final String? referalCode;
 
-  NotificationData({required this.notificationId, required this.communicationId, required this.remindId, required this.notificationType, required this.referalCode});
+  NotificationData({required this.notificationId, required this.calendarId, required this.communicationId, required this.remindId, required this.notificationType, required this.referalCode});
 
   @override
   factory NotificationData.fromJson(dynamic json) {
@@ -75,6 +79,7 @@ class NotificationData {
         notificationId: json['notificationId'],
         communicationId: json['communicationId'],
         remindId: json['remindId'],
+        calendarId: json['calendarId'],
         referalCode: json['referalCode'],
         notificationType: json['notificationType']);
   }

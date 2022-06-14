@@ -74,7 +74,7 @@ class _NotificationDetailControllerState extends State<NotificationDetailControl
                           child: Container(
                               margin: const EdgeInsets.all(16),
                               width: 195,
-                              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                               decoration: BoxDecoration(
                                   color: R.color.mainColor,
                                   borderRadius: BorderRadius.circular(20),

@@ -329,8 +329,8 @@ class _AllQuestionAnswerPageState extends State<AllQuestionAnswerPage> with Auto
         var result = await Navigator.pushNamed(context, NavigatorName.question_detail,
             arguments: {'questionModel': questionModel, 'isAll': true});
         if (result != null) {
-          await refresh();
-          Observable.instance.notifyObservers([], notifyName: "update_my_question");
+      //    await refresh();
+      //    Observable.instance.notifyObservers([], notifyName: "update_my_question");
           
           // if (result is Map) {
           //   var type = result['type'];

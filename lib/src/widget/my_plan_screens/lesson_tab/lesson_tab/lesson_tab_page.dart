@@ -17,6 +17,7 @@ import 'package:medical/src/widgets/lesson_status_widget.dart';
 import 'package:medical/src/widgets/network_image_widget.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
+import '../../../../utils/utils.dart';
 import '../../my_plan/models/completion_status.dart';
 import '../../my_plan/my_plan.dart';
 import '../../my_plan/widgets/app_bar_bottom.dart';
@@ -76,7 +77,9 @@ class _LessonTabPageState extends State<LessonTabPage> with AutomaticKeepAliveCl
           if (state is LessonTabLoading) {
             BotToast.showLoading();
           } else {
-            BotToast.closeAllLoading();
+            if (state is! LessonTabWeekChanged) {
+              BotToast.closeAllLoading();
+            }
             _controller.refreshCompleted();
           }
           if (state is LessonTabFailure) {
@@ -87,13 +90,23 @@ class _LessonTabPageState extends State<LessonTabPage> with AutomaticKeepAliveCl
           }
           if (state is LessonTabScrollToLesson) {
             if (_lessonScrollController.hasClients) {
-              if(_cubit.lessonsList != null && _cubit.lessonsList!.length > 5){
-                 _lessonScrollController.animateTo(
-                  127.0 * state.newIndex,
-                  duration: const Duration(milliseconds: 10),
-                  curve: Curves.ease,
-                );
-              }
+           //   if(_cubit.currentLessonTypeIndex == 0){
+                if(_cubit.lessonsList != null && _cubit.lessonsList!.length > 5){
+                  _lessonScrollController.jumpTo(
+                    127.0 * state.newIndex,
+                //    duration: const Duration(milliseconds: 10),
+                //    curve: Curves.ease,
+                  );
+                }
+              // } else {
+              //   if(_cubit.lessonsListSuggest != null && _cubit.lessonsListSuggest!.length > 5){
+              //     _lessonScrollController.animateTo(
+              //       127.0 * state.newIndex,
+              //       duration: const Duration(milliseconds: 10),
+              //       curve: Curves.ease,
+              //     );
+              //   }
+              // }
             }
           }
         },
@@ -131,8 +144,9 @@ class _LessonTabPageState extends State<LessonTabPage> with AutomaticKeepAliveCl
                           if (result is FilterData) {
                             _cubit.filterData = result;
                             _cubit.getInitData();
+                          } else {
+                            _cubit.refresh();
                           }
-                          _cubit.refresh();
                         },
                         child: Padding(
                           padding: const EdgeInsets.only(bottom: 12),
@@ -181,9 +195,9 @@ class _LessonTabPageState extends State<LessonTabPage> with AutomaticKeepAliveCl
                         child: SmartRefresher(
                           controller: _controller,
                           scrollController: _lessonScrollController,
-                          onRefresh: () => _cubit.getInitData(isRefresh: true, showCurrentWeek: false),
+                          onRefresh: () => _cubit.onRefresh(isRefresh: true),
                           child: _cubit.lessonsList!.isEmpty
-                              ? _buildEmptyLessonList()
+                              ? (state is LessonTabLoading || state is LessonTabWeekChanged) ? Container() : _buildEmptyLessonList()
                               : SingleChildScrollView(
                                   child: Column(
                                     children: List.generate(
@@ -192,16 +206,20 @@ class _LessonTabPageState extends State<LessonTabPage> with AutomaticKeepAliveCl
                                           lessonDetail: _cubit.lessonsList?[index],
                                           onTap: () async {
                                             if (_cubit.lessonsList?[index]?.id?.isNotEmpty == true) {
-                                              await NavigationUtil.navigatePage(
+                                              var result = await NavigationUtil.navigatePage(
                                                 context,
                                                 LessonDetailPage(
                                                   lessonType: _cubit.lessonsList?[index]?.type,
                                                   lessonId: _cubit.lessonsList![index]!.id!,
                                                 ),
                                               );
+                                              // if(result == 0) {
                                               _controller.requestRefresh();
-                                              _cubit.getInitData(isRefresh: true,
-                                                  showCurrentWeek: false, currentWeek: _cubit.filterData.currentWeek);
+                                              // }
+                                           //   if(result != null){
+                                           //     _cubit.getInitData(isRefresh: true,
+                                           //       showCurrentWeek: true, currentWeek: _cubit.filterData.currentWeek);
+                                           //   }
                                             }
                                           }),
                                     )
@@ -332,7 +350,7 @@ class _LessonTabPageState extends State<LessonTabPage> with AutomaticKeepAliveCl
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              state.weekTitle ?? '',
+              Utils.getNewTitle(state.weekTitle ?? ''),
               style: TextStyle(
                 color: isDisable ? R.color.grayCaption : textColor,
                 fontSize: 14,

@@ -1,4 +1,8 @@
+import 'dart:convert';
+
+import 'package:bot_toast/bot_toast.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_observer/Observable.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
@@ -16,11 +20,20 @@ import 'package:medical/src/modal/user/schedule_reminder_model.dart';
 import 'package:medical/src/modal/user/secure.dart';
 import 'package:medical/src/modal/user/update_profile_request.dart';
 import 'package:medical/src/modal/user/user_model.dart';
+import 'package:medical/src/model/response/app_version_response.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/helper/http_helper.dart';
 import 'package:medical/src/modal/error/error_model.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import '../../model/repository/app_repository.dart';
+import '../../model/response/common_response.dart';
+import '../../model/response/menu_response.dart';
+import '../../model/service/api_result.dart';
+import '../../model/service/network_exceptions.dart';
+import '../../widget/helper/version.dart';
 
 enum CategoryType {
   JOB_TYPE,
@@ -38,6 +51,8 @@ enum CategoryType {
 }
 
 class UserClient extends FetchClient {
+  final AppRepository repository = AppRepository();
+
   Future<UserModel?> fetchUser() async {
     try {
       final Response response = await super.fetchData(url: '/App/Patient/mobile/CurrentToken');
@@ -47,6 +62,8 @@ class UserClient extends FetchClient {
         } else {
           var user = UserModel.fromJson(response.data['data']);
           AppSettings.userInfo = user;
+          AppSettings.isGetUser = true;
+          await saveUserPreferences(user);
 
           //await fetchUserInfo(user.patientId);
           Observable.instance.notifyObservers([], notifyName: "user_info_change");
@@ -61,6 +78,33 @@ class UserClient extends FetchClient {
       throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
     }
   }
+
+  Future<void> saveUserPreferences(UserModel userModel) async {
+    final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
+    final SharedPreferences prefs = await _prefs;
+    try {
+      var json = jsonEncode(userModel.toJson());
+      prefs.setString('user', json);
+    } catch(error){
+      print('${error.toString()}');
+    }
+  }
+
+  Future<UserModel?> getUserPreferences() async {
+    final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
+    final SharedPreferences prefs = await _prefs;
+    final userJson = prefs.getString('user');
+    UserModel? user;
+    if(userJson != null){
+      try {
+        user = UserModel.fromJson(jsonDecode(userJson));
+      } catch(error){
+        
+      }
+    }
+    return user;
+  }
+
 
   // Future<CategoryUserModel?> fetchCategoryItems() async {
   //   try {
@@ -138,6 +182,42 @@ class UserClient extends FetchClient {
       }
     } catch (e) {
       throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+    }
+  }
+
+  Future<AppVersionResponse?> getAppVersion(BuildContext context) async {
+    AppVersionResponse? appVersionResponse;
+    try {
+      var localVersion = await getVersion(context);
+      final ApiResult<List<AppVersionResponse>> apiResult =
+          await repository.getAppVersion();
+      apiResult.when(success: (List<AppVersionResponse> response) {
+        if(response.isNotEmpty){
+          for(var appVersion in response){
+            if(localVersion == appVersion.version){
+              appVersionResponse = appVersion;
+            }
+          }
+        }
+      }, failure: (NetworkExceptions error) {
+        return appVersionResponse;
+      });
+    } catch(error){
+      return appVersionResponse;
+    }
+    return appVersionResponse;
+  }
+
+  Future<String> getVersion(BuildContext context) async {
+    try {
+      final newVersion = NewVersion(context: context);
+      final status = await newVersion.getVersionStatus();
+      if (status == null) return "";
+      final localVersion = status.localVersion;
+      final storeVersion = status.storeVersion;
+      return localVersion ?? "";
+    } catch(error){
+      return "";
     }
   }
 
@@ -597,6 +677,17 @@ class UserClient extends FetchClient {
     } catch (e) {
       throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
     }
+  }
+
+  Future<void> markCompletedUpdateProfile(String? id) async {
+    BotToast.showLoading();
+    final ApiResult<CommonResponse> apiResult = await repository.markCompletedUpdateProfile(id ?? '');
+    apiResult.when(success: (CommonResponse response) {
+      Observable.instance.notifyObservers([], notifyName: "food_change_data");
+      BotToast.closeAllLoading();
+    }, failure: (NetworkExceptions error) {
+      BotToast.closeAllLoading();
+    });
   }
 
   Future<bool> inputMotivationDiary(String? content) async {

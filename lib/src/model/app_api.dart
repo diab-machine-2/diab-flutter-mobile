@@ -1,11 +1,15 @@
 import 'package:dio/dio.dart';
 import 'package:medical/src/model/request/SelectRoadmapRequest.dart';
+import 'package:medical/src/model/request/complete_update_profile_request.dart';
+import 'package:medical/src/model/request/has_shared_profile_request.dart';
 import 'package:medical/src/model/request/make_comment_request.dart';
 import 'package:medical/src/model/request/make_question_request.dart';
 import 'package:medical/src/model/request/mark_completed_calendar_request.dart';
 import 'package:medical/src/model/request/mark_completed_target_request.dart';
 import 'package:medical/src/model/request/read_welcome_request.dart';
+import 'package:medical/src/model/response/app_version_response.dart';
 import 'package:medical/src/model/response/calendar_training_response.dart';
+import 'package:medical/src/model/response/content_welcome_response.dart';
 import 'package:medical/src/model/response/expert_comment_list_response.dart';
 import 'package:medical/src/model/response/lesson_module_response.dart';
 import 'package:medical/src/model/response/question_answer_response.dart';
@@ -131,6 +135,9 @@ abstract class AppApi {
   @GET("App/PatientFoodMenu/GetUserFoodMenu")
   Future<MenuResponse> getUserFoodMenu();
 
+  @GET("App/Version")
+  Future<List<AppVersionResponse>> getAppVersion();
+
   @GET("App/PatientFoodMenu/SuggestionFood")
   Future<FoodSuggestResponse> getSuggestionFood({
     @Query("foodMenuCode") String? foodMenuCode,
@@ -202,6 +209,11 @@ abstract class AppApi {
     @Query('week') int? week,
   );
 
+  @GET("App/PackageAccountTransaction/GetContentWelcome")
+  Future<ContentWelcomeResponse> getContentWelcome(
+    @Query('accountId') String? accountId,
+  );
+
   @POST("App/ExerciseMovementReview")
   Future<CommonResponse> exerciseFeedback(
     @Body() ExerciseFeedbackRequest request,
@@ -234,6 +246,11 @@ abstract class AppApi {
     @Body() CompleteSmartGoalRequest request,
   );
 
+  @POST("App/Target/MarkCompletedUpdateProfile")
+  Future<CommonResponse> markCompletedUpdateProfile(
+    @Query("id") String id,
+  );
+
   @POST("App/Target/MarkCompletedTarget")
   Future<CommonResponse> completeGoal(
     @Body() MarkCompletedTargetRequest request,
@@ -261,7 +278,7 @@ abstract class AppApi {
     @Query('day') int? day,
   });
 
-  @GET("App/Question")
+  @GET("App/Question/GetAllMobile")
   Future<QuestionAnswerResponse> getListQuestion(@Query('page') int page, @Query('size') int size,
       @Query("lessonModuleIds") List<String>? lessonModuleIds, @Query("accountIds") List<String>? accountIds);
 
@@ -337,6 +354,11 @@ abstract class AppApi {
   @PUT("App/Patient/UpdateReferalCodeFromPatient")
   Future<UpdateSharedProfileResponse> updateSharedProfile(
     @Body() UpdateSharedProfileRequest? request,
+  );
+
+  @GET("App/Patient/CheckHasShareProfile/{referalCode}")
+  Future<UpdateSharedProfileResponse> hasSharedProfile(
+    @Path('referalCode') String referalCode,
   );
 
   @GET("App/Patient/CheckDuplicateReferalAccount/{referalCode}")

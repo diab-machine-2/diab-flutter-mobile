@@ -304,7 +304,7 @@ class _KcalParameterPageState extends State<KcalParameterPage> {
                         barrierColor: R.color.color0xff003F38.withOpacity(0.5),
                         context: context,
                         builder: (_) => NoticeChangePage(
-                            description: R.string.consumption.tr(),
+                            description: "Mức tiêu thụ năng lượng của bạn đã thay đổi. Xác nhận bằng cách chọn \"Đồng ý\" để cập nhật thực đơn mẫu mới.",
                             onClick: () {
                               Future.delayed(const Duration(milliseconds: 200),
                                   () {

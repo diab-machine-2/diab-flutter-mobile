@@ -132,31 +132,35 @@ class NotificationManager {
     NotificationClient().readNotification(
       model.data?.communicationId, model.id ?? model.data?.notificationId, AppSettings.userInfo?.id, model.data?.notificationType, true);
 
-    switch (model.actionType) {
-      case NotificationActionType.redirect_to_activity_tab:
-        Navigator.pushReplacementNamed(navigatorKey.currentState!.context, NavigatorName.tabbar, arguments: {
-          'id': model.data?.communicationId,
-          'isRedirectFromNotification': true,
-        });
-        break;
-      case NotificationActionType.redirect_to_url:
-        Navigator.pushNamed(navigatorKey.currentState!.context, NavigatorName.notification_detail,
-            arguments: {'id': model.data?.notificationId, 'communicationId': model.data?.communicationId});
-        break;
-      case NotificationActionType.add_reminder:
-        Navigator.pushNamed(navigatorKey.currentState!.context, NavigatorName.add_reminder,
-            arguments: {'type': 'update', 'id': model.data?.remindId});
-        break;
-      case NotificationActionType.add_blood_sugar:
-        Navigator.pushNamed(navigatorKey.currentState!.context, NavigatorName.add_blood_sugar,
-            arguments: {'type': 'input', 'id': model.data?.communicationId});
-        break;
-      case NotificationActionType.none:
-        break;
-      case NotificationActionType.share_profile:
-        break;
-      case NotificationActionType.redirect_date_detail:
-        break;
+    if(model.calendarId == null) {
+      switch (model.actionType) {
+        case NotificationActionType.redirect_to_activity_tab:
+          Navigator.pushReplacementNamed(navigatorKey.currentState!.context, NavigatorName.tabbar, arguments: {
+            'id': model.data?.communicationId,
+            'isRedirectFromNotification': true,
+          });
+          break;
+        case NotificationActionType.redirect_to_url:
+          Navigator.pushNamed(navigatorKey.currentState!.context, NavigatorName.notification_detail,
+              arguments: {'id': model.data?.notificationId, 'communicationId': model.data?.communicationId});
+          break;
+        case NotificationActionType.add_reminder:
+          Navigator.pushNamed(navigatorKey.currentState!.context, NavigatorName.add_reminder,
+              arguments: {'type': 'update', 'id': model.data?.remindId});
+          break;
+        case NotificationActionType.add_blood_sugar:
+          Navigator.pushNamed(navigatorKey.currentState!.context, NavigatorName.add_blood_sugar,
+              arguments: {'type': 'input', 'id': model.data?.communicationId});
+          break;
+        case NotificationActionType.none:
+          break;
+        case NotificationActionType.share_profile:
+          break;
+        case NotificationActionType.redirect_date_detail:
+          break;
+        case NotificationActionType.redirect_survey:
+          break;
+      }
     }
   }
 

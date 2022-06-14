@@ -32,6 +32,16 @@ class CategoryItemUserModel {
   static List<CategoryItemUserModel> toList(List<dynamic> items) {
     return items.map((item) => CategoryItemUserModel.fromJson(item)).toList();
   }
+
+   Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['disabled'] = this.disabled;
+    data['group'] = this.group;
+    data['selected'] = this.selected;
+    data['text'] = this.text;
+    data['value'] = this.value;
+    return data;
+  }
 }
 
 class GroupModel {

@@ -192,8 +192,9 @@ class _HomeControllerState extends State<HomeController> with Observer {
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width - 32;
     return BlocProvider<HomeBloc>(
-        create: (context) => HomeBloc(),
-        child: BlocBuilder<HomeBloc, HomeState>(builder: (BuildContext context, HomeState state) {
+        create: (context) => HomeBloc(), 
+        child: BlocBuilder<HomeBloc, HomeState>(
+          builder: (BuildContext context, HomeState state) {
           currentContext = context;
 
           if (state is HomeInitial) {
@@ -204,7 +205,6 @@ class _HomeControllerState extends State<HomeController> with Observer {
           }
           if (state is HomeLoaded) {
             model = state.model;
-
             if(false == model?.packageAccount?.isDisplayedWelcome){
               if(AppSettings.isDisplayedWelcome == false){
                 Future.delayed(Duration.zero, () async {

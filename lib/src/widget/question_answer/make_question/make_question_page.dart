@@ -90,14 +90,14 @@ class _MakeQuestionPageState extends State<MakeQuestionPage> {
             _buildAppBar(context),
             Expanded(
               child: Container(
-                padding: EdgeInsets.all(16),
+                padding: EdgeInsets.only(left: 16, right: 16, top: 8, bottom: 8),
                 child: SingleChildScrollView(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       _buildLessonModule(),
-                      SizedBox(height: 20),
+                      SizedBox(height: 16),
                       _buildQuestion(),
                     ],
                   ),
@@ -163,16 +163,17 @@ class _MakeQuestionPageState extends State<MakeQuestionPage> {
               visible: _cubit.suggestLessonModuleItems.isNotEmpty && _cubit.isShowSuggestLessonModuleList,
               child: Container(
                 width: double.infinity,
-                height: min(310, _cubit.suggestLessonModuleItems.length * 48 + 70),
+                height: min(276, _cubit.suggestLessonModuleItems.length * 48 + 70),
                 decoration: BoxDecoration(
                   color: R.color.white,
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Padding(
-                  padding: const EdgeInsets.only(top: 16.0, left: 8),
+                  padding: const EdgeInsets.only(top: 8.0, left: 8),
                   child: ListView.separated(
                     itemCount: _cubit.suggestLessonModuleItems.length,
                     shrinkWrap: true,
+               //     physics: AlwaysScrollableScrollPhysics(),
                     itemBuilder: (context, index) {
                       bool isSelected = _cubit.suggestLessonModuleItems[index]!.id == _cubit.currentLessonModule?.id;
                       return InkWell(

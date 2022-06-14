@@ -91,9 +91,9 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
       number = model!.glucose!.round() == model!.glucose
           ? model!.glucose!.round().toDouble()
           : model!.glucose;
-      _controllerReason.text = model!.reason ?? '';
+      _controllerReason.text = model?.reason ?? '';
       showReason = _controllerReason.text.isNotEmpty;
-      _controllerNote.text = model!.note!;
+      _controllerNote.text = model?.note ?? '';
       files.addAll(model!.images);
       selectedDate =
           DateTime.fromMillisecondsSinceEpoch(model!.createDate! * 1000);

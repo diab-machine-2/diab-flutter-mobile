@@ -4,7 +4,7 @@ import 'package:meta/meta.dart';
 @immutable
 class FoodModel {
   final String? id;
-  final String? code;
+  String? code;
   final String? name;
   final double? portion;
   final String? unit;
@@ -21,6 +21,7 @@ class FoodModel {
   final double? quantity;
   final String? mealId;
   final int? timeCode;
+  String? foodMenuCode;
 
   FoodModel({
     required this.id,
@@ -41,6 +42,7 @@ class FoodModel {
     this.quantity,
     this.mealId,
     this.timeCode,
+    this.foodMenuCode,
   });
 
   @override
@@ -98,6 +100,7 @@ class FoodModel {
     double? quantity,
     String? mealId,
     int? timeCode,
+    String? foodMenuCode,
   }) {
     return FoodModel(
       id: id ?? this.id,
@@ -118,6 +121,7 @@ class FoodModel {
       quantity: quantity ?? this.quantity,
       mealId: mealId ?? this.mealId,
       timeCode: timeCode ?? this.timeCode,
+      foodMenuCode: foodMenuCode ?? this.foodMenuCode,
     );
   }
 

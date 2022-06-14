@@ -26,6 +26,7 @@ import 'package:medical/src/widgets/share_profile_popup.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:external_app_launcher/external_app_launcher.dart';
 
+import '../../../modal/user/user_model.dart';
 import '../../../widgets/button_widget.dart';
 
 class HomeHeader extends StatefulWidget {
@@ -40,7 +41,7 @@ class _HomeHeaderState extends State<HomeHeader> with Observer {
 
   int? notificationCount = 0;
   MotivationModel? motivation;
-  var user = AppSettings.userInfo;
+  UserModel? user = AppSettings.userInfo;
 
   @override
   void initState() {
@@ -81,6 +82,10 @@ class _HomeHeaderState extends State<HomeHeader> with Observer {
     if (widget.sharedCode?.isNotEmpty == true) {
       ShareProfilePopup.instance.onHasSharedCode(context: context, code: widget.sharedCode.toString());
     }
+    if(AppSettings.isGetUser == false){
+      user = await UserClient().fetchUser();
+      setState(() {});
+    }
   }
 
   Future<void> loadNotification() async {
@@ -96,7 +101,6 @@ class _HomeHeaderState extends State<HomeHeader> with Observer {
 
   @override
   Widget build(BuildContext context) {
-    final user = AppSettings.userInfo!;
     return SafeArea(
         bottom: false,
         child: Container(
@@ -122,10 +126,10 @@ class _HomeHeaderState extends State<HomeHeader> with Observer {
                                     clipBehavior: Clip.hardEdge,
                                     decoration:
                                         BoxDecoration(color: R.color.white, borderRadius: BorderRadius.circular(21)),
-                                    child: user.imageUrl!.url == null
+                                    child: user?.imageUrl!.url == null
                                         ? Icon(Icons.person, size: 42, color: R.color.mainColor)
                                         : Image.network(
-                                            user.imageUrl!.url ?? '',
+                                            user?.imageUrl!.url ?? '',
                                             width: 42,
                                             height: 42,
                                             errorBuilder: (BuildContext context, Object error, StackTrace? stackTrace) {
@@ -150,7 +154,7 @@ class _HomeHeaderState extends State<HomeHeader> with Observer {
                               child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                                 FittedBox(
                                   fit: BoxFit.scaleDown,
-                                  child: Text(user.fullName!.trim(),
+                                  child: Text(user?.fullName?.trim() ?? '',
                                       style: TextStyle(
                                         color: R.color.white,
                                         fontSize: 16,
@@ -161,7 +165,7 @@ class _HomeHeaderState extends State<HomeHeader> with Observer {
                                       ),
                                 ),
                                 const SizedBox(height: 4),
-                                Text((user.packageName != null && user.packageName!.isNotEmpty) ? user.packageName! : R.string.thanh_vien_co_ban.tr(),
+                                Text((user?.packageName != null && user?.packageName?.isNotEmpty == true) ? user?.packageName ?? '' : R.string.thanh_vien_co_ban.tr(),
                                     style: TextStyle(color: R.color.white, fontSize: 14, fontWeight: FontWeight.w400))
                               ]),
                             ),
@@ -173,7 +177,7 @@ class _HomeHeaderState extends State<HomeHeader> with Observer {
                       children: [
                         InkWell(
                           onTap: () async {
-                            if(user.isUserHasRoadmap) {
+                            if(user?.isUserHasRoadmap == true) {
                               showChatMenu();
                             } else {
                               NavigationUtil.showUpdateRequirePopup(context: context, title: R.string.chat_with_coach.tr());
@@ -222,7 +226,7 @@ class _HomeHeaderState extends State<HomeHeader> with Observer {
                 // if (!isChoose)
                 //   const SizedBox()
                 // else
-                (motivation != null && motivation!.content != null && motivation!.content!.isNotEmpty)
+                (motivation != null && motivation!.content != null && motivation!.content!.trim().isNotEmpty)
                     ? Padding(
                         padding: const EdgeInsets.only(top: 12),
                         child: Text(motivation!.content!,

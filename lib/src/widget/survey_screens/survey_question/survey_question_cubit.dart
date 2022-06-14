@@ -1,3 +1,4 @@
+import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/request/post_survey_request.dart';
@@ -120,19 +121,21 @@ class SurveyQuestionCubit extends Cubit<SurveyQuestionState> {
       if (answer?.isMappedToSurvey == true) {
         //If the answer is selected
         if (answerResult.surveyAnswerIdList?.contains(answer?.id) == true) {
-          final int? mappedQuestionIndex = sectionSurvey?.questions
-              ?.indexWhere((element) => element.id == answer?.mappedQuestionId);
-          if (mappedQuestionIndex != null &&
-              sectionSurvey?.questions?[mappedQuestionIndex] != null) {
-            final QuizData mappedQuestion =
-                sectionSurvey!.questions![mappedQuestionIndex];
-            // Check if the mappedQuestion is in question
-            if (!isContainQuestion(mappedQuestion.id)) {
-              final int indexInsert = findIndexToInsert(mappedQuestion.order);
-              //Check if the mappedQuestion is after current question
-              if (indexInsert != -1) {
-                //Insert mappedQuestion to question list
-                questions.insert(indexInsert, mappedQuestion);
+          for(var mappedQuestionId in answer?.mappedQuestionIds ?? []){
+            final int? mappedQuestionIndex = sectionSurvey?.questions
+                ?.indexWhere((element) => element.id == mappedQuestionId);
+            if (mappedQuestionIndex != null &&
+                sectionSurvey?.questions?[mappedQuestionIndex] != null) {
+              final QuizData mappedQuestion =
+                  sectionSurvey!.questions![mappedQuestionIndex];
+              // Check if the mappedQuestion is in question
+              if (!isContainQuestion(mappedQuestion.id)) {
+                final int indexInsert = findIndexToInsert(mappedQuestion.order);
+                //Check if the mappedQuestion is after current question
+                if (indexInsert != -1) {
+                  //Insert mappedQuestion to question list
+                  questions.insert(indexInsert, mappedQuestion);
+                }
               }
             }
           }
@@ -140,11 +143,13 @@ class SurveyQuestionCubit extends Cubit<SurveyQuestionState> {
         //If the answer is not selected
         else {
           //If no selected answer linked to the question
-          if (!hasAnswerLinkedToQuestion(
-              answerResult, answer?.mappedQuestionId)) {
-            //Remove mappedQuestion from question list
-            questions.removeWhere(
-                (element) => element.id == answer?.mappedQuestionId);
+          for(var mappedQuestionId in answer?.mappedQuestionIds ?? []){
+            if (!hasAnswerLinkedToQuestion(
+                answerResult, mappedQuestionId)) {
+              //Remove mappedQuestion from question list
+              questions.removeWhere(
+                  (element) => element.id == mappedQuestionId);
+            }
           }
         }
       }
@@ -161,9 +166,11 @@ class SurveyQuestionCubit extends Cubit<SurveyQuestionState> {
         index++) {
       final AnswerData? answer = currentQuestion?.answers?[index];
       if (answer?.isMappedToSurvey == true) {
-        if (answerResult.surveyAnswerIdList?.contains(answer?.id) == true &&
-            answer?.mappedQuestionId == mappedQuestionId) {
-          return true;
+        for(var id in answer?.mappedQuestionIds ?? []){
+          if (answerResult.surveyAnswerIdList?.contains(answer?.id) == true &&
+              id == mappedQuestionId) {
+            return true;
+          }
         }
       }
     }
@@ -195,6 +202,11 @@ class SurveyQuestionCubit extends Cubit<SurveyQuestionState> {
     isShowed = true;
     emit(SurveyQuestionLoading());
     selectedCourseIndex = index;
+    if(questions[selectedCourseIndex].results != null && questions[selectedCourseIndex].results?.isNotEmpty == true) {
+      currentText = questions[selectedCourseIndex].results!.first.content ?? '';
+    } else {
+      currentText = '';
+    }
     emit(InitialSurveyQuestionState());
   }
 
@@ -204,7 +216,9 @@ class SurveyQuestionCubit extends Cubit<SurveyQuestionState> {
     required String questionId,
     required bool isRelatedQuestion,
   }) async {
-    emit(SurveyQuestionLoading());
+    // await Future.delayed(Duration(milliseconds: 1));
+    // emit(SurveyQuestionLoading());
+    BotToast.showLoading();
     final List<QuestionAnswerResults> list = [];
     answer.forEach((key, value) {
       list.add(value);

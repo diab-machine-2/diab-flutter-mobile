@@ -78,6 +78,7 @@ class UserInfoResponseDataOwnPackage {
   int? durationType;
   int? activationDate;
   int? expirationDate;
+  int? endDateFirst;
   UserInfoResponseDataOwnPackageOwnRoadmap? ownRoadmap;
 
   UserInfoResponseDataOwnPackage({
@@ -86,6 +87,7 @@ class UserInfoResponseDataOwnPackage {
     this.durationType,
     this.activationDate,
     this.expirationDate,
+    this.endDateFirst,
     this.ownRoadmap,
   });
   UserInfoResponseDataOwnPackage.fromJson(Map<String, dynamic> json) {
@@ -94,6 +96,7 @@ class UserInfoResponseDataOwnPackage {
     durationType = json['durationType']?.toInt();
     activationDate = json['activationDate']?.toInt();
     expirationDate = json['expirationDate']?.toInt();
+    endDateFirst = json['endDateFirst']?.toInt();
     ownRoadmap =
         (json['ownRoadmap'] != null) ? UserInfoResponseDataOwnPackageOwnRoadmap.fromJson(json['ownRoadmap']) : null;
   }
@@ -104,6 +107,7 @@ class UserInfoResponseDataOwnPackage {
     data['durationType'] = durationType;
     data['activationDate'] = activationDate;
     data['expirationDate'] = expirationDate;
+    data['endDateFirst'] = endDateFirst;
     if (ownRoadmap != null) {
       data['ownRoadmap'] = ownRoadmap!.toJson();
     }

@@ -96,6 +96,22 @@ class SmartGoalStatisticResponseData {
     return dayInWeekList;
   }
 
+  int get initDayIndex {
+    for (int index = 0; index < (daysInCurrentWeek?.length ?? 0); index++) {
+      if (daysInCurrentWeek?[index]?.completionStatus == CompletionStatus.studying) {
+        return index;
+      }
+    }
+    return 0;
+  }
+
+  int getCompletedMarkIndex({required int? currentWeek, required int? userCurrentWeek}) {
+    if (currentWeek == null || userCurrentWeek == null) return 0;
+    if (currentWeek < userCurrentWeek) return 14;
+    if (currentWeek > userCurrentWeek) return 0;
+    return initDayIndex;
+  }
+
   SmartGoalStatisticResponseData.fromJson(Map<String, dynamic> json) {
     if (json['weeks'] != null) {
       final v = json['weeks'];

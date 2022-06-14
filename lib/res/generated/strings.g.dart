@@ -1,5 +1,9 @@
 // GENERATED CODE - DO NOT MODIFY
 
+// ignore_for_file: non_constant_identifier_names
+
+import 'package:easy_localization/easy_localization.dart';
+
 class Strings {
 	String get ok => 'ok';
 	String get cancel => 'cancel';
@@ -137,6 +141,7 @@ class Strings {
 	String get hide => 'hide';
 	String get camera_permission_required => 'camera_permission_required';
 	String get shared_profile_list => 'shared_profile_list';
+	String get has_share_doctor_profile => 'has_share_doctor_profile';
 	String get unable_share_doctor_profile => 'unable_share_doctor_profile';
 	String get doctor_request_share_profile => 'doctor_request_share_profile';
 	String get share_profile_for_doctor => 'share_profile_for_doctor';

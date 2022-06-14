@@ -63,13 +63,13 @@ class ExpertCommentModel {
         case 3:
           return 'Tư vấn nhóm';
         case 4:
-          return 'Livestream';
+          return 'Khác';
         case 5:
           return 'Khác';
         case 6:
           return 'Bác sĩ nhận xét';
         default:
-          return '';
+          return 'Khác';
       }
     } else {
       return '';

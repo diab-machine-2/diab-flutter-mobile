@@ -20,6 +20,7 @@ import 'package:medical/src/widgets/video_player_widget.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
 
+import '../../../../utils/utils.dart';
 import '../../my_plan/models/completion_status.dart';
 import '../../my_plan/my_plan.dart';
 import '../../my_plan/widgets/app_bar_bottom.dart';
@@ -73,7 +74,9 @@ class _ExerciseTabPageState extends State<ExerciseTabPage> with AutomaticKeepAli
           if (state is ExerciseTabLoading) {
             BotToast.showLoading();
           } else {
-            BotToast.closeAllLoading();
+            if(state is! ExerciseTabWeekChanged) {
+              BotToast.closeAllLoading();
+            }
             _controller.refreshCompleted();
           }
           if (state is ExerciseTabFailure) {
@@ -130,7 +133,9 @@ class _ExerciseTabPageState extends State<ExerciseTabPage> with AutomaticKeepAli
                   top: false,
                   child: SmartRefresher(
                     controller: _controller,
-                    onRefresh: () => _cubit.onRefresh(isRefresh: true),
+                    onRefresh: () async {
+                       await _cubit.onRefresh(isRefresh: true);
+                    },
                     child: (_cubit.exerciseMovementResponse?.data?.isEmpty == null || _cubit.exerciseMovementResponse?.data?.isEmpty == true)
                         ? GestureDetector(
                           onTap: () {
@@ -337,7 +342,7 @@ class _ExerciseTabPageState extends State<ExerciseTabPage> with AutomaticKeepAli
                                 ),
                               );
                               _controller.requestRefresh();
-                              _cubit.onRefresh(isRefresh: true, keepSelectedDayIndex: true);
+                           //   _cubit.onRefresh(isRefresh: true, keepSelectedDayIndex: true);
                             },
                           ),
                           // _buildCustomIconButton(
@@ -535,7 +540,7 @@ class _ExerciseTabPageState extends State<ExerciseTabPage> with AutomaticKeepAli
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              state.weekTitle ?? '',
+              Utils.getNewTitle(state.weekTitle ?? ''),
               style: TextStyle(
                 color: isSelected && state.completionStatus == CompletionStatus.not_start_yet
                     ? R.color.mainColor

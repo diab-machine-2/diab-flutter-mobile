@@ -61,6 +61,8 @@ class DailyNutritionCubit extends Cubit<DailyNutritionState> {
 
   String otherFoodId = '7e8c6d8e-5d34-4c86-b15e-7ffe2e156999';
 
+  List<MenuResponseListdayfoodTimeGroupsDefaultFood?> listFoodMenu = [];
+
   bool get isBasicUser {
     // final String packageCode = userInfo?.packageCode ?? '';
     // return packageCode.isEmpty || packageCode == Const.BASIC;
@@ -204,6 +206,14 @@ class DailyNutritionCubit extends Cubit<DailyNutritionState> {
               timeCode: timeCode ?? 1,
             ) ??
             [];
+
+        for(var dayFood in response.listdayfood ?? []){
+          for(var timeGroup in dayFood.timeGroups ?? []){
+            for(var defaultFood in timeGroup.defaultFood ?? []){
+              listFoodMenu.add(defaultFood);
+            }
+          }
+        }
         foodSuggestByMenu = List<FoodModel>.from(selectedFoods);
         totalKcalInFoodMenu = getTotalKcalFromListFood(selectedFoods);
       }

@@ -9,6 +9,7 @@ import 'package:medical/src/modal/user/category_user_model.dart';
 import 'package:medical/src/modal/user/user_model.dart';
 import 'package:medical/src/model/preference/app_preference.dart';
 import 'package:medical/src/model/response/smart_goal_list_reponse.dart';
+import 'package:medical/src/model/response/statistic_data.dart';
 import 'package:medical/src/repo/login/login_client.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigator_name.dart';
@@ -19,6 +20,7 @@ import '../modal/user/secure.dart';
 
 class AppSettings {
   static UserModel? userInfo;
+  static bool isGetUser = false;
   static List<SmartGoalList?> smartGoalDayList = [];
   static CategoryUserModel? categoryUserModel;
   static int? currentDateTime;
@@ -155,6 +157,7 @@ class AppSettings {
       await clearRefreshToken();
       appPreference.removeData("hasNewReports");
       appPreference.removeData("reports");
+      appPreference.removeData("user");
       final GoogleSignIn _googleSignIn = GoogleSignIn();
       _googleSignIn.signOut();
       final facebookLogin = FacebookLogin();

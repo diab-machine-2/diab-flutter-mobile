@@ -58,7 +58,7 @@ class FilterData {
       tagIdList: tagFilterStringList,
       lessonIdList: nameFilterStringList,
       isNotCompleted: isCompleted,
-      week: filterWithWeek ? week : null,
+      week: filterWithWeek ? week : currentWeek,
     );
   }
 }

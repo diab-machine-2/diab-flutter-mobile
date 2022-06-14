@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_observer/Observable.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/request/make_comment_request.dart';
@@ -18,12 +19,14 @@ class QuestionDetailCubit extends Cubit<QuestionDetailState> {
   final AppRepository repository;
   Timer? timer;
   bool isClickSend = false;
-  bool canRefreshScreen = true;
+  bool canRefreshScreen = false;
   final userInfo = AppSettings.userInfo;
   double titleHeight = 280;
   final ScrollController commentScrollController = ScrollController();
 
-  QuestionDetailCubit(this.repository, this.isAll, this.questionModel) : super(QuestionDetailInitial()) {}
+  QuestionDetailCubit(this.repository, this.isAll, this.questionModel) : super(QuestionDetailInitial()) {
+    getQuestionById(isShowLoading: true);
+  }
 
   Future<bool> get keyboardHidden async {
     final check = () => (WidgetsBinding.instance?.window.viewInsets.bottom ?? 0) <= 0;
@@ -38,8 +41,9 @@ class QuestionDetailCubit extends Cubit<QuestionDetailState> {
     }
   }
 
-  getQuestionById({bool isShowLoading = false}) async {
+  getQuestionById({bool isShowLoading = false, bool isUpdateListQuestion = false}) async {
     if (isShowLoading) {
+      await Future.delayed(Duration(milliseconds: 100));
       emit(QuestionDetailLoading());
     }
     final ApiResult<QuestionResponse> apiResult = await repository.getQuestionById(questionModel.id!);
@@ -56,11 +60,16 @@ class QuestionDetailCubit extends Cubit<QuestionDetailState> {
           lessonModule: response.data!.lessonModule,
           lessonModuleId: response.data!.lessonModuleId,
           professor: response.data!.professor,
+          answer: response.data!.answer,
           answers: response.data!.answers,
         );
         canRefreshScreen = true;
         emit(const QuestionDetailSuccess());
 
+        if(isUpdateListQuestion) {
+        Observable.instance.notifyObservers([], notifyName: "update_all_question");
+        Observable.instance.notifyObservers([], notifyName: "update_my_question");
+        }
         //if (questionModel.answers != null && questionModel.answers!.isNotEmpty) {
         //   commentScrollController.jumpTo(questionModel.answers!.length - 1);
         //}
@@ -85,6 +94,7 @@ class QuestionDetailCubit extends Cubit<QuestionDetailState> {
     }, failure: (NetworkExceptions error) {
       emit(QuestionDetailFailure(NetworkExceptions.getErrorMessage(error)));
     });
+    emit(QuestionDetailInitial());
   }
 
   // Future<void> sendComment(String? body) async {
@@ -113,8 +123,9 @@ class QuestionDetailCubit extends Cubit<QuestionDetailState> {
         body: body?.trim() ?? '', questionId: questionModel.id, accountId: userInfo.accountId, isComment: true);
     final ApiResult<CommonResponse> apiResult = await repository.makeComment(request);
     apiResult.when(success: (CommonResponse response) async {
+      getQuestionById(isUpdateListQuestion: true);
     }, failure: (NetworkExceptions error) {
-      emit(MakeCommentFailure(NetworkExceptions.getErrorMessage(error)));
+  //    emit(MakeCommentFailure(NetworkExceptions.getErrorMessage(error)));
     });
   }
 
@@ -124,6 +135,8 @@ class QuestionDetailCubit extends Cubit<QuestionDetailState> {
     final ApiResult<CommonResponse> apiResult = await repository.deleteQuestion(id);
     apiResult.when(success: (CommonResponse response) {
       canRefreshScreen = true;
+      Observable.instance.notifyObservers([], notifyName: "update_all_question");
+      Observable.instance.notifyObservers([], notifyName: "update_my_question");
       emit(DeleteQuestionSuccess(message: id));
     }, failure: (NetworkExceptions error) {
       canRefreshScreen = true;
@@ -140,6 +153,8 @@ class QuestionDetailCubit extends Cubit<QuestionDetailState> {
       if (questionModel.answers != null) {
         questionModel.answers!.removeWhere((element) => element.id == id);
       }
+      Observable.instance.notifyObservers([], notifyName: "update_all_question");
+      Observable.instance.notifyObservers([], notifyName: "update_my_question");
       emit(DeleteCommentSuccess(message: id));
     }, failure: (NetworkExceptions error) {
       canRefreshScreen = true;

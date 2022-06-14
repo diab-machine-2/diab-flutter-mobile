@@ -20,9 +20,19 @@ class DateUtil {
     }
   }
 
+  static int getDayInMillis(DateTime dateTime) {
+    int startDate = (dateTime.millisecondsSinceEpoch ~/ 1000).toInt();
+    return startDate;
+  }
+
   static int getCurrentDayInMillis() {
     DateTime dateTime0 = DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day, 0, 0, 0);
     int startDate = (dateTime0.millisecondsSinceEpoch ~/ 1000).toInt();
+    return startDate;
+  }
+
+  static int getCurrentNowInMillis() {
+    int startDate = (DateTime.now().millisecondsSinceEpoch ~/ 1000).toInt();
     return startDate;
   }
 

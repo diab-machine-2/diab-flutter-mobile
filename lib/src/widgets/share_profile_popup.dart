@@ -16,6 +16,7 @@ import 'package:medical/src/widget/shared_profile/shared_profile.dart';
 import 'package:medical/src/widgets/button_widget.dart';
 
 import '../app.dart';
+import '../model/request/has_shared_profile_request.dart';
 import '../model/response/common_response.dart';
 import '../utils/navigation_util.dart';
 
@@ -36,12 +37,22 @@ class ShareProfilePopup {
   }) async {
     if(code.isEmpty) return;
     bool isCancel = false;
+    bool isShared = false;
     final BuildContext currentContext = context ?? navigatorKey.currentState!.context;
+    
+    final bool hasShareProfile = await _hasShareProfile(currentContext, code: code);
     final UserInfoReferralCodeResponse? userInfo = await _getSharedProfile(currentContext, code: code);
     if (userInfo?.isUserExists != true) {
       Message.showToastMessage(currentContext, R.string.qr_not_available.tr());
       return;
     }
+
+    if(hasShareProfile == true){
+      Message.showToastMessage(
+          currentContext, R.string.has_share_doctor_profile.tr(args: [userInfo?.data?.fullName ?? '']));
+      return;
+    }
+
     if (userInfo?.notValidPosition == true) {
       Message.showToastMessage(
           currentContext, R.string.unable_share_doctor_profile.tr(args: [userInfo?.data?.fullName ?? '']));
@@ -55,26 +66,36 @@ class ShareProfilePopup {
         description: R.string.share_profile_description.tr(), 
         onTapCancel: () async {
           if(!isCancel){
-            await markIsShare();
-            NavigationUtil.pop(currentContext);
             isCancel = true;
+            BotToast.showLoading();
+            await markIsShare();
+            BotToast.closeAllLoading();
+            NavigationUtil.pop(currentContext);
           }
-      
-    }, onTapYes: () async {
-      final bool sharingSuccessed = await _shareProfile(currentContext, code: code);
-      if (!sharingSuccessed) return;
-      await markIsShare();
-      NavigationUtil.pop(currentContext);
-      showPopup(currentContext,
-          image: R.drawable.img_survey_completed,
-          title: R.string.share_profile_success.tr(),
-          description: R.string.share_profile_success_description.tr(args: [userInfo?.data?.fullName ?? '']),
-          onTapYes: () {
-        NavigationUtil.pop(currentContext, result: true);
-      }, afterShow: () {
-        NavigationUtil.navigatePage(currentContext, const SharedProfilePage());
-      });
-    });
+        }, onTapYes: () async {
+          if(!isShared){
+            isShared = true;
+            BotToast.showLoading();
+            final bool sharingSuccessed = await _shareProfile(currentContext, code: code);
+            if (!sharingSuccessed) {
+              BotToast.closeAllLoading();
+              return;
+            }
+            await markIsShare();
+            BotToast.closeAllLoading();
+            NavigationUtil.pop(currentContext);
+            showPopup(currentContext,
+                image: R.drawable.img_survey_completed,
+                title: R.string.share_profile_success.tr(),
+                description: R.string.share_profile_success_description.tr(args: [userInfo?.data?.fullName ?? '']),
+                onTapYes: () {
+              NavigationUtil.pop(currentContext, result: true);
+            }, afterShow: () {
+              NavigationUtil.navigatePage(currentContext, const SharedProfilePage());
+            });
+          }
+        },
+      );
   }
 
   static Future<void> showPopup(
@@ -229,6 +250,19 @@ class ShareProfilePopup {
     final ApiResult<UpdateSharedProfileResponse> apiResult = await appRepository.updateSharedProfile(request);
     apiResult.when(success: (UpdateSharedProfileResponse response) {
       sharingSuccessed = true;
+    }, failure: (NetworkExceptions error) {
+      Message.showToastMessage(context, error.toString());
+    });
+    BotToast.closeAllLoading();
+    return sharingSuccessed;
+  }
+
+  Future<bool> _hasShareProfile(BuildContext context, {String? code}) async {
+    BotToast.showLoading();
+    bool sharingSuccessed = false;
+    final ApiResult<UpdateSharedProfileResponse> apiResult = await appRepository.hasSharedProfile(code ?? "");
+    apiResult.when(success: (UpdateSharedProfileResponse response) {
+      sharingSuccessed = response.data ?? false;
     }, failure: (NetworkExceptions error) {
       Message.showToastMessage(context, error.toString());
     });
