@@ -283,26 +283,33 @@ class NotificationReadControllerState extends State<NotificationReadController>
       NotificationClient()
           .readNotification(notificationModel.id, notificationModel.notificationId, AppSettings.userInfo!.id, notificationModel.notificationType.toString(), true);
     }
-    switch (notificationModel.actionType) {
-      case NotificationActionType.redirect_to_activity_tab:
-        break;
-      case NotificationActionType.redirect_to_url:
-        Navigator.pushNamed(context, NavigatorName.notification_detail, arguments: {'id': notificationModel.notificationId ?? '', 'communicationId': notificationModel.id});
-        break;
-      case NotificationActionType.add_reminder:
-        Navigator.pushNamed(context, NavigatorName.add_reminder,
-            arguments: {'type': 'update', 'id': notificationModel.id});
-        break;
-      case NotificationActionType.add_blood_sugar:
-        Navigator.pushNamed(context, NavigatorName.add_blood_sugar, arguments: {'type': 'input', 'id': null});
-        break;
-      case NotificationActionType.none:
-        break;
-      case NotificationActionType.share_profile:
-        break;
-      case NotificationActionType.redirect_date_detail:
-        // TODO: Handle this case.
-        break;
+    if(notificationModel.calendarId == null) {
+      switch (notificationModel.actionType) {
+        case NotificationActionType.redirect_to_activity_tab:
+          Navigator.pushReplacementNamed(context, NavigatorName.tabbar, arguments: {
+            'id': notificationModel.id,
+            'isRedirectFromNotification': true,
+          });
+          break;
+        case NotificationActionType.redirect_to_url:
+          Navigator.pushNamed(context, NavigatorName.notification_detail, arguments: {'id': notificationModel.notificationId ?? '', 'communicationId': notificationModel.id});
+          break;
+        case NotificationActionType.add_reminder:
+          Navigator.pushNamed(context, NavigatorName.add_reminder,
+              arguments: {'type': 'update', 'id': notificationModel.id});
+          break;
+        case NotificationActionType.add_blood_sugar:
+          Navigator.pushNamed(context, NavigatorName.add_blood_sugar, arguments: {'type': 'input', 'id': notificationModel.id});
+          break;
+        case NotificationActionType.none:
+          break;
+        case NotificationActionType.share_profile:
+          break;
+        case NotificationActionType.redirect_date_detail:
+          break;
+        case NotificationActionType.redirect_survey:
+          break;
+      }
     }
   }
 

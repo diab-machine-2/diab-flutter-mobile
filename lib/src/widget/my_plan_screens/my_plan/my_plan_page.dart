@@ -6,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_observer/Observable.dart';
 import 'package:flutter_observer/Observer.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
@@ -29,14 +30,22 @@ class MyPlanPage extends StatefulWidget {
 class _MyPlanPageState extends State<MyPlanPage> with Observer {
   late final MyPlanCubit _cubit;
   late PageController _pageController;
+  final user = AppSettings.userInfo!;
+  int index = 0;
 
   @override
   void initState() {
     super.initState();
     Observable.instance.addObserver(this);
-    _pageController = PageController(initialPage: widget.index);
+    if(user.isUserFree){
+      index = 1;
+    } else {
+      index = widget.index;
+    }
+
+    _pageController = PageController(initialPage: index);
     final AppRepository appRepository = AppRepository();
-    _cubit = MyPlanCubit(appRepository, widget.index);
+    _cubit = MyPlanCubit(appRepository, index);
   }
 
   @override

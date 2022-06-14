@@ -6,6 +6,7 @@ enum NotificationActionType {
   none,
   share_profile,
   redirect_date_detail,
+  redirect_survey,
 }
 
 enum NotificationType {
@@ -39,6 +40,10 @@ extension NotificationActionExtend on NotificationActionType {
           return NotificationActionType.none;
         case "5":
           return NotificationActionType.share_profile;
+        case "6":
+          return NotificationActionType.redirect_date_detail;
+        case "7":
+          return NotificationActionType.redirect_survey;
         default:
           return NotificationActionType.redirect_to_url;
       }
@@ -62,6 +67,10 @@ extension NotificationActionExtend on NotificationActionType {
           return NotificationActionType.none;
         case 5:
           return NotificationActionType.share_profile;
+        case 6:
+          return NotificationActionType.redirect_date_detail;
+        case 7:
+          return NotificationActionType.redirect_survey;
         default:
           return NotificationActionType.redirect_to_url;
       }
