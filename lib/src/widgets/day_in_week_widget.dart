@@ -62,7 +62,7 @@ class DayInWeekWidget extends StatelessWidget {
   }
 
   double _getDashLength(double maxWidth) {
-    return (maxWidth - 168) / 6;
+    return (maxWidth - 190) / 7;
   }
 
   Widget _buildSingleDay(

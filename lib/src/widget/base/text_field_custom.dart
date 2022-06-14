@@ -6,6 +6,7 @@ import 'package:medical/res/R.dart';
 class TextFieldCustom extends StatefulWidget {
   final String title;
   final String placeholder;
+  final double hintTextSize;
   final bool isPassword;
   final bool isSharedCode;
   final bool autoFocus;
@@ -13,17 +14,22 @@ class TextFieldCustom extends StatefulWidget {
   final int maxLength;
   final String? initText;
   final Function(String)? onChanged;
+  final String? rightIcon;
+  final Function()? onRightWidgetClick;
 
   const TextFieldCustom(
       {Key? key,
       this.title = '',
       this.placeholder = '',
+      this.hintTextSize = 15,
       this.isPassword = false,
       this.isSharedCode = false,
       this.autoFocus = false,
       this.showStar = false,
       this.initText,
       this.maxLength = 100,
+      this.rightIcon,
+      this.onRightWidgetClick,
       this.onChanged})
       : super(key: key);
 
@@ -124,7 +130,7 @@ class TextFieldCustomState extends State<TextFieldCustom> {
                                   hintStyle: TextStyle(
                                       fontFamily: 'roboto',
                                       color: R.color.textDark,
-                                      fontSize: 15,
+                                      fontSize: widget.hintTextSize,
                                       fontWeight: FontWeight.w300)),
                               onChanged: (value) {
                                 if (!widget.isSharedCode) {
@@ -179,7 +185,7 @@ class TextFieldCustomState extends State<TextFieldCustom> {
                                     hintStyle: TextStyle(
                                         fontFamily: 'roboto',
                                         color: R.color.textDark,
-                                        fontSize: 15,
+                                        fontSize: widget.hintTextSize,
                                         fontWeight: FontWeight.w300),
                                     fillColor: R.color.textDark),
                                 onChanged: (value) {
@@ -197,24 +203,14 @@ class TextFieldCustomState extends State<TextFieldCustom> {
                                 }),
                           ),
                         )
-                      ])
-                  ]),
+                      ],
+                    ),
+                  ],
+                ),
               SizedBox(
                 width: 70,
                 child: Row(mainAxisAlignment: MainAxisAlignment.end, children: [
-                  if (widget.isPassword && textEditingController.text.isNotEmpty)
-                    GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            showPassword = !showPassword;
-                          });
-                        },
-                        child: Container(
-                            color: R.color.transparent,
-                            child: Text(!showPassword ? R.string.show.tr() : R.string.hide.tr(),
-                                style: TextStyle(color: R.color.grey_2))))
-                  else
-                    const SizedBox(),
+                  rightWidget(),
                   if (isCorrect && !widget.isSharedCode)
                     Padding(
                       padding: const EdgeInsets.only(left: 8),
@@ -240,6 +236,38 @@ class TextFieldCustomState extends State<TextFieldCustom> {
           const SizedBox()
       ],
     );
+  }
+
+  rightWidget(){
+     if (widget.isPassword && textEditingController.text.isNotEmpty) {
+        return GestureDetector(
+            onTap: () {
+              setState(() {
+                showPassword = !showPassword;
+              });
+            },
+            child: Container(
+                color: R.color.transparent,
+                child: Text(!showPassword ? R.string.show.tr() : R.string.hide.tr(),
+                    style: TextStyle(color: R.color.grey_2))));
+     } else {
+       if(widget.rightIcon != null){
+         return GestureDetector(
+           onTap: () {
+            if(widget.onRightWidgetClick != null){
+              widget.onRightWidgetClick!();
+            }
+           },
+           child: Padding(
+             padding: const EdgeInsets.only(right: 4.0),
+             child: Image.asset(widget.rightIcon!, width: 25, height: 25),
+           ),
+         );
+       } else {
+         return SizedBox();
+       }
+     }
+                  
   }
 
   void valideReferralCode(String code) {

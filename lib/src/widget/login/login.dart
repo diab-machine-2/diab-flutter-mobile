@@ -220,7 +220,8 @@ class _LoginControllerState extends State<LoginController> {
       final user = await UserClient().fetchUser();
       BotToast.closeAllLoading();
       if (user == null) {
-        Navigator.pushReplacementNamed(context, NavigatorName.update_info, arguments: {'type': 'phone'});
+        final diabeteStates = await UserClient().fetchDiabeteStatesNoHeader();
+        Navigator.pushReplacementNamed(context, NavigatorName.update_info, arguments: {'type': 'phone', 'diabeteStates': diabeteStates});
       } else {
         Navigator.popUntil(context, (route) => route.isFirst);
         Navigator.pushReplacementNamed(context, NavigatorName.tabbar, arguments: widget.sharedCode,);

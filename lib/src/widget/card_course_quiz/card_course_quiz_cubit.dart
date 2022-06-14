@@ -26,7 +26,7 @@ class CardCourseQuizCubit extends Cubit<CardCourseQuizState> {
 
   void fillTextField(QuizData quizData){
     if(quizData.results != null && quizData.answers?.isEmpty == true){
-      emit(CardCourseQuizFillTextField(quizData.results!.content ?? ''));
+      emit(CardCourseQuizFillTextField(quizData.results!.isNotEmpty == true ? quizData.results!.first.content ?? '' : ''));
     }
   }
 

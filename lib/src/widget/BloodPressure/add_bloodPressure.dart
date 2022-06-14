@@ -86,15 +86,17 @@ class _AddBloodPressureControllerState
     model = await BloodPressureClient().fetchBloodPressureDetail(widget.id);
     BotToast.closeAllLoading();
     print(model);
-    _controllerSystolic.text = model!.systolic!.toInt().toString();
-    _controllerDiastolic.text = model!.diastolic!.toInt().toString();
-    _controllerNote.text = model!.note!;
-    _controllerHeart.text = model!.pulseRate!.toInt().toString();
-    _controllerReason.text = model!.reason ?? '';
-    selectedDate = DateTime.fromMillisecondsSinceEpoch(model!.date! * 1000);
-    selectedTimeFrame =
-        TimeFrameModel(id: model!.timeFrameId, code: '', name: model!.timeFrame);
-    files.addAll(model!.images);
+    if(model != null){
+      _controllerSystolic.text = model!.systolic?.toInt().toString() ?? '';
+      _controllerDiastolic.text = model!.diastolic?.toInt().toString() ?? '';
+      _controllerNote.text = model?.note ?? '';
+      _controllerHeart.text = model!.pulseRate?.toInt().toString() ?? '';
+      _controllerReason.text = model!.reason ?? '';
+      selectedDate = DateTime.fromMillisecondsSinceEpoch(model!.date! * 1000);
+      selectedTimeFrame =
+          TimeFrameModel(id: model!.timeFrameId ?? '', code: '', name: model!.timeFrame ?? '');
+      files.addAll(model!.images);
+    }
     checkValidateInput();
     setState(() {});
   }

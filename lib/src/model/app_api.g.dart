@@ -238,6 +238,25 @@ class _AppApi implements AppApi {
   }
 
   @override
+  Future<List<AppVersionResponse>> getAppVersion() async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    final _result = await _dio.fetch<List<dynamic>>(
+        _setStreamType<List<AppVersionResponse>>(
+            Options(method: 'GET', headers: _headers, extra: _extra)
+                .compose(_dio.options, 'App/Version',
+                    queryParameters: queryParameters, data: _data)
+                .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    var value = _result.data!
+        .map((dynamic i) =>
+            AppVersionResponse.fromJson(i as Map<String, dynamic>))
+        .toList();
+    return value;
+  }
+
+  @override
   Future<FoodSuggestResponse> getSuggestionFood(
       {foodMenuCode, foodId, dateCode, timeCode, isUseReplacedFood}) async {
     const _extra = <String, dynamic>{};
@@ -480,6 +499,24 @@ class _AppApi implements AppApi {
   }
 
   @override
+  Future<ContentWelcomeResponse> getContentWelcome(accountId) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{r'accountId': accountId};
+    queryParameters.removeWhere((k, v) => v == null);
+    final _headers = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    final _result = await _dio.fetch<Map<String, dynamic>>(
+        _setStreamType<ContentWelcomeResponse>(Options(
+                method: 'GET', headers: _headers, extra: _extra)
+            .compose(
+                _dio.options, 'App/PackageAccountTransaction/GetContentWelcome',
+                queryParameters: queryParameters, data: _data)
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = ContentWelcomeResponse.fromJson(_result.data!);
+    return value;
+  }
+
+  @override
   Future<CommonResponse> exerciseFeedback(request) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
@@ -590,6 +627,22 @@ class _AppApi implements AppApi {
         _setStreamType<CommonResponse>(
             Options(method: 'POST', headers: _headers, extra: _extra)
                 .compose(_dio.options, 'App/Target/MarkCompletedTarget',
+                    queryParameters: queryParameters, data: _data)
+                .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = CommonResponse.fromJson(_result.data!);
+    return value;
+  }
+
+  @override
+  Future<CommonResponse> markCompletedUpdateProfile(id) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{r'id': id};
+    final _headers = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    final _result = await _dio.fetch<Map<String, dynamic>>(
+        _setStreamType<CommonResponse>(
+            Options(method: 'POST', headers: _headers, extra: _extra)
+                .compose(_dio.options, 'App/Target/MarkCompletedUpdateProfile',
                     queryParameters: queryParameters, data: _data)
                 .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
     final value = CommonResponse.fromJson(_result.data!);
@@ -711,7 +764,7 @@ class _AppApi implements AppApi {
     final _result = await _dio.fetch<Map<String, dynamic>>(
         _setStreamType<QuestionAnswerResponse>(
             Options(method: 'GET', headers: _headers, extra: _extra)
-                .compose(_dio.options, 'App/Question',
+                .compose(_dio.options, 'App/Question/GetAllMobile',
                     queryParameters: queryParameters, data: _data)
                 .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
     final value = QuestionAnswerResponse.fromJson(_result.data!);
@@ -999,6 +1052,23 @@ class _AppApi implements AppApi {
                     _dio.options, 'App/Patient/UpdateReferalCodeFromPatient',
                     queryParameters: queryParameters, data: _data)
                 .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = UpdateSharedProfileResponse.fromJson(_result.data!);
+    return value;
+  }
+
+  @override
+  Future<UpdateSharedProfileResponse> hasSharedProfile(referalCode) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    final _result = await _dio.fetch<Map<String, dynamic>>(
+        _setStreamType<UpdateSharedProfileResponse>(Options(
+                method: 'GET', headers: _headers, extra: _extra)
+            .compose(
+                _dio.options, 'App/Patient/CheckHasShareProfile/$referalCode',
+                queryParameters: queryParameters, data: _data)
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
     final value = UpdateSharedProfileResponse.fromJson(_result.data!);
     return value;
   }

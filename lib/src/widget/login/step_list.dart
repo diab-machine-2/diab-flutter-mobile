@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/app_setting/deep_link_config.dart';
@@ -57,6 +58,7 @@ class _StepListControllerState extends State<StepListController> {
   @override
   void initState() {
     super.initState();
+  
     //startTimer();
     DeepLinkConfig.setUpHandleDeepLink(onHaveLink: (code) {
       if (code?.isNotEmpty == true) {
@@ -79,6 +81,9 @@ class _StepListControllerState extends State<StepListController> {
       //   arguments: widget.sharedCode,
       // );
     }
+    Future.delayed(Duration(milliseconds: 600), () async {
+      FlutterNativeSplash.remove();
+    });
   }
 
   void startTimer() {

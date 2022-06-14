@@ -5,6 +5,7 @@ import 'package:medical/src/model/request/create_menu_request.dart';
 import 'package:medical/src/model/request/create_smart_goal_request.dart';
 import 'package:medical/src/model/request/exercise_feedback_request.dart';
 import 'package:medical/src/model/request/food_change_request.dart';
+import 'package:medical/src/model/request/has_shared_profile_request.dart';
 import 'package:medical/src/model/request/ios_receipt_request.dart';
 import 'package:medical/src/model/request/lesson_filter_request.dart';
 import 'package:medical/src/model/request/make_comment_request.dart';
@@ -56,19 +57,25 @@ import 'package:medical/src/model/response/week_states_response.dart';
 import 'package:medical/src/model/service/api_result.dart';
 import 'package:medical/src/model/service/network_exceptions.dart';
 
+import '../app_api.dart';
 import '../request/SelectRoadmapRequest.dart';
+import '../request/complete_update_profile_request.dart';
 import '../request/complete_video_request.dart';
 import '../request/mark_completed_calendar_request.dart';
 import '../request/read_welcome_request.dart';
+import '../response/app_version_response.dart';
 import '../response/calendar_training_response.dart';
+import '../response/content_welcome_response.dart';
 import '../response/expert_comment_response.dart';
 import '../service/app_client.dart';
+
+late AppApi appClient;
 
 class AppRepository {
   /**
    * Package flow
    */
-
+  
   Future<ApiResult<ListPackageResponse>> getListPackage() async {
     try {
       final ListPackageResponse response = await appClient.getListPackage();
@@ -202,6 +209,16 @@ class AppRepository {
   Future<ApiResult<MenuResponse>> getUserFoodMenu() async {
     try {
       final MenuResponse response = await appClient.getUserFoodMenu();
+      return ApiResult.success(data: response);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
+  Future<ApiResult<List<AppVersionResponse>>> getAppVersion() async {
+    appClient = AppClient().appClient;
+    try {
+      final List<AppVersionResponse> response = await appClient.getAppVersion();
       return ApiResult.success(data: response);
     } catch (e) {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));
@@ -406,6 +423,15 @@ class AppRepository {
     }
   }
 
+  Future<ApiResult<ContentWelcomeResponse>> getContentWelcome(String accountId) async {
+    try {
+      final ContentWelcomeResponse response = await appClient.getContentWelcome(accountId);
+      return ApiResult.success(data: response);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
   Future<ApiResult<CommonResponse>> exerciseFeedback(ExerciseFeedbackRequest request) async {
     try {
       final CommonResponse response = await appClient.exerciseFeedback(request);
@@ -485,6 +511,15 @@ class AppRepository {
   Future<ApiResult<CommonResponse>> completeSmartGoal(CompleteSmartGoalRequest request) async {
     try {
       final CommonResponse response = await appClient.completeSmartGoal(request);
+      return ApiResult.success(data: response);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
+  Future<ApiResult<CommonResponse>> markCompletedUpdateProfile(String id) async {
+    try {
+      final CommonResponse response = await appClient.markCompletedUpdateProfile(id);
       return ApiResult.success(data: response);
     } catch (e) {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));
@@ -680,6 +715,15 @@ class AppRepository {
   Future<ApiResult<UpdateSharedProfileResponse>> updateSharedProfile(UpdateSharedProfileRequest request) async {
     try {
       final UpdateSharedProfileResponse response = await appClient.updateSharedProfile(request);
+      return ApiResult.success(data: response);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
+  Future<ApiResult<UpdateSharedProfileResponse>> hasSharedProfile(String code) async {
+    try {
+      final UpdateSharedProfileResponse response = await appClient.hasSharedProfile(code);
       return ApiResult.success(data: response);
     } catch (e) {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));

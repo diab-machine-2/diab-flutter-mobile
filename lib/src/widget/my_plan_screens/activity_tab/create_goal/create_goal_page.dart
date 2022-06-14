@@ -2,6 +2,7 @@ import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
@@ -14,6 +15,7 @@ import 'package:medical/src/widgets/common_page.dart';
 import 'package:medical/src/widgets/custom_checkbox_widget.dart';
 import 'package:medical/src/widgets/custom_date_picker.dart';
 import 'package:medical/src/widgets/popup_window_widget.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../widgets/select_bottom_sheet_widget.dart';
 import '../../../helper/helper.dart';
@@ -101,7 +103,7 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
                     Expanded(
                       child: ListView(
                         keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-                        padding: const EdgeInsets.fromLTRB(16, 32, 16, 0),
+                        padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
                         children: body,
                       ),
                     ),
@@ -681,29 +683,32 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          'DiaB khuyến nghị:',
-          style: TextStyle(
-            color: R.color.textDark,
-            fontSize: 14,
-            fontWeight: FontWeight.w700,
-          ),
+        // Text(
+        //   R.string.dia_recommand.tr(),
+        //   style: TextStyle(
+        //     color: R.color.textDark,
+        //     fontSize: 15,
+        //     fontWeight: FontWeight.w700,
+        //   ),
+        // ),
+      //  const SizedBox(height: 8),
+        Html(
+          data: _cubit.getSubTitle(),
+          style: {"body": Style(padding: EdgeInsets.zero, margin: EdgeInsets.zero),},
+          onLinkTap: (url, context, attributes, element) async {
+            await canLaunch(url!)
+                ? await launch(url, forceSafariVC: false, forceWebView: false)
+                : throw 'Could not launch $url';
+          },
         ),
-        const SizedBox(height: 8),
-        Text('''
-      - Nếu huyết áp của bạn ổn định, hãy đo 1- 3 ngày/tuần
-      - Nếu huyết áp của bạn chưa ổn định, hãy đo 3 - 7 ngày/tuần''', style: R.style.normalTextStyle),
-        const SizedBox(height: 14),
+     //   Text(_cubit.getSubTitle(), style: R.style.normalTextStyle),
+     //   const SizedBox(height: 14),
         Row(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
             InkWell(
               onTap: () {
-                showDescriptionPopup('''
-- Nếu huyết áp của bạn ổn định, hãy đo 1- 3 ngày/tuần
-- Nếu huyết áp của bạn chưa ổn định, hãy đo 3 - 7 ngày/tuần
-Dù chưa biết lý do vì sao có sự tương quan đáng kể giữa đái tháo đường và tăng huyết áp nhưng người ta giả định rằng béo phì, chế độ ăn uống nhiều natri và lười vận động dẫn đến sự gia tăng đồng thời cả hai bệnh trên.
-Tăng huyết áp được biết đến như một “kẻ giết người thầm lặng” vì nó không có triệu chứng rõ ràng. Một cuộc khảo sát năm 2002 của Hiệp hội Đái tháo đường Hoa Kỳ (ADA) cho thấy, khoảng 68% những người bị bệnh đái tháo đường không biết họ cũng có nguy cơ gia tăng bệnh tim và đột quỵ vì liên quan đến tăng huyết áp mạn tính.''');
+                showDescriptionPopup(_cubit.getFullSubTitle());
               },
               child: Text(
                 'Tìm hiểu thêm',
@@ -779,17 +784,26 @@ Tăng huyết áp được biết đến như một “kẻ giết người th�
               const SizedBox(height: 16),
               Expanded(
                 child: SingleChildScrollView(
-                  child: Text(
-                    message ?? "",
-                    textAlign: TextAlign.left,
-                    style: TextStyle(
-                      color: R.color.textDark,
-                      fontWeight: FontWeight.normal,
-                      fontSize: 16,
-                      letterSpacing: 0.4,
-                      height: 1.4,
-                    ),
+                  child: Html(
+                    data: message ?? '',
+                    style: {"body": Style(padding: EdgeInsets.zero, margin: EdgeInsets.zero),},
+                    onLinkTap: (url, context, attributes, element) async {
+                      await canLaunch(url!)
+                          ? await launch(url, forceSafariVC: false, forceWebView: false)
+                          : throw 'Could not launch $url';
+                    },
                   ),
+                  // Text(
+                  //   message ?? "",
+                  //   textAlign: TextAlign.left,
+                  //   style: TextStyle(
+                  //     color: R.color.textDark,
+                  //     fontWeight: FontWeight.normal,
+                  //     fontSize: 16,
+                  //     letterSpacing: 0.4,
+                  //     height: 1.4,
+                  //   ),
+                  // ),
                 ),
               ),
             ],

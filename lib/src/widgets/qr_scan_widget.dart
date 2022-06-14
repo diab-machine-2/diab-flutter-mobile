@@ -47,7 +47,7 @@ class _QRScanWidgetState extends State<QRScanWidget> {
 
   void _startTimer() {
     _stopTimer();
-    _timer = Timer(const Duration(minutes: 1), () {
+    _timer = Timer(const Duration(seconds: 20), () {
       Message.showToastMessage(context, R.string.qr_code_not_found.tr());
     });
   }

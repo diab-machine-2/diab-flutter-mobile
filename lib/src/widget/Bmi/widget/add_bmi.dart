@@ -35,6 +35,7 @@ import '../../../model/response/common_response.dart';
 import '../../../model/service/api_result.dart';
 import '../../../model/service/network_exceptions.dart';
 import '../../../repo/home/home_client.dart';
+import '../../../utils/utils.dart';
 import '../../../widgets/network_image_widget.dart';
 import '../../my_plan_screens/activity_tab/activity_tab/models/schedule_type.dart';
 
@@ -63,7 +64,7 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
   TimeFrameModel? selectedTimeFrame;
   List<String?> removeIDs = [];
   String textValidate = '';
-  int selectedWeight = 0;
+  double selectedWeight = 0;
   int selectedHeight = 0;
   int selectedHip = 0;
   double? bmiNumber = 0;
@@ -98,7 +99,7 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
     if (model == null) return;
     BotToast.closeAllLoading();
     bmiNumber = model!.bmi;
-    selectedWeight = model!.weight == null ? 0 : model!.weight!.toInt();
+    selectedWeight = model!.weight == null ? 0 : model!.weight!;
     selectedHeight = model!.height == null ? 0 : model!.height!.toInt();
     _controllerNote.text = model!.note ?? '';
     selectedHip = model!.waist == null ? 0 : model!.waist!.toInt();
@@ -256,7 +257,7 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                                                       builder: (_) => CustomWeightPicker(
                                                           callback: (number) {
                                                             setState(() {
-                                                              if (number != null) selectedWeight = number.toInt();
+                                                              if (number != null) selectedWeight = number;
                                                             });
                                                             handleBMI();
                                                           },
@@ -270,7 +271,7 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                                                       width: 80,
                                                       child: Center(
                                                         child: Text(
-                                                            selectedWeight == 0 ? '-' : selectedWeight.toString(),
+                                                            selectedWeight == 0 ? '-' : Utils.showValue(selectedWeight),
                                                             style: TextStyle(
                                                                 color: selectedWeight == 0
                                                                     ? R.color.captionColorGray
@@ -926,6 +927,8 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
       ownPackage: userInfo.ownPackage,
       isShare: userInfo.isShare,
       shareRefCode: userInfo.shareRefCode,
+      statistict: userInfo.statistict,
+      sharedProfile: userInfo.sharedProfile,
     );
     try {
       BotToast.showLoading();

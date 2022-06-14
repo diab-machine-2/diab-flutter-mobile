@@ -20,6 +20,8 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:medical/src/modal/error/error_model.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 
+import '../../../utils/utils.dart';
+
 class BmiTrendChart extends StatefulWidget {
   BmiTrendChart({Key? key}) : super(key: key);
 
@@ -192,9 +194,7 @@ class BmiTrendChartState extends State<BmiTrendChart>
                                                                 FontWeight
                                                                     .w700))
                                                     : Text(
-                                                        model.current!
-                                                            .toInt()
-                                                            .toString(),
+                                                        Utils.showValue(model.current!),
                                                         style: TextStyle(
                                                             color: R.color.textDark,
                                                             fontSize: 24,
@@ -244,9 +244,7 @@ class BmiTrendChartState extends State<BmiTrendChart>
                                                                 FontWeight
                                                                     .w700))
                                                     : Text(
-                                                        model.goal!
-                                                            .toInt()
-                                                            .toString(),
+                                                        Utils.showValue(model.goal!),
                                                         style: TextStyle(
                                                             color:  R.color.green,
                                                             fontSize: 24,
@@ -348,7 +346,7 @@ class BmiTrendChartState extends State<BmiTrendChart>
                     SizedBox(
                       width: 4,
                     ),
-                    Text('${model.lowest!.toInt()}',
+                    Text('${Utils.showValue(model.lowest!)}',
                         style: TextStyle(
                             fontSize: 16,
                             color: R.color.black,
@@ -373,7 +371,7 @@ class BmiTrendChartState extends State<BmiTrendChart>
                     SizedBox(
                       width: 4,
                     ),
-                    Text('${model.highest!.toInt()}',
+                    Text('${Utils.showValue(model.highest!)}',
                         style: TextStyle(
                             fontSize: 16,
                             color: R.color.black,

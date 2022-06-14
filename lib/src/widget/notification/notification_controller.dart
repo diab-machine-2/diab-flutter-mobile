@@ -277,33 +277,69 @@ class NotificationControllerState extends State<NotificationController>
     );
   }
 
-  void _onTapNotify(NotificationListModel notificationModel) {
-    if ((widget.isRemovealbe != true) && !notificationModel.isRead!) {
-      Observable.instance.notifyObservers([], notifyName: "read_notification", map: {'notification': notificationModel});
+  void _onTapNotify(NotificationListModel model) {
+    if ((widget.isRemovealbe != true) && !model.isRead!) {
+      Observable.instance.notifyObservers([], notifyName: "read_notification", map: {'notification': model});
       NotificationClient()
-          .readNotification(notificationModel.id, notificationModel.notificationId, AppSettings.userInfo!.id, notificationModel.notificationType.toString(), true);
+          .readNotification(model.id, model.notificationId, AppSettings.userInfo!.id, model.notificationType.toString(), true);
     }
-    switch (notificationModel.actionType) {
-      case NotificationActionType.redirect_to_activity_tab:
-        break;
-      case NotificationActionType.redirect_to_url:
-        Navigator.pushNamed(context, NavigatorName.notification_detail, arguments: {'id': notificationModel.notificationId ?? '', 'communicationId': notificationModel.id});
-        break;
-      case NotificationActionType.add_reminder:
-        Navigator.pushNamed(context, NavigatorName.add_reminder,
-            arguments: {'type': 'update', 'id': notificationModel.id});
-        break;
-      case NotificationActionType.add_blood_sugar:
-        Navigator.pushNamed(context, NavigatorName.add_blood_sugar, arguments: {'type': 'input', 'id': null});
-        break;
-      case NotificationActionType.none:
-        break;
-      case NotificationActionType.share_profile:
-        break;
-      case NotificationActionType.redirect_date_detail:
-        // TODO: Handle this case.
-        break;
+    if(model.calendarId == null) {
+      switch (model.actionType) {
+        case NotificationActionType.redirect_to_activity_tab:
+          Navigator.pushReplacementNamed(context, NavigatorName.tabbar, arguments: {
+            'id': model.id,
+            'isRedirectFromNotification': true,
+          });
+          break;
+        case NotificationActionType.redirect_to_url:
+          Navigator.pushNamed(context, NavigatorName.notification_detail, arguments: {'id': model.notificationId ?? '', 'communicationId': model.id});
+          break;
+        case NotificationActionType.add_reminder:
+          Navigator.pushNamed(context, NavigatorName.add_reminder,
+              arguments: {'type': 'update', 'id': model.id});
+          break;
+        case NotificationActionType.add_blood_sugar:
+          Navigator.pushNamed(context, NavigatorName.add_blood_sugar, arguments: {'type': 'input', 'id': model.id});
+          break;
+        case NotificationActionType.none:
+          break;
+        case NotificationActionType.share_profile:
+          break;
+        case NotificationActionType.redirect_date_detail:
+          break;
+        case NotificationActionType.redirect_survey:
+          break;
+      }
     }
+
+    // switch (model.actionType) {
+    //   case NotificationActionType.redirect_to_activity_tab:
+    //     Navigator.pushReplacementNamed(context, NavigatorName.tabbar, arguments: {
+    //       'id': model.id,
+    //       'isRedirectFromNotification': true,
+    //     });
+    //   //  Navigator.pushNamed(context, NavigatorName.notification_detail, 
+    //   //      arguments: {'id': model.notificationId ?? '', 'communicationId': model.id});
+    //     break;
+    //   case NotificationActionType.redirect_to_url:
+    //     Navigator.pushNamed(context, NavigatorName.notification_detail,
+    //         arguments: {'id': model.notificationId ?? '', 'communicationId': model.id});
+    //     break;
+    //   case NotificationActionType.add_reminder:
+    //     Navigator.pushNamed(context, NavigatorName.add_reminder,
+    //         arguments: {'type': 'update', 'id': model.id});
+    //     break;
+    //   case NotificationActionType.add_blood_sugar:
+    //     Navigator.pushNamed(context, NavigatorName.add_blood_sugar,
+    //         arguments: {'type': 'input', 'id': model.id});
+    //     break;
+    //   case NotificationActionType.none:
+    //     break;
+    //   case NotificationActionType.share_profile:
+    //     break;
+    //   case NotificationActionType.redirect_date_detail:
+    //     break;
+    // }
   }
 
   _showDialogDelete(BuildContext context, NotificationListModel model) {

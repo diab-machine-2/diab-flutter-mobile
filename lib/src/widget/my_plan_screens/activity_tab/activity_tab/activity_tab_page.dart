@@ -15,6 +15,7 @@ import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/date_utils.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/navigator_name.dart';
+import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/Food/daily_nutrition/daily_nutrition.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/my_booking/my_booking.dart';
@@ -88,8 +89,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
         notifyName == 'food_change_data' ||
         notifyName == 'hba1c_change_data' ||
         notifyName == 'goal_calo_changed') {
-      _controller.requestRefresh();
-      _cubit.refreshData(isRefresh: true);
+       _controller.requestRefresh();
     }
   }
 
@@ -109,7 +109,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
           if (state is ActivityTabLoading) {
             BotToast.showLoading();
           } else {
-            BotToast.closeAllLoading();
+        //    BotToast.closeAllLoading();
             _controller.refreshCompleted();
           }
           if (state is ActivityTabSuccess) {
@@ -183,7 +183,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
                   child: SmartRefresher(
                     controller: _controller,
                     onRefresh: () async { 
-                      await _cubit.initData();
+                      await _cubit.refreshData(isRefresh: true);
                     },
                     child: SingleChildScrollView(
                       controller: _scrollSmartGoalListController,
@@ -210,14 +210,14 @@ class _ActivityTabPageState extends State<ActivityTabPage>
                                     if(DateUtil.isSameDay(_cubit.currentDay, DateTime.now().millisecondsSinceEpoch ~/ 1000)){
                                       Observable.instance.notifyObservers([], notifyName: Const.HIDE_OVERLAY_KEY);
                                       await NavigationUtil.navigatePage(context, CreateGoalPage(_cubit.smartGoalDayList));
-                                      _cubit.refreshData(isRefresh: true, keepCurrentDay: false);
+                                 //     _cubit.refreshData(isRefresh: true, keepCurrentDay: false);
                                     } else {
                                       _showDialogConfirmCreateGoal(context, 
                                       'Mục tiêu sẽ hiệu lực từ ngày ${convertToUTC(DateTime.now().millisecondsSinceEpoch ~/ 1000, 'dd/MM/yyyy')}, bạn có muốn tiếp tục?',
                                        () async {
                                           Observable.instance.notifyObservers([], notifyName: Const.HIDE_OVERLAY_KEY);
                                           await NavigationUtil.navigatePage(context, CreateGoalPage(_cubit.smartGoalDayList));
-                                          _cubit.refreshData(isRefresh: true, keepCurrentDay: false);
+                                 //         _cubit.refreshData(isRefresh: true, keepCurrentDay: false);
                                        },);
                                     }
                                   }),
@@ -349,7 +349,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
         Expanded(
           child: Container(
             alignment: Alignment.centerRight,
-            padding: const EdgeInsets.symmetric(horizontal: 16),
+            padding: const EdgeInsets.symmetric(horizontal: 8),
             color: R.color.transparent,
             child: DayInWeekWidget(
               data: _cubit.dayInWeekList,
@@ -405,7 +405,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              state?.weekTitle ?? '',
+              Utils.getNewTitle(state?.weekTitle ?? ''),
               style: TextStyle(
                 color: isSelected && state?.completionStatus == CompletionStatus.not_start_yet
                     ? R.color.mainColor
@@ -601,7 +601,12 @@ class _ActivityTabPageState extends State<ActivityTabPage>
         _showCoachingPopup(smartGoal);
         break;
       case ScheduleType.update_profile:
-        await Navigator.pushNamed(context, NavigatorName.profile_info);
+        await Navigator.pushNamed(context, 
+          NavigatorName.profile_info, 
+          arguments: {
+            'id': smartGoal?.state != 1 ? smartGoal?.id : null,
+          }
+        );
         break;
       case ScheduleType.output_assessment:
         _showCoachingPopup(smartGoal);

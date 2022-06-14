@@ -87,6 +87,11 @@ class _QuestionItemState extends State<QuestionItem> with AutomaticKeepAliveClie
   }
 
   _buildQuestionItemInCard(QuestionModel questionModel) {
+    if(questionModel.answer == null){
+      if(questionModel.answers != null && questionModel.answers?.isNotEmpty == true){
+        questionModel.answer = questionModel.answers!.last;
+      }
+    }
     return Card(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(8.0),
@@ -103,9 +108,9 @@ class _QuestionItemState extends State<QuestionItem> with AutomaticKeepAliveClie
           _buildHeaderItem(questionModel),
           SizedBox(height: 12),
           _buildTitleItem(questionModel),
-          SizedBox(height: (questionModel.answers != null && questionModel.answers!.isNotEmpty) ? 16 : 0),
+          SizedBox(height: (questionModel.answer != null) ? 16 : 0),
           Visibility(
-            visible: questionModel.answers != null && questionModel.answers!.isNotEmpty,
+            visible: questionModel.answer != null,
             child: Divider(height: 0.5, color: R.color.grayBorder),
           ),
           SizedBox(height: 8),
@@ -118,8 +123,8 @@ class _QuestionItemState extends State<QuestionItem> with AutomaticKeepAliveClie
           //         questionModel.answers != null ? questionModel.answers![position] : null);
           //   },
           // ),
-          _buildDoctorItemInQuestionItem((questionModel.answers != null && questionModel.answers!.isNotEmpty)
-              ? questionModel.answers!.last
+          _buildDoctorItemInQuestionItem((questionModel.answer != null)
+              ? questionModel.answer
               : null),
         ],
       ),

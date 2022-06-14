@@ -440,6 +440,13 @@ class _DailyNutritionPageState extends State<DailyNutritionPage> {
                                                           true,
                                                       child: GestureDetector(
                                                         onTap: () async {
+                                                          if(_cubit.selectedFoods[
+                                                                      index].foodMenuCode == null && _cubit.listFoodMenu.isNotEmpty){
+                                                            _cubit.selectedFoods[
+                                                                      index].foodMenuCode = 
+                                                                      _cubit.listFoodMenu[0]?.foodMenuCode ?? '000000000';
+                                                          }
+
                                                           final dynamic result =
                                                               await NavigationUtil
                                                                   .navigatePage(
@@ -452,9 +459,8 @@ class _DailyNutritionPageState extends State<DailyNutritionPage> {
                                                                   true,
                                                               dateCode:
                                                                   'T${_cubit.selectedDate.weekday + 1}',
-                                                              timeCode: _cubit
-                                                                      .selectedFoods[
-                                                                          index]
+                                                              timeCode: _cubit.selectedFoods[
+                                                                      index]
                                                                       .timeCode ??
                                                                   _cubit
                                                                       .timeCode,
@@ -467,7 +473,7 @@ class _DailyNutritionPageState extends State<DailyNutritionPage> {
                                                                     newFoodModel:
                                                                         result);
                                                             _cubit.selectedFoods[
-                                                                index] = result;
+                                                                      index] = result;
                                                             if (result.mealId
                                                                     ?.isNotEmpty ==
                                                                 true) {

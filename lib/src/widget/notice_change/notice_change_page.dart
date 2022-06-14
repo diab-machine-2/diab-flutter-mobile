@@ -1,8 +1,10 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_html/flutter_html.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/widgets/button_widget.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class NoticeChangePage extends StatelessWidget {
   const NoticeChangePage(
@@ -11,6 +13,8 @@ class NoticeChangePage extends StatelessWidget {
       this.negativeButtonTitle,
       this.positiveButtonTitle,
       this.onClick,
+      this.isShowTextHtml,
+      this.htmlText,
       this.gradientColor});
 
   final String? title;
@@ -19,6 +23,8 @@ class NoticeChangePage extends StatelessWidget {
   final String? positiveButtonTitle;
   final VoidCallback? onClick;
   final bool? gradientColor;
+  final bool? isShowTextHtml;
+  final String? htmlText;
 
   @override
   Widget build(BuildContext context) {
@@ -61,18 +67,29 @@ class NoticeChangePage extends StatelessWidget {
                     color: R.color.textDark,
                   ),
                 ),
-                const SizedBox(height: 20),
-                Text(
-                  description,
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w400,
-                    color: R.color.textDark,
+                SizedBox(height: isShowTextHtml == true ? 6 : 20),
+                if(isShowTextHtml == true)
+                  Html(
+                    data: htmlText ?? '',
+                    style: {"body": Style(padding: EdgeInsets.zero, margin: EdgeInsets.zero),},
+                    onLinkTap: (url, context, attributes, element) async {
+                      await canLaunch(url!)
+                          ? await launch(url, forceSafariVC: false, forceWebView: false)
+                          : throw 'Could not launch $url';
+                    },
+                  )
+                else 
+                  Text(
+                    description,
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w400,
+                      color: R.color.textDark,
+                    ),
+                    maxLines: 3,
+                    textAlign: TextAlign.center,
                   ),
-                  maxLines: 3,
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 20),
+                SizedBox(height: isShowTextHtml == true ? 8 : 20),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [

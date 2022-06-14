@@ -3,6 +3,7 @@ import 'notification_type.dart';
 class NotificationListModel {
   final String? id;
   String? notificationId;
+  String? calendarId;
   String? title;
   String? body;
   String? topic;
@@ -19,6 +20,7 @@ class NotificationListModel {
   NotificationListModel(
       {this.id,
       this.notificationId,
+      this.calendarId,
       required this.title,
       required this.body,
       this.topic,
@@ -36,6 +38,7 @@ class NotificationListModel {
     return NotificationListModel(
       id: notification['id'],
       notificationId: notification['notificationId'],
+      calendarId: notification['calendarId'],
       title: notification['title'],
       body: notification['body'],
       topic: notification['topic'],

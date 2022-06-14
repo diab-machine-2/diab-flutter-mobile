@@ -31,6 +31,7 @@ class CreateGoalCubit extends Cubit<CreateGoalState> {
   List<SmartGoalList?> smartGoalDayList = [];
 
   GoalInfoModel? goalInfoModel;
+  ScheduleType? currentSelectedType;
 
   CreateSmartGoalData dataModel = CreateSmartGoalData();
 
@@ -73,6 +74,7 @@ class CreateGoalCubit extends Cubit<CreateGoalState> {
 
   Future<void> setupGoal({required ScheduleType selectedType, int? subType}) async {
     //When chose a smart goal type for the first time
+    currentSelectedType = selectedType;
     if (dataModel.cachedType == null ||
         selectedType != dataModel.cachedType ||
         selectedType == dataModel.cachedType && subType != dataModel.cachedSubType) {
@@ -245,5 +247,60 @@ class CreateGoalCubit extends Cubit<CreateGoalState> {
           if (!keepCurrentDay) currentDayIndex = response.initDayIndex;
         },
         failure: (NetworkExceptions error) {});
+  }
+
+  String getSubTitle(){
+    if(currentSelectedType == ScheduleType.blood_pressure) {
+      return '''<p style="line-height: 1;"><span style="font-family: Arial, Helvetica, sans-serif; font-size: 15px;"><strong>Diab khuyến nghị:</strong></span></p>
+<p style="line-height: 1;"><span style="font-family: Arial, Helvetica, sans-serif; font-size: 15px;">&bull; Nếu huyết &aacute;p của bạn ổn định, h&atilde;y đo 1- 3 ng&agrave;y/tuần</span></p>
+<p style="line-height: 1;"><span style="font-family: Arial, Helvetica, sans-serif; font-size: 15px;">&bull; Nếu huyết &aacute;p của bạn chưa ổn định, h&atilde;y đo 3 - 7 ng&agrave;y/tuần</span></p>''';
+    } else if(currentSelectedType == ScheduleType.exercise) {
+      return '''<p style="line-height: 1;"><span style="font-family: Arial, Helvetica, sans-serif; font-size: 15px;">DiaB khuyến nghị ghi theo tần suất hoạt động của bạn.</span></p>''';
+    } else if(currentSelectedType == ScheduleType.weight) {
+      return '''<p style="line-height: 1;"><span style="font-family: Arial, Helvetica, sans-serif; font-size: 15px;">DiaB khuyến nghị bạn theo d&otilde;i c&acirc;n nặng của m&igrave;nh 2 tuần/lần.</span></p>''';
+    } else if(currentSelectedType == ScheduleType.emotion) {
+      return '''<p style="line-height: 1;"><span style="font-family: Arial, Helvetica, sans-serif; font-size: 15px;">DiaB khuyến nghị bạn n&ecirc;n ghi nhận lại cảm x&uacute;c mỗi khi c&oacute; cảm x&uacute;c đặc biệt.&nbsp;</span></p>
+<p style="line-height: 1;"><span style="font-family: Arial, Helvetica, sans-serif; font-size: 15px;">Một ng&agrave;y bạn c&oacute; thể ghi nhiều lần.</span></p>''';
+    } else if(currentSelectedType == ScheduleType.food) {
+      return '''<p style="line-height: 1;"><span style="font-family: Arial, Helvetica, sans-serif; font-size: 15px;"><strong>DiaB khuyến nghị: 2 lần/tuần</strong></span></p>
+<p style="line-height: 1;"><span style="font-family: Arial, Helvetica, sans-serif; font-size: 15px;">Bạn n&ecirc;n chọn 1 ng&agrave;y trong tuần v&agrave; 1 ng&agrave;y cuối tuần.</span></p>''';
+    } else {
+      return '';
+    } 
+  }
+
+  String getFullSubTitle(){
+    if(currentSelectedType == ScheduleType.blood_pressure) {
+      return '''<p style="line-height: 1;"><span style="font-family: Arial, Helvetica, sans-serif; font-size: 15px;">&bull; Nếu huyết &aacute;p của bạn ổn định, h&atilde;y đo 1- 3 ng&agrave;y/tuần</span></p>
+<p style="line-height: 1;"><span style="font-family: Arial, Helvetica, sans-serif; font-size: 15px;">&bull; Nếu huyết &aacute;p của bạn chưa ổn định, h&atilde;y đo 3 - 7 ng&agrave;y/tuần</span></p>
+<p style="line-height: 1;"><span style="font-family: Arial, Helvetica, sans-serif; font-size: 15px;">D&ugrave; chưa biết l&yacute; do v&igrave; sao c&oacute; sự tương quan đ&aacute;ng kể giữa đ&aacute;i th&aacute;o đường v&agrave; tăng huyết &aacute;p nhưng người ta giả định rằng b&eacute;o ph&igrave;, chế độ ăn uống nhiều natri v&agrave; lười vận động dẫn đến sự gia tăng đồng thời cả hai bệnh tr&ecirc;n.</span></p>
+<p style="line-height: 1;"><span style="font-family: Arial, Helvetica, sans-serif; font-size: 15px;">Tăng huyết &aacute;p được biết đến như một &ldquo;kẻ giết người thầm lặng&rdquo; v&igrave; n&oacute; kh&ocirc;ng c&oacute; triệu chứng r&otilde; r&agrave;ng. Một cuộc khảo s&aacute;t năm 2002 của Hiệp hội Đ&aacute;i th&aacute;o đường Hoa Kỳ (ADA) cho thấy, khoảng 68% những người bị bệnh đ&aacute;i th&aacute;o đường kh&ocirc;ng biết họ cũng c&oacute; nguy cơ gia tăng bệnh tim v&agrave; đột quỵ v&igrave; li&ecirc;n quan đến tăng huyết &aacute;p mạn t&iacute;nh.</span></p>
+<p><br></p>''';
+    } else if(currentSelectedType == ScheduleType.exercise) {
+      return '''<p style="line-height: 1;"><span style="font-family: Arial, Helvetica, sans-serif; font-size: 15px;">Theo khuyến nghị của chuy&ecirc;n gia y tế, thời gian vận động tối thiểu l&agrave; 20 - 30 ph&uacute;t/ ng&agrave;y, &iacute;t nhất 5 ng&agrave;y trong tuần, 2 lần tập c&aacute;ch nhau kh&ocirc;ng qu&aacute; 48 giờ</span></p>
+<p style="line-height: 1;"><span style="font-family: Arial, Helvetica, sans-serif; font-size: 15px;">Đối với m&ocirc;n đi bộ, tốc độ được xem ph&ugrave; hợp l&agrave; bạn vừa đi vừa c&oacute; thể n&oacute;i chuyện được nhưng kh&ocirc;ng đủ hơi để h&aacute;t, v&agrave; nhịp tim tăng &gt;130 bpm sau khi tập. Mức năng lượng ti&ecirc;u hao cho việc đi bộ được khuyến kh&iacute;ch l&agrave; đạt &iacute;t nhất 700kcal/tuần.</span></p>
+<p style="line-height: 1;"><span style="font-family: Arial, Helvetica, sans-serif; font-size: 15px;">Đối với bệnh nh&acirc;n đ&aacute;i th&aacute;o đường, bạn cần được b&aacute;c sĩ kiểm tra v&agrave; cho lời khuy&ecirc;n trước khi bắt đầu tập bất cứ m&ocirc;n thể thao n&agrave;o, h&atilde;y n&oacute;i r&otilde; với b&aacute;c sĩ về bộ m&ocirc;n bạn dự định tham gia, thời gian, v&agrave; cường độ của b&agrave;i tập. V&agrave; quan trọng nhất, h&atilde;y lưu &yacute; tham gia luyện tập an to&agrave;n, tr&aacute;nh chấn thương, t&eacute; ng&atilde; bạn nh&eacute;.</span></p>
+<p><br></p>''';
+    } else if(currentSelectedType == ScheduleType.weight) {
+      return '''<p style="line-height: 1;"><span style="font-family: Arial, Helvetica, sans-serif; font-size: 15px;">C&oacute; tới 80-90% người bệnh đ&aacute;i th&aacute;o đường c&oacute; rối loạn mỡ m&aacute;u. Hai căn bệnh n&agrave;y gần như lu&ocirc;n đi đ&ocirc;i với nhau v&agrave; đều li&ecirc;n quan mật thiết đến t&igrave;nh trạng <strong>thừa c&acirc;n - b&eacute;o ph&igrave;</strong>.</span></p>
+<p style="line-height: 1;"><span style="font-family: Arial, Helvetica, sans-serif; font-size: 15px;">H&atilde;y theo d&otilde;i c&acirc;n năng, chỉ số khối cơ thể (BMI) của m&igrave;nh thường xuy&ecirc;n đặc biệt khi bạn đang trong giai đoạn điều chỉnh tăng cần, giảm c&acirc;n.</span></p>''';
+    } else if(currentSelectedType == ScheduleType.emotion) {
+      return '''<p style="line-height: 1;"><span style="font-family: Arial, Helvetica, sans-serif; font-size: 15px;">Căng thẳng c&oacute; thể g&acirc;y ra những ảnh hưởng kh&aacute;c nhau đối với mỗi người.</span></p>
+<p style="line-height: 1;"><span style="font-family: Arial, Helvetica, sans-serif; font-size: 15px;">Những người mắc bệnh Đ&aacute;i th&aacute;o đường t&iacute;p 2 khi trải qua căng thẳng tinh thần, mức đường huyết thường gia tăng cao hơn. Tuy nhi&ecirc;n, người bệnh tiểu đường t&iacute;p 1 lại c&oacute; phản ứng với căng thẳng đa dạng hơn. Tức l&agrave;, mức đường huyết của họ c&oacute; thể tăng cao hoặc giảm thấp.</span></p>
+<p style="line-height: 1;"><span style="font-family: Arial, Helvetica, sans-serif; font-size: 15px;">Khi cơ thể gặp vấn đề g&acirc;y ra những căng thẳng về thể chất, chẳng hạn như bị ốm hoặc chấn thương, lượng đường trong m&aacute;u c&oacute; thể tăng l&ecirc;n. Điều n&agrave;y xảy ra ở cả người bệnh tiểu đường t&iacute;p 1 v&agrave; t&iacute;p 2.</span></p>
+<p style="line-height: 1;"><span style="font-family: Arial, Helvetica, sans-serif; font-size: 15px;">Ngo&agrave;i ra, căng thẳng k&eacute;o d&agrave;i cũng tạo n&ecirc;n t&aacute;c động ti&ecirc;u cực l&ecirc;n c&aacute;c hệ thống kh&aacute;c trong cơ thể:</span></p>
+<p style="line-height: 1;"><span style="font-family: Arial, Helvetica, sans-serif; font-size: 15px;">&nbsp; &bull; Hệ miễn dịch</span></p>
+<p style="line-height: 1;"><span style="font-family: Arial, Helvetica, sans-serif; font-size: 15px;">&nbsp; &bull; Hệ ti&ecirc;u h&oacute;a</span></p>
+<p style="line-height: 1;"><span style="color: rgb(0, 0, 0); font-family: Arial, Helvetica, sans-serif; font-size: 15px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; white-space: normal; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial; float: none; display: inline !important;">&nbsp; &bull;&nbsp;</span><span style="font-family: Arial, Helvetica, sans-serif; font-size: 15px;">Hệ b&agrave;i tiết (thận)</span></p>
+<p style="line-height: 1;"><span style="color: rgb(0, 0, 0); font-family: Arial, Helvetica, sans-serif; font-size: 15px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; white-space: normal; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial; float: none; display: inline !important;">&nbsp; &bull;&nbsp;</span><span style="font-family: Arial, Helvetica, sans-serif; font-size: 15px;">Hệ sinh sản</span></p>
+<p style="line-height: 1;"><span style="font-family: Arial, Helvetica, sans-serif; font-size: 15px;">Hơn nữa, khả năng suy nghĩ thấu đ&aacute;o v&agrave; đưa ra quyết định đ&uacute;ng đắn cũng giảm xuống khi bạn lu&ocirc;n lo lắng, sầu muộn v&agrave; sợ h&atilde;i. T&igrave;nh trạng căng thẳng về tinh thần k&eacute;o d&agrave;i c&oacute; thể l&agrave;m tăng nguy cơ mắc bệnh trầm cảm.</span></p>
+<p style="line-height: 1;"><span style="font-family: Arial, Helvetica, sans-serif; font-size: 15px;">Nguồn: hellobacsi</span></p>''';
+    } else if(currentSelectedType == ScheduleType.food) {
+      return '''<p style="line-height: 1;"><span style="font-family: Arial, Helvetica, sans-serif; font-size: 15px;">Bạn n&ecirc;n chọn 1 ng&agrave;y trong tuần v&agrave; 1 ng&agrave;y cuối tuần.</span></p>
+        <p style="line-height: 1;"><span style="font-family: Arial, Helvetica, sans-serif; font-size: 15px;">Trong trường hợp bạn tham gia c&aacute;c chương tr&igrave;nh chuy&ecirc;n s&acirc;u của DiaB, h&atilde;y trao đổi với huấn luyện vi&ecirc;n của bạn để theo d&otilde;i s&aacute;t bữa ăn của m&igrave;nh hơn.</span></p>
+        <p><br></p>''';
+    } else {
+      return '';
+    } 
   }
 }

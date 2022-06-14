@@ -38,7 +38,7 @@ class NetWorkImageWidget extends StatelessWidget {
               fit: fit,
               placeholder: showLoading
                   ? (_, __) {
-                      return Container(color: R.color.backgroundColor);
+                      return Container(color: R.color.transparent);
                     }
                   : null,
               errorWidget: (_, __, ___) {

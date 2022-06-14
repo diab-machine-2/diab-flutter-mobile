@@ -2,13 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/HbA1C/short_gui.dart';
+import 'package:medical/src/utils/utils.dart';
+import 'package:html/dom.dart' as dom;
 
 class DetailDescription extends StatelessWidget {
   final bool input;
   final ShortGuiModel? data;
   final String title;
+  final bool isShowTitle;
+  final double titleFontSize;
+
   DetailDescription(
-      {required this.input, required this.data, required this.title});
+      {required this.input, required this.data, required this.title, this.isShowTitle = true, this.titleFontSize = 20});
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -30,28 +35,35 @@ class DetailDescription extends StatelessWidget {
                       child: Column(
                         children: [
                           SizedBox(height: 8),
-                          Row(children: [
-                            Image.asset(
-                              R.drawable.img_des,
-                              width: 99,
-                              height: 85,
-                            ),
-                            SizedBox(width: 16),
-                            Expanded(
-                              child: Text(title,
-                                  style: TextStyle(
-                                      color: R.color.black,
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.w600)),
-                            )
-                          ]),
+                          Visibility(
+                            visible: isShowTitle,
+                            child: Row(children: [
+                              Image.asset(
+                                R.drawable.img_des,
+                                width: 99,
+                                height: 85,
+                              ),
+                              SizedBox(width: 16),
+                              Expanded(
+                                child: Text(title,
+                                    style: TextStyle(
+                                        color: R.color.black,
+                                        fontSize: titleFontSize,
+                                        fontWeight: FontWeight.w600)),
+                              )
+                            ]),
+                          ),
                           SizedBox(height: 16),
                           Expanded(
                             child: Padding(
                               padding: EdgeInsets.only(bottom: 16),
                               child: ListView(children: [
                                 Html(
-                                    data: (input ? data?.content2 : data?.content4) ?? "")
+                                  data: (input ? data?.content2 : data?.content4) ?? "",
+                                  onLinkTap: (String? url, RenderContext context, Map<String, String> attributes, dom.Element? element) async {
+                                    await Utils.launchURL(url ?? "");
+                                  }  
+                                )
                               ]),
                             ),
                           ),

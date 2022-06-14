@@ -74,21 +74,19 @@ class MyQuestionAnswerCubit extends Cubit<MyQuestionAnswerState> {
       BotToast.showLoading();
     }
 
-    await getListLessonModule();
-    await getQuestions();
+    getLessonModules();
+    getQuestions();
   }
 
-  getListLessonModule() async {
+  getLessonModules() async {
+    allLessonModules = [];
+    allLessonModules.add(LessonModuleItem(id: "0", code: "0", name: 'Tất cả'));
     final ApiResult<LessonModuleResponse> apiResult = await repository.getListLessonModule();
     apiResult.when(success: (LessonModuleResponse response) {
-      allLessonModules = [];
-      allLessonModules.add(LessonModuleItem(id: "0", code: "0", name: 'Tất cả'));
       if (response.data?.items != null) {
         allLessonModules.addAll(response.data!.items!);
       }
     }, failure: (NetworkExceptions error) {
-      allLessonModules = [];
-      allLessonModules.add(LessonModuleItem(id: "0", code: "0", name: 'Tất cả'));
       //   emit(AllQuestionAnswerFailure(NetworkExceptions.getErrorMessage(error)));
     });
   }
@@ -188,17 +186,17 @@ class MyQuestionAnswerCubit extends Cubit<MyQuestionAnswerState> {
     }
   }
 
-  Future<void> deleteCommentLocal(String questionId, String commentId) async {
-    emit(MyQuestionAnswerLoading());
-    var question = questions.firstWhere((element) => element.id == questionId, orElse: null);
-    if (question != null) {
-      if (question.answers != null) {
-        question.answers!.removeWhere((element) => element.id == commentId);
-      }
-    }
-  //  Observable.instance.notifyObservers([], notifyName : "update_all_question", map: {'id': questionId, 'commentId': commentId});
-    emit(DeleteCommentSuccess());
-  }
+  // Future<void> deleteCommentLocal(String questionId, String commentId) async {
+  //   emit(MyQuestionAnswerLoading());
+  //   var question = questions.firstWhere((element) => element.id == questionId, orElse: null);
+  //   if (question != null) {
+  //     if (question.answers != null) {
+  //       question.answers!.removeWhere((element) => element.id == commentId);
+  //     }
+  //   }
+  // //  Observable.instance.notifyObservers([], notifyName : "update_all_question", map: {'id': questionId, 'commentId': commentId});
+  //   emit(DeleteCommentSuccess());
+  // }
 
   Future<void> updateQuestionsLocal(QuestionModel questionModel) async {
     emit(MyQuestionAnswerLoading());

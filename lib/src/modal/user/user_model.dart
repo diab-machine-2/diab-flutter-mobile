@@ -2,6 +2,7 @@ import 'package:medical/src/modal/base/images.dart';
 import 'package:medical/src/modal/user/update_profile_request.dart';
 import 'package:meta/meta.dart';
 
+import '../../model/response/statistic_data.dart';
 import '../../model/response/user_info_response.dart';
 import 'category_item_user_model.dart';
 
@@ -83,6 +84,8 @@ class UserModel {
   final UserInfoResponseDataOwnPackage? ownPackage;
   final bool? isShare;
   final String? shareRefCode;
+  final StatisticData? statistict;
+  final bool? sharedProfile;
 
   bool get isUserFree {
     return ownPackage == null;
@@ -104,6 +107,12 @@ class UserModel {
       }
     }
     return false;
+  }
+
+  PackageType get packageType {
+    if (this.ownPackage == null) return PackageType.free;
+    if (this.ownPackage?.ownRoadmap == null) return PackageType.no_road_map;
+    return PackageType.has_road_map;
   }
 
   const UserModel({
@@ -178,6 +187,8 @@ class UserModel {
     required this.ownPackage,
     required this.isShare,
     required this.shareRefCode,
+    required this.statistict,
+    required this.sharedProfile,
   });
 
   UserModel copyWith({
@@ -253,6 +264,8 @@ class UserModel {
     UserInfoResponseDataOwnPackage? ownPackage,
     bool? isShare,
     String? shareRefCode,
+    StatisticData? statistict,
+    bool? sharedProfile,
   }) =>
       UserModel(
         id: id ?? this.id,
@@ -326,6 +339,8 @@ class UserModel {
         ownPackage: ownPackage ?? this.ownPackage,
         isShare: isShare ?? this.isShare,
         shareRefCode: shareRefCode ?? this.shareRefCode,
+        statistict: statistict ?? this.statistict,
+        sharedProfile: sharedProfile ?? this.sharedProfile,
       );
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
@@ -406,11 +421,164 @@ class UserModel {
       ownPackage: json['ownPackage'] == null ? null : UserInfoResponseDataOwnPackage.fromJson(json['ownPackage']),
       isShare: json['isShare'],
       shareRefCode: json['shareRefCode'],
+      sharedProfile: json['sharedProfile'],
+      statistict: json['statistict'] == null ? null : StatisticData.fromJson(json['statistict']),
     );
   }
 
   static List<UserModel> toList(List<dynamic> items) {
     return items.map((item) => UserModel.fromJson(item)).toList();
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['isShare'] = this.isShare;
+    data['shareRefCode'] = this.shareRefCode;
+    data['nameOfAgency'] = this.nameOfAgency;
+    data['nameOfDoctor'] = this.nameOfDoctor;
+    if (this.packageAccount != null) {
+      data['packageAccount'] = this.packageAccount!.toJson();
+    }
+
+    if (this.caredTopic != null) {
+      data['caredTopic'] = this.caredTopic!.map((v) => v.toJson()).toList();
+    }
+    if (this.personalInterests != null) {
+      data['personalInterests'] = this.personalInterests!.map((v) => v.toJson()).toList();
+    }
+    if (this.favouriteSports != null) {
+      data['favouriteSports'] = this.favouriteSports!.map((v) => v.toJson()).toList();
+    }
+    if (this.workingHourss != null) {
+      data['workingHourss'] = this.workingHourss!.map((v) => v.toJson()).toList();
+    }
+    if (this.profession != null) {
+      data['profession'] = this.profession!.toJson();
+    }
+     if (this.educationLevel != null) {
+      data['educationLevel'] = this.educationLevel!.toJson();
+    }
+     if (this.personality != null) {
+      data['personality'] = this.personality!.toJson();
+    }
+     if (this.consciousnessPractice != null) {
+      data['consciousnessPractice'] = this.consciousnessPractice!.toJson();
+    }
+     if (this.religion != null) {
+      data['religion'] = this.religion!.toJson();
+    }
+     if (this.vegetarian != null) {
+      data['vegetarian'] = this.vegetarian!.toJson();
+    }
+
+    if (this.personalityRuleList != null) {
+      data['personalityRuleList'] =
+          this.personalityRuleList!.map((v) => v.toJson()).toList();
+    }
+    if (this.interestRuleList != null) {
+      data['interestRuleList'] =
+          this.interestRuleList!.map((v) => v.toJson()).toList();
+    }
+    if (this.consciousnessPracticeRuleList != null) {
+      data['consciousnessPracticeRuleList'] =
+          this.consciousnessPracticeRuleList!.map((v) => v.toJson()).toList();
+    }
+    if (this.vegetarianRuleList != null) {
+      data['vegetarianRuleList'] =
+          this.vegetarianRuleList!.map((v) => v.toJson()).toList();
+    }
+    if (this.workingHourRuleList != null) {
+      data['workingHourRuleList'] =
+          this.workingHourRuleList!.map((v) => v.toJson()).toList();
+    }
+    if (this.favouriteSportRuleList != null) {
+      data['favouriteSportRuleList'] =
+          this.favouriteSportRuleList!.map((v) => v.toJson()).toList();
+    }
+    if (this.religionRuleList != null) {
+      data['religionRuleList'] =
+          this.religionRuleList!.map((v) => v.toJson()).toList();
+    }
+    if (this.jobList != null) {
+      data['jobList'] = this.jobList!.map((v) => v.toJson()).toList();
+    }
+    if (this.educationLevelList != null) {
+      data['educationLevelList'] =
+          this.educationLevelList!.map((v) => v.toJson()).toList();
+    }
+    if (this.lessonTagList != null) {
+      data['lessonTagList'] =
+          this.lessonTagList!.map((v) => v.toJson()).toList();
+    }
+    if (this.accountRule != null) {
+      data['accountRule'] = this.accountRule!.toJson();
+    }
+    if (this.trainingGroups != null) {
+      data['trainingGroups'] =
+          this.trainingGroups!.map((v) => v.toJson()).toList();
+    }
+    if (this.statistict != null) {
+      data['statistict'] = this.statistict!.toJson();
+    }
+    data['id'] = this.id;
+    data['accountId'] = this.accountId;
+    data['code'] = this.code;
+    data['userName'] = this.userName;
+    data['age'] = this.age;
+    data['dateOfBirth'] = this.dateOfBirth;
+    data['genderType'] = this.genderType;
+    data['gender'] = this.gender;
+    data['creatorId'] = this.creatorId;
+    data['createDatetime'] = this.createDatetime;
+    data['fullName'] = this.fullName;
+    data['phoneNumber'] = this.phoneNumber;
+    data['secondPhoneNumber'] = this.secondPhoneNumber;
+    data['email'] = this.email;
+    if (this.nation != null) {
+      data['nation'] = this.nation!.toJson();
+    }
+    if (this.province != null) {
+      data['province'] = this.province!.toJson();
+    }
+    if (this.district != null) {
+      data['district'] = this.district!.toJson();
+    }
+    if (this.ward != null) {
+      data['ward'] = this.ward!.toJson();
+    }
+    data['address'] = this.address;
+    if (this.diabetes != null) {
+      data['diabetes'] = this.diabetes!.toJson();
+    }
+    data['height'] = this.height;
+    data['weight'] = this.weight;
+    data['goalWaist'] = this.goalWaist;
+    data['goalWeight'] = this.goalWeight;
+    data['energyGoal'] = this.energyGoal;
+    data['activityLevelRate'] = this.activityLevelRate;
+    data['isLinkedFacebook'] = this.isLinkedFacebook;
+    data['isLinkedGoogle'] = this.isLinkedGoogle;
+    data['isMobileAccount'] = this.isMobileAccount;
+    data['firstLinkedAccount'] = this.firstLinkedAccount;
+    if (this.imageUrl != null) {
+      data['imageUrl'] = this.imageUrl!.toJson();
+    }
+    data['glucoseUnit'] = this.glucoseUnit;
+    data['hasBreakfastSnack'] = this.hasBreakfastSnack;
+    data['hasLunchSnack'] = this.hasLunchSnack;
+    data['hasDinnerSnack'] = this.hasDinnerSnack;
+    data['roadMapId'] = this.roadMapId;
+    data['googleEmail'] = this.googleEmail;
+    data['packageName'] = this.packageName;
+    if (this.ownPackage != null) {
+      data['ownPackage'] = this.ownPackage!.toJson();
+    }
+    data['sharedProfile'] = this.sharedProfile;
+    if (this.levelOfDiabetesRuleList != null) {
+      data['levelOfDiabetesRuleList'] =
+          this.levelOfDiabetesRuleList!.map((v) => v.toJson()).toList();
+    }
+    return data;
   }
 }
 
@@ -430,9 +598,18 @@ class ProvinceModel {
     );
   }
 
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['id'] = this.id;
+    data['name'] = this.name;
+    return data;
+  }
+
   static List<ProvinceModel> toList(List<dynamic> items) {
     return items.map((item) => ProvinceModel.fromJson(item)).toList();
   }
+
+
 }
 
 class InfoModel {
@@ -456,6 +633,14 @@ class InfoModel {
 
   static List<InfoModel> toList(List<dynamic> items) {
     return items.map((item) => InfoModel.fromJson(item)).toList();
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['keyEnum'] = this.keyEnum;
+    data['keyGuid'] = this.keyGuid;
+    data['value'] = this.value;
+    return data;
   }
 }
 
@@ -481,6 +666,14 @@ class DiabeteModel {
   static List<DiabeteModel> toList(List<dynamic> items) {
     return items.map((item) => DiabeteModel.fromJson(item)).toList();
   }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['status'] = this.status;
+    data['date'] = this.date;
+    data['name'] = this.name;
+    return data;
+  }
 }
 
 class TrainingGroupModel {
@@ -491,6 +684,7 @@ class TrainingGroupModel {
   final String? zaloUrl;
   final String? nameTrainingGroup;
   final TrainingGroup? trainingGroup;
+  final String? accountId;
 
   TrainingGroupModel({
     required this.trainingGroupId,
@@ -500,6 +694,7 @@ class TrainingGroupModel {
     required this.id,
     required this.coachPhoneNumber,
     required this.zaloUrl,
+    required this.accountId,
   });
 
   factory TrainingGroupModel.fromJson(Map<String, dynamic> json) {
@@ -510,12 +705,24 @@ class TrainingGroupModel {
       coachPhoneNumber: json['coachPhoneNumber'],
       nameTrainingGroup: json['nameTrainingGroup'],
       zaloUrl: json['zaloUrl'],
+      accountId: json['accountId'],
       trainingGroup: json['trainingGroup'] == null ? null : TrainingGroup.fromJson(json['trainingGroup']),
     );
   }
 
   static List<TrainingGroupModel> toList(List<dynamic> items) {
     return items.map((item) => TrainingGroupModel.fromJson(item)).toList();
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['id'] = this.id;
+    data['trainingGroupId'] = this.trainingGroupId;
+    data['accountId'] = this.accountId;
+    data['nameTrainingGroup'] = this.nameTrainingGroup;
+    data['zaloUrl'] = this.zaloUrl;
+    data['coachPhoneNumber'] = this.coachPhoneNumber;
+    return data;
   }
 }
 
