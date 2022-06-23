@@ -92,7 +92,7 @@ class QuizData {
     }
     if(answers?.isEmpty == true){
      // String? accountIdCurrentUser = AppSettings.userInfo?.accountId;
-      if(results != null){
+      if(results != null && results?.isNotEmpty == true){
      //   if(results!.accountId == accountIdCurrentUser){
           return true;
      //   }
@@ -157,6 +157,10 @@ class QuizData {
 
   void setAnswers(List<AnswerData> listAnswer){
     _answers = listAnswer;
+  }
+
+  void addResult(ResultData result){
+    _results?.add(result);
   }
 
   Map<String, dynamic> toJson() {

@@ -124,7 +124,7 @@ class SurveyQuestionCubit extends Cubit<SurveyQuestionState> {
           for(var mappedQuestionId in answer?.mappedQuestionIds ?? []){
             final int? mappedQuestionIndex = sectionSurvey?.questions
                 ?.indexWhere((element) => element.id == mappedQuestionId);
-            if (mappedQuestionIndex != null &&
+            if (mappedQuestionIndex != null && mappedQuestionIndex >= 0 &&
                 sectionSurvey?.questions?[mappedQuestionIndex] != null) {
               final QuizData mappedQuestion =
                   sectionSurvey!.questions![mappedQuestionIndex];
@@ -229,6 +229,16 @@ class SurveyQuestionCubit extends Cubit<SurveyQuestionState> {
             .toList();
 
     QuestionAnswerResults? answerResult = listAnswer.isNotEmpty ? listAnswer.first : null;
+
+    questions[selectedCourseIndex].addResult(
+      ResultData(
+        id: surveyId, 
+        accountId: AppSettings.userInfo?.accountId,
+        surveyQuestionId: answerResult?.surveyQuestionId,
+        surveyAnswerId: answerResult?.surveySectionId,
+        content: answerResult?.content,
+      ),
+    );
 
     final PostSurveyRequest request = PostSurveyRequest(
         questionAnswerResults: answerResult);
