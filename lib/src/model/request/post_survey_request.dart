@@ -13,12 +13,14 @@ class QuestionAnswerResults {
   List<String?>? surveyAnswerIdList;
   String? content;
   String? surveySectionId;
+  bool isTyping = false;
 
   QuestionAnswerResults({
     this.surveyQuestionId,
     this.surveyAnswerIdList,
     this.content,
     this.surveySectionId,
+    this.isTyping = false,
   });
   QuestionAnswerResults.fromJson(Map<String, dynamic> json) {
     surveyQuestionId = json['surveyQuestionId']?.toString();
