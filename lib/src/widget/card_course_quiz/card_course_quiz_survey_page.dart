@@ -57,7 +57,7 @@ class CardCourseQuizSurveyPageState extends State<CardCourseQuizSurveyPage>
       ),
     );
     if(widget.quizData.results != null && widget.quizData.answers?.isEmpty == true){
-      String text = widget.quizData.results!.isNotEmpty ? widget.quizData.results!.first.content ?? '' : '';
+      String text = widget.quizData.results!.isNotEmpty ? widget.quizData.results!.last.content ?? '' : '';
       _textController.text = text;
       if(text.isNotEmpty){
         widget.onSubmitAnswer(QuestionAnswerResults(
@@ -207,6 +207,7 @@ class CardCourseQuizSurveyPageState extends State<CardCourseQuizSurveyPage>
                   surveyQuestionId: quizData.id, 
                   surveySectionId: widget.surveySectionId,
                   content: text.trim(),
+                  isTyping: true,
                 ),
               );
             }

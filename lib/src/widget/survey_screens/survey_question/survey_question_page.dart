@@ -172,12 +172,13 @@ class _SurveyQuestionPageState extends State<SurveyQuestionPage> {
                       quizData: data,
                       surveySectionId: _cubit.sectionSurvey?.id ?? '',
                       onSubmitAnswer: (listAnswer) {
-                        if(listAnswer.content != null && listAnswer.content?.isNotEmpty == true) {
+                        if((listAnswer.content != null && listAnswer.content?.isNotEmpty == true) || listAnswer.isTyping == true) {
                           _cubit.currentText = listAnswer.content!;
                         }
                         _cubit.recordAnswer(
                           questionId: data.id!,
                           answerResult: listAnswer,
+                          isTyping: listAnswer.isTyping,
                         );
                       },
                     ),

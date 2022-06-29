@@ -98,8 +98,22 @@ class SurveyQuestionCubit extends Cubit<SurveyQuestionState> {
   void recordAnswer({
     required String questionId,
     required QuestionAnswerResults answerResult,
+    bool isTyping= false,
   }) {
     emit(SurveyQuestionLoading());
+
+    if(answerResult.content != null && isTyping == true){
+      questions[selectedCourseIndex].addResult(
+        ResultData(
+          id: questionId, 
+          accountId: AppSettings.userInfo?.accountId,
+          surveyQuestionId: answerResult.surveyQuestionId,
+          surveyAnswerId: answerResult.surveySectionId,
+          content: answerResult.content,
+        ),
+      );
+    }
+
     answer[questionId] = answerResult;
     if (answerResult.surveyAnswerIdList?.isNotEmpty != true &&
         answerResult.content?.isNotEmpty != true) {
@@ -124,7 +138,7 @@ class SurveyQuestionCubit extends Cubit<SurveyQuestionState> {
           for(var mappedQuestionId in answer?.mappedQuestionIds ?? []){
             final int? mappedQuestionIndex = sectionSurvey?.questions
                 ?.indexWhere((element) => element.id == mappedQuestionId);
-            if (mappedQuestionIndex != null &&
+            if (mappedQuestionIndex != null && mappedQuestionIndex >= 0 &&
                 sectionSurvey?.questions?[mappedQuestionIndex] != null) {
               final QuizData mappedQuestion =
                   sectionSurvey!.questions![mappedQuestionIndex];
@@ -203,7 +217,7 @@ class SurveyQuestionCubit extends Cubit<SurveyQuestionState> {
     emit(SurveyQuestionLoading());
     selectedCourseIndex = index;
     if(questions[selectedCourseIndex].results != null && questions[selectedCourseIndex].results?.isNotEmpty == true) {
-      currentText = questions[selectedCourseIndex].results!.first.content ?? '';
+      currentText = questions[selectedCourseIndex].results!.last.content ?? '';
     } else {
       currentText = '';
     }
