@@ -92,8 +92,8 @@ class UserModel {
   }
 
   bool get isUserSubcription {
-    if(ownPackage != null){
-      if(ownPackage!.ownRoadmap == null){
+    if (ownPackage != null) {
+      if (ownPackage!.ownRoadmap == null) {
         return true;
       }
     }
@@ -101,8 +101,8 @@ class UserModel {
   }
 
   bool get isUserHasRoadmap {
-    if(ownPackage != null){
-      if(ownPackage!.ownRoadmap != null){
+    if (ownPackage != null) {
+      if (ownPackage!.ownRoadmap != null) {
         return true;
       }
     }
@@ -314,7 +314,8 @@ class UserModel {
         profession: profession ?? this.profession,
         educationLevel: educationLevel ?? this.educationLevel,
         personality: personality ?? this.personality,
-        consciousnessPractice: consciousnessPractice ?? this.consciousnessPractice,
+        consciousnessPractice:
+            consciousnessPractice ?? this.consciousnessPractice,
         religion: religion ?? this.religion,
         vegetarian: vegetarian ?? this.vegetarian,
         caredTopic: caredTopic ?? this.caredTopic,
@@ -327,11 +328,14 @@ class UserModel {
         lessonTagList: lessonTagList ?? this.lessonTagList,
         personalityRuleList: personalityRuleList ?? this.personalityRuleList,
         interestRuleList: interestRuleList ?? this.interestRuleList,
-        consciousnessPracticeRuleList: consciousnessPracticeRuleList ?? this.consciousnessPracticeRuleList,
+        consciousnessPracticeRuleList:
+            consciousnessPracticeRuleList ?? this.consciousnessPracticeRuleList,
         vegetarianRuleList: vegetarianRuleList ?? this.vegetarianRuleList,
         workingHourRuleList: workingHourRuleList ?? this.workingHourRuleList,
-        levelOfDiabetesRuleList: levelOfDiabetesRuleList ?? this.levelOfDiabetesRuleList,
-        favouriteSportRuleList: favouriteSportRuleList ?? this.favouriteSportRuleList,
+        levelOfDiabetesRuleList:
+            levelOfDiabetesRuleList ?? this.levelOfDiabetesRuleList,
+        favouriteSportRuleList:
+            favouriteSportRuleList ?? this.favouriteSportRuleList,
         religionRuleList: religionRuleList ?? this.religionRuleList,
         accountRule: accountRule ?? this.accountRule,
         nameOfAgency: nameOfAgency ?? this.nameOfAgency,
@@ -349,7 +353,9 @@ class UserModel {
       accountId: json['accountId'],
       creatorId: json['creatorId'],
       userName: json['userName'],
-      packageAccount: json['packageAccount'] == null ? null : PackageAccountModel.fromJson(json['packageAccount']),
+      packageAccount: json['packageAccount'] == null
+          ? null
+          : PackageAccountModel.fromJson(json['packageAccount']),
       packageName: json['packageName'],
       fullName: json['fullName'],
       age: json['age'],
@@ -359,22 +365,36 @@ class UserModel {
       genderType: json['genderType'],
       createDatetime: json['createDatetime'],
       isActive: json['isActive'],
-      nation:
-          json['nation'] == null ? null : (json['nation'] is String ? null : ProvinceModel.fromJson(json['nation'])),
+      nation: json['nation'] == null
+          ? null
+          : (json['nation'] is String
+              ? null
+              : ProvinceModel.fromJson(json['nation'])),
       province: json['province'] == null
           ? null
-          : (json['province'] is String ? null : ProvinceModel.fromJson(json['province'])),
+          : (json['province'] is String
+              ? null
+              : ProvinceModel.fromJson(json['province'])),
       district: json['district'] == null
           ? null
-          : (json['district'] is String ? null : ProvinceModel.fromJson(json['district'])),
+          : (json['district'] is String
+              ? null
+              : ProvinceModel.fromJson(json['district'])),
       height: json['height'],
       weight: json['weight'],
-      ward: json['ward'] == null ? null : (json['ward'] is String ? null : ProvinceModel.fromJson(json['ward'])),
+      ward: json['ward'] == null
+          ? null
+          : (json['ward'] is String
+              ? null
+              : ProvinceModel.fromJson(json['ward'])),
       dateOfBirth: json['dateOfBirth'],
-      diabetesStatus: json['diabetes'] == null ? null : json['diabetes']['status'],
+      diabetesStatus:
+          json['diabetes'] == null ? null : json['diabetes']['status'],
       diabetesName: json['diabetes'] == null ? null : json['diabetes']['name'],
       diabetesDate: json['diabetes'] == null ? null : json['diabetes']['date'],
-      imageUrl: json['imageUrl'] == null ? null : ImagesModel.fromJson(json['imageUrl']),
+      imageUrl: json['imageUrl'] == null
+          ? null
+          : ImagesModel.fromJson(json['imageUrl']),
       code: json['code'],
       email: json['email'],
       address: json['address'],
@@ -392,7 +412,9 @@ class UserModel {
       hasBreakfastSnack: json['hasBreakfastSnack'],
       hasLunchSnack: json['hasLunchSnack'],
       hasDinnerSnack: json['hasDinnerSnack'],
-      diabetes: json['diabetes'] == null ? null : DiabeteModel.fromJson(json['diabetes']),
+      diabetes: json['diabetes'] == null
+          ? null
+          : DiabeteModel.fromJson(json['diabetes']),
       profession: json['profession'],
       educationLevel: json['educationLevel'],
       personality: json['personality'],
@@ -404,25 +426,40 @@ class UserModel {
       favouriteSports: json['favouriteSports'],
       workingHourss: json['workingHourss'],
       jobList: CategoryItemUserModel.toList(json['jobList']),
-      trainingGroups: json['trainingGroups'] == null ? [] : TrainingGroupModel.toList(json['trainingGroups']),
-      educationLevelList: CategoryItemUserModel.toList(json['educationLevelList']),
+      trainingGroups: json['trainingGroups'] == null
+          ? []
+          : TrainingGroupModel.toList(json['trainingGroups']),
+      educationLevelList:
+          CategoryItemUserModel.toList(json['educationLevelList']),
       lessonTagList: CategoryItemUserModel.toList(json['lessonTagList']),
       interestRuleList: CategoryItemUserModel.toList(json['interestRuleList']),
-      consciousnessPracticeRuleList: CategoryItemUserModel.toList(json['consciousnessPracticeRuleList']),
-      vegetarianRuleList: CategoryItemUserModel.toList(json['vegetarianRuleList']),
-      workingHourRuleList: CategoryItemUserModel.toList(json['workingHourRuleList']),
-      levelOfDiabetesRuleList: CategoryItemUserModel.toList(json['levelOfDiabetesRuleList']),
-      favouriteSportRuleList: CategoryItemUserModel.toList(json['favouriteSportRuleList']),
+      consciousnessPracticeRuleList:
+          CategoryItemUserModel.toList(json['consciousnessPracticeRuleList']),
+      vegetarianRuleList:
+          CategoryItemUserModel.toList(json['vegetarianRuleList']),
+      workingHourRuleList:
+          CategoryItemUserModel.toList(json['workingHourRuleList']),
+      levelOfDiabetesRuleList:
+          CategoryItemUserModel.toList(json['levelOfDiabetesRuleList']),
+      favouriteSportRuleList:
+          CategoryItemUserModel.toList(json['favouriteSportRuleList']),
       religionRuleList: CategoryItemUserModel.toList(json['religionRuleList']),
-      accountRule: json['accountRule'] == null ? null : AccountRule.fromJson(json['accountRule']),
-      personalityRuleList: CategoryItemUserModel.toList(json['personalityRuleList']),
+      accountRule: json['accountRule'] == null
+          ? null
+          : AccountRule.fromJson(json['accountRule']),
+      personalityRuleList:
+          CategoryItemUserModel.toList(json['personalityRuleList']),
       nameOfAgency: json['nameOfAgency'],
       nameOfDoctor: json['nameOfDoctor'],
-      ownPackage: json['ownPackage'] == null ? null : UserInfoResponseDataOwnPackage.fromJson(json['ownPackage']),
+      ownPackage: json['ownPackage'] == null
+          ? null
+          : UserInfoResponseDataOwnPackage.fromJson(json['ownPackage']),
       isShare: json['isShare'],
       shareRefCode: json['shareRefCode'],
       sharedProfile: json['sharedProfile'],
-      statistict: json['statistict'] == null ? null : StatisticData.fromJson(json['statistict']),
+      statistict: json['statistict'] == null
+          ? null
+          : StatisticData.fromJson(json['statistict']),
     );
   }
 
@@ -444,30 +481,33 @@ class UserModel {
       data['caredTopic'] = this.caredTopic!.map((v) => v.toJson()).toList();
     }
     if (this.personalInterests != null) {
-      data['personalInterests'] = this.personalInterests!.map((v) => v.toJson()).toList();
+      data['personalInterests'] =
+          this.personalInterests!.map((v) => v.toJson()).toList();
     }
     if (this.favouriteSports != null) {
-      data['favouriteSports'] = this.favouriteSports!.map((v) => v.toJson()).toList();
+      data['favouriteSports'] =
+          this.favouriteSports!.map((v) => v.toJson()).toList();
     }
     if (this.workingHourss != null) {
-      data['workingHourss'] = this.workingHourss!.map((v) => v.toJson()).toList();
+      data['workingHourss'] =
+          this.workingHourss!.map((v) => v.toJson()).toList();
     }
     if (this.profession != null) {
       data['profession'] = this.profession!.toJson();
     }
-     if (this.educationLevel != null) {
+    if (this.educationLevel != null) {
       data['educationLevel'] = this.educationLevel!.toJson();
     }
-     if (this.personality != null) {
+    if (this.personality != null) {
       data['personality'] = this.personality!.toJson();
     }
-     if (this.consciousnessPractice != null) {
+    if (this.consciousnessPractice != null) {
       data['consciousnessPractice'] = this.consciousnessPractice!.toJson();
     }
-     if (this.religion != null) {
+    if (this.religion != null) {
       data['religion'] = this.religion!.toJson();
     }
-     if (this.vegetarian != null) {
+    if (this.vegetarian != null) {
       data['vegetarian'] = this.vegetarian!.toJson();
     }
 
@@ -608,8 +648,6 @@ class ProvinceModel {
   static List<ProvinceModel> toList(List<dynamic> items) {
     return items.map((item) => ProvinceModel.fromJson(item)).toList();
   }
-
-
 }
 
 class InfoModel {
@@ -706,7 +744,9 @@ class TrainingGroupModel {
       nameTrainingGroup: json['nameTrainingGroup'],
       zaloUrl: json['zaloUrl'],
       accountId: json['accountId'],
-      trainingGroup: json['trainingGroup'] == null ? null : TrainingGroup.fromJson(json['trainingGroup']),
+      trainingGroup: json['trainingGroup'] == null
+          ? null
+          : TrainingGroup.fromJson(json['trainingGroup']),
     );
   }
 
@@ -756,7 +796,9 @@ class TrainingGroup {
       coverId: json['coverId'],
       linkZalo: json['linkZalo'],
       maxMember: json['maxMember'],
-      account: json['account'] == null ? null : AccountCoach.fromJson(json['account']),
+      account: json['account'] == null
+          ? null
+          : AccountCoach.fromJson(json['account']),
     );
   }
 

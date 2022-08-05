@@ -55,7 +55,8 @@ class UserClient extends FetchClient {
 
   Future<UserModel?> fetchUser() async {
     try {
-      final Response response = await super.fetchData(url: '/App/Patient/mobile/CurrentToken');
+      final Response response =
+          await super.fetchData(url: '/App/Patient/mobile/CurrentToken');
       if (response.statusCode == 200) {
         if (response.data['data'] == null) {
           return null;
@@ -66,7 +67,8 @@ class UserClient extends FetchClient {
           await saveUserPreferences(user);
 
           //await fetchUserInfo(user.patientId);
-          Observable.instance.notifyObservers([], notifyName: "user_info_change");
+          Observable.instance
+              .notifyObservers([], notifyName: "user_info_change");
           // DartNotificationCenter.post(channel: 'user_info_change');
           return user;
         }
@@ -85,7 +87,7 @@ class UserClient extends FetchClient {
     try {
       var json = jsonEncode(userModel.toJson());
       prefs.setString('user', json);
-    } catch(error){
+    } catch (error) {
       print('${error.toString()}');
     }
   }
@@ -95,16 +97,13 @@ class UserClient extends FetchClient {
     final SharedPreferences prefs = await _prefs;
     final userJson = prefs.getString('user');
     UserModel? user;
-    if(userJson != null){
+    if (userJson != null) {
       try {
         user = UserModel.fromJson(jsonDecode(userJson));
-      } catch(error){
-        
-      }
+      } catch (error) {}
     }
     return user;
   }
-
 
   // Future<CategoryUserModel?> fetchCategoryItems() async {
   //   try {
@@ -151,7 +150,8 @@ class UserClient extends FetchClient {
 
   Future<List<ManualModel>?> fetchManuals() async {
     try {
-      final Response response = await super.fetchData(url: '/App/Profile/Instruction', params: {'takeAll': 'true'});
+      final Response response = await super.fetchData(
+          url: '/App/Profile/Instruction', params: {'takeAll': 'true'});
       if (response.statusCode == 200) {
         if (response.data['data'] == null) {
           return null;
@@ -169,7 +169,8 @@ class UserClient extends FetchClient {
 
   Future<SecureModel?> fetchInfoSecure() async {
     try {
-      final Response response = await super.fetchDataProdNoHeaders(url: '/App/Profile/Information');
+      final Response response =
+          await super.fetchDataProdNoHeaders(url: '/App/Profile/Information');
       if (response.statusCode == 200) {
         if (response.data['data'] == null) {
           return null;
@@ -192,9 +193,9 @@ class UserClient extends FetchClient {
       final ApiResult<List<AppVersionResponse>> apiResult =
           await repository.getAppVersion();
       apiResult.when(success: (List<AppVersionResponse> response) {
-        if(response.isNotEmpty){
-          for(var appVersion in response){
-            if(localVersion == appVersion.version){
+        if (response.isNotEmpty) {
+          for (var appVersion in response) {
+            if (localVersion == appVersion.version) {
               appVersionResponse = appVersion;
             }
           }
@@ -202,7 +203,7 @@ class UserClient extends FetchClient {
       }, failure: (NetworkExceptions error) {
         return appVersionResponse;
       });
-    } catch(error){
+    } catch (error) {
       return appVersionResponse;
     }
     return appVersionResponse;
@@ -216,14 +217,15 @@ class UserClient extends FetchClient {
       final localVersion = status.localVersion;
       final storeVersion = status.storeVersion;
       return localVersion ?? "";
-    } catch(error){
+    } catch (error) {
       return "";
     }
   }
 
   Future<GoalInfoModel?> fetchGoalInfo() async {
     try {
-      final Response response = await super.fetchData(url: '/App/Patient/Target');
+      final Response response =
+          await super.fetchData(url: '/App/Patient/Target');
       if (response.statusCode == 200) {
         if (response.data['data'] == null) {
           return null;
@@ -262,7 +264,8 @@ class UserClient extends FetchClient {
       // if (model.goalWeight != null) {
       //   params['goalWeight'] = model.goalWeight!;
       // }
-      final Response response = await super.putData(url: '/App/Patient/Target', params: {
+      final Response response =
+          await super.putData(url: '/App/Patient/Target', params: {
         'dailyWalkTargetDuration': model.dailyWalkTargetDuration,
         'dailyTargetDuration': model.dailyTargetDuration,
         'weeklyTargetDuration': model.weeklyTargetDuration,
@@ -290,8 +293,11 @@ class UserClient extends FetchClient {
       Map<String, String> params = {
         'patientId': patientId!,
       };
-      final response =
-          await super.putHttp(path: '/App/Patient/Avatar', params: params, files: [path], fileName: 'image');
+      final response = await super.putHttp(
+          path: '/App/Patient/Avatar',
+          params: params,
+          files: [path],
+          fileName: 'image');
       if (response.statusCode == 200) {
         return true;
       } else {
@@ -303,19 +309,26 @@ class UserClient extends FetchClient {
     }
   }
 
-  Future<bool> updateUserInfo(String? patientId, UserModel userInfo, {bool isUpdateDiabetes = false}) async {
+  Future<bool> updateUserInfo(String? patientId, UserModel userInfo,
+      {bool isUpdateDiabetes = false}) async {
     try {
       Map<String, dynamic> params = {
         'patientId': patientId ?? '',
         'fullName': userInfo.fullName ?? '',
         'dateOfBirth': userInfo.dateOfBirth,
-        'gender': userInfo.genderType == null || userInfo.genderType == 0 ? 1 : userInfo.genderType,
-        'provinceId': userInfo.province == null ? '' : userInfo.province!.id ?? '',
-        'districtId': userInfo.district == null ? '' : userInfo.district!.id ?? '',
+        'gender': userInfo.genderType == null || userInfo.genderType == 0
+            ? 1
+            : userInfo.genderType,
+        'provinceId':
+            userInfo.province == null ? '' : userInfo.province!.id ?? '',
+        'districtId':
+            userInfo.district == null ? '' : userInfo.district!.id ?? '',
         'wardId': userInfo.ward == null ? '' : userInfo.ward!.id ?? '',
         'address': userInfo.address ?? '',
-        'diabetesStatus': userInfo.diabetesStatus == null ? 0 : userInfo.diabetesStatus!,
-        'diabetesDate': userInfo.diabetesDate == null ? 0 : userInfo.diabetesDate,
+        'diabetesStatus':
+            userInfo.diabetesStatus == null ? 0 : userInfo.diabetesStatus!,
+        'diabetesDate':
+            userInfo.diabetesDate == null ? 0 : userInfo.diabetesDate,
         'height': userInfo.height == null ? 0 : userInfo.height,
         'weight': userInfo.weight == null ? 0 : userInfo.weight,
         'email': userInfo.email ?? '',
@@ -345,7 +358,33 @@ class UserClient extends FetchClient {
         }
       }
 
-      final Response response = await super.putData(url: '/App/Patient/mobile/Input', params: params);
+      final Response response =
+          await super.putData(url: '/App/Patient/mobile/Input', params: params);
+      if (response.statusCode == 200) {
+        return true;
+      } else {
+        final error = Error.fromJson(response);
+        throw error;
+      }
+    } catch (e) {
+      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+    }
+  }
+
+  Future<bool> deleteUser() async {
+    try {
+      UserModel userInfo = AppSettings.userInfo!;
+
+      FormData formData = FormData.fromMap({
+        'active': false,
+        "patientId": userInfo.id,
+      });
+
+      final Response response = await super.putData2(
+        url: '/App/Patient/Input',
+        params: formData,
+      );
+
       if (response.statusCode == 200) {
         return true;
       } else {
@@ -388,21 +427,29 @@ class UserClient extends FetchClient {
       if (categoryType == CategoryType.LESSON_TAG_TYPE ||
           categoryType == CategoryType.FAVORITE_SPORT_TYPE ||
           categoryType == CategoryType.RELIGION_TYPE) {
-        if (accountRule.accountRuleTagMappings == null) accountRule.accountRuleTagMappings = [];
-        if (accountRule.accountRuleTypeMappings == null) accountRule.accountRuleTypeMappings = [];
+        if (accountRule.accountRuleTagMappings == null)
+          accountRule.accountRuleTagMappings = [];
+        if (accountRule.accountRuleTypeMappings == null)
+          accountRule.accountRuleTypeMappings = [];
         List<CategoryItemUserModel> oldSelectedList = [];
         if (categoryType == CategoryType.LESSON_TAG_TYPE) {
           oldSelectedList = userInfo.lessonTagList == null
               ? []
-              : userInfo.lessonTagList!.where((element) => element.selected ?? false).toList();
+              : userInfo.lessonTagList!
+                  .where((element) => element.selected ?? false)
+                  .toList();
         } else if (categoryType == CategoryType.FAVORITE_SPORT_TYPE) {
           oldSelectedList = userInfo.favouriteSportRuleList == null
               ? []
-              : userInfo.favouriteSportRuleList!.where((element) => element.selected ?? false).toList();
+              : userInfo.favouriteSportRuleList!
+                  .where((element) => element.selected ?? false)
+                  .toList();
         } else if (categoryType == CategoryType.RELIGION_TYPE) {
           oldSelectedList = userInfo.religionRuleList == null
               ? []
-              : userInfo.religionRuleList!.where((element) => element.selected ?? false).toList();
+              : userInfo.religionRuleList!
+                  .where((element) => element.selected ?? false)
+                  .toList();
         }
 
         for (int i = 0; i < oldSelectedList.length; i++) {
@@ -425,37 +472,46 @@ class UserClient extends FetchClient {
         }
 
         List<AccountRuleTagMapping> accountRuleTagMappingList = [];
-        accountRuleTagMappingList.addAll(oldSelectedList.map((e) => AccountRuleTagMapping(
-              tagId: e.value,
-              modelStatus: 2,
-              accountRuleId: (accountRule.id != null && accountRule.id!.isNotEmpty)
-                  ? accountRule.id
-                  : "00000000-0000-0000-0000-000000000000",
-              tag: null,
-            )));
-        accountRuleTagMappingList.addAll(selectedList.map((e) => AccountRuleTagMapping(
-              tagId: e.value,
-              modelStatus: 3,
-              accountRuleId: (accountRule.id != null && accountRule.id!.isNotEmpty)
-                  ? accountRule.id
-                  : "00000000-0000-0000-0000-000000000000",
-              tag: null,
-            )));
+        accountRuleTagMappingList
+            .addAll(oldSelectedList.map((e) => AccountRuleTagMapping(
+                  tagId: e.value,
+                  modelStatus: 2,
+                  accountRuleId:
+                      (accountRule.id != null && accountRule.id!.isNotEmpty)
+                          ? accountRule.id
+                          : "00000000-0000-0000-0000-000000000000",
+                  tag: null,
+                )));
+        accountRuleTagMappingList
+            .addAll(selectedList.map((e) => AccountRuleTagMapping(
+                  tagId: e.value,
+                  modelStatus: 3,
+                  accountRuleId:
+                      (accountRule.id != null && accountRule.id!.isNotEmpty)
+                          ? accountRule.id
+                          : "00000000-0000-0000-0000-000000000000",
+                  tag: null,
+                )));
 
         accountRule.accountRuleTagMappings = accountRuleTagMappingList;
         accountRule.accountRuleTypeMappings = [];
       } else {
-        if (accountRule.accountRuleTypeMappings == null) accountRule.accountRuleTypeMappings = [];
+        if (accountRule.accountRuleTypeMappings == null)
+          accountRule.accountRuleTypeMappings = [];
 
         if (!isMultiChoice) {
           String id = "00000000-0000-0000-0000-000000000000";
-          String? accountRuleId = (accountRule.id != null && accountRule.id!.isNotEmpty)
-              ? accountRule.id
-              : "00000000-0000-0000-0000-000000000000";
+          String? accountRuleId =
+              (accountRule.id != null && accountRule.id!.isNotEmpty)
+                  ? accountRule.id
+                  : "00000000-0000-0000-0000-000000000000";
           int modelStatus = 3;
 
-          for (int i = 0; i < accountRule.accountRuleTypeMappings!.length; i++) {
-            if (accountRule.accountRuleTypeMappings![i].ruleType == getRuleType(categoryType)) {
+          for (int i = 0;
+              i < accountRule.accountRuleTypeMappings!.length;
+              i++) {
+            if (accountRule.accountRuleTypeMappings![i].ruleType ==
+                getRuleType(categoryType)) {
               id = accountRule.accountRuleTypeMappings![i].id ?? '';
               modelStatus = 1;
               break;
@@ -472,25 +528,30 @@ class UserClient extends FetchClient {
               .toList();
         } else {
           List<AccountRuleTypeMapping> newAccountRuleTypeMappingList = [];
-          newAccountRuleTypeMappingList.addAll(selectedList.map((e) => AccountRuleTypeMapping(
-                id: "00000000-0000-0000-0000-000000000000",
-                ruleType: getRuleType(categoryType),
-                value: Utils.parseStringToInt(e.value!),
-                accountRuleId: (accountRule.id != null && accountRule.id!.isNotEmpty)
-                    ? accountRule.id
-                    : "00000000-0000-0000-0000-000000000000",
-                modelStatus: 3,
-              )));
+          newAccountRuleTypeMappingList
+              .addAll(selectedList.map((e) => AccountRuleTypeMapping(
+                    id: "00000000-0000-0000-0000-000000000000",
+                    ruleType: getRuleType(categoryType),
+                    value: Utils.parseStringToInt(e.value!),
+                    accountRuleId:
+                        (accountRule.id != null && accountRule.id!.isNotEmpty)
+                            ? accountRule.id
+                            : "00000000-0000-0000-0000-000000000000",
+                    modelStatus: 3,
+                  )));
 
-          List<AccountRuleTypeMapping> oldAccountRuleTypeMappingList = accountRule.accountRuleTypeMappings!
-              .where((element) => element.ruleType == getRuleType(categoryType))
-              .toList();
+          List<AccountRuleTypeMapping> oldAccountRuleTypeMappingList =
+              accountRule.accountRuleTypeMappings!
+                  .where((element) =>
+                      element.ruleType == getRuleType(categoryType))
+                  .toList();
 
           for (int i = 0; i < oldAccountRuleTypeMappingList.length; i++) {
             bool isExisted = false;
             int indexSelectedList = -1;
             for (int j = 0; j < newAccountRuleTypeMappingList.length; j++) {
-              if (oldAccountRuleTypeMappingList[i].value == newAccountRuleTypeMappingList[j].value) {
+              if (oldAccountRuleTypeMappingList[i].value ==
+                  newAccountRuleTypeMappingList[j].value) {
                 indexSelectedList = j;
                 isExisted = true;
                 break;
@@ -517,12 +578,14 @@ class UserClient extends FetchClient {
         accountRule.accountRuleTagMappings = [];
       }
 
-      UpdateProfileRequest request = UpdateProfileRequest(patientId: patientId, accountRule: accountRule);
+      UpdateProfileRequest request =
+          UpdateProfileRequest(patientId: patientId, accountRule: accountRule);
       if (isUpdateDiabetes) {
         request.diabetesDate = userInfo.diabetesDate;
         request.diabetesStatus = userInfo.diabetesStatus;
       }
-      final Response response = await super.putData(url: '/App/Patient/mobile/Input', params: request.toJson());
+      final Response response = await super
+          .putData(url: '/App/Patient/mobile/Input', params: request.toJson());
       if (response.statusCode == 200) {
         return true;
       } else {
@@ -536,7 +599,8 @@ class UserClient extends FetchClient {
 
   Future<List<dynamic>?> fetchDiabeteStates() async {
     try {
-      final Response response = await super.fetchData(url: '/App/Patient/DiabeteStates');
+      final Response response =
+          await super.fetchData(url: '/App/Patient/DiabeteStates');
       if (response.statusCode == 200) {
         final List<dynamic>? result = response.data['data'];
         return result;
@@ -551,7 +615,8 @@ class UserClient extends FetchClient {
 
   Future<List<CategoryItemUserModel>?> fetchDiabeteStatesNoHeader() async {
     try {
-      final Response response = await super.fetchDataNoHeaders(url: '/App/Patient/DiabeteStates');
+      final Response response =
+          await super.fetchDataNoHeaders(url: '/App/Patient/DiabeteStates');
       if (response.statusCode == 200) {
         if (response.data['data'] == null) {
           return null;
@@ -569,8 +634,9 @@ class UserClient extends FetchClient {
 
   Future<List<ProvinceModel>?> fetchProvinces() async {
     try {
-      final Response response =
-          await super.fetchData(url: '/App/Division/Provinces', params: {'page': '1', 'size': '1000'});
+      final Response response = await super.fetchData(
+          url: '/App/Division/Provinces',
+          params: {'page': '1', 'size': '1000'});
       if (response.statusCode == 200) {
         if (response.data['data'] == null) {
           return null;
@@ -588,8 +654,9 @@ class UserClient extends FetchClient {
 
   Future<List<ProvinceModel>?> fetchDictricts(String provinceId) async {
     try {
-      final Response response = await super
-          .fetchData(url: '/App/Division/Dictricts', params: {'provinceId': provinceId, 'page': '1', 'size': '1000'});
+      final Response response = await super.fetchData(
+          url: '/App/Division/Dictricts',
+          params: {'provinceId': provinceId, 'page': '1', 'size': '1000'});
       if (response.statusCode == 200) {
         if (response.data['data'] == null) {
           return null;
@@ -607,8 +674,9 @@ class UserClient extends FetchClient {
 
   Future<List<ProvinceModel>?> fetchWards(String districtId) async {
     try {
-      final Response response = await super
-          .fetchData(url: '/App/Division/Wards', params: {'districtId': districtId, 'page': '1', 'size': '1000'});
+      final Response response = await super.fetchData(
+          url: '/App/Division/Wards',
+          params: {'districtId': districtId, 'page': '1', 'size': '1000'});
       if (response.statusCode == 200) {
         if (response.data['data'] == null) {
           return null;
@@ -626,7 +694,8 @@ class UserClient extends FetchClient {
 
   Future<List<PatientTimeFrameModel>?> fetchPatientTimeFrame() async {
     try {
-      final Response response = await super.fetchData(url: '/App/Patient/PatientTimeFrame');
+      final Response response =
+          await super.fetchData(url: '/App/Patient/PatientTimeFrame');
       if (response.statusCode == 200) {
         if (response.data['data'] == null) {
           return null;
@@ -642,7 +711,8 @@ class UserClient extends FetchClient {
     }
   }
 
-  Future<bool> updatePatientTimeFrame(List<PatientTimeFrameModel> timeFramePatients) async {
+  Future<bool> updatePatientTimeFrame(
+      List<PatientTimeFrameModel> timeFramePatients) async {
     try {
       List<Map<String, dynamic>> data = [];
       timeFramePatients.forEach((element) {
@@ -651,7 +721,8 @@ class UserClient extends FetchClient {
 
       Map<String, dynamic> params = {'timeFramePatients': data};
 
-      final response = await super.putData(url: '/App/Patient/PatientTimeFrame', params: params);
+      final response = await super
+          .putData(url: '/App/Patient/PatientTimeFrame', params: params);
       if (response.statusCode == 200) {
         return true;
       } else {
@@ -665,11 +736,13 @@ class UserClient extends FetchClient {
 
   Future<MotivationDataModel> fetchMotivationDiary(int page) async {
     try {
-      final Response response =
-          await super.fetchData(url: '/App/Profile/MotivationDiary', params: {'page': page.toString(), 'size': '10'});
+      final Response response = await super.fetchData(
+          url: '/App/Profile/MotivationDiary',
+          params: {'page': page.toString(), 'size': '10'});
       if (response.statusCode == 200) {
         return MotivationDataModel(
-            models: MotivationModel.toList(response.data['data']), hasMore: response.data['meta']['canNext']);
+            models: MotivationModel.toList(response.data['data']),
+            hasMore: response.data['meta']['canNext']);
       } else {
         final error = Error.fromJson(response);
         throw error;
@@ -681,7 +754,8 @@ class UserClient extends FetchClient {
 
   Future<void> markCompletedUpdateProfile(String? id) async {
     BotToast.showLoading();
-    final ApiResult<CommonResponse> apiResult = await repository.markCompletedUpdateProfile(id ?? '');
+    final ApiResult<CommonResponse> apiResult =
+        await repository.markCompletedUpdateProfile(id ?? '');
     apiResult.when(success: (CommonResponse response) {
       Observable.instance.notifyObservers([], notifyName: "food_change_data");
       BotToast.closeAllLoading();
@@ -692,8 +766,10 @@ class UserClient extends FetchClient {
 
   Future<bool> inputMotivationDiary(String? content) async {
     try {
-      final Response response = await super
-          .postUri(baseOption: true, url: '/App/Profile/MotivationDiary/Input', params: {'content': content});
+      final Response response = await super.postUri(
+          baseOption: true,
+          url: '/App/Profile/MotivationDiary/Input',
+          params: {'content': content});
       if (response.statusCode == 200) {
         return true;
       } else {
@@ -707,8 +783,9 @@ class UserClient extends FetchClient {
 
   Future<bool> editMotivationDiary(String? id, String? content) async {
     try {
-      final Response response =
-          await super.putData(url: '/App/Profile/MotivationDiary/Input', params: {'id': id, 'content': content});
+      final Response response = await super.putData(
+          url: '/App/Profile/MotivationDiary/Input',
+          params: {'id': id, 'content': content});
       if (response.statusCode == 200) {
         return true;
       } else {
@@ -722,8 +799,9 @@ class UserClient extends FetchClient {
 
   Future<ScheduleReminderDataModel> fetchScheduleReminders(int page) async {
     try {
-      final Response response =
-          await super.fetchData(url: '/App/Patient/PatientRemind', params: {'page': page.toString(), 'size': '20'});
+      final Response response = await super.fetchData(
+          url: '/App/Patient/PatientRemind',
+          params: {'page': page.toString(), 'size': '20'});
       if (response.statusCode == 200) {
         return ScheduleReminderDataModel(
             models: ScheduleReminderModel.toList(response.data['data']),
@@ -739,9 +817,11 @@ class UserClient extends FetchClient {
 
   Future<ScheduleReminderModel> fetchScheduleReminderDetail(String? id) async {
     try {
-      final Response response = await super.fetchData(url: '/App/Patient/PatientRemind/$id');
+      final Response response =
+          await super.fetchData(url: '/App/Patient/PatientRemind/$id');
       if (response.statusCode == 200) {
-        return ScheduleReminderModel.fromJson(response.data['data']); //response.data['meta']['canNext']);
+        return ScheduleReminderModel.fromJson(
+            response.data['data']); //response.data['meta']['canNext']);
       } else {
         final error = Error.fromJson(response);
         throw error;
@@ -753,8 +833,10 @@ class UserClient extends FetchClient {
 
   Future<bool> inputScheduleReminder(ScheduleReminderModel model) async {
     try {
-      final Response response =
-          await super.postUri(baseOption: true, url: '/App/Patient/PatientRemind/Input', params: model.toJson());
+      final Response response = await super.postUri(
+          baseOption: true,
+          url: '/App/Patient/PatientRemind/Input',
+          params: model.toJson());
       if (response.statusCode == 200) {
         return true;
       } else {
@@ -768,7 +850,8 @@ class UserClient extends FetchClient {
 
   Future<bool> editScheduleReminder(ScheduleReminderModel model) async {
     try {
-      final Response response = await super.putData(url: '/App/Patient/PatientRemind/Input', params: model.toJson());
+      final Response response = await super.putData(
+          url: '/App/Patient/PatientRemind/Input', params: model.toJson());
       if (response.statusCode == 200) {
         return true;
       } else {
@@ -782,7 +865,8 @@ class UserClient extends FetchClient {
 
   Future<bool> deleteScheduleReminder(String? id) async {
     try {
-      final Response response = await super.delete(url: '/App/Patient/PatientRemind/Input/$id');
+      final Response response =
+          await super.delete(url: '/App/Patient/PatientRemind/Input/$id');
       print(response);
       if (response.statusCode == 200) {
         print('delete success');
@@ -798,7 +882,8 @@ class UserClient extends FetchClient {
 
   Future<ScheduleGlucoseModel> fetchScheduleGlucose() async {
     try {
-      final Response response = await super.fetchData(url: '/App/Patient/PatientGlucoseRemind/Day');
+      final Response response =
+          await super.fetchData(url: '/App/Patient/PatientGlucoseRemind/Day');
       if (response.statusCode == 200) {
         return ScheduleGlucoseModel.fromJson(response.data['data']);
       } else {
@@ -812,7 +897,8 @@ class UserClient extends FetchClient {
 
   Future<ScheduleGlucoseTimeModel> fetchScheduleGlucoseSetting() async {
     try {
-      final Response response = await super.fetchData(url: '/App/Patient/PatientGlucoseRemind/Time');
+      final Response response =
+          await super.fetchData(url: '/App/Patient/PatientGlucoseRemind/Time');
       if (response.statusCode == 200) {
         return ScheduleGlucoseTimeModel.fromJson(response.data['data']);
       } else {
@@ -824,15 +910,18 @@ class UserClient extends FetchClient {
     }
   }
 
-  Future<bool> updateScheduleGlucoseSetting(ScheduleGlucoseTimeModel model) async {
+  Future<bool> updateScheduleGlucoseSetting(
+      ScheduleGlucoseTimeModel model) async {
     try {
-      final response =
-          await super.postUri(baseOption: true, url: '/App/Patient/PatientGlucoseRemind/InputTime', params: {
-        "beforeEat": model.beforeEat,
-        "afterEat": model.afterEat,
-        "beforeSleeping": model.beforeSleeping,
-        "glucoseUnit": model.glucoseUnit
-      });
+      final response = await super.postUri(
+          baseOption: true,
+          url: '/App/Patient/PatientGlucoseRemind/InputTime',
+          params: {
+            "beforeEat": model.beforeEat,
+            "afterEat": model.afterEat,
+            "beforeSleeping": model.beforeSleeping,
+            "glucoseUnit": model.glucoseUnit
+          });
       if (response.statusCode == 200) {
         return true;
       } else {
@@ -846,8 +935,10 @@ class UserClient extends FetchClient {
 
   Future<bool> updateScheduleGlucose(ScheduleGlucoseModel model) async {
     try {
-      final response = await super
-          .postUri(baseOption: true, url: '/App/Patient/PatientGlucoseRemind/InputDay', params: model.toJson());
+      final response = await super.postUri(
+          baseOption: true,
+          url: '/App/Patient/PatientGlucoseRemind/InputDay',
+          params: model.toJson());
       if (response.statusCode == 200) {
         return true;
       } else {

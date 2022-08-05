@@ -185,6 +185,7 @@ class Drawables {
 	String get ic_lock => "lib/res/drawables/ic_lock.png";
 	String get ic_login_apple => "lib/res/drawables/ic_login_apple.png";
 	String get ic_logout => "lib/res/drawables/ic_logout.png";
+	String get ic_delete_account => "lib/res/drawables/ic_delete_account.png";
 	String get ic_mark => "lib/res/drawables/ic_mark.png";
 	String get ic_my_package => "lib/res/drawables/ic_my_package.png";
 	String get ic_new_lesson => "lib/res/drawables/ic_new_lesson.png";
