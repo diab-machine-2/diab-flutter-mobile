@@ -18,7 +18,7 @@ publish_to: "none" # Remove this line if you wish to publish to pub.dev
 version: 1.1.8+68
 
 environment:
-  sdk: '>=2.12.0 <3.0.0'
+  sdk: '>=2.15.0 <3.0.0'
 
 dependencies:
   flutter:
@@ -35,23 +35,23 @@ dependencies:
   flutter_animated_dialog: ^2.0.1
   fluttertoast: ^8.0.8
   # image_picker: ^0.6.7+22
-  image_picker: ^0.8.4+2
+  image_picker: 0.8.4+8
   permission_handler: ^8.2.2
   # permission_handler: ^5.0.1+1
   flutter_datetime_picker: ^1.5.1
   percent_indicator: ^3.4.0
   intl: ^0.17.0
-  fl_chart: ^0.45.0
+  fl_chart: 0.45.0
   # sms_autofill: ^1.2.6
-  pin_code_fields: ^7.3.0
+  pin_code_fields: 7.3.0
 #  dart_notification_center: ^1.0.0+1
   flutter_observer: ^2.0.0
   grouped_list: ^4.1.0
   device_info: ^2.0.2
-  ua_client_hints: ^1.1.0
-  shared_preferences: ^2.0.8
+  ua_client_hints: 1.1.0
+  shared_preferences: 2.0.13
   #Networking
-  dio: ^4.0.0
+  dio: 4.0.4
   retrofit: ^2.0.1
   pretty_dio_logger: ^1.2.0-beta-1
   logger: ^1.1.0
@@ -71,11 +71,11 @@ dependencies:
   # horizontal_card_pager: ^1.0.3
   syncfusion_flutter_gauges: ^19.4.50
   # url_launcher: ^5.5.0
-  url_launcher: ^6.0.11
+  url_launcher: 6.0.20
   simple_html_css: ^3.0.1
   flutter_html: ^2.2.1
   html: ^0.15.0
-  image_cropper: ^1.4.1
+  image_cropper: 1.4.1
   carousel_slider: ^4.0.0
   flutter_facebook_login:
     git:
@@ -84,35 +84,35 @@ dependencies:
   flutter_statusbar_manager:
     git:
       url: https://github.com/NarHakobyan/flutter_statusbar_manager.git
-  google_sign_in: ^5.1.1
+  google_sign_in: 5.2.3
   sign_in_with_apple: ^3.2.0
   package_info: ^2.0.2
   flutter_svg: ^0.22.0
-  google_fonts: ^2.1.0
-  firebase_core: ^1.7.0
-  firebase_crashlytics: ^2.2.3
+  google_fonts: 2.3.1
+  firebase_core: 1.12.0
+  firebase_crashlytics: 2.5.1
   firebase_analytics: ^8.3.3
   firebase_messaging: ^10.0.8
   flutter_slidable: ^0.6.0
-  flutter_screenutil: ^5.0.0+2
+  flutter_screenutil: 5.2.0
   modal_bottom_sheet: ^2.0.0
   pull_to_refresh: ^2.0.0
   visibility_detector: ^0.2.2
   #avatars
   avatars: ^2.2.0
   cached_network_image: ^3.1.0
-  flutter_inapp_purchase: ^5.0.3
+  flutter_inapp_purchase: 5.1.2
   #video player
-  better_player: ^0.0.81
-  video_thumbnail: ^0.4.3
-  path_provider: ^2.0.8
+  better_player: 0.0.81
+  video_thumbnail: 0.4.3
+  path_provider: 2.0.9
   #audio player
   audioplayers: ^0.20.1
-  just_audio: ^0.9.18
+  just_audio: 0.9.20
   flutter_rating_bar: ^4.0.0
   scroll_to_index: ^2.1.0
   #PDF viewer
-  flutter_cached_pdfview: ^0.4.0-nullsafety
+  flutter_cached_pdfview: 0.4.1
   #QR code scan
   qr_code_scanner: ^0.6.1
   #Deep link
@@ -130,8 +130,8 @@ dev_dependencies:
   wakelock: ^0.5.6
 
 dependency_overrides:
-  provider: ^6.0.1
-  meta: ^1.7.0
+  provider: 6.0.2
+  meta: 1.7.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
