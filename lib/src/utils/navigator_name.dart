@@ -39,6 +39,7 @@ class NavigatorName {
   static const String profile = '/profile';
   static const String goal_setting = '/goal_setting';
   static const String profile_info = '/profile_info';
+  static const String delete_account = '/delete_account';
   static const String notification = '/notification';
   static const String notification_detail = '/notification_detail';
   static const String schedule_activity = '/schedule_activity';
