@@ -739,7 +739,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
     return _showPopup(
       context: context,
       buttonTitle: R.string.join.tr(),
-      isDisableCompleteButton: ((DateUtil.isSameDay(DateTime.now().millisecondsSinceEpoch ~/ 1000, smartGoal?.appointmentDate) == false) || (smartGoal?.progress == 1)),
+      isDisableCompleteButton: !DateUtil.isSameDay(DateTime.now().millisecondsSinceEpoch ~/ 1000, smartGoal?.appointmentDate),
       onTap: () async {
         await _cubit.markCompletedCalendar(smartGoal?.calendarId);
         Navigator.pop(context);
