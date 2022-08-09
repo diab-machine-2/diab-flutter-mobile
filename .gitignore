@@ -39,3 +39,7 @@ lib/generated_plugin_registrant.dart
 !/packages/flutter_tools/test/data/dart_dependencies_test/**/.packages
 analysis_options.yaml
 .vscode/launch.json
+.vscode/settings.json
+
+
+.fvm/
