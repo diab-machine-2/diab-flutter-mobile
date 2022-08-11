@@ -25,7 +25,7 @@ class PaymentPackageCubit extends Cubit<PaymentPackageState> {
   }
 
   Future<void> initConnect() async {
-    var result = await FlutterInappPurchase.instance.initConnection;
+    var result = await FlutterInappPurchase.instance.initialize();
     logger.i('result: $result');
     initPlatformState();
     getListSubscription();

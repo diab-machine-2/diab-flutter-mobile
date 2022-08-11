@@ -241,6 +241,7 @@ class _ProfileControllerState extends State<ProfileController> with Observer {
                   //     }),
                   //const SizedBox(height: 16),
                   buildAction(R.string.profile_information.tr(), R.drawable.ic_user, 0),
+                  buildAction("Chia sẻ app", R.drawable.ic_share, 1),
                   buildAction(R.string.shared_profile_list.tr(), R.drawable.ic_share, 1),
                   buildAction(R.string.user_manual.tr(), R.drawable.ic_question, 2),
                   buildAction(R.string.information_security.tr(), R.drawable.ic_security, 3),

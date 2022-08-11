@@ -240,7 +240,7 @@ class BmiScaleChartState extends State<BmiScaleChart>
         height: 170,
         child: Stack(
             alignment: Alignment.topCenter,
-            overflow: Overflow.visible,
+            clipBehavior: Clip.none,
             children: [
               Positioned(
                 top: -180,
