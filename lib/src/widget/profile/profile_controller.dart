@@ -4,8 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_observer/Observable.dart';
 import 'package:flutter_observer/Observer.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_share/flutter_share.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
+import 'package:medical/src/app_setting/dynamic_link_config.dart';
 import 'package:medical/src/modal/error/error_model.dart';
 import 'package:medical/src/modal/user/manual.dart';
 import 'package:medical/src/modal/user/secure.dart';
@@ -23,6 +25,8 @@ import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/my_package/my_package_page.dart';
 import 'package:medical/src/widget/shared_profile/shared_profile.dart';
+import 'package:medical/src/widgets/refferal_code.dart';
+import 'package:share_plus/share_plus.dart';
 
 import '../../widgets/button_widget.dart';
 import '../food_menu_screens/food_menu/food_menu_page.dart';
@@ -49,7 +53,8 @@ class _ProfileControllerState extends State<ProfileController> with Observer {
   }
 
   @override
-  void update(Observable observable, String? notifyName, Map<dynamic, dynamic>? map) {
+  void update(
+      Observable observable, String? notifyName, Map<dynamic, dynamic>? map) {
     if (notifyName == 'user_info_change') {
       setState(() {});
     }
@@ -58,9 +63,9 @@ class _ProfileControllerState extends State<ProfileController> with Observer {
   loadData() async {
     try {
       BotToast.showLoading();
-      if(AppSettings.secureModel == null) {
-      secureModel = await UserClient().fetchInfoSecure();
-      AppSettings.secureModel = secureModel;
+      if (AppSettings.secureModel == null) {
+        secureModel = await UserClient().fetchInfoSecure();
+        AppSettings.secureModel = secureModel;
       } else {
         secureModel = AppSettings.secureModel;
       }
@@ -73,7 +78,8 @@ class _ProfileControllerState extends State<ProfileController> with Observer {
   }
 
   Future<void> checkPackage() async {
-    final ApiResult<UserInfoResponse> apiResult = await _appRepository.getCurrentUserInfo();
+    final ApiResult<UserInfoResponse> apiResult =
+        await _appRepository.getCurrentUserInfo();
     apiResult.when(success: (UserInfoResponse response) {
       // final String packageCode = response.data?.packageCode ?? '';
       // isPro = packageCode.isNotEmpty && packageCode != Const.BASIC;
@@ -96,7 +102,10 @@ class _ProfileControllerState extends State<ProfileController> with Observer {
           backgroundColor: R.color.color0xffB1DDDB.withOpacity(0.2),
           hideAllBackButton: widget.hideAllBackButton,
           title: Text(R.string.profile_file.tr(),
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: R.color.textDark)),
+              style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                  color: R.color.textDark)),
           leadingIcon: IconButton(
               splashColor: R.color.transparent,
               highlightColor: R.color.transparent,
@@ -114,51 +123,77 @@ class _ProfileControllerState extends State<ProfileController> with Observer {
                   Row(children: [
                     Container(
                         clipBehavior: Clip.hardEdge,
-                        decoration: BoxDecoration(color: R.color.mainColor, borderRadius: BorderRadius.circular(52)),
+                        decoration: BoxDecoration(
+                            color: R.color.mainColor,
+                            borderRadius: BorderRadius.circular(52)),
                         child: user.imageUrl!.url == null
-                            ? Icon(Icons.person, size: 104, color: R.color.white)
+                            ? Icon(Icons.person,
+                                size: 104, color: R.color.white)
                             : Image.network(
                                 user.imageUrl!.url!,
                                 width: 104,
                                 height: 104,
-                                errorBuilder: (BuildContext context, Object error, StackTrace? stackTrace) {
-                                  return Icon(Icons.person, size: 100, color: R.color.white);
+                                errorBuilder: (BuildContext context,
+                                    Object error, StackTrace? stackTrace) {
+                                  return Icon(Icons.person,
+                                      size: 100, color: R.color.white);
                                 },
                               )),
                     const SizedBox(width: 16),
                     Expanded(
-                      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                        Text(
-                          user.fullName!,
-                          style: TextStyle(color: R.color.textDark, fontSize: 20, fontWeight: FontWeight.w700),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        const SizedBox(height: 8),
-                        Text(R.string.user_id.tr(args: [user.code ?? '0']),
-                            style:
-                                TextStyle(color: R.color.primaryGreyColor, fontSize: 14, fontWeight: FontWeight.w400)),
-                        const SizedBox(height: 8),
-                        Row(
+                      child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Container(
-                              height: 32,
-                              decoration: BoxDecoration(color: R.color.white, borderRadius: BorderRadius.circular(16)),
-                              padding: const EdgeInsets.only(left: 16, right: 16),
-                              child: Row(
-                                children: [
-                                  Image.asset(isPro ? R.drawable.ic_pro : R.drawable.ic_crown_green,
-                                      width: 20, height: 20),
-                                  const SizedBox(width: 8),
-                                  Text((userInfo?.packageName != null && userInfo!.packageName!.isNotEmpty) ? userInfo!.packageName! : R.string.thanh_vien_co_ban.tr(),
-                                      style:
-                                          TextStyle(color: R.color.textDark, fontSize: 14, fontWeight: FontWeight.w700))
-                                ],
-                              ),
+                            Text(
+                              user.fullName!,
+                              style: TextStyle(
+                                  color: R.color.textDark,
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.w700),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
                             ),
-                          ],
-                        )
-                      ]),
+                            const SizedBox(height: 8),
+                            Text(R.string.user_id.tr(args: [user.code ?? '0']),
+                                style: TextStyle(
+                                    color: R.color.primaryGreyColor,
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w400)),
+                            const SizedBox(height: 8),
+                            Row(
+                              children: [
+                                Container(
+                                  height: 32,
+                                  decoration: BoxDecoration(
+                                      color: R.color.white,
+                                      borderRadius: BorderRadius.circular(16)),
+                                  padding: const EdgeInsets.only(
+                                      left: 16, right: 16),
+                                  child: Row(
+                                    children: [
+                                      Image.asset(
+                                          isPro
+                                              ? R.drawable.ic_pro
+                                              : R.drawable.ic_crown_green,
+                                          width: 20,
+                                          height: 20),
+                                      const SizedBox(width: 8),
+                                      Text(
+                                          (userInfo?.packageName != null &&
+                                                  userInfo!
+                                                      .packageName!.isNotEmpty)
+                                              ? userInfo!.packageName!
+                                              : R.string.thanh_vien_co_ban.tr(),
+                                          style: TextStyle(
+                                              color: R.color.textDark,
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.w700))
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            )
+                          ]),
                     ),
                   ]),
                   //Buttons
@@ -170,7 +205,8 @@ class _ProfileControllerState extends State<ProfileController> with Observer {
                           title: R.string.blood_sugar_schedule_single_line.tr(),
                           image: R.drawable.ic_blood_sugar_testing_schedule,
                           onTap: () {
-                            Navigator.pushNamed(context, NavigatorName.schedule_glucose);
+                            Navigator.pushNamed(
+                                context, NavigatorName.schedule_glucose);
                           }),
                     ),
                     const SizedBox(width: 16),
@@ -180,7 +216,8 @@ class _ProfileControllerState extends State<ProfileController> with Observer {
                           title: R.string.goal_setting.tr(),
                           image: R.drawable.ic_set_goal,
                           onTap: () {
-                            Navigator.pushNamed(context, NavigatorName.goal_setting);
+                            Navigator.pushNamed(
+                                context, NavigatorName.goal_setting);
                           }),
                     )
                   ]),
@@ -193,7 +230,8 @@ class _ProfileControllerState extends State<ProfileController> with Observer {
                           title: R.string.remind.tr(),
                           image: R.drawable.ic_remind,
                           onTap: () {
-                            Navigator.pushNamed(context, NavigatorName.reminder);
+                            Navigator.pushNamed(
+                                context, NavigatorName.reminder);
                           }),
                     ),
                     const SizedBox(width: 16),
@@ -208,7 +246,8 @@ class _ProfileControllerState extends State<ProfileController> with Observer {
                             //   NavigationUtil.showUpdateRequirePopup(context: context, title: R.string.food_menu.tr());
                             //   return;
                             // }
-                            NavigationUtil.navigatePage(context, const FoodMenuPage());
+                            NavigationUtil.navigatePage(
+                                context, const FoodMenuPage());
                           }),
                     )
                   ]),
@@ -228,7 +267,8 @@ class _ProfileControllerState extends State<ProfileController> with Observer {
                       title: R.string.personal_schedule_single_line.tr(),
                       image: R.drawable.ic_personal_schedule,
                       onTap: () {
-                        Navigator.pushNamed(context, NavigatorName.schedule_activity);
+                        Navigator.pushNamed(
+                            context, NavigatorName.schedule_activity);
                       }),
                   const SizedBox(height: 12),
                   // buildItem(
@@ -240,13 +280,18 @@ class _ProfileControllerState extends State<ProfileController> with Observer {
                   //       NavigationUtil.navigatePage(context, MyPackagePage());
                   //     }),
                   //const SizedBox(height: 16),
-                  buildAction(R.string.profile_information.tr(), R.drawable.ic_user, 0),
-                  buildAction("Chia sẻ app", R.drawable.ic_share, 1),
-                  buildAction(R.string.shared_profile_list.tr(), R.drawable.ic_share, 1),
-                  buildAction(R.string.user_manual.tr(), R.drawable.ic_question, 2),
-                  buildAction(R.string.information_security.tr(), R.drawable.ic_security, 3),
+                  buildAction(
+                      R.string.profile_information.tr(), R.drawable.ic_user, 0),
+                  buildAction("Chia sẻ app", R.drawable.ic_share, 6),
+                  buildAction(R.string.shared_profile_list.tr(),
+                      R.drawable.ic_share, 1),
+                  buildAction(
+                      R.string.user_manual.tr(), R.drawable.ic_question, 2),
+                  buildAction(R.string.information_security.tr(),
+                      R.drawable.ic_security, 3),
                   // buildAction(R.string.contact_diab.tr(), R.drawable.ic_contact, 4),
-                  buildAction(R.string.password.tr(), R.drawable.ic_password, 5),
+                  buildAction(
+                      R.string.password.tr(), R.drawable.ic_password, 5),
                 ],
               ),
             )));
@@ -262,7 +307,8 @@ class _ProfileControllerState extends State<ProfileController> with Observer {
   }) {
     final Widget textWidget = Text(
       title,
-      style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: R.color.textDark),
+      style: TextStyle(
+          fontSize: 14, fontWeight: FontWeight.w700, color: R.color.textDark),
       textAlign: TextAlign.center,
       maxLines: 1,
       overflow: TextOverflow.ellipsis,
@@ -301,7 +347,7 @@ class _ProfileControllerState extends State<ProfileController> with Observer {
 
   Widget buildAction(String title, String icon, int index) {
     return GestureDetector(
-      onTap: () {
+      onTap: () async {
         if (index == 0) {
           final String phoneNumber = AppSettings.userInfo?.phoneNumber ?? '';
           if (phoneNumber.isEmpty || phoneNumber.contains('User')) {
@@ -315,12 +361,31 @@ class _ProfileControllerState extends State<ProfileController> with Observer {
           Navigator.pushNamed(context, NavigatorName.manual);
         } else if (index == 3) {
           Navigator.pushNamed(context, NavigatorName.manual_detail, arguments: {
-            'manual': ManualModel(id: '', question: R.string.information_security.tr(), answer: secureModel!.security)
+            'manual': ManualModel(
+                id: '',
+                question: R.string.information_security.tr(),
+                answer: secureModel!.security)
           });
         } else if (index == 4) {
-          Navigator.pushNamed(context, NavigatorName.contact, arguments: {'contact': secureModel});
+          Navigator.pushNamed(context, NavigatorName.contact,
+              arguments: {'contact': secureModel});
         } else if (index == 5) {
           Navigator.pushNamed(context, NavigatorName.change_password);
+        } else if (index == 6) {
+          final String refferalCode =
+              await DynamicLinkConfig.buildDynamicLink();
+          print("refferalCode, $refferalCode");
+          Share.share(
+            'Cùng tham gia DiaB, để sống khoẻ cùng với Đái tháo đường\n$refferalCode',
+            subject: 'Sống khoẻ với tiểu đường'
+          );
+
+          // await FlutterShare.share(
+          //   text: 'Diab | Sống khoẻ với tiểu đường',
+          //   title: 'Cùng tham gia DiaB, để sống khoẻ cùng với Đái tháo đường',
+          //   linkUrl: refferalCode,
+          //   chooserTitle: 'Example Chooser Title',
+          // );
         }
       },
       child: Container(
@@ -334,7 +399,8 @@ class _ProfileControllerState extends State<ProfileController> with Observer {
                   const SizedBox(width: 16),
                   Text(title, style: const TextStyle(fontSize: 16))
                 ]),
-                Icon(Icons.arrow_forward_ios, color: R.color.mainColor, size: 16)
+                Icon(Icons.arrow_forward_ios,
+                    color: R.color.mainColor, size: 16)
               ]),
               const SizedBox(height: 20),
               Container(height: 1, color: R.color.grey.withOpacity(0.2))
@@ -355,15 +421,21 @@ class _ProfileControllerState extends State<ProfileController> with Observer {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                  Text(R.string.update_phone_number.tr(),
-                      style: TextStyle(color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w600)),
-                  GestureDetector(
-                      child: Icon(Icons.close, color: R.color.color0xffBEC0C8),
-                      onTap: () {
-                        Navigator.pop(context);
-                      })
-                ]),
+                Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(R.string.update_phone_number.tr(),
+                          style: TextStyle(
+                              color: R.color.textDark,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600)),
+                      GestureDetector(
+                          child:
+                              Icon(Icons.close, color: R.color.color0xffBEC0C8),
+                          onTap: () {
+                            Navigator.pop(context);
+                          })
+                    ]),
                 const SizedBox(height: 16),
                 Container(
                     height: 54,
@@ -378,62 +450,79 @@ class _ProfileControllerState extends State<ProfileController> with Observer {
                           fillColor: R.color.textDark,
                           counterText: '',
                           enabledBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: R.color.grayComponentBorder, width: 1.0),
+                            borderSide: BorderSide(
+                                color: R.color.grayComponentBorder, width: 1.0),
                             borderRadius: BorderRadius.circular(10),
                           ),
                           focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: R.color.mainColor, width: 1.0),
+                            borderSide: BorderSide(
+                                color: R.color.mainColor, width: 1.0),
                             borderRadius: BorderRadius.circular(10),
                           ),
-                          contentPadding: const EdgeInsets.only(top: 0, left: 16, right: 16),
+                          contentPadding: const EdgeInsets.only(
+                              top: 0, left: 16, right: 16),
                           hintText: R.string.nhap_so_dien_thoai.tr(),
                         ),
                         onChanged: (value) {})),
                 Container(
                   margin: const EdgeInsets.only(top: 16),
-                  child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                    GestureDetector(
-                      onTap: () {
-                        Navigator.pop(context);
-                        Navigator.pushNamed(context, NavigatorName.profile_info);
-                      },
-                      child: Container(
-                          height: 48,
-                          width: 119,
-                          decoration:
-                              BoxDecoration(borderRadius: BorderRadius.circular(200), color: R.color.grayBorder),
-                          child: Center(
-                            child: Text(R.string.cancel.tr(),
-                                style: TextStyle(color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w600)),
-                          )),
-                    ),
-                    GestureDetector(
-                      onTap: () {
-                        final phone = textEditingController.text;
-                        if (phone.isEmpty) {
-                          Message.showToastMessage(context, R.string.ban_chua_nhap_so_dien_thoai.tr());
-                          return;
-                        } else {
-                          updatePhone(phone);
-                        }
-                      },
-                      child: Container(
-                        height: 48,
-                        width: 119,
-                        decoration: BoxDecoration(
-                            color: R.color.red,
-                            borderRadius: BorderRadius.circular(200),
-                            gradient: LinearGradient(
-                                begin: Alignment.topLeft,
-                                end: Alignment.centerRight,
-                                colors: [R.color.greenGradientTop, R.color.greenGradientBottom])),
-                        child: Center(
-                          child: Text(R.string.save.tr(),
-                              style: TextStyle(color: R.color.white, fontSize: 16, fontWeight: FontWeight.w600)),
+                  child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.pop(context);
+                            Navigator.pushNamed(
+                                context, NavigatorName.profile_info);
+                          },
+                          child: Container(
+                              height: 48,
+                              width: 119,
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(200),
+                                  color: R.color.grayBorder),
+                              child: Center(
+                                child: Text(R.string.cancel.tr(),
+                                    style: TextStyle(
+                                        color: R.color.textDark,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w600)),
+                              )),
                         ),
-                      ),
-                    ),
-                  ]),
+                        GestureDetector(
+                          onTap: () {
+                            final phone = textEditingController.text;
+                            if (phone.isEmpty) {
+                              Message.showToastMessage(context,
+                                  R.string.ban_chua_nhap_so_dien_thoai.tr());
+                              return;
+                            } else {
+                              updatePhone(phone);
+                            }
+                          },
+                          child: Container(
+                            height: 48,
+                            width: 119,
+                            decoration: BoxDecoration(
+                                color: R.color.red,
+                                borderRadius: BorderRadius.circular(200),
+                                gradient: LinearGradient(
+                                    begin: Alignment.topLeft,
+                                    end: Alignment.centerRight,
+                                    colors: [
+                                      R.color.greenGradientTop,
+                                      R.color.greenGradientBottom
+                                    ])),
+                            child: Center(
+                              child: Text(R.string.save.tr(),
+                                  style: TextStyle(
+                                      color: R.color.white,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600)),
+                            ),
+                          ),
+                        ),
+                      ]),
                 ),
               ],
             )));

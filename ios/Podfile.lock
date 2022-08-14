@@ -57,7 +57,7 @@ PODS:
     - Firebase/Crashlytics (= 9.3.0)
     - firebase_core
     - Flutter
-  - firebase_dynamic_links (4.3.3):
+  - firebase_dynamic_links (4.3.4):
     - Firebase/DynamicLinks (= 9.3.0)
     - firebase_core
     - Flutter
@@ -128,6 +128,8 @@ PODS:
   - flutter_native_splash (0.0.1):
     - Flutter
   - flutter_pdfview (1.0.2):
+    - Flutter
+  - flutter_share (0.0.1):
     - Flutter
   - flutter_statusbar_manager (0.0.1):
     - Flutter
@@ -237,6 +239,8 @@ PODS:
   - qr_code_scanner (0.2.0):
     - Flutter
     - MTBBarcodeScanner
+  - share_plus (0.0.1):
+    - Flutter
   - shared_preferences_ios (0.0.1):
     - Flutter
   - sign_in_with_apple (0.0.1):
@@ -274,6 +278,7 @@ DEPENDENCIES:
   - flutter_inapp_purchase (from `.symlinks/plugins/flutter_inapp_purchase/ios`)
   - flutter_native_splash (from `.symlinks/plugins/flutter_native_splash/ios`)
   - flutter_pdfview (from `.symlinks/plugins/flutter_pdfview/ios`)
+  - flutter_share (from `.symlinks/plugins/flutter_share/ios`)
   - flutter_statusbar_manager (from `.symlinks/plugins/flutter_statusbar_manager/ios`)
   - fluttertoast (from `.symlinks/plugins/fluttertoast/ios`)
   - google_sign_in_ios (from `.symlinks/plugins/google_sign_in_ios/ios`)
@@ -284,6 +289,7 @@ DEPENDENCIES:
   - path_provider_ios (from `.symlinks/plugins/path_provider_ios/ios`)
   - permission_handler_apple (from `.symlinks/plugins/permission_handler_apple/ios`)
   - qr_code_scanner (from `.symlinks/plugins/qr_code_scanner/ios`)
+  - share_plus (from `.symlinks/plugins/share_plus/ios`)
   - shared_preferences_ios (from `.symlinks/plugins/shared_preferences_ios/ios`)
   - sign_in_with_apple (from `.symlinks/plugins/sign_in_with_apple/ios`)
   - sqflite (from `.symlinks/plugins/sqflite/ios`)
@@ -357,6 +363,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/flutter_native_splash/ios"
   flutter_pdfview:
     :path: ".symlinks/plugins/flutter_pdfview/ios"
+  flutter_share:
+    :path: ".symlinks/plugins/flutter_share/ios"
   flutter_statusbar_manager:
     :path: ".symlinks/plugins/flutter_statusbar_manager/ios"
   fluttertoast:
@@ -377,6 +385,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/permission_handler_apple/ios"
   qr_code_scanner:
     :path: ".symlinks/plugins/qr_code_scanner/ios"
+  share_plus:
+    :path: ".symlinks/plugins/share_plus/ios"
   shared_preferences_ios:
     :path: ".symlinks/plugins/shared_preferences_ios/ios"
   sign_in_with_apple:
@@ -408,7 +418,7 @@ SPEC CHECKSUMS:
   firebase_analytics: 8f772ccb3dad1e8968019a158823f99e63069d2b
   firebase_core: 96214f90497b808a2cf2a24517084c5f6de37b53
   firebase_crashlytics: cdba3f556462dd5ee25cc7d28790ff2de2c0edcf
-  firebase_dynamic_links: 0cc25cd58aa0b24acfcf10e1aaf6f32323f1c361
+  firebase_dynamic_links: 6b03202f0a9aca5f748d453028c54063a1ba60cd
   firebase_messaging: a2cd2c6dd7b5430bb9e4e50e9a474413ae3bce09
   FirebaseAnalytics: bf46f5163f44097ce2c789de0b3e6f87f1da834a
   FirebaseCore: c088995ece701a021a48a1348ea0174877de2a6a
@@ -423,6 +433,7 @@ SPEC CHECKSUMS:
   flutter_inapp_purchase: 5c6a1ac3f11b11d0c8c0321c0c41c1f05805e4c8
   flutter_native_splash: 52501b97d1c0a5f898d687f1646226c1f93c56ef
   flutter_pdfview: 25f53dd6097661e6395b17de506e6060585946bd
+  flutter_share: 4be0208963c60b537e6255ed2ce1faae61cd9ac2
   flutter_statusbar_manager: 18588ba7dce7a28a538363d2a9989f9ede4a6710
   fluttertoast: 16fbe6039d06a763f3533670197d01fc73459037
   FMDB: 2ce00b547f966261cd18927a3ddb07cb6f3db82a
@@ -448,6 +459,7 @@ SPEC CHECKSUMS:
   PINOperation: 00c935935f1e8cf0d1e2d6b542e75b88fc3e5e20
   PromisesObjC: ab77feca74fa2823e7af4249b8326368e61014cb
   qr_code_scanner: bb67d64904c3b9658ada8c402e8b4d406d5d796e
+  share_plus: 056a1e8ac890df3e33cb503afffaf1e9b4fbae68
   shared_preferences_ios: 548a61f8053b9b8a49ac19c1ffbc8b92c50d68ad
   sign_in_with_apple: f3bf75217ea4c2c8b91823f225d70230119b8440
   sqflite: 6d358c025f5b867b29ed92fc697fd34924e11904

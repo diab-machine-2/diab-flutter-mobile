@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/app_setting/dynamic_link_config.dart';
 import 'package:medical/src/theme/app_theme.dart';
 import 'package:medical/src/widget/BloodPressure/add_bloodPressure.dart';
 import 'package:medical/src/widget/BloodPressure/bloodPressure_detail_tabbar.dart';
@@ -80,13 +81,14 @@ class _AppState extends State<App> {
   @override
   void initState() {
     super.initState();
-
     // DeepLinkConfig.instance.handleDeepLink();
+    DynamicLinkConfig.instance.setUpHandleDeepLink();
   }
 
   @override
   void dispose() {
     DeepLinkConfig.instance.dispose();
+    DynamicLinkConfig.instance.dispose();
     super.dispose();
   }
 

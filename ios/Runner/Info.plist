@@ -39,6 +39,10 @@
 	<string>154356806592189</string>
 	<key>FacebookDisplayName</key>
 	<string>diaB</string>
+	<key>FirebaseDynamicLinksCustomDomains</key>
+	<array>
+		<string>https://diab.page.link</string>
+	</array>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
 	<key>LSApplicationQueriesSchemes</key>
