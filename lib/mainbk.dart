@@ -43,7 +43,7 @@
 //       'details.';
 
 //   final String dynamicLink = 'https://test-app/helloworld';
-//   final String link = 'https://diab.page.link/EDfY';
+//   final String link = 'https://diab.page.link/ofqK';
 
 //   @override
 //   void initState() {
@@ -53,7 +53,8 @@
 
 //   Future<void> initDynamicLinks() async {
 //     dynamicLinks.onLink.listen((dynamicLinkData) {
-//       Navigator.pushNamed(context, dynamicLinkData.link.path);
+//       print("dynamicLinkData: ${dynamicLinkData.link}");
+//       // Navigator.pushNamed(context, dynamicLinkData.link.path);
 //     }).onError((error) {
 //       print('onLink error');
 //       print(error.message);
@@ -64,21 +65,21 @@
 //     setState(() {
 //       _isCreatingLink = true;
 //     });
-
+//     String url1 = "https://diab.page.link";
 //     final DynamicLinkParameters parameters = DynamicLinkParameters(
-//       uriPrefix: 'https://diab.page.link',
-//       longDynamicLink: Uri.parse(
-//         'https://diab.page.link/?efr=0&ibi=io.invertase.testing&apn=io.flutter.plugins.firebase.dynamiclinksexample&imv=0&amv=0&link=https%3A%2F%2Ftest-app%2Fhelloworld&ofl=https://ofl-example.com',
-//       ),
-//       link: Uri.parse(dynamicLink),
+//       uriPrefix: url1,
+//       // longDynamicLink: Uri.parse(
+//       //     'https://diab.page.link/?link=$url1?referralCode=user.accountId&apn=com.cactusoftware.diab&amv=0&afl=https://diab.com.vn/giai-phap'),
+//       link: Uri.parse('$url1/referralCode=user.accountId'),
 //       androidParameters: const AndroidParameters(
-//         packageName: 'io.flutter.plugins.firebase.dynamiclinksexample',
+//         packageName: "dev.ntp.referral",
 //         minimumVersion: 0,
 //       ),
-//       iosParameters: const IOSParameters(
+//       iosParameters: IOSParameters(
 //         minimumVersion: '0',
 //         appStoreId: "1569353448",
 //         bundleId: "com.cactusoftware.diab",
+//         fallbackUrl: Uri.parse("https://diab.com.vn/giai-phap"),
 //       ),
 //       socialMetaTagParameters: SocialMetaTagParameters(
 //         description:
@@ -88,6 +89,29 @@
 //         title: "Diab | Giải pháp toàn diện cho người Đái tháo đường",
 //       ),
 //     );
+//     // DynamicLinkParameters(
+//     //   uriPrefix: 'https://diab.page.link',
+//     //   longDynamicLink: Uri.parse(
+//     //     'https://diab.page.link/?efr=0&ibi=io.invertase.testing&apn=io.flutter.plugins.firebase.dynamiclinksexample&imv=0&amv=0&link=https%3A%2F%2Ftest-app%2Fhelloworld&ofl=https://ofl-example.com',
+//     //   ),
+//     //   link: Uri.parse(dynamicLink),
+//     //   androidParameters: const AndroidParameters(
+//     //     packageName: 'io.flutter.plugins.firebase.dynamiclinksexample',
+//     //     minimumVersion: 0,
+//     //   ),
+//     //   iosParameters: const IOSParameters(
+//     //     minimumVersion: '0',
+//     //     appStoreId: "1569353448",
+//     //     bundleId: "com.cactusoftware.diab",
+//     //   ),
+//     //   socialMetaTagParameters: SocialMetaTagParameters(
+//     //     description:
+//     //         "Sống khoẻ cùng đái tháo đường. Nơi cung cấp kiến thức toàn diện. Giúp người Đái tháo đường sống khoẻ mạnh hơn.",
+//     //     imageUrl: Uri.parse(
+//     //         "https://diab.com.vn/wp-content/uploads/2022/02/hinh-1-banner-trang-chu.png"),
+//     //     title: "Diab | Giải pháp toàn diện cho người Đái tháo đường",
+//     //   ),
+//     // );
 
 //     Uri url;
 //     if (short) {
@@ -123,7 +147,7 @@
 //                       ElevatedButton(
 //                         onPressed: () async {
 //                           final PendingDynamicLinkData? data =
-//                               await dynamicLinks.getInitialLink();
+//                               await dynamicLinks.getDynamicLink();
 //                           final Uri? deepLink = data?.link;
 //                           print(deepLink?.path);
 
@@ -139,8 +163,8 @@
 //                           final PendingDynamicLinkData? data =
 //                               await dynamicLinks
 //                                   .getDynamicLink(Uri.parse(link));
+//                           print(data);
 //                           final Uri? deepLink = data?.link;
-//                           print(deepLink?.path);
 //                           if (deepLink != null) {
 //                             // ignore: unawaited_futures
 //                             // Navigator.pushNamed(context, deepLink.path);

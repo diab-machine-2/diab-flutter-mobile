@@ -372,20 +372,7 @@ class _ProfileControllerState extends State<ProfileController> with Observer {
         } else if (index == 5) {
           Navigator.pushNamed(context, NavigatorName.change_password);
         } else if (index == 6) {
-          final String refferalCode =
-              await DynamicLinkConfig.buildDynamicLink();
-          print("refferalCode, $refferalCode");
-          Share.share(
-            'Cùng tham gia DiaB, để sống khoẻ cùng với Đái tháo đường\n$refferalCode',
-            subject: 'Sống khoẻ với tiểu đường'
-          );
-
-          // await FlutterShare.share(
-          //   text: 'Diab | Sống khoẻ với tiểu đường',
-          //   title: 'Cùng tham gia DiaB, để sống khoẻ cùng với Đái tháo đường',
-          //   linkUrl: refferalCode,
-          //   chooserTitle: 'Example Chooser Title',
-          // );
+          DynamicLinkConfig.instance.shareApp();
         }
       },
       child: Container(

@@ -1,5 +1,6 @@
 import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -45,7 +46,6 @@ import 'package:medical/src/widget/login/rules.dart';
 import 'package:medical/src/widget/login/step_list.dart';
 import 'package:medical/src/widget/login/update_info.dart';
 import 'package:medical/src/widget/login/verify_phone.dart';
-import 'package:medical/src/widget/my_plan_screens/activity_tab/my_progress/my_progress.dart';
 import 'package:medical/src/widget/notification/notification_detail.dart';
 import 'package:medical/src/widget/notification/notification_tabbar.dart';
 import 'package:medical/src/widget/profile/add_reminder.dart';
@@ -81,14 +81,13 @@ class _AppState extends State<App> {
   @override
   void initState() {
     super.initState();
-    // DeepLinkConfig.instance.handleDeepLink();
+    DeepLinkConfig.instance.handleDeepLink();
     DynamicLinkConfig.instance.setUpHandleDeepLink();
   }
 
   @override
   void dispose() {
     DeepLinkConfig.instance.dispose();
-    DynamicLinkConfig.instance.dispose();
     super.dispose();
   }
 
