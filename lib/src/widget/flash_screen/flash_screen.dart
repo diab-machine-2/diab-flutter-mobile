@@ -66,7 +66,7 @@ class _FlashScreenControllerState extends State<FlashScreenController> {
       id: "cb110991-eb73-4dc7-92ce-50157c3ee359",
       code: "123",
       platform: "iOs",
-      enviroment: "product",
+      enviroment: Const.ENVIRONMENT_DEFAULT,
       version: "1.1.6",
     );
     // }

@@ -12,6 +12,7 @@ class DynamicLinkConfig {
   late String _shareLink;
 
   String? get referalCode => _referalCode;
+  String? get shareLink => _shareLink;
 
   Future<void> setUpHandleDeepLink() async {
     final PendingDynamicLinkData? data =
@@ -30,18 +31,7 @@ class DynamicLinkConfig {
       }
     }).onError((error) {
       print("onError");
-      // Handle errors
     });
-    // linkStream.listen((link) {
-    //   onHaveLink(getShareCodeFromUrl(link));
-    // });
-  }
-
-  void shareApp() {
-    Share.share(
-      'Cùng tham gia DiaB, để sống khoẻ cùng với Đái tháo đường\n$_shareLink',
-      subject: 'Sống khoẻ với tiểu đường',
-    );
   }
 
   Future<void> buildDynamicLink() async {

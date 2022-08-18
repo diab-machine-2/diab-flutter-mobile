@@ -18,7 +18,7 @@ publish_to: "none" # Remove this line if you wish to publish to pub.dev
 version: 1.1.10+69
 
 environment:
-  sdk: '>=2.15.0 <3.0.0'
+  sdk: ">=2.15.0 <3.0.0"
 
 dependencies:
   flutter:
@@ -44,7 +44,7 @@ dependencies:
   fl_chart: ^0.45.0
   # sms_autofill: ^1.2.6
   pin_code_fields: ^7.4.0
-#  dart_notification_center: ^1.0.0+1
+  #  dart_notification_center: ^1.0.0+1
   flutter_observer: ^2.0.0
   grouped_list: ^5.1.2
   device_info: ^2.0.2
@@ -114,13 +114,12 @@ dependencies:
   #PDF viewer
   flutter_cached_pdfview: 0.4.1
   #QR code scan
-  qr_code_scanner: ^1.0.0
+  qr_code_scanner: 1.0.0
   #Deep link
   uni_links: ^0.5.1
   external_app_launcher: ^3.1.0
   flutter_native_splash: ^2.1.6
   firebase_dynamic_links: ^4.3.4
-  flutter_share: ^2.0.0
   share_plus: ^4.0.10+1
 
 dev_dependencies:

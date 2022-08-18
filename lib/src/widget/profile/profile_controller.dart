@@ -4,9 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_observer/Observable.dart';
 import 'package:flutter_observer/Observer.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_share/flutter_share.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
+import 'package:medical/src/app_setting/app_sharing.dart';
 import 'package:medical/src/app_setting/dynamic_link_config.dart';
 import 'package:medical/src/modal/error/error_model.dart';
 import 'package:medical/src/modal/user/manual.dart';
@@ -25,10 +25,7 @@ import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/my_package/my_package_page.dart';
 import 'package:medical/src/widget/shared_profile/shared_profile.dart';
-import 'package:medical/src/widgets/refferal_code.dart';
 import 'package:share_plus/share_plus.dart';
-
-import '../../widgets/button_widget.dart';
 import '../food_menu_screens/food_menu/food_menu_page.dart';
 
 class ProfileController extends StatefulWidget {
@@ -372,7 +369,10 @@ class _ProfileControllerState extends State<ProfileController> with Observer {
         } else if (index == 5) {
           Navigator.pushNamed(context, NavigatorName.change_password);
         } else if (index == 6) {
-          DynamicLinkConfig.instance.shareApp();
+          String? shareLink = DynamicLinkConfig.instance.shareLink;
+          if (shareLink != null) {
+            AppShare.instance.userReferralCode(context, shareLink);
+          }
         }
       },
       child: Container(
