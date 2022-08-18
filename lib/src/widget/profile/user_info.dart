@@ -1608,6 +1608,37 @@ class _ProfileInfoControllerState extends State<ProfileInfoController>
                             Navigator.pop(context);
                           })
                     ]),
+                Container(
+                  height: 64,
+                  width: width - 36,
+                  child: TextField(
+                    controller: textEditingController,
+                    minLines: 1,
+                    maxLines: 1,
+                    maxLength: 50,
+                    inputFormatters: [
+                      LengthLimitingTextFieldFormatterFixed(50),
+                    ],
+                    obscureText: false,
+                    decoration: InputDecoration(
+                        fillColor: R.color.textDark,
+                        counterText: '',
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                              color: R.color.grayComponentBorder, width: 1.0),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide:
+                              BorderSide(color: R.color.mainColor, width: 1.0),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        contentPadding:
+                            const EdgeInsets.only(top: 0, left: 16, right: 16),
+                        hintText: R.string.enter_first_name_and_last_name.tr()),
+                    onChanged: (value) {},
+                  ),
+                ),
                 const SizedBox(height: 16),
                 Container(
                   margin: const EdgeInsets.only(top: 16),
