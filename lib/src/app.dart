@@ -81,13 +81,12 @@ class _AppState extends State<App> {
   @override
   void initState() {
     super.initState();
-    DeepLinkConfig.instance.handleDeepLink();
-    DynamicLinkConfig.instance.setUpHandleDeepLink();
+    // DeepLinkConfig.instance.handleDeepLink();
   }
 
   @override
   void dispose() {
-    DeepLinkConfig.instance.dispose();
+    // DeepLinkConfig.instance.dispose();
     super.dispose();
   }
 

@@ -59,6 +59,8 @@ class _StepListControllerState extends State<StepListController> {
   @override
   void initState() {
     super.initState();
+    DynamicLinkConfig.instance.setUpHandleDeepLink();
+    // DynamicLinkConfig.instance.getLongLink();
     // DynamicLinkConfig.instance.setUpHandleDeepLink();
     // if (widget.sharedCode != "") {
     //   Navigator.pushNamed(
@@ -149,6 +151,7 @@ class _StepListControllerState extends State<StepListController> {
   void dispose() {
     _timer?.cancel();
     _timer = null;
+    DynamicLinkConfig.instance.dispose();
     super.dispose();
   }
 

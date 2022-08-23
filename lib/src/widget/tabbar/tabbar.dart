@@ -55,7 +55,6 @@ class _TabbarControllerState extends State<TabbarController>
   @override
   void initState() {
     super.initState();
-    DynamicLinkConfig.instance.buildDynamicLink();
     tabs = [
       HomeController(sharedCode: widget.sharedCode),
       //   MyPlanPage(index: widget.isRedirectFromNotification ? 0 : 1),
@@ -81,6 +80,11 @@ class _TabbarControllerState extends State<TabbarController>
       FlutterNativeSplash.remove();
     });
     //   startTimer();
+    _checkUserReferralCode();
+  }
+
+  _checkUserReferralCode() async {
+    DynamicLinkConfig.instance.buildDynamicLink();
   }
 
   Future startTimer() async {

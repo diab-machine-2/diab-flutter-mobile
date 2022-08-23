@@ -120,31 +120,29 @@ class BloodPressureDetailState extends State<BloodPressureDetail>
                                         mainAxisAlignment:
                                             MainAxisAlignment.spaceBetween,
                                         children: [
-                                          Text(
-                                              model == null
-                                                  ? '--'
-                                                  : model.systolicLowest!
-                                                                  .toInt() ==
-                                                              0 &&
-                                                          model.diastolicLowest!
-                                                                  .toInt() ==
-                                                              0
-                                                      ? '--'
-                                                      : '${model.systolicLowest!.toInt()}/${model.diastolicLowest!.toInt()}'
-                                                          .toString(),
-                                              style: TextStyle(
-                                                  fontFamily: 'Viga',
-                                                  color: model == null
-                                                      ? R.color.black
-                                                      : toColor(
-                                                          model.lowestColor),
-                                                  fontSize: 15,
-                                                  fontWeight: FontWeight.w400)),
+                                          // Text(
+                                          //     model == null
+                                          //         ? '--'
+                                          //         : model.systolicLowest!
+                                          //                         .toInt() ==
+                                          //                     0 &&
+                                          //                 model.diastolicLowest!
+                                          //                         .toInt() ==
+                                          //                     0
+                                          //             ? '--'
+                                          //             : '${model.systolicLowest!.toInt()}/${model.diastolicLowest!.toInt()}'
+                                          //                 .toString(),
+                                          //     style: TextStyle(
+                                          //         fontFamily: 'Viga',
+                                          //         color: model == null
+                                          //             ? R.color.black
+                                          //             : toColor(
+                                          //                 model.lowestColor),
+                                          //         fontSize: 15,
+                                          //         fontWeight: FontWeight.w400)),
                                           SizedBox(width: 10),
-                                          Image.asset(
-                                              R.drawable.ic_line_low,
-                                              width: 20,
-                                              height: 15)
+                                          Image.asset(R.drawable.ic_line_low,
+                                              width: 20, height: 15)
                                         ],
                                       ),
                                       SizedBox(height: 8),
@@ -159,60 +157,60 @@ class BloodPressureDetailState extends State<BloodPressureDetail>
                               ),
                             ),
                             SizedBox(width: 12),
-                            Expanded(
-                              child: Container(
-                                padding: EdgeInsets.only(
-                                    top: 16, bottom: 16, left: 8, right: 8),
-                                decoration: BoxDecoration(
-                                  color: R.color.white,
-                                  borderRadius: BorderRadius.circular(16),
-                                ),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Text(
-                                            model == null
-                                                ? '--'
-                                                : model.systolicAverage!
-                                                                .toInt() ==
-                                                            0 &&
-                                                        model.diastolicAverage!
-                                                                .toInt() ==
-                                                            0
-                                                    ? '--'
-                                                    : '${model.systolicAverage!.toInt()}/${model.diastolicAverage!.toInt()}'
-                                                        .toString(),
-                                            style: TextStyle(
-                                                fontFamily: 'Viga',
-                                                color: model == null
-                                                    ? R.color.black
-                                                    : toColor(
-                                                        model.averageColor),
-                                                fontSize: 15,
-                                                fontWeight: FontWeight.w400)),
-                                        SizedBox(width: 10),
-                                        Image.asset(
-                                            R.drawable.ic_line_average,
-                                            width: 20,
-                                            height: 15)
-                                      ],
-                                    ),
-                                    SizedBox(height: 8),
-                                    Text(R.string.medium.tr(),
-                                        style: TextStyle(
-                                          color: R.color.textDark,
-                                          fontSize: 15,
-                                          // fontWeight: FontWeight.w700
-                                        )),
-                                  ],
-                                ),
-                              ),
-                            ),
-                            SizedBox(width: 12),
+                            // Expanded(
+                            //   child: Container(
+                            //     padding: EdgeInsets.only(
+                            //         top: 16, bottom: 16, left: 8, right: 8),
+                            //     decoration: BoxDecoration(
+                            //       color: R.color.white,
+                            //       borderRadius: BorderRadius.circular(16),
+                            //     ),
+                            //     child: Column(
+                            //       crossAxisAlignment: CrossAxisAlignment.start,
+                            //       children: [
+                            //         Row(
+                            //           mainAxisAlignment:
+                            //               MainAxisAlignment.spaceBetween,
+                            //           children: [
+                            //             Text(
+                            //                 model == null
+                            //                     ? '--'
+                            //                     : model.systolicAverage!
+                            //                                     .toInt() ==
+                            //                                 0 &&
+                            //                             model.diastolicAverage!
+                            //                                     .toInt() ==
+                            //                                 0
+                            //                         ? '--'
+                            //                         : '${model.systolicAverage!.toInt()}/${model.diastolicAverage!.toInt()}'
+                            //                             .toString(),
+                            //                 style: TextStyle(
+                            //                     fontFamily: 'Viga',
+                            //                     color: model == null
+                            //                         ? R.color.black
+                            //                         : toColor(
+                            //                             model.averageColor),
+                            //                     fontSize: 15,
+                            //                     fontWeight: FontWeight.w400)),
+                            //             SizedBox(width: 10),
+                            //             Image.asset(
+                            //                 R.drawable.ic_line_average,
+                            //                 width: 20,
+                            //                 height: 15)
+                            //           ],
+                            //         ),
+                            //         SizedBox(height: 8),
+                            //         Text(R.string.medium.tr(),
+                            //             style: TextStyle(
+                            //               color: R.color.textDark,
+                            //               fontSize: 15,
+                            //               // fontWeight: FontWeight.w700
+                            //             )),
+                            //       ],
+                            //     ),
+                            //   ),
+                            // ),
+                            // SizedBox(width: 12),
                             Expanded(
                               child: GestureDetector(
                                 onTap: () {
@@ -257,10 +255,8 @@ class BloodPressureDetailState extends State<BloodPressureDetail>
                                                   fontSize: 15,
                                                   fontWeight: FontWeight.w400)),
                                           SizedBox(width: 10),
-                                          Image.asset(
-                                              R.drawable.ic_line_high,
-                                              width: 20,
-                                              height: 15)
+                                          Image.asset(R.drawable.ic_line_high,
+                                              width: 20, height: 15)
                                         ],
                                       ),
                                       SizedBox(height: 8),
@@ -332,10 +328,8 @@ class BloodPressureDetailState extends State<BloodPressureDetail>
                                                     fontWeight:
                                                         FontWeight.w400)),
                                             SizedBox(width: 10),
-                                            Image.asset(
-                                                R.drawable.ic_line_low,
-                                                width: 20,
-                                                height: 15)
+                                            Image.asset(R.drawable.ic_line_low,
+                                                width: 20, height: 15)
                                           ],
                                         ),
                                         SizedBox(height: 8),
@@ -443,10 +437,8 @@ class BloodPressureDetailState extends State<BloodPressureDetail>
                                                   fontSize: 24,
                                                   fontWeight: FontWeight.w400)),
                                           SizedBox(width: 10),
-                                          Image.asset(
-                                              R.drawable.ic_line_high,
-                                              width: 20,
-                                              height: 15)
+                                          Image.asset(R.drawable.ic_line_high,
+                                              width: 20, height: 15)
                                         ],
                                       ),
                                       SizedBox(height: 8),

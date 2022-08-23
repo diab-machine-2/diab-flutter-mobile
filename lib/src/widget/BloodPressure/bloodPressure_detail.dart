@@ -23,7 +23,9 @@ class BloodPressureDetailController extends StatefulWidget {
 
 class BloodPressureDetailControllerState
     extends State<BloodPressureDetailController>
-    with AutomaticKeepAliveClientMixin<BloodPressureDetailController>, Observer {
+    with
+        AutomaticKeepAliveClientMixin<BloodPressureDetailController>,
+        Observer {
   @override
   bool get wantKeepAlive => true;
 
@@ -57,7 +59,8 @@ class BloodPressureDetailControllerState
 
     itemPositionsListener.itemPositions.addListener(() {
       final lastIndex = itemPositionsListener.itemPositions.value.last.index;
-      final BloodPressureState state = BlocProvider.of<BloodPressureBloc>(currentContext).state;
+      final BloodPressureState state =
+          BlocProvider.of<BloodPressureBloc>(currentContext).state;
       if (state is BloodPressureDataLoaded) {
         final model = state.bloodPressureModel;
         if (model.length - 2 == lastIndex) {
@@ -71,7 +74,8 @@ class BloodPressureDetailControllerState
   }
 
   @override
-  void update(Observable observable, String? notifyName, Map<dynamic, dynamic>? map) {
+  void update(
+      Observable observable, String? notifyName, Map<dynamic, dynamic>? map) {
     if (notifyName == 'BloodPressure_change_data') {
       _refresh();
     }
@@ -202,7 +206,8 @@ class BloodPressureDetailControllerState
                           physics: AlwaysScrollableScrollPhysics(),
                           padding: EdgeInsets.only(top: 16, bottom: 100),
                           itemCount: model.length,
-                          itemBuilder: (context, index) {
+                          itemBuilder: (context, _index) {
+                            int index = _index.isNegative ? 0 : _index;
                             final element = model![index];
                             final previousElement =
                                 index == 0 ? null : model[index - 1];
@@ -233,7 +238,8 @@ class BloodPressureDetailControllerState
                                               padding: EdgeInsets.only(
                                                   top: 8, bottom: 10),
                                               child: Text(
-                                                convertCustomDate(element.date!),
+                                                convertCustomDate(
+                                                    element.date!),
                                                 textAlign: TextAlign.left,
                                                 style: TextStyle(
                                                     fontSize: 18,
@@ -379,7 +385,8 @@ class BloodPressureDetailControllerState
                                                                       .w400)),
                                                       SizedBox(width: 4),
                                                       Text(
-                                                          R.string.time_per_minute
+                                                          R.string
+                                                              .time_per_minute
                                                               .tr(),
                                                           style: TextStyle(
                                                               color:
@@ -404,7 +411,8 @@ class BloodPressureDetailControllerState
                                                         fontWeight:
                                                             FontWeight.w400),
                                                   ),
-                                                  Text(', ' + element.timeFrame!,
+                                                  Text(
+                                                      ', ' + element.timeFrame!,
                                                       style: TextStyle(
                                                           color: R.color.black,
                                                           fontSize: 16,
