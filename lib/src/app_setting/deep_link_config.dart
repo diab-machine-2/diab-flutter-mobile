@@ -26,8 +26,10 @@ class DeepLinkConfig {
     try {
       final String? initialLink = await getInitialLink();
       print('LOG onInit link: $initialLink');
-      sharedCode = getShareCodeFromUrl(initialLink);
-      return sharedCode;
+      if (initialLink != null && !initialLink.contains("click.diab.com.vn")) {
+        sharedCode = getShareCodeFromUrl(initialLink);
+        return sharedCode;
+      }
     } on PlatformException {}
     try {
       final Uri? initialUri = await getInitialUri();

@@ -8,8 +8,8 @@ class AppShare {
   userReferralCode(BuildContext context, String _shareLink) async {
     final box = context.findRenderObject() as RenderBox?;
     Share.share(
-      'Cùng tham gia DiaB, để sống khoẻ cùng với Đái tháo đường\n$_shareLink',
-      subject: 'Sống khoẻ với tiểu đường',
+      'Cùng DiaB làm chủ đường huyết, sống khỏe cùng Đái tháo đường!\n$_shareLink',
+      subject: 'DIAB | Ứng dụng giúp quản lý đường huyết hiệu quả',
       sharePositionOrigin: box!.localToGlobal(Offset.zero) & box.size,
     );
   }
