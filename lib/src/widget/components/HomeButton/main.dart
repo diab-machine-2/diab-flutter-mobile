@@ -183,8 +183,6 @@ class FunkyOverlayState extends State<FunkyOverlay>
                       HorizontalMenuItem(
                         label: 'Chat với huấn luyện viên',
                         ontap: () async {
-                          goToZaloCoach("0909202394");
-
                           if (user?.trainingGroups != null &&
                               user!.trainingGroups!.isNotEmpty) {
                             if (user!.trainingGroups!.first.coachPhoneNumber !=
