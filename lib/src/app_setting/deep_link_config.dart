@@ -16,7 +16,9 @@ class DeepLinkConfig {
   static void setUpHandleDeepLink(
       {required Function(String? code) onHaveLink}) {
     linkStream.listen((link) {
-      if (link != null && !link.contains("click.diab.com.vn")) {
+      if (link != null &&
+          !link.contains("click.diab.com.vn") &&
+          !link.contains("referralCode")) {
         onHaveLink(getShareCodeFromUrl(link));
       }
     });
@@ -26,7 +28,9 @@ class DeepLinkConfig {
     try {
       final String? initialLink = await getInitialLink();
       print('LOG onInit link: $initialLink');
-      if (initialLink != null && !initialLink.contains("click.diab.com.vn")) {
+      if (initialLink != null &&
+          !initialLink.contains("click.diab.com.vn") &&
+          !initialLink.contains("referralCode")) {
         sharedCode = getShareCodeFromUrl(initialLink);
         return sharedCode;
       }
@@ -55,6 +59,8 @@ class DeepLinkConfig {
 
   static String getShareCodeFromUrl(String? url) {
     if (url == null) return '';
-    return url.substring(url.length - 6, url.length);
+    String test = url.substring(url.length - 6, url.length);
+    print("getShareCodeFromUrl: $test");
+    return test;
   }
 }
