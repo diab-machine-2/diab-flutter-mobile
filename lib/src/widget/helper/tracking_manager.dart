@@ -19,7 +19,7 @@ class TrackingManager {
     });
   }
 
-  static FirebaseAnalytics analytics = FirebaseAnalytics();
+  static FirebaseAnalytics analytics = FirebaseAnalytics.instance;
   static FirebaseAnalyticsObserver observerFirebase = FirebaseAnalyticsObserver(analytics: analytics);
 
   // Define an async function to initialize FlutterFire

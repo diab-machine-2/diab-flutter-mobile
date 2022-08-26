@@ -100,6 +100,7 @@ class _QRScanWidgetState extends State<QRScanWidget> {
     setState(() {
       this.controller = controller;
     });
+    this.controller?.resumeCamera();
     subcription = controller.scannedDataStream.listen((scanData) {
       if (scanData.code?.isNotEmpty == true) {
         checkValidLink(scanData.code!);

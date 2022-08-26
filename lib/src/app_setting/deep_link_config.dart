@@ -2,6 +2,8 @@ import 'dart:async';
 import 'package:flutter/services.dart' show PlatformException;
 import 'package:uni_links/uni_links.dart';
 
+import 'dynamic_link_config.dart';
+
 class DeepLinkConfig {
   DeepLinkConfig._privateConstructor();
   static final DeepLinkConfig instance = DeepLinkConfig._privateConstructor();
@@ -11,9 +13,14 @@ class DeepLinkConfig {
 
   String? sharedCode;
 
-  static void setUpHandleDeepLink({required Function(String? code) onHaveLink}) {
+  static void setUpHandleDeepLink(
+      {required Function(String? code) onHaveLink}) {
     linkStream.listen((link) {
-      onHaveLink(getShareCodeFromUrl(link));
+      if (link != null &&
+          !link.contains("click.diab.com.vn") &&
+          !link.contains("referralCode")) {
+        onHaveLink(getShareCodeFromUrl(link));
+      }
     });
   }
 
@@ -21,14 +28,16 @@ class DeepLinkConfig {
     try {
       final String? initialLink = await getInitialLink();
       print('LOG onInit link: $initialLink');
-      sharedCode = getShareCodeFromUrl(initialLink);
-      return sharedCode;
+      if (initialLink != null &&
+          !initialLink.contains("click.diab.com.vn") &&
+          !initialLink.contains("referralCode")) {
+        sharedCode = getShareCodeFromUrl(initialLink);
+        return sharedCode;
+      }
     } on PlatformException {}
     try {
       final Uri? initialUri = await getInitialUri();
       print('LOG onInit uri.host ${initialUri?.path}');
-      sharedCode = getShareCodeFromUrl(initialUri?.path);
-      return sharedCode;
     } on FormatException {}
     return null;
   }
@@ -50,6 +59,8 @@ class DeepLinkConfig {
 
   static String getShareCodeFromUrl(String? url) {
     if (url == null) return '';
-    return url.substring(url.length - 6, url.length);
+    String test = url.substring(url.length - 6, url.length);
+    print("getShareCodeFromUrl: $test");
+    return test;
   }
 }

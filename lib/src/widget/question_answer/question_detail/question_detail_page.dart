@@ -32,7 +32,7 @@ class _QuestionDetailPageState extends State<QuestionDetailPage> with WidgetsBin
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance?.addObserver(this);
+    WidgetsBinding.instance.addObserver(this);
     _controller = TextEditingController(text: '');
     final AppRepository appRepository = AppRepository();
 
@@ -47,7 +47,7 @@ class _QuestionDetailPageState extends State<QuestionDetailPage> with WidgetsBin
   @override
   void dispose() {
     super.dispose();
-    WidgetsBinding.instance?.removeObserver(this);
+    WidgetsBinding.instance.removeObserver(this);
   }
 
   @override

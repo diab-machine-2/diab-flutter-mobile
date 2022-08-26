@@ -6,6 +6,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:http/http.dart' as http;
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
+import 'package:medical/src/utils/const.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 import 'package:ua_client_hints/ua_client_hints.dart';
 
@@ -14,8 +15,8 @@ class FetchClient {
     // return 'is.diab.com.vn';
     //return 'id.savvycom.asia';
     return AppSettings.environment == "staging"
-        ? 'is.stg.savvycom.asia'
-        : 'is.diab.com.vn';
+        ? Const.IS_DOMAIN_STAGING
+        : Const.IS_DOMAIN;
     // return 'diab-id-staging.savvycom.vn';
     // return 'is.stg.diab.cptech.vn';
     // return 'is.dev.diab.cptech.vn';
@@ -26,8 +27,8 @@ class FetchClient {
     // return 'api.diab.com.vn';
     // return 'diab-api-staging.savvycom.vn';
     return AppSettings.environment == "staging"
-        ? 'api.stg.savvycom.asia'
-        : 'api.diab.com.vn';
+        ? Const.DOMAIN_STAGING
+        : Const.DOMAIN;
     //return 'api.savvycom.asia';
     // return 'api.stg.diab.cptech.vn';
     // return 'api.mobile.dev.diab.cptech.vn';
@@ -132,7 +133,7 @@ class FetchClient {
       required String url,
       Map<String, String?>? params}) async {
     final option = await options3();
-    final domain = "api.diab.com.vn";
+    final domain = Const.DOMAIN;
     final Dio dio = Dio();
     logRequest(dio);
     return dio.getUri(Uri.https(domain, url, params), options: option);

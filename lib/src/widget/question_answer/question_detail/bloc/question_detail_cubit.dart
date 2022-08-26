@@ -29,7 +29,7 @@ class QuestionDetailCubit extends Cubit<QuestionDetailState> {
   }
 
   Future<bool> get keyboardHidden async {
-    final check = () => (WidgetsBinding.instance?.window.viewInsets.bottom ?? 0) <= 0;
+    final check = () => (WidgetsBinding.instance.window.viewInsets.bottom) <= 0;
     if (!check()) return false;
     return await Future.delayed(Duration(milliseconds: 100), () => check());
   }

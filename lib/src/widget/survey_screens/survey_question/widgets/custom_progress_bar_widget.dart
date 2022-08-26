@@ -29,7 +29,7 @@ class _CustomProgressBarWidgetState extends State<CustomProgressBarWidget> {
   @override
   void initState() {
     _cubit = context.read<SurveyQuestionCubit>();
-    WidgetsBinding.instance!.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
      showOverlay();
     });
     super.initState();

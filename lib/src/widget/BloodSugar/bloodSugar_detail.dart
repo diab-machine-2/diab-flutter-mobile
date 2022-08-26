@@ -168,7 +168,8 @@ class BloodSugarDetailControllerState extends State<BloodSugarDetailController>
                             physics: AlwaysScrollableScrollPhysics(),
                             padding: EdgeInsets.only(top: 16, bottom: 100),
                             itemCount: model.length,
-                            itemBuilder: (context, index) {
+                            itemBuilder: (context, _index) {
+                              int index = _index.isNegative ? 0 : _index;
                               final element = model![index];
                               final previousElement =
                                   index == 0 ? null : model[index - 1];

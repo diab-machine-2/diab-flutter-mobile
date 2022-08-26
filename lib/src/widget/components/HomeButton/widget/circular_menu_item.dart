@@ -153,7 +153,7 @@ class _Badge extends StatelessWidget {
   Widget build(BuildContext context) {
     return Stack(
       alignment: Alignment.center,
-      overflow: Overflow.visible,
+      clipBehavior: Clip.none,
       children: [
         child,
         Positioned(

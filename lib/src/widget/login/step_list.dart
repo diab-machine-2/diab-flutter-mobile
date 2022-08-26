@@ -7,6 +7,7 @@ import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/app_setting/deep_link_config.dart';
+import 'package:medical/src/app_setting/dynamic_link_config.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:package_info/package_info.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
@@ -58,7 +59,17 @@ class _StepListControllerState extends State<StepListController> {
   @override
   void initState() {
     super.initState();
-  
+    DynamicLinkConfig.instance.setUpHandleDeepLink();
+    // DynamicLinkConfig.instance.getLongLink();
+    // DynamicLinkConfig.instance.setUpHandleDeepLink();
+    // if (widget.sharedCode != "") {
+    //   Navigator.pushNamed(
+    //     context,
+    //     NavigatorName.register,
+    //     arguments: widget.sharedCode,
+    //   );
+    // }
+
     //startTimer();
     DeepLinkConfig.setUpHandleDeepLink(onHaveLink: (code) {
       if (code?.isNotEmpty == true) {
@@ -70,8 +81,8 @@ class _StepListControllerState extends State<StepListController> {
         // );
       }
     });
-  //  getSecuredModel();
-  //  getVersion();
+    //  getSecuredModel();
+    //  getVersion();
 
     if (widget.sharedCode.isNotEmpty) {
       sharedCode = widget.sharedCode;
@@ -83,6 +94,7 @@ class _StepListControllerState extends State<StepListController> {
     }
     Future.delayed(Duration(milliseconds: 600), () async {
       FlutterNativeSplash.remove();
+      checkReferralCode();
     });
   }
 
@@ -93,8 +105,20 @@ class _StepListControllerState extends State<StepListController> {
       } else {
         currentPage = 0;
       }
-      pageController.animateToPage(currentPage, duration: Duration(milliseconds: 500), curve: Curves.easeIn);
+      pageController.animateToPage(currentPage,
+          duration: Duration(milliseconds: 500), curve: Curves.easeIn);
     });
+  }
+
+  checkReferralCode() async {
+    final String? referalCode = DynamicLinkConfig.instance.referalCode;
+    if (referalCode != null) {
+      await Navigator.pushNamed(
+        context,
+        NavigatorName.register,
+        arguments: referalCode,
+      );
+    }
   }
 
   // getSecuredModel() async {
@@ -106,9 +130,9 @@ class _StepListControllerState extends State<StepListController> {
   //     AppClient();
   //   } catch(exception){
   //     secureModel = SecureModel(
-  //       email: "lienhe@diab.com.vn", 
-  //       support: "Supporter", 
-  //       hotline: "0768 07 07 27", 
+  //       email: "lienhe@diab.com.vn",
+  //       support: "Supporter",
+  //       hotline: "0768 07 07 27",
   //       security: "security",
   //       environment: "staging",
   //     );
@@ -127,12 +151,12 @@ class _StepListControllerState extends State<StepListController> {
   void dispose() {
     _timer?.cancel();
     _timer = null;
+    DynamicLinkConfig.instance.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    // final width = MediaQuery.of(context).size.width;
     return Scaffold(
       body: Container(
         decoration: BoxDecoration(
@@ -141,121 +165,161 @@ class _StepListControllerState extends State<StepListController> {
           fit: BoxFit.cover,
         )),
         child: SafeArea(
-          child: Column(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-            SizedBox(height: 20),
-            Expanded(
-              child: PageView.builder(
-                  onPageChanged: (value) {
-                    currentPage = value;
-                  },
-                  controller: pageController,
-                  itemCount: data.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    final name = data[index]['name']!;
-                    final image = data[index]['image']!;
-                    final text = data[index]['text']!;
-                    return builtItem(context, name, image, text);
-                  }),
-            ),
-            Column(children: [
-              SizedBox(height: 33),
-              Column(
-                children: [
-                  SmoothPageIndicator(
-                    controller: pageController,
-                    count: 3,
-                    effect: ExpandingDotsEffect(
-                        dotWidth: 5, dotHeight: 5, dotColor: R.color.notActiveGreen, activeDotColor: R.color.mainColor),
-                  ),
-                  SizedBox(height: 32),
-                  Container(
-                    margin: EdgeInsets.only(bottom: 16),
-                    child: Padding(
-                      padding: const EdgeInsets.only(left: 16, right: 16),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                        Expanded(
-                            child: GestureDetector(
-                          onTap: () {
-                            Navigator.pushNamed(
-                              context,
-                              NavigatorName.register,
-                              arguments: sharedCode,
-                            );
-                          },
-                          child: Container(
-                                height: 48,
-                                decoration: BoxDecoration(
-                                    color: R.color.mainColor,
-                                    borderRadius: BorderRadius.circular(200),
-                                    gradient: LinearGradient(
-                                        begin: Alignment.topLeft,
-                                        end: Alignment.centerRight,
-                                        colors: [R.color.greenGradientTop, R.color.greenGradientBottom])),
-                                child: Center(
-                                  child: Text(R.string.tao_tai_khoan.tr(),
-                                      style: TextStyle(color: R.color.white, fontSize: 16, fontWeight: FontWeight.w600)),
-                                )),
-                          ),
+          child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                SizedBox(height: 20),
+                Expanded(
+                  child: PageView.builder(
+                      onPageChanged: (value) {
+                        currentPage = value;
+                      },
+                      controller: pageController,
+                      itemCount: data.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        final name = data[index]['name']!;
+                        final image = data[index]['image']!;
+                        final text = data[index]['text']!;
+                        return builtItem(context, name, image, text);
+                      }),
+                ),
+                Column(children: [
+                  SizedBox(height: 33),
+                  Column(
+                    children: [
+                      SmoothPageIndicator(
+                        controller: pageController,
+                        count: 3,
+                        effect: ExpandingDotsEffect(
+                            dotWidth: 5,
+                            dotHeight: 5,
+                            dotColor: R.color.notActiveGreen,
+                            activeDotColor: R.color.mainColor),
+                      ),
+                      SizedBox(height: 32),
+                      Container(
+                        margin: EdgeInsets.only(bottom: 16),
+                        child: Padding(
+                          padding: const EdgeInsets.only(left: 16, right: 16),
+                          child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Expanded(
+                                  child: GestureDetector(
+                                    onTap: () async {
+                                      Navigator.pushNamed(
+                                        context,
+                                        NavigatorName.register,
+                                        arguments: sharedCode,
+                                      );
+                                    },
+                                    child: Container(
+                                        height: 48,
+                                        decoration: BoxDecoration(
+                                            color: R.color.mainColor,
+                                            borderRadius:
+                                                BorderRadius.circular(200),
+                                            gradient: LinearGradient(
+                                                begin: Alignment.topLeft,
+                                                end: Alignment.centerRight,
+                                                colors: [
+                                                  R.color.greenGradientTop,
+                                                  R.color.greenGradientBottom
+                                                ])),
+                                        child: Center(
+                                          child: Text(
+                                              R.string.tao_tai_khoan.tr(),
+                                              style: TextStyle(
+                                                  color: R.color.white,
+                                                  fontSize: 16,
+                                                  fontWeight: FontWeight.w600)),
+                                        )),
+                                  ),
+                                ),
+                                SizedBox(width: 16),
+                                Expanded(
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      Navigator.pushNamed(
+                                        context,
+                                        NavigatorName.login,
+                                        arguments: sharedCode,
+                                      );
+                                    },
+                                    child: Container(
+                                      height: 48,
+                                      decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(200),
+                                          border: Border.all(
+                                              color: R.color.mainColor,
+                                              width: 2)),
+                                      child: Center(
+                                        child: Text(
+                                            R.string.da_co_tai_khoan.tr(),
+                                            style: TextStyle(
+                                                color: R.color.mainColor,
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.w600)),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ]),
                         ),
-                        SizedBox(width: 16),
-                        Expanded(
-                          child: GestureDetector(
-                            onTap: () {
-                              Navigator.pushNamed(context, NavigatorName.login, arguments: sharedCode,);
-                            },
-                            child: Container(
-                              height: 48,
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(200),
-                                  border: Border.all(color: R.color.mainColor, width: 2)),
-                              child: Center(
-                                child: Text(R.string.da_co_tai_khoan.tr(),
-                                    style:
-                                        TextStyle(color: R.color.mainColor, fontSize: 16, fontWeight: FontWeight.w600)),
-                              ),
+                      ),
+                      SizedBox(
+                        height: 12,
+                      ),
+                      GestureDetector(
+                        onTap: () async {
+                          if (AppSettings.secureModel != null) {
+                            Navigator.pushNamed(context, NavigatorName.contact,
+                                arguments: {
+                                  'contact': AppSettings.secureModel
+                                });
+                          }
+                        },
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Image.asset(
+                              R.drawable.ic_contact,
+                              width: 19,
+                              height: 19,
                             ),
-                          ),
+                            SizedBox(
+                              width: 8,
+                            ),
+                            Text(R.string.contact_diab_info.tr(),
+                                style: TextStyle(
+                                    fontSize: 15,
+                                    color: R.color.captionColorGray)),
+                          ],
                         ),
-                      ]),
-                    ),
-                  ),
-                  SizedBox(
-                    height: 12,
-                  ),
-                  GestureDetector(
-                    onTap: () async {
-                      if(AppSettings.secureModel != null) {
-                        Navigator.pushNamed(context, NavigatorName.contact, arguments: {'contact': AppSettings.secureModel});
-                      }
-                    },
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Image.asset(R.drawable.ic_contact, width: 19, height: 19,),
-                        SizedBox(width: 8,),
-                        Text(R.string.contact_diab_info.tr(), style: TextStyle(fontSize: 15, color: R.color.captionColorGray)),
-                      ],
-                    ),
-                  ),
-                  SizedBox(height: 12)
-                ],
-              )
-            ]),
-          ]),
+                      ),
+                      SizedBox(height: 12)
+                    ],
+                  )
+                ]),
+              ]),
         ),
       ),
     );
   }
 
-  Widget builtItem(BuildContext context, String name, String image, String text) {
+  Widget builtItem(
+      BuildContext context, String name, String image, String text) {
     final width = MediaQuery.of(context).size.width;
     return Column(
       ///mainAxisSize: MainAxisSize.min,
       children: [
         Expanded(child: Image.asset(image)),
         Text(name,
-            style: TextStyle(color: R.color.mainColor, fontSize: 20, fontWeight: FontWeight.w700),
+            style: TextStyle(
+                color: R.color.mainColor,
+                fontSize: 20,
+                fontWeight: FontWeight.w700),
             textAlign: TextAlign.center),
         SizedBox(
           height: 20,
@@ -263,7 +327,10 @@ class _StepListControllerState extends State<StepListController> {
         Padding(
           padding: const EdgeInsets.only(left: 16, right: 16),
           child: Text(text,
-              style: TextStyle(color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w400),
+              style: TextStyle(
+                  color: R.color.textDark,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w400),
               textAlign: TextAlign.center),
         ),
       ],

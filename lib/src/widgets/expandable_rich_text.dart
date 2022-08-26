@@ -60,7 +60,7 @@ class ExpandableRichTextState extends State<ExpandableRichText> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance?.addPostFrameCallback((timeStamp) {
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       print(myKey.currentContext?.size);
     });
   }
