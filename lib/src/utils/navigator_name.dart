@@ -54,4 +54,5 @@ class NavigatorName {
   static const String my_progress = '/my_progress';
   static const String make_question = '/make_question';
   static const String question_detail = '/question_detail';
+  static const String news_detail = '/news_detail';
 }

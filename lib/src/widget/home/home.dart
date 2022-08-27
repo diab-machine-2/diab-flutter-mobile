@@ -486,12 +486,13 @@ class _HomeControllerState extends State<HomeController> with Observer {
                               // buildServiceButton(),
                               InkWell(
                                 onTap: () {
-                                  String? shareLink =
-                                      DynamicLinkConfig.instance.shareLink;
-                                  if (shareLink != null) {
-                                    AppShare.instance
-                                        .userReferralCode(context, shareLink);
-                                  }
+                                  Navigator.pushNamed(context, NavigatorName.news_detail);
+                                  // String? shareLink =
+                                  //     DynamicLinkConfig.instance.shareLink;
+                                  // if (shareLink != null) {
+                                  //   AppShare.instance
+                                  //       .userReferralCode(context, shareLink);
+                                  // }
                                 },
                                 child: Padding(
                                   padding: const EdgeInsets.all(15.0),
