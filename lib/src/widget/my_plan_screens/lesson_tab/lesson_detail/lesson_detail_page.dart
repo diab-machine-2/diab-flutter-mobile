@@ -73,7 +73,9 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
               ? CourseQuizPage(
                   key: Key(_cubit.currentSectionDetail?.id ?? ''),
                   lessonId: _cubit.lessonId,
-                  lessonSectionItem: widget.lessonType != 3 ? _cubit.currentSectionDetail : null,
+                  lessonSectionItem: widget.lessonType != 3
+                      ? _cubit.currentSectionDetail
+                      : null,
                   onDone: (isPassed) async {
                     _cubit.onChangeSection(context, _cubit.currentSection + 1);
                   })
@@ -86,7 +88,8 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                         SafeArea(
                           bottom: false,
                           child: Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 16),
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 18, horizontal: 16),
                             child: Row(
                               mainAxisSize: MainAxisSize.max,
                               mainAxisAlignment: MainAxisAlignment.start,
@@ -94,11 +97,14 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                               children: [
                                 Expanded(
                                   child: Text(
-                                    R.string.section_position.tr(args: [_cubit.sectionPosition]),
+                                    R.string.section_position
+                                        .tr(args: [_cubit.sectionPosition]),
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
-                                    style:
-                                        TextStyle(fontSize: 16, color: R.color.textDark, fontWeight: FontWeight.w400),
+                                    style: TextStyle(
+                                        fontSize: 16,
+                                        color: R.color.textDark,
+                                        fontWeight: FontWeight.w400),
                                   ),
                                 ),
                                 GestureDetector(
@@ -134,30 +140,16 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Padding(
-                                    padding: const EdgeInsets.only(bottom: 24),
-                                    child: WidgetHtmlText(_cubit.currentSectionDetail?.firstContent ?? ''),
-                                  ),
-                                  if (_cubit.currentSectionDetail?.image?.url?.isNotEmpty == true)
-                                    Container(
-                                      alignment: Alignment.center,
-                                      padding: const EdgeInsets.only(bottom: 24),
-                                      child: _buildTitleWidget(
-                                        child: CachedNetworkImage(imageUrl: _cubit.currentSectionDetail!.image!.url!),
-                                        title: _cubit.currentSectionDetail?.imageTitle,
-                                      ),
-                                    ),
-                                  if (_cubit.currentSectionDetail?.secondContent?.isNotEmpty == true)
-                                    Padding(
-                                      padding: const EdgeInsets.only(bottom: 24),
-                                      child: WidgetHtmlText(_cubit.currentSectionDetail!.secondContent!),
-                                    ),
-                                  if (_cubit.currentSectionDetail?.videoAddressLink != null)
+                                  if (_cubit.currentSectionDetail
+                                          ?.videoAddressLink !=
+                                      null)
                                     _buildTitleWidget(
                                       child:
                                           //BetterPlayer(controller: _cubit.videoManager!.controller!),
                                           VideoWidget(
-                                        url: _cubit.currentSectionDetail?.videoAddressLink ?? '',
+                                        url: _cubit.currentSectionDetail
+                                                ?.videoAddressLink ??
+                                            '',
                                         callback: () {
                                           _cubit.complete();
                                         },
@@ -165,25 +157,66 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                                           _cubit.setVideoManager(videoManager);
                                         },
                                       ),
-                                      title: _cubit.currentSectionDetail?.videoDescription,
+                                      title: _cubit.currentSectionDetail
+                                          ?.videoDescription,
                                     ),
                                   SizedBox(height: 8),
+                                  Padding(
+                                    padding: const EdgeInsets.only(bottom: 24),
+                                    child: WidgetHtmlText(_cubit
+                                            .currentSectionDetail
+                                            ?.firstContent ??
+                                        ''),
+                                  ),
+                                  if (_cubit.currentSectionDetail?.image?.url
+                                          ?.isNotEmpty ==
+                                      true)
+                                    Container(
+                                      alignment: Alignment.center,
+                                      padding:
+                                          const EdgeInsets.only(bottom: 24),
+                                      child: _buildTitleWidget(
+                                        child: CachedNetworkImage(
+                                            imageUrl: _cubit
+                                                .currentSectionDetail!
+                                                .image!
+                                                .url!),
+                                        title: _cubit
+                                            .currentSectionDetail?.imageTitle,
+                                      ),
+                                    ),
+                                  if (_cubit.currentSectionDetail?.secondContent
+                                          ?.isNotEmpty ==
+                                      true)
+                                    Padding(
+                                      padding:
+                                          const EdgeInsets.only(bottom: 24),
+                                      child: WidgetHtmlText(_cubit
+                                          .currentSectionDetail!
+                                          .secondContent!),
+                                    ),
                                   if (_cubit.audioManager?.controller != null)
                                     _buildTitleWidget(
                                         child: StreamBuilder<AudioData>(
-                                            stream: _cubit.audioManager?.controller!.onChanged.stream,
+                                            stream: _cubit.audioManager
+                                                ?.controller!.onChanged.stream,
                                             builder: (context, snapshot) {
                                               return _buildAudioController(
                                                 audioData: snapshot.data,
                                                 seektoPosition: (newPosition) {
-                                                  _cubit.audioManager?.controller!.seekTo(newPosition);
+                                                  _cubit
+                                                      .audioManager?.controller!
+                                                      .seekTo(newPosition);
                                                 },
                                                 onTogglePlay: () {
-                                                  _cubit.audioManager?.controller!.togglePlay();
+                                                  _cubit
+                                                      .audioManager?.controller!
+                                                      .togglePlay();
                                                 },
                                               );
                                             }),
-                                        title: _cubit.currentSectionDetail?.audioDescription),
+                                        title: _cubit.currentSectionDetail
+                                            ?.audioDescription),
                                   const SizedBox(height: 20),
                                 ],
                               ),
@@ -193,11 +226,15 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                         CustomBottomBarWidget(
                           isPreviousButtonActive: _cubit.isFirstSection,
                           onTapPrevious: () {
-                            _cubit.onChangeSection(context, _cubit.currentSection - 1);
+                            _cubit.onChangeSection(
+                                context, _cubit.currentSection - 1);
                           },
-                          isNextButtonActive: (!_cubit.isLastSection && (_cubit.currentSectionDetail?.isComplete ?? false)),
+                          isNextButtonActive: (!_cubit.isLastSection &&
+                              (_cubit.currentSectionDetail?.isComplete ??
+                                  false)),
                           onTapNext: () {
-                            _cubit.onChangeSection(context, _cubit.currentSection + 1);
+                            _cubit.onChangeSection(
+                                context, _cubit.currentSection + 1);
                           },
                           currentPositionTitle: _cubit.sectionPosition,
                           onTapCenter: () {
@@ -241,10 +278,13 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
       children: [
         IconButton(
           onPressed: onTogglePlay,
-          icon: audioData?.isPlaying ?? false ? const Icon(Icons.pause) : const Icon(Icons.play_arrow),
+          icon: audioData?.isPlaying ?? false
+              ? const Icon(Icons.pause)
+              : const Icon(Icons.play_arrow),
           iconSize: 24,
         ),
-        Text(audioData?.timeText ?? '00:00 / 00:00', style: R.style.normalTextStyle),
+        Text(audioData?.timeText ?? '00:00 / 00:00',
+            style: R.style.normalTextStyle),
         Expanded(
           child: Slider(
             inactiveColor: R.color.gray,
@@ -253,7 +293,8 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
               if (audioData?.totalTime == null) {
                 return;
               }
-              final double newPosition = v * audioData!.totalTime.inMilliseconds;
+              final double newPosition =
+                  v * audioData!.totalTime.inMilliseconds;
               seektoPosition(newPosition);
             },
             value: audioData?.position ?? 0.0,
