@@ -234,139 +234,217 @@ class _HomeControllerState extends State<HomeController> with Observer {
                       child: SafeArea(
                         top: false,
                         child: ListView(
-                            padding: const EdgeInsets.only(bottom: 16),
-                            children: [
-                              GridView.builder(
-                                  physics: const NeverScrollableScrollPhysics(),
-                                  shrinkWrap: true,
-                                  padding: const EdgeInsets.only(
-                                      left: 16, right: 16),
-                                  itemCount: data.length,
-                                  gridDelegate:
-                                      const SliverGridDelegateWithFixedCrossAxisCount(
-                                          crossAxisCount: 2,
-                                          crossAxisSpacing: 24,
-                                          mainAxisSpacing: 16,
-                                          childAspectRatio: 160 / 140),
-                                  itemBuilder:
-                                      (BuildContext context, int index) {
-                                    final name = data[index]['name'];
-                                    final image = data[index]['image'];
-                                    final icon = data[index]['icon'];
-                                    if (index == 0 &&
-                                        model != null &&
-                                        model!.glucoseIndex.index != 0) {
-                                      return _buildBloodSugar(
-                                          context,
-                                          index,
-                                          name as String?,
-                                          image as String?,
-                                          icon as String?,
-                                          model!.glucoseIndex);
-                                    }
-                                    if (index == 1 &&
-                                        model != null &&
-                                        model!.bloodPressureIndex.diastolic !=
-                                            0) {
-                                      return _buildBloodPressure(
-                                          context,
-                                          index,
-                                          name as String?,
-                                          image as String?,
-                                          icon as String?,
-                                          model!.bloodPressureIndex);
-                                    }
-                                    if (index == 2 &&
-                                        model != null &&
-                                        model!.weightCard!.weight != 0) {
-                                      return _buildWeight(
-                                          context,
-                                          index,
-                                          name as String?,
-                                          image as String?,
-                                          icon as String?,
-                                          model!.weightCard!);
-                                    }
-                                    if (index == 3 &&
-                                        model != null &&
-                                        model!.emotionCard!.details != null) {
-                                      return _buildEmotion(
-                                          context,
-                                          index,
-                                          name as String?,
-                                          image as String?,
-                                          icon as String?,
-                                          model!.emotionCard!);
-                                    }
-
-                                    if (index == 4 &&
-                                        model != null &&
-                                        model!.energyCard!.consumedEnergy !=
-                                            0) {
-                                      return _buildFood(
-                                          context,
-                                          index,
-                                          name as String?,
-                                          image as String?,
-                                          icon as String?,
-                                          model!.energyCard!);
-                                    }
-                                    if (index == 5 &&
-                                        model != null &&
-                                        model!.exercise!.targetExercise != 0) {
-                                      return _buildExcercise(
-                                          context,
-                                          index,
-                                          name as String?,
-                                          image as String?,
-                                          icon as String?,
-                                          model!.exercise!);
-                                    }
-                                    if (index == 6 &&
-                                        model != null &&
-                                        model!.processCard != null &&
-                                        model!.processCard!.target != 0) {
-                                      return _buildProgress(
-                                          context,
-                                          index,
-                                          name as String?,
-                                          image as String?,
-                                          icon as String?,
-                                          model!.processCard!);
-                                    }
-                                    if (index == 7 &&
-                                        model != null &&
-                                        model!.hbA1CIndex.index != 0) {
-                                      return _buildHbA1C(
-                                          context,
-                                          index,
-                                          name as String?,
-                                          image as String?,
-                                          icon as String?,
-                                          model!.hbA1CIndex);
-                                    }
-
-                                    return _buildItem(
+                          padding: const EdgeInsets.only(bottom: 16),
+                          children: [
+                            GridView.builder(
+                                physics: const NeverScrollableScrollPhysics(),
+                                shrinkWrap: true,
+                                padding:
+                                    const EdgeInsets.only(left: 16, right: 16),
+                                itemCount: data.length,
+                                gridDelegate:
+                                    const SliverGridDelegateWithFixedCrossAxisCount(
+                                        crossAxisCount: 2,
+                                        crossAxisSpacing: 24,
+                                        mainAxisSpacing: 16,
+                                        childAspectRatio: 160 / 140),
+                                itemBuilder: (BuildContext context, int index) {
+                                  final name = data[index]['name'];
+                                  final image = data[index]['image'];
+                                  final icon = data[index]['icon'];
+                                  if (index == 0 &&
+                                      model != null &&
+                                      model!.glucoseIndex.index != 0) {
+                                    return _buildBloodSugar(
                                         context,
                                         index,
                                         name as String?,
                                         image as String?,
-                                        icon as String?);
-                                  }),
-                              //   const SizedBox(height: 16),
-                              Visibility(
-                                visible: false,
-                                child: Padding(
-                                    padding: const EdgeInsets.only(
-                                        left: 16, right: 16),
+                                        icon as String?,
+                                        model!.glucoseIndex);
+                                  }
+                                  if (index == 1 &&
+                                      model != null &&
+                                      model!.bloodPressureIndex.diastolic !=
+                                          0) {
+                                    return _buildBloodPressure(
+                                        context,
+                                        index,
+                                        name as String?,
+                                        image as String?,
+                                        icon as String?,
+                                        model!.bloodPressureIndex);
+                                  }
+                                  if (index == 2 &&
+                                      model != null &&
+                                      model!.weightCard!.weight != 0) {
+                                    return _buildWeight(
+                                        context,
+                                        index,
+                                        name as String?,
+                                        image as String?,
+                                        icon as String?,
+                                        model!.weightCard!);
+                                  }
+                                  if (index == 3 &&
+                                      model != null &&
+                                      model!.emotionCard!.details != null) {
+                                    return _buildEmotion(
+                                        context,
+                                        index,
+                                        name as String?,
+                                        image as String?,
+                                        icon as String?,
+                                        model!.emotionCard!);
+                                  }
+
+                                  if (index == 4 &&
+                                      model != null &&
+                                      model!.energyCard!.consumedEnergy != 0) {
+                                    return _buildFood(
+                                        context,
+                                        index,
+                                        name as String?,
+                                        image as String?,
+                                        icon as String?,
+                                        model!.energyCard!);
+                                  }
+                                  if (index == 5 &&
+                                      model != null &&
+                                      model!.exercise!.targetExercise != 0) {
+                                    return _buildExcercise(
+                                        context,
+                                        index,
+                                        name as String?,
+                                        image as String?,
+                                        icon as String?,
+                                        model!.exercise!);
+                                  }
+                                  if (index == 6 &&
+                                      model != null &&
+                                      model!.processCard != null &&
+                                      model!.processCard!.target != 0) {
+                                    return _buildProgress(
+                                        context,
+                                        index,
+                                        name as String?,
+                                        image as String?,
+                                        icon as String?,
+                                        model!.processCard!);
+                                  }
+                                  if (index == 7 &&
+                                      model != null &&
+                                      model!.hbA1CIndex.index != 0) {
+                                    return _buildHbA1C(
+                                        context,
+                                        index,
+                                        name as String?,
+                                        image as String?,
+                                        icon as String?,
+                                        model!.hbA1CIndex);
+                                  }
+
+                                  return _buildItem(
+                                      context,
+                                      index,
+                                      name as String?,
+                                      image as String?,
+                                      icon as String?);
+                                }),
+                            //   const SizedBox(height: 16),
+                            Visibility(
+                              visible: false,
+                              child: Padding(
+                                  padding: const EdgeInsets.only(
+                                      left: 16, right: 16),
+                                  child: model != null &&
+                                          (model!.energyCard!.consumedEnergy !=
+                                                  0 ||
+                                              model!.exercise!.index != 0)
+                                      ? buildFoodAndExcercise(model!)
+                                      : Container(
+                                          height: width * 160 / 343,
+                                          child: Stack(children: [
+                                            Positioned.fill(
+                                              child: Container(
+                                                padding:
+                                                    const EdgeInsets.all(16),
+                                                decoration: BoxDecoration(
+                                                    color: R.color.white,
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            10)),
+                                                child: Text(
+                                                    R.string
+                                                        .dinh_duong_va_van_dong
+                                                        .tr(),
+                                                    style: const TextStyle(
+                                                        fontSize: 16,
+                                                        fontWeight:
+                                                            FontWeight.w600)),
+                                              ),
+                                            ),
+                                            Positioned(
+                                                top: 60,
+                                                bottom: 0,
+                                                left: 0,
+                                                child: Image.asset(R.drawable
+                                                    .bg_food_and_excersire)),
+                                            Center(
+                                                child: Image.asset(
+                                                    R.drawable
+                                                        .ic_food_and_excersire,
+                                                    width: 58,
+                                                    height: 58)),
+                                            Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
+                                                children: [
+                                                  Expanded(
+                                                      child: GestureDetector(
+                                                    onTap: () {
+                                                      Navigator.pushNamed(
+                                                          context,
+                                                          NavigatorName
+                                                              .detail_food);
+                                                    },
+                                                    child: Container(
+                                                        color: R
+                                                            .color.transparent),
+                                                  )),
+                                                  Expanded(
+                                                      child: GestureDetector(
+                                                    onTap: () {
+                                                      Navigator.pushNamed(
+                                                          context,
+                                                          NavigatorName
+                                                              .detail_exercrises);
+                                                    },
+                                                    child: Container(
+                                                        color: R
+                                                            .color.transparent),
+                                                  ))
+                                                ])
+                                          ]),
+                                        )),
+                            ),
+                            const SizedBox(height: 8),
+                            Visibility(
+                              visible: false,
+                              child: Padding(
+                                padding:
+                                    const EdgeInsets.only(left: 16, right: 16),
+                                child: GestureDetector(
+                                    onTap: () {
+                                      Navigator.pushNamed(
+                                          context, NavigatorName.detail_hba1c);
+                                    },
                                     child: model != null &&
-                                            (model!.energyCard!
-                                                        .consumedEnergy !=
-                                                    0 ||
-                                                model!.exercise!.index != 0)
-                                        ? buildFoodAndExcercise(model!)
+                                            model!.hbA1CIndex.index != 0
+                                        ? buildHbA1C(model!.hbA1CIndex)
                                         : Container(
-                                            height: width * 160 / 343,
+                                            height: width * 90 / 343,
                                             child: Stack(children: [
                                               Positioned.fill(
                                                 child: Container(
@@ -378,9 +456,7 @@ class _HomeControllerState extends State<HomeController> with Observer {
                                                           BorderRadius.circular(
                                                               10)),
                                                   child: Text(
-                                                      R.string
-                                                          .dinh_duong_va_van_dong
-                                                          .tr(),
+                                                      R.string.hba1c.tr(),
                                                       style: const TextStyle(
                                                           fontSize: 16,
                                                           fontWeight:
@@ -388,124 +464,46 @@ class _HomeControllerState extends State<HomeController> with Observer {
                                                 ),
                                               ),
                                               Positioned(
-                                                  top: 60,
+                                                  top: 0,
                                                   bottom: 0,
-                                                  left: 0,
-                                                  child: Image.asset(R.drawable
-                                                      .bg_food_and_excersire)),
+                                                  right: 0,
+                                                  child: Image.asset(
+                                                      R.drawable.bg_hba1c)),
                                               Center(
                                                   child: Image.asset(
-                                                      R.drawable
-                                                          .ic_food_and_excersire,
+                                                      R.drawable.ic_hba1cn,
                                                       width: 58,
-                                                      height: 58)),
-                                              Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment
-                                                          .spaceBetween,
-                                                  children: [
-                                                    Expanded(
-                                                        child: GestureDetector(
-                                                      onTap: () {
-                                                        Navigator.pushNamed(
-                                                            context,
-                                                            NavigatorName
-                                                                .detail_food);
-                                                      },
-                                                      child: Container(
-                                                          color: R.color
-                                                              .transparent),
-                                                    )),
-                                                    Expanded(
-                                                        child: GestureDetector(
-                                                      onTap: () {
-                                                        Navigator.pushNamed(
-                                                            context,
-                                                            NavigatorName
-                                                                .detail_exercrises);
-                                                      },
-                                                      child: Container(
-                                                          color: R.color
-                                                              .transparent),
-                                                    ))
-                                                  ])
+                                                      height: 58))
                                             ]),
                                           )),
                               ),
-                              const SizedBox(height: 8),
-                              Visibility(
-                                visible: false,
-                                child: Padding(
-                                  padding: const EdgeInsets.only(
-                                      left: 16, right: 16),
-                                  child: GestureDetector(
-                                      onTap: () {
-                                        Navigator.pushNamed(context,
-                                            NavigatorName.detail_hba1c);
-                                      },
-                                      child: model != null &&
-                                              model!.hbA1CIndex.index != 0
-                                          ? buildHbA1C(model!.hbA1CIndex)
-                                          : Container(
-                                              height: width * 90 / 343,
-                                              child: Stack(children: [
-                                                Positioned.fill(
-                                                  child: Container(
-                                                    padding:
-                                                        const EdgeInsets.all(
-                                                            16),
-                                                    decoration: BoxDecoration(
-                                                        color: R.color.white,
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(10)),
-                                                    child: Text(
-                                                        R.string.hba1c.tr(),
-                                                        style: const TextStyle(
-                                                            fontSize: 16,
-                                                            fontWeight:
-                                                                FontWeight
-                                                                    .w600)),
-                                                  ),
-                                                ),
-                                                Positioned(
-                                                    top: 0,
-                                                    bottom: 0,
-                                                    right: 0,
-                                                    child: Image.asset(
-                                                        R.drawable.bg_hba1c)),
-                                                Center(
-                                                    child: Image.asset(
-                                                        R.drawable.ic_hba1cn,
-                                                        width: 58,
-                                                        height: 58))
-                                              ]),
-                                            )),
-                                ),
-                              ),
-                              // buildServiceButton(),
-                              InkWell(
-                                onTap: () {
-                                  Navigator.pushNamed(context, NavigatorName.news_detail);
-                                  // String? shareLink =
-                                  //     DynamicLinkConfig.instance.shareLink;
-                                  // if (shareLink != null) {
-                                  //   AppShare.instance
-                                  //       .userReferralCode(context, shareLink);
-                                  // }
-                                },
-                                child: Padding(
-                                  padding: const EdgeInsets.all(15.0),
-                                  child: ClipRRect(
-                                    borderRadius: BorderRadius.circular(12),
-                                    child: Image.asset(
-                                      R.drawable.banner_share_app,
-                                    ),
+                            ),
+                            // buildServiceButton(),
+                            InkWell(
+                              onTap: () {
+                                Navigator.pushNamed(
+                                    context, NavigatorName.news_detail);
+                                // String? shareLink =
+                                //     DynamicLinkConfig.instance.shareLink;
+                                // if (shareLink != null) {
+                                //   AppShare.instance
+                                //       .userReferralCode(context, shareLink);
+                                // }
+                              },
+                              child: Padding(
+                                padding: const EdgeInsets.all(15.0),
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(12),
+                                  child: Image.asset(
+                                    R.drawable.banner_share_app,
                                   ),
                                 ),
                               ),
-                              CourseSuggest(position: 1),
-                            ]),
+                            ),
+                            CourseSuggest(position: 1),
+                            SizedBox(height: 25),
+                          ],
+                        ),
                       ),
                     ),
                   ],

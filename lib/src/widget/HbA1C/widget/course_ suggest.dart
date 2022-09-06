@@ -31,7 +31,7 @@ class _CourseSuggestState extends State<CourseSuggest>
 
   loadData() async {
     models = await LearningClient().fetchLearningPost(widget.position);
-    if(widget.position == 1){
+    if (widget.position == 1) {
       models.removeWhere((item) => item.status == 0);
     }
 
@@ -41,105 +41,157 @@ class _CourseSuggestState extends State<CourseSuggest>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    return models.length == 0
-        ? SizedBox()
-        : Container(
-            color: R.color.transparent,
-            child:
-                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Padding(
-                padding: EdgeInsets.all(16),
-                child: Text(R.string.bai_viet_noi_bat.tr(),
-                    style:
-                        TextStyle(fontSize: 20, fontWeight: FontWeight.w700)),
+    return models.length == 0 ? SizedBox() : _newsItem();
+    Container(
+      color: R.color.transparent,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: EdgeInsets.all(16),
+            child: Text(R.string.bai_viet_noi_bat.tr(),
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700)),
+          ),
+          Container(
+            height: 180,
+            alignment: Alignment.center,
+            child: CarouselSlider.builder(
+              options: CarouselOptions(
+                autoPlay: true,
+                aspectRatio: 2.0,
+                //   enlargeCenterPage: true,
+                autoPlayInterval: Duration(seconds: 3),
+                viewportFraction: 0.6,
+                initialPage: 0,
               ),
-              Container(
-                height: 180,
-                alignment: Alignment.center,
-                child: CarouselSlider.builder(
-                  options: CarouselOptions(
-                    autoPlay: true,
-                    aspectRatio: 2.0,
-                 //   enlargeCenterPage: true,
-                    autoPlayInterval: Duration(seconds: 3),
-                    viewportFraction: 0.6,
-                    initialPage: 0,
-                  ),
-                  itemCount: models.length,
-                  itemBuilder: (BuildContext context, int index, int pageViewIndex) =>
-                    GestureDetector(
-                        onTap: () {
-                          _launchInBrowser(models[index].link!);
-                        },
-                        child: Container(
-                          padding: EdgeInsets.only(left: 6, right: 6),
-                          color: R.color.transparent,
+              itemCount: models.length,
+              itemBuilder:
+                  (BuildContext context, int index, int pageViewIndex) =>
+                      GestureDetector(
+                onTap: () {
+                  _launchInBrowser(models[index].link!);
+                },
+                child: Container(
+                  padding: EdgeInsets.only(left: 6, right: 6),
+                  color: R.color.transparent,
+                  width: 223,
+                  child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(8.0),
+                          child: NetWorkImageWidget(
+                            imageUrl: models[index].imageUrl.url ?? '',
+                            width: 223,
+                            height: 112,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                        SizedBox(height: 8),
+                        Text(models[index].title!,
+                            style: TextStyle(
+                                fontWeight: FontWeight.w600, fontSize: 16),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis),
+                      ]),
+                ),
+              ),
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget _newsItem() {
+    return Container(
+      color: R.color.transparent,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: EdgeInsets.all(16),
+            child: Text(R.string.bai_viet_noi_bat.tr(),
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700)),
+          ),
+          Container(
+            height: 190,
+            alignment: Alignment.center,
+            child: CarouselSlider.builder(
+              options: CarouselOptions(
+                autoPlay: true,
+                aspectRatio: 2.2,
+                autoPlayInterval: Duration(seconds: 3),
+                viewportFraction: 0.6,
+                initialPage: 0,
+              ),
+              itemCount: models.length,
+              itemBuilder:
+                  (BuildContext context, int index, int pageViewIndex) =>
+                      GestureDetector(
+                onTap: () {
+                  _launchInBrowser(models[index].link!);
+                },
+                child: Container(
+                  padding: EdgeInsets.only(left: 6, right: 6),
+                  color: R.color.transparent,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(8.0),
+                        child: NetWorkImageWidget(
+                          imageUrl: models[index].imageUrl.url ?? '',
                           width: 223,
-                          child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                 ClipRRect(
-                                  borderRadius: BorderRadius.circular(8.0),
-                                  child: NetWorkImageWidget(imageUrl: 
-                                    models[index].imageUrl.url ?? '',
-                                    width: 223, 
-                                    height: 112,
-                                    fit: BoxFit.cover,
-                                  ),
-                                ),
-                                SizedBox(height: 8),
-                                Text(models[index].title!,
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.w600,
-                                        fontSize: 16),
-                                    maxLines: 2,
-                                    overflow: TextOverflow.ellipsis),
-                              ]),
+                          height: 125,
+                          fit: BoxFit.cover,
                         ),
                       ),
+                      SizedBox(height: 12),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          CircleAvatar(
+                            radius: 16,
+                          ),
+                          SizedBox(width: 5),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  models[index].title!,
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: R.color.textDark,
+                                  ),
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                                SizedBox(height: 3),
+                                Text(
+                                  "Bởi Bệnh viện Hoàn Mỹ",
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: R.color.textDark.withOpacity(0.5),
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
-                
-                // ListView.separated(
-                //     padding: EdgeInsets.only(left: 16, right: 16),
-                //     itemCount: models.length,
-                //     scrollDirection: Axis.horizontal,
-                //     separatorBuilder: (BuildContext context, int index) {
-                //       return SizedBox(width: 16);
-                //     },
-                //     itemBuilder: (BuildContext context, int index) {
-                //       return GestureDetector(
-                //         onTap: () {
-                //           _launchInBrowser(models[index].link!);
-                //         },
-                //         child: Container(
-                //           color: R.color.transparent,
-                //           width: 223,
-                //           child: Column(
-                //               crossAxisAlignment: CrossAxisAlignment.start,
-                //               children: [
-                //                 ClipRRect(
-                //                   borderRadius: BorderRadius.circular(8.0),
-                //                   child: NetWorkImageWidget(imageUrl: 
-                //                     models[index].imageUrl.url ?? '',
-                //                     width: 223,
-                //                     height: 112,
-                //                     fit: BoxFit.fitWidth,
-                //                   ),
-                //                 ),
-                //                 SizedBox(height: 8),
-                //                 Text(models[index].title!,
-                //                     style: TextStyle(
-                //                         fontWeight: FontWeight.w600,
-                //                         fontSize: 16),
-                //                     maxLines: 2,
-                //                     overflow: TextOverflow.ellipsis),
-                //               ]),
-                //         ),
-                //       );
-                //     }),
-              )
-            ]),
-          );
+              ),
+            ),
+          )
+        ],
+      ),
+    );
   }
 
   Future<void> _launchInBrowser(String url) async {
