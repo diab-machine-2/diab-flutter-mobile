@@ -46,7 +46,7 @@ class DynamicLinkConfig {
     longDynamicLink += "&isi=1569353448";
     // longDynamicLink += "&efr=1";
     longDynamicLink +=
-        "&sd=DIAB là ứng dụng hướng dẫn chế độ dinh dưỡng, vận động và thư giãn giúp quản lý đường huyết hiệu quả.";
+        "&sd=Ứng dụng hoàn toàn miễn phí giúp kiểm soát bệnh đái tháo đường và kết nối với chuyên gia.";
     longDynamicLink +=
         "&si=https://diab.com.vn/wp-content/uploads/2022/02/hinh-1-banner-trang-chu.png";
     print("longDynamicLink: $longDynamicLink");

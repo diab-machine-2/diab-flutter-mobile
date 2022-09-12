@@ -177,6 +177,7 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                                           const EdgeInsets.only(bottom: 24),
                                       child: _buildTitleWidget(
                                         child: CachedNetworkImage(
+                                            height: 90,
                                             imageUrl: _cubit
                                                 .currentSectionDetail!
                                                 .image!
