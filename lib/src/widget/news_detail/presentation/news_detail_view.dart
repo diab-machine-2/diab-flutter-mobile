@@ -1,8 +1,18 @@
+import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/modal/learning/learning_post_model.dart';
+import 'package:medical/src/widget/helper/show_message.dart';
+import 'package:medical/src/widgets/html_text_widget.dart';
+import 'package:medical/src/widgets/network_image_widget.dart';
+
+import 'blocs/newsDetail_bloc.dart';
 
 class NewsDetailView extends StatefulWidget {
-  const NewsDetailView({Key? key}) : super(key: key);
+  final String id;
+  const NewsDetailView({Key? key, required this.id}) : super(key: key);
 
   @override
   State<NewsDetailView> createState() => _NewsDetailViewState();
@@ -10,144 +20,239 @@ class NewsDetailView extends StatefulWidget {
 
 class _NewsDetailViewState extends State<NewsDetailView> {
   bool isSticky = false;
+  bool isScrolled = false;
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: NotificationListener(
-        onNotification: (ScrollNotification notification) {
-          if (notification.metrics.pixels >= 300) {
-            if (!isSticky) {
+    return BlocProvider<NewsDetailBloc>(
+      create: (_) =>
+          NewsDetailBloc()..add(EventGetNewsDetail(newsId: widget.id)),
+      child: Scaffold(
+        body: NotificationListener(
+          onNotification: (ScrollNotification notification) {
+            if (notification.metrics.pixels >= 50) {
+              if (!isScrolled) {
+                setState(() {
+                  isScrolled = true;
+                });
+              }
+            } else if (isScrolled) {
               setState(() {
-                isSticky = true;
+                isScrolled = false;
               });
             }
-          } else if (isSticky) {
-            setState(() {
-              isSticky = false;
-            });
-          }
-          return false;
-        },
-        child: NestedScrollView(
-          headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
-            return <Widget>[
-              SliverAppBar(
-                backgroundColor: Colors.white,
-                expandedHeight: 340,
-                floating: false,
-                pinned: true,
-                leading: Row(
-                  children: [
-                    InkWell(
-                      onTap: () => Navigator.pop(context),
-                      child: Container(
-                        margin: EdgeInsets.only(left: 15),
-                        width: 36,
-                        height: 36,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Color(0xFF172823),
-                        ),
-                        child: Icon(
-                          Icons.arrow_back,
-                          size: 18,
-                          color: R.color.white,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                flexibleSpace: FlexibleSpaceBar(
-                  centerTitle: true,
-                  title: AnimatedOpacity(
-                    opacity: isSticky ? 1 :0,
-                    duration: Duration(milliseconds: 300),
-                    child: Text(
-                      "Tin tức",
-                      style: TextStyle(
-                        fontWeight: FontWeight.w700,
-                        fontSize: 18,
-                      ),
-                    ),
-                  ),
-                  background: Stack(
-                    children: [
-                      Positioned(
-                        top: 0,
-                        right: 0,
-                        bottom: 0,
-                        left: 0,
-                        child: Image.network(
-                          "https://via.placeholder.com/375x340",
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                      Positioned(
-                        right: 0,
-                        bottom: 0,
-                        left: 0,
-                        child: Container(
-                          height: 25,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.vertical(
-                              top: Radius.circular(16),
+
+            if (notification.metrics.pixels >= 300) {
+              if (!isSticky) {
+                setState(() {
+                  isSticky = true;
+                });
+              }
+            } else if (isSticky) {
+              setState(() {
+                isSticky = false;
+              });
+            }
+            return false;
+          },
+          child: BlocListener<NewsDetailBloc, NewsDetailState>(
+            listener: ((context, state) {
+              if (state.blocStatus == BlocStatus.loading) {
+                BotToast.showLoading();
+              } else if (state.blocStatus == BlocStatus.error) {
+                Message.showToastMessage(context, state.blocMessage);
+                BotToast.closeAllLoading();
+              } else {
+                BotToast.closeAllLoading();
+              }
+            }),
+            child: BlocBuilder<NewsDetailBloc, NewsDetailState>(
+              buildWhen: ((previous, current) =>
+                  previous.newsDetail != current.newsDetail),
+              builder: (context, state) {
+                final LearningPostModel? newsDetail = state.newsDetail;
+                return NestedScrollView(
+                  headerSliverBuilder:
+                      (BuildContext context, bool innerBoxIsScrolled) {
+                    return <Widget>[
+                      SliverAppBar(
+                        backgroundColor: Colors.white,
+                        expandedHeight: 340,
+                        floating: false,
+                        pinned: true,
+                        leading: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            InkWell(
+                              onTap: () => Navigator.pop(context),
+                              child: AnimatedContainer(
+                                margin: EdgeInsets.only(left: 15),
+                                duration: Duration(milliseconds: 300),
+                                width: 36,
+                                height: 36,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: isSticky
+                                      ? Colors.transparent
+                                      : Color(0xFF172823),
+                                ),
+                                child: Icon(
+                                  Icons.arrow_back,
+                                  size: isSticky ? 24 : 18,
+                                  color: isSticky
+                                      ? R.color.textDark
+                                      : R.color.white,
+                                ),
+                              ),
                             ),
-                            color: R.color.greenbg,
+                          ],
+                        ),
+                        flexibleSpace: FlexibleSpaceBar(
+                          centerTitle: true,
+                          title: AnimatedOpacity(
+                            opacity: isSticky ? 1 : 0,
+                            duration: Duration(milliseconds: 300),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                SizedBox(width: 50),
+                                Text(
+                                  "Tin tức",
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w700,
+                                    fontSize: 18,
+                                    color: R.color.textDark,
+                                  ),
+                                ),
+                                SizedBox(width: 50),
+                                // InkWell(
+                                //   onTap: () => Navigator.pop(context),
+                                //   child: SizedBox(
+                                //     width: 40,
+                                //     child: SvgPicture.asset(
+                                //       R.icons.ic_share,
+                                //       width: 22,
+                                //       color: R.color.textDark,
+                                //       fit: BoxFit.scaleDown,
+                                //     ),
+                                //   ),
+                                // ),
+                              ],
+                            ),
+                          ),
+                          background: Stack(
+                            children: [
+                              Positioned(
+                                top: 0,
+                                right: 0,
+                                bottom: 0,
+                                left: 0,
+                                child: NetWorkImageWidget(
+                                  imageUrl: newsDetail?.imageUrl.url ?? '',
+                                  width: 223.w,
+                                  height: 110.h,
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                              Positioned(
+                                right: 0,
+                                bottom: 0,
+                                left: 0,
+                                child: Container(
+                                  height: 25,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.vertical(
+                                      top: Radius.circular(16),
+                                    ),
+                                    color: Color(0xFFF5FDFB),
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       ),
-                    ],
+                    ];
+                  },
+                  body: AnimatedContainer(
+                    duration: Duration(milliseconds: 300),
+                    padding: EdgeInsets.only(
+                      left: 15,
+                      right: 15,
+                      top: isScrolled ? 15 : 0,
+                    ),
+                    color: Color(0xFFF5FDFB),
+                    child: newsDetail == null
+                        ? SizedBox()
+                        : Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  if (newsDetail
+                                      .learningPostTagMappings.isNotEmpty)
+                                    Expanded(
+                                      child: Wrap(
+                                        children: newsDetail
+                                            .learningPostTagMappings
+                                            .map((tag) => _itemHastag(tag))
+                                            .toList(),
+                                        // children: [
+                                        //   _itemHastag(),
+                                        //   _itemHastag(),
+                                        // ],
+                                      ),
+                                    ),
+                                  // InkWell(
+                                  //   onTap: () => Navigator.pop(context),
+                                  //   child: SizedBox(
+                                  //     width: 40,
+                                  //     child: SvgPicture.asset(
+                                  //       R.icons.ic_share,
+                                  //       width: 22,
+                                  //       color: R.color.gray,
+                                  //       fit: BoxFit.scaleDown,
+                                  //     ),
+                                  //   ),
+                                  // ),
+                                  // InkWell(
+                                  //   onTap: () => Navigator.pop(context),
+                                  //   child: SizedBox(
+                                  //     width: 40,
+                                  //     child: SvgPicture.asset(
+                                  //       R.icons.ic_heart,
+                                  //       width: 21,
+                                  //       color: R.color.gray,
+                                  //       fit: BoxFit.scaleDown,
+                                  //     ),
+                                  //   ),
+                                  // ),
+                                ],
+                              ),
+                              SizedBox(height: 15),
+                              Text(
+                                newsDetail.title!,
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                              SizedBox(height: 10),
+                              Text(
+                                "Ngày ${newsDetail.createDatetime}",
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: R.color.grey_2,
+                                ),
+                              ),
+                              SizedBox(height: 10),
+                              WidgetHtmlText(newsDetail.content),
+                            ],
+                          ),
                   ),
-                ),
-              ),
-            ];
-          },
-          body: Container(
-            padding: EdgeInsets.symmetric(horizontal: 15),
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  R.color.greenbg.withOpacity(0.3),
-                  R.color.greenbg.withOpacity(0.9),
-                ],
-                begin: const FractionalOffset(1, 1),
-                end: const FractionalOffset(0.9, 0.5),
-                stops: const [0.0, 1.0],
-              ),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Wrap(
-                  children: [
-                    _itemHastag(),
-                    _itemHastag(),
-                  ],
-                ),
-                SizedBox(height: 15),
-                Text(
-                  "Những đối tượng cần sàng lọc bệnh Đái tháo đường típ 2 sớm",
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-                SizedBox(height: 10),
-                Text(
-                  "Ngày 21/01/2022",
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: R.color.grey_2,
-                  ),
-                ),
-                SizedBox(height: 10),
-                Text(
-                  "Đái tháo đường (tiểu đường) típ 2 là căn bệnh nguy hiểm với mức độ tử vong cao cần phải sàng lọc sớm, nhất là những đối tượng nằm trong nhóm nguy cơ cao sau",
-                  style: TextStyle(
-                    fontSize: 16,
-                  ),
-                ),
-              ],
+                );
+              },
             ),
           ),
         ),
@@ -155,19 +260,19 @@ class _NewsDetailViewState extends State<NewsDetailView> {
     );
   }
 
-  Widget _itemHastag() {
+  Widget _itemHastag(LearningPostTagMappings tag) {
     return Container(
       margin: EdgeInsets.only(right: 10),
       padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(10),
-        color: R.color.buttonRoundColor,
+        color: R.color.color0xffD6F5F6,
       ),
       child: Text(
-        "Sức khoẻ",
+        tag.name,
         style: TextStyle(
           fontSize: 14,
-          color: R.color.mainColor,
+          color: R.color.color0xff008890,
           fontWeight: FontWeight.w700,
         ),
       ),

@@ -1,11 +1,13 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/learning/learning_post_model.dart';
 import 'package:medical/src/repo/learning/learning_client.dart';
+import 'package:medical/src/utils/navigator_name.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:easy_localization/easy_localization.dart';
-
 import '../../../widgets/network_image_widget.dart';
 
 class CourseSuggest extends StatefulWidget {
@@ -41,155 +43,122 @@ class _CourseSuggestState extends State<CourseSuggest>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    return models.length == 0 ? SizedBox() : _newsItem();
-    Container(
-      color: R.color.transparent,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: EdgeInsets.all(16),
-            child: Text(R.string.bai_viet_noi_bat.tr(),
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700)),
-          ),
-          Container(
-            height: 180,
-            alignment: Alignment.center,
-            child: CarouselSlider.builder(
-              options: CarouselOptions(
-                autoPlay: true,
-                aspectRatio: 2.0,
-                //   enlargeCenterPage: true,
-                autoPlayInterval: Duration(seconds: 3),
-                viewportFraction: 0.6,
-                initialPage: 0,
-              ),
-              itemCount: models.length,
-              itemBuilder:
-                  (BuildContext context, int index, int pageViewIndex) =>
-                      GestureDetector(
-                onTap: () {
-                  _launchInBrowser(models[index].link!);
-                },
-                child: Container(
-                  padding: EdgeInsets.only(left: 6, right: 6),
-                  color: R.color.transparent,
-                  width: 223,
-                  child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(8.0),
-                          child: NetWorkImageWidget(
-                            imageUrl: models[index].imageUrl.url ?? '',
-                            width: 223,
-                            height: 112,
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                        SizedBox(height: 8),
-                        Text(models[index].title!,
-                            style: TextStyle(
-                                fontWeight: FontWeight.w600, fontSize: 16),
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis),
-                      ]),
+    return models.length == 0
+        ? SizedBox()
+        : Container(
+            color: R.color.transparent,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: EdgeInsets.all(16),
+                  child: Text(R.string.bai_viet_noi_bat.tr(),
+                      style:
+                          TextStyle(fontSize: 20, fontWeight: FontWeight.w700)),
                 ),
-              ),
+                Container(
+                  height: 190,
+                  alignment: Alignment.center,
+                  child: CarouselSlider.builder(
+                    options: CarouselOptions(
+                      autoPlay: true,
+                      aspectRatio: 2.2,
+                      autoPlayInterval: Duration(seconds: 3),
+                      viewportFraction: 0.6,
+                      initialPage: 0,
+                    ),
+                    itemCount: models.length,
+                    itemBuilder:
+                        (BuildContext context, int index, int pageViewIndex) =>
+                            _newsItem(models[index]),
+                  ),
+                )
+              ],
             ),
-          )
-        ],
-      ),
-    );
+          );
   }
 
-  Widget _newsItem() {
-    return Container(
-      color: R.color.transparent,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: EdgeInsets.all(16),
-            child: Text(R.string.bai_viet_noi_bat.tr(),
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700)),
-          ),
-          Container(
-            height: 190,
-            alignment: Alignment.center,
-            child: CarouselSlider.builder(
-              options: CarouselOptions(
-                autoPlay: true,
-                aspectRatio: 2.2,
-                autoPlayInterval: Duration(seconds: 3),
-                viewportFraction: 0.6,
-                initialPage: 0,
+  Widget _newsItem(LearningPostModel postItem) {
+    String? imagePartnerUrl = postItem.imagePartnerUrl?.url;
+    return GestureDetector(
+      onTap: () {
+        if (postItem.enableLink) {
+          _launchInBrowser(postItem.link!);
+        } else {
+          Navigator.pushNamed(
+            context,
+            NavigatorName.news_detail,
+            arguments: {'id': postItem.id},
+          );
+        }
+      },
+      child: Container(
+        padding: EdgeInsets.only(left: 6, right: 6),
+        color: R.color.transparent,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            ClipRRect(
+              borderRadius: BorderRadius.circular(8.0),
+              child: NetWorkImageWidget(
+                imageUrl: postItem.imageUrl.url ?? '',
+                width: 223.w,
+                height: 110.h,
+                fit: BoxFit.cover,
               ),
-              itemCount: models.length,
-              itemBuilder:
-                  (BuildContext context, int index, int pageViewIndex) =>
-                      GestureDetector(
-                onTap: () {
-                  _launchInBrowser(models[index].link!);
-                },
-                child: Container(
-                  padding: EdgeInsets.only(left: 6, right: 6),
-                  color: R.color.transparent,
+            ),
+            SizedBox(height: 12),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                if (imagePartnerUrl != null)
+                  Padding(
+                    padding: const EdgeInsets.only(right: 5.0),
+                    child: CircleAvatar(
+                      radius: 16,
+                      child: NetWorkImageWidget(
+                        imageUrl: imagePartnerUrl,
+                        width: 223,
+                        height: 125,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  ),
+                Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(8.0),
-                        child: NetWorkImageWidget(
-                          imageUrl: models[index].imageUrl.url ?? '',
-                          width: 223,
-                          height: 125,
-                          fit: BoxFit.cover,
+                      AutoSizeText(
+                        postItem.title!,
+                        minFontSize: 10,
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: R.color.textDark,
                         ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
                       ),
-                      SizedBox(height: 12),
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          CircleAvatar(
-                            radius: 16,
-                          ),
-                          SizedBox(width: 5),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  models[index].title!,
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    color: R.color.textDark,
-                                  ),
-                                  maxLines: 2,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                                SizedBox(height: 3),
-                                Text(
-                                  "Bởi Bệnh viện Hoàn Mỹ",
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    color: R.color.textDark.withOpacity(0.5),
-                                  ),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ],
+                      if (postItem.partnerName != null)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 3.0),
+                          child: AutoSizeText(
+                            "${postItem.partnerName}",
+                            minFontSize: 8,
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: R.color.textDark.withOpacity(0.5),
                             ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                           ),
-                        ],
-                      ),
+                        ),
                     ],
                   ),
                 ),
-              ),
+              ],
             ),
-          )
-        ],
+          ],
+        ),
       ),
     );
   }
