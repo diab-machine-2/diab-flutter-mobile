@@ -70,6 +70,7 @@ class Colors {
 	Color get textFieldGrey => Color(0xff8D8D8D);
 	Color get buttonRoundColor => Color(0xffDBF0EE);
 	Color get color0xffE5E5E5 => Color(0xffE5E5E5);
+	Color get color0xffD6F5F6 => Color(0xffD6F5F6);
 	Color get color0xff003F38 => Color(0xff003F38);
 	Color get color0xffBEC0C8 => Color(0xffBEC0C8);
 	Color get color0xff333333 => Color(0xff333333);
@@ -107,4 +108,5 @@ class Colors {
 	Color get color0xffFDE9E9 => Color(0xffFDE9E9);
 	Color get color0xff737072 => Color(0xff737072);
 	Color get color0xff004E47 => Color(0xff004E47);
+	Color get color0xff008890 => Color(0xff008890);
 }

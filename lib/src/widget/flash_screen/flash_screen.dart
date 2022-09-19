@@ -33,6 +33,7 @@ class _FlashScreenControllerState extends State<FlashScreenController> {
     isNavigateToStepList = false;
     getSecuredModel();
     getData(context);
+    DynamicLinkConfig.instance.setUpHandleDeepLink();
   }
 
   getSecuredModel() async {

@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:medical/src/modal/learning/learning_post_model.dart';
 import 'package:medical/src/model/request/SelectRoadmapRequest.dart';
 import 'package:medical/src/model/request/complete_update_profile_request.dart';
 import 'package:medical/src/model/request/has_shared_profile_request.dart';
@@ -86,7 +87,8 @@ abstract class AppApi {
   Future<UpgradeAccountResponse> getUpgradeAccount();
 
   @POST("App/PackageInterest/Input")
-  Future<CommonResponse> sendInterestFeedback(@Body() SendInterestRequest request);
+  Future<CommonResponse> sendInterestFeedback(
+      @Body() SendInterestRequest request);
 
   // Transaction
 
@@ -279,21 +281,25 @@ abstract class AppApi {
   });
 
   @GET("App/Question/GetAllMobile")
-  Future<QuestionAnswerResponse> getListQuestion(@Query('page') int page, @Query('size') int size,
-      @Query("lessonModuleIds") List<String>? lessonModuleIds, @Query("accountIds") List<String>? accountIds);
+  Future<QuestionAnswerResponse> getListQuestion(
+      @Query('page') int page,
+      @Query('size') int size,
+      @Query("lessonModuleIds") List<String>? lessonModuleIds,
+      @Query("accountIds") List<String>? accountIds);
 
   @GET("App/Question/{id}")
   Future<QuestionResponse> getQuestionById(@Path('id') String id);
 
   @GET("App/LessonModule")
-  Future<LessonModuleResponse> getListLessonModule(@Query('page') int page, @Query('size') int size);
+  Future<LessonModuleResponse> getListLessonModule(
+      @Query('page') int page, @Query('size') int size);
 
   @POST("App/Question/Input")
   Future<CommonResponse> makeQuestion(
     @Body() MakeQuestionRequest request,
   );
 
-   @POST("App/Question/CreateAnswer")
+  @POST("App/Question/CreateAnswer")
   Future<CommonResponse> makeComment(
     @Body() MakeCommentRequest request,
   );
@@ -332,20 +338,23 @@ abstract class AppApi {
   );
 
   @GET("App/Lesson/{lessonId}/LessonQuizDetail")
-  Future<LessonSectionListResponse> getListQuiz(@Path("lessonId") String lessonId);
+  Future<LessonSectionListResponse> getListQuiz(
+      @Path("lessonId") String lessonId);
 
   // My Progress
   @GET("App/MyProgress")
   Future<MyProgressResponse> getMyProgress({@Query('type') int? type});
 
   @GET("App/UserDashboard/Calendar-Training-Comment")
-  Future<ExpertCommentListResponse> getCommentProfessorByAccountId(@Query('patientId') String? accountId);
+  Future<ExpertCommentListResponse> getCommentProfessorByAccountId(
+      @Query('patientId') String? accountId);
 
   @GET("App/UserDashboard/Calendar-Training-Comment/{id}")
   Future<ExpertCommentResponse> getCommentById(@Path('id') String id);
 
   @GET("App/CalendarTraining")
-  Future<CalendarTrainingListResponse> getCalendarTraining(@Query('calendarId') String calendarId);
+  Future<CalendarTrainingListResponse> getCalendarTraining(
+      @Query('calendarId') String calendarId);
 
   //Referral, Share Profile
   @GET("App/Patient/GetAccountInfoWithReferalOfCurrentPatient")

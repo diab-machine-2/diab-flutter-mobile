@@ -59,7 +59,6 @@ class _StepListControllerState extends State<StepListController> {
   @override
   void initState() {
     super.initState();
-    DynamicLinkConfig.instance.setUpHandleDeepLink();
     // DynamicLinkConfig.instance.getLongLink();
     // DynamicLinkConfig.instance.setUpHandleDeepLink();
     // if (widget.sharedCode != "") {
