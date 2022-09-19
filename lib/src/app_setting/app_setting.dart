@@ -40,7 +40,6 @@ class AppSettings {
 
   static Future<String> getEnvironment() async {
     final token = appPreference.getData(Const.ENVIRONMENT) ?? '';
-    print(token);
     return token;
   }
 
@@ -56,7 +55,6 @@ class AppSettings {
 
   static Future<String> getToken() async {
     final token = appPreference.getData(Const.TOKEN) ?? '';
-    print(token);
     return token;
   }
 
@@ -72,7 +70,6 @@ class AppSettings {
 
   static Future<String> getRefreshToken() async {
     final token = appPreference.getData(Const.REFRESH_TOKEN) ?? '';
-    print(token);
     return token;
   }
 

@@ -116,10 +116,9 @@ class _CourseSuggestState extends State<CourseSuggest>
                     padding: const EdgeInsets.only(right: 5.0),
                     child: CircleAvatar(
                       radius: 16,
+                      backgroundColor: R.color.white,
                       child: NetWorkImageWidget(
                         imageUrl: imagePartnerUrl,
-                        width: 223,
-                        height: 125,
                         fit: BoxFit.cover,
                       ),
                     ),
@@ -129,7 +128,7 @@ class _CourseSuggestState extends State<CourseSuggest>
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       AutoSizeText(
-                        postItem.title!,
+                        postItem.title,
                         minFontSize: 10,
                         style: TextStyle(
                           fontSize: 13,

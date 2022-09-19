@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
@@ -84,7 +83,7 @@ class _TabbarControllerState extends State<TabbarController>
   }
 
   _checkUserReferralCode() async {
-    DynamicLinkConfig.instance.buildDynamicLink();
+    DynamicLinkConfig.instance.createShareReferralLink();
   }
 
   Future startTimer() async {

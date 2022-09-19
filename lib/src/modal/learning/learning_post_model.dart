@@ -4,7 +4,7 @@ import 'package:meta/meta.dart';
 @immutable
 class LearningPostModel {
   final String? id;
-  final String? title;
+  final String title;
   final String? link;
   final ImagesModel imageUrl;
   final ImagesModel? imagePartnerUrl;
@@ -39,7 +39,7 @@ class LearningPostModel {
 
     return LearningPostModel(
       id: json['id'],
-      title: json['title'],
+      title: json['title'] ?? "",
       link: json['link'],
       status: json['status'],
       enableLink: json['enableLink'] ?? false,
