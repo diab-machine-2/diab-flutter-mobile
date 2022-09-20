@@ -68,6 +68,7 @@ import 'app_setting/deep_link_config.dart';
 import 'utils/navigator_name.dart';
 import 'widget/Food/add_food.dart';
 import 'widget/helper/photo_view.dart';
+import 'widget/news_detail/presentation/news_detail_view.dart';
 import 'widget/profile/profile_controller.dart';
 
 class App extends StatefulWidget {
@@ -504,6 +505,12 @@ class _AppState extends State<App> {
                               questionModel: data!['questionModel'],
                               isAll: data['isAll']),
                           isPresent: true);
+                    case NavigatorName.news_detail:
+                      final data = settings.arguments as Map<String, dynamic>?;
+                      return _buildRoute(
+                        settings,
+                        NewsDetailView(id: data?['id']),
+                      );
                     default:
                       return null;
                   }

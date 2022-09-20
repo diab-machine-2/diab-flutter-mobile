@@ -1,11 +1,23 @@
 import 'dart:async';
+import 'package:flutter/material.dart';
+import 'package:medical/src/app.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
+import 'package:medical/src/modal/learning/learning_post_model.dart';
+import 'package:medical/src/utils/navigator_name.dart';
 
 class DynamicLinkConfig {
   DynamicLinkConfig._privateConstructor();
   static final DynamicLinkConfig instance =
       DynamicLinkConfig._privateConstructor();
+  static String _androidApplicationId = "com.vbhc.diab";
+  static String _iosBundleId = "com.cactusoftware.diab";
+  static String _appStoreId = "1569353448";
+
+  List<String> dynamicLinkType = [
+    "referralCode",
+    "newsDetail",
+  ];
 
   StreamSubscription? _subLink;
   String? _referalCode;
@@ -22,18 +34,37 @@ class DynamicLinkConfig {
     if (deepLink != null) {
       _referalCode = getShareCodeFromUrl(deepLink);
     }
-    print("setUpHandleDeepLink");
 
     _subLink = FirebaseDynamicLinks.instance.onLink.listen((dynamicLinkData) {
-      print("setUpHandleDeepLink: $dynamicLinkData");
       final Uri? deepLink = dynamicLinkData.link;
+      print("deepLink: $deepLink");
+
       if (deepLink != null) {
+        dynamicLinkType.forEach((functionName) {
+          String urlString = deepLink.toString();
+          List<String> separatedString = urlString.split('$functionName=');
+          switch (functionName) {
+            case "referralCode":
+              if (urlString.contains(functionName)) {
+                _referalCode = separatedString[1];
+              }
+              break;
+            case "newsDetail":
+              if (urlString.contains(functionName)) {
+                String newsDetailId = separatedString[1];
+                Navigator.pushNamed(navigatorKey.currentState!.context,
+                    NavigatorName.news_detail,
+                    arguments: {'id': newsDetailId});
+              }
+              break;
+          }
+        });
         _referalCode = getShareCodeFromUrl(deepLink);
       }
     });
   }
 
-  Future<void> buildDynamicLink() async {
+  Future<void> createShareReferralLink() async {
     final user = AppSettings.userInfo!;
     final dynamicLink = FirebaseDynamicLinks.instance;
     String domain = "https://click.diab.com.vn/referralCode";
@@ -44,12 +75,10 @@ class DynamicLinkConfig {
     longDynamicLink += "&apn=com.vbhc.diab";
     longDynamicLink += "&ibi=com.cactusoftware.diab";
     longDynamicLink += "&isi=1569353448";
-    // longDynamicLink += "&efr=1";
     longDynamicLink +=
-        "&sd=DIAB là ứng dụng hướng dẫn chế độ dinh dưỡng, vận động và thư giãn giúp quản lý đường huyết hiệu quả.";
+        "&sd=Ứng dụng hoàn toàn miễn phí giúp kiểm soát bệnh đái tháo đường và kết nối với chuyên gia.";
     longDynamicLink +=
         "&si=https://diab.com.vn/wp-content/uploads/2022/02/hinh-1-banner-trang-chu.png";
-    print("longDynamicLink: $longDynamicLink");
 
     final DynamicLinkParameters parameters = DynamicLinkParameters(
       uriPrefix: domain,
@@ -84,93 +113,42 @@ class DynamicLinkConfig {
     _referalCode = null;
   }
 
-  Future<void> getLongLink() async {
-    String shareRefCode = "AAAAAA";
+  static Future<String?> createShareNewsLink(
+      LearningPostModel newsDetail) async {
+    String _fallbackUrl = "https://diab.com.vn/cau-chuyen-thanh-cong";
+    String _domainShareLink = "https://news.diab.com.vn/referralCode";
+    String _link = "https://diab.com.vn/newsDetail=${newsDetail.id}";
+    String _shareTitle = newsDetail.title;
+    String _shareDesription = "hihi";
+    String _shareBanner = newsDetail.imageUrl.url != null
+        ? newsDetail.imageUrl.url!
+        : "https://diab.com.vn/wp-content/uploads/2022/02/hinh-1-banner-trang-chu.png";
+    String _androidMininumVersion = "70";
+    String _iosMininumVersion = "1.2.0";
+
     final dynamicLink = FirebaseDynamicLinks.instance;
-    String domain = "https://click.diab.com.vn/referralCode";
-    String longDynamicLink = "https://click.diab.com.vn/referralCode/";
-    longDynamicLink += "?link=https://diab.com.vn/referralCode=${shareRefCode}";
-    longDynamicLink += "&ofl=https://diab.com.vn/giai-phap";
-    longDynamicLink += "&apn=com.vbhc.diab";
-    longDynamicLink += "&ibi=com.cactusoftware.diab";
-    longDynamicLink += "&isi=1569353448";
-    longDynamicLink +=
-        "&sd=S%E1%BB%91ng%20kho%E1%BA%BB%20c%C3%B9ng%20%C4%91%C3%A1i%20th%C3%A1o%20%C4%91%C6%B0%E1%BB%9Dng.%20N%C6%A1i%20cung%20c%E1%BA%A5p%20ki%E1%BA%BFn%20th%E1%BB%A9c%20to%C3%A0n%20di%E1%BB%87n.%20Gi%C3%BAp%20ng%C6%B0%E1%BB%9Di%20%C4%90%C3%A1i%20th%C3%A1o%20%C4%91%C6%B0%E1%BB%9Dng%20s%E1%BB%91ng%20kho%E1%BA%BB%20m%E1%BA%A1nh%20h%C6%A1n.";
-    longDynamicLink +=
-        "&si=https%3A%2F%2Fdiab.com.vn%2Fwp-content%2Fuploads%2F2022%2F02%2Fhinh-1-banner-trang-chu.png";
+    String longDynamicLink = "$_domainShareLink";
+    longDynamicLink += "?link=$_link";
+    longDynamicLink += "&st=$_shareTitle";
+    longDynamicLink += "&isi=$_appStoreId";
+    longDynamicLink += "&si=$_shareBanner";
+    longDynamicLink += "&ofl=$_fallbackUrl";
+    longDynamicLink += "&ibi=$_iosBundleId";
+    longDynamicLink += "&sd=$_shareDesription";
+    longDynamicLink += "&imv=$_iosMininumVersion";
+    longDynamicLink += "&amv=$_androidMininumVersion";
+    longDynamicLink += "&apn=$_androidApplicationId";
+
     final DynamicLinkParameters parameters = DynamicLinkParameters(
-      uriPrefix: domain,
+      uriPrefix: _domainShareLink,
       longDynamicLink: Uri.parse(longDynamicLink),
-      link: Uri.parse('https://diab.com.vn/referralCode=${shareRefCode}'),
-      androidParameters: AndroidParameters(
-        packageName: "com.vbhc.diab",
-        minimumVersion: 70,
-        fallbackUrl: Uri.parse("https://diab.com.vn/giai-phap"),
-      ),
-      iosParameters: IOSParameters(
-        minimumVersion: '1.10.0',
-        appStoreId: "1569353448",
-        bundleId: "com.cactusoftware.diab",
-        ipadFallbackUrl: Uri.parse("https://diab.com.vn/giai-phap"),
-        fallbackUrl: Uri.parse("https://diab.com.vn/giai-phap"),
-      ),
-      socialMetaTagParameters: SocialMetaTagParameters(
-        description:
-            "Sống khoẻ cùng đái tháo đường. Nơi cung cấp kiến thức toàn diện. Giúp người Đái tháo đường sống khoẻ mạnh hơn.",
-        imageUrl: Uri.parse(
-            "https://diab.com.vn/wp-content/uploads/2022/02/hinh-1-banner-trang-chu.png"),
-        title: "Diab | Giải pháp toàn diện cho người Đái tháo đường",
-      ),
+      link: Uri.parse(_link),
     );
 
-    final Uri dynamicUrl = await dynamicLink.buildLink(parameters);
-    print("dynamicUrl: $dynamicUrl");
+    final ShortDynamicLink dynamicUrl =
+        await dynamicLink.buildShortLink(parameters);
+    return dynamicUrl.shortUrl.toString();
   }
-
-  // Future<void> buildDynamicLink() async {
-  //   final user = AppSettings.userInfo!;
-  //   final dynamicLink = FirebaseDynamicLinks.instance;
-  //   String link = "https://diab.com.vn";
-  //   String domain = "https://diab.com.vn";
-  //   //   String longDynamicLink = "https://diab.page.link";
-  //   //   longDynamicLink += "?link=$domain/referralCode=${user.shareRefCode}";
-
-  //   String longDynamicLink = "https://diab.com.vn/referralCode";
-  //   longDynamicLink += "/?link=https://portal.diab.com.vn/${user.shareRefCode}";
-  //   longDynamicLink += "&ofl=https://diab.com.vn/giai-phap";
-  //   longDynamicLink += "&apn=com.vbhc.diab";
-  //   longDynamicLink += "&ibi=com.cactusoftware.diab";
-  //   longDynamicLink += "&isi=1569353448";
-  //   longDynamicLink +=
-  //       "&sd=S%E1%BB%91ng%20kho%E1%BA%BB%20c%C3%B9ng%20%C4%91%C3%A1i%20th%C3%A1o%20%C4%91%C6%B0%E1%BB%9Dng.%20N%C6%A1i%20cung%20c%E1%BA%A5p%20ki%E1%BA%BFn%20th%E1%BB%A9c%20to%C3%A0n%20di%E1%BB%87n.%20Gi%C3%BAp%20ng%C6%B0%E1%BB%9Di%20%C4%90%C3%A1i%20th%C3%A1o%20%C4%91%C6%B0%E1%BB%9Dng%20s%E1%BB%91ng%20kho%E1%BA%BB%20m%E1%BA%A1nh%20h%C6%A1n.";
-  //   longDynamicLink +=
-  //       "&si=https%3A%2F%2Fdiab.com.vn%2Fwp-content%2Fuploads%2F2022%2F02%2Fhinh-1-banner-trang-chu.png";
-  //   final DynamicLinkParameters parameters = DynamicLinkParameters(
-  //     uriPrefix: domain,
-  //     longDynamicLink: Uri.parse(longDynamicLink),
-  //     link: Uri.parse('$link/${user.shareRefCode}'),
-  //     androidParameters: const AndroidParameters(
-  //       packageName: "com.vbhc.diab",
-  //       minimumVersion: 0,
-  //     ),
-  //     iosParameters: IOSParameters(
-  //       minimumVersion: '0',
-  //       appStoreId: "1569353448",
-  //       bundleId: "com.cactusoftware.diab",
-  //       fallbackUrl: Uri.parse("https://diab.com.vn/giai-phap"),
-  //     ),
-  //     socialMetaTagParameters: SocialMetaTagParameters(
-  //       description:
-  //           "Sống khoẻ cùng đái tháo đường. Nơi cung cấp kiến thức toàn diện. Giúp người Đái tháo đường sống khoẻ mạnh hơn.",
-  //       imageUrl: Uri.parse(
-  //           "https://diab.com.vn/wp-content/uploads/2022/02/hinh-1-banner-trang-chu.png"),
-  //       title: "Diab | Giải pháp toàn diện cho người Đái tháo đường",
-  //     ),
-  //   );
-  //   final ShortDynamicLink dynamicUrl =
-  //       await dynamicLink.buildShortLink(parameters);
-  //   _shareLink = dynamicUrl.shortUrl.toString();
-  // }
 
   Future<String?> getInitLink() async {
     final PendingDynamicLinkData? data =
@@ -186,7 +164,6 @@ class DynamicLinkConfig {
   static String getShareCodeFromUrl(Uri url) {
     String urlString = url.toString();
     List<String> separatedString = urlString.split('referralCode=');
-    print("getShareCodeFromUrl: ${separatedString[1]}");
     return separatedString[1];
   }
 

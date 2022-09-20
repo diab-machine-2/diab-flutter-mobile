@@ -41,7 +41,7 @@
 	<string>diaB</string>
 	<key>FirebaseDynamicLinksCustomDomains</key>
 	<array>
-		<string>https://diab.page.link</string>
+		<string>https://news.diab.com.vn</string>
 		<string>https://diab.com.vn</string>
 		<string>https://click.diab.com.vn</string>
 	</array>
