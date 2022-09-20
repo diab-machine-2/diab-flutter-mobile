@@ -5,7 +5,7 @@ import 'package:medical/src/widget/Food/widget/food_chart.dart';
 import 'package:medical/src/widget/Food/widget/food_distribution_chart.dart';
 import 'package:medical/src/widget/Food/widget/food_trend_chart.dart';
 import 'package:medical/src/widget/Food/widget/starch_chart.dart';
-import 'package:medical/src/widget/HbA1C/widget/course_%20suggest.dart';
+import 'package:medical/src/widget/HbA1C/widget/course_suggest.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 
 class FoodOverviewController extends StatefulWidget {

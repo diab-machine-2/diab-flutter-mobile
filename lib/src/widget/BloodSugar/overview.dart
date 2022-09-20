@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/widget/BloodSugar/widget/bloodSugar_chart.dart';
 import 'package:medical/src/widget/BloodSugar/widget/bloodSugar_compare_chart.dart';
-import 'package:medical/src/widget/HbA1C/widget/course_%20suggest.dart';
+import 'package:medical/src/widget/HbA1C/widget/course_suggest.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'widget/bloodSugar_contain_detail.dart';
 
