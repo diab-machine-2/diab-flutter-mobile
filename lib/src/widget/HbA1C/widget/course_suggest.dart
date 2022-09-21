@@ -13,13 +13,13 @@ import '../../../widgets/network_image_widget.dart';
 class CourseSuggest extends StatefulWidget {
   final int position;
 
-  CourseSuggest({required this.position});
+  const CourseSuggest({Key? key, required this.position}) : super(key: key);
 
   @override
-  _CourseSuggestState createState() => _CourseSuggestState();
+  CourseSuggestState createState() => CourseSuggestState();
 }
 
-class _CourseSuggestState extends State<CourseSuggest>
+class CourseSuggestState extends State<CourseSuggest>
     with AutomaticKeepAliveClientMixin<CourseSuggest> {
   @override
   bool get wantKeepAlive => true;

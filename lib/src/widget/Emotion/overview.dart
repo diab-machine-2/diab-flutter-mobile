@@ -3,7 +3,7 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/widget/Emotion/widget/emotion_activity_chart.dart';
 import 'package:medical/src/widget/Emotion/widget/emotion_symptom_chart.dart';
 import 'package:medical/src/widget/Emotion/widget/emotion_distribution_chart.dart';
-import 'package:medical/src/widget/HbA1C/widget/course_%20suggest.dart';
+import 'package:medical/src/widget/HbA1C/widget/course_suggest.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 
 class EmotionOverviewController extends StatefulWidget {

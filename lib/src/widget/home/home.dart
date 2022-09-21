@@ -14,7 +14,7 @@ import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/Food/widget/energy_chart.dart';
-import 'package:medical/src/widget/HbA1C/widget/course_%20suggest.dart';
+import 'package:medical/src/widget/HbA1C/widget/course_suggest.dart';
 import 'package:medical/src/widget/components/HomeButton/main.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
@@ -36,6 +36,7 @@ class HomeController extends StatefulWidget {
 }
 
 class _HomeControllerState extends State<HomeController> with Observer {
+  GlobalKey<CourseSuggestState> courseSuggestKey = GlobalKey();
   var data = [
     {
       'name': R.string.duong_huyet.tr(),
@@ -185,6 +186,7 @@ class _HomeControllerState extends State<HomeController> with Observer {
   }
 
   Future<bool> _pullToRefresh() async {
+    courseSuggestKey.currentState?.loadData();
     page = 1;
     BlocProvider.of<HomeBloc>(currentContext).add(FetchHome());
     user = await UserClient().fetchUser();
@@ -498,7 +500,7 @@ class _HomeControllerState extends State<HomeController> with Observer {
                                 ),
                               ),
                             ),
-                            CourseSuggest(position: 1),
+                            CourseSuggest(key: courseSuggestKey, position: 1),
                             SizedBox(height: 25),
                           ],
                         ),

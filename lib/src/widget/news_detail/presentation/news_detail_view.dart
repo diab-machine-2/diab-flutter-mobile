@@ -1,16 +1,16 @@
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:medical/src/app_setting/app_sharing.dart';
-import 'package:medical/src/app_setting/dynamic_link_config.dart';
+import 'package:intl/intl.dart';
 
 import 'blocs/newsDetail_bloc.dart';
 import 'package:medical/res/R.dart';
 import 'package:flutter/material.dart';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:medical/src/app_setting/app_sharing.dart';
 import 'package:medical/src/widgets/html_text_widget.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widgets/network_image_widget.dart';
+import 'package:medical/src/app_setting/dynamic_link_config.dart';
 import 'package:medical/src/modal/learning/learning_post_model.dart';
 
 class NewsDetailView extends StatefulWidget {
@@ -80,6 +80,15 @@ class _NewsDetailViewState extends State<NewsDetailView> {
                 previous.newsDetail != current.newsDetail),
             builder: (context, state) {
               final LearningPostModel? newsDetail = state.newsDetail;
+              String? createdDate;
+              if (newsDetail != null) {
+                DateTime dateConverted = DateFormat('MM/dd/yyyy HH:mm:ss')
+                    .parse(newsDetail.createDatetime);
+                dateConverted = dateConverted.add(Duration(hours: 7));
+                createdDate = DateFormat('dd/MM/yyyy - HH:mm')
+                    .format(dateConverted)
+                    .toString();
+              }
               return NestedScrollView(
                 controller: _scrollController,
                 headerSliverBuilder:
@@ -167,6 +176,24 @@ class _NewsDetailViewState extends State<NewsDetailView> {
                                 ),
                               ),
                             Positioned(
+                              top: 0,
+                              right: 0,
+                              left: 0,
+                              child: Container(
+                                height: 120,
+                                decoration: BoxDecoration(
+                                  gradient: LinearGradient(
+                                    begin: Alignment.topCenter,
+                                    end: Alignment.bottomCenter,
+                                    colors: [
+                                      R.color.black.withOpacity(0.5),
+                                      R.color.black.withOpacity(0),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Positioned(
                               right: 0,
                               bottom: 0,
                               left: 0,
@@ -251,7 +278,7 @@ class _NewsDetailViewState extends State<NewsDetailView> {
                             ),
                             SizedBox(height: 10),
                             Text(
-                              "Ngày ${newsDetail.createDatetime}",
+                              "Ngày $createdDate",
                               style: TextStyle(
                                 fontSize: 12,
                                 color: R.color.grey_2,
