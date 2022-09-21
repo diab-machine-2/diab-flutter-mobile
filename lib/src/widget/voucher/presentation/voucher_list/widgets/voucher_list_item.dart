@@ -21,7 +21,7 @@ class VoucherListItem extends StatelessWidget {
       child: Opacity(
         opacity: isUsed ? 0.5 : 1,
         child: Container(
-          margin: EdgeInsets.only(bottom: 15),
+          margin: EdgeInsets.only(bottom: 15, right: 1, left: 1),
           constraints: BoxConstraints(
             maxHeight: isUsed ? 120 : 95,
           ),
@@ -31,8 +31,8 @@ class VoucherListItem extends StatelessWidget {
             boxShadow: [
               BoxShadow(
                 color: R.color.accentColor.withOpacity(0.1),
-                offset: Offset(4, 2),
-                blurRadius: 5,
+                offset: Offset(0, 1),
+                blurRadius: 3,
               ),
             ],
           ),

@@ -570,6 +570,17 @@ class _AppState extends State<App> {
                         settings,
                         NewsDetailView(id: data?['id']),
                       );
+                    case NavigatorName.voucher_list:
+                      final data = settings.arguments as Map<String, dynamic>?;
+                      return _buildRoute(
+                          settings,
+                          VoucherListView(
+                            voucherId: data?['voucherId'],
+                          ));
+                    case NavigatorName.voucher_detail:
+                      return _buildRoute(settings, VoucherDetailView());
+                    case NavigatorName.share_app_detail:
+                      return _buildRoute(settings, ShareAppDetail());
                     default:
                       return null;
                   }

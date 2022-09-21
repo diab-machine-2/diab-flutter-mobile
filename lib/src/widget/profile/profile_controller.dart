@@ -25,6 +25,7 @@ import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/my_package/my_package_page.dart';
+import 'package:medical/src/widget/shared_profile/pages/share_app_detail.dart';
 import 'package:medical/src/widget/shared_profile/shared_profile.dart';
 import 'package:share_plus/share_plus.dart';
 import '../food_menu_screens/food_menu/food_menu_page.dart';
@@ -286,6 +287,7 @@ class _ProfileControllerState extends State<ProfileController> with Observer {
               // buildAction(R.string.contact_diab.tr(), R.drawable.ic_contact, 4),
               buildAction(R.string.password.tr(), R.drawable.ic_password, 5),
               buildAction("Ưu đãi của bạn", R.icons.ic_gift, 7),
+              SizedBox(height: 15),
             ],
           ),
         ),

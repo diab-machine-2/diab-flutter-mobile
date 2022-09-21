@@ -1,9 +1,13 @@
+import 'package:dotted_border/dotted_border.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
+import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widgets/button_widget.dart';
+import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
 import '../blocs/voucherDetail_bloc.dart';
 
@@ -40,13 +44,12 @@ class VoucherDetailView extends StatelessWidget {
                 },
               ),
             ),
-            body: Container(
-              padding: EdgeInsets.symmetric(
-                vertical: 15,
-                horizontal: 55 + paddingBottom,
+            body: SingleChildScrollView(
+              child: Container(
+                padding: EdgeInsets.symmetric(vertical: 25, horizontal: 15),
+                color: R.color.color0xfff5f5f5,
+                child: _sectionContent(context),
               ),
-              color: R.color.color0xfff5f5f5,
-              child: _sectionContent(context),
             ),
           ),
         ),
@@ -56,21 +59,74 @@ class VoucherDetailView extends StatelessWidget {
 
   Widget _sectionContent(BuildContext context) {
     double paddingBottom = MediaQuery.of(context).padding.bottom + 10;
-    return ListView(
-      shrinkWrap: true,
-      physics: NeverScrollableScrollPhysics(),
-      padding: EdgeInsets.all(0),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          "Mời bạn và nhận thưởng",
+          "Chúc mừng bạn đã nhận được voucher khuyến mãi.",
           style: TextStyle(
-            fontSize: 20,
+            fontSize: 16,
             fontWeight: FontWeight.w700,
           ),
         ),
         SizedBox(height: 20),
+        Image.asset(R.drawable.voucher_reward),
+        SizedBox(height: 20),
         Text(
-          "Khi chia sẻ app Diab thành công bạn sẽ nhận được Voucher khuyến mãi được áp dụng cho tất cả cửa hàng của Long Châu. Chia sẻ app DiaB giúp bạn bè cải thiện sức khoẻ tốt hơn.",
+          "DiaB tặng bạn mã giảm giá 50k cho tất cả hoá đơn khi mua sắm tại nhà thuốc Long Châu. Xem cách sử dụng dưới đây nhé!",
+          style: TextStyle(
+            height: 1.4,
+            fontSize: 16,
+          ),
+        ),
+        SizedBox(height: 15),
+        Text(
+          "Hướng dẫn sử dụng:",
+          style: TextStyle(
+            height: 1.4,
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        SizedBox(height: 10),
+        Text(
+          "Trên màn hình có “Mã Voucher” cung cấp mã Voucher cho nhân viên tại quầy thu ngân để được giảm giá cho tất cả đơn hàng.",
+          style: TextStyle(
+            height: 1.4,
+            fontSize: 16,
+            color: R.color.color0xff666666,
+          ),
+        ),
+        SizedBox(height: 15),
+        Text(
+          "Hệ thống áp dụng:",
+          style: TextStyle(
+            height: 1.4,
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        SizedBox(height: 10),
+        Text(
+          "Mã khuyến mãi được áp dụng cho tất cả các cửa hàng nhà thuốc Long Châu.",
+          style: TextStyle(
+            height: 1.4,
+            fontSize: 16,
+            color: R.color.color0xff666666,
+          ),
+        ),
+        SizedBox(height: 15),
+        Text(
+          "Quy định về thẻ voucher:",
+          style: TextStyle(
+            height: 1.4,
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        SizedBox(height: 10),
+        Text(
+          " - Được cộng Gộp nhiều thẻ Voucher cho 1  đơn hàng.",
           style: TextStyle(
             height: 1.4,
             fontSize: 16,
@@ -79,7 +135,7 @@ class VoucherDetailView extends StatelessWidget {
         ),
         SizedBox(height: 10),
         Text(
-          "Phần này anh Việt nhờ team MKT update thêm content giúp em với .... Diab thành công bạn sẽ nhận được Voucher khuyến mãi được áp dụng cho tất cả cửa hàng của Long Châu.",
+          " - Thẻ quà tặng không có giá trị quy đổi thành tiền.",
           style: TextStyle(
             height: 1.4,
             fontSize: 16,
@@ -87,9 +143,73 @@ class VoucherDetailView extends StatelessWidget {
           ),
         ),
         SizedBox(
-          height: 55 + paddingBottom,
+          height: 65 + paddingBottom,
         )
       ],
+    );
+  }
+
+  _useVoucher(BuildContext context) {
+    showBarModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (context) => Container(
+        color: R.color.white,
+        child: Padding(
+          padding: const EdgeInsets.all(15),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              InkWell(
+                onTap: () {
+                  Clipboard.setData(ClipboardData(text: "DIABKMO1")).then((_) {
+                    Message.showToastMessage(context, "Đã copy mã Voucher");
+                    Navigator.pop(context);
+                  });
+                },
+                child: DottedBorder(
+                  dashPattern: [3, 3],
+                  strokeWidth: 1,
+                  radius: Radius.circular(18),
+                  color: R.color.greenGradientBottom,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 15, vertical: 15),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          "Mã Voucher: ",
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: R.color.greenGradientBottom,
+                          ),
+                        ),
+                        Text(
+                          "DIABKMO1",
+                          style: TextStyle(
+                            fontSize: 17,
+                            color: R.color.greenGradientBottom,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                        SizedBox(width: 5),
+                        Icon(
+                          Icons.copy,
+                          size: 14,
+                          color: R.color.captionColorGray,
+                        )
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              SizedBox(height: 40),
+            ],
+          ),
+        ),
+      ),
     );
   }
 
@@ -109,8 +229,11 @@ class VoucherDetailView extends StatelessWidget {
         ],
       ),
       child: ButtonWidget(
-        title: R.string.share_now.tr(),
-        onPressed: () {},
+        radius: 8,
+        title: R.string.use_voucher.tr(),
+        onPressed: () {
+          _useVoucher(context);
+        },
       ),
     );
   }
