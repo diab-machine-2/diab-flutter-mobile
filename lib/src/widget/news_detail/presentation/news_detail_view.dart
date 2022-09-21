@@ -176,6 +176,24 @@ class _NewsDetailViewState extends State<NewsDetailView> {
                                 ),
                               ),
                             Positioned(
+                              top: 0,
+                              right: 0,
+                              left: 0,
+                              child: Container(
+                                height: 120,
+                                decoration: BoxDecoration(
+                                  gradient: LinearGradient(
+                                    begin: Alignment.topCenter,
+                                    end: Alignment.bottomCenter,
+                                    colors: [
+                                      R.color.black.withOpacity(0.5),
+                                      R.color.black.withOpacity(0),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Positioned(
                               right: 0,
                               bottom: 0,
                               left: 0,
