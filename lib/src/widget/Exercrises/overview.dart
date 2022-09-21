@@ -4,7 +4,7 @@ import 'package:medical/src/widget/Exercrises/widget/exercrises_contain_detail.d
 import 'package:medical/src/widget/Exercrises/widget/exercrises_ranking_chart.dart';
 import 'package:medical/src/widget/Exercrises/widget/exercrises_trend_calo_chart.dart';
 import 'package:medical/src/widget/Exercrises/widget/exercrises_trend_chart.dart';
-import 'package:medical/src/widget/HbA1C/widget/course_%20suggest.dart';
+import 'package:medical/src/widget/HbA1C/widget/course_suggest.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 
 class ExercrisesOverviewController extends StatefulWidget {
