@@ -13,24 +13,7 @@ class VoucherDetailView extends StatelessWidget {
     return Container(
       color: R.color.color0xffB1DDDB,
       child: Scaffold(
-        bottomSheet: Container(
-          padding: EdgeInsets.fromLTRB(15, 15, 15, paddingBottom),
-          decoration: BoxDecoration(
-            color: R.color.white,
-            boxShadow: [
-              BoxShadow(
-                color: R.color.grey.withOpacity(0.5),
-                spreadRadius: 1,
-                blurRadius: 7,
-                offset: Offset(0, 2),
-              ),
-            ],
-          ),
-          child: ButtonWidget(
-            title: R.string.use_voucher.tr(),
-            onPressed: () {},
-          ),
-        ),
+        bottomSheet: _btnShare(context),
         appBar: CustomAppBar(
           backgroundColor: R.color.transparent,
           title: Text(
@@ -56,13 +39,69 @@ class VoucherDetailView extends StatelessWidget {
             horizontal: 55 + paddingBottom,
           ),
           color: R.color.color0xfff5f5f5,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              
-            ],
+          child: _sectionContent(context),
+        ),
+      ),
+    );
+  }
+
+  Widget _sectionContent(BuildContext context) {
+    double paddingBottom = MediaQuery.of(context).padding.bottom + 10;
+    return ListView(
+      shrinkWrap: true,
+      physics: NeverScrollableScrollPhysics(),
+      padding: EdgeInsets.all(0),
+      children: [
+        Text(
+          "Mời bạn và nhận thưởng",
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.w700,
           ),
         ),
+        SizedBox(height: 20),
+        Text(
+          "Khi chia sẻ app Diab thành công bạn sẽ nhận được Voucher khuyến mãi được áp dụng cho tất cả cửa hàng của Long Châu. Chia sẻ app DiaB giúp bạn bè cải thiện sức khoẻ tốt hơn.",
+          style: TextStyle(
+            height: 1.4,
+            fontSize: 16,
+            color: R.color.color0xff666666,
+          ),
+        ),
+        SizedBox(height: 10),
+        Text(
+          "Phần này anh Việt nhờ team MKT update thêm content giúp em với .... Diab thành công bạn sẽ nhận được Voucher khuyến mãi được áp dụng cho tất cả cửa hàng của Long Châu.",
+          style: TextStyle(
+            height: 1.4,
+            fontSize: 16,
+            color: R.color.color0xff666666,
+          ),
+        ),
+        SizedBox(
+          height: 55 + paddingBottom,
+        )
+      ],
+    );
+  }
+
+  Widget _btnShare(BuildContext context) {
+    double paddingBottom = MediaQuery.of(context).padding.bottom + 10;
+    return Container(
+      padding: EdgeInsets.fromLTRB(15, 15, 15, paddingBottom),
+      decoration: BoxDecoration(
+        color: R.color.white,
+        boxShadow: [
+          BoxShadow(
+            color: R.color.grey.withOpacity(0.5),
+            spreadRadius: 1,
+            blurRadius: 7,
+            offset: Offset(0, 2),
+          ),
+        ],
+      ),
+      child: ButtonWidget(
+        title: R.string.share_now.tr(),
+        onPressed: () {},
       ),
     );
   }

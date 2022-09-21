@@ -167,14 +167,18 @@ class _ShareAppDetailState extends State<ShareAppDetail> {
         Text(
           "Khi chia sẻ app Diab thành công bạn sẽ nhận được Voucher khuyến mãi được áp dụng cho tất cả cửa hàng của Long Châu. Chia sẻ app DiaB giúp bạn bè cải thiện sức khoẻ tốt hơn.",
           style: TextStyle(
+            height: 1.4,
             fontSize: 16,
+            color: R.color.color0xff666666,
           ),
         ),
-        SizedBox(height: 15),
+        SizedBox(height: 10),
         Text(
           "Phần này anh Việt nhờ team MKT update thêm content giúp em với .... Diab thành công bạn sẽ nhận được Voucher khuyến mãi được áp dụng cho tất cả cửa hàng của Long Châu.",
           style: TextStyle(
+            height: 1.4,
             fontSize: 16,
+            color: R.color.color0xff666666,
           ),
         ),
         SizedBox(
@@ -201,12 +205,14 @@ class _ShareAppDetailState extends State<ShareAppDetail> {
       ),
       child: ButtonWidget(
         title: R.string.share_now.tr(),
-        onPressed: () {},
+        onPressed: () {
+          _onShareApp(context);
+        },
       ),
     );
   }
 
-  _onShareApp() {
+  _onShareApp(BuildContext context) {
     String? shareLink = DynamicLinkConfig.instance.shareLink;
     if (shareLink != null) {
       AppShare.instance.userReferralCode(context, shareLink);
