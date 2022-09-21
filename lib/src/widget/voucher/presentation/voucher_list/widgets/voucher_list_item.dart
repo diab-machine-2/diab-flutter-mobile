@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 
+import '../../voucher_modals/voucher_reward_modal.dart';
+
 class VoucherListItem extends StatelessWidget {
   final bool isUsed;
   const VoucherListItem({Key? key, this.isUsed = false}) : super(key: key);
@@ -9,7 +11,13 @@ class VoucherListItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: () => Navigator.pushNamed(context, NavigatorName.voucher_detail),
+      onTap: () {
+        if (isUsed) {
+          VoucherModalReward().showModal(context);
+        } else {
+          Navigator.pushNamed(context, NavigatorName.voucher_detail);
+        }
+      },
       child: Opacity(
         opacity: isUsed ? 0.5 : 1,
         child: Container(

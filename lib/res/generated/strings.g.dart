@@ -1087,4 +1087,6 @@ class Strings {
   String get voucher_have => 'voucher_have';
   String get voucher_detail => 'voucher_detail';
   String get use_voucher => 'use_voucher';
+  String get view_voucher => 'view_voucher';
+  String get share_now => 'share_now';
 }

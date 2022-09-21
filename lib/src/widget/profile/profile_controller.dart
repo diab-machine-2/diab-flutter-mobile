@@ -369,10 +369,11 @@ class _ProfileControllerState extends State<ProfileController> with Observer {
         } else if (index == 5) {
           Navigator.pushNamed(context, NavigatorName.change_password);
         } else if (index == 6) {
-          String? shareLink = DynamicLinkConfig.instance.shareLink;
-          if (shareLink != null) {
-            AppShare.instance.userReferralCode(context, shareLink);
-          }
+          Navigator.pushNamed(context, NavigatorName.share_app_detail);
+          // String? shareLink = DynamicLinkConfig.instance.shareLink;
+          // if (shareLink != null) {
+          //   AppShare.instance.userReferralCode(context, shareLink);
+          // }
         } else if (index == 7) {
           Navigator.pushNamed(context, NavigatorName.voucher_list);
         }

@@ -71,6 +71,7 @@ import 'utils/navigator_name.dart';
 import 'widget/Food/add_food.dart';
 import 'widget/helper/photo_view.dart';
 import 'widget/profile/profile_controller.dart';
+import 'widget/shared_profile/pages/share_app_detail.dart';
 
 class App extends StatefulWidget {
   @override
@@ -503,6 +504,8 @@ class _AppState extends State<App> {
                     return _buildRoute(settings, VoucherListView());
                   case NavigatorName.voucher_detail:
                     return _buildRoute(settings, VoucherDetailView());
+                  case NavigatorName.share_app_detail:
+                    return _buildRoute(settings, ShareAppDetail());
                   default:
                     return null;
                 }
