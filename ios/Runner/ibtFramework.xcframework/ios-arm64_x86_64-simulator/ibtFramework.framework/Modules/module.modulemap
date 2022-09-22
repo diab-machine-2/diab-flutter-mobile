@@ -1,0 +1,11 @@
+framework module ibtFramework {
+  umbrella header "ibtFramework.h"
+
+  export *
+  module * { export * }
+}
+
+module ibtFramework.Swift {
+    header "ibtFramework-Swift.h"
+    requires objc
+}

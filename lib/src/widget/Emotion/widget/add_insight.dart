@@ -46,16 +46,16 @@ class AddInsightController extends StatefulWidget {
   final String? otherActivity;
   final String? goalId;
 
-  AddInsightController(
-      {this.type,
-      this.id,
-      this.emotion,
-      this.symptoms,
-      this.activities,
-      this.otherSymptom,
-      this.otherActivity,
-      this.goalId,
-      });
+  AddInsightController({
+    this.type,
+    this.id,
+    this.emotion,
+    this.symptoms,
+    this.activities,
+    this.otherSymptom,
+    this.otherActivity,
+    this.goalId,
+  });
 
   @override
   _AddInsightControllerState createState() => _AddInsightControllerState();
@@ -235,8 +235,8 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
                             color: R.color.transparent,
                             child: Column(
                               children: [
-                                NetWorkImageWidget(imageUrl: 
-                                    emotion == null
+                                NetWorkImageWidget(
+                                    imageUrl: emotion == null
                                         ? ''
                                         : emotion!.imageUrl ?? '',
                                     width: 60,
@@ -265,8 +265,7 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
                             // color: R.color.white,
                             padding: EdgeInsets.all(16),
                             child: Column(
-                                crossAxisAlignment:
-                                    CrossAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Row(
                                     mainAxisAlignment:
@@ -276,13 +275,10 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
                                         Image.asset(R.drawable.ic_chatting,
                                             width: 24, height: 24),
                                         SizedBox(width: 8),
-                                        Text(
-                                            R.string.trieu_chung_cua_ban
-                                                .tr(),
+                                        Text(R.string.trieu_chung_cua_ban.tr(),
                                             style: TextStyle(
                                                 fontSize: 16,
-                                                fontWeight:
-                                                    FontWeight.w700)),
+                                                fontWeight: FontWeight.w700)),
                                       ]),
                                       GestureDetector(
                                         onTap: () {
@@ -331,27 +327,24 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
                                           key: Key(index.toString()),
                                           index: index,
                                           image: ItemTagsImage(
-                                            child: NetWorkImageWidget(imageUrl: 
-                                                item.icon.url ?? '',
+                                            child: NetWorkImageWidget(
+                                                imageUrl: item.icon.url ?? '',
                                                 width: 24,
                                                 height: 24),
                                           ),
                                           title: item.name!,
                                           activeColor: R.color.white,
-                                          textOverflow:
-                                              TextOverflow.visible,
+                                          textOverflow: TextOverflow.visible,
                                           splashColor: R.color.green,
                                           combine:
                                               ItemTagsCombine.withTextAfter,
                                           textActiveColor: R.color.textDark,
-                                          textStyle:
-                                              TextStyle(fontSize: 14),
+                                          textStyle: TextStyle(fontSize: 14),
                                           elevation: 0,
                                           onPressed: (item) => null);
                                     },
                                   ),
-                                  otherSymptom == null ||
-                                          otherSymptom!.isEmpty
+                                  otherSymptom == null || otherSymptom!.isEmpty
                                       ? SizedBox()
                                       : Column(children: [
                                           SizedBox(
@@ -359,8 +352,7 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
                                           ),
                                           Container(
                                               height: 1,
-                                              color:
-                                                  R.color.color0xffE5E5E5),
+                                              color: R.color.color0xffE5E5E5),
                                           Column(
                                             children: [
                                               SizedBox(
@@ -371,22 +363,20 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
                                                     MainAxisAlignment
                                                         .spaceBetween,
                                                 crossAxisAlignment:
-                                                    CrossAxisAlignment
-                                                        .start,
+                                                    CrossAxisAlignment.start,
                                                 children: [
                                                   Text(R.string.khac.tr(),
                                                       style: TextStyle(
                                                           fontSize: 14,
-                                                          color: R.color
-                                                              .textDark,
+                                                          color:
+                                                              R.color.textDark,
                                                           fontWeight:
-                                                              FontWeight
-                                                                  .w700)),
+                                                              FontWeight.w700)),
                                                   SizedBox(width: 8),
                                                   Expanded(
-                                                    child: Text(
-                                                        otherSymptom!,
-                                                        style: R.style.normalTextStyle),
+                                                    child: Text(otherSymptom!,
+                                                        style: R.style
+                                                            .normalTextStyle),
                                                   ),
                                                 ],
                                               ),
@@ -475,8 +465,9 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
                                                   right: 8),
                                               index: index,
                                               image: ItemTagsImage(
-                                                child: NetWorkImageWidget(imageUrl: 
-                                                    item.icon.url ?? '',
+                                                child: NetWorkImageWidget(
+                                                    imageUrl:
+                                                        item.icon.url ?? '',
                                                     width: 24,
                                                     height: 24),
                                               ),
@@ -530,7 +521,8 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
                                                       Expanded(
                                                         child: Text(
                                                             otherActivity!,
-                                                            style: R.style.normalTextStyle),
+                                                            style: R.style
+                                                                .normalTextStyle),
                                                       ),
                                                     ],
                                                   ),
@@ -754,9 +746,10 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
                                                                     fit: BoxFit
                                                                         .cover,
                                                                   )
-                                                                : NetWorkImageWidget(imageUrl: 
-                                                                    files[index]
-                                                                        .url,
+                                                                : NetWorkImageWidget(
+                                                                    imageUrl:
+                                                                        files[index]
+                                                                            .url,
                                                                     fit: BoxFit
                                                                         .cover),
                                                           ),
@@ -1020,9 +1013,10 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
           note,
           paths);
       if (result == true) {
-      //  if(widget.goalId != null && widget.goalId?.isNotEmpty == true){
-          await HomeClient().completeSmartGoal(selectedDate, widget.goalId ?? '', 1, ScheduleType.emotion.typeIndex);
-      //  }
+        //  if(widget.goalId != null && widget.goalId?.isNotEmpty == true){
+        await HomeClient().completeSmartGoal(selectedDate, widget.goalId ?? '',
+            1, ScheduleType.emotion.typeIndex);
+        //  }
         Observable.instance
             .notifyObservers([], notifyName: "Emotion_change_data");
       }
@@ -1367,13 +1361,13 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
   }
 
   showAlertDialog(BuildContext context) {
-    Widget cancelButton = FlatButton(
+    Widget cancelButton = TextButton(
       child: Text(R.string.cancel.tr()),
       onPressed: () {
         Navigator.pop(context);
       },
     );
-    Widget continueButton = FlatButton(
+    Widget continueButton = TextButton(
       child: Text(R.string.allowed.tr()),
       onPressed: () {
         Navigator.pop(context);

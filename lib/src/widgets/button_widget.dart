@@ -10,7 +10,7 @@ class ButtonWidget extends StatelessWidget {
   final String title;
   final VoidCallback? onPressed;
   final double? radius;
-  final bool modeFlatButton;
+  final bool modeTextButton;
 
   const ButtonWidget({
     this.backgroundColor,
@@ -21,7 +21,7 @@ class ButtonWidget extends StatelessWidget {
     required this.title,
     required this.onPressed,
     this.radius,
-    this.modeFlatButton = false,
+    this.modeTextButton = false,
   });
 
   @override

@@ -159,11 +159,11 @@ class NewVersion {
                 title: title,
                 content: content,
                 actions: <Widget>[
-                  FlatButton(
+                  TextButton(
                     child: dismissText,
                     onPressed: dismissAction,
                   ),
-                  FlatButton(
+                  TextButton(
                     child: updateText,
                     onPressed: updateAction,
                   ),

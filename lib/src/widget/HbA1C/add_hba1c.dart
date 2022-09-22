@@ -130,10 +130,8 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
                       child: Padding(
                         padding: const EdgeInsets.only(left: 16, right: 16),
                         child: isClicked
-                            ? Image.asset(
-                                R.drawable.ic_help_circle_active,
-                                width: 24,
-                                height: 24)
+                            ? Image.asset(R.drawable.ic_help_circle_active,
+                                width: 24, height: 24)
                             : Image.asset(R.drawable.ic_help_circle,
                                 width: 24, height: 24),
                       ),
@@ -155,8 +153,9 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
                                 ? Description(
                                     input: true,
                                     data: des,
-                                    titleDetail:
-                                        R.string.chi_so_hba1c_doi_voi_benh_tieu_duong.tr())
+                                    titleDetail: R.string
+                                        .chi_so_hba1c_doi_voi_benh_tieu_duong
+                                        .tr())
                                 : SizedBox()),
                         Padding(
                           padding: const EdgeInsets.only(
@@ -198,8 +197,8 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
                                                             bottom: 8),
                                                     border: InputBorder.none,
                                                     hintStyle: TextStyle(
-                                                        color:
-                                                            R.color.captionColorGray,
+                                                        color: R.color
+                                                            .captionColorGray,
                                                         fontSize: 34,
                                                         fontWeight:
                                                             FontWeight.w500))),
@@ -229,16 +228,16 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
                               GestureDetector(
                                 onTap: () {
                                   showDialog(
-                                    barrierColor:
-                                        R.color.color0xff003F38.withOpacity(0.5),
+                                    barrierColor: R.color.color0xff003F38
+                                        .withOpacity(0.5),
                                     context: context,
                                     builder: (_) => DateMultiPicker(
                                         initDate: time,
                                         callback: (value) {
                                           if (value != null)
-                                          setState(() {
-                                            time = value;
-                                          });
+                                            setState(() {
+                                              time = value;
+                                            });
                                         }),
                                   );
                                 },
@@ -249,10 +248,8 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
                                         mainAxisAlignment:
                                             MainAxisAlignment.spaceBetween,
                                         children: [
-                                          Image.asset(
-                                              R.drawable.ic_calendar,
-                                              width: 24,
-                                              height: 24),
+                                          Image.asset(R.drawable.ic_calendar,
+                                              width: 24, height: 24),
                                           SizedBox(width: 8),
                                           Row(
                                             children: [
@@ -286,7 +283,8 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
                                         ]),
                                     SizedBox(height: 16),
                                     Container(
-                                        height: 1, color: R.color.color0xffE5E5E5),
+                                        height: 1,
+                                        color: R.color.color0xffE5E5E5),
                                     SizedBox(height: 8),
                                   ]),
                                 ),
@@ -325,16 +323,20 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
                                           fontSize: 16,
                                           fontWeight: FontWeight.w400),
                                       decoration: InputDecoration(
-                                          hintText: R.string.nhap_ghi_chu_cua_ban.tr(),
+                                          hintText: R
+                                              .string.nhap_ghi_chu_cua_ban
+                                              .tr(),
                                           contentPadding:
                                               EdgeInsets.only(bottom: 8),
                                           border: InputBorder.none,
                                           hintStyle: TextStyle(
                                               fontSize: 16,
                                               fontWeight: FontWeight.w400,
-                                              color: R.color.primaryGreyColor))),
+                                              color:
+                                                  R.color.primaryGreyColor))),
                                   Container(
-                                      height: 1, color: R.color.color0xffE5E5E5),
+                                      height: 1,
+                                      color: R.color.color0xffE5E5E5),
                                   SizedBox(height: 16),
                                   GridView.builder(
                                       physics: NeverScrollableScrollPhysics(),
@@ -356,23 +358,23 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
                                             },
                                             child: index == files.length
                                                 ? Container(
-                                                    child: Image.asset(
-                                                        R.drawable.ic_add_photo))
+                                                    child: Image.asset(R
+                                                        .drawable.ic_add_photo))
                                                 : GestureDetector(
-                                              onTap: () {
-                                                Navigator.pushNamed(
-                                                    context,
-                                                    '/photo_view',
-                                                    arguments: {
-                                                      'files': files,
-                                                      'index': index
-                                                    });
-                                              },
-                                                  child: Stack(
-                                                      alignment:
-                                                          AlignmentDirectional
-                                                              .topEnd,
-                                                      children: [
+                                                    onTap: () {
+                                                      Navigator.pushNamed(
+                                                          context,
+                                                          '/photo_view',
+                                                          arguments: {
+                                                            'files': files,
+                                                            'index': index
+                                                          });
+                                                    },
+                                                    child: Stack(
+                                                        alignment:
+                                                            AlignmentDirectional
+                                                                .topEnd,
+                                                        children: [
                                                           Positioned.fill(
                                                             child: files[index]
                                                                     is PickedFile
@@ -383,18 +385,21 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
                                                                     fit: BoxFit
                                                                         .cover,
                                                                   )
-                                                                : NetWorkImageWidget(imageUrl: 
-                                                                    files[index]
-                                                                        .url,
+                                                                : NetWorkImageWidget(
+                                                                    imageUrl:
+                                                                        files[index]
+                                                                            .url,
                                                                     fit: BoxFit
                                                                         .cover),
                                                           ),
                                                           IconButton(
-                                                              icon: Image.asset(
-                                                                  R.drawable.ic_trash),
+                                                              icon: Image.asset(R
+                                                                  .drawable
+                                                                  .ic_trash),
                                                               onPressed: () {
                                                                 setState(() {
-                                                                  if (files[index]
+                                                                  if (files[
+                                                                          index]
                                                                       is PickedFile) {
                                                                     files.removeAt(
                                                                         index);
@@ -408,7 +413,7 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
                                                                 });
                                                               })
                                                         ]),
-                                                ));
+                                                  ));
                                       })
                                 ]),
                           ),
@@ -525,8 +530,7 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Image.asset(R.drawable.ic_earse,
-                          width: 64, height: 64),
+                      Image.asset(R.drawable.ic_earse, width: 64, height: 64),
                       Padding(
                         padding: const EdgeInsets.only(top: 16.0),
                         child: Text(R.string.ban_muon_xoa_du_lieu.tr(),
@@ -538,8 +542,7 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
                       ),
                       Padding(
                         padding: const EdgeInsets.only(top: 16.0),
-                        child: Text(
-                            R.string.confirm_to_remove_data.tr(),
+                        child: Text(R.string.confirm_to_remove_data.tr(),
                             textAlign: TextAlign.center,
                             style: R.style.normalTextStyle),
                       ),
@@ -616,7 +619,8 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
     final numberInput = _controller.text;
     if (model != null) {
       final des = model!.description ?? '';
-      final parseTime = DateTime.fromMillisecondsSinceEpoch(model!.date! * 1000);
+      final parseTime =
+          DateTime.fromMillisecondsSinceEpoch(model!.date! * 1000);
       if (note == des &&
           double.parse(numberInput) == model!.hbA1C &&
           parseTime.millisecondsSinceEpoch == time.millisecondsSinceEpoch &&
@@ -655,8 +659,7 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
                       ),
                       Padding(
                         padding: const EdgeInsets.only(top: 16.0),
-                        child: Text(
-                            R.string.confirm_to_back.tr(),
+                        child: Text(R.string.confirm_to_back.tr(),
                             textAlign: TextAlign.center,
                             style: R.style.normalTextStyle),
                       ),
@@ -737,7 +740,8 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
       final result = await HbA1CClient().deleteIndexHbA1C(model!.id);
       if (result == true) {
         Message.showToastMessage(context, R.string.xoa_thanh_cong.tr());
-        Observable.instance.notifyObservers([], notifyName : "hba1c_change_data");
+        Observable.instance
+            .notifyObservers([], notifyName: "hba1c_change_data");
       }
       BotToast.closeAllLoading();
     } catch (e, _) {
@@ -757,12 +761,12 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
     numberInput = numberInput.split(',').join('.');
 
     if (numberInput == null) {
-      Message.showToastMessage(context, R.string.ban_chua_nhap_chi_so_hba1c.tr());
+      Message.showToastMessage(
+          context, R.string.ban_chua_nhap_chi_so_hba1c.tr());
       return;
     }
     if (double.parse(numberInput) > 30) {
-      Message.showToastMessage(context,
-          R.string.invalid_hba1c.tr());
+      Message.showToastMessage(context, R.string.invalid_hba1c.tr());
       return;
     }
     if (time == null) {
@@ -791,7 +795,8 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
           paths);
       if (result == true) {
         Message.showToastMessage(context, R.string.luu_thanh_cong.tr());
-        Observable.instance.notifyObservers([], notifyName : "hba1c_change_data");
+        Observable.instance
+            .notifyObservers([], notifyName: "hba1c_change_data");
       }
 
       BotToast.closeAllLoading();
@@ -812,12 +817,12 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
     numberInput = numberInput.split(',').join('.');
 
     if (numberInput.isEmpty) {
-      Message.showToastMessage(context, R.string.ban_chua_nhap_chi_so_hba1c.tr());
+      Message.showToastMessage(
+          context, R.string.ban_chua_nhap_chi_so_hba1c.tr());
       return;
     }
     if (double.parse(numberInput) > 30) {
-      Message.showToastMessage(context,
-          R.string.invalid_hba1c.tr());
+      Message.showToastMessage(context, R.string.invalid_hba1c.tr());
       return;
     }
     if (time == null) {
@@ -841,7 +846,8 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
           note,
           paths);
       if (result == true) {
-        Observable.instance.notifyObservers([], notifyName : "hba1c_change_data");
+        Observable.instance
+            .notifyObservers([], notifyName: "hba1c_change_data");
       }
 
       BotToast.closeAllLoading();
@@ -865,11 +871,11 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
               padding: EdgeInsets.only(left: 8, right: 8),
               child: Row(
                 children: [
-                  Image.asset(R.drawable.ic_photo,
-                      width: 24, height: 24),
+                  Image.asset(R.drawable.ic_photo, width: 24, height: 24),
                   SizedBox(width: 16),
                   Text(R.string.chon_trong_thu_vien.tr(),
-                      style: TextStyle(color: R.color.color0xff333333, fontSize: 14)),
+                      style: TextStyle(
+                          color: R.color.color0xff333333, fontSize: 14)),
                 ],
               ),
             ),
@@ -887,7 +893,8 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
                       width: 24, height: 24),
                   SizedBox(width: 16),
                   Text(R.string.chup_anh.tr(),
-                      style: TextStyle(color: R.color.color0xff333333, fontSize: 14)),
+                      style: TextStyle(
+                          color: R.color.color0xff333333, fontSize: 14)),
                 ],
               ),
             ),
@@ -945,13 +952,13 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
   }
 
   showAlertDialog(BuildContext context) {
-    Widget cancelButton = FlatButton(
+    Widget cancelButton = TextButton(
       child: Text(R.string.cancel.tr()),
       onPressed: () {
         Navigator.pop(context);
       },
     );
-    Widget continueButton = FlatButton(
+    Widget continueButton = TextButton(
       child: Text(R.string.allowed.tr()),
       onPressed: () {
         Navigator.pop(context);
@@ -1029,8 +1036,8 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
                                     fontSize: 16,
                                     fontWeight: FontWeight.w700)),
                             IconButton(
-                                icon:
-                                    Icon(Icons.close, color: R.color.color0xffBEC0C8),
+                                icon: Icon(Icons.close,
+                                    color: R.color.color0xffBEC0C8),
                                 onPressed: () {
                                   Navigator.pop(context);
                                 })

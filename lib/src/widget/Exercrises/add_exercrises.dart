@@ -89,7 +89,8 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
     BotToast.showLoading();
     model = await ExercrisesClient().fetchDetail(widget.id);
     selectedDate = DateTime.fromMillisecondsSinceEpoch(model!.date! * 1000);
-    sumCalories = model?.burnedCalorie != null ? model!.burnedCalorie!.toInt() : 0;
+    sumCalories =
+        model?.burnedCalorie != null ? model!.burnedCalorie!.toInt() : 0;
     selectedCategory = model?.exercise != null ? [...model!.exercise] : [];
     _controllerNote.text = model?.note != null ? model!.note! : '';
     selectedTimeFrame = TimeFrameModel(
@@ -475,12 +476,13 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
                                                                   .bg_activity_empty,
                                                               width: 50,
                                                               height: 50),
-                                                          NetWorkImageWidget(imageUrl: 
-                                                            selectedCategory[
-                                                                        index]
-                                                                    .cover!
-                                                                    .url ??
-                                                                '',
+                                                          NetWorkImageWidget(
+                                                            imageUrl:
+                                                                selectedCategory[
+                                                                            index]
+                                                                        .cover!
+                                                                        .url ??
+                                                                    '',
                                                             width: 30,
                                                             height: 30,
                                                           )
@@ -609,12 +611,13 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
                                                                   .bg_activity_empty,
                                                               width: 50,
                                                               height: 50),
-                                                          NetWorkImageWidget(imageUrl: 
-                                                            exercriseRegularly[
-                                                                        index]
-                                                                    .cover!
-                                                                    .url ??
-                                                                '',
+                                                          NetWorkImageWidget(
+                                                            imageUrl:
+                                                                exercriseRegularly[
+                                                                            index]
+                                                                        .cover!
+                                                                        .url ??
+                                                                    '',
                                                             width: 30,
                                                             height: 30,
                                                           )
@@ -846,9 +849,10 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
                                                                     fit: BoxFit
                                                                         .cover,
                                                                   )
-                                                                : NetWorkImageWidget(imageUrl: 
-                                                                    files[index]
-                                                                        .url,
+                                                                : NetWorkImageWidget(
+                                                                    imageUrl:
+                                                                        files[index]
+                                                                            .url,
                                                                     fit: BoxFit
                                                                         .cover),
                                                           ),
@@ -1181,13 +1185,14 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
           selectedCategory,
           paths);
       if (result == true) {
-      //  if(widget.goalId != null && widget.goalId?.isNotEmpty == true){
-          // var totalDuration = 0.0;
-          // for(var item in selectedCategory){
-          //   totalDuration += item.duration ?? 0;
-          // }
-          await HomeClient().completeSmartGoal(selectedDate, widget.goalId ?? '', 1, ScheduleType.exercise.typeIndex);
-      //  }
+        //  if(widget.goalId != null && widget.goalId?.isNotEmpty == true){
+        // var totalDuration = 0.0;
+        // for(var item in selectedCategory){
+        //   totalDuration += item.duration ?? 0;
+        // }
+        await HomeClient().completeSmartGoal(selectedDate, widget.goalId ?? '',
+            1, ScheduleType.exercise.typeIndex);
+        //  }
         Observable.instance
             .notifyObservers([], notifyName: "active_change_data");
       }
@@ -1527,13 +1532,13 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
   }
 
   showAlertDialog(BuildContext context) {
-    Widget cancelButton = FlatButton(
+    Widget cancelButton = TextButton(
       child: Text(R.string.cancel.tr()),
       onPressed: () {
         Navigator.pop(context);
       },
     );
-    Widget continueButton = FlatButton(
+    Widget continueButton = TextButton(
       child: Text(R.string.allowed.tr()),
       onPressed: () {
         Navigator.pop(context);

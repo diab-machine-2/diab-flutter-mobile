@@ -3,6 +3,7 @@ import 'dart:ui';
 
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_observer/Observable.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
@@ -21,6 +22,7 @@ import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
+import 'package:medical/src/widget/nipro/list_devices.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:image_picker/image_picker.dart';
@@ -166,10 +168,8 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
                       child: Padding(
                         padding: const EdgeInsets.only(left: 16, right: 16),
                         child: isClicked
-                            ? Image.asset(
-                                R.drawable.ic_help_circle_active,
-                                width: 24,
-                                height: 24)
+                            ? Image.asset(R.drawable.ic_help_circle_active,
+                                width: 24, height: 24)
                             : Image.asset(R.drawable.ic_help_circle,
                                 width: 24, height: 24),
                       ),
@@ -226,7 +226,8 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
                                                     EdgeInsets.only(bottom: 8),
                                                 border: InputBorder.none,
                                                 hintStyle: TextStyle(
-                                                    color: R.color.captionColorGray,
+                                                    color: R
+                                                        .color.captionColorGray,
                                                     fontSize: 34,
                                                     fontWeight:
                                                         FontWeight.w500)),
@@ -275,12 +276,12 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
                                               MainAxisAlignment.spaceBetween,
                                           children: [
                                             Row(children: [
-                                              Image.asset(
-                                                  R.drawable.ic_repeat,
-                                                  width: 22,
-                                                  height: 22),
+                                              Image.asset(R.drawable.ic_repeat,
+                                                  width: 22, height: 22),
                                               SizedBox(width: 8),
-                                              Text(R.string.corresponding_to.tr(),
+                                              Text(
+                                                  R.string.corresponding_to
+                                                      .tr(),
                                                   style:
                                                       TextStyle(fontSize: 16))
                                             ]),
@@ -305,12 +306,42 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
                               SizedBox(height: 8),
                               !showReason
                                   ? SizedBox()
-                                  : Text(
-                                      R.string.mes_unsafe_blood_sugar.tr(),
+                                  : Text(R.string.mes_unsafe_blood_sugar.tr(),
                                       style: TextStyle(color: R.color.red),
                                       textAlign: TextAlign.center)
                             ]),
                           ),
+                        ),
+                        GestureDetector(
+                          onTap: () {
+                            showModalBottomSheet(
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.vertical(
+                                        top: Radius.circular(15))),
+                                backgroundColor: R.color.white,
+                                context: context,
+                                isScrollControlled: true,
+                                builder: (context) => ListDevices());
+                          },
+                          child: Container(
+                              margin: EdgeInsets.only(
+                                  bottom: 16, left: 16, right: 16),
+                              padding: EdgeInsets.all(16),
+                              decoration: BoxDecoration(
+                                color: R.color.white,
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                              child: Row(
+                                children: [
+                                  Image.asset(R.drawable.ic_device,
+                                      width: 24, height: 24),
+                                  SizedBox(width: 8),
+                                  Text('Kết nối thiết bị và app',
+                                      style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w700)),
+                                ],
+                              )),
                         ),
                         !showReason
                             ? SizedBox()
@@ -328,10 +359,8 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
                                           CrossAxisAlignment.start,
                                       children: [
                                         Row(children: [
-                                          Image.asset(
-                                              R.drawable.ic_note_text,
-                                              width: 24,
-                                              height: 24),
+                                          Image.asset(R.drawable.ic_note_text,
+                                              width: 24, height: 24),
                                           SizedBox(width: 8),
                                           Text(R.string.ly_do.tr(),
                                               style: TextStyle(
@@ -346,14 +375,16 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
                                                 fontSize: 16,
                                                 fontWeight: FontWeight.w400),
                                             decoration: InputDecoration(
-                                                hintText: R.string.nhap_ly_do.tr(),
+                                                hintText:
+                                                    R.string.nhap_ly_do.tr(),
                                                 contentPadding:
                                                     EdgeInsets.only(bottom: 8),
                                                 border: InputBorder.none,
                                                 hintStyle: TextStyle(
                                                     fontSize: 16,
                                                     fontWeight: FontWeight.w400,
-                                                    color: R.color.primaryGreyColor))),
+                                                    color: R.color
+                                                        .primaryGreyColor))),
                                         Container(
                                             height: 1,
                                             color: R.color.color0xffE5E5E5),
@@ -374,8 +405,8 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
                               GestureDetector(
                                 onTap: () {
                                   showDialog(
-                                    barrierColor:
-                                        R.color.color0xff003F38.withOpacity(0.5),
+                                    barrierColor: R.color.color0xff003F38
+                                        .withOpacity(0.5),
                                     context: context,
                                     builder: (_) => DateMultiPicker(
                                       initDate: selectedDate,
@@ -405,10 +436,8 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
                                         mainAxisAlignment:
                                             MainAxisAlignment.spaceBetween,
                                         children: [
-                                          Image.asset(
-                                              R.drawable.ic_calendar,
-                                              width: 24,
-                                              height: 24),
+                                          Image.asset(R.drawable.ic_calendar,
+                                              width: 24, height: 24),
                                           SizedBox(width: 8),
                                           Text(
                                               convertToUTC(
@@ -422,7 +451,8 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
                                         ]),
                                     SizedBox(height: 16),
                                     Container(
-                                        height: 1, color: R.color.color0xffE5E5E5),
+                                        height: 1,
+                                        color: R.color.color0xffE5E5E5),
                                     SizedBox(height: 8),
                                   ]),
                                 ),
@@ -451,10 +481,8 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
                                         mainAxisAlignment:
                                             MainAxisAlignment.spaceBetween,
                                         children: [
-                                          Image.asset(
-                                              R.drawable.ic_clock,
-                                              width: 24,
-                                              height: 24),
+                                          Image.asset(R.drawable.ic_clock,
+                                              width: 24, height: 24),
                                           SizedBox(width: 8),
                                           Text(
                                               selectedTimeFrame == null
@@ -466,7 +494,8 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
                                         ]),
                                     SizedBox(height: 16),
                                     Container(
-                                        height: 1, color: R.color.color0xffE5E5E5),
+                                        height: 1,
+                                        color: R.color.color0xffE5E5E5),
                                     SizedBox(height: 8),
                                   ]),
                                 ),
@@ -503,16 +532,20 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
                                           fontSize: 16,
                                           fontWeight: FontWeight.w400),
                                       decoration: InputDecoration(
-                                          hintText: R.string.nhap_ghi_chu_cua_ban.tr(),
+                                          hintText: R
+                                              .string.nhap_ghi_chu_cua_ban
+                                              .tr(),
                                           contentPadding:
                                               EdgeInsets.only(bottom: 8),
                                           border: InputBorder.none,
                                           hintStyle: TextStyle(
                                               fontSize: 16,
                                               fontWeight: FontWeight.w400,
-                                              color: R.color.primaryGreyColor))),
+                                              color:
+                                                  R.color.primaryGreyColor))),
                                   Container(
-                                      height: 1, color: R.color.color0xffE5E5E5),
+                                      height: 1,
+                                      color: R.color.color0xffE5E5E5),
                                   SizedBox(height: 8),
                                   GridView.builder(
                                       physics: NeverScrollableScrollPhysics(),
@@ -534,23 +567,23 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
                                             },
                                             child: index == files.length
                                                 ? Container(
-                                                    child: Image.asset(
-                                                        R.drawable.ic_add_photo))
-                                                :GestureDetector(
-                                              onTap: () {
-                                                Navigator.pushNamed(
-                                                    context,
-                                                    '/photo_view',
-                                                    arguments: {
-                                                      'files': files,
-                                                      'index': index
-                                                    });
-                                              },
-                                                  child: Stack(
-                                                      alignment:
-                                                          AlignmentDirectional
-                                                              .topEnd,
-                                                      children: [
+                                                    child: Image.asset(R
+                                                        .drawable.ic_add_photo))
+                                                : GestureDetector(
+                                                    onTap: () {
+                                                      Navigator.pushNamed(
+                                                          context,
+                                                          '/photo_view',
+                                                          arguments: {
+                                                            'files': files,
+                                                            'index': index
+                                                          });
+                                                    },
+                                                    child: Stack(
+                                                        alignment:
+                                                            AlignmentDirectional
+                                                                .topEnd,
+                                                        children: [
                                                           Positioned.fill(
                                                             child: files[index]
                                                                     is PickedFile
@@ -561,18 +594,21 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
                                                                     fit: BoxFit
                                                                         .cover,
                                                                   )
-                                                                : NetWorkImageWidget(imageUrl:
-                                                                    files[index]
-                                                                        .url,
+                                                                : NetWorkImageWidget(
+                                                                    imageUrl:
+                                                                        files[index]
+                                                                            .url,
                                                                     fit: BoxFit
                                                                         .cover),
                                                           ),
                                                           IconButton(
-                                                              icon: Image.asset(
-                                                                  R.drawable.ic_trash),
+                                                              icon: Image.asset(R
+                                                                  .drawable
+                                                                  .ic_trash),
                                                               onPressed: () {
                                                                 setState(() {
-                                                                  if (files[index]
+                                                                  if (files[
+                                                                          index]
                                                                       is PickedFile) {
                                                                     files.removeAt(
                                                                         index);
@@ -586,7 +622,7 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
                                                                 });
                                                               })
                                                         ]),
-                                                ));
+                                                  ));
                                       })
                                 ]),
                           ),
@@ -642,7 +678,7 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
                                             borderRadius:
                                                 BorderRadius.circular(200),
                                             border: Border.all(
-                                                color:R.color.red, width: 2)),
+                                                color: R.color.red, width: 2)),
                                         child: Center(
                                           child: Text(R.string.xoa_du_lieu.tr(),
                                               style: TextStyle(
@@ -694,7 +730,8 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
       final result = await GlucoseClient().deleteIndexGlucose(widget.id);
       if (result == true) {
         Message.showToastMessage(context, R.string.xoa_thanh_cong.tr());
-        Observable.instance.notifyObservers([], notifyName : "glucose_change_data");
+        Observable.instance
+            .notifyObservers([], notifyName: "glucose_change_data");
       }
 
       BotToast.closeAllLoading();
@@ -754,7 +791,8 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
           removeIDs,
           paths);
       if (result == true) {
-        Observable.instance.notifyObservers([], notifyName : "glucose_change_data");
+        Observable.instance
+            .notifyObservers([], notifyName: "glucose_change_data");
       }
 
       BotToast.closeAllLoading();
@@ -804,10 +842,12 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
           note,
           paths);
       if (result == true) {
-       // if(widget.goalId != null && widget.goalId?.isNotEmpty == true){
-          await HomeClient().completeSmartGoal(selectedDate, widget.goalId ?? '', 1, ScheduleType.blood_sugar.typeIndex);
-       // }
-        Observable.instance.notifyObservers([], notifyName : "glucose_change_data");
+        // if(widget.goalId != null && widget.goalId?.isNotEmpty == true){
+        await HomeClient().completeSmartGoal(selectedDate, widget.goalId ?? '',
+            1, ScheduleType.blood_sugar.typeIndex);
+        // }
+        Observable.instance
+            .notifyObservers([], notifyName: "glucose_change_data");
       }
 
       BotToast.closeAllLoading();
@@ -834,8 +874,7 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Image.asset(R.drawable.ic_earse,
-                          width: 64, height: 64),
+                      Image.asset(R.drawable.ic_earse, width: 64, height: 64),
                       Padding(
                         padding: const EdgeInsets.only(top: 16.0),
                         child: Text(R.string.ban_muon_xoa_du_lieu.tr(),
@@ -847,8 +886,7 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
                       ),
                       Padding(
                         padding: const EdgeInsets.only(top: 16.0),
-                        child: Text(
-                            R.string.confirm_to_remove_data.tr(),
+                        child: Text(R.string.confirm_to_remove_data.tr(),
                             textAlign: TextAlign.center,
                             style: R.style.normalTextStyle),
                       ),
@@ -887,7 +925,7 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
                                   child: Container(
                                     height: 43,
                                     decoration: BoxDecoration(
-                                      color:R.color.red,
+                                      color: R.color.red,
                                       borderRadius: BorderRadius.circular(200),
                                     ),
                                     child: Center(
@@ -928,7 +966,8 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
     if (model != null) {
       final noteText = model!.note ?? '';
       final reasonText = model!.reason ?? '';
-      final date = DateTime.fromMillisecondsSinceEpoch(model!.createDate! * 1000);
+      final date =
+          DateTime.fromMillisecondsSinceEpoch(model!.createDate! * 1000);
       if (note == noteText &&
           numberInput == model!.glucose!.round().toString() &&
           reason == reasonText &&
@@ -971,8 +1010,7 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
                       ),
                       Padding(
                         padding: const EdgeInsets.only(top: 16.0),
-                        child: Text(
-                            R.string.confirm_to_back.tr(),
+                        child: Text(R.string.confirm_to_back.tr(),
                             textAlign: TextAlign.center,
                             style: R.style.normalTextStyle),
                       ),
@@ -1009,7 +1047,7 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
                                   child: Container(
                                     height: 43,
                                     decoration: BoxDecoration(
-                                        color:R.color.red,
+                                        color: R.color.red,
                                         borderRadius:
                                             BorderRadius.circular(200),
                                         gradient: LinearGradient(
@@ -1074,11 +1112,11 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
               padding: EdgeInsets.only(left: 8, right: 8),
               child: Row(
                 children: [
-                  Image.asset(R.drawable.ic_photo,
-                      width: 24, height: 24),
+                  Image.asset(R.drawable.ic_photo, width: 24, height: 24),
                   SizedBox(width: 16),
                   Text(R.string.chon_trong_thu_vien.tr(),
-                      style: TextStyle(color: R.color.color0xff333333, fontSize: 14)),
+                      style: TextStyle(
+                          color: R.color.color0xff333333, fontSize: 14)),
                 ],
               ),
             ),
@@ -1096,7 +1134,8 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
                       width: 24, height: 24),
                   SizedBox(width: 16),
                   Text(R.string.chup_anh.tr(),
-                      style: TextStyle(color: R.color.color0xff333333, fontSize: 14)),
+                      style: TextStyle(
+                          color: R.color.color0xff333333, fontSize: 14)),
                 ],
               ),
             ),
@@ -1154,13 +1193,13 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
   }
 
   showAlertDialog(BuildContext context) {
-    Widget cancelButton = FlatButton(
+    Widget cancelButton = TextButton(
       child: Text(R.string.cancel.tr()),
       onPressed: () {
         Navigator.pop(context);
       },
     );
-    Widget continueButton = FlatButton(
+    Widget continueButton = TextButton(
       child: Text(R.string.allowed.tr()),
       onPressed: () {
         Navigator.pop(context);
@@ -1242,8 +1281,8 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
                                     fontSize: 16,
                                     fontWeight: FontWeight.w700)),
                             IconButton(
-                                icon:
-                                    Icon(Icons.close, color: R.color.color0xffBEC0C8),
+                                icon: Icon(Icons.close,
+                                    color: R.color.color0xffBEC0C8),
                                 onPressed: () {
                                   Navigator.pop(context);
                                 })
@@ -1371,7 +1410,8 @@ class _CustomTimePickerState extends State<CustomTimePicker> {
       selectedMinute = widget.selectedMinute;
     }
     hourController = FixedExtentScrollController(initialItem: selectedHour!);
-    minuteController = FixedExtentScrollController(initialItem: selectedMinute!);
+    minuteController =
+        FixedExtentScrollController(initialItem: selectedMinute!);
   }
 
   @override
