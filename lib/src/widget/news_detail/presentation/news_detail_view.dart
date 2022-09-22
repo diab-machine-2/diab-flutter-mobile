@@ -79,6 +79,7 @@ class _NewsDetailViewState extends State<NewsDetailView> {
             buildWhen: ((previous, current) =>
                 previous.newsDetail != current.newsDetail),
             builder: (context, state) {
+              bool hasBanner = false;
               final LearningPostModel? newsDetail = state.newsDetail;
               String? createdDate;
               if (newsDetail != null) {
@@ -88,6 +89,7 @@ class _NewsDetailViewState extends State<NewsDetailView> {
                 createdDate = DateFormat('dd/MM/yyyy - HH:mm')
                     .format(dateConverted)
                     .toString();
+                hasBanner = newsDetail.imageBannerUrl != null;
               }
               return NestedScrollView(
                 controller: _scrollController,
@@ -96,7 +98,7 @@ class _NewsDetailViewState extends State<NewsDetailView> {
                   return <Widget>[
                     SliverAppBar(
                       backgroundColor: Colors.white,
-                      expandedHeight: 340,
+                      expandedHeight: hasBanner ? 340 : 0,
                       floating: false,
                       pinned: true,
                       leading: Row(
@@ -160,55 +162,56 @@ class _NewsDetailViewState extends State<NewsDetailView> {
                             ],
                           ),
                         ),
-                        background: Stack(
-                          children: [
-                            if (newsDetail != null)
-                              Positioned(
-                                top: 0,
-                                right: 0,
-                                bottom: 0,
-                                left: 0,
-                                child: NetWorkImageWidget(
-                                  imageUrl: newsDetail.imageUrl.url ?? '',
-                                  width: 223.w,
-                                  height: 110.h,
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
-                            Positioned(
-                              top: 0,
-                              right: 0,
-                              left: 0,
-                              child: Container(
-                                height: 120,
-                                decoration: BoxDecoration(
-                                  gradient: LinearGradient(
-                                    begin: Alignment.topCenter,
-                                    end: Alignment.bottomCenter,
-                                    colors: [
-                                      R.color.black.withOpacity(0.5),
-                                      R.color.black.withOpacity(0),
-                                    ],
+                        background: hasBanner
+                            ? Stack(
+                                children: [
+                                  Positioned(
+                                    top: 0,
+                                    right: 0,
+                                    bottom: 0,
+                                    left: 0,
+                                    child: NetWorkImageWidget(
+                                      imageUrl: newsDetail!.imageBannerUrl!.url,
+                                      width: 223.w,
+                                      height: 110.h,
+                                      fit: BoxFit.cover,
+                                    ),
                                   ),
-                                ),
-                              ),
-                            ),
-                            Positioned(
-                              right: 0,
-                              bottom: 0,
-                              left: 0,
-                              child: Container(
-                                height: 25,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.vertical(
-                                    top: Radius.circular(16),
+                                  Positioned(
+                                    top: 0,
+                                    right: 0,
+                                    left: 0,
+                                    child: Container(
+                                      height: 120,
+                                      decoration: BoxDecoration(
+                                        gradient: LinearGradient(
+                                          begin: Alignment.topCenter,
+                                          end: Alignment.bottomCenter,
+                                          colors: [
+                                            R.color.black.withOpacity(0.5),
+                                            R.color.black.withOpacity(0),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
                                   ),
-                                  color: Color(0xFFF5FDFB),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
+                                  Positioned(
+                                    right: 0,
+                                    bottom: 0,
+                                    left: 0,
+                                    child: Container(
+                                      height: 25,
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.vertical(
+                                          top: Radius.circular(16),
+                                        ),
+                                        color: Color(0xFFF5FDFB),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              )
+                            : null,
                       ),
                     ),
                   ];
@@ -218,7 +221,7 @@ class _NewsDetailViewState extends State<NewsDetailView> {
                   padding: EdgeInsets.only(
                     left: 15,
                     right: 15,
-                    top: isScrolled ? 15 : 0,
+                    top: isScrolled || !hasBanner ? 15 : 0,
                     bottom: 15,
                   ),
                   color: Color(0xFFF5FDFB),

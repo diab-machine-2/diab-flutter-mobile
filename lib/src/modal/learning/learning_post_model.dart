@@ -8,9 +8,10 @@ class LearningPostModel {
   final String? link;
   final ImagesModel imageUrl;
   final ImagesModel? imagePartnerUrl;
+  final ImagesModel? imageBannerUrl;
   final int? status;
   final bool enableLink;
-  final String content;
+  final String? content;
   final String? partnerName;
   final String createDatetime;
   final List<LearningPostTagMappings> learningPostTagMappings;
@@ -20,13 +21,14 @@ class LearningPostModel {
     required this.title,
     required this.link,
     required this.imageUrl,
-    required this.imagePartnerUrl,
     required this.status,
     required this.enableLink,
-    required this.content,
     required this.createDatetime,
-    this.partnerName,
     required this.learningPostTagMappings,
+    this.imagePartnerUrl,
+    this.imageBannerUrl,
+    this.partnerName,
+    this.content,
   });
   @override
   factory LearningPostModel.fromJson(Map<String, dynamic> json) {
@@ -48,7 +50,12 @@ class LearningPostModel {
       createDatetime: json['createDatetime'],
       learningPostTagMappings: _learningPostTagMappings,
       imageUrl: ImagesModel.fromJson(json['imageUrl']),
-      imagePartnerUrl: ImagesModel.fromJson(json['imagePartnerUrl']),
+      imagePartnerUrl: json['imagePartnerUrl'] != null
+          ? ImagesModel.fromJson(json['imagePartnerUrl'])
+          : null,
+      imageBannerUrl: json['imageBannerUrl'] != null
+          ? ImagesModel.fromJson(json['imageBannerUrl'])
+          : null,
     );
   }
 
