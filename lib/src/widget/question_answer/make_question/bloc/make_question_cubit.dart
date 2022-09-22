@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
@@ -21,20 +22,26 @@ class MakeQuestionCubit extends Cubit<MakeQuestionState> {
   Timer? timer;
   bool isClickSend = false;
   bool isShowSuggestLessonModuleList = false;
+  late TextEditingController searchLessonModuleController =
+      TextEditingController(text: '');
 
   List<LessonModuleItem?> get suggestLessonModuleItems {
     final List<LessonModuleItem?> suggestList = lessonModuleItems;
     if (textSearch.isEmpty) return suggestList;
     final List<LessonModuleItem?> suggestFiltered = [];
     for (final LessonModuleItem? filterDataItem in suggestList) {
-      if (filterDataItem?.name?.toUpperCase().contains(textSearch.toUpperCase()) == true) {
+      if (filterDataItem?.name
+              ?.toUpperCase()
+              .contains(textSearch.toUpperCase()) ==
+          true) {
         suggestFiltered.add(filterDataItem);
       }
     }
     return suggestFiltered;
   }
 
-  MakeQuestionCubit(this.repository, this.lessonModuleItems) : super(MakeQuestionInitial()) {
+  MakeQuestionCubit(this.repository, this.lessonModuleItems)
+      : super(MakeQuestionInitial()) {
     if (lessonModuleItems.isNotEmpty) {
       if (lessonModuleItems.first.name == 'Tất cả') {
         lessonModuleItems.removeAt(0);
@@ -60,8 +67,10 @@ class MakeQuestionCubit extends Cubit<MakeQuestionState> {
     body = body?.trim() ?? '';
 
     emit(MakeQuestionLoading());
-    final MakeQuestionRequest request =
-        MakeQuestionRequest(body: body, lessonModuleId: currentLessonModule!.id, accountId: userInfo.accountId);
+    final MakeQuestionRequest request = MakeQuestionRequest(
+        body: body,
+        lessonModuleId: currentLessonModule!.id,
+        accountId: userInfo.accountId);
     var response = await QuestionAnswerClient().makeQuestion(request);
     if (response is bool && response) {
       emit(SendQuestionSuccess());
