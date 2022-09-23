@@ -454,7 +454,7 @@ class NotificationUnreadControllerState
   _delete(NotificationListModel model) async {
     try {
       BotToast.showLoading();
-      await NotificationClient().deleteNotification(model.id);
+      await NotificationClient().deleteNotification(model.notificationId, model.messageType);
       refresh();
       BotToast.closeAllLoading();
     } catch (e, _) {
