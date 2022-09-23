@@ -21,12 +21,10 @@ class DefaultModelResponse {
 }
 
 class Meta {
-  bool? success;
-
-  Meta({this.success});
+  late bool success;
 
   Meta.fromJson(Map<String, dynamic> json) {
-    success = json['success'];
+    success = json['success'] = false;
   }
 
   Map<String, dynamic> toJson() {

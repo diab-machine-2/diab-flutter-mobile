@@ -301,9 +301,6 @@ class NotificationControllerState extends State<NotificationController>
           AppSettings.userInfo!.id, model.notificationType.toString(), true);
     }
     if (model.calendarId == null) {
-      Navigator.pushNamed(context, NavigatorName.voucher_list,
-          arguments: {'type': 'input', 'voucherId': "model.id"});
-      return;
       switch (model.actionType) {
         case NotificationActionType.redirect_to_activity_tab:
           Navigator.pushReplacementNamed(context, NavigatorName.tabbar,
@@ -334,6 +331,11 @@ class NotificationControllerState extends State<NotificationController>
         case NotificationActionType.redirect_date_detail:
           break;
         case NotificationActionType.redirect_survey:
+          break;
+        case NotificationActionType.register_referral_success:
+        case NotificationActionType.register_referral_success:
+          Navigator.pushNamed(context, NavigatorName.voucher_list,
+              arguments: {'type': 'input', 'voucherId': model.id});
           break;
       }
     }

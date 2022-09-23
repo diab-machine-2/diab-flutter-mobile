@@ -572,13 +572,12 @@ class _AppState extends State<App> {
                       );
                     case NavigatorName.voucher_list:
                       final data = settings.arguments as Map<String, dynamic>?;
-                      return _buildRoute(
-                          settings,
-                          VoucherListView(
-                            voucherId: data?['voucherId'],
-                          ));
+                      return _buildRoute(settings,
+                          VoucherListView(voucherId: data?['voucherId']));
                     case NavigatorName.voucher_detail:
-                      return _buildRoute(settings, VoucherDetailView());
+                      final data = settings.arguments as Map<String, dynamic>?;
+                      return _buildRoute(settings,
+                          VoucherDetailView(voucherId: data?['voucherId']));
                     case NavigatorName.share_app_detail:
                       return _buildRoute(settings, ShareAppDetail());
                     default:

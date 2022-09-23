@@ -5,13 +5,14 @@ abstract class VoucherDetailEvent {
 }
 
 class EventGetVoucherDetail extends VoucherDetailEvent {
-  const EventGetVoucherDetail();
+  final String voucherId;
+  const EventGetVoucherDetail(this.voucherId);
 
   List<Object> get props => [];
 }
 
-class SubmitUserVoucher extends VoucherDetailEvent {
-  const SubmitUserVoucher();
+class SubmitUseVoucher extends VoucherDetailEvent {
+  const SubmitUseVoucher();
 
   List<Object> get props => [];
 }

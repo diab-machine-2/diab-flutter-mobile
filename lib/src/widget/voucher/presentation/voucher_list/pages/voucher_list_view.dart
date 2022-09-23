@@ -1,3 +1,4 @@
+import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -5,6 +6,7 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 
+import '../../../data/models/voucherList_response.dart';
 import '../blocs/voucherList_bloc.dart';
 import '../widgets/index.dart';
 
@@ -30,6 +32,11 @@ class _VoucherListViewState extends State<VoucherListView> {
       create: (_) => VoucherListBloc()..add(EventGetVoucherList()),
       child: BlocListener<VoucherListBloc, VoucherListState>(
         listener: (context, state) {
+          if (state.blocStatus == BlocStatus.loading) {
+            BotToast.showLoading();
+          } else {
+            BotToast.closeAllLoading();
+          }
           if (state.blocStatus == BlocStatus.success &&
               widget.voucherId != null) {
             Navigator.pushNamed(context, NavigatorName.voucher_detail);
@@ -65,34 +72,23 @@ class _VoucherListViewState extends State<VoucherListView> {
                 child: BlocBuilder<VoucherListBloc, VoucherListState>(
                     builder: (context, state) {
                   currentContext = context;
+                  final List<VoucherModel>? voucherList = state.voucherList;
+                  if (voucherList == null) return SizedBox();
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       Text(
-                        R.string.voucher_have
-                            .tr()
-                            .replaceFirst("[NUMBER_VOUCHER]", "12"),
+                        R.string.voucher_have.tr().replaceFirst(
+                            "[NUMBER_VOUCHER]", "${voucherList.length}"),
                       ),
                       SizedBox(height: 25),
                       Expanded(
                         child: ListView(
-                          children: [
-                            VoucherListItem(isUsed: true),
-                            VoucherListItem(),
-                            VoucherListItem(),
-                            VoucherListItem(),
-                            VoucherListItem(),
-                            VoucherListItem(),
-                            VoucherListItem(),
-                            VoucherListItem(),
-                            VoucherListItem(),
-                            VoucherListItem(),
-                            VoucherListItem(),
-                            VoucherListItem(),
-                            VoucherListItem(),
-                            VoucherListItem(),
-                          ],
-                        ),
+                            children: voucherList
+                                .map((voucherData) => VoucherListItem(
+                                      voucherData: voucherData,
+                                    ))
+                                .toList()),
                       ),
                     ],
                   );

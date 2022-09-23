@@ -3,23 +3,23 @@ part of 'voucherList_bloc.dart';
 class VoucherListState {
   final String blocMessage;
   final BlocStatus blocStatus;
-  final List<dynamic>? newsList;
+  final List<VoucherModel>? voucherList;
 
   const VoucherListState({
     this.blocStatus = BlocStatus.initial,
     this.blocMessage = "",
-    this.newsList,
+    this.voucherList,
   });
 
   VoucherListState copyWith({
     BlocStatus blocStatus = BlocStatus.initial,
-    List<dynamic>? newsList,
+    List<VoucherModel>? voucherList,
     int? expireDuration,
     String? blocMessage,
   }) {
     return VoucherListState(
       blocStatus: blocStatus,
-      newsList: newsList ?? this.newsList,
+      voucherList: voucherList ?? this.voucherList,
       blocMessage: blocMessage ?? this.blocMessage,
     );
   }

@@ -1,21 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/utils/navigator_name.dart';
-
+import 'package:medical/src/widgets/network_image_widget.dart';
+import '../../../data/models/voucherList_response.dart';
 import '../../voucher_modals/voucher_reward_modal.dart';
 
 class VoucherListItem extends StatelessWidget {
-  final bool isUsed;
-  const VoucherListItem({Key? key, this.isUsed = false}) : super(key: key);
+  final VoucherModel voucherData;
+  const VoucherListItem({
+    Key? key,
+    required this.voucherData,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    bool isUsed = voucherData.status == 1;
     return InkWell(
       onTap: () {
         if (isUsed) {
           VoucherModalReward().showModal(context);
         } else {
-          Navigator.pushNamed(context, NavigatorName.voucher_detail);
+          Navigator.pushNamed(context, NavigatorName.voucher_detail,
+              arguments: {'voucherId': voucherData.id});
         }
       },
       child: Opacity(
@@ -42,10 +48,18 @@ class VoucherListItem extends StatelessWidget {
                 flex: 100,
                 child: Padding(
                   padding: const EdgeInsets.all(15),
-                  child: Image.asset(
-                    R.drawable.ic_add_photo,
-                    width: 50,
-                  ),
+                  child: voucherData.logo != null
+                      ? NetWorkImageWidget(
+                          imageUrl: voucherData.logo!.url ?? '',
+                          width: 50,
+                          fit: BoxFit.cover,
+                        )
+                      : Image.asset(
+                          R.drawable.ic_crown_green,
+                          width: 40,
+                          height: 40,
+                          fit: BoxFit.contain,
+                        ),
                 ),
               ),
               Stack(
@@ -127,14 +141,14 @@ class VoucherListItem extends StatelessWidget {
                     children: [
                       if (isUsed)
                         Text(
-                          "Mã Voucher: DIABKM01",
+                          "Mã Voucher: ${voucherData.code}",
                           style: TextStyle(
                             fontWeight: FontWeight.w700,
                             color: R.color.orange,
                           ),
                         ),
                       Text(
-                        "Giảm 10k cho tất cả đơn hàng tại nhà thuốc Long Châu, áp dụng áp dụng áp dụng áp dụng áp dụng",
+                        voucherData.title,
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(

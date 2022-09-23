@@ -1,3 +1,4 @@
+import 'package:bot_toast/bot_toast.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
@@ -9,49 +10,79 @@ import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widgets/button_widget.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
+import '../../../data/models/voucherList_response.dart';
 import '../blocs/voucherDetail_bloc.dart';
 
-class VoucherDetailView extends StatelessWidget {
-  const VoucherDetailView({Key? key}) : super(key: key);
+class VoucherDetailView extends StatefulWidget {
+  final String voucherId;
+  // final Function voucherId;
+  const VoucherDetailView({Key? key, required this.voucherId})
+      : super(key: key);
 
   @override
+  State<VoucherDetailView> createState() => _VoucherDetailViewState();
+}
+
+class _VoucherDetailViewState extends State<VoucherDetailView> {
+  late BuildContext currentContext;
+  @override
   Widget build(BuildContext context) {
-    double paddingBottom = MediaQuery.of(context).padding.bottom + 10;
     return BlocProvider<VoucherDetailBloc>(
-      create: (_) => VoucherDetailBloc()..add(EventGetVoucherDetail()),
+      create: (_) =>
+          VoucherDetailBloc()..add(EventGetVoucherDetail(widget.voucherId)),
       child: BlocListener<VoucherDetailBloc, VoucherDetailState>(
-        listener: (context, state) {},
+        listener: (context, state) {
+          if (state.blocStatus == BlocStatus.loading) {
+            BotToast.showLoading();
+          } else {
+            BotToast.closeAllLoading();
+          }
+          if (state.blocStatus == BlocStatus.useVoucherSuccess) {
+            Clipboard.setData(ClipboardData(text: state.voucherDetail!.code))
+                .then((_) {
+              Message.showToastMessage(context, "Đã copy mã Voucher");
+              Navigator.pop(context);
+            });
+          }
+        },
         child: Container(
           color: R.color.color0xffB1DDDB,
-          child: Scaffold(
-            bottomSheet: _btnShare(context),
-            appBar: CustomAppBar(
-              backgroundColor: R.color.transparent,
-              title: Text(
-                R.string.voucher_detail.tr(),
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                  color: R.color.textDark,
+          child: BlocBuilder<VoucherDetailBloc, VoucherDetailState>(
+              builder: (context, state) {
+            currentContext = context;
+            final VoucherModel? voucherDetail = state.voucherDetail;
+            if (voucherDetail == null) return SizedBox();
+            bool isUsed = voucherDetail.status == 1;
+            return Scaffold(
+              bottomSheet: !isUsed ? _btnShare(voucherDetail) : null,
+              appBar: CustomAppBar(
+                backgroundColor: R.color.transparent,
+                title: Text(
+                  R.string.voucher_detail.tr(),
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
+                    color: R.color.textDark,
+                  ),
+                ),
+                leadingIcon: IconButton(
+                  splashColor: R.color.transparent,
+                  highlightColor: R.color.transparent,
+                  icon: Icon(Icons.arrow_back, color: R.color.textDark),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
                 ),
               ),
-              leadingIcon: IconButton(
-                splashColor: R.color.transparent,
-                highlightColor: R.color.transparent,
-                icon: Icon(Icons.arrow_back, color: R.color.textDark),
-                onPressed: () {
-                  Navigator.pop(context);
-                },
+              body: SingleChildScrollView(
+                child: Container(
+                  padding: EdgeInsets.symmetric(vertical: 25, horizontal: 15),
+                  color: R.color.color0xfff5f5f5,
+                  child: _sectionContent(context),
+                ),
               ),
-            ),
-            body: SingleChildScrollView(
-              child: Container(
-                padding: EdgeInsets.symmetric(vertical: 25, horizontal: 15),
-                color: R.color.color0xfff5f5f5,
-                child: _sectionContent(context),
-              ),
-            ),
-          ),
+            );
+          }),
         ),
       ),
     );
@@ -149,9 +180,9 @@ class VoucherDetailView extends StatelessWidget {
     );
   }
 
-  _useVoucher(BuildContext context) {
+  _useVoucher(VoucherModel voucherDetail) {
     showBarModalBottomSheet(
-      context: context,
+      context: currentContext,
       backgroundColor: Colors.transparent,
       builder: (context) => Container(
         color: R.color.white,
@@ -163,10 +194,9 @@ class VoucherDetailView extends StatelessWidget {
             children: [
               InkWell(
                 onTap: () {
-                  Clipboard.setData(ClipboardData(text: "DIABKMO1")).then((_) {
-                    Message.showToastMessage(context, "Đã copy mã Voucher");
-                    Navigator.pop(context);
-                  });
+                  currentContext
+                      .read<VoucherDetailBloc>()
+                      .add(SubmitUseVoucher());
                 },
                 child: DottedBorder(
                   dashPattern: [3, 3],
@@ -187,7 +217,7 @@ class VoucherDetailView extends StatelessWidget {
                           ),
                         ),
                         Text(
-                          "DIABKMO1",
+                          voucherDetail.code,
                           style: TextStyle(
                             fontSize: 17,
                             color: R.color.greenGradientBottom,
@@ -213,8 +243,8 @@ class VoucherDetailView extends StatelessWidget {
     );
   }
 
-  Widget _btnShare(BuildContext context) {
-    double paddingBottom = MediaQuery.of(context).padding.bottom + 10;
+  Widget _btnShare(VoucherModel voucherDetail) {
+    double paddingBottom = MediaQuery.of(currentContext).padding.bottom + 10;
     return Container(
       padding: EdgeInsets.fromLTRB(15, 15, 15, paddingBottom),
       decoration: BoxDecoration(
@@ -232,7 +262,7 @@ class VoucherDetailView extends StatelessWidget {
         radius: 8,
         title: R.string.use_voucher.tr(),
         onPressed: () {
-          _useVoucher(context);
+          _useVoucher(voucherDetail);
         },
       ),
     );

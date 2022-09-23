@@ -33,7 +33,8 @@ class NotificationManager {
     final String deviceId = deviceInfor != null ? deviceInfor['uuid'] : '';
     if (Platform.isIOS) {
       await FirebaseMessaging.instance.requestPermission();
-      await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
+      await FirebaseMessaging.instance
+          .setForegroundNotificationPresentationOptions(
         alert: true,
         badge: true,
         sound: true,
@@ -52,7 +53,8 @@ class NotificationManager {
     }
   }
 
-  static Future<dynamic> myBackgroundMessageHandler(RemoteMessage message) async {
+  static Future<dynamic> myBackgroundMessageHandler(
+      RemoteMessage message) async {
     NotificationManager.instance.navigateNotification(message);
   }
 
@@ -64,10 +66,12 @@ class NotificationManager {
           data: NotificationData.fromJson(message.data));
 
       if (model.actionType == NotificationActionType.share_profile) {
-        ShareProfilePopup.instance.onHasSharedCode(requestFromDoctor: true, code: model.data?.referalCode ?? "");
+        ShareProfilePopup.instance.onHasSharedCode(
+            requestFromDoctor: true, code: model.data?.referalCode ?? "");
         return;
       }
-      Observable.instance.notifyObservers([], notifyName: "reload_notification");
+      Observable.instance
+          .notifyObservers([], notifyName: "reload_notification");
 
       // if(model.body != null){
       //   model.body = parseHtmlString(model.body!);
@@ -89,7 +93,8 @@ class NotificationManager {
       navigateNotification(message);
     });
 
-    FirebaseMessaging.onBackgroundMessage((message) => myBackgroundMessageHandler(message));
+    FirebaseMessaging.onBackgroundMessage(
+        (message) => myBackgroundMessageHandler(message));
   }
 
   navigateNotification(RemoteMessage? message) {
@@ -125,31 +130,43 @@ class NotificationManager {
     }
 
     if (model.actionType == NotificationActionType.share_profile) {
-      ShareProfilePopup.instance.onHasSharedCode(requestFromDoctor: true, code: model.data?.referalCode ?? "");
+      ShareProfilePopup.instance.onHasSharedCode(
+          requestFromDoctor: true, code: model.data?.referalCode ?? "");
       return;
     }
 
     NotificationClient().readNotification(
-      model.data?.communicationId, model.id ?? model.data?.notificationId, AppSettings.userInfo?.id, model.data?.notificationType, true);
+        model.data?.communicationId,
+        model.id ?? model.data?.notificationId,
+        AppSettings.userInfo?.id,
+        model.data?.notificationType,
+        true);
 
-    if(model.calendarId == null) {
+    if (model.calendarId == null) {
       switch (model.actionType) {
         case NotificationActionType.redirect_to_activity_tab:
-          Navigator.pushReplacementNamed(navigatorKey.currentState!.context, NavigatorName.tabbar, arguments: {
-            'id': model.data?.communicationId,
-            'isRedirectFromNotification': true,
-          });
+          Navigator.pushReplacementNamed(
+              navigatorKey.currentState!.context, NavigatorName.tabbar,
+              arguments: {
+                'id': model.data?.communicationId,
+                'isRedirectFromNotification': true,
+              });
           break;
         case NotificationActionType.redirect_to_url:
-          Navigator.pushNamed(navigatorKey.currentState!.context, NavigatorName.notification_detail,
-              arguments: {'id': model.data?.notificationId, 'communicationId': model.data?.communicationId});
+          Navigator.pushNamed(navigatorKey.currentState!.context,
+              NavigatorName.notification_detail, arguments: {
+            'id': model.data?.notificationId,
+            'communicationId': model.data?.communicationId
+          });
           break;
         case NotificationActionType.add_reminder:
-          Navigator.pushNamed(navigatorKey.currentState!.context, NavigatorName.add_reminder,
+          Navigator.pushNamed(
+              navigatorKey.currentState!.context, NavigatorName.add_reminder,
               arguments: {'type': 'update', 'id': model.data?.remindId});
           break;
         case NotificationActionType.add_blood_sugar:
-          Navigator.pushNamed(navigatorKey.currentState!.context, NavigatorName.add_blood_sugar,
+          Navigator.pushNamed(
+              navigatorKey.currentState!.context, NavigatorName.add_blood_sugar,
               arguments: {'type': 'input', 'id': model.data?.communicationId});
           break;
         case NotificationActionType.none:
@@ -160,14 +177,20 @@ class NotificationManager {
           break;
         case NotificationActionType.redirect_survey:
           break;
+        case NotificationActionType.register_referral_success:
+          Navigator.pushNamed(
+              navigatorKey.currentState!.context, NavigatorName.voucher_list,
+              arguments: {'type': 'input', 'voucherId': model.data?.communicationId});
+          break;
       }
     }
   }
 
   String parseHtmlString(String htmlString) {
     final document = parse(htmlString);
-    final String parsedString = parse(document.body!.text).documentElement!.text;
-    return parsedString;  
+    final String parsedString =
+        parse(document.body!.text).documentElement!.text;
+    return parsedString;
   }
 
   Future<Map<String, dynamic>?> getDeviceInformation() async {
