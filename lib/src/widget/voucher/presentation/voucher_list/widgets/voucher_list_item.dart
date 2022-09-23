@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widgets/network_image_widget.dart';
 import '../../../data/models/voucherList_response.dart';
-import '../../voucher_modals/voucher_reward_modal.dart';
+import '../blocs/voucherList_bloc.dart';
 
 class VoucherListItem extends StatelessWidget {
   final VoucherModel voucherData;
@@ -17,12 +18,17 @@ class VoucherListItem extends StatelessWidget {
     bool isUsed = voucherData.status == 1;
     return InkWell(
       onTap: () {
-        if (isUsed) {
-          VoucherModalReward().showModal(context);
-        } else {
-          Navigator.pushNamed(context, NavigatorName.voucher_detail,
-              arguments: {'voucherId': voucherData.id});
-        }
+        Navigator.pushNamed(
+          context,
+          NavigatorName.voucher_detail,
+          arguments: {
+            "voucherId": voucherData.id,
+            "updateVoucherList": () {
+              BlocProvider.of<VoucherListBloc>(context)
+                  .add(EventGetVoucherList());
+            }
+          },
+        );
       },
       child: Opacity(
         opacity: isUsed ? 0.5 : 1,

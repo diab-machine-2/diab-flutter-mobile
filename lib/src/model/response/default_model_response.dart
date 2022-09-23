@@ -24,7 +24,7 @@ class Meta {
   late bool success;
 
   Meta.fromJson(Map<String, dynamic> json) {
-    success = json['success'] = false;
+    success = json['success'] ?? false;
   }
 
   Map<String, dynamic> toJson() {

@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:dartz/dartz.dart';
+import 'package:easy_localization/easy_localization.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/error/failures.dart';
 import '../../../data/models/voucherList_response.dart';
 import '../../../data/voucher_repository.dart';
@@ -40,16 +42,21 @@ class VoucherDetailBloc extends Bloc<VoucherDetailEvent, VoucherDetailState> {
 
   Stream<VoucherDetailState> _mapSubmitUseVoucher(
       SubmitUseVoucher event) async* {
-    Either<Failure, bool> failureOrVoucherData =
+    Either<Failure, bool> failureOrSuccess =
         await repository.useVoucher(state.voucherDetail!.id);
-    yield failureOrVoucherData.fold(
+    yield failureOrSuccess.fold(
       (failure) => state.copyWith(
         blocStatus: BlocStatus.error,
         blocMessage: failure.message,
       ),
-      (result) => state.copyWith(
-        blocStatus: BlocStatus.useVoucherSuccess,
-      ),
+      (success) {
+        print("success: $success");
+        return state.copyWith(
+          blocStatus:
+              success == true ? BlocStatus.useVoucherSuccess : BlocStatus.error,
+          blocMessage: success == true ? null : R.string.error.tr(),
+        );
+      },
     );
   }
 }

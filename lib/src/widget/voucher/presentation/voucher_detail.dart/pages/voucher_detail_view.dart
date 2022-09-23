@@ -9,14 +9,14 @@ import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widgets/button_widget.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
-
 import '../../../data/models/voucherList_response.dart';
 import '../blocs/voucherDetail_bloc.dart';
 
 class VoucherDetailView extends StatefulWidget {
   final String voucherId;
-  // final Function voucherId;
-  const VoucherDetailView({Key? key, required this.voucherId})
+  final Function updateVoucherList;
+  const VoucherDetailView(
+      {Key? key, required this.voucherId, required this.updateVoucherList})
       : super(key: key);
 
   @override
@@ -38,11 +38,7 @@ class _VoucherDetailViewState extends State<VoucherDetailView> {
             BotToast.closeAllLoading();
           }
           if (state.blocStatus == BlocStatus.useVoucherSuccess) {
-            Clipboard.setData(ClipboardData(text: state.voucherDetail!.code))
-                .then((_) {
-              Message.showToastMessage(context, "Đã copy mã Voucher");
-              Navigator.pop(context);
-            });
+            widget.updateVoucherList();
           }
         },
         child: Container(
@@ -52,9 +48,8 @@ class _VoucherDetailViewState extends State<VoucherDetailView> {
             currentContext = context;
             final VoucherModel? voucherDetail = state.voucherDetail;
             if (voucherDetail == null) return SizedBox();
-            bool isUsed = voucherDetail.status == 1;
             return Scaffold(
-              bottomSheet: !isUsed ? _btnShare(voucherDetail) : null,
+              bottomSheet: _btnShare(voucherDetail),
               appBar: CustomAppBar(
                 backgroundColor: R.color.transparent,
                 title: Text(
@@ -194,9 +189,16 @@ class _VoucherDetailViewState extends State<VoucherDetailView> {
             children: [
               InkWell(
                 onTap: () {
-                  currentContext
-                      .read<VoucherDetailBloc>()
-                      .add(SubmitUseVoucher());
+                  Clipboard.setData(ClipboardData(text: voucherDetail.code))
+                      .then((_) {
+                    Message.showToastMessage(context, "Đã copy mã Voucher");
+                    Navigator.pop(context);
+                  });
+                  if (voucherDetail.status == 0) {
+                    currentContext
+                        .read<VoucherDetailBloc>()
+                        .add(SubmitUseVoucher());
+                  }
                 },
                 child: DottedBorder(
                   dashPattern: [3, 3],

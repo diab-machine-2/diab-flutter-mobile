@@ -6,7 +6,8 @@ import 'package:medical/src/app_setting/dynamic_link_config.dart';
 import 'package:medical/src/widgets/button_widget.dart';
 
 class ShareAppDetail extends StatefulWidget {
-  const ShareAppDetail({Key? key}) : super(key: key);
+  final String voucherId;
+  const ShareAppDetail({Key? key, required this.voucherId}) : super(key: key);
 
   @override
   State<ShareAppDetail> createState() => _ShareAppDetailState();

@@ -15,6 +15,8 @@ import 'package:medical/src/repo/notification/notification_client.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
+import 'package:medical/src/widget/shared_profile/pages/share_app_detail.dart';
+import 'package:medical/src/widget/voucher/presentation/voucher_modals/voucher_reward_modal.dart';
 import 'package:medical/src/widgets/share_profile_popup.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -178,9 +180,8 @@ class NotificationManager {
         case NotificationActionType.redirect_survey:
           break;
         case NotificationActionType.register_referral_success:
-          Navigator.pushNamed(
-              navigatorKey.currentState!.context, NavigatorName.voucher_list,
-              arguments: {'type': 'input', 'voucherId': model.data?.communicationId});
+          VoucherModalReward.showModal(
+              navigatorKey.currentState!.context, model.data!.communicationId!);
           break;
       }
     }

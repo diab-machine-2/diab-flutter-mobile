@@ -56,6 +56,7 @@ class VoucherRepository extends FetchClient {
       DefaultModelResponse responseData =
           DefaultModelResponse.fromJson(response.data);
       if (response.statusCode == 200) {
+        print("hehg: ${responseData.meta.success}");
         return Right(responseData.meta.success);
       }
       return Left(

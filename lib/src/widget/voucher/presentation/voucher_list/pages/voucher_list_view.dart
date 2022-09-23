@@ -39,7 +39,17 @@ class _VoucherListViewState extends State<VoucherListView> {
           }
           if (state.blocStatus == BlocStatus.success &&
               widget.voucherId != null) {
-            Navigator.pushNamed(context, NavigatorName.voucher_detail);
+            Navigator.pushNamed(
+              context,
+              NavigatorName.voucher_detail,
+              arguments: {
+                "voucherId": widget.voucherId,
+                "updateVoucherList": () {
+                  BlocProvider.of<VoucherListBloc>(currentContext)
+                      .add(EventGetVoucherList());
+                }
+              },
+            );
           }
         },
         child: Container(

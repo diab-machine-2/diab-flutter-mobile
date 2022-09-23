@@ -1,18 +1,21 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/profile/delete_account/presentation/widgets/submit_button.dart';
 import 'package:medical/src/widgets/button_widget.dart';
 
 class VoucherModalReward extends StatelessWidget {
-  const VoucherModalReward({Key? key}) : super(key: key);
+  final String voucherId;
+  const VoucherModalReward({Key? key, required this.voucherId})
+      : super(key: key);
 
-  showModal(BuildContext context) {
+  static showModal(BuildContext context, String voucherId) {
     showDialog(
       context: context,
       barrierDismissible: true,
       builder: (context) {
-        return VoucherModalReward();
+        return VoucherModalReward(voucherId: voucherId);
       },
     );
   }
@@ -76,7 +79,8 @@ class VoucherModalReward extends StatelessWidget {
               child: GestureDetector(
                 onTap: () {
                   Navigator.pop(context);
-                  // Navigator.pop(context, true);
+                  Navigator.pushNamed(context, NavigatorName.voucher_list,
+                      arguments: {'type': 'input', 'voucherId': voucherId});
                 },
                 child: Image.asset(
                   R.drawable.ic_close,
