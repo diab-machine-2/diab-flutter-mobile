@@ -22,7 +22,7 @@ class _VoucherListViewState extends State<VoucherListView> {
   late BuildContext currentContext;
 
   Future<bool> _pullToRefresh() async {
-    BlocProvider.of<VoucherListBloc>(currentContext).add(EventGetVoucherList());
+    BlocProvider.of<VoucherListBloc>(currentContext).add(EventGetVoucherList(isReload: true));
     return true;
   }
 
@@ -37,7 +37,7 @@ class _VoucherListViewState extends State<VoucherListView> {
           } else {
             BotToast.closeAllLoading();
           }
-          if (state.blocStatus == BlocStatus.success &&
+          if (state.blocStatus == BlocStatus.getVoucherListSuccess &&
               widget.voucherId != null) {
             Navigator.pushNamed(
               context,
@@ -46,7 +46,7 @@ class _VoucherListViewState extends State<VoucherListView> {
                 "voucherId": widget.voucherId,
                 "updateVoucherList": () {
                   BlocProvider.of<VoucherListBloc>(currentContext)
-                      .add(EventGetVoucherList());
+                      .add(EventGetVoucherList(isReload: true));
                 }
               },
             );

@@ -33,7 +33,9 @@ class VoucherListBloc extends Bloc<VoucherListEvent, VoucherListState> {
       ),
       (voucherData) => state.copyWith(
         voucherList: voucherData.items,
-        blocStatus: BlocStatus.success,
+        blocStatus: event.isReload
+            ? BlocStatus.refreshVoucherListSuccess
+            : BlocStatus.getVoucherListSuccess,
       ),
     );
   }

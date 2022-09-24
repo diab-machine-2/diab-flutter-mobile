@@ -44,7 +44,7 @@ class NotificationManager {
     }
     try {
       final token = await FirebaseMessaging.instance.getToken();
-      print(token);
+      print('Firebase Messaging - token: $token');
       // Clipboard.setData(new ClipboardData(text: token)).then((_){
       //   ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(token ?? 'Copied'), duration: Duration(minutes: 3),));
       // });
@@ -62,6 +62,7 @@ class NotificationManager {
 
   Future<void> firebaseConfigure() async {
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      print("Firebase Messaging - onMessage ");
       final model = NotificationModel(
           title: message.notification?.title,
           body: message.notification?.body ?? '',
@@ -71,6 +72,11 @@ class NotificationManager {
         ShareProfilePopup.instance.onHasSharedCode(
             requestFromDoctor: true, code: model.data?.referalCode ?? "");
         return;
+      } else if (model.actionType ==
+          NotificationActionType.register_referral_success) {
+        VoucherModalReward.showModal(
+            navigatorKey.currentState!.context, model.data!.communicationId!);
+        return;
       }
       Observable.instance
           .notifyObservers([], notifyName: "reload_notification");
@@ -78,6 +84,7 @@ class NotificationManager {
       // if(model.body != null){
       //   model.body = parseHtmlString(model.body!);
       // }
+
       Message.showNotificationMessage(
           model: model,
           callback: (model) {
@@ -88,10 +95,12 @@ class NotificationManager {
     });
 
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+      print("Firebase Messaging - onMessageOpenedApp ");
       navigateNotification(message);
     });
 
     FirebaseMessaging.instance.getInitialMessage().then((message) {
+      print("Firebase Messaging - getInitialMessage ");
       navigateNotification(message);
     });
 
@@ -100,6 +109,7 @@ class NotificationManager {
   }
 
   navigateNotification(RemoteMessage? message) {
+    print("Firebase Messaging - navigateNotification");
     if (message == null) return;
     Observable.instance.notifyObservers([], notifyName: "reload_notification");
     var user = AppSettings.userInfo;
@@ -143,7 +153,6 @@ class NotificationManager {
         AppSettings.userInfo?.id,
         model.data?.notificationType,
         true);
-
     if (model.calendarId == null) {
       switch (model.actionType) {
         case NotificationActionType.redirect_to_activity_tab:

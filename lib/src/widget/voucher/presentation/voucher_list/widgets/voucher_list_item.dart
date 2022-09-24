@@ -25,7 +25,7 @@ class VoucherListItem extends StatelessWidget {
             "voucherId": voucherData.id,
             "updateVoucherList": () {
               BlocProvider.of<VoucherListBloc>(context)
-                  .add(EventGetVoucherList());
+                  .add(EventGetVoucherList(isReload: true));
             }
           },
         );
@@ -56,7 +56,7 @@ class VoucherListItem extends StatelessWidget {
                   padding: const EdgeInsets.all(15),
                   child: voucherData.logo != null
                       ? NetWorkImageWidget(
-                          imageUrl: voucherData.logo!.url ?? '',
+                          imageUrl: voucherData.logo,
                           width: 50,
                           fit: BoxFit.cover,
                         )

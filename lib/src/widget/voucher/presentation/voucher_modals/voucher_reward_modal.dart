@@ -66,7 +66,14 @@ class VoucherModalReward extends StatelessWidget {
                       SizedBox(height: 24),
                       ButtonWidget(
                         title: R.string.view_voucher.tr(),
-                        onPressed: () {},
+                        onPressed: () {
+                          Navigator.pop(context);
+                          Navigator.pushNamed(
+                              context, NavigatorName.voucher_list, arguments: {
+                            'type': 'input',
+                            'voucherId': voucherId
+                          });
+                        },
                       ),
                     ],
                   ),
@@ -79,8 +86,6 @@ class VoucherModalReward extends StatelessWidget {
               child: GestureDetector(
                 onTap: () {
                   Navigator.pop(context);
-                  Navigator.pushNamed(context, NavigatorName.voucher_list,
-                      arguments: {'type': 'input', 'voucherId': voucherId});
                 },
                 child: Image.asset(
                   R.drawable.ic_close,

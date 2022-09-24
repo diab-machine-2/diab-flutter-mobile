@@ -5,7 +5,8 @@ abstract class VoucherListEvent {
 }
 
 class EventGetVoucherList extends VoucherListEvent {
-  const EventGetVoucherList();
+  final bool isReload;
+  const EventGetVoucherList({this.isReload = false});
 
   List<Object> get props => [];
 }

@@ -16,6 +16,10 @@ class VoucherRepository extends FetchClient {
   Future<Either<Failure, VoucherListResponse>> getListVoucher() async {
     final Response response = await super.fetchData(
       url: '/App/Voucher/Mobile',
+      params: {
+        'page': '1',
+        "take": "100",
+      },
     );
     try {
       if (response.statusCode == 200) {

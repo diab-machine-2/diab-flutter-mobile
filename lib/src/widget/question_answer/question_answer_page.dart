@@ -1,22 +1,13 @@
-import 'package:bot_toast/bot_toast.dart';
-import 'package:easy_localization/easy_localization.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_observer/Observable.dart';
-import 'package:flutter_observer/Observer.dart';
 import 'package:medical/res/R.dart';
-import 'package:medical/src/model/repository/app_repository.dart';
-import 'package:medical/src/utils/const.dart';
-import 'package:medical/src/widget/helper/show_message.dart';
-import 'package:medical/src/widgets/common_page.dart';
-import 'package:medical/src/widgets/widget_custom_multi_select_toggle.dart';
-
+import 'package:flutter/material.dart';
 import '../../app_setting/app_setting.dart';
-import '../../utils/navigation_util.dart';
-import '../../widgets/button_widget.dart';
-import 'all_question_answer/all_question_answer.dart';
+import 'package:medical/src/utils/const.dart';
+import 'package:flutter_observer/Observer.dart';
+import 'package:flutter_observer/Observable.dart';
 import 'my_question_answer/my_question_answer.dart';
+import 'all_question_answer/all_question_answer.dart';
+import 'package:easy_localization/easy_localization.dart';
+import 'package:medical/src/widgets/widget_custom_multi_select_toggle.dart';
 
 class QuestionAnswerPage extends StatefulWidget {
   const QuestionAnswerPage();
@@ -27,7 +18,10 @@ class QuestionAnswerPage extends StatefulWidget {
 
 class _QuestionAnswerPageState extends State<QuestionAnswerPage> with Observer {
   final PageController _pageController = PageController(initialPage: 0);
-  List<QuestionAnswerType> questionAnswerList = [QuestionAnswerType.Mine, QuestionAnswerType.All];
+  List<QuestionAnswerType> questionAnswerList = [
+    QuestionAnswerType.Mine,
+    QuestionAnswerType.All
+  ];
 
   QuestionAnswerType currentQuestionAnswerType = QuestionAnswerType.Mine;
 
@@ -81,7 +75,10 @@ class _QuestionAnswerPageState extends State<QuestionAnswerPage> with Observer {
         children: [
           Text(
             R.string.question_doctor.tr(),
-            style: TextStyle(color: R.color.black, fontWeight: FontWeight.w700, fontSize: 24),
+            style: TextStyle(
+                color: R.color.black,
+                fontWeight: FontWeight.w700,
+                fontSize: 24),
           ),
           GestureDetector(
             onTap: () {
@@ -106,7 +103,8 @@ class _QuestionAnswerPageState extends State<QuestionAnswerPage> with Observer {
         toggleList: questionAnswerList.map((e) => e.title).toList(),
         selectedIndex: currentQuestionAnswerTypeIndex,
         onChange: (index) {
-          Observable.instance.notifyObservers([], notifyName: Const.HIDE_OVERLAY_KEY);
+          Observable.instance
+              .notifyObservers([], notifyName: Const.HIDE_OVERLAY_KEY);
           changeQuestionAnswerType(index);
         },
       ),
@@ -114,14 +112,22 @@ class _QuestionAnswerPageState extends State<QuestionAnswerPage> with Observer {
   }
 
   _buildPageView() {
+    List<Widget> widgets = [];
+    questionAnswerList.forEach((type) {
+      switch (type) {
+        case QuestionAnswerType.All:
+          widgets.add(AllQuestionAnswerPage());
+          break;
+        case QuestionAnswerType.Mine:
+          widgets.add(MyQuestionAnswerPage());
+          break;
+      }
+    });
     return Expanded(
       child: PageView(
         controller: _pageController,
         physics: const NeverScrollableScrollPhysics(),
-        children: const [
-          AllQuestionAnswerPage(),
-          MyQuestionAnswerPage(),
-        ],
+        children: widgets,
       ),
     );
   }

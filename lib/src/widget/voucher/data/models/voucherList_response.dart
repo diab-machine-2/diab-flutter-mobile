@@ -21,7 +21,7 @@ class VoucherListResponse {
 }
 
 class VoucherModel {
-  ImagesModel? logo;
+  String? logo;
   late String title;
   late String code;
   String? description;
@@ -29,7 +29,7 @@ class VoucherModel {
   late String id;
 
   VoucherModel.fromJson(Map<String, dynamic> json) {
-    logo = json['logo'] != null ? ImagesModel.fromJson(json['logo']) : null;
+    logo = json['logo'];
     title = json["title"] ?? "";
     code = json["code"] ?? "";
     description = json["description"] ?? "";

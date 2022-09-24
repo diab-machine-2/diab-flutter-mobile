@@ -34,5 +34,6 @@ enum BlocStatus {
   initial,
   error,
   loading,
-  success,
+  getVoucherListSuccess,
+  refreshVoucherListSuccess,
 }

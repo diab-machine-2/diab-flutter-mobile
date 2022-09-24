@@ -583,9 +583,7 @@ class _AppState extends State<App> {
                             updateVoucherList: data?['updateVoucherList'],
                           ));
                     case NavigatorName.share_app_detail:
-                      final data = settings.arguments as Map<String, dynamic>?;
-                      return _buildRoute(settings,
-                          ShareAppDetail(voucherId: data?['voucherId']));
+                      return _buildRoute(settings, const ShareAppDetail());
                     default:
                       return null;
                   }
