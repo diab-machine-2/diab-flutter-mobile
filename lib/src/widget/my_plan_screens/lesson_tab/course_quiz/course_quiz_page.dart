@@ -1,6 +1,7 @@
 import 'package:bot_toast/bot_toast.dart';
 import 'package:dio/dio.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -270,8 +271,12 @@ class _CourseQuizPageState extends State<CourseQuizPage> {
 
     final bool isCurrent = _cubit.selectedCourseIndex == index;
     final bool isAnswered = _cubit.answer[index]?.isNotEmpty == true;
-    final bool isRight = _cubit.answer[index].toString() ==
-        quizData?.quiz?.quizAnswers?.where((e) => e?.isCorrect == true).map((e) => e?.id).toList().toString();
+  
+    final List<String?> selectedAnswers = _cubit.answer[index] ?? [];
+    final List<String?> correctAnswers = quizData?.quiz?.quizAnswers?.where((e) => e?.isCorrect == true).map((e) => e?.id).toList() ?? [];
+    selectedAnswers.sort((a,b) => (a ?? '').compareTo(b ?? ''));
+    correctAnswers.sort((a,b) => (a ?? '').compareTo(b ?? ''));
+    final bool isRight = listEquals(selectedAnswers, correctAnswers);
 
     if (_cubit.isShowResult) {
       colorText = R.color.white;
