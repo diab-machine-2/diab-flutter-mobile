@@ -9,11 +9,12 @@ class WidgetHtmlText extends StatelessWidget {
     this.text, {
     this.textStyle,
   });
-  final String text;
+  final String? text;
   final TextStyle? textStyle;
 
   @override
   Widget build(BuildContext context) {
+    if (text == null) return SizedBox();
     return Html(
       data: text,
       style: {

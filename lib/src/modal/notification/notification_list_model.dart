@@ -13,6 +13,7 @@ class NotificationListModel {
   final String? hyperText;
   final String? hyperLink;
   final int? notificationType;
+  final int? messageType;
 
    NotificationActionType get actionType =>
       NotificationActionExtend.getNotificationActionTypeFromIndexInteger(notificationType);
@@ -29,7 +30,8 @@ class NotificationListModel {
       this.isRead,
       this.hyperText,
       this.hyperLink,
-      this.notificationType});
+      this.notificationType,
+      this.messageType});
 
   @override
   factory NotificationListModel.fromJson(Map<String, dynamic> json) {
@@ -48,6 +50,7 @@ class NotificationListModel {
       hyperText: notification['hyperText'],
       hyperLink: notification['hyperLink'],
       notificationType: notification['notificationType'],
+      messageType: notification['messageType'],
     );
   }
 
