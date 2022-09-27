@@ -46,6 +46,7 @@ import 'package:medical/src/widget/login/rules.dart';
 import 'package:medical/src/widget/login/step_list.dart';
 import 'package:medical/src/widget/login/update_info.dart';
 import 'package:medical/src/widget/login/verify_phone.dart';
+import 'package:medical/src/widget/nipro/connection_instructions.dart';
 import 'package:medical/src/widget/notification/notification_detail.dart';
 import 'package:medical/src/widget/notification/notification_tabbar.dart';
 import 'package:medical/src/widget/profile/add_reminder.dart';
@@ -511,6 +512,12 @@ class _AppState extends State<App> {
                         settings,
                         NewsDetailView(id: data?['id']),
                       );
+                    case NavigatorName.connection_instructions:
+                      return _buildRoute(
+                        settings,
+                        ConnectionInstructionsController(),
+                      );
+
                     default:
                       return null;
                   }

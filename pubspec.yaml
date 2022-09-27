@@ -123,6 +123,8 @@ dependencies:
   share_plus: ^4.0.10+1
   dartz: ^0.10.1
   auto_size_text: ^3.0.0
+  timelines: ^0.1.0
+  app_settings: ^4.1.8
 
 dev_dependencies:
   flutter_test:

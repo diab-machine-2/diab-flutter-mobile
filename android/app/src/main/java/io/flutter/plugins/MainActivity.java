@@ -1,5 +1,6 @@
 package com.vbhc.diab;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import io.flutter.embedding.android.FlutterActivity;
 import io.flutter.embedding.engine.FlutterEngine;
@@ -71,428 +72,492 @@ import io.reactivex.schedulers.Schedulers;
 
 public class MainActivity extends FlutterActivity {
 
-  private ScanCallback mScanCallback;
-  private LocationManager mLocationManager;
-  private BluetoothAdapter mBluetoothAdapter;
-  private BluetoothManager mBluetoothManager;
-  private DeviceAdapter mDeviceAdapter;
-  private EventChannel.EventSink events;
+    private ScanCallback mScanCallback;
+    private LocationManager mLocationManager;
+    private BluetoothAdapter mBluetoothAdapter;
+    private BluetoothManager mBluetoothManager;
+    private DeviceAdapter mDeviceAdapter;
+    private EventChannel.EventSink events;
+
+    private Context context;
+
+    @Override
+    protected void onDestroy() {
+        IBLE_Manager.getInstance().DestroySDK();
+        super.onDestroy();
+    }
+
+    @Override
+    public void configureFlutterEngine(@NonNull FlutterEngine flutterEngine) {
+        super.configureFlutterEngine(flutterEngine);
+        context = this;
+        new MethodChannel(flutterEngine.getDartExecutor().getBinaryMessenger(), "iBleSdk")
+                .setMethodCallHandler(
+                        (call, result) -> {
+                            if (call.method.equals("request_permission")) {
+                                requestPermission();
+                            } else if (call.method.equals("init_IBle_Sdk")) {
+                                initIBle();
+                            } else if (call.method.equals("start_scan")) {
+                                startScan();
+                            } else if (call.method.equals("stop_scan")) {
+                                stopScan();
+                            }  else if (call.method.equals("connect")) {
+                                connect(call.arguments.toString());
+                            } else if (call.method.equals("dis_connect")) {
+                                disConnect();
+                            } else if (call.method.equals("destroy_sdk")) {
+                                destroySDK();
+                            } else if (call.method.equals("get_data")) {
+                                getData();
+                            } else {
+                                result.notImplemented();
+                            }
+                        }
+                );
+
+        new EventChannel(flutterEngine.getDartExecutor().getBinaryMessenger(), "eventChannelStreamiBle").setStreamHandler(
+                new EventChannel.StreamHandler() {
+                    @Override
+                    public void onListen(Object args, EventChannel.EventSink event) {
+                        events = event;
+                    }
+
+                    @Override
+                    public void onCancel(Object args) {
+                        emitData("event_cancel", null);
+                    }
+                }
+        );      
+    }
 
 
-  @Override
-  public void configureFlutterEngine(@NonNull FlutterEngine flutterEngine) {
-      super.configureFlutterEngine(flutterEngine);
-      new MethodChannel(flutterEngine.getDartExecutor().getBinaryMessenger(), "iBleSdk")
-              .setMethodCallHandler(
-                      (call, result) -> {
-                          // This method is invoked on the main thread.
-                          if (call.method.equals("initIBleSdk")) {
-                              initIBle(result);
-                          } else if (call.method.equals("startScan")) {
-                              startScan(result);
-                          } else if (call.method.equals("connect")) {
-                              connect(call.arguments.toString());
-                          } else if (call.method.equals("getData")) {
-                              getData();
-                          } else {
-                              result.notImplemented();
-                          }
-                      }
-              );
+    final IBLE_Callback mIBleCallback = new IBLE_Callback() {
 
-      new EventChannel(flutterEngine.getDartExecutor().getBinaryMessenger(), "eventChannelStreamiBle").setStreamHandler(
-              new EventChannel.StreamHandler() {
-                  @Override
-                  public void onListen(Object args, EventChannel.EventSink event) {
+        @Override
+        public void CallbackInitSDK(int version) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    emitData("init_success", null);
+                    emitData("SDK init Success with Version : " + version, null);
+                }
+            });
+            
+        }
 
-                      events = event;
-                      events.success("init event success");
+        @Override
+        public void CallbackConnectedDevice() {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    emitData("connected", null);
+                }
+            });
+        }
 
-                  }
+        @Override
+        public void CallbackDisconnectedDevice() {
 
-                  @Override
-                  public void onCancel(Object args) {
-                      events.success("event cancel");
-                      // if (timerSubscription != null) {
-                      //     timerSubscription.dispose();
-                      //     timerSubscription = null;
-                      // }
-                  }
-              }
-      );
-  }
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    emitData("device_disconnect", null);
+                }
+            });
+        }
 
+        @Override
+        public void CallbackRequestTimeSync() {
 
-  final IBLE_Callback mIBleCallback = new IBLE_Callback() {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    emitData("CallbackRequestTimeSync", null);
+                }
+            });
+        }
 
-      @Override
-      public void CallbackInitSDK(int version) {
-          events.success("CallbackInitSDK Version : " + version);
-      }
+        @Override
+        public void CallbackRequestRecordsComplete(SparseArray<IBLE_GlucoseRecord> sparseArray) {
 
-      @Override
-      public void CallbackConnectedDevice() {
-          runOnUiThread(new Runnable() {
-              @Override
-              public void run() {
-                  events.success("CallbackConnectedDevice");
-              }
-          });
-      }
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                 
+                    SparseArray<IBLE_GlucoseRecord> mRecords = sparseArray;
+                    if (mRecords == null || mRecords.size() <= 0) {
+                        emitData("empty_data", null);
+                        return;
+                    }
 
-      @Override
-      public void CallbackDisconnectedDevice() {
+                    ArrayList<Map<String, String>> data = new ArrayList<Map<String, String>>();
+                    for (int i = mRecords.size() - 1; i >= 0; i--) {
+                        final IBLE_GlucoseRecord glucoseRecord = mRecords.valueAt(i);
+                        Map<String, String> map = new HashMap();
+                        map.put("glucose", String.valueOf(glucoseRecord.glucoseData));
+                        map.put("date", String.valueOf(glucoseRecord.time));
+                        data.add(map);
+                    }
+                    
+                    emitData("get_data_success", data);
+                    // for (int i = mRecords.size() - 1; i >= 0; i--) {
+                    //     final IBLE_GlucoseRecord glucoseRecord = mRecords.valueAt(i);
+                    //     try {
+                    //         String str_hilow = "-";
 
-          runOnUiThread(new Runnable() {
-              @Override
-              public void run() {
-                  events.success("CallbackDisconnectedDevice");
-              }
-          });
-      }
+                    //         if (glucoseRecord.flag_ketone == 1) {
+                    //             if (glucoseRecord.flag_hilow == -2) str_hilow = "Lo"; //ketone Low
+                    //             else if (glucoseRecord.flag_hilow == 1)
+                    //                 str_hilow = "Hi"; //ketone High
+                    //         } else {
+                    //             if (glucoseRecord.flag_hilow == -1) str_hilow = "Lo"; //glucose Low
+                    //             else if (glucoseRecord.flag_hilow == 1)
+                    //                 str_hilow = "Hi"; //glucose High
+                    //         }
 
-      @Override
-      public void CallbackRequestTimeSync() {
+                    //         String str_meal = "-";
+                    //         if (glucoseRecord.flag_meal == -1) {
+                    //             str_meal = "before";
+                    //         } else if (glucoseRecord.flag_meal == 1) {
+                    //             str_meal = "after";
+                    //         }
 
-          runOnUiThread(new Runnable() {
-              @Override
-              public void run() {
-                  events.success("CallbackRequestTimeSync");
-              }
-          });
-      }
+                    //         if (glucoseRecord.flag_ketone == 1) {
 
-      @Override
-      public void CallbackRequestRecordsComplete(SparseArray<IBLE_GlucoseRecord> sparseArray) {
+                    //             events.success("## Seq:" + glucoseRecord.sequenceNumber + "  Ketone:" + glucoseRecord.glucoseData / IBLE_Const.KetoneMultiplier + "mmol/L" +
+                    //                     "  Date:" + getDate(glucoseRecord.time) + "  TimeOffset:" + glucoseRecord.timeoffset +
+                    //                     "  HiLo:" + str_hilow + "  Meal: " + str_meal + "\n\n");
+                    //         } else {
+                    //             events.success("## Seq mgdl:" + glucoseRecord.sequenceNumber + "  Glucose:" + glucoseRecord.glucoseData + "mg/dL" +
+                    //                     "  Date:" + getDate(glucoseRecord.time) + "  TimeOffset:" + glucoseRecord.timeoffset +
+                    //                     "  HiLo:" + str_hilow + "  Meal:" + str_meal + "\n\n");
+                    //             glucoseRecord.glucoseData = Double.parseDouble(String.valueOf(Math.round(10 * (double) glucoseRecord.glucoseData / IBLE_Const.GlucoseUnitConversionMultiplier) / 10.0));
+                    //             events.success("## Seq:" + glucoseRecord.sequenceNumber + "  Glucose:" + glucoseRecord.glucoseData + "mmol/L" +
+                    //                     "  Date:" + getDate(glucoseRecord.time) + "  TimeOffset:" + glucoseRecord.timeoffset +
+                    //                     "  HiLo:" + str_hilow + "  Meal:" + str_meal + "\n\n");
+                    //         }
+                    //     } catch (Exception e) {
+                    //     }
+                    // }
+                }
+            });
+        }
 
-          runOnUiThread(new Runnable() {
-              @Override
-              public void run() {
-                  events.success("CallbackRequestRecordsComplete");
+        @Override
+        public void CallbackReadDeviceInfo(IBLE_Device ible_device) {
 
-                  SparseArray<IBLE_GlucoseRecord> mRecords = sparseArray;
-                  if (mRecords == null || mRecords.size() <= 0) {
-                      events.success("No data downloaded.");
-                      return;
-                  }
-                  ArrayList<Map<String, String>> data = new ArrayList<Map<String, String>>();
-                  for (int i = mRecords.size() - 1; i >= 0; i--) {
-                      final IBLE_GlucoseRecord glucoseRecord = mRecords.valueAt(i);
-                      Map<String, String> map = new HashMap();
-                            map.put("glucose", String.valueOf(glucoseRecord.glucoseData));
-                            map.put("date", String.valueOf(glucoseRecord.time));
+            IBLE_Device device;
+            device = ible_device;
 
-                            
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    emitData("CallbackReadDeviceInfo", null);
+                    emitData("device_connected", null);
+                }
+            });
+        }
+
+        @Override
+        public void CallbackError(IBLE_Error ible_error) {
+
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    emitData("connect_error", null);
+                }
+            });
+        }
+    };
+
+    private BluetoothAdapter.LeScanCallback mLEScanCallback = new BluetoothAdapter.LeScanCallback() {
+        @Override
+        public void onLeScan(BluetoothDevice device, int rssi, byte[] scanRecord) {
+            if (device != null) {
+                try {
+                    if (IBLE_ScannerServiceParser.decodeDeviceAdvData(scanRecord)) {
+                        if (device.getBondState() == BluetoothDevice.BOND_BONDED) {
+                            addScannedDevice(device, rssi, true);
+                        } else {
+                            addScannedDevice(device, rssi, false);
+                        }
+                    }
+                } catch (Exception e) {
+                    e.getMessage();
+                }
+            }
+        }
+    };
+
+    private void addScannedDevice(final BluetoothDevice device, final int rssi, final boolean isBonded) {
+        try {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    int count = mDeviceAdapter.getCount();
+                    mDeviceAdapter.addDevice(new ExtendedDevice(device, rssi, isBonded));
+                    if (count != mDeviceAdapter.getCount()) {
+
+                        ArrayList<ExtendedDevice> listItems = mDeviceAdapter.getList();
+                        ArrayList<Map<String, String>> data = new ArrayList<Map<String, String>>();
+
+                        for (int i = 0; i < listItems.size(); i++) {
+                            ExtendedDevice item = listItems.get(i);
+
+                            Map<String, String> map = new HashMap();
+                            map.put("address", item.device.getAddress());
+                            map.put("name", item.device.getName());
                             data.add(map);
-                    //   try {
-                    //       String str_hilow = "-";
 
-                    //       if (glucoseRecord.flag_ketone == 1) {
-                    //           if (glucoseRecord.flag_hilow == -2) str_hilow = "Lo"; //ketone Low
-                    //           else if (glucoseRecord.flag_hilow == 1)
-                    //               str_hilow = "Hi"; //ketone High
-                    //       } else {
-                    //           if (glucoseRecord.flag_hilow == -1) str_hilow = "Lo"; //glucose Low
-                    //           else if (glucoseRecord.flag_hilow == 1)
-                    //               str_hilow = "Hi"; //glucose High
-                    //       }
+                        }
+                        emitData("new_device",data);
 
-                    //       String str_meal = "-";
-                    //       if (glucoseRecord.flag_meal == -1) {
-                    //           str_meal = "before";
-                    //       } else if (glucoseRecord.flag_meal == 1) {
-                    //           str_meal = "after";
-                    //       }
+                    }
+                }
+            });
 
-                    //       if (glucoseRecord.flag_ketone == 1) {
+        } catch (NullPointerException e) {
 
-                    //           events.success("## Seq:" + glucoseRecord.sequenceNumber + "  Ketone:" + glucoseRecord.glucoseData / IBLE_Const.KetoneMultiplier + "mmol/L" +
-                    //                   "  Date:" + getDate(glucoseRecord.time) + "  TimeOffset:" + glucoseRecord.timeoffset +
-                    //                   "  HiLo:" + str_hilow + "  Meal: " + str_meal + "\n\n");
-                    //       } else {
-                            
+        } catch (Exception e) {
+        }
+    }
 
-                    //           events.success("## Seq mgdl:" + glucoseRecord.sequenceNumber + "  Glucose:" + glucoseRecord.glucoseData + "mg/dL" +
-                    //                   "  Date:" + getDate(glucoseRecord.time) + "  TimeOffset:" + glucoseRecord.timeoffset +
-                    //                   "  HiLo:" + str_hilow + "  Meal:" + str_meal + "\n\n");
-                    //           glucoseRecord.glucoseData = Double.parseDouble(String.valueOf(Math.round(10 * (double) glucoseRecord.glucoseData / IBLE_Const.GlucoseUnitConversionMultiplier) / 10.0));
-                    //           events.success("## Seq:" + glucoseRecord.sequenceNumber + "  Glucose:" + glucoseRecord.glucoseData + "mmol/L" +
-                    //                   "  Date:" + getDate(glucoseRecord.time) + "  TimeOffset:" + glucoseRecord.timeoffset +
-                    //                   "  HiLo:" + str_hilow + "  Meal:" + str_meal + "\n\n");
-                    //       }
-                    //   } catch (Exception e) {
-                    //   }
-                  }
-                  Map<String, Object> map = new HashMap();
-                  map.put("data", data);
-                  events.success(map);
-              }
-          });
-      }
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    private void initCallbackLollipop() {
+        if (mScanCallback != null) return;
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            this.mScanCallback = new ScanCallback() {
+                @Override
+                public void onScanResult(int callbackType, final ScanResult result) {
+                    super.onScanResult(callbackType, result);
+                    if (result != null) {
+                        try {
+                            if (IBLE_ScannerServiceParser.decodeDeviceAdvData(result.getScanRecord().getBytes())) {
+                                if (result.getDevice().getBondState() == BluetoothDevice.BOND_BONDED) {
+                                    addScannedDevice(result.getDevice(), result.getRssi(), true);
+                                } else {
+                                    addScannedDevice(result.getDevice(), result.getRssi(), false);
+                                }
+                            }
+                        } catch (Exception e) {
+                        }
+                    }
+                }
 
-      @Override
-      public void CallbackReadDeviceInfo(IBLE_Device ible_device) {
+                @Override
+                public void onBatchScanResults(List<ScanResult> results) {
+                    super.onBatchScanResults(results);
+                }
 
-          IBLE_Device device;
-          device = ible_device;
-
-          runOnUiThread(new Runnable() {
-              @Override
-              public void run() {
-                  events.success("CallbackReadDeviceInfo");
-                  IBLE_Manager.getInstance().RequestAllRecords();
-              }
-          });
-      }
-
-      @Override
-      public void CallbackError(IBLE_Error ible_error) {
-
-          runOnUiThread(new Runnable() {
-              @Override
-              public void run() {
-                  events.success("CallbackError");
-              }
-          });
-      }
-  };
-
-  private BluetoothAdapter.LeScanCallback mLEScanCallback = new BluetoothAdapter.LeScanCallback() {
-      @Override
-      public void onLeScan(BluetoothDevice device, int rssi, byte[] scanRecord) {
-          if (device != null) {
-              try {
-                  if (IBLE_ScannerServiceParser.decodeDeviceAdvData(scanRecord)) {
-                      if (device.getBondState() == BluetoothDevice.BOND_BONDED) {
-                          addScannedDevice(device, rssi, true);
-                      } else {
-                          addScannedDevice(device, rssi, false);
-                      }
-                  }
-              } catch (Exception e) {
-                  e.getMessage();
-              }
-          }
-      }
-  };
-
-  private void addScannedDevice(final BluetoothDevice device, final int rssi, final boolean isBonded) {
-      try {
-          runOnUiThread(new Runnable() {
-              @Override
-              public void run() {
-                  int count = mDeviceAdapter.getCount();
-                  mDeviceAdapter.addDevice(new ExtendedDevice(device, rssi, isBonded));
-                  if (count != mDeviceAdapter.getCount()) {
-
-                      ArrayList<ExtendedDevice> listItems = mDeviceAdapter.getList();
-                      ArrayList<Map<String, String>> data = new ArrayList<Map<String, String>>();
-
-                      for (int i = 0; i < listItems.size(); i++) {
-                          ExtendedDevice item = listItems.get(i);
-
-                          Map<String, String> map = new HashMap();
-                          map.put("address", item.device.getAddress());
-                          map.put("name", item.device.getName());
-                          data.add(map);
-
-                      }
-                      events.success(data);
-
-                  }
-              }
-          });
-
-      } catch (NullPointerException e) {
-
-      } catch (Exception e) {
-      }
-  }
-
-  @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-  private void initCallbackLollipop() {
-      if (mScanCallback != null) return;
-      if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-          this.mScanCallback = new ScanCallback() {
-              @Override
-              public void onScanResult(int callbackType, final ScanResult result) {
-                  super.onScanResult(callbackType, result);
-                  if (result != null) {
-                      try {
-                          if (IBLE_ScannerServiceParser.decodeDeviceAdvData(result.getScanRecord().getBytes())) {
-                              if (result.getDevice().getBondState() == BluetoothDevice.BOND_BONDED) {
-                                  addScannedDevice(result.getDevice(), result.getRssi(), true);
-                              } else {
-                                  addScannedDevice(result.getDevice(), result.getRssi(), false);
-                              }
-                          }
-                      } catch (Exception e) {
-                      }
-                  }
-              }
-
-              @Override
-              public void onBatchScanResults(List<ScanResult> results) {
-                  super.onBatchScanResults(results);
-              }
-
-              @Override
-              public void onScanFailed(int errorCode) {
-                  super.onScanFailed(errorCode);
-              }
-          };
-      }
-  }
+                @Override
+                public void onScanFailed(int errorCode) {
+                    super.onScanFailed(errorCode);
+                }
+            };
+        }
+    }
 
 
-  public boolean checkPermission(String[] permission) {
-      for (int i = 0; i < permission.length; i++) {
-          if (ContextCompat.checkSelfPermission(getApplicationContext(), permission[i]) < 0) {
-              return false;
-          }
-      }
-      return true;
-  }
+    public boolean checkPermission(String[] permission) {
+        for (int i = 0; i < permission.length; i++) {
+            if (ContextCompat.checkSelfPermission(getApplicationContext(), permission[i]) < 0) {
+                return false;
+            }
+        }
+        return true;
+    }
 
-  private boolean isGPSEnabled() {
-      if (!mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-          return false;
-      }
-      return true;
-  }
+    private boolean isGPSEnabled() {
+        if (!mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+            return false;
+        }
+        return true;
+    }
 
-  private boolean isBLEEnabled() {
-      final BluetoothAdapter adapter = mBluetoothManager.getAdapter();
-      return adapter != null && adapter.isEnabled();
-  }
+    private boolean isBLEEnabled() {
+        final BluetoothAdapter adapter = mBluetoothManager.getAdapter();
+        return adapter != null && adapter.isEnabled();
+    }
 
-  public void requestPermissions(String[] permission) {
-      for (int i = 0; i < permission.length; i++) {
-          if (ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this, permission[i]) == false) {
-              ActivityCompat.requestPermissions(MainActivity.this, permission, 100);
-              return;
-          }
-      }
-  }
+    public void requestPermissions(String[] permission) {
+        for (int i = 0; i < permission.length; i++) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this, permission[i]) == false) {
+                ActivityCompat.requestPermissions(MainActivity.this, permission, 100);
+                return;
+            }
+        }
+    }
 
-  public String getDate(long t) {
-      SimpleDateFormat sdfNow = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-      String date = sdfNow.format(t * 1000);
+    public String getDate(long t) {
+        SimpleDateFormat sdfNow = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String date = sdfNow.format(t * 1000);
 
-      return date;
-  }
-
-
-  private void initIBle(MethodChannel.Result result) {
+        return date;
+    }
 
 
-      boolean isBleAvailable = getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE) ? true : false;
-      if (isBleAvailable && Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-          mBluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
-          mBluetoothAdapter = mBluetoothManager.getAdapter();
-          if (mBluetoothAdapter == null) {
-              //ble_not_supported
-              result.success("bluetooth không hỗ trợ");
-          } else {
-              result.success("bluetooth sẵn sàng");
-          }
-      } else {
-          //BLE off. Turn on ble mode
-          result.success("bluetooth đang tắt");
-      }
-      mLocationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+    // call method chanel----------------------------------------------
 
-      IBLE_Manager.getInstance().SetCallback(mIBleCallback);
-      IBLE_Manager.getInstance().InitSDK(this);
-      mDeviceAdapter = new DeviceAdapter(this);
+    private void requestPermission() {
+        boolean isBleAvailable = getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE) ? true : false;
+        if (isBleAvailable && Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            mBluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
+            mBluetoothAdapter = mBluetoothManager.getAdapter();
+            if (mBluetoothAdapter == null) {
+                //ble_not_supported
+                emitData("ble_not_supported", null);
+            } else {
+                emitData("ble_already", null);
+            }
+        } else {
+            //BLE off. Turn on ble mode
+            emitData("ble_off", null);
+        }
+        mLocationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+        
+        String[] permission = new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION};
+        if (isBLEEnabled() && isGPSEnabled() && checkPermission(permission)) {
+            emitData("permission_grand", null);
+        } else if (isBLEEnabled() == false) {
+            //BT 설정화면으로 이동
+            final Intent enableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+            startActivity(enableIntent);
+        } else if (isGPSEnabled() == false) {
+            //GPS 설정화면으로 이동
+            Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+            intent.addCategory(Intent.CATEGORY_DEFAULT);
+            startActivity(intent);
+        } else if (checkPermission(permission) == false) {
+            requestPermissions(permission);
+        }
+
+    }
+
+    private void emitData(String event, Object data) {
+        Map<String, Object> map = new HashMap();
+        map.put("event", event);
+        map.put("data", data );
+        events.success(map);
+    }
+
+    private void initIBle() {
+        if (IBLE_Manager.mIBleManager == null) {
+            IBLE_Manager.getInstance().SetCallback(mIBleCallback);
+            IBLE_Manager.getInstance().InitSDK(this);
+            mDeviceAdapter = new DeviceAdapter(this);
+        }
+        
+    }
+
+    
+
+    private void startScan() {
+        mDeviceAdapter.clearDevices();
+        try {
+            if (mBluetoothAdapter.getState() == BluetoothAdapter.STATE_ON) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    if (mScanCallback == null)
+                        initCallbackLollipop();
+
+                    List<ScanFilter> filters = new ArrayList<ScanFilter>();
+
+                    ScanSettings settings = new ScanSettings.Builder()
+                            .setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY)
+                            .setReportDelay(0)
+                            .build();
+
+                    if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                        emitData("is_scanning", null);
+                        mBluetoothAdapter.getBluetoothLeScanner().flushPendingScanResults(mScanCallback);
+                        mBluetoothAdapter.getBluetoothLeScanner().stopScan(mScanCallback);
+                        mBluetoothAdapter.getBluetoothLeScanner().startScan(filters, settings, mScanCallback);
+                    } else {
+                        emitData("scanning_faild", null);
+                    }
+
+                } else {
+                    mBluetoothAdapter.startLeScan(mLEScanCallback);
+                    emitData("is_scanning", null);
+                }
 
 
-      String[] permission = new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION};
-      if (isBLEEnabled() && isGPSEnabled() && checkPermission(permission)) {
-        events.success("init_success");
-      } else if (isBLEEnabled() == false) {
-          //BT 설정화면으로 이동
-          final Intent enableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-          startActivity(enableIntent);
-      } else if (isGPSEnabled() == false) {
-          //GPS 설정화면으로 이동
-          Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-          intent.addCategory(Intent.CATEGORY_DEFAULT);
-          startActivity(intent);
-      } else if (checkPermission(permission) == false) {
-          requestPermissions(permission);
-      }
+            } else {
+                emitData("ble_off", null);
+            }
 
 
-  }
+        } catch (Exception e) {
+            emitData(e.getMessage().toString(), null);
+        }
 
-  private void startScan(MethodChannel.Result result) {
-      mDeviceAdapter.clearDevices();
-      try {
-          if (mBluetoothAdapter.getState() == BluetoothAdapter.STATE_ON) {
-              if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                  if (mScanCallback == null)
-                      initCallbackLollipop();
+    }
 
-                  List<ScanFilter> filters = new ArrayList<ScanFilter>();
+    public void stopScan() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        // Stop scan and flush pending scan
+                        mBluetoothAdapter.getBluetoothLeScanner().flushPendingScanResults(mScanCallback);
+                        mBluetoothAdapter.getBluetoothLeScanner().stopScan(mScanCallback);
+                    } else {
+                        mBluetoothAdapter.stopLeScan(mLEScanCallback);
+                    }
+                    emitData("stop_scan", null);
+                } catch (Exception e) {
+                    e.getMessage();
+                }
+            }
+        });
+        
+    }
 
-                  ScanSettings settings = new ScanSettings.Builder()
-                          .setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY)
-                          .setReportDelay(0)
-                          .build();
-
-                  if (1 == 1) {
-                      result.success("Scanning LOLLIPOP");
-                      mBluetoothAdapter.getBluetoothLeScanner().flushPendingScanResults(mScanCallback);
-                      mBluetoothAdapter.getBluetoothLeScanner().stopScan(mScanCallback);
-                      mBluetoothAdapter.getBluetoothLeScanner().startScan(filters, settings, mScanCallback);
-                      result.success("Scanning LOLLIPOP");
-                  } else {
-                      result.success("Scanning LOLLIPO faild");
-                  }
-
-              } else {
-                  mBluetoothAdapter.startLeScan(mLEScanCallback);
-                  result.success("Scanning");
-              }
-
-
-          } else {
-              result.success("bluetooth off");
-          }
-
-
-      } catch (Exception e) {
-          result.success(e.getMessage().toString());
-      }
-
-  }
-
-  private void connect(String address) {
-      runOnUiThread(new Runnable() {
-          @Override
-          public void run() {
-              ExtendedDevice device = mDeviceAdapter.getItem(address);
-              if (device != null) {
-                  IBLE_Manager.getInstance().ConnectDevice(device.device.toString());
-              } else {
-                  events.success("device_not_connect");
-              }
-          }
-      });
+    private void connect(String address) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                ExtendedDevice device = mDeviceAdapter.getItem(address);
+                if (device != null) {
+                    emitData("connecting device", null);
+                    IBLE_Manager.getInstance().ConnectDevice(device.device.toString());
+                } else {
+                    emitData("device_not_connect", null);
+                }
+            }
+        });
 
 
 
-  }
+    }
 
-  private void getData() {
-      runOnUiThread(new Runnable() {
-          @Override
-          public void run() {
-              IBLE_Manager.getInstance().RequestAllRecords();
-          }
-      });
+    private void disConnect() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                IBLE_Manager.getInstance().DisconnectDevice();
+            }
+        });
+    }
 
-  }
+    private void destroySDK() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                IBLE_Manager.getInstance().DestroySDK();
+            }
+        });
+    }
+
+    private void getData() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                IBLE_Manager.getInstance().RequestAllRecords();
+            }
+        });
+
+    }
 
 }

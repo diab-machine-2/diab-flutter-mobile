@@ -428,4 +428,13 @@ class Drawables {
   String get img_workaround => "lib/res/drawables/img_workaround.png";
   String get splash => "lib/res/drawables/splash.png";
   String get ic_device => "lib/res/drawables/ic_device.png";
+  String get ic_clipboard => "lib/res/drawables/ic_clipboard.png";
+  String get ic_connect_faild => "lib/res/drawables/ic_connect_faild.png";
+  String get ic_lamp_charge => "lib/res/drawables/ic_lamp_charge.png";
+  String get ic_active => "lib/res/drawables/ic_active.png";
+  String get ic_change_unit => "lib/res/drawables/ic_change_unit.png";
+  String get ic_unactive => "lib/res/drawables/ic_unactive.png";
+  String get ic_no_device => "lib/res/drawables/ic_no_device.png";
+  String get ic_bluetooth => "lib/res/drawables/ic_bluetooth.png";
+  String get ic_glucose_meter => "lib/res/drawables/ic_glucose_meter.png";
 }

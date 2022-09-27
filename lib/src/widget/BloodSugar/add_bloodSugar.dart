@@ -13,6 +13,7 @@ import 'package:medical/src/modal/glucose/glucose_timeFrame.dart';
 import 'package:medical/src/repo/HbA1C/HbA1C_client.dart';
 import 'package:medical/src/repo/glucose/glucose_client.dart';
 import 'package:medical/src/repo/home/home_client.dart';
+import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/BloodSugar/widget/action_list_trend.dart';
 import 'package:medical/src/widget/HbA1C/widget/CalendarPicker/custom_date_picker.dart';
 import 'package:medical/src/widget/HbA1C/widget/description/description.dart';
@@ -313,15 +314,18 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
                           ),
                         ),
                         GestureDetector(
-                          onTap: () {
-                            showModalBottomSheet(
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.vertical(
-                                        top: Radius.circular(15))),
-                                backgroundColor: R.color.white,
-                                context: context,
-                                isScrollControlled: true,
-                                builder: (context) => ListDevices());
+                          onTap: () async {
+                            final data = await Navigator.pushNamed(
+                                context, NavigatorName.connection_instructions);
+                            if (data != null && data is Map) {
+                              _controller.text = data['glucose'].toString();
+                              number = double.tryParse(data['glucose']) ?? 0;
+                              selectedDate =
+                                  DateTime.fromMillisecondsSinceEpoch(
+                                      (int.tryParse(data['date']) ?? 0) * 1000);
+                              loadTimeFrame();
+                              setState(() {});
+                            }
                           },
                           child: Container(
                               margin: EdgeInsets.only(
@@ -332,14 +336,22 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
                                 borderRadius: BorderRadius.circular(16),
                               ),
                               child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
-                                  Image.asset(R.drawable.ic_device,
-                                      width: 24, height: 24),
-                                  SizedBox(width: 8),
-                                  Text('Kết nối thiết bị và app',
-                                      style: TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w700)),
+                                  Row(
+                                    children: [
+                                      Image.asset(R.drawable.ic_device,
+                                          width: 24, height: 24),
+                                      SizedBox(width: 8),
+                                      Text('Kết nối thiết bị và app',
+                                          style: TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w700)),
+                                    ],
+                                  ),
+                                  Icon(Icons.navigate_next,
+                                      color: R.color.grayCaption)
                                 ],
                               )),
                         ),

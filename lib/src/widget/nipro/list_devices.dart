@@ -1,58 +1,30 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:medical/res/R.dart';
-import 'package:easy_localization/easy_localization.dart';
-import 'package:medical/src/widget/helper/show_message.dart';
+import 'package:medical/src/app_setting/app_setting.dart';
 
 class ListDevices extends StatefulWidget {
-  ListDevices();
+  final List<Map<String, String>> devices;
+  final VoidCallback request;
+  ListDevices({required Key key, required this.devices, required this.request})
+      : super(key: key);
+
   @override
-  _ListDevicesState createState() => _ListDevicesState();
+  State<ListDevices> createState() => ListDevicesState();
 }
 
-class _ListDevicesState extends State<ListDevices> {
-  MethodChannel _channel = const MethodChannel('iBleSdk');
-  EventChannel messageChannel = const EventChannel('eventChannelStreamiBle');
-
+class ListDevicesState extends State<ListDevices> {
   List<Map<String, String>> devices = [];
-
-  List<Map<String, String>> glucoses = [];
-
+  List<Map<String, dynamic>> savedDevices = [];
   @override
   void initState() {
+    devices = widget.devices;
     super.initState();
-    initSDK();
+    getDevices();
   }
 
-  initSDK() async {
-    messageChannel.receiveBroadcastStream().listen((event) async {
-      print(event.toString());
-      if (event is String && event == 'init_success') {
-        final result = await _channel.invokeMethod('startScan', {});
-        print(result);
-      } else if (event is List && event.length != 0) {
-        devices = [];
-        event.forEach((element) {
-          devices.add(Map<String, String>.from(element));
-        });
-        setState(() {});
-      } else if (event is String && event == 'CallbackReadDeviceInfo') {
-      } else if (event is Map) {
-        if (event['data'] != null && event['data'] is List) {
-          event['data'].forEach((element) {
-            glucoses.add(Map<String, String>.from(element));
-          });
-          Message.showToastMessage(context, glucoses.toString());
-        }
-      }
-    });
-    final result = await _channel.invokeMethod('initIBleSdk', {});
-    print(result);
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
+  getDevices() async {
+    savedDevices = AppSettings.getNiproDevices();
+    setState(() {});
   }
 
   @override
@@ -86,34 +58,207 @@ class _ListDevicesState extends State<ListDevices> {
               ],
             ),
             SizedBox(height: 16),
-            Expanded(
-              child: ListView.separated(
-                  shrinkWrap: true,
-                  padding: EdgeInsets.all(0),
-                  itemCount: devices.length,
-                  separatorBuilder: (context, index) =>
-                      Container(height: 1, color: R.color.grayBorder),
-                  itemBuilder: (BuildContext context, int index) {
-                    return GestureDetector(
-                      onTap: () {
-                        _channel.invokeMethod(
-                            'connect', devices[index]['address']);
-                        // _channel.invokeMethod('getData', {});
-                      },
-                      child: Container(
-                          height: 54,
-                          color: Colors.white,
-                          child: Row(
-                            children: [
-                              Text('Nipro Premier a',
+            savedDevices.length + devices.length == 0
+                ? Expanded(
+                    child: SingleChildScrollView(
+                      child: Column(children: [
+                        SizedBox(height: 32),
+                        Image.asset(R.drawable.ic_no_device, height: 110),
+                        SizedBox(height: 24),
+                        Text('Không tìm thấy thiết bị',
+                            style: TextStyle(
+                                fontSize: 20, fontWeight: FontWeight.bold)),
+                        SizedBox(height: 18),
+                        Text(
+                            'DiaB không tìm thấy thiết bị nào gần đây. Vui lòng kiểm tra lại thiết bị đã được bật chưa?',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                                fontSize: 16, color: Color(0xff8E8E8E))),
+                      ]),
+                    ),
+                  )
+                : Expanded(
+                    child: SingleChildScrollView(
+                      child: Column(
+                        children: [
+                          ListView.separated(
+                              shrinkWrap: true,
+                              physics: NeverScrollableScrollPhysics(),
+                              padding: EdgeInsets.all(0),
+                              itemCount: savedDevices.length,
+                              separatorBuilder: (context, index) => Container(
+                                  height: 1, color: R.color.grayBorder),
+                              itemBuilder: (BuildContext context, int index) {
+                                final device = savedDevices[index];
+                                return Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    index == 0 && savedDevices.length != 0
+                                        ? Padding(
+                                            padding:
+                                                EdgeInsets.only(bottom: 16),
+                                            child: Text('Máy đã kết nối',
+                                                style: TextStyle(
+                                                    fontSize: 14,
+                                                    color: Color(0xff8E8E8E),
+                                                    fontWeight:
+                                                        FontWeight.w700)),
+                                          )
+                                        : SizedBox(),
+                                    GestureDetector(
+                                      onTap: () {
+                                        Navigator.of(context).pop(device);
+                                      },
+                                      child: Container(
+                                          height: 54,
+                                          color: Colors.white,
+                                          child: Row(
+                                            children: [
+                                              Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  Text(device['name']!,
+                                                      style: TextStyle(
+                                                          fontSize: 16,
+                                                          fontWeight:
+                                                              FontWeight.w500)),
+                                                  Text(device['address']!,
+                                                      style: TextStyle(
+                                                          color: R.color
+                                                              .grayCaption,
+                                                          fontSize: 14,
+                                                          fontWeight:
+                                                              FontWeight.w400))
+                                                ],
+                                              ),
+                                            ],
+                                          )),
+                                    ),
+                                  ],
+                                );
+                              }),
+                          Container(
+                              height: 1,
+                              color: R.color.grayBorder,
+                              margin: EdgeInsets.only(bottom: 16)),
+                          ListView.separated(
+                              shrinkWrap: true,
+                              physics: NeverScrollableScrollPhysics(),
+                              padding: EdgeInsets.all(0),
+                              itemCount: devices.length,
+                              separatorBuilder: (context, index) => Container(
+                                  height: 1, color: R.color.grayBorder),
+                              itemBuilder: (BuildContext context, int index) {
+                                final device = devices[index];
+                                return Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    index == 0 && devices.length != 0
+                                        ? Padding(
+                                            padding:
+                                                EdgeInsets.only(bottom: 16),
+                                            child: Text(
+                                                'Danh sách thiết bị khác',
+                                                style: TextStyle(
+                                                    fontSize: 14,
+                                                    color: Color(0xff8E8E8E),
+                                                    fontWeight:
+                                                        FontWeight.w700)),
+                                          )
+                                        : SizedBox(),
+                                    GestureDetector(
+                                      onTap: () {
+                                        Navigator.of(context)
+                                            .pop(devices[index]);
+                                      },
+                                      child: Container(
+                                          height: 54,
+                                          color: Colors.white,
+                                          child: Row(
+                                            children: [
+                                              Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  Text(device['name']!,
+                                                      style: TextStyle(
+                                                          fontSize: 16,
+                                                          fontWeight:
+                                                              FontWeight.w500)),
+                                                  Text(device['address']!,
+                                                      style: TextStyle(
+                                                          color: R.color
+                                                              .grayCaption,
+                                                          fontSize: 14,
+                                                          fontWeight:
+                                                              FontWeight.w400))
+                                                ],
+                                              ),
+                                            ],
+                                          )),
+                                    ),
+                                  ],
+                                );
+                              })
+                        ],
+                      ),
+                    ),
+                  ),
+            SafeArea(
+              top: false,
+              child: Container(
+                  margin: EdgeInsets.all(16),
+                  child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.pop(context);
+                          },
+                          child: Container(
+                              height: 48,
+                              width: 164,
+                              decoration: BoxDecoration(
+                                color: R.color.grayBorder,
+                                borderRadius: BorderRadius.circular(200),
+                              ),
+                              child: Center(
+                                child: Text('Hủy',
+                                    style: TextStyle(
+                                        color: R.color.black,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w600)),
+                              )),
+                        ),
+                        GestureDetector(
+                          onTap: () {
+                            widget.request();
+                          },
+                          child: Container(
+                            height: 48,
+                            width: 164,
+                            decoration: BoxDecoration(
+                                color: R.color.mainColor,
+                                borderRadius: BorderRadius.circular(200),
+                                gradient: LinearGradient(
+                                    begin: Alignment.topLeft,
+                                    end: Alignment.centerRight,
+                                    colors: [
+                                      R.color.greenGradientTop,
+                                      R.color.greenGradientBottom
+                                    ])),
+                            child: Center(
+                              child: Text('Thử lại',
                                   style: TextStyle(
+                                      color: R.color.white,
                                       fontSize: 16,
-                                      fontWeight: FontWeight.w500)),
-                            ],
-                          )),
-                    );
-                  }),
-            ),
+                                      fontWeight: FontWeight.w600)),
+                            ),
+                          ),
+                        ),
+                      ])),
+            )
           ],
         ),
       ),
