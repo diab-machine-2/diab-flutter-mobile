@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_observer/Observable.dart';
 import 'package:flutter_observer/Observer.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/app_setting/app_sharing.dart';
@@ -24,6 +25,7 @@ import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/my_package/my_package_page.dart';
+import 'package:medical/src/widget/shared_profile/pages/share_app_detail.dart';
 import 'package:medical/src/widget/shared_profile/shared_profile.dart';
 import 'package:share_plus/share_plus.dart';
 import '../food_menu_screens/food_menu/food_menu_page.dart';
@@ -95,203 +97,202 @@ class _ProfileControllerState extends State<ProfileController> with Observer {
   Widget build(BuildContext context) {
     final user = AppSettings.userInfo!;
     return Scaffold(
-        appBar: CustomAppBar(
-          backgroundColor: R.color.color0xffB1DDDB.withOpacity(0.2),
-          hideAllBackButton: widget.hideAllBackButton,
-          title: Text(R.string.profile_file.tr(),
-              style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                  color: R.color.textDark)),
-          leadingIcon: IconButton(
-              splashColor: R.color.transparent,
-              highlightColor: R.color.transparent,
-              icon: Icon(Icons.arrow_back, color: R.color.textDark),
-              onPressed: () {
-                Navigator.pop(context);
-              }),
-        ),
-        body: Container(
-            color: R.color.color0xffB1DDDB.withOpacity(0.2),
-            padding: const EdgeInsets.all(16),
-            child: Center(
-              child: ListView(
-                children: [
-                  Row(children: [
-                    Container(
-                        clipBehavior: Clip.hardEdge,
-                        decoration: BoxDecoration(
-                            color: R.color.mainColor,
-                            borderRadius: BorderRadius.circular(52)),
-                        child: user.imageUrl!.url == null
-                            ? Icon(Icons.person,
-                                size: 104, color: R.color.white)
-                            : Image.network(
-                                user.imageUrl!.url!,
-                                width: 104,
-                                height: 104,
-                                errorBuilder: (BuildContext context,
-                                    Object error, StackTrace? stackTrace) {
-                                  return Icon(Icons.person,
-                                      size: 100, color: R.color.white);
-                                },
-                              )),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+      appBar: CustomAppBar(
+        backgroundColor: R.color.color0xffB1DDDB.withOpacity(0.2),
+        hideAllBackButton: widget.hideAllBackButton,
+        title: Text(R.string.profile_file.tr(),
+            style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+                color: R.color.textDark)),
+        leadingIcon: IconButton(
+            splashColor: R.color.transparent,
+            highlightColor: R.color.transparent,
+            icon: Icon(Icons.arrow_back, color: R.color.textDark),
+            onPressed: () {
+              Navigator.pop(context);
+            }),
+      ),
+      body: Container(
+        color: R.color.color0xffB1DDDB.withOpacity(0.2),
+        padding: const EdgeInsets.all(16),
+        child: Center(
+          child: ListView(
+            children: [
+              Row(children: [
+                Container(
+                    clipBehavior: Clip.hardEdge,
+                    decoration: BoxDecoration(
+                        color: R.color.mainColor,
+                        borderRadius: BorderRadius.circular(52)),
+                    child: user.imageUrl!.url == null
+                        ? Icon(Icons.person, size: 104, color: R.color.white)
+                        : Image.network(
+                            user.imageUrl!.url!,
+                            width: 104,
+                            height: 104,
+                            errorBuilder: (BuildContext context, Object error,
+                                StackTrace? stackTrace) {
+                              return Icon(Icons.person,
+                                  size: 100, color: R.color.white);
+                            },
+                          )),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          user.fullName!,
+                          style: TextStyle(
+                              color: R.color.textDark,
+                              fontSize: 20,
+                              fontWeight: FontWeight.w700),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        const SizedBox(height: 8),
+                        Text(R.string.user_id.tr(args: [user.code ?? '0']),
+                            style: TextStyle(
+                                color: R.color.primaryGreyColor,
+                                fontSize: 14,
+                                fontWeight: FontWeight.w400)),
+                        const SizedBox(height: 8),
+                        Row(
                           children: [
-                            Text(
-                              user.fullName!,
-                              style: TextStyle(
-                                  color: R.color.textDark,
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.w700),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
+                            Container(
+                              height: 32,
+                              decoration: BoxDecoration(
+                                  color: R.color.white,
+                                  borderRadius: BorderRadius.circular(16)),
+                              padding:
+                                  const EdgeInsets.only(left: 16, right: 16),
+                              child: Row(
+                                children: [
+                                  Image.asset(
+                                      isPro
+                                          ? R.drawable.ic_pro
+                                          : R.drawable.ic_crown_green,
+                                      width: 20,
+                                      height: 20),
+                                  const SizedBox(width: 8),
+                                  Text(
+                                      (userInfo?.packageName != null &&
+                                              userInfo!.packageName!.isNotEmpty)
+                                          ? userInfo!.packageName!
+                                          : R.string.thanh_vien_co_ban.tr(),
+                                      style: TextStyle(
+                                          color: R.color.textDark,
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w700))
+                                ],
+                              ),
                             ),
-                            const SizedBox(height: 8),
-                            Text(R.string.user_id.tr(args: [user.code ?? '0']),
-                                style: TextStyle(
-                                    color: R.color.primaryGreyColor,
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w400)),
-                            const SizedBox(height: 8),
-                            Row(
-                              children: [
-                                Container(
-                                  height: 32,
-                                  decoration: BoxDecoration(
-                                      color: R.color.white,
-                                      borderRadius: BorderRadius.circular(16)),
-                                  padding: const EdgeInsets.only(
-                                      left: 16, right: 16),
-                                  child: Row(
-                                    children: [
-                                      Image.asset(
-                                          isPro
-                                              ? R.drawable.ic_pro
-                                              : R.drawable.ic_crown_green,
-                                          width: 20,
-                                          height: 20),
-                                      const SizedBox(width: 8),
-                                      Text(
-                                          (userInfo?.packageName != null &&
-                                                  userInfo!
-                                                      .packageName!.isNotEmpty)
-                                              ? userInfo!.packageName!
-                                              : R.string.thanh_vien_co_ban.tr(),
-                                          style: TextStyle(
-                                              color: R.color.textDark,
-                                              fontSize: 14,
-                                              fontWeight: FontWeight.w700))
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            )
-                          ]),
-                    ),
-                  ]),
-                  //Buttons
-                  const SizedBox(height: 19),
-                  Row(children: [
-                    Expanded(
-                      child: buildItem(
-                          color: R.color.color0xffD3EFEE,
-                          title: R.string.blood_sugar_schedule_single_line.tr(),
-                          image: R.drawable.ic_blood_sugar_testing_schedule,
-                          onTap: () {
-                            Navigator.pushNamed(
-                                context, NavigatorName.schedule_glucose);
-                          }),
-                    ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: buildItem(
-                          color: R.color.orange_6,
-                          title: R.string.goal_setting.tr(),
-                          image: R.drawable.ic_set_goal,
-                          onTap: () {
-                            Navigator.pushNamed(
-                                context, NavigatorName.goal_setting);
-                          }),
-                    )
-                  ]),
-                  const SizedBox(height: 12),
-                  Row(children: [
-                    Expanded(
-                      child: buildItem(
-                          isShow: isPro,
-                          color: R.color.color0xffFCF8DA,
-                          title: R.string.remind.tr(),
-                          image: R.drawable.ic_remind,
-                          onTap: () {
-                            Navigator.pushNamed(
-                                context, NavigatorName.reminder);
-                          }),
-                    ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: buildItem(
-                          isShow: isPro,
-                          color: R.color.color0xffD3EFEE,
-                          title: R.string.food_menu.tr(),
-                          image: R.drawable.ic_food_menu,
-                          onTap: () {
-                            // if(userInfo?.ownPackage == null) {
-                            //   NavigationUtil.showUpdateRequirePopup(context: context, title: R.string.food_menu.tr());
-                            //   return;
-                            // }
-                            NavigationUtil.navigatePage(
-                                context, const FoodMenuPage());
-                          }),
-                    )
-                  ]),
-                  buildItem(
-                      isShow: !isPro,
-                      isRow: true,
+                          ],
+                        )
+                      ]),
+                ),
+              ]),
+              //Buttons
+              const SizedBox(height: 19),
+              Row(children: [
+                Expanded(
+                  child: buildItem(
+                      color: R.color.color0xffD3EFEE,
+                      title: R.string.blood_sugar_schedule_single_line.tr(),
+                      image: R.drawable.ic_blood_sugar_testing_schedule,
+                      onTap: () {
+                        Navigator.pushNamed(
+                            context, NavigatorName.schedule_glucose);
+                      }),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: buildItem(
+                      color: R.color.orange_6,
+                      title: R.string.goal_setting.tr(),
+                      image: R.drawable.ic_set_goal,
+                      onTap: () {
+                        Navigator.pushNamed(
+                            context, NavigatorName.goal_setting);
+                      }),
+                )
+              ]),
+              const SizedBox(height: 12),
+              Row(children: [
+                Expanded(
+                  child: buildItem(
+                      isShow: isPro,
                       color: R.color.color0xffFCF8DA,
                       title: R.string.remind.tr(),
                       image: R.drawable.ic_remind,
                       onTap: () {
                         Navigator.pushNamed(context, NavigatorName.reminder);
                       }),
-                  const SizedBox(height: 12),
-                  buildItem(
-                      isRow: true,
-                      color: R.color.color0xffFDE9E9,
-                      title: R.string.personal_schedule_single_line.tr(),
-                      image: R.drawable.ic_personal_schedule,
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: buildItem(
+                      isShow: isPro,
+                      color: R.color.color0xffD3EFEE,
+                      title: R.string.food_menu.tr(),
+                      image: R.drawable.ic_food_menu,
                       onTap: () {
-                        Navigator.pushNamed(
-                            context, NavigatorName.schedule_activity);
+                        // if(userInfo?.ownPackage == null) {
+                        //   NavigationUtil.showUpdateRequirePopup(context: context, title: R.string.food_menu.tr());
+                        //   return;
+                        // }
+                        NavigationUtil.navigatePage(
+                            context, const FoodMenuPage());
                       }),
-                  const SizedBox(height: 12),
-                  // buildItem(
-                  //     isRow: true,
-                  //     color: R.color.color0xffD3EFEE,
-                  //     title: R.string.my_package.tr(),
-                  //     image: R.drawable.ic_my_package,
-                  //     onTap: () {
-                  //       NavigationUtil.navigatePage(context, MyPackagePage());
-                  //     }),
-                  //const SizedBox(height: 16),
-                  buildAction(
-                      R.string.profile_information.tr(), R.drawable.ic_user, 0),
-                  buildAction("Mời bạn bè dùng App DiaB", R.drawable.ic_share, 6),
-                  buildAction(R.string.shared_profile_list.tr(),
-                      R.drawable.ic_share, 1),
-                  buildAction(
-                      R.string.user_manual.tr(), R.drawable.ic_question, 2),
-                  buildAction(R.string.information_security.tr(),
-                      R.drawable.ic_security, 3),
-                  // buildAction(R.string.contact_diab.tr(), R.drawable.ic_contact, 4),
-                  buildAction(
-                      R.string.password.tr(), R.drawable.ic_password, 5),
-                ],
-              ),
-            )));
+                )
+              ]),
+              buildItem(
+                  isShow: !isPro,
+                  isRow: true,
+                  color: R.color.color0xffFCF8DA,
+                  title: R.string.remind.tr(),
+                  image: R.drawable.ic_remind,
+                  onTap: () {
+                    Navigator.pushNamed(context, NavigatorName.reminder);
+                  }),
+              const SizedBox(height: 12),
+              buildItem(
+                  isRow: true,
+                  color: R.color.color0xffFDE9E9,
+                  title: R.string.personal_schedule_single_line.tr(),
+                  image: R.drawable.ic_personal_schedule,
+                  onTap: () {
+                    Navigator.pushNamed(
+                        context, NavigatorName.schedule_activity);
+                  }),
+              const SizedBox(height: 12),
+              // buildItem(
+              //     isRow: true,
+              //     color: R.color.color0xffD3EFEE,
+              //     title: R.string.my_package.tr(),
+              //     image: R.drawable.ic_my_package,
+              //     onTap: () {
+              //       NavigationUtil.navigatePage(context, MyPackagePage());
+              //     }),
+              //const SizedBox(height: 16),
+              buildAction(
+                  R.string.profile_information.tr(), R.drawable.ic_user, 0),
+              buildAction("Mời bạn bè dùng App DiaB", R.drawable.ic_share, 6),
+              buildAction(
+                  R.string.shared_profile_list.tr(), R.drawable.ic_share, 1),
+              buildAction(R.string.user_manual.tr(), R.drawable.ic_question, 2),
+              buildAction(R.string.information_security.tr(),
+                  R.drawable.ic_security, 3),
+              // buildAction(R.string.contact_diab.tr(), R.drawable.ic_contact, 4),
+              buildAction(R.string.password.tr(), R.drawable.ic_password, 5),
+              buildAction("Ưu đãi của bạn", R.icons.ic_gift, 7),
+              SizedBox(height: 15),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 
   Widget buildItem({
@@ -343,6 +344,7 @@ class _ProfileControllerState extends State<ProfileController> with Observer {
   }
 
   Widget buildAction(String title, String icon, int index) {
+    bool isSvgIcon = icon.split('.').last == "svg";
     return GestureDetector(
       onTap: () async {
         if (index == 0) {
@@ -369,10 +371,13 @@ class _ProfileControllerState extends State<ProfileController> with Observer {
         } else if (index == 5) {
           Navigator.pushNamed(context, NavigatorName.change_password);
         } else if (index == 6) {
-          String? shareLink = DynamicLinkConfig.instance.shareLink;
-          if (shareLink != null) {
-            AppShare.instance.userReferralCode(context, shareLink);
-          }
+          Navigator.pushNamed(context, NavigatorName.share_app_detail);
+          // String? shareLink = DynamicLinkConfig.instance.shareLink;
+          // if (shareLink != null) {
+          //   AppShare.instance.userReferralCode(context, shareLink);
+          // }
+        } else if (index == 7) {
+          Navigator.pushNamed(context, NavigatorName.voucher_list);
         }
       },
       child: Container(
@@ -382,7 +387,14 @@ class _ProfileControllerState extends State<ProfileController> with Observer {
             children: [
               Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
                 Row(children: [
-                  Image.asset(icon, width: 20, height: 20),
+                  isSvgIcon
+                      ? SvgPicture.asset(
+                          icon,
+                          width: 20,
+                          height: 20,
+                          color: R.color.accentColor,
+                        )
+                      : Image.asset(icon, width: 20, height: 20),
                   const SizedBox(width: 16),
                   Text(title, style: const TextStyle(fontSize: 16))
                 ]),

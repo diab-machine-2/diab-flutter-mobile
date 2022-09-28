@@ -32,7 +32,7 @@ dependencies:
   json_annotation: ^4.1.0
   bot_toast: ^4.0.1
   smooth_page_indicator: ^1.0.0+2
-  flutter_animated_dialog: ^2.0.1
+  # flutter_animated_dialog: ^2.0.1
   fluttertoast: ^8.0.8
   # image_picker: ^0.6.7+22
   image_picker: ^0.8.5+3
