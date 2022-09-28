@@ -279,9 +279,12 @@ class _ProfileControllerState extends State<ProfileController> with Observer {
                   //const SizedBox(height: 16),
                   buildAction(
                       R.string.profile_information.tr(), R.drawable.ic_user, 0),
-                  buildAction("Mời bạn bè dùng App DiaB", R.drawable.ic_share, 6),
+                  buildAction(
+                      "Mời bạn bè dùng App DiaB", R.drawable.ic_share, 6),
                   buildAction(R.string.shared_profile_list.tr(),
                       R.drawable.ic_share, 1),
+                  buildAction('Kết nối sức khoẻ từ thiết bị và app',
+                      R.drawable.ic_heart_connect, 7),
                   buildAction(
                       R.string.user_manual.tr(), R.drawable.ic_question, 2),
                   buildAction(R.string.information_security.tr(),
@@ -373,6 +376,8 @@ class _ProfileControllerState extends State<ProfileController> with Observer {
           if (shareLink != null) {
             AppShare.instance.userReferralCode(context, shareLink);
           }
+        } else if (index == 7) {
+          Navigator.pushNamed(context, NavigatorName.connect_device_app);
         }
       },
       child: Container(

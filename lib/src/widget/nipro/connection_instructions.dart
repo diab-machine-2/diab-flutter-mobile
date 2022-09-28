@@ -1,8 +1,13 @@
+import 'dart:async';
+
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
+import 'package:medical/src/modal/HbA1C/short_gui.dart';
+import 'package:medical/src/repo/glucose/glucose_client.dart';
+import 'package:medical/src/widget/HbA1C/widget/description/description_detail.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/nipro/list_data.dart';
@@ -12,6 +17,8 @@ import 'package:timelines/timelines.dart';
 import 'package:app_settings/app_settings.dart' as Settings;
 
 class ConnectionInstructionsController extends StatefulWidget {
+  final bool? connectOnly;
+  ConnectionInstructionsController({@required this.connectOnly});
   @override
   State<ConnectionInstructionsController> createState() =>
       _ConnectionInstructionsControllerState();
@@ -22,6 +29,8 @@ class _ConnectionInstructionsControllerState
   MethodChannel _channel = const MethodChannel('iBleSdk');
   EventChannel messageChannel = const EventChannel('eventChannelStreamiBle');
 
+  String userManual = '';
+
   GlobalKey<ListDevicesState> listDevicesKey = GlobalKey();
 
   bool initSuccess = false;
@@ -30,10 +39,13 @@ class _ConnectionInstructionsControllerState
   String dataText = '';
   Map<String, String>? device;
 
+  Timer? _timer;
+
   @override
   void initState() {
     super.initState();
     initSDK();
+    loadHowToUse();
   }
 
   initSDK() async {
@@ -55,8 +67,6 @@ class _ConnectionInstructionsControllerState
       } else if (event == 'init_success') {
         BotToast.closeAllLoading();
         //_channel.invokeMethod('start_scan');
-      } else if (event == 'stop_scan') {
-        isScanning = false;
       } else if (event == 'new_device' && data.length != 0) {
         BotToast.closeAllLoading();
 
@@ -66,7 +76,10 @@ class _ConnectionInstructionsControllerState
           listDevicesKey.currentState!.setState(() {});
         }
       } else if (event == 'device_connected') {
-        _channel.invokeMethod('get_data');
+        if (widget.connectOnly == null || !widget.connectOnly!) {
+          _channel.invokeMethod('get_data');
+        }
+
         if (device != null) {
           List<Map<String, String>> savedDevices =
               AppSettings.getNiproDevices();
@@ -105,23 +118,57 @@ class _ConnectionInstructionsControllerState
         if (event == 'connect_error' || event == 'device_not_connect') {
           _showDialogConnectFaild(context);
         }
+      } else if (event == 'is_scanning') {
+        isScanning = true;
+        if (listDevicesKey.currentState != null) {
+          listDevicesKey.currentState!.isScanning = isScanning;
+          listDevicesKey.currentState!.setState(() {});
+        }
+      } else if (event == 'stop_scan') {
+        isScanning = false;
+        if (listDevicesKey.currentState != null) {
+          listDevicesKey.currentState!.isScanning = isScanning;
+          listDevicesKey.currentState!.setState(() {});
+        }
       }
     });
     _channel.invokeMethod('request_permission');
   }
 
   startScan() {
+    _timer?.cancel();
+    _timer = new Timer.periodic(
+      Duration(seconds: 1),
+      (Timer timer) {
+        if (timer.tick > 60) {
+          stopScan();
+        }
+      },
+    );
     isScanning = true;
     _channel.invokeMethod('start_scan');
   }
 
   stopScan() {
+    _timer?.cancel();
     isScanning = true;
     _channel.invokeMethod('stop_scan');
   }
 
+  loadHowToUse() async {
+    try {
+      BotToast.showLoading();
+      userManual = await GlucoseClient().fetchUserManual();
+      BotToast.closeAllLoading();
+    } catch (e) {
+      BotToast.closeAllLoading();
+      print(e);
+    }
+  }
+
   @override
   void dispose() {
+    _timer?.cancel();
     //_channel.invokeMethod('destroy_sdk');
     super.dispose();
   }
@@ -263,7 +310,20 @@ class _ConnectionInstructionsControllerState
                                   SizedBox(height: 8),
                                   GestureDetector(
                                     onTap: () async {
-                                      //
+                                      showDialog(
+                                        barrierColor: R.color.color0xff003F38
+                                            .withOpacity(0.8),
+                                        useSafeArea: false,
+                                        context: context,
+                                        builder: (_) => DetailDescription(
+                                            input: true,
+                                            data: ShortGuiModel(
+                                                content1: userManual,
+                                                content2: userManual,
+                                                content3: userManual,
+                                                content4: userManual),
+                                            title: 'Hướng dẫn bật Bluetooth'),
+                                      );
                                     },
                                     child: Text('Hướng dẫn',
                                         style: TextStyle(
@@ -294,9 +354,10 @@ class _ConnectionInstructionsControllerState
                         }));
                 if (result != null) {
                   device = result;
-                  //BotToast.showLoading();
+                  BotToast.showLoading();
                   _channel.invokeMethod('connect', device!['address']);
                 }
+                stopScan();
               },
               child: SafeArea(
                 top: false,
@@ -354,7 +415,7 @@ class _ConnectionInstructionsControllerState
                     Padding(
                       padding: const EdgeInsets.only(top: 16.0),
                       child: Text(
-                          'Xin lỗi bạn hiện tại DiaB không hỗ trợ kết nối máy này.',
+                          'Bạn vui lòng bật Bluetooth của thiết bị lên để kết nối.',
                           textAlign: TextAlign.center,
                           style: TextStyle(
                               color: Color(0xff8E8E8E), fontSize: 16)),

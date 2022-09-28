@@ -437,4 +437,9 @@ class Drawables {
   String get ic_no_device => "lib/res/drawables/ic_no_device.png";
   String get ic_bluetooth => "lib/res/drawables/ic_bluetooth.png";
   String get ic_glucose_meter => "lib/res/drawables/ic_glucose_meter.png";
+  String get ic_connect_from_device =>
+      "lib/res/drawables/ic_connect_from_device.png";
+  String get ic_connect_apple => "lib/res/drawables/ic_connect_apple.png";
+  String get ic_connect_samsung => "lib/res/drawables/ic_connect_samsung.png";
+  String get ic_heart_connect => "lib/res/drawables/ic_heart_connect.png";
 }

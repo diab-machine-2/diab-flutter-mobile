@@ -136,56 +136,32 @@ public class MainActivity extends FlutterActivity {
 
         @Override
         public void CallbackInitSDK(int version) {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    emitData("init_success", null);
+            emitData("init_success", null);
                     emitData("SDK init Success with Version : " + version, null);
-                }
-            });
             
         }
 
         @Override
         public void CallbackConnectedDevice() {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    emitData("connected", null);
-                }
-            });
+            emitData("connected", null);
         }
 
         @Override
         public void CallbackDisconnectedDevice() {
 
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    emitData("device_disconnect", null);
-                }
-            });
+            emitData("device_disconnect", null);
         }
 
         @Override
         public void CallbackRequestTimeSync() {
 
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    emitData("CallbackRequestTimeSync", null);
-                }
-            });
+            emitData("CallbackRequestTimeSync", null);
         }
 
         @Override
         public void CallbackRequestRecordsComplete(SparseArray<IBLE_GlucoseRecord> sparseArray) {
 
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                 
-                    SparseArray<IBLE_GlucoseRecord> mRecords = sparseArray;
+            SparseArray<IBLE_GlucoseRecord> mRecords = sparseArray;
                     if (mRecords == null || mRecords.size() <= 0) {
                         emitData("empty_data", null);
                         return;
@@ -201,73 +177,17 @@ public class MainActivity extends FlutterActivity {
                     }
                     
                     emitData("get_data_success", data);
-                    // for (int i = mRecords.size() - 1; i >= 0; i--) {
-                    //     final IBLE_GlucoseRecord glucoseRecord = mRecords.valueAt(i);
-                    //     try {
-                    //         String str_hilow = "-";
-
-                    //         if (glucoseRecord.flag_ketone == 1) {
-                    //             if (glucoseRecord.flag_hilow == -2) str_hilow = "Lo"; //ketone Low
-                    //             else if (glucoseRecord.flag_hilow == 1)
-                    //                 str_hilow = "Hi"; //ketone High
-                    //         } else {
-                    //             if (glucoseRecord.flag_hilow == -1) str_hilow = "Lo"; //glucose Low
-                    //             else if (glucoseRecord.flag_hilow == 1)
-                    //                 str_hilow = "Hi"; //glucose High
-                    //         }
-
-                    //         String str_meal = "-";
-                    //         if (glucoseRecord.flag_meal == -1) {
-                    //             str_meal = "before";
-                    //         } else if (glucoseRecord.flag_meal == 1) {
-                    //             str_meal = "after";
-                    //         }
-
-                    //         if (glucoseRecord.flag_ketone == 1) {
-
-                    //             events.success("## Seq:" + glucoseRecord.sequenceNumber + "  Ketone:" + glucoseRecord.glucoseData / IBLE_Const.KetoneMultiplier + "mmol/L" +
-                    //                     "  Date:" + getDate(glucoseRecord.time) + "  TimeOffset:" + glucoseRecord.timeoffset +
-                    //                     "  HiLo:" + str_hilow + "  Meal: " + str_meal + "\n\n");
-                    //         } else {
-                    //             events.success("## Seq mgdl:" + glucoseRecord.sequenceNumber + "  Glucose:" + glucoseRecord.glucoseData + "mg/dL" +
-                    //                     "  Date:" + getDate(glucoseRecord.time) + "  TimeOffset:" + glucoseRecord.timeoffset +
-                    //                     "  HiLo:" + str_hilow + "  Meal:" + str_meal + "\n\n");
-                    //             glucoseRecord.glucoseData = Double.parseDouble(String.valueOf(Math.round(10 * (double) glucoseRecord.glucoseData / IBLE_Const.GlucoseUnitConversionMultiplier) / 10.0));
-                    //             events.success("## Seq:" + glucoseRecord.sequenceNumber + "  Glucose:" + glucoseRecord.glucoseData + "mmol/L" +
-                    //                     "  Date:" + getDate(glucoseRecord.time) + "  TimeOffset:" + glucoseRecord.timeoffset +
-                    //                     "  HiLo:" + str_hilow + "  Meal:" + str_meal + "\n\n");
-                    //         }
-                    //     } catch (Exception e) {
-                    //     }
-                    // }
-                }
-            });
         }
 
         @Override
         public void CallbackReadDeviceInfo(IBLE_Device ible_device) {
-
-            IBLE_Device device;
-            device = ible_device;
-
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    emitData("CallbackReadDeviceInfo", null);
-                    emitData("device_connected", null);
-                }
-            });
+            emitData("CallbackReadDeviceInfo", null);
+            emitData("device_connected", null);
         }
 
         @Override
         public void CallbackError(IBLE_Error ible_error) {
-
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    emitData("connect_error", null);
-                }
-            });
+            emitData("connect_error", null);
         }
     };
 
@@ -284,6 +204,7 @@ public class MainActivity extends FlutterActivity {
                         }
                     }
                 } catch (Exception e) {
+                    emitData("scan_error",null);
                     e.getMessage();
                 }
             }
@@ -292,10 +213,7 @@ public class MainActivity extends FlutterActivity {
 
     private void addScannedDevice(final BluetoothDevice device, final int rssi, final boolean isBonded) {
         try {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    int count = mDeviceAdapter.getCount();
+            int count = mDeviceAdapter.getCount();
                     mDeviceAdapter.addDevice(new ExtendedDevice(device, rssi, isBonded));
                     if (count != mDeviceAdapter.getCount()) {
 
@@ -314,12 +232,10 @@ public class MainActivity extends FlutterActivity {
                         emitData("new_device",data);
 
                     }
-                }
-            });
-
         } catch (NullPointerException e) {
-
+            emitData("scan_error",null);
         } catch (Exception e) {
+            emitData("scan_error",null);
         }
     }
 
@@ -341,6 +257,7 @@ public class MainActivity extends FlutterActivity {
                                 }
                             }
                         } catch (Exception e) {
+                            emitData("scan_error",null);
                         }
                     }
                 }
@@ -348,11 +265,13 @@ public class MainActivity extends FlutterActivity {
                 @Override
                 public void onBatchScanResults(List<ScanResult> results) {
                     super.onBatchScanResults(results);
+                    emitData("scan_error",null);
                 }
 
                 @Override
                 public void onScanFailed(int errorCode) {
                     super.onScanFailed(errorCode);
+                    emitData("scan_error",null);
                 }
             };
         }
@@ -435,10 +354,16 @@ public class MainActivity extends FlutterActivity {
     }
 
     private void emitData(String event, Object data) {
-        Map<String, Object> map = new HashMap();
-        map.put("event", event);
-        map.put("data", data );
-        events.success(map);
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Map<String, Object> map = new HashMap();
+                map.put("event", event);
+                map.put("data", data );
+                events.success(map);
+            }
+        });
+        
     }
 
     private void initIBle() {
@@ -488,76 +413,47 @@ public class MainActivity extends FlutterActivity {
 
 
         } catch (Exception e) {
-            emitData(e.getMessage().toString(), null);
+            emitData("scan_error",null);
+            //emitData(e.getMessage().toString(), null);
         }
 
     }
 
     public void stopScan() {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                        // Stop scan and flush pending scan
-                        mBluetoothAdapter.getBluetoothLeScanner().flushPendingScanResults(mScanCallback);
-                        mBluetoothAdapter.getBluetoothLeScanner().stopScan(mScanCallback);
-                    } else {
-                        mBluetoothAdapter.stopLeScan(mLEScanCallback);
-                    }
-                    emitData("stop_scan", null);
-                } catch (Exception e) {
-                    e.getMessage();
-                }
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                // Stop scan and flush pending scan
+                mBluetoothAdapter.getBluetoothLeScanner().flushPendingScanResults(mScanCallback);
+                mBluetoothAdapter.getBluetoothLeScanner().stopScan(mScanCallback);
+            } else {
+                mBluetoothAdapter.stopLeScan(mLEScanCallback);
             }
-        });
-        
+            emitData("stop_scan", null);
+        } catch (Exception e) {
+            e.getMessage();
+        }
     }
 
     private void connect(String address) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                ExtendedDevice device = mDeviceAdapter.getItem(address);
+        ExtendedDevice device = mDeviceAdapter.getItem(address);
                 if (device != null) {
                     emitData("connecting device", null);
                     IBLE_Manager.getInstance().ConnectDevice(device.device.toString());
                 } else {
                     emitData("device_not_connect", null);
                 }
-            }
-        });
-
-
-
     }
 
     private void disConnect() {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                IBLE_Manager.getInstance().DisconnectDevice();
-            }
-        });
+        IBLE_Manager.getInstance().DisconnectDevice();
     }
 
     private void destroySDK() {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                IBLE_Manager.getInstance().DestroySDK();
-            }
-        });
+        IBLE_Manager.getInstance().DestroySDK();
     }
 
     private void getData() {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                IBLE_Manager.getInstance().RequestAllRecords();
-            }
-        });
-
+        IBLE_Manager.getInstance().RequestAllRecords();
     }
 
 }

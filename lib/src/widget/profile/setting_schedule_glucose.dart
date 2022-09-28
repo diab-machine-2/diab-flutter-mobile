@@ -88,8 +88,7 @@ class _SettingScheduleGlucoseControllerState
                 Padding(
                   padding:
                       EdgeInsets.only(left: 16, right: 16, top: 8, bottom: 16),
-                  child: Text(
-                      R.string.setup_reminder_time_and_unit.tr()),
+                  child: Text(R.string.setup_reminder_time_and_unit.tr()),
                 ),
                 timeModel == null
                     ? SizedBox()
@@ -103,9 +102,12 @@ class _SettingScheduleGlucoseControllerState
                                     fontSize: 16,
                                     fontWeight: FontWeight.w600)),
                           ),
-                          buildItem(R.string.truoc_an.tr(), R.string.minute.tr(), 0),
-                          buildItem(R.string.sau_an.tr(), R.string.minute.tr(), 1),
-                          buildItem(R.string.before_sleep.tr(), R.string.minute.tr(), 2),
+                          buildItem(
+                              R.string.truoc_an.tr(), R.string.minute.tr(), 0),
+                          buildItem(
+                              R.string.sau_an.tr(), R.string.minute.tr(), 1),
+                          buildItem(R.string.before_sleep.tr(),
+                              R.string.minute.tr(), 2),
                           Padding(
                             padding: EdgeInsets.all(16),
                             child: Column(
@@ -128,13 +130,15 @@ class _SettingScheduleGlucoseControllerState
                                         0: SizedBox(
                                             height: 46,
                                             child: Center(
-                                                child: Text(R.string.mmol_l.tr(),
+                                                child: Text(
+                                                    R.string.mmol_l.tr(),
                                                     style: TextStyle(
                                                         color: timeModel!
                                                                     .glucoseUnit ==
                                                                 2
                                                             ? R.color.mainColor
-                                                            : R.color.primaryGreyColor,
+                                                            : R.color
+                                                                .primaryGreyColor,
                                                         fontWeight: timeModel!
                                                                     .glucoseUnit ==
                                                                 2
@@ -150,7 +154,8 @@ class _SettingScheduleGlucoseControllerState
                                                                     .glucoseUnit ==
                                                                 1
                                                             ? R.color.mainColor
-                                                            : R.color.primaryGreyColor,
+                                                            : R.color
+                                                                .primaryGreyColor,
                                                         fontWeight: timeModel!
                                                                     .glucoseUnit ==
                                                                 1
@@ -282,7 +287,10 @@ class _SettingScheduleGlucoseControllerState
                             color: R.color.black,
                             fontSize: 40,
                             fontWeight: FontWeight.w700)),
-                    Container(height: 1, width: 120, color: R.color.grayComponentBorder)
+                    Container(
+                        height: 1,
+                        width: 120,
+                        color: R.color.grayComponentBorder)
                   ]),
                   Text(unit,
                       style: TextStyle(
@@ -301,8 +309,9 @@ class _SettingScheduleGlucoseControllerState
       BotToast.showLoading();
       await UserClient().updateScheduleGlucoseSetting(timeModel!);
       await UserClient().fetchUser();
-      Observable.instance.notifyObservers([], notifyName : "setup_schedule_change");
-      Observable.instance.notifyObservers([], notifyName : "refresh_home");
+      Observable.instance
+          .notifyObservers([], notifyName: "setup_schedule_change");
+      Observable.instance.notifyObservers([], notifyName: "refresh_home");
       // DartNotificationCenter.post(channel: 'setup_schedule_change');
       // DartNotificationCenter.post(channel: 'refresh_home');
       BotToast.closeAllLoading();

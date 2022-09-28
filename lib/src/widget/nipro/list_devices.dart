@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 class ListDevices extends StatefulWidget {
   final List<Map<String, String>> devices;
@@ -14,7 +15,8 @@ class ListDevices extends StatefulWidget {
 
 class ListDevicesState extends State<ListDevices> {
   List<Map<String, String>> devices = [];
-  List<Map<String, dynamic>> savedDevices = [];
+  List<Map<String, String>> savedDevices = [];
+  bool isScanning = true;
   @override
   void initState() {
     devices = widget.devices;
@@ -58,7 +60,7 @@ class ListDevicesState extends State<ListDevices> {
               ],
             ),
             SizedBox(height: 16),
-            savedDevices.length + devices.length == 0
+            !isScanning && (savedDevices.length + devices.length == 0)
                 ? Expanded(
                     child: SingleChildScrollView(
                       child: Column(children: [
@@ -105,43 +107,16 @@ class ListDevicesState extends State<ListDevices> {
                                                         FontWeight.w700)),
                                           )
                                         : SizedBox(),
-                                    GestureDetector(
-                                      onTap: () {
-                                        Navigator.of(context).pop(device);
-                                      },
-                                      child: Container(
-                                          height: 54,
-                                          color: Colors.white,
-                                          child: Row(
-                                            children: [
-                                              Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                children: [
-                                                  Text(device['name']!,
-                                                      style: TextStyle(
-                                                          fontSize: 16,
-                                                          fontWeight:
-                                                              FontWeight.w500)),
-                                                  Text(device['address']!,
-                                                      style: TextStyle(
-                                                          color: R.color
-                                                              .grayCaption,
-                                                          fontSize: 14,
-                                                          fontWeight:
-                                                              FontWeight.w400))
-                                                ],
-                                              ),
-                                            ],
-                                          )),
-                                    ),
+                                    buildItem(context, device)
                                   ],
                                 );
                               }),
-                          Container(
-                              height: 1,
-                              color: R.color.grayBorder,
-                              margin: EdgeInsets.only(bottom: 16)),
+                          savedDevices.length + devices.length == 0
+                              ? SizedBox()
+                              : Container(
+                                  height: 1,
+                                  color: R.color.grayBorder,
+                                  margin: EdgeInsets.only(bottom: 16)),
                           ListView.separated(
                               shrinkWrap: true,
                               physics: NeverScrollableScrollPhysics(),
@@ -167,101 +142,107 @@ class ListDevicesState extends State<ListDevices> {
                                                         FontWeight.w700)),
                                           )
                                         : SizedBox(),
-                                    GestureDetector(
-                                      onTap: () {
-                                        Navigator.of(context)
-                                            .pop(devices[index]);
-                                      },
-                                      child: Container(
-                                          height: 54,
-                                          color: Colors.white,
-                                          child: Row(
-                                            children: [
-                                              Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                children: [
-                                                  Text(device['name']!,
-                                                      style: TextStyle(
-                                                          fontSize: 16,
-                                                          fontWeight:
-                                                              FontWeight.w500)),
-                                                  Text(device['address']!,
-                                                      style: TextStyle(
-                                                          color: R.color
-                                                              .grayCaption,
-                                                          fontSize: 14,
-                                                          fontWeight:
-                                                              FontWeight.w400))
-                                                ],
-                                              ),
-                                            ],
-                                          )),
-                                    ),
+                                    buildItem(context, device),
                                   ],
                                 );
-                              })
+                              }),
+                          !isScanning
+                              ? SizedBox()
+                              : SpinKitFadingCircle(
+                                  color: Colors.black,
+                                  size: 20.0,
+                                )
                         ],
                       ),
                     ),
                   ),
-            SafeArea(
-              top: false,
-              child: Container(
-                  margin: EdgeInsets.all(16),
-                  child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        GestureDetector(
-                          onTap: () {
-                            Navigator.pop(context);
-                          },
-                          child: Container(
-                              height: 48,
-                              width: 164,
-                              decoration: BoxDecoration(
-                                color: R.color.grayBorder,
-                                borderRadius: BorderRadius.circular(200),
+            !isScanning && (savedDevices.length + devices.length == 0)
+                ? SafeArea(
+                    top: false,
+                    child: Container(
+                        margin: EdgeInsets.all(16),
+                        child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              GestureDetector(
+                                onTap: () {
+                                  Navigator.pop(context);
+                                },
+                                child: Container(
+                                    height: 48,
+                                    width: 164,
+                                    decoration: BoxDecoration(
+                                      color: R.color.grayBorder,
+                                      borderRadius: BorderRadius.circular(200),
+                                    ),
+                                    child: Center(
+                                      child: Text('Hủy',
+                                          style: TextStyle(
+                                              color: R.color.black,
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w600)),
+                                    )),
                               ),
-                              child: Center(
-                                child: Text('Hủy',
-                                    style: TextStyle(
-                                        color: R.color.black,
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w600)),
-                              )),
-                        ),
-                        GestureDetector(
-                          onTap: () {
-                            widget.request();
-                          },
-                          child: Container(
-                            height: 48,
-                            width: 164,
-                            decoration: BoxDecoration(
-                                color: R.color.mainColor,
-                                borderRadius: BorderRadius.circular(200),
-                                gradient: LinearGradient(
-                                    begin: Alignment.topLeft,
-                                    end: Alignment.centerRight,
-                                    colors: [
-                                      R.color.greenGradientTop,
-                                      R.color.greenGradientBottom
-                                    ])),
-                            child: Center(
-                              child: Text('Thử lại',
-                                  style: TextStyle(
-                                      color: R.color.white,
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600)),
-                            ),
-                          ),
-                        ),
-                      ])),
-            )
+                              GestureDetector(
+                                onTap: () {
+                                  widget.request();
+                                },
+                                child: Container(
+                                  height: 48,
+                                  width: 164,
+                                  decoration: BoxDecoration(
+                                      color: R.color.mainColor,
+                                      borderRadius: BorderRadius.circular(200),
+                                      gradient: LinearGradient(
+                                          begin: Alignment.topLeft,
+                                          end: Alignment.centerRight,
+                                          colors: [
+                                            R.color.greenGradientTop,
+                                            R.color.greenGradientBottom
+                                          ])),
+                                  child: Center(
+                                    child: Text('Thử lại',
+                                        style: TextStyle(
+                                            color: R.color.white,
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w600)),
+                                  ),
+                                ),
+                              ),
+                            ])),
+                  )
+                : SizedBox()
           ],
         ),
       ),
     ));
+  }
+
+  Widget buildItem(BuildContext context, Map<String, String> device) {
+    return GestureDetector(
+      onTap: () {
+        Navigator.of(context).pop(device);
+      },
+      child: Container(
+          height: 54,
+          color: Colors.white,
+          child: Row(
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(device['name']!,
+                      style:
+                          TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
+                  Text(device['address']!,
+                      style: TextStyle(
+                          color: R.color.grayCaption,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w400))
+                ],
+              ),
+            ],
+          )),
+    );
   }
 }

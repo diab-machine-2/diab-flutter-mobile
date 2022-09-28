@@ -57,4 +57,5 @@ class NavigatorName {
   static const String question_detail = '/question_detail';
   static const String news_detail = '/news_detail';
   static const String connection_instructions = '/connection_instructions';
+  static const String connect_device_app = '/connect_device_app';
 }

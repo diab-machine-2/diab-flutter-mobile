@@ -10,9 +10,11 @@ import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/modal/HbA1C/short_gui.dart';
 import 'package:medical/src/modal/glucose/glucose_input.dart';
 import 'package:medical/src/modal/glucose/glucose_timeFrame.dart';
+import 'package:medical/src/modal/user/schedule_glucose_time.dart';
 import 'package:medical/src/repo/HbA1C/HbA1C_client.dart';
 import 'package:medical/src/repo/glucose/glucose_client.dart';
 import 'package:medical/src/repo/home/home_client.dart';
+import 'package:medical/src/repo/user/user_client.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/BloodSugar/widget/action_list_trend.dart';
 import 'package:medical/src/widget/HbA1C/widget/CalendarPicker/custom_date_picker.dart';
@@ -65,6 +67,7 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
   ShortGuiModel? des;
 
   double mmollToMgdlFactor = 18.018;
+  bool fromNipro = false;
 
   void initState() {
     super.initState();
@@ -233,6 +236,7 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
                                                     fontWeight:
                                                         FontWeight.w500)),
                                             onChanged: (value) {
+                                              fromNipro = false;
                                               final newValue =
                                                   value.split(',').join('.');
                                               number = newValue.isEmpty
@@ -268,42 +272,73 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
                                       height: 1,
                                       width: 74,
                                       color: R.color.color0xffE5E5E5)),
-                              _controller.text.isEmpty
-                                  ? SizedBox()
-                                  : Padding(
-                                      padding: EdgeInsets.only(top: 16),
-                                      child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            Row(children: [
-                                              Image.asset(R.drawable.ic_repeat,
-                                                  width: 22, height: 22),
-                                              SizedBox(width: 8),
-                                              Text(
-                                                  R.string.corresponding_to
-                                                      .tr(),
-                                                  style:
-                                                      TextStyle(fontSize: 16))
-                                            ]),
-                                            Text(
-                                                roundNumber(roundAsFixed(AppSettings
-                                                                    .userInfo!
-                                                                    .glucoseUnit ==
-                                                                1
-                                                            ? number! /
-                                                                mmollToMgdlFactor
-                                                            : number! *
-                                                                mmollToMgdlFactor))
-                                                        .toString() +
-                                                    (AppSettings.userInfo!
-                                                                .glucoseUnit ==
-                                                            2
-                                                        ? ' ${R.string.mg_dl.tr()}'
-                                                        : ' ${R.string.mmol_l.tr()}'),
-                                                style: TextStyle(fontSize: 16)),
-                                          ]),
-                                    ),
+                              GestureDetector(
+                                onTap: () {
+                                  changeUnit();
+                                },
+                                child: Container(
+                                  margin: EdgeInsets.only(top: 20),
+                                  padding: EdgeInsets.all(12),
+                                  decoration: BoxDecoration(
+                                      color: Color(0xffE5F6F0),
+                                      borderRadius: BorderRadius.circular(8)),
+                                  child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Image.asset(R.drawable.ic_change_unit,
+                                            height: 16),
+                                        SizedBox(width: 6),
+                                        Text(
+                                            'Chuyển đơn vị: ' +
+                                                (AppSettings.userInfo!
+                                                            .glucoseUnit ==
+                                                        2
+                                                    ? R.string.mg_dl.tr()
+                                                    : R.string.mmol_l.tr()),
+                                            style: TextStyle(
+                                                fontSize: 16,
+                                                color: Color(0xff4BB2AB),
+                                                fontWeight: FontWeight.w500))
+                                      ]),
+                                ),
+                              ),
+                              // _controller.text.isEmpty
+                              //     ? SizedBox()
+                              //     : Padding(
+                              //         padding: EdgeInsets.only(top: 16),
+                              //         child: Row(
+                              //             mainAxisAlignment:
+                              //                 MainAxisAlignment.spaceBetween,
+                              //             children: [
+                              //               Row(children: [
+                              //                 Image.asset(R.drawable.ic_repeat,
+                              //                     width: 22, height: 22),
+                              //                 SizedBox(width: 8),
+                              //                 Text(
+                              //                     R.string.corresponding_to
+                              //                         .tr(),
+                              //                     style:
+                              //                         TextStyle(fontSize: 16))
+                              //               ]),
+                              //               Text(
+                              //                   roundNumber(roundAsFixed(AppSettings
+                              //                                       .userInfo!
+                              //                                       .glucoseUnit ==
+                              //                                   1
+                              //                               ? number! /
+                              //                                   mmollToMgdlFactor
+                              //                               : number! *
+                              //                                   mmollToMgdlFactor))
+                              //                           .toString() +
+                              //                       (AppSettings.userInfo!
+                              //                                   .glucoseUnit ==
+                              //                               2
+                              //                           ? ' ${R.string.mg_dl.tr()}'
+                              //                           : ' ${R.string.mmol_l.tr()}'),
+                              //                   style: TextStyle(fontSize: 16)),
+                              //             ]),
+                              //       ),
                               SizedBox(height: 8),
                               !showReason
                                   ? SizedBox()
@@ -318,8 +353,21 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
                             final data = await Navigator.pushNamed(
                                 context, NavigatorName.connection_instructions);
                             if (data != null && data is Map) {
-                              _controller.text = data['glucose'].toString();
-                              number = double.tryParse(data['glucose']) ?? 0;
+                              fromNipro = true;
+
+                              final glucose =
+                                  double.tryParse(data['glucose']) ?? 0;
+                              number = AppSettings.userInfo!.glucoseUnit == 1
+                                  ? glucose
+                                  : (roundAsFixed(glucose / mmollToMgdlFactor));
+                              _controller.text = number.toString();
+
+                              showReason = (AppSettings.userInfo!.glucoseUnit ==
+                                          1
+                                      ? (number! < 55 || number! > 250)
+                                      : (number! < 55 / mmollToMgdlFactor ||
+                                          number! > 250 / mmollToMgdlFactor)) &&
+                                  number! > 0;
                               selectedDate =
                                   DateTime.fromMillisecondsSinceEpoch(
                                       (int.tryParse(data['date']) ?? 0) * 1000);
@@ -800,6 +848,7 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
           numberInput,
           showReason ? reason : null,
           note,
+          fromNipro,
           removeIDs,
           paths);
       if (result == true) {
@@ -852,6 +901,7 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
           number.toString(),
           showReason ? reason : null,
           note,
+          fromNipro,
           paths);
       if (result == true) {
         // if(widget.goalId != null && widget.goalId?.isNotEmpty == true){
@@ -863,6 +913,39 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
       }
 
       BotToast.closeAllLoading();
+    } catch (e, _) {
+      BotToast.closeAllLoading();
+      if (e is Error) {
+        Message.showToastMessage(context, e.message);
+      } else {
+        Message.showToastMessage(context, e.toString());
+      }
+    }
+  }
+
+  changeUnit() async {
+    try {
+      BotToast.showLoading();
+      ScheduleGlucoseTimeModel timeModel =
+          await UserClient().fetchScheduleGlucoseSetting();
+      await UserClient().updateScheduleGlucoseSetting(ScheduleGlucoseTimeModel(
+          beforeEat: timeModel.beforeEat,
+          afterEat: timeModel.afterEat,
+          beforeSleeping: timeModel.beforeSleeping,
+          glucoseUnit: timeModel.glucoseUnit == 1 ? 2 : 1));
+      await UserClient().fetchUser();
+      Observable.instance
+          .notifyObservers([], notifyName: "setup_schedule_change");
+      Observable.instance.notifyObservers([], notifyName: "refresh_home");
+      // DartNotificationCenter.post(channel: 'setup_schedule_change');
+      // DartNotificationCenter.post(channel: 'refresh_home');
+      BotToast.closeAllLoading();
+      final glucose = roundAsFixed(AppSettings.userInfo!.glucoseUnit == 1
+          ? number! * mmollToMgdlFactor
+          : number! / mmollToMgdlFactor);
+      _controller.text = glucose.toString();
+      number = glucose;
+      setState(() {});
     } catch (e, _) {
       BotToast.closeAllLoading();
       if (e is Error) {
