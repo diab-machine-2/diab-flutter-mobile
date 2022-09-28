@@ -1,3 +1,4 @@
+import 'package:medical/src/modal/base/images.dart';
 import 'package:medical/src/model/response/lesson_module_response.dart';
 
 class QuestionModel {
@@ -16,6 +17,8 @@ class QuestionModel {
     this.creatorId,
     this.creatorUrl,
     this.answers,
+    this.rateAnswer,
+    this.pictureUrls = const [],
   });
 
   String? id;
@@ -30,8 +33,10 @@ class QuestionModel {
   Account? professor;
   Answer? answer;
   List<Answer>? answers;
+  List<ImagesModel> pictureUrls;
   String? creatorId;
   Avatar? creatorUrl;
+  RateAnswer? rateAnswer;
 
   QuestionModel copyWith({
     String? id,
@@ -48,6 +53,8 @@ class QuestionModel {
     String? creatorId,
     Avatar? creatorUrl,
     List<Answer>? answers,
+    List<ImagesModel>? pictureUrls,
+    RateAnswer? rateAnswer,
   }) {
     return QuestionModel(
       id: id ?? this.id,
@@ -64,9 +71,10 @@ class QuestionModel {
       creatorId: creatorId ?? this.creatorId,
       creatorUrl: creatorUrl ?? this.creatorUrl,
       answers: answers ?? this.answers,
+      pictureUrls: pictureUrls ?? const [],
+      rateAnswer: rateAnswer,
     );
   }
-
 
   factory QuestionModel.fromJson(Map<String, dynamic> json) => QuestionModel(
         id: json["id"],
@@ -77,13 +85,27 @@ class QuestionModel {
         creator: json["creator"],
         accountId: json["accountId"],
         lessonModuleId: json["lessonModuleId"],
-        lessonModule: json["lessonModule"] != null ? LessonModuleItem.fromJson(json["lessonModule"]) : null,
+        lessonModule: json["lessonModule"] != null
+            ? LessonModuleItem.fromJson(json["lessonModule"])
+            : null,
         creatorId: json["creatorId"],
-        professor: json["professor"] != null ? Account.fromJson(json["professor"]) : null,
-        creatorUrl: json["creatorUrl"] != null ? Avatar.fromJson(json["creatorUrl"]) : null,
+        professor: json["professor"] != null
+            ? Account.fromJson(json["professor"])
+            : null,
+        creatorUrl: json["creatorUrl"] != null
+            ? Avatar.fromJson(json["creatorUrl"])
+            : null,
         answer: json["answer"] != null ? Answer.fromJson(json["answer"]) : null,
-        answers: json["answers"] == null ? [] : List<Answer>.from(json["answers"].map((x) => Answer.fromJson(x))),
-
+        rateAnswer: json["rateAnswer"] != null
+            ? RateAnswer.fromJson(json["rateAnswer"])
+            : null,
+        answers: json["answers"] == null
+            ? []
+            : List<Answer>.from(json["answers"].map((x) => Answer.fromJson(x))),
+        pictureUrls: json["pictureUrls"] == null
+            ? []
+            : List<ImagesModel>.from(
+                json["pictureUrls"].map((x) => ImagesModel.fromJson(x))),
       );
 
   Map<String, dynamic> toJson() => {
@@ -99,8 +121,12 @@ class QuestionModel {
         "professor": professor == null ? null : professor!.toJson(),
         "creatorUrl": creatorUrl == null ? null : creatorUrl!.toJson(),
         "answer": answer == null ? null : answer!.toJson(),
-        "answers": answers == null ? null : List<dynamic>.from(answers!.map((x) => x.toJson())),
-
+        "rateAnswer": rateAnswer == null ? null : rateAnswer!.toJson(),
+        "answers": answers == null
+            ? null
+            : List<dynamic>.from(answers!.map((x) => x.toJson())),
+        "pictureUrls":
+            List<ImagesModel>.from(pictureUrls.map((x) => x.toJson())),
       };
 }
 
@@ -112,6 +138,7 @@ class Answer {
     this.account,
     this.questionId,
     this.accountId,
+    this.rateAnswer,
   });
 
   String? id;
@@ -120,14 +147,19 @@ class Answer {
   Account? account;
   String? questionId;
   String? accountId;
+  RateAnswer? rateAnswer;
 
   factory Answer.fromJson(Map<String, dynamic> json) => Answer(
         id: json["id"],
         body: json["body"],
         createDateTime: json["createDateTime"],
-        account: json["account"] != null ? Account.fromJson(json["account"]) : null,
+        account:
+            json["account"] != null ? Account.fromJson(json["account"]) : null,
         questionId: json["questionId"],
         accountId: json["accountId"],
+        rateAnswer: json["rateAnswer"] != null
+            ? RateAnswer.fromJson(json["rateAnswer"])
+            : null,
       );
 
   Map<String, dynamic> toJson() => {
@@ -135,6 +167,7 @@ class Answer {
         "body": body,
         "createDateTime": createDateTime,
         "account": account == null ? null : account!.toJson(),
+        "rateAnswer": rateAnswer == null ? null : rateAnswer!.toJson(),
         "questionId": questionId,
         "accountId": accountId,
       };
@@ -233,13 +266,18 @@ class Account {
         firstLogin: json["firstLogin"],
         accountRoles: json["accountRoles"] == null
             ? null
-            : List<AccountRole>.from(json["accountRoles"].map((x) => AccountRole.fromJson(x))),
-        accountRule: json["accountRule"] == null ? null : AccountRule.fromJson(json["accountRule"]),
+            : List<AccountRole>.from(
+                json["accountRoles"].map((x) => AccountRole.fromJson(x))),
+        accountRule: json["accountRule"] == null
+            ? null
+            : AccountRule.fromJson(json["accountRule"]),
         accountPositionMappings: json["accountPositionMappings"] == null
             ? null
-            : List<AccountPositionMapping>.from(
-                json["accountPositionMappings"].map((x) => AccountPositionMapping.fromJson(x))),
-        roles: json["roles"] == null ? null : List<String>.from(json["roles"].map((x) => x)),
+            : List<AccountPositionMapping>.from(json["accountPositionMappings"]
+                .map((x) => AccountPositionMapping.fromJson(x))),
+        roles: json["roles"] == null
+            ? null
+            : List<String>.from(json["roles"].map((x) => x)),
         avatar: json["avatar"] == null ? null : Avatar.fromJson(json["avatar"]),
       );
 
@@ -269,11 +307,14 @@ class Account {
         "level": level,
         "typeOfWork": typeOfWork,
         "firstLogin": firstLogin,
-        "accountRoles": accountRoles == null ? null : List<dynamic>.from(accountRoles!.map((x) => x.toJson())),
+        "accountRoles": accountRoles == null
+            ? null
+            : List<dynamic>.from(accountRoles!.map((x) => x.toJson())),
         "accountRule": accountRule == null ? null : accountRule!.toJson(),
         "accountPositionMappings": accountPositionMappings == null
             ? null
-            : List<dynamic>.from(accountPositionMappings!.map((x) => x.toJson())),
+            : List<dynamic>.from(
+                accountPositionMappings!.map((x) => x.toJson())),
         "roles": roles == null ? null : List<String>.from(roles!.map((x) => x)),
         "avatar": avatar == null ? null : avatar!.toJson(),
       };
@@ -292,11 +333,14 @@ class AccountPositionMapping {
   String? positionId;
   Position? position;
 
-  factory AccountPositionMapping.fromJson(Map<String, dynamic> json) => AccountPositionMapping(
+  factory AccountPositionMapping.fromJson(Map<String, dynamic> json) =>
+      AccountPositionMapping(
         id: json["id"],
         accountId: json["accountId"],
         positionId: json["positionId"],
-        position: json["position"] == null ? null : Position.fromJson(json["position"]),
+        position: json["position"] == null
+            ? null
+            : Position.fromJson(json["position"]),
       );
 
   Map<String, dynamic> toJson() => {
@@ -379,7 +423,9 @@ class Role {
         name: json["name"],
         code: json["code"],
         isSystem: json["isSystem"],
-        accountRoles: json["accountRoles"] == null ? null : List<dynamic>.from(json["accountRoles"].map((x) => x)),
+        accountRoles: json["accountRoles"] == null
+            ? null
+            : List<dynamic>.from(json["accountRoles"].map((x) => x)),
       );
 
   Map<String, dynamic> toJson() => {
@@ -387,7 +433,9 @@ class Role {
         "name": name,
         "code": code,
         "isSystem": isSystem,
-        "accountRoles": accountRoles == null ? null : List<dynamic>.from(accountRoles!.map((x) => x)),
+        "accountRoles": accountRoles == null
+            ? null
+            : List<dynamic>.from(accountRoles!.map((x) => x)),
       };
 }
 
@@ -415,12 +463,12 @@ class AccountRule {
         amount: json["amount"],
         accountRuleTypeMappings: json["accountRuleTypeMappings"] == null
             ? null
-            : List<AccountRuleTypeMapping>.from(
-                json["accountRuleTypeMappings"].map((x) => AccountRuleTypeMapping.fromJson(x))),
+            : List<AccountRuleTypeMapping>.from(json["accountRuleTypeMappings"]
+                .map((x) => AccountRuleTypeMapping.fromJson(x))),
         accountRuleTagMappings: json["accountRuleTagMappings"] == null
             ? null
-            : List<AccountRuleTagMapping>.from(
-                json["accountRuleTagMappings"].map((x) => AccountRuleTagMapping.fromJson(x))),
+            : List<AccountRuleTagMapping>.from(json["accountRuleTagMappings"]
+                .map((x) => AccountRuleTagMapping.fromJson(x))),
       );
 
   Map<String, dynamic> toJson() => {
@@ -430,9 +478,12 @@ class AccountRule {
         "amount": amount,
         "accountRuleTypeMappings": accountRuleTypeMappings == null
             ? null
-            : List<dynamic>.from(accountRuleTypeMappings!.map((x) => x.toJson())),
-        "accountRuleTagMappings":
-            accountRuleTagMappings == null ? null : List<dynamic>.from(accountRuleTagMappings!.map((x) => x.toJson())),
+            : List<dynamic>.from(
+                accountRuleTypeMappings!.map((x) => x.toJson())),
+        "accountRuleTagMappings": accountRuleTagMappings == null
+            ? null
+            : List<dynamic>.from(
+                accountRuleTagMappings!.map((x) => x.toJson())),
       };
 }
 
@@ -453,7 +504,8 @@ class AccountRuleTagMapping {
   Tag? tag;
   int? modelStatus;
 
-  factory AccountRuleTagMapping.fromJson(Map<String, dynamic> json) => AccountRuleTagMapping(
+  factory AccountRuleTagMapping.fromJson(Map<String, dynamic> json) =>
+      AccountRuleTagMapping(
         id: json["id"],
         code: json["code"],
         accountRuleId: json["accountRuleId"],
@@ -509,7 +561,8 @@ class AccountRuleTypeMapping {
   double? value;
   String? accountRuleId;
 
-  factory AccountRuleTypeMapping.fromJson(Map<String, dynamic> json) => AccountRuleTypeMapping(
+  factory AccountRuleTypeMapping.fromJson(Map<String, dynamic> json) =>
+      AccountRuleTypeMapping(
         id: json["id"],
         ruleType: json["ruleType"],
         value: json["value"],
@@ -542,4 +595,18 @@ class Avatar {
         "id": id,
         "url": url,
       };
+}
+
+class RateAnswer {
+  late num rate;
+
+  RateAnswer.fromJson(Map<String, dynamic> json) {
+    this.rate = json["rate"] ?? 0;
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data["rate"] = this.rate;
+    return data;
+  }
 }

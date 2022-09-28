@@ -10,6 +10,7 @@ import 'package:medical/src/model/response/common_response.dart';
 import 'package:medical/src/model/response/question_answer_response.dart';
 import 'package:medical/src/model/service/api_result.dart';
 import 'package:medical/src/model/service/network_exceptions.dart';
+import 'package:medical/src/repo/question_answer/question_answer_client.dart';
 import 'package:medical/src/widget/question_answer/all_question_answer/model/question_model.dart';
 import '../question_detail.dart';
 
@@ -24,7 +25,8 @@ class QuestionDetailCubit extends Cubit<QuestionDetailState> {
   double titleHeight = 280;
   final ScrollController commentScrollController = ScrollController();
 
-  QuestionDetailCubit(this.repository, this.isAll, this.questionModel) : super(QuestionDetailInitial()) {
+  QuestionDetailCubit(this.repository, this.isAll, this.questionModel)
+      : super(QuestionDetailInitial()) {
     getQuestionById(isShowLoading: true);
   }
 
@@ -41,12 +43,14 @@ class QuestionDetailCubit extends Cubit<QuestionDetailState> {
     }
   }
 
-  getQuestionById({bool isShowLoading = false, bool isUpdateListQuestion = false}) async {
+  getQuestionById(
+      {bool isShowLoading = false, bool isUpdateListQuestion = false}) async {
     if (isShowLoading) {
       await Future.delayed(Duration(milliseconds: 100));
       emit(QuestionDetailLoading());
     }
-    final ApiResult<QuestionResponse> apiResult = await repository.getQuestionById(questionModel.id!);
+    final ApiResult<QuestionResponse> apiResult =
+        await repository.getQuestionById(questionModel.id!);
     apiResult.when(success: (QuestionResponse response) {
       if (response.data != null) {
         questionModel = questionModel.copyWith(
@@ -62,18 +66,21 @@ class QuestionDetailCubit extends Cubit<QuestionDetailState> {
           professor: response.data!.professor,
           answer: response.data!.answer,
           answers: response.data!.answers,
+          pictureUrls: response.data!.pictureUrls,
         );
         canRefreshScreen = true;
         emit(const QuestionDetailSuccess());
 
-        if(isUpdateListQuestion) {
-        Observable.instance.notifyObservers([], notifyName: "update_all_question");
-        Observable.instance.notifyObservers([], notifyName: "update_my_question");
+        if (isUpdateListQuestion) {
+          Observable.instance
+              .notifyObservers([], notifyName: "update_all_question");
+          Observable.instance
+              .notifyObservers([], notifyName: "update_my_question");
         }
         //if (questionModel.answers != null && questionModel.answers!.isNotEmpty) {
         //   commentScrollController.jumpTo(questionModel.answers!.length - 1);
         //}
-        
+
         // if (isAll) {
         //   if (questionModel.status == 0) {
         //     if (questionModel.answers != null && questionModel.answers!.isNotEmpty) {
@@ -120,22 +127,28 @@ class QuestionDetailCubit extends Cubit<QuestionDetailState> {
     canRefreshScreen = false;
     emit(QuestionDetailLoading());
     final MakeCommentRequest request = MakeCommentRequest(
-        body: body?.trim() ?? '', questionId: questionModel.id, accountId: userInfo.accountId, isComment: true);
-    final ApiResult<CommonResponse> apiResult = await repository.makeComment(request);
+        body: body?.trim() ?? '',
+        questionId: questionModel.id,
+        accountId: userInfo.accountId,
+        isComment: true);
+    final ApiResult<CommonResponse> apiResult =
+        await repository.makeComment(request);
     apiResult.when(success: (CommonResponse response) async {
       getQuestionById(isUpdateListQuestion: true);
     }, failure: (NetworkExceptions error) {
-  //    emit(MakeCommentFailure(NetworkExceptions.getErrorMessage(error)));
+      //    emit(MakeCommentFailure(NetworkExceptions.getErrorMessage(error)));
     });
   }
 
   Future<void> deleteQuestion(String id) async {
     emit(QuestionDetailLoading());
     canRefreshScreen = false;
-    final ApiResult<CommonResponse> apiResult = await repository.deleteQuestion(id);
+    final ApiResult<CommonResponse> apiResult =
+        await repository.deleteQuestion(id);
     apiResult.when(success: (CommonResponse response) {
       canRefreshScreen = true;
-      Observable.instance.notifyObservers([], notifyName: "update_all_question");
+      Observable.instance
+          .notifyObservers([], notifyName: "update_all_question");
       Observable.instance.notifyObservers([], notifyName: "update_my_question");
       emit(DeleteQuestionSuccess(message: id));
     }, failure: (NetworkExceptions error) {
@@ -147,19 +160,34 @@ class QuestionDetailCubit extends Cubit<QuestionDetailState> {
   Future<void> deleteComment(String id) async {
     emit(QuestionDetailLoading());
     canRefreshScreen = false;
-    final ApiResult<CommonResponse> apiResult = await repository.deleteComment(id);
+    final ApiResult<CommonResponse> apiResult =
+        await repository.deleteComment(id);
     apiResult.when(success: (CommonResponse response) {
       canRefreshScreen = true;
       if (questionModel.answers != null) {
         questionModel.answers!.removeWhere((element) => element.id == id);
       }
-      Observable.instance.notifyObservers([], notifyName: "update_all_question");
+      Observable.instance
+          .notifyObservers([], notifyName: "update_all_question");
       Observable.instance.notifyObservers([], notifyName: "update_my_question");
       emit(DeleteCommentSuccess(message: id));
     }, failure: (NetworkExceptions error) {
       canRefreshScreen = true;
       emit(DeleteCommentFailure(NetworkExceptions.getErrorMessage(error)));
     });
+  }
+
+  Future<void> ratingComment(String commentId, {required int rate}) async {
+    emit(QuestionDetailLoading());
+    canRefreshScreen = false;
+    var response = await QuestionAnswerClient()
+        .ratingComment(commentId: commentId, rate: rate.toString());
+    if (response is bool && response) {
+      emit(RatingCommentSuccess(message: commentId));
+    } else if (response is Error) {
+      emit(RatingCommentFailure());
+    }
+    canRefreshScreen = true;
   }
 
   setClickSend() {

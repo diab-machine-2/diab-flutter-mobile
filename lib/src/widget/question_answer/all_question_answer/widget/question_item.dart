@@ -1,4 +1,6 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:medical/res/R.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -30,12 +32,11 @@ class QuestionItem extends StatefulWidget {
   _QuestionItemState createState() => _QuestionItemState();
 }
 
-class _QuestionItemState extends State<QuestionItem> with AutomaticKeepAliveClientMixin {
-
+class _QuestionItemState extends State<QuestionItem>
+    with AutomaticKeepAliveClientMixin {
   @override
   void initState() {
     super.initState();
-   
   }
 
   @override
@@ -59,27 +60,29 @@ class _QuestionItemState extends State<QuestionItem> with AutomaticKeepAliveClie
       actionPane: SlidableDrawerActionPane(),
       secondaryActions: [
         Container(
-            margin: EdgeInsets.only(left: 8, right: 8, top: 8, bottom: 8),
-            clipBehavior: Clip.hardEdge,
-            decoration: BoxDecoration(borderRadius: BorderRadius.circular(8)),
-            child: IconSlideAction(
-          color: R.color.color0xffFF5552,
-          iconWidget: Container(
-            padding: EdgeInsets.symmetric(horizontal: 16),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Image.asset(R.drawable.ic_trash2, width: 24, height: 24),
-                SizedBox(height: 8),
-                Text(R.string.delete_question.tr(),
-                    style: TextStyle(color: R.color.white, fontWeight: FontWeight.w500), textAlign: TextAlign.center),
-              ],
+          margin: EdgeInsets.only(left: 8, right: 8, top: 8, bottom: 8),
+          clipBehavior: Clip.hardEdge,
+          decoration: BoxDecoration(borderRadius: BorderRadius.circular(8)),
+          child: IconSlideAction(
+            color: R.color.color0xffFF5552,
+            iconWidget: Container(
+              padding: EdgeInsets.symmetric(horizontal: 16),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Image.asset(R.drawable.ic_trash2, width: 24, height: 24),
+                  SizedBox(height: 8),
+                  Text(R.string.delete_question.tr(),
+                      style: TextStyle(
+                          color: R.color.white, fontWeight: FontWeight.w500),
+                      textAlign: TextAlign.center),
+                ],
+              ),
             ),
+            onTap: () {
+              _showDialogDelete(context, questionModel.id!);
+            },
           ),
-          onTap: () {
-            _showDialogDelete(context, questionModel.id!);
-          },
-        ),
         ),
       ],
       child: _buildQuestionItemInCard(widget.questionModel),
@@ -87,79 +90,98 @@ class _QuestionItemState extends State<QuestionItem> with AutomaticKeepAliveClie
   }
 
   _buildQuestionItemInCard(QuestionModel questionModel) {
-    if(questionModel.answer == null){
-      if(questionModel.answers != null && questionModel.answers?.isNotEmpty == true){
+    if (questionModel.answer == null) {
+      if (questionModel.answers != null &&
+          questionModel.answers?.isNotEmpty == true) {
         questionModel.answer = questionModel.answers!.last;
       }
     }
     return Card(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8.0),
-        ),
-        color: R.color.white,
-        margin: EdgeInsets.symmetric(vertical: 8),
-        elevation: 2,
-        child: Container(
-      padding: EdgeInsets.all(16),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _buildHeaderItem(questionModel),
-          SizedBox(height: 12),
-          _buildTitleItem(questionModel),
-          SizedBox(height: (questionModel.answer != null) ? 16 : 0),
-          Visibility(
-            visible: questionModel.answer != null,
-            child: Divider(height: 0.5, color: R.color.grayBorder),
-          ),
-          SizedBox(height: 8),
-          // ListView.builder(
-          //   itemCount: questionModel.answers?.length ?? 0,
-          //   shrinkWrap: true,
-          //   physics: NeverScrollableScrollPhysics(),
-          //   itemBuilder: (context, position) {
-          //     return _buildDoctorItemInQuestionItem(
-          //         questionModel.answers != null ? questionModel.answers![position] : null);
-          //   },
-          // ),
-          _buildDoctorItemInQuestionItem((questionModel.answer != null)
-              ? questionModel.answer
-              : null),
-        ],
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8.0),
       ),
+      color: R.color.white,
+      margin: EdgeInsets.symmetric(vertical: 8),
+      elevation: 2,
+      child: Container(
+        padding: EdgeInsets.all(16),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildHeaderItem(questionModel),
+            SizedBox(height: 12),
+            _buildTitleItem(questionModel),
+            if (questionModel.rateAnswer != null)
+              Padding(
+                padding: const EdgeInsets.only(top: 10),
+                child: RatingBar.builder(
+                  itemSize: 20,
+                  initialRating: questionModel.rateAnswer!.rate.toDouble(),
+                  itemCount: 5,
+                  itemPadding: const EdgeInsets.only(right: 5),
+                  itemBuilder: (context, _) => Icon(
+                    CupertinoIcons.star,
+                    color: R.color.accentColor,
+                  ),
+                  onRatingUpdate: (rating) {},
+                ),
+              ),
+            SizedBox(height: (questionModel.answer != null) ? 16 : 0),
+            Visibility(
+              visible: questionModel.answer != null,
+              child: Divider(height: 0.5, color: R.color.grayBorder),
+            ),
+            SizedBox(height: 8),
+            // ListView.builder(
+            //   itemCount: questionModel.answers?.length ?? 0,
+            //   shrinkWrap: true,
+            //   physics: NeverScrollableScrollPhysics(),
+            //   itemBuilder: (context, position) {
+            //     return _buildDoctorItemInQuestionItem(
+            //         questionModel.answers != null ? questionModel.answers![position] : null);
+            //   },
+            // ),
+            _buildDoctorItemInQuestionItem(
+                (questionModel.answer != null) ? questionModel.answer : null),
+          ],
         ),
+      ),
     );
   }
 
-   _buildHeaderItem(QuestionModel questionModel) {
+  _buildHeaderItem(QuestionModel questionModel) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Container(
-          alignment: Alignment.center,
-          padding: EdgeInsets.symmetric(vertical: 4, horizontal: 10),
-          decoration: BoxDecoration(
-            color: true ? R.color.greenGradientBottom : R.color.grayBorder,
-            border: true ? Border.all(color: R.color.greenGradientBottom) : null,
-            borderRadius: BorderRadius.circular(20),
-          ),
-          child: Text(
-            questionModel.lessonModule != null
-                ? questionModel.lessonModule!.name ?? ''
-                : getLessonModule(questionModel.lessonModuleId ?? '').name ?? '',
-            style: TextStyle(
-              color: true ? R.color.white : R.color.black,
-              fontSize: 12,
-              fontWeight: FontWeight.w600,
+        if (questionModel.lessonModule != null &&
+            questionModel.lessonModule!.name != null)
+          Container(
+            alignment: Alignment.center,
+            padding: EdgeInsets.symmetric(vertical: 4, horizontal: 10),
+            decoration: BoxDecoration(
+              color: R.color.greenGradientBottom,
+              border: Border.all(color: R.color.greenGradientBottom),
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Text(
+              questionModel.lessonModule != null
+                  ? questionModel.lessonModule!.name ?? ''
+                  : getLessonModule(questionModel.lessonModuleId ?? '').name ??
+                      '',
+              style: TextStyle(
+                color: R.color.white,
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+              ),
             ),
           ),
-        ),
         Spacer(),
         Text(
           QuestionAnswerUtils.getStatus(questionModel.status ?? 0),
           style: TextStyle(
-            color: QuestionAnswerUtils.getColorStatus(questionModel.status ?? 0),
+            color:
+                QuestionAnswerUtils.getColorStatus(questionModel.status ?? 0),
             fontSize: 14,
             fontWeight: FontWeight.w600,
           ),
@@ -191,7 +213,9 @@ class _QuestionItemState extends State<QuestionItem> with AutomaticKeepAliveClie
             clipBehavior: Clip.hardEdge,
             height: 40,
             width: 40,
-            decoration: BoxDecoration(borderRadius: BorderRadius.circular(90), color: R.color.grayBorder),
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(90),
+                color: R.color.grayBorder),
             child: answer.account?.avatar?.url == null
                 ? Icon(Icons.person, size: 24, color: R.color.white)
                 : NetWorkImageWidget(imageUrl: answer.account!.avatar!.url),
@@ -215,7 +239,9 @@ class _QuestionItemState extends State<QuestionItem> with AutomaticKeepAliveClie
                   answer.account?.createDatetime == null
                       ? ''
                       : DateUtil.parseDateToString(
-                          DateTime.fromMillisecondsSinceEpoch(answer.createDateTime! * 1000), 'dd/MM/yyyy - hh:mm'),
+                          DateTime.fromMillisecondsSinceEpoch(
+                              answer.createDateTime! * 1000),
+                          'dd/MM/yyyy - hh:mm'),
                   style: TextStyle(
                     color: R.color.gray,
                     fontSize: 12,
@@ -226,7 +252,8 @@ class _QuestionItemState extends State<QuestionItem> with AutomaticKeepAliveClie
               ],
             ),
           ),
-          Image.asset(R.drawable.ic_right, width: 16, height: 16, color: R.color.greenGradientBottom),
+          Image.asset(R.drawable.ic_right,
+              width: 16, height: 16, color: R.color.greenGradientBottom),
         ],
       ),
     );
@@ -249,53 +276,69 @@ class _QuestionItemState extends State<QuestionItem> with AutomaticKeepAliveClie
                       padding: const EdgeInsets.only(top: 8.0),
                       child: Text(R.string.confirm_delete_question.tr(),
                           textAlign: TextAlign.center,
-                          style: TextStyle(color: R.color.textDark, fontSize: 20, fontWeight: FontWeight.w700)),
+                          style: TextStyle(
+                              color: R.color.textDark,
+                              fontSize: 20,
+                              fontWeight: FontWeight.w700)),
                     ),
                     Padding(
                       padding: const EdgeInsets.only(top: 8.0),
-                      child: Text(R.string.confirm_delete_question_subtitle.tr(),
+                      child: Text(
+                          R.string.confirm_delete_question_subtitle.tr(),
                           textAlign: TextAlign.center,
-                          style: TextStyle(color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w400)),
+                          style: TextStyle(
+                              color: R.color.textDark,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w400)),
                     ),
                     Container(
                       margin: EdgeInsets.only(top: 16),
-                      child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                        Expanded(
-                          child: GestureDetector(
-                            onTap: () {
-                              Navigator.pop(context);
-                            },
-                            child: Container(
-                                height: 40,
-                                decoration:
-                                    BoxDecoration(borderRadius: BorderRadius.circular(200), color: R.color.grayBorder),
-                                child: Center(
-                                  child: Text(R.string.back.tr(),
-                                      style: TextStyle(
-                                          color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w600)),
-                                )),
-                          ),
-                        ),
-                        SizedBox(width: 14),
-                        Expanded(
-                          child: GestureDetector(
-                            onTap: () async {
-                              widget.callbackDelete(id);
-                            },
-                            child: Container(
-                              height: 40,
-                              decoration: BoxDecoration(
-                                color: R.color.attentionText,
-                                borderRadius: BorderRadius.circular(200),
-                              ),
-                              child: Center(
-                                child: Text(R.string.delete.tr(),
-                                    style: TextStyle(color: R.color.white, fontSize: 16, fontWeight: FontWeight.w600)),
+                      child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Expanded(
+                              child: GestureDetector(
+                                onTap: () {
+                                  Navigator.pop(context);
+                                },
+                                child: Container(
+                                    height: 40,
+                                    decoration: BoxDecoration(
+                                        borderRadius:
+                                            BorderRadius.circular(200),
+                                        color: R.color.grayBorder),
+                                    child: Center(
+                                      child: Text(R.string.back.tr(),
+                                          style: TextStyle(
+                                              color: R.color.textDark,
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w600)),
+                                    )),
                               ),
                             ),
-                          ),
-                        ),
-                      ]),
+                            SizedBox(width: 14),
+                            Expanded(
+                              child: GestureDetector(
+                                onTap: () async {
+                                  widget.callbackDelete(id);
+                                },
+                                child: Container(
+                                  height: 40,
+                                  decoration: BoxDecoration(
+                                    color: R.color.attentionText,
+                                    borderRadius: BorderRadius.circular(200),
+                                  ),
+                                  child: Center(
+                                    child: Text(R.string.delete.tr(),
+                                        style: TextStyle(
+                                            color: R.color.white,
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w600)),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ]),
                     ),
                   ],
                 ),
@@ -315,7 +358,8 @@ class _QuestionItemState extends State<QuestionItem> with AutomaticKeepAliveClie
   }
 
   LessonModuleItem getLessonModule(String id) {
-    return widget.lessonModules.firstWhere((element) => element.id == id, orElse: null);
+    return widget.lessonModules
+        .firstWhere((element) => element.id == id, orElse: null);
   }
 
   @override

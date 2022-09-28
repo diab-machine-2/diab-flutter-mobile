@@ -93,3 +93,19 @@ class DeleteCommentFailure extends QuestionDetailState {
   @override
   String toString() => 'DeleteCommentFailure { error: $error }';
 }
+
+class RatingCommentSuccess extends QuestionDetailState {
+  final String? message;
+
+  const RatingCommentSuccess({this.message});
+
+  @override
+  String toString() => 'DeleteCommentSuccess { message: $message }';
+}
+
+class RatingCommentFailure extends QuestionDetailState {
+  const RatingCommentFailure();
+
+  @override
+  String toString() => 'RatingCommentFailure';
+}

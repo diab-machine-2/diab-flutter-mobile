@@ -41,27 +41,26 @@ class _QuestionAnswerPageState extends State<QuestionAnswerPage> with Observer {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: SafeArea(
         top: true,
         bottom: true,
-        child: Container(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              _buildTitleAppBar(),
-              Expanded(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    SizedBox(height: 16),
-                    _buildTabBar(),
-                    SizedBox(height: 16),
-                    _buildPageView(),
-                  ],
-                ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            _buildTitleAppBar(),
+            Expanded(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  SizedBox(height: 16),
+                  _buildTabBar(),
+                  SizedBox(height: 16),
+                  _buildPageView(),
+                ],
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

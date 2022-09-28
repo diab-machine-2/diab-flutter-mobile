@@ -9,6 +9,7 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
+import 'package:medical/src/model/response/lesson_module_response.dart';
 import 'package:medical/src/utils/date_utils.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/question_answer/all_question_answer/model/question_model.dart';
@@ -27,7 +28,8 @@ class AllQuestionAnswerPage extends StatefulWidget {
   _AllQuestionAnswerPageState createState() => _AllQuestionAnswerPageState();
 }
 
-class _AllQuestionAnswerPageState extends State<AllQuestionAnswerPage> with AutomaticKeepAliveClientMixin, Observer {
+class _AllQuestionAnswerPageState extends State<AllQuestionAnswerPage>
+    with AutomaticKeepAliveClientMixin, Observer {
   late AllQuestionAnswerCubit _cubit;
   final ScrollController _scrollController = ScrollController();
   final ScrollController _questionScrollController = ScrollController();
@@ -44,7 +46,8 @@ class _AllQuestionAnswerPageState extends State<AllQuestionAnswerPage> with Auto
   }
 
   @override
-  void update(Observable observable, String? notifyName, Map<dynamic, dynamic>? map) async {
+  void update(Observable observable, String? notifyName,
+      Map<dynamic, dynamic>? map) async {
     if (notifyName == 'update_all_question') {
       // if (map != null) {
       //   String? id = map['id'];
@@ -83,7 +86,8 @@ class _AllQuestionAnswerPageState extends State<AllQuestionAnswerPage> with Auto
               BotToast.showLoading();
             } else {
               BotToast.closeAllLoading();
-              if (state is AllQuestionAnswerSuccess || state is AllQuestionAnswerFailure) {
+              if (state is AllQuestionAnswerSuccess ||
+                  state is AllQuestionAnswerFailure) {
                 _cubit.controller.refreshCompleted();
               }
             }
@@ -123,6 +127,7 @@ class _AllQuestionAnswerPageState extends State<AllQuestionAnswerPage> with Auto
                   ),
                 ),
                 SizedBox(height: 8),
+                // SizedBox(height: MediaQuery.of(context).padding.bottom)
               ],
             ),
           ),
@@ -134,8 +139,13 @@ class _AllQuestionAnswerPageState extends State<AllQuestionAnswerPage> with Auto
   _buildLessonModule(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.only(bottomLeft: Radius.circular(10.0), bottomRight: Radius.circular(10.0)),
-        boxShadow: [BoxShadow(blurRadius: 1, color: R.color.grayBorder, offset: Offset(1, 3))],
+        borderRadius: BorderRadius.only(
+            bottomLeft: Radius.circular(10.0),
+            bottomRight: Radius.circular(10.0)),
+        boxShadow: [
+          BoxShadow(
+              blurRadius: 1, color: R.color.grayBorder, offset: Offset(1, 3))
+        ],
         color: Colors.white,
       ),
       padding: EdgeInsets.only(left: 16, right: 16, bottom: 16),
@@ -145,20 +155,24 @@ class _AllQuestionAnswerPageState extends State<AllQuestionAnswerPage> with Auto
         children: [
           Text(
             R.string.view_by_topic.tr(),
-            style: TextStyle(color: R.color.black, fontWeight: FontWeight.w400, fontSize: 14),
+            style: TextStyle(
+                color: R.color.black,
+                fontWeight: FontWeight.w400,
+                fontSize: 14),
           ),
           SizedBox(height: 8),
           Row(
             children: [
               InkWell(
                 onTap: () {
-                  if (_cubit.currentLessonModule == null) return;
                   animateToIndex(_cubit.currentLessonModule - 1);
                 },
                 child: Icon(
                   Icons.chevron_left_rounded,
                   size: 28,
-                  color: (_cubit.currentLessonModule) <= 0 ? R.color.captionColorGray : R.color.greenGradientBottom,
+                  color: (_cubit.currentLessonModule) <= 0
+                      ? R.color.captionColorGray
+                      : R.color.greenGradientBottom,
                 ),
               ),
               Expanded(
@@ -166,16 +180,23 @@ class _AllQuestionAnswerPageState extends State<AllQuestionAnswerPage> with Auto
                   scrollDirection: Axis.horizontal,
                   controller: _scrollController,
                   child: Row(
-                    children: List.generate(_cubit.lessonModules.length, (index) {
-                      return _buildLessonModuleItem(
-                          item: _cubit.lessonModules[index].name ?? '',
-                          isSelected: _cubit.listSelectedLessonModule[index],
-                          onSelect: () {
-                            _cubit.onSelectLessonModule(index);
-                          });
+                    children:
+                        List.generate(_cubit.lessonModules.length, (index) {
+                      LessonModuleItem lessonModule =
+                          _cubit.lessonModules[index];
+                      if (lessonModule.name != null)
+                        return _buildLessonModuleItem(
+                            item: lessonModule.name ?? '',
+                            isSelected: _cubit.listSelectedLessonModule[index],
+                            onSelect: () {
+                              _cubit.onSelectLessonModule(index);
+                            });
+                      return SizedBox();
                     })
-                      ..add(SizedBox(
-                          width: _cubit.lessonModules.isEmpty ? MediaQuery.of(context).size.width - 96 * 2 : 0)),
+                          ..add(SizedBox(
+                              width: _cubit.lessonModules.isEmpty
+                                  ? MediaQuery.of(context).size.width - 96 * 2
+                                  : 0)),
                   ),
                 ),
               ),
@@ -187,7 +208,8 @@ class _AllQuestionAnswerPageState extends State<AllQuestionAnswerPage> with Auto
                 child: Icon(
                   Icons.chevron_right_rounded,
                   size: 28,
-                  color: (_cubit.currentLessonModule) >= (_cubit.lessonModules.length - 1)
+                  color: (_cubit.currentLessonModule) >=
+                          (_cubit.lessonModules.length - 1)
                       ? R.color.captionColorGray
                       : R.color.greenGradientBottom,
                 ),
@@ -233,7 +255,9 @@ class _AllQuestionAnswerPageState extends State<AllQuestionAnswerPage> with Auto
         padding: EdgeInsets.symmetric(horizontal: 12, vertical: 7),
         decoration: BoxDecoration(
           color: isSelected ? R.color.greenGradientBottom : R.color.grayBorder,
-          border: isSelected ? Border.all(color: R.color.greenGradientBottom) : null,
+          border: isSelected
+              ? Border.all(color: R.color.greenGradientBottom)
+              : null,
           borderRadius: BorderRadius.circular(20),
         ),
         child: Row(
@@ -261,12 +285,14 @@ class _AllQuestionAnswerPageState extends State<AllQuestionAnswerPage> with Auto
         //   return;
         // }
 
-        var result = await Navigator.pushNamed(context, NavigatorName.make_question,
+        var result = await Navigator.pushNamed(
+            context, NavigatorName.make_question,
             arguments: {'lessonModuleItems': _cubit.allLessonModules});
         if (result != null) {
           await refresh();
-          Observable.instance
-              .notifyObservers([], notifyName: "update_my_question", map: {'question': _cubit.questions.first});
+          Observable.instance.notifyObservers([],
+              notifyName: "update_my_question",
+              map: {'question': _cubit.questions.first});
         }
       },
     );
@@ -286,7 +312,8 @@ class _AllQuestionAnswerPageState extends State<AllQuestionAnswerPage> with Auto
                   return _buildQuestionItem(_cubit.questions[position]);
                 },
               )
-            : (state is AllQuestionAnswerSuccess || state is AllQuestionAnswerFailure)
+            : (state is AllQuestionAnswerSuccess ||
+                    state is AllQuestionAnswerFailure)
                 ? _buildEmpty()
                 : Container(),
       ),
@@ -294,12 +321,14 @@ class _AllQuestionAnswerPageState extends State<AllQuestionAnswerPage> with Auto
   }
 
   void _scrollListener() async {
-    if (_questionScrollController.offset >= _questionScrollController.position.maxScrollExtent &&
+    if (_questionScrollController.offset >=
+            _questionScrollController.position.maxScrollExtent &&
         !_questionScrollController.position.outOfRange) {
       //reach the bottom
       await _cubit.loadmore();
     }
-    if (_questionScrollController.offset <= _questionScrollController.position.minScrollExtent &&
+    if (_questionScrollController.offset <=
+            _questionScrollController.position.minScrollExtent &&
         !_questionScrollController.position.outOfRange) {
       //reach the top
     }
@@ -314,7 +343,10 @@ class _AllQuestionAnswerPageState extends State<AllQuestionAnswerPage> with Auto
           SizedBox(height: 20),
           Text(R.string.question_empty.tr(),
               textAlign: TextAlign.center,
-              style: TextStyle(color: R.color.textDark, fontSize: 15, fontWeight: FontWeight.w400)),
+              style: TextStyle(
+                  color: R.color.textDark,
+                  fontSize: 15,
+                  fontWeight: FontWeight.w400)),
         ],
       ),
     );
@@ -326,12 +358,13 @@ class _AllQuestionAnswerPageState extends State<AllQuestionAnswerPage> with Auto
       currentAccountId: _cubit.userInfo!.accountId!,
       lessonModules: _cubit.lessonModules,
       callbackDetail: () async {
-        var result = await Navigator.pushNamed(context, NavigatorName.question_detail,
+        var result = await Navigator.pushNamed(
+            context, NavigatorName.question_detail,
             arguments: {'questionModel': questionModel, 'isAll': true});
         if (result != null) {
-      //    await refresh();
-      //    Observable.instance.notifyObservers([], notifyName: "update_my_question");
-          
+          //    await refresh();
+          //    Observable.instance.notifyObservers([], notifyName: "update_my_question");
+
           // if (result is Map) {
           //   var type = result['type'];
           //   var id = result['id'];
