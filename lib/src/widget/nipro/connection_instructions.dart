@@ -38,6 +38,7 @@ class _ConnectionInstructionsControllerState
   List<Map<String, String>> devices = [];
   String dataText = '';
   Map<String, String>? device;
+  bool requestPermission = false;
 
   Timer? _timer;
 
@@ -63,6 +64,7 @@ class _ConnectionInstructionsControllerState
       print(data);
 
       if (event == 'permission_grand') {
+        requestPermission = true;
         //_channel.invokeMethod('init_IBle_Sdk');
       } else if (event == 'init_success') {
         BotToast.closeAllLoading();
@@ -338,26 +340,30 @@ class _ConnectionInstructionsControllerState
             ),
             GestureDetector(
               onTap: () async {
-                startScan();
-                final result = await showModalBottomSheet(
-                    shape: RoundedRectangleBorder(
-                        borderRadius:
-                            BorderRadius.vertical(top: Radius.circular(15))),
-                    backgroundColor: R.color.white,
-                    context: context,
-                    isScrollControlled: true,
-                    builder: (context) => ListDevices(
-                        key: listDevicesKey,
-                        devices: devices,
-                        request: () {
-                          startScan();
-                        }));
-                if (result != null) {
-                  device = result;
-                  BotToast.showLoading();
-                  _channel.invokeMethod('connect', device!['address']);
+                if (requestPermission) {
+                  startScan();
+                  final result = await showModalBottomSheet(
+                      shape: RoundedRectangleBorder(
+                          borderRadius:
+                              BorderRadius.vertical(top: Radius.circular(15))),
+                      backgroundColor: R.color.white,
+                      context: context,
+                      isScrollControlled: true,
+                      builder: (context) => ListDevices(
+                          key: listDevicesKey,
+                          devices: devices,
+                          request: () {
+                            startScan();
+                          }));
+                  if (result != null) {
+                    device = result;
+                    BotToast.showLoading();
+                    _channel.invokeMethod('connect', device!['address']);
+                  }
+                  stopScan();
+                } else {
+                  _channel.invokeMethod('request_permission');
                 }
-                stopScan();
               },
               child: SafeArea(
                 top: false,

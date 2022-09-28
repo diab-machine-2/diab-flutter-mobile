@@ -23,11 +23,13 @@ import ibtFramework
         
         iBleMethodChannel.setMethodCallHandler({
             (call: FlutterMethodCall, result: @escaping FlutterResult) -> Void in
-            if call.method == "initIBleSdk" {
+            if call.method == "request_permission" {
+                //
+            }if else call.method == "init_IBle_Sdk" {
                 self.initIBle(result: result)
-            } else if call.method == "startScan", let data = call.arguments as? [String: Any] {
+            } else if call.method == "startScan" {
                 self.startScan(result: result)
-            } else if call.method == "getData", let data = call.arguments as? [String: Any] {
+            } else if call.method == "getData" {
                 self.getData(result: result)
             } else {
                 result(FlutterMethodNotImplemented)
