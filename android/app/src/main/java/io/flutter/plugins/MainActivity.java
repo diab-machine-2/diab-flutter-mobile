@@ -148,7 +148,6 @@ public class MainActivity extends FlutterActivity {
 
         @Override
         public void CallbackDisconnectedDevice() {
-
             emitData("device_disconnect", null);
         }
 
@@ -160,14 +159,14 @@ public class MainActivity extends FlutterActivity {
 
         @Override
         public void CallbackRequestRecordsComplete(SparseArray<IBLE_GlucoseRecord> sparseArray) {
-
             SparseArray<IBLE_GlucoseRecord> mRecords = sparseArray;
+            ArrayList<Map<String, String>> data = new ArrayList<Map<String, String>>();
                     if (mRecords == null || mRecords.size() <= 0) {
-                        emitData("empty_data", null);
+                        emitData("get_data_success", data);
                         return;
                     }
 
-                    ArrayList<Map<String, String>> data = new ArrayList<Map<String, String>>();
+                    
                     for (int i = mRecords.size() - 1; i >= 0; i--) {
                         final IBLE_GlucoseRecord glucoseRecord = mRecords.valueAt(i);
                         Map<String, String> map = new HashMap();
@@ -213,7 +212,10 @@ public class MainActivity extends FlutterActivity {
 
     private void addScannedDevice(final BluetoothDevice device, final int rssi, final boolean isBonded) {
         try {
-            int count = mDeviceAdapter.getCount();
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    int count = mDeviceAdapter.getCount();
                     mDeviceAdapter.addDevice(new ExtendedDevice(device, rssi, isBonded));
                     if (count != mDeviceAdapter.getCount()) {
 
@@ -232,6 +234,9 @@ public class MainActivity extends FlutterActivity {
                         emitData("new_device",data);
 
                     }
+                }
+            });
+            
         } catch (NullPointerException e) {
             emitData("scan_error",null);
         } catch (Exception e) {
@@ -333,6 +338,7 @@ public class MainActivity extends FlutterActivity {
             //BLE off. Turn on ble mode
             emitData("ble_off", null);
         }
+
         mLocationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
         
         String[] permission = new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION};
@@ -378,6 +384,8 @@ public class MainActivity extends FlutterActivity {
     
 
     private void startScan() {
+        mLocationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+        initIBle();
         mDeviceAdapter.clearDevices();
         try {
             if (mBluetoothAdapter.getState() == BluetoothAdapter.STATE_ON) {

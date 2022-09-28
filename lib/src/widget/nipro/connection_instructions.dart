@@ -63,7 +63,7 @@ class _ConnectionInstructionsControllerState
       print(data);
 
       if (event == 'permission_grand') {
-        _channel.invokeMethod('init_IBle_Sdk');
+        //_channel.invokeMethod('init_IBle_Sdk');
       } else if (event == 'init_success') {
         BotToast.closeAllLoading();
         //_channel.invokeMethod('start_scan');
