@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -24,6 +25,7 @@ class MakeQuestionCubit extends Cubit<MakeQuestionState> {
   bool isShowSuggestLessonModuleList = false;
   late TextEditingController searchLessonModuleController =
       TextEditingController(text: '');
+  List<File> mediaList = [];
 
   List<LessonModuleItem?> get suggestLessonModuleItems {
     final List<LessonModuleItem?> suggestList = lessonModuleItems;
@@ -51,8 +53,12 @@ class MakeQuestionCubit extends Cubit<MakeQuestionState> {
 
   setCurrentLessonModule(LessonModuleItem item) {
     currentLessonModule = item;
-    emit(MakeQuestionInitial());
+  }
+
+  setMediaList(List<File> newMediaList) {
+    mediaList = newMediaList;
     emit(MakeQuestionSuccess());
+    emit(MakeQuestionInitial());
   }
 
   void refresh() {
@@ -65,12 +71,20 @@ class MakeQuestionCubit extends Cubit<MakeQuestionState> {
     var userInfo = AppSettings.userInfo;
     if (userInfo == null) return;
     body = body?.trim() ?? '';
+    List<String> pictures = [];
+    if (mediaList.isNotEmpty) {
+      mediaList.forEach((file) {
+        pictures.add(file.path);
+      });
+    }
 
     emit(MakeQuestionLoading());
     final MakeQuestionRequest request = MakeQuestionRequest(
-        body: body,
-        lessonModuleId: currentLessonModule!.id,
-        accountId: userInfo.accountId);
+      body: body,
+      lessonModuleId: currentLessonModule!.id,
+      accountId: userInfo.accountId,
+      pictures: pictures,
+    );
     var response = await QuestionAnswerClient().makeQuestion(request);
     if (response is bool && response) {
       emit(SendQuestionSuccess());

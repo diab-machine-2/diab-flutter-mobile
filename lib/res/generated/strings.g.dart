@@ -1034,4 +1034,6 @@ class Strings {
 	String get output_evaluate => 'output_evaluate';
 	String get other => 'other';
 	String get contact_diab_info => 'contact_diab_info';
+	String get select_your_image => 'select_your_image';
+	String get note_max_media => 'note_max_media';
 }

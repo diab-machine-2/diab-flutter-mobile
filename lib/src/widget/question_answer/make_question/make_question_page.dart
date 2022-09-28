@@ -100,9 +100,10 @@ class _MakeQuestionPageState extends State<MakeQuestionPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      BuildLessonModule(cubit: _cubit),
-                      SizedBox(height: 16),
+                      // BuildLessonModule(cubit: _cubit),
                       _buildQuestion(),
+                      SizedBox(height: 16),
+                      ImagePickerItem(cubit: _cubit),
                     ],
                   ),
                 ),
@@ -124,12 +125,13 @@ class _MakeQuestionPageState extends State<MakeQuestionPage> {
               fontWeight: FontWeight.w600,
               color: R.color.textDark)),
       leadingIcon: IconButton(
-          splashColor: R.color.transparent,
-          highlightColor: R.color.transparent,
-          icon: Icon(Icons.arrow_back, color: R.color.textDark),
-          onPressed: () {
-            Navigator.pop(context);
-          }),
+        splashColor: R.color.transparent,
+        highlightColor: R.color.transparent,
+        icon: Icon(Icons.arrow_back, color: R.color.textDark),
+        onPressed: () {
+          Navigator.pop(context);
+        },
+      ),
     );
   }
 
@@ -258,10 +260,10 @@ class _MakeQuestionPageState extends State<MakeQuestionPage> {
   _submitData() async {
     if (!_cubit.isClickSend) {
       _cubit.setClickSend();
-      if (_cubit.currentLessonModule == null) {
-        Message.showToastMessage(context, R.string.input_topic_required.tr());
-        return;
-      }
+      // if (_cubit.currentLessonModule == null) {
+      //   Message.showToastMessage(context, R.string.input_topic_required.tr());
+      //   return;
+      // }
       if (_controller.text.trim().isEmpty) {
         Message.showToastMessage(
             context, R.string.input_question_required.tr());

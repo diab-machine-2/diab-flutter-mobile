@@ -9,6 +9,7 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
+import 'package:medical/src/model/response/lesson_module_response.dart';
 import 'package:medical/src/utils/date_utils.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/question_answer/all_question_answer/model/question_model.dart';
@@ -27,7 +28,8 @@ class MyQuestionAnswerPage extends StatefulWidget {
   _MyQuestionAnswerPageState createState() => _MyQuestionAnswerPageState();
 }
 
-class _MyQuestionAnswerPageState extends State<MyQuestionAnswerPage> with AutomaticKeepAliveClientMixin, Observer {
+class _MyQuestionAnswerPageState extends State<MyQuestionAnswerPage>
+    with AutomaticKeepAliveClientMixin, Observer {
   late MyQuestionAnswerCubit _cubit;
   final ScrollController _scrollController = ScrollController();
   final ScrollController _questionScrollController = ScrollController();
@@ -44,7 +46,8 @@ class _MyQuestionAnswerPageState extends State<MyQuestionAnswerPage> with Automa
   }
 
   @override
-  void update(Observable observable, String? notifyName, Map<dynamic, dynamic>? map) async {
+  void update(Observable observable, String? notifyName,
+      Map<dynamic, dynamic>? map) async {
     if (notifyName == 'update_my_question') {
       // if (map != null) {
       //   String? id = map['id'];
@@ -83,7 +86,8 @@ class _MyQuestionAnswerPageState extends State<MyQuestionAnswerPage> with Automa
               BotToast.showLoading();
             } else {
               BotToast.closeAllLoading();
-              if (state is MyQuestionAnswerSuccess || state is MyQuestionAnswerFailure) {
+              if (state is MyQuestionAnswerSuccess ||
+                  state is MyQuestionAnswerFailure) {
                 _cubit.controller.refreshCompleted();
               }
             }
@@ -134,8 +138,13 @@ class _MyQuestionAnswerPageState extends State<MyQuestionAnswerPage> with Automa
   _buildLessonModule(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.only(bottomLeft: Radius.circular(10.0), bottomRight: Radius.circular(10.0)),
-        boxShadow: [BoxShadow(blurRadius: 1, color: R.color.grayBorder, offset: Offset(1, 3))],
+        borderRadius: BorderRadius.only(
+            bottomLeft: Radius.circular(10.0),
+            bottomRight: Radius.circular(10.0)),
+        boxShadow: [
+          BoxShadow(
+              blurRadius: 1, color: R.color.grayBorder, offset: Offset(1, 3))
+        ],
         color: Colors.white,
       ),
       padding: EdgeInsets.only(left: 16, right: 16, bottom: 16),
@@ -145,20 +154,24 @@ class _MyQuestionAnswerPageState extends State<MyQuestionAnswerPage> with Automa
         children: [
           Text(
             R.string.view_by_topic.tr(),
-            style: TextStyle(color: R.color.black, fontWeight: FontWeight.w400, fontSize: 14),
+            style: TextStyle(
+                color: R.color.black,
+                fontWeight: FontWeight.w400,
+                fontSize: 14),
           ),
           SizedBox(height: 8),
           Row(
             children: [
               InkWell(
                 onTap: () {
-                  if (_cubit.currentLessonModule == null) return;
                   animateToIndex(_cubit.currentLessonModule - 1);
                 },
                 child: Icon(
                   Icons.chevron_left_rounded,
                   size: 28,
-                  color: (_cubit.currentLessonModule) <= 0 ? R.color.captionColorGray : R.color.greenGradientBottom,
+                  color: (_cubit.currentLessonModule) <= 0
+                      ? R.color.captionColorGray
+                      : R.color.greenGradientBottom,
                 ),
               ),
               Expanded(
@@ -166,16 +179,23 @@ class _MyQuestionAnswerPageState extends State<MyQuestionAnswerPage> with Automa
                   scrollDirection: Axis.horizontal,
                   controller: _scrollController,
                   child: Row(
-                    children: List.generate(_cubit.lessonModules.length, (index) {
-                      return _buildLessonModuleItem(
-                          item: _cubit.lessonModules[index].name ?? '',
-                          isSelected: _cubit.listSelectedLessonModule[index],
-                          onSelect: () {
-                            _cubit.onSelectLessonModule(index);
-                          });
+                    children:
+                        List.generate(_cubit.lessonModules.length, (index) {
+                      LessonModuleItem lessonModule =
+                          _cubit.lessonModules[index];
+                      if (lessonModule.name != null)
+                        return _buildLessonModuleItem(
+                            item: _cubit.lessonModules[index].name ?? '',
+                            isSelected: _cubit.listSelectedLessonModule[index],
+                            onSelect: () {
+                              _cubit.onSelectLessonModule(index);
+                            });
+                      return SizedBox();
                     })
-                      ..add(SizedBox(
-                          width: _cubit.lessonModules.isEmpty ? MediaQuery.of(context).size.width - 96 * 2 : 0)),
+                          ..add(SizedBox(
+                              width: _cubit.lessonModules.isEmpty
+                                  ? MediaQuery.of(context).size.width - 96 * 2
+                                  : 0)),
                   ),
                 ),
               ),
@@ -187,7 +207,8 @@ class _MyQuestionAnswerPageState extends State<MyQuestionAnswerPage> with Automa
                 child: Icon(
                   Icons.chevron_right_rounded,
                   size: 28,
-                  color: (_cubit.currentLessonModule) >= (_cubit.lessonModules.length - 1)
+                  color: (_cubit.currentLessonModule) >=
+                          (_cubit.lessonModules.length - 1)
                       ? R.color.captionColorGray
                       : R.color.greenGradientBottom,
                 ),
@@ -233,7 +254,9 @@ class _MyQuestionAnswerPageState extends State<MyQuestionAnswerPage> with Automa
         padding: EdgeInsets.symmetric(horizontal: 12, vertical: 7),
         decoration: BoxDecoration(
           color: isSelected ? R.color.greenGradientBottom : R.color.grayBorder,
-          border: isSelected ? Border.all(color: R.color.greenGradientBottom) : null,
+          border: isSelected
+              ? Border.all(color: R.color.greenGradientBottom)
+              : null,
           borderRadius: BorderRadius.circular(20),
         ),
         child: Row(
@@ -256,17 +279,20 @@ class _MyQuestionAnswerPageState extends State<MyQuestionAnswerPage> with Automa
   _buildMakeQuestion() {
     return MakeQuestionHeader(
       callback: () async {
-        if(userInfo?.isUserFree == true) {
-          NavigationUtil.showUpdateRequirePopup(context: context, title: R.string.ask_doctor.tr());
+        if (userInfo?.isUserFree == true) {
+          NavigationUtil.showUpdateRequirePopup(
+              context: context, title: R.string.ask_doctor.tr());
           return;
         }
-        
-        var result = await Navigator.pushNamed(context, NavigatorName.make_question,
+
+        var result = await Navigator.pushNamed(
+            context, NavigatorName.make_question,
             arguments: {'lessonModuleItems': _cubit.allLessonModules});
         if (result != null) {
           await refresh();
-          Observable.instance
-              .notifyObservers([], notifyName: "update_all_question", map: {'question': _cubit.questions.first});
+          Observable.instance.notifyObservers([],
+              notifyName: "update_all_question",
+              map: {'question': _cubit.questions.first});
         }
       },
     );
@@ -286,7 +312,8 @@ class _MyQuestionAnswerPageState extends State<MyQuestionAnswerPage> with Automa
                   return _buildQuestionItem(_cubit.questions[position]);
                 },
               )
-            : (state is MyQuestionAnswerSuccess || state is MyQuestionAnswerFailure)
+            : (state is MyQuestionAnswerSuccess ||
+                    state is MyQuestionAnswerFailure)
                 ? _buildEmpty()
                 : Container(),
       ),
@@ -302,19 +329,24 @@ class _MyQuestionAnswerPageState extends State<MyQuestionAnswerPage> with Automa
           SizedBox(height: 20),
           Text(R.string.question_empty.tr(),
               textAlign: TextAlign.center,
-              style: TextStyle(color: R.color.textDark, fontSize: 15, fontWeight: FontWeight.w400)),
+              style: TextStyle(
+                  color: R.color.textDark,
+                  fontSize: 15,
+                  fontWeight: FontWeight.w400)),
         ],
       ),
     );
   }
 
   void _scrollListener() async {
-    if (_questionScrollController.offset >= _questionScrollController.position.maxScrollExtent &&
+    if (_questionScrollController.offset >=
+            _questionScrollController.position.maxScrollExtent &&
         !_questionScrollController.position.outOfRange) {
       //reach the bottom
       await _cubit.loadmore();
     }
-    if (_questionScrollController.offset <= _questionScrollController.position.minScrollExtent &&
+    if (_questionScrollController.offset <=
+            _questionScrollController.position.minScrollExtent &&
         !_questionScrollController.position.outOfRange) {
       //reach the top
     }
@@ -326,11 +358,12 @@ class _MyQuestionAnswerPageState extends State<MyQuestionAnswerPage> with Automa
       currentAccountId: _cubit.userInfo!.accountId!,
       lessonModules: _cubit.lessonModules,
       callbackDetail: () async {
-        var result = await Navigator.pushNamed(context, NavigatorName.question_detail,
+        var result = await Navigator.pushNamed(
+            context, NavigatorName.question_detail,
             arguments: {'questionModel': questionModel, 'isAll': false});
         if (result != null) {
-       //   await refresh();
-       //   Observable.instance.notifyObservers([], notifyName: "update_all_question");
+          //   await refresh();
+          //   Observable.instance.notifyObservers([], notifyName: "update_all_question");
 
           // if (result is Map) {
           //   var type = result['type'];
