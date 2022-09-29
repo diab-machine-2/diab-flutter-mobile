@@ -2,8 +2,10 @@ import 'package:bot_toast/bot_toast.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:easy_localization/src/public_ext.dart';
+import 'dart:math' as math;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -14,7 +16,10 @@ import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/question_answer/all_question_answer/model/question_model.dart';
+import 'package:medical/src/widgets/block_bottom_sheet.dart';
+import 'package:medical/src/widgets/button_widget.dart';
 import 'package:medical/src/widgets/network_image_widget.dart';
+import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import '../question_answer_utils.dart';
 import 'question_detail.dart';
 
@@ -71,7 +76,18 @@ class _QuestionDetailPageState extends State<QuestionDetailPage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomInset: true,
+      // resizeToAvoidBottomInset: true,
+      appBar: AppBar(
+        backgroundColor: R.color.transparent,
+        leading: IconButton(
+          splashColor: R.color.transparent,
+          highlightColor: R.color.transparent,
+          icon: Icon(Icons.arrow_back, color: R.color.accentColor),
+          onPressed: () {
+            _backPressed();
+          },
+        ),
+      ),
       body: BlocProvider(
         create: (context) => _cubit,
         child: BlocListener<QuestionDetailCubit, QuestionDetailState>(
@@ -113,38 +129,42 @@ class _QuestionDetailPageState extends State<QuestionDetailPage>
       onWillPop: () => _backPressed(),
       child: GestureDetector(
         onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            _buildAppBar(context),
-            Expanded(
-              child: Container(
-                padding:
-                    EdgeInsets.only(top: 8, left: 16, right: 16, bottom: 8),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    _buildHeaderItem(),
-                    SizedBox(height: 12),
-                    _buildTitleItem(),
-                    // _cubit.questionModel.answers!.isEmpty ? Flexible(child: _buildTitleItem()) : _buildTitleItem(),
-                    SizedBox(height: 16),
-                    _buildAuthor(_cubit.questionModel),
-                    Visibility(
-                      visible: _cubit.questionModel.answers!.isNotEmpty,
-                      child: SizedBox(height: 16),
+        child: Expanded(
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Expanded(
+                  child: Container(
+                    padding:
+                        EdgeInsets.only(top: 8, left: 16, right: 16, bottom: 8),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        _buildHeaderItem(),
+                        SizedBox(height: 12),
+                        _buildTitleItem(),
+                        // _cubit.questionModel.answers!.isEmpty ? Flexible(child: _buildTitleItem()) : _buildTitleItem(),
+                        SizedBox(height: 16),
+                        _buildAuthor(_cubit.questionModel),
+                        Visibility(
+                          visible: _cubit.questionModel.answers!.isNotEmpty,
+                          child: SizedBox(height: 16),
+                        ),
+                        Visibility(
+                            visible: _cubit.questionModel.answers!.isNotEmpty,
+                            child:
+                                Divider(height: 0.5, color: R.color.grayBorder)),
+                        SizedBox(height: 8),
+                        _buildListComment(),
+                      ],
                     ),
-                    Visibility(
-                        visible: _cubit.questionModel.answers!.isNotEmpty,
-                        child: Divider(height: 0.5, color: R.color.grayBorder)),
-                    SizedBox(height: 8),
-                    _buildListComment(),
-                  ],
+                  ),
                 ),
-              ),
+                _buildCommentTextBox(context),
+              ],
             ),
-            _buildCommentTextBox(),
-          ],
+          ),
         ),
       ),
     );
@@ -153,24 +173,6 @@ class _QuestionDetailPageState extends State<QuestionDetailPage>
   Future<bool> _backPressed() async {
     Navigator.pop(context, _cubit.questionModel);
     return true;
-  }
-
-  _buildAppBar(BuildContext context) {
-    return CustomAppBar(
-      backgroundColor: R.color.transparent,
-      title: Text('',
-          style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w600,
-              color: R.color.textDark)),
-      leadingIcon: IconButton(
-          splashColor: R.color.transparent,
-          highlightColor: R.color.transparent,
-          icon: Icon(Icons.arrow_back, color: R.color.textDark),
-          onPressed: () {
-            _backPressed();
-          }),
-    );
   }
 
   _buildHeaderItem() {
@@ -360,36 +362,40 @@ class _QuestionDetailPageState extends State<QuestionDetailPage>
       color: R.color.color0xffFF5552,
       child: Icon(Icons.more_vert, size: 24, color: R.color.black54),
       itemBuilder: (context) {
-        return List.generate(1, (index) {
-          return PopupMenuItem<String>(
-              height: 30,
-              padding: EdgeInsets.zero,
-              onTap: () {
-                Future.delayed(
-                    const Duration(seconds: 0),
-                    () => _showDialogDeleteQuestion(
-                        context, _cubit.questionModel.id!));
-              },
-              child: Container(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Image.asset(R.drawable.ic_trash2, width: 24, height: 24),
-                    SizedBox(width: 8),
-                    Text(R.string.delete_question.tr(),
-                        style: TextStyle(
-                            color: R.color.white, fontWeight: FontWeight.w500),
-                        textAlign: TextAlign.center),
-                  ],
+        return List.generate(
+          1,
+          (index) {
+            return PopupMenuItem<String>(
+                height: 30,
+                padding: EdgeInsets.zero,
+                onTap: () {
+                  Future.delayed(
+                      const Duration(seconds: 0),
+                      () => _showDialogDeleteQuestion(
+                          context, _cubit.questionModel.id!));
+                },
+                child: Container(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Image.asset(R.drawable.ic_trash2, width: 24, height: 24),
+                      SizedBox(width: 8),
+                      Text(R.string.delete_question.tr(),
+                          style: TextStyle(
+                              color: R.color.white,
+                              fontWeight: FontWeight.w500),
+                          textAlign: TextAlign.center),
+                    ],
+                  ),
                 ),
-              ),
-              value: 'Doge');
-        });
+                value: 'Doge');
+          },
+        );
       },
     );
   }
 
-  _buildDoctorItemInQuestionItem(Answer? answer) {
+  Widget _buildDoctorItemInQuestionItem(Answer? answer) {
     if (answer == null) return Container();
     return Container(
       padding: EdgeInsets.symmetric(vertical: 8),
@@ -457,27 +463,32 @@ class _QuestionDetailPageState extends State<QuestionDetailPage>
             ),
           ),
           SizedBox(height: 10),
-          RatingBar.builder(
-            itemSize: 20,
-            initialRating: answer.rateAnswer != null
-                ? answer.rateAnswer!.rate.toDouble()
-                : 0,
-            minRating: 0,
-            direction: Axis.horizontal,
-            allowHalfRating: false,
-            itemCount: 5,
-            itemPadding: const EdgeInsets.only(right: 5),
-            itemBuilder: (context, _) => Icon(
-              CupertinoIcons.star,
-              color: R.color.accentColor,
+          if (answer.accountId != _cubit.userInfo!.accountId)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 10),
+              child: RatingBar.builder(
+                ignoreGestures: _cubit.ignoreGestures,
+                itemSize: 20,
+                initialRating: answer.rateAnswer != null
+                    ? answer.rateAnswer!.rate.toDouble()
+                    : 0,
+                minRating: 0,
+                direction: Axis.horizontal,
+                allowHalfRating: false,
+                itemCount: 5,
+                itemPadding: const EdgeInsets.only(right: 5),
+                itemBuilder: (context, _) => Icon(
+                  CupertinoIcons.star,
+                  color: R.color.accentColor,
+                ),
+                onRatingUpdate: (rating) {
+                  _cubit.ratingComment(
+                    answer.id!,
+                    rate: rating.toInt(),
+                  );
+                },
+              ),
             ),
-            onRatingUpdate: (rating) {
-              _cubit.ratingComment(
-                answer.id!,
-                rate: rating.toInt(),
-              );
-            },
-          ),
         ],
       ),
     );
@@ -521,27 +532,88 @@ class _QuestionDetailPageState extends State<QuestionDetailPage>
   _buildListComment() {
     return _cubit.questionModel.answers!.isEmpty
         ? Container()
-        : Expanded(
-            child: ListView.builder(
-              // separatorBuilder: (context, index) {
-              //   return Divider(height: 0.0);
-              // },
-              itemCount: _cubit.questionModel.answers?.length ?? 0,
-              shrinkWrap: true,
-              //  controller: _cubit.commentScrollController,
-              padding: EdgeInsets.zero,
-              physics: AlwaysScrollableScrollPhysics(),
-              itemBuilder: (context, position) {
-                return _buildDoctorItemInQuestionItem(
-                    _cubit.questionModel.answers != null
-                        ? _cubit.questionModel.answers![position]
-                        : null);
-              },
-            ),
+        : Column(
+            children: _cubit.questionModel.answers!
+                .map((e) => _buildDoctorItemInQuestionItem(
+                    _cubit.questionModel.answers != null ? e : null))
+                .toList(),
           );
+    // : Expanded(
+    //     child: ListView.builder(
+    //       // separatorBuilder: (context, index) {
+    //       //   return Divider(height: 0.0);
+    //       // },
+    //       itemCount: _cubit.questionModel.answers?.length ?? 0,
+    //       shrinkWrap: true,
+    //       //  controller: _cubit.commentScrollController,
+    //       padding: EdgeInsets.zero,
+    //       physics: AlwaysScrollableScrollPhysics(),
+    //       itemBuilder: (context, position) {
+    //         return _buildDoctorItemInQuestionItem(
+    //             _cubit.questionModel.answers != null
+    //                 ? _cubit.questionModel.answers![position]
+    //                 : null);
+    //       },
+    //     ),
+    //   );
   }
 
-  _buildCommentTextBox() {
+  _enterAnswer(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isDismissible: true,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => BlockBottomSheet(
+        title: 'Nôi dung bình luận',
+        child: Padding(
+          padding: const EdgeInsets.all(15),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              SizedBox(height: 15),
+              TextField(
+                minLines: 16,
+                maxLines: 16,
+                style: TextStyle(
+                  fontSize: 18.0,
+                  color: R.color.black,
+                ),
+                decoration: InputDecoration(
+                    counterText: '',
+                    isDense: true,
+                    contentPadding:
+                        EdgeInsets.symmetric(horizontal: 16, vertical: 18),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderSide:
+                          BorderSide(color: R.color.grayBorder, width: 1),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    filled: true,
+                    hintStyle: TextStyle(color: R.color.gray, fontSize: 18),
+                    hintText: R.string.add_comment.tr(),
+                    fillColor: R.color.white),
+                controller: _controller,
+              ),
+              SizedBox(height: 25),
+              ButtonWidget(
+                title: "Gửi",
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              )
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  _buildCommentTextBox(BuildContext context) {
     if (_cubit.questionModel.status == 0) return Container();
     if (_cubit.questionModel.accountId != _cubit.userInfo?.accountId)
       return Container();
@@ -557,36 +629,42 @@ class _QuestionDetailPageState extends State<QuestionDetailPage>
                 fontSize: 18.0,
                 color: R.color.black,
               ),
+              // onTap: () {
+              //   _enterAnswer(context);
+              // },
+              // readOnly: true,
               decoration: InputDecoration(
-                  counterText: '',
-                  isDense: true,
-                  contentPadding:
-                      EdgeInsets.symmetric(horizontal: 16, vertical: 18),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: R.color.grayBorder, width: 1),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  filled: true,
-                  hintStyle: TextStyle(color: R.color.gray, fontSize: 18),
-                  hintText: R.string.add_comment.tr(),
-                  fillColor: R.color.white),
+                counterText: '',
+                isDense: true,
+                contentPadding:
+                    EdgeInsets.symmetric(horizontal: 16, vertical: 18),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: R.color.grayBorder, width: 1),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                filled: true,
+                hintStyle: TextStyle(color: R.color.gray, fontSize: 18),
+                hintText: R.string.add_comment.tr(),
+                fillColor: R.color.white,
+              ),
               controller: _controller,
             ),
           ),
           SizedBox(width: 12),
           FloatingActionButton(
-              backgroundColor: R.color.greenGradientBottom,
-              child: Image.asset(
-                R.drawable.ic_send,
-                width: 30,
-                height: 30,
-              ),
-              onPressed: () async {
-                await _submitData();
-              }),
+            backgroundColor: R.color.greenGradientBottom,
+            child: Image.asset(
+              R.drawable.ic_send,
+              width: 30,
+              height: 30,
+            ),
+            onPressed: () async {
+              await _submitData();
+            },
+          ),
         ],
       ),
     );

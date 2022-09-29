@@ -3,7 +3,6 @@ import 'package:dio/dio.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/error/failures.dart';
-import 'package:medical/src/modal/learning/learning_post_model.dart';
 import 'package:medical/src/model/app_api.dart';
 import 'package:medical/src/model/response/default_model_response.dart';
 import 'package:medical/src/widget/helper/http_helper.dart';
@@ -17,8 +16,8 @@ class VoucherRepository extends FetchClient {
     final Response response = await super.fetchData(
       url: '/App/Voucher/Mobile',
       params: {
-        'page': '1',
-        "take": "100",
+        "size": "100",
+        "page": "1",
       },
     );
     try {
@@ -60,7 +59,6 @@ class VoucherRepository extends FetchClient {
       DefaultModelResponse responseData =
           DefaultModelResponse.fromJson(response.data);
       if (response.statusCode == 200) {
-        print("hehg: ${responseData.meta.success}");
         return Right(responseData.meta.success);
       }
       return Left(

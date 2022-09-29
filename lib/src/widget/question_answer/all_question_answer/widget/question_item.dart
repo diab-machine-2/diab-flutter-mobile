@@ -117,6 +117,7 @@ class _QuestionItemState extends State<QuestionItem>
                 padding: const EdgeInsets.only(top: 10),
                 child: RatingBar.builder(
                   itemSize: 20,
+                  ignoreGestures: true,
                   initialRating: questionModel.rateAnswer!.rate.toDouble(),
                   itemCount: 5,
                   itemPadding: const EdgeInsets.only(right: 5),

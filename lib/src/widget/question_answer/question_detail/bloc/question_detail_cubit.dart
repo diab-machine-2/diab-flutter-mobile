@@ -21,6 +21,7 @@ class QuestionDetailCubit extends Cubit<QuestionDetailState> {
   Timer? timer;
   bool isClickSend = false;
   bool canRefreshScreen = false;
+  bool ignoreGestures = false;
   final userInfo = AppSettings.userInfo;
   double titleHeight = 280;
   final ScrollController commentScrollController = ScrollController();
@@ -69,6 +70,9 @@ class QuestionDetailCubit extends Cubit<QuestionDetailState> {
           pictureUrls: response.data!.pictureUrls,
         );
         canRefreshScreen = true;
+        var userInfo = AppSettings.userInfo;
+        ignoreGestures = questionModel.accountId != userInfo!.accountId;
+
         emit(const QuestionDetailSuccess());
 
         if (isUpdateListQuestion) {
