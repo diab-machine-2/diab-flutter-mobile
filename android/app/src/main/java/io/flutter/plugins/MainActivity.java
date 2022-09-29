@@ -65,6 +65,8 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 
+// import javax.naming.spi.DirStateFactory.Result;
+
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
@@ -95,7 +97,7 @@ public class MainActivity extends FlutterActivity {
                 .setMethodCallHandler(
                         (call, result) -> {
                             if (call.method.equals("request_permission")) {
-                                requestPermission();
+                                requestPermission(result);
                             } else if (call.method.equals("init_IBle_Sdk")) {
                                 initIBle();
                             } else if (call.method.equals("start_scan")) {
@@ -322,40 +324,50 @@ public class MainActivity extends FlutterActivity {
 
 
     // call method chanel----------------------------------------------
-
-    private void requestPermission() {
-        boolean isBleAvailable = getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE) ? true : false;
-        if (isBleAvailable && Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            mBluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
-            mBluetoothAdapter = mBluetoothManager.getAdapter();
-            if (mBluetoothAdapter == null) {
-                //ble_not_supported
-                emitData("ble_not_supported", null);
-            } else {
-                emitData("ble_already", null);
-            }
+    
+    private void requestPermission(MethodChannel.Result result) {
+        mBluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
+        mBluetoothAdapter = mBluetoothManager.getAdapter();
+        if (mBluetoothAdapter.getState() == BluetoothAdapter.STATE_ON) {
+            result.success("ble_already");
         } else {
-            //BLE off. Turn on ble mode
-            emitData("ble_off", null);
+            result.success("ble_off");
         }
+        // boolean isBleAvailable = getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE) ? true : false;
+        // if (isBleAvailable && Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+        //     mBluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
+        //     mBluetoothAdapter = mBluetoothManager.getAdapter();
+        //     if (mBluetoothAdapter == null) {
+        //         //ble_not_supported
+        //         result.success("ble_not_supported");
+        //         //emitData("ble_not_supported", null);
+        //     } else {
+        //         result.success("ble_already");
+        //         //emitData("ble_already", null);
+        //     }
+        // } else {
+        //     //BLE off. Turn on ble mode
+        //     result.success("ble_off");
+        //     //emitData("ble_off", null);
+        // }
 
-        mLocationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+        // mLocationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
         
-        String[] permission = new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION};
-        if (isBLEEnabled() && isGPSEnabled() && checkPermission(permission)) {
-            emitData("permission_grand", null);
-        } else if (isBLEEnabled() == false) {
-            //BT 설정화면으로 이동
-            final Intent enableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-            startActivity(enableIntent);
-        } else if (isGPSEnabled() == false) {
-            //GPS 설정화면으로 이동
-            Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-            intent.addCategory(Intent.CATEGORY_DEFAULT);
-            startActivity(intent);
-        } else if (checkPermission(permission) == false) {
-            requestPermissions(permission);
-        }
+        // String[] permission = new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION};
+        // if (isBLEEnabled() && isGPSEnabled() && checkPermission(permission)) {
+        //     emitData("permission_grand", null);
+        // } else if (isBLEEnabled() == false) {
+        //     //BT 설정화면으로 이동
+        //     final Intent enableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+        //     startActivity(enableIntent);
+        // } else if (isGPSEnabled() == false) {
+        //     //GPS 설정화면으로 이동
+        //     Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+        //     intent.addCategory(Intent.CATEGORY_DEFAULT);
+        //     startActivity(intent);
+        // } else if (checkPermission(permission) == false) {
+        //     requestPermissions(permission);
+        // }
 
     }
 

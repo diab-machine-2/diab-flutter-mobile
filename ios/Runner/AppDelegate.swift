@@ -105,7 +105,7 @@ class IBleStreamHandler: NSObject, FlutterStreamHandler {
     }
 
     public func onCancel(withArguments arguments: Any?) -> FlutterError? {
-        AppDelegate.sink = nil
+        //AppDelegate.sink = nil
         return nil
     }
     
@@ -118,7 +118,7 @@ extension AppDelegate: iBTManagerDelegate {
         // after checkig the current bluetooth status, check the permission
         if #available(iOS 13.0, *) {
             if (central.state == .poweredOn && iBTManager.shared.checkPermission()) {
-                AppDelegate.sink!("permission_grand")
+                AppDelegate.sink!(["event":"permission_grand", "data": []])
             } else {
                 print("bluetooth off")
             }

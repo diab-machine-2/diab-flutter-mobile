@@ -15,6 +15,7 @@ import 'package:medical/src/widget/nipro/list_devices.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:timelines/timelines.dart';
 import 'package:app_settings/app_settings.dart' as Settings;
+import 'dart:io' show Platform;
 
 class ConnectionInstructionsController extends StatefulWidget {
   final bool? connectOnly;
@@ -38,7 +39,6 @@ class _ConnectionInstructionsControllerState
   List<Map<String, String>> devices = [];
   String dataText = '';
   Map<String, String>? device;
-  bool requestPermission = false;
 
   Timer? _timer;
 
@@ -63,8 +63,8 @@ class _ConnectionInstructionsControllerState
       print(event.toString());
       print(data);
 
-      if (event == 'permission_grand') {
-        requestPermission = true;
+      if (event == 'ble_off') {
+        Message.showToastMessage(context, 'Bạn chưa bật Bluetooth');
         //_channel.invokeMethod('init_IBle_Sdk');
       } else if (event == 'init_success') {
         BotToast.closeAllLoading();
@@ -134,7 +134,9 @@ class _ConnectionInstructionsControllerState
         }
       }
     });
-    _channel.invokeMethod('request_permission');
+    //_channel.invokeMethod('request_permission');
+    await Permission.location.request();
+    //await Permission.bluetooth.request();
   }
 
   startScan() {
@@ -245,9 +247,12 @@ class _ConnectionInstructionsControllerState
                                           padding: EdgeInsets.only(top: 10),
                                           child: GestureDetector(
                                             onTap: () async {
-                                              final isGranted = await Permission
-                                                  .bluetooth.isGranted;
-                                              if (isGranted) {
+                                              final String blueToothPermission =
+                                                  await _channel.invokeMethod(
+                                                      'request_permission');
+
+                                              if (blueToothPermission ==
+                                                  'ble_already') {
                                                 Message.showToastMessage(
                                                     context,
                                                     'Bluetooth đã được bật');
@@ -340,7 +345,21 @@ class _ConnectionInstructionsControllerState
             ),
             GestureDetector(
               onTap: () async {
-                if (requestPermission) {
+                final String blueToothPermission =
+                    await _channel.invokeMethod('request_permission');
+                // !(await Permission.bluetooth.isPermanentlyDenied) &&
+                //     await Permission.bluetooth.isGranted;
+                final locationGranted = Platform.isIOS
+                    ? true
+                    : (await Permission.location.isGranted &&
+                        await Permission.location.serviceStatus.isEnabled);
+                if (blueToothPermission != 'ble_already') {
+                  Message.showToastMessage(context, 'Bạn chưa bật Bluetooth');
+                } else if (!locationGranted) {
+                  Message.showToastMessage(context, 'Bạn chưa bật vị trí');
+                } else {
+                  // _channel.invokeMethod('request_permission');
+
                   startScan();
                   final result = await showModalBottomSheet(
                       shape: RoundedRectangleBorder(
@@ -361,9 +380,6 @@ class _ConnectionInstructionsControllerState
                     _channel.invokeMethod('connect', device!['address']);
                   }
                   stopScan();
-                } else {
-                  // _channel.invokeMethod('request_permission');
-                  Message.showToastMessage(context, 'Bạn chưa bật Bluetooth');
                 }
               },
               child: SafeArea(
