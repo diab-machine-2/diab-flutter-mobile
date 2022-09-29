@@ -105,6 +105,7 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
           DateTime.fromMillisecondsSinceEpoch(model!.createDate! * 1000);
       selectedTimeFrame = TimeFrameModel(
           id: model!.timeFrameId, code: '', name: model!.timeFrame);
+      fromNipro = model!.byDevice;
       setState(() {});
     } catch (e) {
       print(e);

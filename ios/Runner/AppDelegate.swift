@@ -24,13 +24,13 @@ import ibtFramework
         iBleMethodChannel.setMethodCallHandler({
             (call: FlutterMethodCall, result: @escaping FlutterResult) -> Void in
             if call.method == "request_permission" {
-                //
-            }if else call.method == "init_IBle_Sdk" {
-                self.initIBle(result: result)
-            } else if call.method == "startScan" {
-                self.startScan(result: result)
-            } else if call.method == "getData" {
-                self.getData(result: result)
+                self.initIBle()
+            } else if call.method == "init_IBle_Sdk" {
+                self.initIBle()
+            } else if call.method == "start_scan" {
+                self.startScan()
+            } else if call.method == "get_data" {
+                self.getData()
             } else {
                 result(FlutterMethodNotImplemented)
                 return
@@ -48,23 +48,22 @@ import ibtFramework
         return super.application(application, didFinishLaunchingWithOptions: launchOptions)
     }
     
-    private func initIBle(result: @escaping FlutterResult) {
+    private func initIBle() {
         let iManager = iDeviceManager.shared
         iManager.m_delegate = self
         iManager.initialize()
         
         // If you would like to use the iDeviceManager log function, please set the "printOn"
-        iManager.bPrintOn = false
+        iManager.bPrintOn = true
         let manager = iBTManager.shared
         manager.m_delegate = self
         
-        
         // Setting Unit
         iDeviceManager.shared.setUnit(0)
-        result("Init success")
+//        AppDelegate.sink!("init_success")
     }
     
-    private func startScan(result: @escaping FlutterResult) {
+    private func startScan() {
         
 //        var allowCBUUID: [String]? = []
 //        let iManager: iDeviceManager? = iDeviceManager.shared
@@ -79,12 +78,10 @@ import ibtFramework
 //            allowCBUUID?.append(uuid.description)
 //        }
 //        result(allowCBUUID)
-        let manager = iBTManager.shared
-        manager.m_delegate = self
-        manager.startScanDevice()
+        iBTManager.shared.startScanDevice()
     }
     
-    private func getData(result: @escaping FlutterResult) {
+    private func getData() {
        
         let control = iDeviceManager.shared
         let currPeri = control.getPeripheral()
@@ -104,8 +101,6 @@ class IBleStreamHandler: NSObject, FlutterStreamHandler {
     
     public func onListen(withArguments arguments: Any?, eventSink events: @escaping FlutterEventSink) -> FlutterError? {
         AppDelegate.sink = events
-        events(true)
-        AppDelegate.sink!("Listen ibl done")
         return nil
     }
 
@@ -123,7 +118,7 @@ extension AppDelegate: iBTManagerDelegate {
         // after checkig the current bluetooth status, check the permission
         if #available(iOS 13.0, *) {
             if (central.state == .poweredOn && iBTManager.shared.checkPermission()) {
-                print("bluetooth on")
+                AppDelegate.sink!("permission_grand")
             } else {
                 print("bluetooth off")
             }
@@ -131,6 +126,7 @@ extension AppDelegate: iBTManagerDelegate {
         else {
             if (central.state == .poweredOn) {
                 print("bluetooth on")
+                AppDelegate.sink!("permission_grand")
             } else {
                 print("bluetooth off")
             }
@@ -154,9 +150,16 @@ extension AppDelegate: iBTManagerDelegate {
         print("centralClientSearched")
         //
         arrDevices?.append(device)
-        if (arrDevices?.count != 0) {
-            iBTManager.shared.connect(device: arrDevices![0])
-        }
+    var arrResult: [[String:String]]? = []
+        arrDevices?.forEach({ btInfo in
+            arrResult?.append(["address" : btInfo.periUUID ?? ""])
+            arrResult?.append(["name" : btInfo.periName ?? ""])
+        })
+        
+        AppDelegate.sink!(["new_device": arrResult])
+//        if (arrDevices?.count != 0) {
+//            iBTManager.shared.connect(device: arrDevices![0])
+//        }
 //        DispatchQueue.main.async {
 //            self.deviceTableView.reloadData()
 //        }

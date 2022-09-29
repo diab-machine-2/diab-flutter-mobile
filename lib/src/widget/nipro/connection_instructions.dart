@@ -362,7 +362,8 @@ class _ConnectionInstructionsControllerState
                   }
                   stopScan();
                 } else {
-                  _channel.invokeMethod('request_permission');
+                  // _channel.invokeMethod('request_permission');
+                  Message.showToastMessage(context, 'Bạn chưa bật Bluetooth');
                 }
               },
               child: SafeArea(
