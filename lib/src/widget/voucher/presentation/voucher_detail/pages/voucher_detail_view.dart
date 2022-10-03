@@ -47,9 +47,12 @@ class _VoucherDetailViewState extends State<VoucherDetailView> {
               builder: (context, state) {
             currentContext = context;
             final VoucherModel? voucherDetail = state.voucherDetail;
-            if (voucherDetail == null) return SizedBox();
+            bool isLoading =
+                voucherDetail == null && state.blocStatus == BlocStatus.loading;
+            if (isLoading) return SizedBox();
             return Scaffold(
-              bottomSheet: _btnShare(voucherDetail),
+              bottomSheet:
+                  voucherDetail != null ? _btnUseVoucher(voucherDetail) : null,
               appBar: CustomAppBar(
                 backgroundColor: R.color.transparent,
                 title: Text(
@@ -69,13 +72,30 @@ class _VoucherDetailViewState extends State<VoucherDetailView> {
                   },
                 ),
               ),
-              body: SingleChildScrollView(
-                child: Container(
-                  padding: EdgeInsets.symmetric(vertical: 25, horizontal: 15),
-                  color: R.color.color0xfff5f5f5,
-                  child: _sectionContent(context),
-                ),
-              ),
+              body: voucherDetail != null
+                  ? SingleChildScrollView(
+                      child: Container(
+                        padding:
+                            EdgeInsets.symmetric(vertical: 25, horizontal: 15),
+                        color: R.color.color0xfff5f5f5,
+                        child: _sectionContent(context),
+                      ),
+                    )
+                  : Column(
+                      children: [
+                        SizedBox(height: 25),
+                        Image.asset(R.drawable.img_blood_sugar_start_survey),
+                        SizedBox(height: 25),
+                        Text(
+                          "Không tìm thấy dữ liệu",
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w700,
+                            color: R.color.accentColor,
+                          ),
+                        )
+                      ],
+                    ),
             );
           }),
         ),
@@ -89,17 +109,17 @@ class _VoucherDetailViewState extends State<VoucherDetailView> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          "Chúc mừng bạn đã nhận được voucher khuyến mãi.",
+          "Chúc mừng bạn đã nhận được mã ưu đãi.",
           style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w700,
           ),
         ),
         SizedBox(height: 20),
-        Image.asset(R.drawable.voucher_reward),
+        Image.asset(R.drawable.voucher_reward_detail),
         SizedBox(height: 20),
         Text(
-          "DiaB tặng bạn mã giảm giá 50k cho tất cả hoá đơn khi mua sắm tại nhà thuốc Long Châu. Xem cách sử dụng dưới đây nhé!",
+          "DiaB tặng bạn mã giảm giá 10k cho tất cả hoá đơn khi mua sắm tại nhà thuốc Long Châu. Xem cách sử dụng dưới đây nhé!",
           style: TextStyle(
             height: 1.4,
             fontSize: 16,
@@ -116,7 +136,7 @@ class _VoucherDetailViewState extends State<VoucherDetailView> {
         ),
         SizedBox(height: 10),
         Text(
-          "Trên màn hình có “Mã Voucher” cung cấp mã Voucher cho nhân viên tại quầy thu ngân để được giảm giá cho tất cả đơn hàng.",
+          "Bước 1: Bấm vào nút “Sử dụng mã”",
           style: TextStyle(
             height: 1.4,
             fontSize: 16,
@@ -124,6 +144,76 @@ class _VoucherDetailViewState extends State<VoucherDetailView> {
           ),
         ),
         SizedBox(height: 15),
+        Container(
+          width: 274,
+          padding: EdgeInsets.all(7),
+          margin: EdgeInsets.symmetric(vertical: 15),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: R.color.red,
+            ),
+          ),
+          child: ButtonWidget(
+            radius: 8,
+            title: R.string.use_voucher.tr(),
+            onPressed: () {},
+          ),
+        ),
+        Text(
+          "Bước 2: Cung cấp mã Voucher cho thu ngân.",
+          style: TextStyle(
+            height: 1.4,
+            fontSize: 16,
+            color: R.color.color0xff666666,
+          ),
+        ),
+        Container(
+          margin: EdgeInsets.symmetric(vertical: 15),
+          width: 274,
+          padding: EdgeInsets.all(7),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: R.color.red,
+            ),
+          ),
+          child: DottedBorder(
+            dashPattern: [3, 3],
+            strokeWidth: 1,
+            radius: Radius.circular(18),
+            color: R.color.greenGradientBottom,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    "Mã Voucher: ",
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: R.color.greenGradientBottom,
+                    ),
+                  ),
+                  Text(
+                    "DIABKMO1",
+                    style: TextStyle(
+                      fontSize: 17,
+                      color: R.color.greenGradientBottom,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  SizedBox(width: 5),
+                  Icon(
+                    Icons.copy,
+                    size: 14,
+                    color: R.color.captionColorGray,
+                  )
+                ],
+              ),
+            ),
+          ),
+        ),
         Text(
           "Hệ thống áp dụng:",
           style: TextStyle(
@@ -194,11 +284,6 @@ class _VoucherDetailViewState extends State<VoucherDetailView> {
                     Message.showToastMessage(context, "Đã copy mã Voucher");
                     Navigator.pop(context);
                   });
-                  if (voucherDetail.status == 0) {
-                    currentContext
-                        .read<VoucherDetailBloc>()
-                        .add(SubmitUseVoucher());
-                  }
                 },
                 child: DottedBorder(
                   dashPattern: [3, 3],
@@ -245,7 +330,7 @@ class _VoucherDetailViewState extends State<VoucherDetailView> {
     );
   }
 
-  Widget _btnShare(VoucherModel voucherDetail) {
+  Widget _btnUseVoucher(VoucherModel voucherDetail) {
     double paddingBottom = MediaQuery.of(currentContext).padding.bottom + 10;
     return Container(
       padding: EdgeInsets.fromLTRB(15, 15, 15, paddingBottom),
@@ -264,6 +349,9 @@ class _VoucherDetailViewState extends State<VoucherDetailView> {
         radius: 8,
         title: R.string.use_voucher.tr(),
         onPressed: () {
+          if (voucherDetail.status == 0) {
+            currentContext.read<VoucherDetailBloc>().add(SubmitUseVoucher());
+          }
           _useVoucher(voucherDetail);
         },
       ),

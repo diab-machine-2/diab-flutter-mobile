@@ -31,7 +31,8 @@ class NotificationModel {
       this.notificationType});
 
   NotificationActionType get actionType =>
-      NotificationActionExtend.getNotificationActionTypeFromIndex(data?.notificationType ?? notificationType);
+      NotificationActionExtend.getNotificationActionTypeFromIndex(
+          data?.notificationType ?? notificationType);
 
   @override
   factory NotificationModel.fromJson(Map<String, dynamic> json) {
@@ -44,7 +45,9 @@ class NotificationModel {
       title: notification['title'],
       body: notification['body'],
       topic: notification['topic'],
-      imageUrl: notification['imageUrl'] is Map ? notification['imageUrl']['url'] : notification['imageUrl'],
+      imageUrl: notification['imageUrl'] is Map
+          ? notification['imageUrl']['url']
+          : notification['imageUrl'],
       sentDateTime: notification['sentDateTime'],
       isRead: notification['isRead'] ?? false,
       hyperText: notification['hyperText'],
@@ -70,8 +73,16 @@ class NotificationData {
   final String notificationType;
   final String? notificationId;
   final String? referalCode;
+  final String? surveyId;
 
-  NotificationData({required this.notificationId, required this.calendarId, required this.communicationId, required this.remindId, required this.notificationType, required this.referalCode});
+  NotificationData(
+      {this.surveyId,
+      required this.notificationId,
+      required this.calendarId,
+      required this.communicationId,
+      required this.remindId,
+      required this.notificationType,
+      required this.referalCode});
 
   @override
   factory NotificationData.fromJson(dynamic json) {
@@ -81,6 +92,7 @@ class NotificationData {
         remindId: json['remindId'],
         calendarId: json['calendarId'],
         referalCode: json['referalCode'],
+        surveyId: json['surveyId'],
         notificationType: json['notificationType']);
   }
 

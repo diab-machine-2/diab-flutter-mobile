@@ -76,6 +76,8 @@ extension NotificationActionExtend on NotificationActionType {
           return NotificationActionType.redirect_date_detail;
         case 7:
           return NotificationActionType.redirect_survey;
+        case 8:
+          return NotificationActionType.register_referral_success;
         default:
           return NotificationActionType.redirect_to_url;
       }

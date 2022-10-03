@@ -75,7 +75,7 @@ class NotificationManager {
       } else if (model.actionType ==
           NotificationActionType.register_referral_success) {
         VoucherModalReward.showModal(
-            navigatorKey.currentState!.context, model.data!.communicationId!);
+            navigatorKey.currentState!.context, model.data!.surveyId!);
         return;
       }
       Observable.instance
@@ -190,7 +190,7 @@ class NotificationManager {
           break;
         case NotificationActionType.register_referral_success:
           VoucherModalReward.showModal(
-              navigatorKey.currentState!.context, model.data!.communicationId!);
+              navigatorKey.currentState!.context, model.data!.surveyId!);
           break;
       }
     }

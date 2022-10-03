@@ -291,7 +291,7 @@ class NotificationControllerState extends State<NotificationController>
         ),
       ),
     );
-  }
+  } 
 
   void _onTapNotify(NotificationListModel model) {
     if ((widget.isRemovealbe != true) && !model.isRead!) {
@@ -300,6 +300,7 @@ class NotificationControllerState extends State<NotificationController>
       NotificationClient().readNotification(model.id, model.notificationId,
           AppSettings.userInfo!.id, model.notificationType.toString(), true);
     }
+
     if (model.calendarId == null) {
       switch (model.actionType) {
         case NotificationActionType.redirect_to_activity_tab:
@@ -333,9 +334,8 @@ class NotificationControllerState extends State<NotificationController>
         case NotificationActionType.redirect_survey:
           break;
         case NotificationActionType.register_referral_success:
-        case NotificationActionType.register_referral_success:
           Navigator.pushNamed(context, NavigatorName.voucher_list,
-              arguments: {'type': 'input', 'voucherId': model.id});
+              arguments: {'type': 'input', 'voucherId': model.surveyId});
           break;
       }
     }
@@ -477,7 +477,8 @@ class NotificationControllerState extends State<NotificationController>
   _delete(NotificationListModel model) async {
     try {
       BotToast.showLoading();
-      await NotificationClient().deleteNotification(model.notificationId, model.messageType);
+      await NotificationClient()
+          .deleteNotification(model.notificationId, model.messageType);
       refresh();
       BotToast.closeAllLoading();
     } catch (e, _) {

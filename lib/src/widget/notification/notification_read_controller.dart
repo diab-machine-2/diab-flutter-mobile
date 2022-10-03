@@ -340,7 +340,7 @@ class NotificationReadControllerState extends State<NotificationReadController>
           break;
         case NotificationActionType.register_referral_success:
           Navigator.pushNamed(context, NavigatorName.voucher_list,
-              arguments: {'type': 'input', 'voucherId': notificationModel.id});
+              arguments: {'type': 'input', 'voucherId': notificationModel.surveyId});
           break;
       }
     }
