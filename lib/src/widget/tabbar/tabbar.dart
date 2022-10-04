@@ -131,6 +131,9 @@ class _TabbarControllerState extends State<TabbarController>
             .notifyObservers([], notifyName: Const.NAVIGATE_TO_EXERCISE_TAB);
       }
     }
+    if (notifyName == Const.NAVIGATE_TO_PROFILE_TAB) {
+      jumpTo(0);
+    }
   }
 
   jumpTo(int index) {

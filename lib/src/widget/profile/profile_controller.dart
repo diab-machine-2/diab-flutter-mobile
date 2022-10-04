@@ -25,6 +25,7 @@ import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/my_package/my_package_page.dart';
 import 'package:medical/src/widget/shared_profile/shared_profile.dart';
+import 'package:medical/src/widgets/button_language_picker.dart';
 import 'package:share_plus/share_plus.dart';
 import '../food_menu_screens/food_menu/food_menu_page.dart';
 
@@ -104,12 +105,16 @@ class _ProfileControllerState extends State<ProfileController> with Observer {
                   fontWeight: FontWeight.w600,
                   color: R.color.textDark)),
           leadingIcon: IconButton(
-              splashColor: R.color.transparent,
-              highlightColor: R.color.transparent,
-              icon: Icon(Icons.arrow_back, color: R.color.textDark),
-              onPressed: () {
-                Navigator.pop(context);
-              }),
+            splashColor: R.color.transparent,
+            highlightColor: R.color.transparent,
+            icon: Icon(Icons.arrow_back, color: R.color.textDark),
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          ),
+          actions: [
+            ButtonLanguagePicker(),
+          ],
         ),
         body: Container(
             color: R.color.color0xffB1DDDB.withOpacity(0.2),
@@ -279,7 +284,8 @@ class _ProfileControllerState extends State<ProfileController> with Observer {
                   //const SizedBox(height: 16),
                   buildAction(
                       R.string.profile_information.tr(), R.drawable.ic_user, 0),
-                  buildAction("Mời bạn bè dùng App DiaB", R.drawable.ic_share, 6),
+                  buildAction(
+                      "Mời bạn bè dùng App DiaB", R.drawable.ic_share, 6),
                   buildAction(R.string.shared_profile_list.tr(),
                       R.drawable.ic_share, 1),
                   buildAction(
