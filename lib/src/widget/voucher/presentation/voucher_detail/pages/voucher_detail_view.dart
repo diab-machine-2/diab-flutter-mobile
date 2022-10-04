@@ -118,11 +118,37 @@ class _VoucherDetailViewState extends State<VoucherDetailView> {
         SizedBox(height: 20),
         Image.asset(R.drawable.voucher_reward_detail),
         SizedBox(height: 20),
-        Text(
-          "DiaB tặng bạn mã giảm giá 10k cho tất cả hoá đơn khi mua sắm tại nhà thuốc Long Châu. Xem cách sử dụng dưới đây nhé!",
-          style: TextStyle(
-            height: 1.4,
-            fontSize: 16,
+        RichText(
+          text: TextSpan(
+            style: TextStyle(
+              color: R.color.textDark,
+              fontSize: 16,
+              wordSpacing: 3,
+              height: 1.4,
+            ),
+            children: [
+              TextSpan(
+                text: 'DiaB tặng bạn ',
+                style: TextStyle(fontWeight: FontWeight.w600),
+              ),
+              TextSpan(
+                text: "mã ưu đãi ",
+              ),
+              TextSpan(
+                text: '10k ',
+                style: TextStyle(fontWeight: FontWeight.w600),
+              ),
+              TextSpan(
+                text: 'cho tất cả hoá đơn khi mua sắm tại nhà thuốc ',
+              ),
+              TextSpan(
+                text: 'Pharmacity.\n',
+                style: TextStyle(fontWeight: FontWeight.w600),
+              ),
+              TextSpan(
+                text: 'Xem cách sử dụng dưới đây nhé!',
+              ),
+            ],
           ),
         ),
         SizedBox(height: 15),
@@ -143,16 +169,13 @@ class _VoucherDetailViewState extends State<VoucherDetailView> {
             color: R.color.color0xff666666,
           ),
         ),
-        SizedBox(height: 15),
         Container(
-          width: 274,
+          width: 280,
           padding: EdgeInsets.all(7),
           margin: EdgeInsets.symmetric(vertical: 15),
           decoration: BoxDecoration(
+            color: R.color.white,
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(
-              color: R.color.red,
-            ),
           ),
           child: ButtonWidget(
             radius: 8,
@@ -161,7 +184,7 @@ class _VoucherDetailViewState extends State<VoucherDetailView> {
           ),
         ),
         Text(
-          "Bước 2: Cung cấp mã Voucher cho thu ngân.",
+          "Bước 2: Cung cấp mã ưu đãi cho thu ngân.",
           style: TextStyle(
             height: 1.4,
             fontSize: 16,
@@ -170,18 +193,17 @@ class _VoucherDetailViewState extends State<VoucherDetailView> {
         ),
         Container(
           margin: EdgeInsets.symmetric(vertical: 15),
-          width: 274,
+          width: 280,
           padding: EdgeInsets.all(7),
           decoration: BoxDecoration(
+            color: R.color.white,
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(
-              color: R.color.red,
-            ),
           ),
           child: DottedBorder(
             dashPattern: [3, 3],
             strokeWidth: 1,
-            radius: Radius.circular(18),
+            radius: Radius.circular(6),
+            borderType: BorderType.RRect,
             color: R.color.greenGradientBottom,
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
@@ -189,7 +211,7 @@ class _VoucherDetailViewState extends State<VoucherDetailView> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    "Mã Voucher: ",
+                    "Mã ưu đãi: ",
                     style: TextStyle(
                       fontSize: 16,
                       color: R.color.greenGradientBottom,
@@ -224,7 +246,7 @@ class _VoucherDetailViewState extends State<VoucherDetailView> {
         ),
         SizedBox(height: 10),
         Text(
-          "Mã khuyến mãi được áp dụng cho tất cả các cửa hàng nhà thuốc Long Châu.",
+          "Mã ưu đãi được áp dụng cho tất cả các cửa hàng nhà thuốc Pharmacity.",
           style: TextStyle(
             height: 1.4,
             fontSize: 16,
@@ -233,7 +255,7 @@ class _VoucherDetailViewState extends State<VoucherDetailView> {
         ),
         SizedBox(height: 15),
         Text(
-          "Quy định về thẻ voucher:",
+          "Quy định về thẻ mã ưu đãi:",
           style: TextStyle(
             height: 1.4,
             fontSize: 16,
@@ -242,7 +264,7 @@ class _VoucherDetailViewState extends State<VoucherDetailView> {
         ),
         SizedBox(height: 10),
         Text(
-          " - Được cộng Gộp nhiều thẻ Voucher cho 1  đơn hàng.",
+          " - Được sử dụng nhiều mã ưu đãi cho 1 đơn hàng.",
           style: TextStyle(
             height: 1.4,
             fontSize: 16,
@@ -281,14 +303,15 @@ class _VoucherDetailViewState extends State<VoucherDetailView> {
                 onTap: () {
                   Clipboard.setData(ClipboardData(text: voucherDetail.code))
                       .then((_) {
-                    Message.showToastMessage(context, "Đã copy mã Voucher");
+                    Message.showToastMessage(context, "Đã copy mã ưu đãi");
                     Navigator.pop(context);
                   });
                 },
                 child: DottedBorder(
                   dashPattern: [3, 3],
                   strokeWidth: 1,
-                  radius: Radius.circular(18),
+                  radius: Radius.circular(6),
+                  borderType: BorderType.RRect,
                   color: R.color.greenGradientBottom,
                   child: Padding(
                     padding: const EdgeInsets.symmetric(
@@ -297,14 +320,15 @@ class _VoucherDetailViewState extends State<VoucherDetailView> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          "Mã Voucher: ",
+                          "Mã ưu đãi: ",
                           style: TextStyle(
                             fontSize: 16,
+                            fontWeight: FontWeight.w700,
                             color: R.color.greenGradientBottom,
                           ),
                         ),
                         Text(
-                          voucherDetail.code,
+                          voucherDetail.code.toUpperCase(),
                           style: TextStyle(
                             fontSize: 17,
                             color: R.color.greenGradientBottom,

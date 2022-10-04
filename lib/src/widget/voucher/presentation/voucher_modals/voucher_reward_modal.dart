@@ -45,7 +45,7 @@ class VoucherModalReward extends StatelessWidget {
                     children: [
                       SizedBox(height: 16),
                       Text(
-                        "Chúc mừng bạn đã nhận được voucher khuyến mãi",
+                        "Chúc mừng bạn đã nhận được\n mã ưu đãi",
                         style: TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.w700,
@@ -55,7 +55,7 @@ class VoucherModalReward extends StatelessWidget {
                       ),
                       SizedBox(height: 12),
                       Text(
-                        "Giới thiệu bạn bè dùng app thành công bạn nhận được 1 voucher khuyến mãi.",
+                        "Giới thiệu bạn bè dùng app thành công bạn nhận được 1 mã ưu đãi.",
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w400,
