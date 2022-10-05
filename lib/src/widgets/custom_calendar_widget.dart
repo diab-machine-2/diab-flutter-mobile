@@ -35,7 +35,7 @@ class _CustomCalendarWidgetState extends State<CustomCalendarWidget> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Text(
-                'Tháng ${_time.month}, ${_time.year}',
+                '${R.string.month} ${_time.month}, ${_time.year}',
                 style: TextStyle(
                     color: R.color.greenGradientBottom,
                     fontSize: 20,

@@ -39,53 +39,53 @@ class _HomeControllerState extends State<HomeController> with Observer {
   GlobalKey<CourseSuggestState> courseSuggestKey = GlobalKey();
   var data = [
     {
-      'name': R.string.duong_huyet.tr(),
+      'name': R.string.duong_huyet,
       'image': R.drawable.bg_blood,
       'icon': R.drawable.ic_blood_sugar,
       'dataDetail': [],
     },
     {
-      'name': R.string.huyet_ap.tr(),
+      'name': R.string.huyet_ap,
       'image': R.drawable.bg_blood_presser,
       'icon': R.drawable.ic_heart_presse,
       'dataDetail': []
     },
     {
-      'name': R.string.can_nang.tr(),
+      'name': R.string.can_nang,
       'image': R.drawable.bg_weight,
       'icon': R.drawable.ic_weight_plus,
       'dataDetail': []
     },
     {
-      'name': R.string.cam_xuc.tr(),
+      'name': R.string.cam_xuc,
       'image': R.drawable.bg_emotion,
       'icon': R.drawable.ic_emotion_plus,
       'dataDetail': [
-        {'name': R.string.vui_ve.tr(), 'image': R.drawable.ic_laughing},
-        {'name': R.string.buon_ngu.tr(), 'image': R.drawable.ic_sleeping},
-        {'name': R.string.om.tr(), 'image': R.drawable.ic_sick}
+        {'name': R.string.vui_ve, 'image': R.drawable.ic_laughing},
+        {'name': R.string.buon_ngu, 'image': R.drawable.ic_sleeping},
+        {'name': R.string.om, 'image': R.drawable.ic_sick}
       ]
     },
     {
-      'name': R.string.dinh_duong.tr(),
+      'name': R.string.dinh_duong,
       'image': R.drawable.bg_food,
       'icon': R.drawable.ic_food,
       'dataDetail': [],
     },
     {
-      'name': R.string.van_dong.tr(),
+      'name': R.string.van_dong,
       'image': R.drawable.bg_exercise,
       'icon': R.drawable.ic_exercise_menu,
       'dataDetail': [],
     },
     {
-      'name': R.string.progress.tr(),
+      'name': R.string.progress,
       'image': '',
       'icon': R.drawable.ic_progress,
       'dataDetail': [],
     },
     {
-      'name': R.string.hba1c.tr(),
+      'name': R.string.hba1c,
       'image': R.drawable.bg_hba1c,
       'icon': R.drawable.ic_hba1c_menu,
       'dataDetail': [],
@@ -147,6 +147,9 @@ class _HomeControllerState extends State<HomeController> with Observer {
       checkScreen(NavigatorName.detail_hba1c);
     }
     if (notifyName == 'goal_calo_changed' || notifyName == 'refresh_home') {
+      _refresh();
+    }
+    if (notifyName == Const.NAVIGATE_TO_PROFILE_TAB) {
       _refresh();
     }
   }
@@ -567,8 +570,9 @@ class _HomeControllerState extends State<HomeController> with Observer {
             decoration: BoxDecoration(
                 color: R.color.white, borderRadius: BorderRadius.circular(10)),
             child: Text(name ?? '',
-                style:
-                    const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+                    style: const TextStyle(
+                        fontSize: 16, fontWeight: FontWeight.w600))
+                .tr(),
           ),
         ),
         if (image?.isNotEmpty != true)
@@ -605,9 +609,10 @@ class _HomeControllerState extends State<HomeController> with Observer {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                  Text(name ?? '',
-                      style: const TextStyle(
-                          fontSize: 16, fontWeight: FontWeight.w600)),
+                  Text(name ?? "",
+                          style: const TextStyle(
+                              fontSize: 16, fontWeight: FontWeight.w600))
+                      .tr(),
                   const SizedBox(height: 4),
                   Text(
                       getStringToday(model.createDateTime!).isEmpty
@@ -693,8 +698,9 @@ class _HomeControllerState extends State<HomeController> with Observer {
               children: [
                 Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                   Text(name ?? '',
-                      style: const TextStyle(
-                          fontSize: 16, fontWeight: FontWeight.w600)),
+                          style: const TextStyle(
+                              fontSize: 16, fontWeight: FontWeight.w600))
+                      .tr(),
                   const SizedBox(height: 4),
                   Text(
                       getStringToday(model.createDateTime ?? 0).isEmpty
@@ -783,8 +789,9 @@ class _HomeControllerState extends State<HomeController> with Observer {
               children: [
                 Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                   Text(name ?? '',
-                      style: const TextStyle(
-                          fontSize: 16, fontWeight: FontWeight.w600)),
+                          style: const TextStyle(
+                              fontSize: 16, fontWeight: FontWeight.w600))
+                      .tr(),
                   const SizedBox(height: 4),
                   Text(
                       getStringToday(model.weightDateTime ?? 0).isEmpty
@@ -843,8 +850,9 @@ class _HomeControllerState extends State<HomeController> with Observer {
               children: [
                 Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                   Text(name ?? '',
-                      style: const TextStyle(
-                          fontSize: 16, fontWeight: FontWeight.w600)),
+                          style: const TextStyle(
+                              fontSize: 16, fontWeight: FontWeight.w600))
+                      .tr(),
                   const SizedBox(height: 4),
                   Text(
                       getStringToday(model.emotionDateTime ?? 0).isEmpty
@@ -906,8 +914,9 @@ class _HomeControllerState extends State<HomeController> with Observer {
               children: [
                 Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                   Text(name ?? '',
-                      style: const TextStyle(
-                          fontSize: 16, fontWeight: FontWeight.w600)),
+                          style: const TextStyle(
+                              fontSize: 16, fontWeight: FontWeight.w600))
+                      .tr(),
                   const SizedBox(height: 4),
                   Text(
                       getStringToday(model.consumedEnergyDateTime ?? 0).isEmpty
@@ -981,8 +990,9 @@ class _HomeControllerState extends State<HomeController> with Observer {
               children: [
                 Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                   Text(name ?? '',
-                      style: const TextStyle(
-                          fontSize: 16, fontWeight: FontWeight.w600)),
+                          style: const TextStyle(
+                              fontSize: 16, fontWeight: FontWeight.w600))
+                      .tr(),
                   const SizedBox(height: 4),
                   Text(
                       getStringToday(model.createDateTime ?? 0).isEmpty
@@ -1008,7 +1018,7 @@ class _HomeControllerState extends State<HomeController> with Observer {
                       child: Padding(
                         padding: const EdgeInsets.only(top: 4),
                         child: Text(
-                            '/${model.targetExercise!.round().toString()} phút',
+                            '/${model.targetExercise!.round().toString()} ${R.string.minute}',
                             style: TextStyle(
                                 color: R.color.captionColorGray,
                                 fontSize: 12,

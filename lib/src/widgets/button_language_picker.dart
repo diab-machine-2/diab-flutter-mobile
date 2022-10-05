@@ -6,6 +6,7 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/model/localization/localization.dart';
 import 'package:medical/src/model/preference/app_preference.dart';
 import 'package:medical/src/utils/const.dart';
+import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
 class ButtonLanguagePicker extends StatelessWidget {
@@ -125,11 +126,11 @@ class LanguagePicker extends StatelessWidget {
     return GestureDetector(
       onTap: () async {
         Navigator.pop(context);
-        Localization.changeLanguage(context, item.languageCode);
-        Observable.instance
-            .notifyObservers([], notifyName: Const.NAVIGATE_TO_PROFILE_TAB);
-        // Observable.instance
-        //     .notifyObservers([], notifyName: Const.HIDE_OVERLAY_KEY);
+        if (isSelected == false) {
+          Localization.changeLanguage(context, item.languageCode);
+          Observable.instance
+              .notifyObservers([], notifyName: Const.NAVIGATE_TO_PROFILE_TAB);
+        }
       },
       child: Padding(
         padding: const EdgeInsets.only(bottom: 15),

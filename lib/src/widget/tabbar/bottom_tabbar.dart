@@ -5,6 +5,7 @@ import 'package:flutter_observer/Observable.dart';
 import 'package:flutter_observer/Observer.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/utils/const.dart';
+import 'package:medical/src/widget/helper/show_message.dart';
 
 typedef TabbarSelected = Function(int);
 
@@ -41,6 +42,7 @@ class _BottomTabbar extends State<BottomTabbar> with Observer {
   Future<void> update(Observable observable, String? notifyName,
       Map<dynamic, dynamic>? map) async {
     if (notifyName == Const.NAVIGATE_TO_PROFILE_TAB) {
+      Message.showToastMessage(context, "Thay đổi ngôn ngữ thành công.");
       jumpToIndex(Const.HOME_SCREEN);
     }
   }
