@@ -33,7 +33,6 @@ class NotificationController extends StatefulWidget {
 
 class NotificationControllerState extends State<NotificationController>
     with AutomaticKeepAliveClientMixin<NotificationController>, Observer {
-
   @override
   bool get wantKeepAlive => true;
 
@@ -49,28 +48,29 @@ class NotificationControllerState extends State<NotificationController>
   @override
   void initState() {
     super.initState();
-  //  if (widget.isRemovealbe != true) {
-      Observable.instance.addObserver(this);
-  //  }
+    //  if (widget.isRemovealbe != true) {
+    Observable.instance.addObserver(this);
+    //  }
   }
 
   @override
-  void update(Observable observable, String? notifyName, Map<dynamic, dynamic>? map) {
+  void update(
+      Observable observable, String? notifyName, Map<dynamic, dynamic>? map) {
     if (notifyName == 'read_notification') {
       NotificationListModel notification = map?['notification'];
-      if(widget.isRemovealbe == null){
+      if (widget.isRemovealbe == null) {
         setState(() {
           readIds.add(notification.id);
         });
-      } else if(widget.isRemovealbe == false){
+      } else if (widget.isRemovealbe == false) {
         setState(() {
           model.removeWhere((element) => element.id == notification.id);
         });
-      } else if(widget.isRemovealbe == true){
-          setState(() {
-            notification.isRead = true;
-            model.add(notification);
-          });
+      } else if (widget.isRemovealbe == true) {
+        setState(() {
+          notification.isRead = true;
+          model.add(notification);
+        });
       }
     }
   }
@@ -109,7 +109,7 @@ class NotificationControllerState extends State<NotificationController>
       child: BlocBuilder<NotificationBloc, NotificationState>(
         builder: (BuildContext context, NotificationState state) {
           currentContext = context;
-          
+
           if (state is NotificationInitial) {
             Future.delayed(Duration(milliseconds: 10));
             BotToast.showLoading();
@@ -144,7 +144,8 @@ class NotificationControllerState extends State<NotificationController>
     );
   }
 
-  Widget _buildNotificationList(List<NotificationListModel> model, NotificationState state) {
+  Widget _buildNotificationList(
+      List<NotificationListModel> model, NotificationState state) {
     return LoadMore(
       onLoadMore: _loadMore,
       isFinish: !hasMore,
@@ -162,14 +163,15 @@ class NotificationControllerState extends State<NotificationController>
           );
         },
         itemBuilder: (BuildContext context, int index) {
-          if(state is NotificationInitial){
+          if (state is NotificationInitial) {
             return Container();
           } else if (model.isNotEmpty != true) {
             return Container(
               height: MediaQuery.of(context).size.height - 190,
               child: Center(
                 child: Column(mainAxisSize: MainAxisSize.min, children: [
-                  Image.asset(R.drawable.img_notification_empty, width: 235, height: 172),
+                  Image.asset(R.drawable.img_notification_empty,
+                      width: 235, height: 172),
                   const SizedBox(height: 24),
                   Text(
                     R.string.no_notification.tr(),
@@ -181,7 +183,8 @@ class NotificationControllerState extends State<NotificationController>
             final NotificationListModel notificationModel = model[index];
             bool? isRead = notificationModel.isRead;
             if (!notificationModel.isRead! && (widget.isRemovealbe != true)) {
-              final selected = readIds.indexWhere((element) => element == notificationModel.id);
+              final selected = readIds
+                  .indexWhere((element) => element == notificationModel.id);
               if (selected != -1) {
                 isRead = true;
               }
@@ -198,13 +201,18 @@ class NotificationControllerState extends State<NotificationController>
                     : [
                         IconSlideAction(
                           color: R.color.color0xffFF5552,
-                          iconWidget: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-                            Image.asset(R.drawable.ic_trash2, width: 24, height: 24),
-                            const SizedBox(height: 4),
-                            Text(R.string.detele_notificaiton.tr(),
-                                style: TextStyle(color: R.color.white, fontWeight: FontWeight.w500),
-                                textAlign: TextAlign.center),
-                          ]),
+                          iconWidget: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Image.asset(R.drawable.ic_trash2,
+                                    width: 24, height: 24),
+                                const SizedBox(height: 4),
+                                Text(R.string.detele_notificaiton.tr(),
+                                    style: TextStyle(
+                                        color: R.color.white,
+                                        fontWeight: FontWeight.w500),
+                                    textAlign: TextAlign.center),
+                              ]),
                           onTap: () {
                             _showDialogDelete(context, notificationModel);
                           },
@@ -229,7 +237,8 @@ class NotificationControllerState extends State<NotificationController>
           children: [
             ClipRRect(
               borderRadius: BorderRadius.circular(20),
-              child: NetWorkImageWidget(imageUrl: model.imageUrl!, width: 40, height: 40),
+              child: NetWorkImageWidget(
+                  imageUrl: model.imageUrl!, width: 40, height: 40),
             ),
             const SizedBox(width: 8),
             Expanded(
@@ -245,7 +254,10 @@ class NotificationControllerState extends State<NotificationController>
                         Expanded(
                           child: Text(
                             model.title!,
-                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: R.color.black),
+                            style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w700,
+                                color: R.color.black),
                           ),
                         ),
                         if (isRead != true)
@@ -264,8 +276,12 @@ class NotificationControllerState extends State<NotificationController>
                   Padding(
                     padding: const EdgeInsets.only(left: 8),
                     child: Text(
-                      convertToUTC(model.sentDateTime ?? 0, 'HH:mm - dd/MM/yyyy'),
-                      style: TextStyle(fontSize: 14, fontWeight: FontWeight.w400, color: R.color.gray),
+                      convertToUTC(
+                          model.sentDateTime ?? 0, 'HH:mm - dd/MM/yyyy'),
+                      style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w400,
+                          color: R.color.gray),
                     ),
                   ),
                 ],
@@ -275,31 +291,39 @@ class NotificationControllerState extends State<NotificationController>
         ),
       ),
     );
-  }
+  } 
 
   void _onTapNotify(NotificationListModel model) {
     if ((widget.isRemovealbe != true) && !model.isRead!) {
-      Observable.instance.notifyObservers([], notifyName: "read_notification", map: {'notification': model});
-      NotificationClient()
-          .readNotification(model.id, model.notificationId, AppSettings.userInfo!.id, model.notificationType.toString(), true);
+      Observable.instance.notifyObservers([],
+          notifyName: "read_notification", map: {'notification': model});
+      NotificationClient().readNotification(model.id, model.notificationId,
+          AppSettings.userInfo!.id, model.notificationType.toString(), true);
     }
-    if(model.calendarId == null) {
+
+    if (model.calendarId == null) {
       switch (model.actionType) {
         case NotificationActionType.redirect_to_activity_tab:
-          Navigator.pushReplacementNamed(context, NavigatorName.tabbar, arguments: {
-            'id': model.id,
-            'isRedirectFromNotification': true,
-          });
+          Navigator.pushReplacementNamed(context, NavigatorName.tabbar,
+              arguments: {
+                'id': model.id,
+                'isRedirectFromNotification': true,
+              });
           break;
         case NotificationActionType.redirect_to_url:
-          Navigator.pushNamed(context, NavigatorName.notification_detail, arguments: {'id': model.notificationId ?? '', 'communicationId': model.id});
+          Navigator.pushNamed(context, NavigatorName.notification_detail,
+              arguments: {
+                'id': model.notificationId ?? '',
+                'communicationId': model.id
+              });
           break;
         case NotificationActionType.add_reminder:
           Navigator.pushNamed(context, NavigatorName.add_reminder,
               arguments: {'type': 'update', 'id': model.id});
           break;
         case NotificationActionType.add_blood_sugar:
-          Navigator.pushNamed(context, NavigatorName.add_blood_sugar, arguments: {'type': 'input', 'id': model.id});
+          Navigator.pushNamed(context, NavigatorName.add_blood_sugar,
+              arguments: {'type': 'input', 'id': model.id});
           break;
         case NotificationActionType.none:
           break;
@@ -308,6 +332,10 @@ class NotificationControllerState extends State<NotificationController>
         case NotificationActionType.redirect_date_detail:
           break;
         case NotificationActionType.redirect_survey:
+          break;
+        case NotificationActionType.register_referral_success:
+          Navigator.pushNamed(context, NavigatorName.voucher_list,
+              arguments: {'type': 'input', 'voucherId': model.surveyId});
           break;
       }
     }
@@ -318,7 +346,7 @@ class NotificationControllerState extends State<NotificationController>
     //       'id': model.id,
     //       'isRedirectFromNotification': true,
     //     });
-    //   //  Navigator.pushNamed(context, NavigatorName.notification_detail, 
+    //   //  Navigator.pushNamed(context, NavigatorName.notification_detail,
     //   //      arguments: {'id': model.notificationId ?? '', 'communicationId': model.id});
     //     break;
     //   case NotificationActionType.redirect_to_url:
@@ -361,58 +389,71 @@ class NotificationControllerState extends State<NotificationController>
                       child: Text(
                         R.string.mes_detele_notificaiton.tr(),
                         textAlign: TextAlign.center,
-                        style: TextStyle(color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w600),
+                        style: TextStyle(
+                            color: R.color.textDark,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600),
                       ),
                     ),
                     Padding(
                       padding: const EdgeInsets.only(top: 16.0),
                       child: Text(R.string.mes_detele_notificaiton.tr(),
-                          textAlign: TextAlign.center, style: R.style.normalTextStyle),
+                          textAlign: TextAlign.center,
+                          style: R.style.normalTextStyle),
                     ),
                     Container(
                       margin: const EdgeInsets.only(top: 16),
-                      child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                        Expanded(
-                          child: GestureDetector(
-                            onTap: () {
-                              Navigator.pop(context);
-                            },
-                            child: Container(
-                              height: 43,
-                              decoration:
-                                  BoxDecoration(borderRadius: BorderRadius.circular(200), color: R.color.grayBorder),
-                              child: Center(
-                                child: Text(
-                                  R.string.later.tr(),
-                                  style: TextStyle(color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w600),
+                      child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Expanded(
+                              child: GestureDetector(
+                                onTap: () {
+                                  Navigator.pop(context);
+                                },
+                                child: Container(
+                                  height: 43,
+                                  decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(200),
+                                      color: R.color.grayBorder),
+                                  child: Center(
+                                    child: Text(
+                                      R.string.later.tr(),
+                                      style: TextStyle(
+                                          color: R.color.textDark,
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w600),
+                                    ),
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
-                        ),
-                        const SizedBox(width: 14),
-                        Expanded(
-                          child: GestureDetector(
-                            onTap: () {
-                              _delete(model);
-                              Navigator.pop(context);
-                            },
-                            child: Container(
-                              height: 43,
-                              decoration: BoxDecoration(
-                                color: R.color.red,
-                                borderRadius: BorderRadius.circular(200),
-                              ),
-                              child: Center(
-                                child: Text(
-                                  R.string.delete.tr(),
-                                  style: TextStyle(color: R.color.white, fontSize: 16, fontWeight: FontWeight.w600),
+                            const SizedBox(width: 14),
+                            Expanded(
+                              child: GestureDetector(
+                                onTap: () {
+                                  _delete(model);
+                                  Navigator.pop(context);
+                                },
+                                child: Container(
+                                  height: 43,
+                                  decoration: BoxDecoration(
+                                    color: R.color.red,
+                                    borderRadius: BorderRadius.circular(200),
+                                  ),
+                                  child: Center(
+                                    child: Text(
+                                      R.string.delete.tr(),
+                                      style: TextStyle(
+                                          color: R.color.white,
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w600),
+                                    ),
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
-                        ),
-                      ]),
+                          ]),
                     ),
                   ],
                 ),
@@ -436,7 +477,8 @@ class NotificationControllerState extends State<NotificationController>
   _delete(NotificationListModel model) async {
     try {
       BotToast.showLoading();
-      await NotificationClient().deleteNotification(model.notificationId, model.messageType);
+      await NotificationClient()
+          .deleteNotification(model.notificationId, model.messageType);
       refresh();
       BotToast.closeAllLoading();
     } catch (e, _) {

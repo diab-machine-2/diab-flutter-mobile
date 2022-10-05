@@ -14,24 +14,28 @@ class NotificationListModel {
   final String? hyperLink;
   final int? notificationType;
   final int? messageType;
+  final String? surveyId;
 
-   NotificationActionType get actionType =>
-      NotificationActionExtend.getNotificationActionTypeFromIndexInteger(notificationType);
+  NotificationActionType get actionType =>
+      NotificationActionExtend.getNotificationActionTypeFromIndexInteger(
+          notificationType);
 
-  NotificationListModel(
-      {this.id,
-      this.notificationId,
-      this.calendarId,
-      required this.title,
-      required this.body,
-      this.topic,
-      this.imageUrl,
-      this.sentDateTime,
-      this.isRead,
-      this.hyperText,
-      this.hyperLink,
-      this.notificationType,
-      this.messageType});
+  NotificationListModel({
+    this.id,
+    this.notificationId,
+    this.calendarId,
+    required this.title,
+    required this.body,
+    this.topic,
+    this.imageUrl,
+    this.sentDateTime,
+    this.isRead,
+    this.hyperText,
+    this.hyperLink,
+    this.notificationType,
+    this.surveyId,
+    this.messageType,
+  });
 
   @override
   factory NotificationListModel.fromJson(Map<String, dynamic> json) {
@@ -44,13 +48,16 @@ class NotificationListModel {
       title: notification['title'],
       body: notification['body'],
       topic: notification['topic'],
-      imageUrl: notification['imageUrl'] is Map ? notification['imageUrl']['url'] : notification['imageUrl'],
+      imageUrl: notification['imageUrl'] is Map
+          ? notification['imageUrl']['url']
+          : notification['imageUrl'],
       sentDateTime: notification['sentDateTime'],
       isRead: notification['isRead'] ?? false,
       hyperText: notification['hyperText'],
       hyperLink: notification['hyperLink'],
       notificationType: notification['notificationType'],
       messageType: notification['messageType'],
+      surveyId: notification['surveyId'],
     );
   }
 

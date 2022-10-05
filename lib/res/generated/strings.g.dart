@@ -1084,4 +1084,12 @@ class Strings {
   String get other => 'other';
   String get contact_diab_info => 'contact_diab_info';
   String get month => 'month';
+  String get voucher_list => 'voucher_list';
+  String get voucher_have => 'voucher_have';
+  String get voucher_detail => 'voucher_detail';
+  String get use_voucher => 'use_voucher';
+  String get view_voucher => 'view_voucher';
+  String get share_now => 'share_now';
+	String get select_your_image => 'select_your_image';
+	String get note_max_media => 'note_max_media';
 }

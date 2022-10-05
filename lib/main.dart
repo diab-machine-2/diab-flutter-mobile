@@ -40,6 +40,9 @@ class SimpleBlocObserver extends BlocObserver {
 // }
 
 Future<void> main() async {
+  // SystemChrome.setSystemUIOverlayStyle(
+  //   SystemUiOverlayStyle(statusBarBrightness: Brightness.light),
+  // );
 //  HttpOverrides.global = new MyHttpOverrides();
   Bloc.observer = SimpleBlocObserver();
   //WidgetsFlutterBinding.ensureInitialized();
@@ -48,8 +51,10 @@ Future<void> main() async {
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
   await EasyLocalization.ensureInitialized();
 
-  ByteData data = await PlatformAssetBundle().load('assets/ca/lets-encrypt-r3.pem');
-  SecurityContext.defaultContext.setTrustedCertificatesBytes(data.buffer.asUint8List()); 
+  ByteData data =
+      await PlatformAssetBundle().load('assets/ca/lets-encrypt-r3.pem');
+  SecurityContext.defaultContext
+      .setTrustedCertificatesBytes(data.buffer.asUint8List());
 
   // SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
   //     statusBarColor: R.color.transparent,
@@ -62,7 +67,8 @@ Future<void> main() async {
   await Firebase.initializeApp();
   await TrackingManager.initializeFlutterFire();
 
-  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]).then((_) {
+  SystemChrome.setPreferredOrientations(
+      [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]).then((_) {
     runApp(Localization.getLocalizationWidget(app: App()));
   });
 }

@@ -108,5 +108,9 @@ class Colors {
 	Color get color0xffFDE9E9 => Color(0xffFDE9E9);
 	Color get color0xff737072 => Color(0xff737072);
 	Color get color0xff004E47 => Color(0xff004E47);
+	Color get color0xffE0E1E1 => Color(0xffE0E1E1);
+	Color get color0xff666666 => Color(0xff666666);
 	Color get color0xff008890 => Color(0xff008890);
+	Color get color0xffE7E7E7 => Color(0xffE7E7E7);
+	Color get color0xffA1A3A6 => Color(0xffA1A3A6);
 }

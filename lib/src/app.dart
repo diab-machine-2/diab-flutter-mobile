@@ -63,13 +63,15 @@ import 'package:medical/src/widget/profile/user_info.dart';
 import 'package:medical/src/widget/question_answer/make_question/make_question_page.dart';
 import 'package:medical/src/widget/question_answer/question_detail/question_detail_page.dart';
 import 'package:medical/src/widget/tabbar/tabbar.dart';
+import 'package:medical/src/widget/voucher/presentation/voucher_detail/pages/voucher_detail_view.dart';
+import 'package:medical/src/widget/voucher/presentation/voucher_list/pages/voucher_list_view.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
-import 'app_setting/deep_link_config.dart';
 import 'utils/navigator_name.dart';
 import 'widget/Food/add_food.dart';
 import 'widget/helper/photo_view.dart';
 import 'widget/news_detail/presentation/news_detail_view.dart';
 import 'widget/profile/profile_controller.dart';
+import 'widget/shared_profile/pages/share_app_detail.dart';
 
 class App extends StatefulWidget {
   @override
@@ -454,6 +456,62 @@ class _AppState extends State<App> {
                           NotificationDetailController(
                               id: data?['id'],
                               communicationId: data?['communicationId']));
+                    // return _buildRoute(
+                    //     settings,
+                    //     NotificationDetailController(
+                    //       id: data?['id'],
+                    //       type: data?['type'],
+                    //       emotion: data?['emotion'],
+                    //       symptoms: data?['symptoms'],
+                    //       activities: data?['activities'],
+                    //       otherSymptom: data?['otherSymptom'],
+                    //       otherActivity: data?['otherActivity'],
+                    //       goalId: data?['goalId'],
+                    //     ));
+                    case NavigatorName.detail_food:
+                      return _buildRoute(settings, FoodDetailTabbarController(),
+                          isPresent: true);
+                    case NavigatorName.detail_emotion:
+                      return _buildRoute(
+                          settings, EmotionDetailTabbarController(),
+                          isPresent: true);
+                    case '/add_food':
+                      final data = settings.arguments as Map<String, dynamic>?;
+                      return _buildRoute(
+                          settings,
+                          AddFoodController(
+                            type: data?['type'],
+                            id: data?['id'],
+                          ));
+                    case NavigatorName.emotion_table:
+                      final data = settings.arguments as Map<String, dynamic>?;
+                      return _buildRoute(
+                          settings,
+                          EmotionTableController(
+                              title: data?['title'],
+                              emotionId: data?['emotionId'],
+                              periodFilterType: data?['periodFilterType']),
+                          isPresent: true);
+                    case NavigatorName.profile:
+                      return _buildRoute(settings, const ProfileController());
+                    case NavigatorName.goal_setting:
+                      return _buildRoute(settings, GoalSettingController());
+                    case NavigatorName.profile_info:
+                      final data = settings.arguments as Map<String, dynamic>?;
+                      return _buildRoute(
+                          settings, ProfileInfoController(id: data?['id']));
+                    case NavigatorName.delete_account:
+                      return _buildRoute(settings, DeleteAccountController());
+                    case NavigatorName.notification:
+                      return _buildRoute(
+                          settings, NotificationTabbarController());
+                    case NavigatorName.notification_detail:
+                      final data = settings.arguments as Map<String, dynamic>?;
+                      return _buildRoute(
+                          settings,
+                          NotificationDetailController(
+                              id: data?['id'],
+                              communicationId: data?['communicationId']));
                     case NavigatorName.schedule_activity:
                       return _buildRoute(
                           settings, ScheduleActivityController());
@@ -511,6 +569,20 @@ class _AppState extends State<App> {
                         settings,
                         NewsDetailView(id: data?['id']),
                       );
+                    case NavigatorName.voucher_list:
+                      final data = settings.arguments as Map<String, dynamic>?;
+                      return _buildRoute(settings,
+                          VoucherListView(voucherId: data?['voucherId']));
+                    case NavigatorName.voucher_detail:
+                      final data = settings.arguments as Map<String, dynamic>?;
+                      return _buildRoute(
+                          settings,
+                          VoucherDetailView(
+                            voucherId: data?['voucherId'],
+                            updateVoucherList: data?['updateVoucherList'],
+                          ));
+                    case NavigatorName.share_app_detail:
+                      return _buildRoute(settings, const ShareAppDetail());
                     default:
                       return null;
                   }

@@ -44,6 +44,8 @@
 	<string>154356806592189</string>
 	<key>FacebookDisplayName</key>
 	<string>diaB</string>
+	<key>FirebaseAppDelegateProxyEnabled</key>
+	<false/>
 	<key>FirebaseDynamicLinksCustomDomains</key>
 	<array>
 		<string>https://news.diab.com.vn</string>

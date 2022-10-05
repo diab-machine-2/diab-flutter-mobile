@@ -233,7 +233,7 @@ class _FoodChooseQuantityState extends State<FoodChooseQuantity> {
                             children: [
                               const SizedBox(height: 16),
                               Visibility(
-                                visible: widget.kcalLeft != null,
+                                visible: widget.selectedModel != null && widget.kcalLeft != null,
                                 child: Padding(
                                   padding:
                                       const EdgeInsets.fromLTRB(16, 0, 16, 16),

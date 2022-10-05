@@ -1,1034 +1,1041 @@
-str,vi,en
-ok,OK,OK
-cancel,Huỷ,CANCEL
-confirm,Xác nhận,VIETNAMESE
-error,Lỗi,ERROR
-error_not_implemented,Không được thực hiện,NOT IMPLEMENTED
-error_request_canceled,Yêu cầu đã bị hủy,REQUEST CANCELLED
-error_internet_server_error,Lỗi máy chủ nội bộ,INTERNAL SERVER ERROR
-error_service_unavailable,Dị
-ch vụ không sẵn có,SERVICE UNAVAILABLE
-error_method_not_allowed,Phương thức không được phép,METHOD NOT ALLOWED
-error_bad_request,Yêu cầu không hợp lệ,BAD REQUEST
-error_unauthorized_request,Yêu cầu chưa được xác thực,UNAUTHORIZED REQUEST
-error_unexpected_error,Đã xảy ra lỗi không mong muốn,UNEXPECTED ERROR OCCURRED
-error_request_timeout,Hết thời gian chờ yêu cầu kết nối,CONNECTION REQUEST TIMEOUT
-error_no_network_connection,Không có kết nối Internet,NO INTERNET CONNECTION
-error_send_timeout,Hết thời gian chờ yêu cầu gửi đến máy chủ,CONNECTION SEND TIMEOUT
-error_conflict,Lỗi do xung đột,ERROR DUE TO A CONFLICT
-error_connect_to_server,Không thể kết nối tới server,ERROR CONNECT TO SERVER
-error_unable_process_data,Không thể xử lý dữ liệu,UNABLE TO PROCESS THE DATA
-error_not_acceptable,Không được chấp nhận,NOT ACCEPTABLE
-error_invalid_status_code,Đã nhận mã trạng thái không hợp lệ: {},RECEIVED INVALID STATUS CODE: {}
-error_not_found_api,Không tìm thấy API,NOT FOUND API
-error_can_not_connect_to_server,"DiaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi",ERROR CAN NOT CONNECT TO SERVER
-error_can_not_access_camera,Không có quyền truy cập camera,ERROR CAN NOT ACCESS CAMERA
-current_language,Tiếng Việt,VIETNAMESE
-please_enter_email,Vui lòng nhập Email,ENTER EMAIL
-please_enter_user_name,Vui lòng nhập Tên đăng nhập,PLEASE ENTER USER NAME
-please_enter_full_name,Vui lòng nhập Họ tên,PLEASE ENTER FULL NAME
-please_enter_phone_number,Vui lòng nhập Số điện thoại,PLEASE ENTER PHONE NUMBER
-please_enter_password,Vui lòng nhập Mật khẩu,ENTER PASSWORD
-please_enter_code,Vui lòng nhập Mã kích hoạt,ENTER CODE
-please_enter_phone_number_or_email,Please enter phone number or email,PLEASE ENTER PHONE NUMBER OR EMAIL
-please_enter_new_password,Vui lòng nhập Mật khẩu mới,PLEASE ENTER NEW PASSWORD
-please_enter_confirm_password,Vui lòng nhập Mật khẩu mới,PLEASE ENTER CONFIRM PASSWORD
-please_enter_curr_password,Vui lòng nhập Mật khẩu cũ,PLEASE ENTER CURRENT PASSWORD
-cannot_same_current_password,Mật khẩu không trùng khớp,WRONG CURRENT PASSWORD
-email_not_valid,Email không hợp lệ,UNVALID EMAIL
-phone_not_valid,Số điện thoại không đúng định dạng,UNVALID PHONE NUMBER
-phone_email_not_valid,The phone number/email is not valid,UNVALID PHONE NUMBER/EMAIL
-user_name_at_least_character,Tên đăng nhập phải có ít nhất 4 kí tự,USER NAME AT LEAST 4 CHARACTER
-user_name_max_character,Tên đăng nhập không nhiều hơn 32 kí tự,USER NAME MAX 32 CHARACTER
-full_name_at_least_character,Họ tên phải có ít nhất 4 kí tự,FULL NAME AT LEAST 4 CHARACTER
-full_name_max_character,Họ tên không nhiều hơn 32 kí tự,FULL NAME MAX 32 CHARACTER
-password_not_match,Mật khẩu không khớp,NOT MATCH
-password_at_least_character,Mật khẩu phải có ít nhất 4 kí tự,PASSWORD AT LEAST 4 CHARACTER
-password_max_character,Mật khẩu không nhiều hơn 32 kí tự,MAX 32 CHARACTER
-confirm_password_at_least_character,Xác nhận mật khẩu phải có ít nhất 4 kí tự,CONFIRM PASSWORD AT LEAST 4 CHARACTER
-confirm_password_max_character,Xác nhận mật khẩu không nhiều hơn 32 kí tự,CONFIRM PASSWORD MAX 32 CHARACTER
-login_google,Đăng nhập với Google,GOOGLE SIGN IN
-login_facebook,Đăng nhập với Facebook,FACEBOOK SIGN IN
-login_email,Đăng nhập với Email,EMAIL SIGN IN
-login_welcome,Xin chào,HELLO
-login_new_here,Chưa có tài khoản?,SIGN UP
-login_create_account,Tạo mới,SIGN IN
-login_get_start,Bắt đầu khám phá ứng dụng,GET START
-profile_title,Cá Nhân,PERSONAL
-profile_information,Thông tin cá nhân,PERSONAL INFORMATION
-profile_edit,Sửa,CHANGE
-profile_user_name,Tài Khoản,ACCOUNT
-profile_date_of_birth,Ngày sinh,DATE OF BIRTH
-profile_bio,Mô tả,DESCRIPTION
-profile_change_avatar,Đổi,CHANGE AVATAR
-profile_gallery,Thư viện,LIBRARY
-profile_camera,Máy ảnh,CAMERA
-tab_home,Trang chủ,HOMEPAGE
-tab_search,Tìm kiếm,SEARCH
-tab_notification,Thông báo,NOTIFICATION
-tab_profile,Cá nhân,PERSONAL
-login_success,Đăng nhập thành công,SIGN IN SUCCESS
-sign_up_success,Đăng ký thành công,SIGN UP SUCCESS
-login,Đăng nhập,LOGIN
-sign_in,Đăng nhập,LOGIN
-sign_up,Đăng ký,SIGN UP
-username,Tên đăng nhập,USERNAME
-email,Email,EMAIL
-full_name,Họ tên,FULL NAME
-phone_number,Số điện thoại,PHONE NUMBER
-password,Mật khẩu,PASSWORD
-forgot_password,Quên mật khẩu?,FORGOT PASSWORD
-home,Trang chủ,HOMEPAGE
-search,Tìm kiếm,SEARCH
-back,Quay lại,BACK
-logout,Đăng xuất,LOG OUT
-logout_success,Đăng xuất thành công,LOG OUT SUCCESS
-delete,Xoá,DELETE
-mute,Mute,MUTE
-last_seen,last seen {},LAST SEEN
-pinned_message,Tin nhắn ghim,PINNED MESSAGE
+str,vi,en,
+ok,OK,Ok,
+cancel,Huỷ,Cancel, 
+confirm,Xác nhận,Vietnamese,
+error,Lỗi,Error,
+error_not_implemented,Không được thực hiện,Not implemented,
+error_request_canceled,Yêu cầu đã bị hủy,Request cancelled,
+error_internet_server_error,Lỗi máy chủ nội bộ,Internal server error,
+error_service_unavailable,Dịch vụ không sẵn có,Service unavailable,
+error_method_not_allowed,Phương thức không được phép,Method not allowed,
+error_bad_request,Yêu cầu không hợp lệ,Bad request,
+error_unauthorized_request,Yêu cầu chưa được xác thực,Unauthorized request,
+error_unexpected_error,Đã xảy ra lỗi không mong muốn,Unexpected error occurred,
+error_request_timeout,Hết thời gian chờ yêu cầu kết nối,Connection request timeout,
+error_no_network_connection,Không có kết nối Internet,No internet connection,
+error_send_timeout,Hết thời gian chờ yêu cầu gửi đến máy chủ,Connection send timeout,
+error_conflict,Lỗi do xung đột,Error due to a conflict,
+error_connect_to_server,Không thể kết nối tới server,Error connect to server,
+error_unable_process_data,Không thể xử lý dữ liệu,Unable to process the data,
+error_not_acceptable,Không được chấp nhận,Not acceptable,
+error_invalid_status_code,Đã nhận mã trạng thái không hợp lệ: {},Received invalid status code: {},
+error_not_found_api,Không tìm thấy API,Not found api,
+error_can_not_connect_to_server,"DiaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi",Error can not connect to server,
+error_can_not_access_camera,Không có quyền truy cập camera,Error can not access camera,
+current_language,Tiếng Việt,Vietnamese,
+please_enter_email,Vui lòng nhập Email,Enter email,
+please_enter_user_name,Vui lòng nhập Tên đăng nhập,Please enter user name,
+please_enter_full_name,Vui lòng nhập Họ tên,Please enter full name,
+please_enter_phone_number,Vui lòng nhập Số điện thoại,Please enter phone number,
+please_enter_password,Vui lòng nhập Mật khẩu,Enter password,
+please_enter_code,Vui lòng nhập Mã kích hoạt,Enter code,
+please_enter_phone_number_or_email,Please enter phone number or email,Please enter phone number or email,
+please_enter_new_password,Vui lòng nhập Mật khẩu mới,Please enter new password,
+please_enter_confirm_password,Vui lòng nhập Mật khẩu mới,Please enter confirm password,
+please_enter_curr_password,Vui lòng nhập Mật khẩu cũ,Please enter current password,
+cannot_same_current_password,Mật khẩu không trùng khớp,Wrong current password,
+email_not_valid,Email không hợp lệ,Unvalid email,
+phone_not_valid,Số điện thoại không đúng định dạng,Unvalid phone number,
+phone_email_not_valid,The phone number/email is not valid,Unvalid phone number/email,
+user_name_at_least_character,Tên đăng nhập phải có ít nhất 4 kí tự,User name at least 4 character,
+user_name_max_character,Tên đăng nhập không nhiều hơn 32 kí tự,User name max 32 character,
+full_name_at_least_character,Họ tên phải có ít nhất 4 kí tự,Full name at least 4 character,
+full_name_max_character,Họ tên không nhiều hơn 32 kí tự,Full name max 32 character,
+password_not_match,Mật khẩu không khớp,Not match,
+password_at_least_character,Mật khẩu phải có ít nhất 4 kí tự,Password at least 4 character,
+password_max_character,Mật khẩu không nhiều hơn 32 kí tự,Max 32 character,
+confirm_password_at_least_character,Xác nhận mật khẩu phải có ít nhất 4 kí tự,Confirm password at least 4 character,
+confirm_password_max_character,Xác nhận mật khẩu không nhiều hơn 32 kí tự,Confirm password max 32 character,
+login_google,Đăng nhập với Google,Google sign in,
+login_facebook,Đăng nhập với Facebook,Facebook sign in,
+login_email,Đăng nhập với Email,Email sign in,
+login_welcome,Xin chào,Hello,
+login_new_here,Chưa có tài khoản?,Sign up,
+login_create_account,Tạo mới,Sign in,
+login_get_start,Bắt đầu khám phá ứng dụng,Get start,
+profile_title,Cá Nhân,Personal,
+profile_information,Thông tin cá nhân,Personal information,
+profile_edit,Sửa,Change,
+profile_user_name,Tài Khoản,Account,
+profile_date_of_birth,Ngày sinh,Date of birth,
+profile_bio,Mô tả,Description,
+profile_change_avatar,Đổi,Change avatar,
+profile_gallery,Thư viện,Library,
+profile_camera,Máy ảnh,Camera,
+tab_home,Trang chủ,Home,
+tab_search,Tìm kiếm,Search,
+tab_notification,Thông báo,Notification,
+tab_profile,Cá nhân,Personal,
+login_success,Đăng nhập thành công,Sign in success,
+sign_up_success,Đăng ký thành công,Sign up success,
+login,Đăng nhập,Login,
+sign_in,Đăng nhập,Login,
+sign_up,Đăng ký,Sign up,
+username,Tên đăng nhập,Username,
+email,Email,Email,
+full_name,Họ tên,Full name,
+phone_number,Số điện thoại,Phone number,
+password,Mật khẩu,Password,
+forgot_password,Quên mật khẩu?,Forgot password,
+home,Trang chủ,Homepage,
+search,Tìm kiếm,Search,
+back,Quay lại,Back,
+logout,Đăng xuất,Log out,
+logout_success,Đăng xuất thành công,Log out success,
+delete,Xoá,Delete,
+mute,Mute,Mute,
+last_seen,last seen {},Last seen,
+pinned_message,Tin nhắn ghim,Pinned message,
 app_name,We One,
-category,Danh mục,CATEGORY
-more,Xem thêm,SEE MORE
-notification,Thông báo,NOTIFICATION
-account,Tài khoản,ACCOUNT
-search_product,Tìm kiếm dịch vụ,SEARCH PRODUCT
-input_name,Nhập hộ và tên,ENTER FULL NAME
-references_code,Mã kết nối bác sĩ của bạn,YOUR DOCTOR CODE
-input_references_code,Nhập hoặc quét mã QR,ENTER/SCAN QR CODE
-scan_references_code,Quét mã giới thiệu,SCAN REFERAL CODE
-update_profile_failure,Cập nhật thông tin chưa thành công,PROFILE UPDATE FAILURE
-detail_address,Địa chỉ cụ thể,ADDRESS
-input_phone,Nhập số điện thoại,PHONE NUMBER
-input_email,Nhập email,EMAIL
-input_re_pass,Nhập lại mật khẩu,RE-INPUT PASS
-remember_password,Nhớ tài khoản,REMEMBER PASSWORD
-back_page,Quay lại trang trước,BACK
-please_input_email,Vui lòng nhập email,INPUT EMAIL
-email_or_phone_number,Email/ Số điện thoại,EMAIL OR PHONE NUMBER
-input_pass,Nhập mật khẩu,PASSWORD
-input_email_or_phone_number,Nhập Email/ Số điện thoại,INPUT EMAIL OR PHONE NUMBER
-please_input_phone_number,Vui lòng nhập số điện thoại,PLEASE INPUT PHONE NUMBER
-password_least_character,Mật khẩu ít nhất 06 ký tự,LEAST CHARACTER
-email_phone_not_valid,Email hoặc số điện thoại không đúng,EMAIL PHONE NOT VALID
-setting,Thiết lập tài khoản,SETTING
-help_center,Trung tâm trợ giúp,HELP CENTER
-blogs,Blogs,BLOGS
-app_reviews,Đánh giá ứng dụng,APP REVIEWS
-profile,Thông tin tài khoản,PROFILE
-save,Lưu,SAVE
-name,Họ và tên,NAME
-date_of_birth,Ngày sinh,VIETNAMESE
-change_password,Đổi mật khẩu,CHANGE PASSWORD
-curr_password,Nhập mật khẩu cũ,LOG OUT
-sign_out,Đăng xuất,VIETNAMESE
-register_account,Đăng ký tài khoản,SIGN UP
-please_input_username,Vui lòng nhập Họ tên,INPUT USERNAME
-please_input_re_password,Vui lòng nhập xác thực mật khẩu,PLEASE INPUT RE PASSWORD
-confirm_password,Xác thực mật khẩu,CONFIRM PASSWORD
-no_notification,Không có thông báo nào,NO NOTIFICATION
-notice,Thông báo,NOTIFICATION
-confirm_logout,Bạn muốn đăng xuất?,DO YOU WANT TO EXIT?
-confirm_logout_description,Bạn sẽ không thể theo dõi sức khoẻ của mình sau khi thoát. Bạn vẫn muốn đăng xuất khỏi DiaB?,YOUR TRACKING WIL NOT BE SAVED. DO YOU STILL WANT TO EXIT?
-close,Đóng,CLOSE
-yes,Đồng ý,YES
-show,Hiện,SHOW
-hide,Ẩn,HIDE
-camera_permission_required,Bạn cần cấp quyền truy cập camera để sử dụng tính năng này,CAMERA PERMISSION REQUIRED
-shared_profile_list,Danh sách chia sẻ hồ sơ,SHARED PROFILE LIST
-has_share_doctor_profile,Bạn đã chia sẻ hồ sơ cho bác sĩ {} rồi.,SHARED PROFILE
-unable_share_doctor_profile,Không thể chia sẻ hồ sơ cho bác sĩ {} do vị trí không hợp lệ,UNABLE TO SHARE PROFILE
-doctor_request_share_profile,Bác sĩ {} muốn xem hồ sơ của bạn. Bạn có đồng ý chia sẻ không?,DOCTOR REQUEST TO SHARER PROFILE
-share_profile_for_doctor,Bạn muốn chia sẻ hồ sơ cho bác sĩ {}?,DO YOU WANT TO SHARE PROFILE FOR DOCTOR ?
+category,Danh mục,Category,
+more,Xem thêm,See more,
+notification,Thông báo,Notification,
+account,Tài khoản,Account,
+search_product,Tìm kiếm dịch vụ,Search product,
+input_name,Nhập hộ và tên,Enter full name,
+references_code,Mã kết nối bác sĩ của bạn,Your doctor code,
+input_references_code,Nhập hoặc quét mã QR,Enter/scan qr code,
+scan_references_code,Quét mã giới thiệu,Scan referal code,
+update_profile_failure,Cập nhật thông tin chưa thành công,Profile update failure,
+detail_address,Địa chỉ cụ thể,Address,
+input_phone,Nhập số điện thoại,Phone number,
+input_email,Nhập email,Email,
+input_re_pass,Nhập lại mật khẩu,Re-input pass,
+remember_password,Nhớ tài khoản,Remember password,
+back_page,Quay lại trang trước,Back,
+please_input_email,Vui lòng nhập email,Input email,
+email_or_phone_number,Email/ Số điện thoại,Email or phone number,
+input_pass,Nhập mật khẩu,Password,
+input_email_or_phone_number,Nhập Email/ Số điện thoại,Input email or phone number,
+please_input_phone_number,Vui lòng nhập số điện thoại,Please input phone number,
+password_least_character,Mật khẩu ít nhất 06 ký tự,Least character,
+email_phone_not_valid,Email hoặc số điện thoại không đúng,Email phone not valid,
+setting,Thiết lập tài khoản,Setting,
+help_center,Trung tâm trợ giúp,Help center,
+blogs,Blogs,Blogs,
+app_reviews,Đánh giá ứng dụng,App reviews,
+profile,Thông tin tài khoản,Profile,
+save,Lưu,Save,
+name,Họ và tên,Name,
+date_of_birth,Ngày sinh,Vietnamese,
+change_password,Đổi mật khẩu,Change password,
+curr_password,Nhập mật khẩu cũ,Log out,
+sign_out,Đăng xuất,Vietnamese,
+register_account,Đăng ký tài khoản,Sign up,
+please_input_username,Vui lòng nhập Họ tên,Input username,
+please_input_re_password,Vui lòng nhập xác thực mật khẩu,Please input re password,
+confirm_password,Xác thực mật khẩu,Confirm password,
+no_notification,Không có thông báo nào,No notification,
+notice,Thông báo,Notification,
+confirm_logout,Bạn muốn đăng xuất?,Do you want to exit?,
+confirm_logout_description,Bạn sẽ không thể theo dõi sức khoẻ của mình sau khi thoát. Bạn vẫn muốn đăng xuất khỏi DiaB?,Your tracking wil not be saved. do you still want to exit?,
+close,Đóng,Close,
+yes,Đồng ý,Yes,
+show,Hiện,Show,
+hide,Ẩn,Hide,
+camera_permission_required,Bạn cần cấp quyền truy cập camera để sử dụng tính năng này,Camera permission required,
+shared_profile_list,Danh sách chia sẻ hồ sơ,Shared profile list,
+has_share_doctor_profile,Bạn đã chia sẻ hồ sơ cho bác sĩ {} rồi.,Shared profile,
+unable_share_doctor_profile,Không thể chia sẻ hồ sơ cho bác sĩ {} do vị trí không hợp lệ,Unable to share profile,
+doctor_request_share_profile,Bác sĩ {} muốn xem hồ sơ của bạn. Bạn có đồng ý chia sẻ không?,Doctor request to sharer profile,
+share_profile_for_doctor,Bạn muốn chia sẻ hồ sơ cho bác sĩ {}?,Do you want to share profile for doctor ?,
 share_profile_description,Việc chia sẻ hồ sơ giúp bác sĩ có thêm thông tin để hỗ trợ chẩn đoán và điều trị. Bạn có thể dừng chia sẻ hồ sơ khi không có nhu cầu.\nBạn có muốn tiếp tục chia sẻ không?,
-share_profile_success,Bạn đã chia sẻ thành công!,SUCCESS
-share_profile_success_description,Bạn đã chia sẻ thành công hồ sơ cho bác sĩ {}. Bạn có thể dừng chia sẻ tại “danh sách đã chia sẻ”.,"SHARING SUCCESSED. YOU CAN UNSHARE AT ""SHARED LIST"""
-show_shared_list,Xem danh sách đã chia sẻ,SHARED LIST
-stop_sharing,Bạn muốn dừng chia sẻ hồ sơ cho bác sĩ {}?,DO YOU WANT TO UNSHARE?
-stop_sharing_description,"Sau khi dừng chia sẻ, bác sĩ sẽ không thể theo dõi hồ sơ của bạn nữa.","ONCE UNSHARING, DOCTOR WILL BE UNANLE TO SEE YOUR PROFILE."
-qr_code_not_found,Không tìm thấy mã QR. Bạn hãy thử lại và đặt mã QR ở trung tâm màn hình nhé!,QR CODE NOT FOUND. PLEASE TRY AGAIN.
-referral_code_not_exist,Mã giới thiệu không tồn tại!,REFERRAL CODE NOT EXIST
-shared_date,Ngày chia sẻ: {},SHARED DATE
-BloodPressureScreen,#ERROR!,BLOODPRESSURESCREEN
-blood_pressure_trend,Xu hướng huyết áp,PRESSURE TREND
-lowest,Thấp nhất,LOWEST
-medium,Trung bình,MEDIUM
-highest,Cao nhất,HIGHEST
-heart_rate,Nhịp tim,HEART RATE
-enter_data,Nhập vào,INPUT
-mm_hg,mmHg,MM_HG
-time_per_minute,lần/phút,TIME/MINUTE
-distribution_frequency,Tần suất phân bổ,DISTRIBUTION FREQUENCY
-grade_3_hypertension,Tăng huyết áp độ 3,HYPERTENSION RATE 3
-grade_2_hypertension,Tăng huyết áp độ 2,HYPERTENSION RATE 2
-grade_1_hypertension,Tăng huyết áp độ 1,HYPERTENSION RATE 1
-normal_high,Bình thường cao,NORMAL HIGH
-normal,Bình thường,NORMAL
-heart_rate_trend,Xu hướng nhịp tim,HEART RATE TRENDS
-update_blood_pressure,Cập nhật chỉ số huyết áp,BLOOD PRESSURE
-enter_blood_pressure,Nhập chỉ số huyết áp,BLOOD PRESSURE
-blood_pressure_for_diabetes,Chỉ số huyết áp đối với bệnh tiểu đường,BLOOD PRESSURE FOR DIABETES
-systolic_diastolic,Tâm thu / tâm trương,SYSTOLIC/DIASTOLIC
-mes_systolic_empty,Bạn chưa nhập chỉ số tâm thu,SYSTOLIC EMPTY
-mes_diastolic_empty,Bạn chưa nhập chỉ số tâm trương,DIASTOLIC EMPTY
-mes_heart_rate_empty,Bạn chưa nhập chỉ số nhịp tim,MES HEART RATE EMPTY
-mes_heart_rate_invalid,"Chúng tôi xin lỗi, số liệu nhịp tim mà bạn nhập không trong phạm vi cho phép. Giá trị kỳ vọng nằm dưới 200",HEART RATE OUT OF VALID RANGE
-blood_pressure_description,"Tăng huyết áp, hay huyết áp cao, rất thường gặp ở những người bị đái tháo đường (tiểu đường) tuýp 2. Dù chưa biết lý do vì sao có sự tương quan đáng kể giữa đái tháo đường và tăng huyết áp nhưng người ta giả định rằng béo phì, chế độ ăn uống nhiều natri và lười vận động dẫn đến sự gia tăng đồng thời cả hai bệnh trên.\n\nTăng huyết áp được biết đến như một “kẻ giết người thầm lặng” vì nó không có triệu chứng rõ ràng. Một cuộc khảo sát năm 2002 của Hiệp hội Đái tháo đường Hoa Kỳ (ADA) cho thấy, khoảng 68% những người bị bệnh đái tháo đường không biết họ cũng có nguy cơ gia tăng bệnh tim và đột quỵ vì liên quan đến tăng huyết áp mạn tính.\n\nTăng huyết áp kéo dài sẽ khiến cho cơ tim mệt mỏi do phải bơm máu với áp lực cao và khiến cơ tim dần giãn rộng ra. Trong năm 2008, những người bệnh đái tháo đường trên 20 tuổi có huyết áp cao hơn 140/90 chiếm tới 67%.\n\nỞ người khỏe mạnh, huyết áp 140/90 được xem là bình thường, nhưng đối với bệnh nhân đái tháo đường tuýp 2, các bác sĩ khuyên bạn nên giữ chỉ số này thấp hơn 135/80.\n\nTrong đó, con số đầu tiên (135) được gọi là huyết áp tâm thu, cho thấy áp lực máu do tim co bóp để bơm đi. Số thứ hai (80), được gọi là huyết áp tâm trương, là áp lực được duy trì trong các động mạch giữa các nhịp co bóp của tim.\n\nNgười khỏe mạnh nên kiểm tra huyết áp vài lần trong năm, nhưng bệnh nhân đái tháo đường cần phải thận trọng hơn. Ngoài việc kiểm tra huyết áp ít nhất bốn lần mỗi năm, các chuyên gia khuyến cáo hãy tự theo dõi tại nhà, ghi lại các chỉ số và thông báo với bác sĩ.","HYPERTENSION IS VERY COMMON IN PEOPLE WITH TYPE 2 DIABETES. ALTHOUGH IT IS UNKNOWN WHY THERE IS A CORRELATION BETWEEN DIABETES AND HYPERTENSION, IT IS ASSUMED THAT OBESITY, A HIGH-SODIUM DIET, AND LACK OF EXERCISE LEAD TO A SIMULTANEOUS INCREASE IN BOTH DISEASES. HIGH BLOOD PRESSURE IS KNOWN AS A “SILENT KILLER” BECAUSE IT DOES NOT HAVE ANY VISIBLE SYMPTOM. A SURVEY IN 2002 BY THE AMERICAN DIABETES ASSOCIATION (ADA) FOUND THAT ABOUT 68% OF PEOPLE WITH DIABETES DID NOT KNOW THEY ALSO HAD AN INCREASED RISK OF HEART DISEASE AND ITS ASSOCIATION WITH HYPERTENSION. LONG-TERM ELEVATION OF BLOOD PRESSURE WILL CREATE FATIGUE FOR TIRED MECHANICS THAT HAVE TO PUMP WITH HIGH PRESSURE AND GRADUALLY RELAX. IN 2008, PEOPLE WITH DIABETES OVER 20 YEARS OLD WITH BLOOD PRESSURE HIGHER THAN 140/90 ACCOUNTED FOR 67%. IN A HEALTHY PERSON, A BLOOD PRESSURE OF 140/90 IS CONSIDERED NORMAL, BUT FOR PATIENTS WITH 2ND LINE DRIP, DOCTORS RECOMMEND KEEPING THIS NUMBER LOWER THAN 135/80. MEANWHILE, THE FIRST NUMBER (135) IS CALLED THE SYSTOLIC PRESSURE, WHICH INDICATES THE PRESSURE DURING CONTRACTION TO PUMP AWAY. THE SECOND NUMBER (80), CALLED THE DIASTOLIC PRESSURE, IS THE PRESSURE MAINTAINED IN THE VESSELS BETWEEN THE CONTRACTIONS OF TIME. NORMAL PEOPLE SHOULD HAVE THEIR BLOOD PRESSURE CHECKED SEVERAL TIMES A YEAR, BUT DIABETES PATIENTS NEED TO BE MORE CAREFUL. BESIDES CHECKING YOUR BLOOD PRESSURE AT LEAST EVERY YEAR, EXPERTS RECOMMEND SELF-MONITORING AT HOME, RECORDING YOUR TEST AND COMMUNICATING WITH YOUR DOCTOR."
-BloodSugarScreen,#ERROR!,BLOODSUGARSCREEN
-before_and_after_eating,Trước & sau ăn,BEFORE AND AFTER MEAL
-before_and_after_exercise,Trước & sau tập luyện,BEFORE AND AFTER EXERCISE
-choose_time_to_compare,Chọn thời điểm so sánh,CHOOSE PERIOD
-choose_time_frame,Vui lòng chọn khung giờ,TIME FRAME
-blood_sugar_trend,Xu hướng đường huyết,BLOOD GLUCOSE TRENDS
-compare,So sánh,COMPARISON
-before_after,Trước/Sau,BEFORE/AFTER
-update_blood_sugar,Cập nhật chỉ số đường huyết,UPDATE
-enter_blood_sugar,Nhập chỉ số đường huyết,ENTER
-blood_sugar_for_diabetes,Chỉ số đường huyết với bệnh tiểu đường,BLOOD SUGAR FOR DIABETES
-corresponding_to,Tương ứng với,CORRESPONDING TO
-mes_unsafe_blood_sugar,Đường huyết của bạn đang trong ngưỡng không an toàn. Vui lòng kiểm tra lại hoặc cho biết lý do,YOUR BLOOD GLUCOSE IS HIGH. PLEASE CHECK AGAIN OR DETAIL THE REASON.
-mes_blood_sugar_empty,Bạn chưa nhập chỉ số Đường Huyết,NO DATA
-mes_reason_empty,Bạn chưa nhập lí do,PLEASE NOTE DOWN THE REASON
-blood_sugar_group,Nhóm đường huyết,SUGAR GROUP
-result,Kết quả,VIETNAMESE
-pick_a_model,Chọn 1 trong {} mẫu dưới đây để xem khuyến nghị của bác sĩ,CHOOSE A SAMPLE BELOW TO SEE EXPERT'S RECOMMENDATION.
-recommand_blood_sugar_test1,Chúng tôi khuyến nghị bạn đo đường huyết,DIAB RECOMMEND YOU TO TEST GLUCOSE
-recommand_blood_sugar_test,Chúng tôi khuyến nghị bạn đo đường huyết ít nhất,DIAB RECOMMEND YOU TO TEST GLUCOSE AT LEAST …
-recommand_blood_sugar,Chúng tôi khuyến nghị bạn,DIAB RECOMMEND
-no_need_to_test,không cần đo,NO NEED TO TEST
-often_testing_blood_sugar,đường huyết thường xuyên.,TESTING BLOOD SUGAR REGULARLY
-time_per_day,{} lần/ngày,TIME/DAY
-time_per_week,{} lần/tuần,TIME/WEEK
-upgrade_to_diab_pro,Nâng cấp gói DiaB Pro,UPGRADE TO PRO PACK
-survey_again,Làm lại khảo sát,REDO SURVEY
-testing_schedule_suggest,Gợi ý lịch đo,SCHEDULE SUGGEST
-blood_sugar_testing_schedule_suggest,Gợi ý lịch đo đường huyết,BLOOD GLUCOSE TESTING SCHEDULE
-show_result,Xem kết quả,SHOW RESULT
-set_as_my_schedule,Đặt làm lịch của tôi,SET AS MY SCHEDULE
-reset_schedule,Đặt lại lịch gợi ý,RESCHEDULE
-before_go_to_sleep,Trước khi đi ngủ,BEFORE BED
-latest_hba1c_is,DiaB ghi nhận chỉ số HbA1c của bạn lần gần nhất là,YOUR LASTEST HBA1C IS
-back_to_schedule,Trở về lịch của tôi,BACK TO SCHEDULE
-blood_sugar_survey_description,Khuyến nghị lịch đo đường huyết được căn cứ trên gợi ý của Hiệp hội Đái tháo đường Canada. Bạn có thể tham khảo gợi ý này kèm theo tư vấn của bác sĩ đang điều trị cho bạn.,THE RECOMMENDED BLOOD GLUCOSE SCHEDULE IS BASED ON THE RECOMMENDATIONS OF THE CANADIAN DIABETES ASSOCIATION. YOU CAN REFER TO THIS SUGGESTION ALONG WITH THE ADVICE OF YOUR DOCTOR.
-blood_sugar_survey_description_link,http://guidelines.diabetes.ca,HTTP://GUIDELINES.DIABETES.CA
-blood_sugar_survey_done_description,Khuyến nghị lịch đo đường huyết được căn cứ trên gợi ý của hiệp hội đái tháo đường Canada. Bạn có thể tham khảo gợi ý này kèm theo tư vấn của bác sĩ đang điều trị cho bạn.,THE RECOMMENDED BLOOD GLUCOSE SCHEDULE IS BASED ON THE RECOMMENDATIONS OF THE CANADIAN DIABETES ASSOCIATION. YOU CAN REFER TO THIS SUGGESTION ALONG WITH THE ADVICE OF YOUR DOCTOR.
-blood_sugar_survey_update_require,Chức năng dành riêng cho gói Đồng hành. Vui lòng nâng cấp tài khoản để sử dụng tính năng này!,THIS FEATURE IS ONLY FOR INDIVIDUAL PACKAGE. PLEASE UPDATE YOUR PACKAGE TO USE THIS FEAFTURE.
-survey_question_1,1. Bạn đang mắc đái tháo đường loại nào?,1. WHAT TYPE OF DIABETES DO YOU HAVE?
-survey_question_2,"2. ""HbA1c của bạn có < 7.0% không?""","2. ""IS YOUR HBA1C < 7.0%?"""
-survey_question_3,3. Bạn đang sử dụng loại thuốc gì?,3. WHAT KIND OF MEDICATION ARE YOU TAKING?
-survey_question_4_1,4. Một ngày bạn tiêm bao nhiêu lần?,4. HOW MANY INJECTIONS HAVE YOU TAKEN PER DAY?
-survey_question_4_2,4. Có phải bạn mới được chẩn đoán đái tháo đường trong vòng 6 tháng gần đây không?,4. HAVE YOU BEEN DIAGNOSED WITH DIABETES WITHIN THE LAST 6 MONTHS?
-survey_answer_1_a,Típ 1,TYPE 1
-survey_answer_1_b,Típ 2,TYPE 2
-survey_answer_1_c,Đái tháo đường thai kỳ,GESTATIONAL DIABETES
-survey_answer_1_d,Tiền Đái tháo đường,PREDIABETES
-survey_answer_2_a,Có,YES
-survey_answer_2_b,Không,NO
-survey_answer_3_a,Insulin,INSULIN
-survey_answer_3_b,Thuốc uống,ORAL MEDICINES
-survey_answer_3_c,Ăn kiêng,DIET
-survey_answer_4_1_a,1 lần / ngày,ONCE A DAY
-survey_answer_4_1_b,2 lần / ngày,TWICE A DAY
-survey_answer_4_1_c,4 lần / ngày,4 TIMES PER DAY
-survey_answer_4_2_a,Có,YES
-survey_answer_4_2_b,Không,NO
-BMIScreen,#ERROR!,BMISCREEN
-update_weight_info,Cập nhật chỉ số cân nặng,UPDATE
-enter_weight_info,Nhập chỉ số cân nặng,ENTER
-diabetes_weight_control,Kiểm soát cân nặng bệnh tiểu đường,WEIGHT CONTROL
-your_bmi,Chỉ số BMI của bạn,BMI
-kg_m_2,kg/m²,KG/M2
-weight_and_height,Cân nặng & chiều cao,WEIGHT & HEIGHT
-enter_weight,Nhập cân nặng,ENTER WEIGHT
-enter_height,Nhập chiều cao,ENTER HEIGHT
-waist,Vòng eo,WAIST
-enter_waist,Nhập vòng eo,ENTER WAIST
-mes_weight_empty,Bạn chưa nhập chỉ số cân nặng,WEIGHT EMPTY
-mes_height_empty,Bạn chưa nhập chỉ số chiều cao,HEIGHT EMPTY
-waist_trend,Xu hướng vòng eo,WAIST TRENDS
-muc_tieu_vong_eo,Mục tiêu vòng eo,WAIST GOALS
-hien_tai,Hiện tại,CURRENT
-nho_nhat,Nhỏ nhất,LOWEST
-lon_nhat,Lớn nhất,HIGHEST
-xu_huong_can_nang,Xu hướng cân nặng,WEIGHT TRENDS
-muc_tieu_can_nang,Mục tiêu cân nặng,WEIGHT GOALS
-nhe_nhat,Nhẹ nhất,LOWEST
-nang_nhat,Nặng nhất,HIGHEST
-bmi_description,"Người mắc bệnh tiểu đường loại 2 thường cảm thấy khó khăn khi kiểm soát cân nặng. Tình trạng thừa cân hay béo phì lại khiến bệnh nghiêm trọng hơn.\n\nBạn sẽ bất ngờ khi biết thừa cân hoặc béo phì làm tăng nguy cơ xảy ra các biến chứng liên quan đến tiểu đường hoặc ngược lại, người tiểu đường sẽ dễ bị thừa cân và béo phì hơn. Bạn nên giảm cân bằng thói quen ăn uống lành mạnh và tập thể dục kiểm soát đường huyết để giảm nguy cơ biến chứng và nhiều vấn đề về sức khỏe khác. Tuy nhiên, nhiều lúc tiểu đường loại 2 tác động đến cân nặng một cách thầm lặng mà bạn không hề hay biết.\n\nCác yếu tố ăn uống cũng ảnh hưởng đến nguy cơ phát triển tiểu đường loại 2. Việc tiêu thụ đồ uống có đường quá mức sẽ làm gia tăng nguy cơ dẫn đến bệnh tiểu đường. Các loại chất béo trong chế độ ăn uống là rất quan trọng. Chất béo bão hòa và các acid béo chuyển hóa làm tăng nguy cơ, trong khi chất béo không bão hòa đa (polyunsaturated fat) và không bão hòa đơn (monounsaturated fat) làm giảm nguy cơ phát triển bệnh. Thói quen ăn nhiều gạo trắng cũng góp phần làm tăng nguy cơ của bệnh. Ngoài ra, có khoảng 7% bệnh nhân bị tiểu đường là do ít tập thể dục.","PEOPLE WITH DIABETES TYPE 2 SOMETIMES FIND IT DIFFICULT TO CONTROL WEIGHT. OBESITY OR OVERWEIGHT MAKE DIABETES TREATMENT GETTING WORST. YOU'LL BE SURPRISED TO KNOW THAT OBESITY OR OVERWEIGHT INCREASE THE RISK OF DIABETES COMPLICATIONS. THEREFORE, LOSING WEIGHT IS HIGHLY RECOMMENDED FOR PEOPLE WITH DIABETES, BY EATING HEALTHY, BEING ACIVE YOU WILL REDUCE REMARKBLY YOUR WEIGHT LEADING TO BETTER HEALTH AND STABLIZING BLOOD GLUCOSE. 
- HOWEVER, DIABETES ALSO AFFECT YOUR WEIGHT SILENTLY THAT YOU DONT EVEN KNOW IT, YOUR DAILY EATING HABITS ALSO RAISE THE RISK OF DEVELOPING DIABETES TYPE 2, FOR EXAMPLE, SUGARY COKE, DRINKS, TYPE OF FAT LIKE SATURATED FATS AND TRANS FAT AND HIGH CARBOHRATE FOOD LIKE RICE IMPACT STRONGLY ON YOUR GLUCOSE AND WEIGHT. 
- MOREOVER, ABOUT 7% OF PEOPLE HAVING DIABETES IS CAUSED BY LACK OF PHYSIAL ACTIVITIES."
-EmotionScreen,#ERROR!,EMOTIONSCREEN
-chinh_sua_cam_xuc,Chỉnh sửa cảm xúc,CHINH SUA CAM XUC
-nhap_cam_xuc,Nhập cảm xúc,ENTER EMOTIONS
-kiem_soat_cam_xuc_benh_tieu_duong,Kiểm soát cảm xúc bệnh tiểu đường,KIEM SOAT CAM XUC BENH TIEU DUONG
-hom_nay_ban_cam_thay_the_nao,Hôm nay bạn\ncảm thấy thế nào?,HOW DO YOU FEEL TODAY?
-scroll_to_select_emotion,Trượt sang trái hoặc phải để chọn 1 cảm xúc,SCROLL TO LEFT OR RIGHT TO SELECT EMOTION
-trieu_chung_cua_ban,Triệu chứng của bạn,YOUR SYMPTOMS
-hoat_dong_cua_ban,Hoạt động của bạn,YOUR ACTIVITIES
-ban_co_trieu_chung_gi_dac_biet,Bạn có triệu chứng gì\nđặc biệt?,DO YOU HAVE ANY SPECIAL SYMPTOM?
-nhan_tiep_tuc_neu_ban_khong_co_trieu_chung_nao,Nhấn 'Tiếp tục' nếu bạn không có triệu chứng nào,"CHOOSE ""NEXT"" IF YOU DON’T HAVE ANY SYMPTOM"
-nhap_trieu_chung_khac,Nhập triệu chứng khác,ENTER OTHER
-nhap_trieu_chung_cua_ban,Nhập triệu chứng của bạn,ENTER SYMPTOM
-ban_da_lam_gi_trong_ngay,Bạn đã làm gì\ntrong ngày?,WHAT DID YOU DO TODAY?
-nhan_tiep_tuc_neu_ban_khong_co_hoat_dong_nao,Nhấn 'Tiếp tục' nếu bạn không có hoạt động nào,"CHOOSE ""NEXT"" IF YOU DON’T HAVE ANY ACTIVITY"
-nhap_hoat_dong_khac,Nhập hoạt động khác,ENTER OTHER
-nhap_hoat_dong_cua_ban,Nhập hoạt động của bạn,ENTER ACTIVITIES
-tong_quan_hoat_dong,Tổng quan hoạt động,ACTIVITES OVERVIEW
-trieu_chung,Triệu chứng,SYMPTOM
-trieu_chung_khac,Triệu chứng khác,OTHER SYMPTOM
-hoat_dong,Hoạt động,ACTIVITIES
-hoat_dong_khac,Hoạt động khác,OTHER ACTIVITIES
-cam_xuc_cua_ban,Cảm xúc của bạn,YOUR FEELING
-ngay_qua,ngày qua,YOUR FEELING IN THE LAST 7 DAYS
-tong_quan_trieu_chung,Tổng quan triệu chứng,SYMPTOM OVERVIEW
-emotion_description,"Một chẩn đoán bệnh tiểu đường có thể đến như một cú sốc. Bạn có thể trải qua nhiều cảm xúc, và thật bình thường khi có cảm giác tức giận, buồn bã, đau buồn, chối bỏ, mất mát hoặc sợ hãi. Nếu những cảm xúc này trở nên quá khó đối phó, điều quan trọng là nói chuyện với bác sĩ gia đình của bạn hoặc tìm kiếm sự trợ giúp chuyên nghiệp.\nÁp lực của việc theo dõi và quản lý bệnh tiểu đường có thể gây căng thẳng - và căng thẳng có thể gây ra sự dao động về mức đường huyết, cũng như có ảnh hưởng đến sức khỏe tâm thần chung của bạn.\nCố gắng đặt kỳ vọng thực tế và các chiến lược thực tế để đối phó với những suy nghĩ, cảm xúc và cảm xúc liên quan đến bệnh tiểu đường. Cũng cố gắng để giữ một số quan điểm về mục tiêu của bạn và những gì bạn có thể quản lý","WHEN TALKING ABOUT DIABETES, THAT MUST BE A SHOCK WHEN KNOWING YOU ARE DIAGNOSED DIABETES. YOU WOULD GO THROUGH SUCH FEELING: ANGRY, ANXIOUS, DENIAL, DEPRESSED, OR EVEN FEAR. IF THESE FEELINGS ARE TOO HARD TO OVERCOME, YOU CAN TALK TO YOUR DOCTOR, FAMILY OR FRIENDS OR SEEK FOR SPECIALIST'S SUPPORT. KEEPING BLOOD GLUCOSE IN RANGE SOMETIMES STRESSES YOU OUT, IN RESULT, IT ALSO IMPACTS ON YOUR MENTAL HEALTH."
-ExercisesScreen,#ERROR!,EXERCISESSCREEN
-hoat_dong_trong_ngay,Hoạt động trong ngày,DAILY ACTIVITIES
-di_bo_trong_ngay,Đi bộ trong ngày,WALKING
-so_phut_di_bo_moi_ngay,Số phút đi bộ mỗi ngày,MINUTES
-them_muc_tieu_thanh_cong,Thêm mục tiêu thành công,ADD GOAL
+share_profile_success,Bạn đã chia sẻ thành công!,Success,
+share_profile_success_description,Bạn đã chia sẻ thành công hồ sơ cho bác sĩ {}. Bạn có thể dừng chia sẻ tại “danh sách đã chia sẻ”.,"Sharing successed. you can unshare at ""shared list""",
+show_shared_list,Xem danh sách đã chia sẻ,Shared list,
+stop_sharing,Bạn muốn dừng chia sẻ hồ sơ cho bác sĩ {}?,Do you want to unshare?,
+stop_sharing_description,"Sau khi dừng chia sẻ, bác sĩ sẽ không thể theo dõi hồ sơ của bạn nữa.","Once unsharing, doctor will be unanle to see your profile.",
+qr_code_not_found,Không tìm thấy mã QR. Bạn hãy thử lại và đặt mã QR ở trung tâm màn hình nhé!,Qr code not found. please try again.,
+referral_code_not_exist,Mã giới thiệu không tồn tại!,Referral code not exist,
+shared_date,Ngày chia sẻ: {},Shared date,
+BloodPressureScreen,#ERROR!,Bloodpressurescreen,
+blood_pressure_trend,Xu hướng huyết áp,Pressure trend,
+lowest,Thấp nhất,Lowest,
+medium,Trung bình,Medium,
+highest,Cao nhất,Highest,
+heart_rate,Nhịp tim,Heart rate,
+enter_data,Nhập vào,Input,
+mm_hg,mmHg,Mm_hg,
+time_per_minute,lần/phút,Time/minute,
+distribution_frequency,Tần suất phân bổ,Distribution frequency,
+grade_3_hypertension,Tăng huyết áp độ 3,Hypertension rate 3,
+grade_2_hypertension,Tăng huyết áp độ 2,Hypertension rate 2,
+grade_1_hypertension,Tăng huyết áp độ 1,Hypertension rate 1,
+normal_high,Bình thường cao,Normal high,
+normal,Bình thường,Normal,
+heart_rate_trend,Xu hướng nhịp tim,Heart rate trends,
+update_blood_pressure,Cập nhật chỉ số huyết áp,Blood pressure,
+enter_blood_pressure,Nhập chỉ số huyết áp,Blood pressure,
+blood_pressure_for_diabetes,Chỉ số huyết áp đối với bệnh tiểu đường,Blood pressure for diabetes,
+systolic_diastolic,Tâm thu / tâm trương,Systolic/diastolic,
+mes_systolic_empty,Bạn chưa nhập chỉ số tâm thu,Systolic empty,
+mes_diastolic_empty,Bạn chưa nhập chỉ số tâm trương,Diastolic empty,
+mes_heart_rate_empty,Bạn chưa nhập chỉ số nhịp tim,Mes heart rate empty,
+mes_heart_rate_invalid,"Chúng tôi xin lỗi, số liệu nhịp tim mà bạn nhập không trong phạm vi cho phép. Giá trị kỳ vọng nằm dưới 200",Heart rate out of valid range,
+blood_pressure_description,"Tăng huyết áp, hay huyết áp cao, rất thường gặp ở những người bị đái tháo đường (tiểu đường) tuýp 2. Dù chưa biết lý do vì sao có sự tương quan đáng kể giữa đái tháo đường và tăng huyết áp nhưng người ta giả định rằng béo phì, chế độ ăn uống nhiều natri và lười vận động dẫn đến sự gia tăng đồng thời cả hai bệnh trên.\n\nTăng huyết áp được biết đến như một “kẻ giết người thầm lặng” vì nó không có triệu chứng rõ ràng. Một cuộc khảo sát năm 2002 của Hiệp hội Đái tháo đường Hoa Kỳ (ADA) cho thấy, khoảng 68% những người bị bệnh đái tháo đường không biết họ cũng có nguy cơ gia tăng bệnh tim và đột quỵ vì liên quan đến tăng huyết áp mạn tính.\n\nTăng huyết áp kéo dài sẽ khiến cho cơ tim mệt mỏi do phải bơm máu với áp lực cao và khiến cơ tim dần giãn rộng ra. Trong năm 2008, những người bệnh đái tháo đường trên 20 tuổi có huyết áp cao hơn 140/90 chiếm tới 67%.\n\nỞ người khỏe mạnh, huyết áp 140/90 được xem là bình thường, nhưng đối với bệnh nhân đái tháo đường tuýp 2, các bác sĩ khuyên bạn nên giữ chỉ số này thấp hơn 135/80.\n\nTrong đó, con số đầu tiên (135) được gọi là huyết áp tâm thu, cho thấy áp lực máu do tim co bóp để bơm đi. Số thứ hai (80), được gọi là huyết áp tâm trương, là áp lực được duy trì trong các động mạch giữa các nhịp co bóp của tim.\n\nNgười khỏe mạnh nên kiểm tra huyết áp vài lần trong năm, nhưng bệnh nhân đái tháo đường cần phải thận trọng hơn. Ngoài việc kiểm tra huyết áp ít nhất bốn lần mỗi năm, các chuyên gia khuyến cáo hãy tự theo dõi tại nhà, ghi lại các chỉ số và thông báo với bác sĩ.","Hypertension is very common in people with type 2 diabetes. although it is unknown why there is a correlation between diabetes and hypertension, it is assumed that obesity, a high-sodium diet, and lack of exercise lead to a simultaneous increase in both diseases. high blood pressure is known as a “silent killer” because it does not have any visible symptom. a survey in 2002 by the american diabetes association (ada) found that about 68% of people with diabetes did not know they also had an increased risk of heart disease and its association with hypertension. long-term elevation of blood pressure will create fatigue for tired mechanics that have to pump with high pressure and gradually relax. in 2008, people with diabetes over 20 years old with blood pressure higher than 140/90 accounted for 67%. in a healthy person, a blood pressure of 140/90 is considered normal, but for patients with 2nd line drip, doctors recommend keeping this number lower than 135/80. meanwhile, the first number (135) is called the systolic pressure, which indicates the pressure during contraction to pump away. the second number (80), called the diastolic pressure, is the pressure maintained in the vessels between the contractions of time. normal people should have their blood pressure checked several times a year, but diabetes patients need to be more careful. besides checking your blood pressure at least every year, experts recommend self-monitoring at home, recording your test and communicating with your doctor.",
+BloodSugarScreen,#ERROR!,Bloodsugarscreen,
+before_and_after_eating,Trước & sau ăn,Before and after meal,
+before_and_after_exercise,Trước & sau tập luyện,Before and after exercise,
+choose_time_to_compare,Chọn thời điểm so sánh,Choose period,
+choose_time_frame,Vui lòng chọn khung giờ,Time frame,
+blood_sugar_trend,Xu hướng đường huyết,Blood glucose trends,
+compare,So sánh,Comparison,
+before_after,Trước/Sau,Before/after,
+update_blood_sugar,Cập nhật chỉ số đường huyết,Update,
+enter_blood_sugar,Nhập chỉ số đường huyết,Enter,
+blood_sugar_for_diabetes,Chỉ số đường huyết với bệnh tiểu đường,Blood sugar for diabetes,
+corresponding_to,Tương ứng với,Corresponding to,
+mes_unsafe_blood_sugar,Đường huyết của bạn đang trong ngưỡng không an toàn. Vui lòng kiểm tra lại hoặc cho biết lý do,Your blood glucose is high. please check again or detail the reason.,
+mes_blood_sugar_empty,Bạn chưa nhập chỉ số Đường Huyết,No data,
+mes_reason_empty,Bạn chưa nhập lí do,Please note down the reason,
+blood_sugar_group,Nhóm đường huyết,Sugar group,
+result,Kết quả,Vietnamese,
+pick_a_model,Chọn 1 trong {} mẫu dưới đây để xem khuyến nghị của bác sĩ,Choose a sample below to see expert's recommendation.,
+recommand_blood_sugar_test1,Chúng tôi khuyến nghị bạn đo đường huyết,Diab recommend you to test glucose,
+recommand_blood_sugar_test,Chúng tôi khuyến nghị bạn đo đường huyết ít nhất,Diab recommend you to test glucose at least …,
+recommand_blood_sugar,Chúng tôi khuyến nghị bạn,Diab recommend,
+no_need_to_test,không cần đo,No need to test,
+often_testing_blood_sugar,đường huyết thường xuyên.,Testing blood sugar regularly,
+time_per_day,{} lần/ngày,Time/day,
+time_per_week,{} lần/tuần,Time/week,
+upgrade_to_diab_pro,Nâng cấp gói DiaB Pro,Upgrade to pro pack,
+survey_again,Làm lại khảo sát,Redo survey,
+testing_schedule_suggest,Gợi ý lịch đo,Schedule suggest,
+blood_sugar_testing_schedule_suggest,Gợi ý lịch đo đường huyết,Blood glucose testing schedule,
+show_result,Xem kết quả,Show result,
+set_as_my_schedule,Đặt làm lịch của tôi,Set as my schedule,
+reset_schedule,Đặt lại lịch gợi ý,Reschedule,
+before_go_to_sleep,Trước khi đi ngủ,Before bed,
+latest_hba1c_is,DiaB ghi nhận chỉ số HbA1c của bạn lần gần nhất là,Your lastest hba1c is,
+back_to_schedule,Trở về lịch của tôi,Back to schedule,
+blood_sugar_survey_description,Khuyến nghị lịch đo đường huyết được căn cứ trên gợi ý của Hiệp hội Đái tháo đường Canada. Bạn có thể tham khảo gợi ý này kèm theo tư vấn của bác sĩ đang điều trị cho bạn.,The recommended blood glucose schedule is based on the recommendations of the canadian diabetes association. you can refer to this suggestion along with the advice of your doctor.,
+blood_sugar_survey_description_link,http://guidelines.diabetes.ca,Http://guidelines.diabetes.ca,
+blood_sugar_survey_done_description,Khuyến nghị lịch đo đường huyết được căn cứ trên gợi ý của hiệp hội đái tháo đường Canada. Bạn có thể tham khảo gợi ý này kèm theo tư vấn của bác sĩ đang điều trị cho bạn.,The recommended blood glucose schedule is based on the recommendations of the canadian diabetes association. you can refer to this suggestion along with the advice of your doctor.,
+blood_sugar_survey_update_require,Chức năng dành riêng cho gói Đồng hành. Vui lòng nâng cấp tài khoản để sử dụng tính năng này!,This feature is only for individual package. please update your package to use this feafture.,
+survey_question_1,1. Bạn đang mắc đái tháo đường loại nào?,1. what type of diabetes do you have?,
+survey_question_2,"2. ""HbA1c của bạn có < 7.0% không?""","2. ""is your hba1c < 7.0%?""",
+survey_question_3,3. Bạn đang sử dụng loại thuốc gì?,3. what kind of medication are you taking?,
+survey_question_4_1,4. Một ngày bạn tiêm bao nhiêu lần?,4. how many injections have you taken per day?,
+survey_question_4_2,4. Có phải bạn mới được chẩn đoán đái tháo đường trong vòng 6 tháng gần đây không?,4. have you been diagnosed with diabetes within the last 6 months?,
+survey_answer_1_a,Típ 1,Type 1,
+survey_answer_1_b,Típ 2,Type 2,
+survey_answer_1_c,Đái tháo đường thai kỳ,Gestational diabetes,
+survey_answer_1_d,Tiền Đái tháo đường,Prediabetes,
+survey_answer_2_a,Có,Yes,
+survey_answer_2_b,Không,No,
+survey_answer_3_a,Insulin,Insulin,
+survey_answer_3_b,Thuốc uống,Oral medicines,
+survey_answer_3_c,Ăn kiêng,Diet,
+survey_answer_4_1_a,1 lần / ngày,Once a day,
+survey_answer_4_1_b,2 lần / ngày,Twice a day,
+survey_answer_4_1_c,4 lần / ngày,4 times per day,
+survey_answer_4_2_a,Có,Yes,
+survey_answer_4_2_b,Không,No,
+BMIScreen,#ERROR!,Bmiscreen,
+update_weight_info,Cập nhật chỉ số cân nặng,Update,
+enter_weight_info,Nhập chỉ số cân nặng,Enter,
+diabetes_weight_control,Kiểm soát cân nặng bệnh tiểu đường,Weight control,
+your_bmi,Chỉ số BMI của bạn,Bmi,
+kg_m_2,kg/m²,Kg/m2,
+weight_and_height,Cân nặng & chiều cao,Weight & height,
+enter_weight,Nhập cân nặng,Enter weight,
+enter_height,Nhập chiều cao,Enter height,
+waist,Vòng eo,Waist,
+enter_waist,Nhập vòng eo,Enter waist,
+mes_weight_empty,Bạn chưa nhập chỉ số cân nặng,Weight empty,
+mes_height_empty,Bạn chưa nhập chỉ số chiều cao,Height empty,
+waist_trend,Xu hướng vòng eo,Waist trends,
+muc_tieu_vong_eo,Mục tiêu vòng eo,Waist goals,
+hien_tai,Hiện tại,Current,
+nho_nhat,Nhỏ nhất,Lowest,
+lon_nhat,Lớn nhất,Highest,
+xu_huong_can_nang,Xu hướng cân nặng,Weight trends,
+muc_tieu_can_nang,Mục tiêu cân nặng,Weight goals,
+nhe_nhat,Nhẹ nhất,Lowest,
+nang_nhat,Nặng nhất,Highest,
+bmi_description,"Người mắc bệnh tiểu đường loại 2 thường cảm thấy khó khăn khi kiểm soát cân nặng. Tình trạng thừa cân hay béo phì lại khiến bệnh nghiêm trọng hơn.\n\nBạn sẽ bất ngờ khi biết thừa cân hoặc béo phì làm tăng nguy cơ xảy ra các biến chứng liên quan đến tiểu đường hoặc ngược lại, người tiểu đường sẽ dễ bị thừa cân và béo phì hơn. Bạn nên giảm cân bằng thói quen ăn uống lành mạnh và tập thể dục kiểm soát đường huyết để giảm nguy cơ biến chứng và nhiều vấn đề về sức khỏe khác. Tuy nhiên, nhiều lúc tiểu đường loại 2 tác động đến cân nặng một cách thầm lặng mà bạn không hề hay biết.\n\nCác yếu tố ăn uống cũng ảnh hưởng đến nguy cơ phát triển tiểu đường loại 2. Việc tiêu thụ đồ uống có đường quá mức sẽ làm gia tăng nguy cơ dẫn đến bệnh tiểu đường. Các loại chất béo trong chế độ ăn uống là rất quan trọng. Chất béo bão hòa và các acid béo chuyển hóa làm tăng nguy cơ, trong khi chất béo không bão hòa đa (polyunsaturated fat) và không bão hòa đơn (monounsaturated fat) làm giảm nguy cơ phát triển bệnh. Thói quen ăn nhiều gạo trắng cũng góp phần làm tăng nguy cơ của bệnh. Ngoài ra, có khoảng 7% bệnh nhân bị tiểu đường là do ít tập thể dục.","People with diabetes type 2 sometimes find it difficult to control weight. obesity or overweight make diabetes treatment getting worst. you'll be surprised to know that obesity or overweight increase the risk of diabetes complications. therefore, losing weight is highly recommended for people with diabetes, by eating healthy, being acive you will reduce remarkbly your weight leading to better health and stablizing blood glucose. 
+ however, diabetes also affect your weight silently that you dont even know it, your daily eating habits also raise the risk of developing diabetes type 2, for example, sugary coke, drinks, type of fat like saturated fats and trans fat and high carbohrate food like rice impact strongly on your glucose and weight. 
+ moreover, about 7% of people having diabetes is caused by lack of physial activities.",
+EmotionScreen,#ERROR!,Emotionscreen,
+chinh_sua_cam_xuc,Chỉnh sửa cảm xúc,Chinh sua cam xuc,
+nhap_cam_xuc,Nhập cảm xúc,Enter emotions,
+kiem_soat_cam_xuc_benh_tieu_duong,Kiểm soát cảm xúc bệnh tiểu đường,Kiem soat cam xuc benh tieu duong,
+hom_nay_ban_cam_thay_the_nao,Hôm nay bạn\ncảm thấy thế nào?,How do you feel today?,
+scroll_to_select_emotion,Trượt sang trái hoặc phải để chọn 1 cảm xúc,Scroll to left or right to select emotion,
+trieu_chung_cua_ban,Triệu chứng của bạn,Your symptoms,
+hoat_dong_cua_ban,Hoạt động của bạn,Your activities,
+ban_co_trieu_chung_gi_dac_biet,Bạn có triệu chứng gì\nđặc biệt?,Do you have any special symptom?,
+nhan_tiep_tuc_neu_ban_khong_co_trieu_chung_nao,Nhấn 'Tiếp tục' nếu bạn không có triệu chứng nào,"Choose ""next"" if you don’t have any symptom",
+nhap_trieu_chung_khac,Nhập triệu chứng khác,Enter other,
+nhap_trieu_chung_cua_ban,Nhập triệu chứng của bạn,Enter symptom,
+ban_da_lam_gi_trong_ngay,Bạn đã làm gì\ntrong ngày?,What did you do today?,
+nhan_tiep_tuc_neu_ban_khong_co_hoat_dong_nao,Nhấn 'Tiếp tục' nếu bạn không có hoạt động nào,"Choose ""next"" if you don’t have any activity",
+nhap_hoat_dong_khac,Nhập hoạt động khác,Enter other,
+nhap_hoat_dong_cua_ban,Nhập hoạt động của bạn,Enter activities,
+tong_quan_hoat_dong,Tổng quan hoạt động,Activites overview,
+trieu_chung,Triệu chứng,Symptom,
+trieu_chung_khac,Triệu chứng khác,Other symptom,
+hoat_dong,Hoạt động,Activities,
+hoat_dong_khac,Hoạt động khác,Other activities,
+cam_xuc_cua_ban,Cảm xúc của bạn,Your feeling,
+ngay_qua,ngày qua,Your feeling in the last 7 days,
+tong_quan_trieu_chung,Tổng quan triệu chứng,Symptom overview,
+emotion_description,"Một chẩn đoán bệnh tiểu đường có thể đến như một cú sốc. Bạn có thể trải qua nhiều cảm xúc, và thật bình thường khi có cảm giác tức giận, buồn bã, đau buồn, chối bỏ, mất mát hoặc sợ hãi. Nếu những cảm xúc này trở nên quá khó đối phó, điều quan trọng là nói chuyện với bác sĩ gia đình của bạn hoặc tìm kiếm sự trợ giúp chuyên nghiệp.\nÁp lực của việc theo dõi và quản lý bệnh tiểu đường có thể gây căng thẳng - và căng thẳng có thể gây ra sự dao động về mức đường huyết, cũng như có ảnh hưởng đến sức khỏe tâm thần chung của bạn.\nCố gắng đặt kỳ vọng thực tế và các chiến lược thực tế để đối phó với những suy nghĩ, cảm xúc và cảm xúc liên quan đến bệnh tiểu đường. Cũng cố gắng để giữ một số quan điểm về mục tiêu của bạn và những gì bạn có thể quản lý","When talking about diabetes, that must be a shock when knowing you are diagnosed diabetes. you would go through such feeling: angry, anxious, denial, depressed, or even fear. if these feelings are too hard to overcome, you can talk to your doctor, family or friends or seek for specialist's support. keeping blood glucose in range sometimes stresses you out, in result, it also impacts on your mental health.",
+ExercisesScreen,#ERROR!,Exercisesscreen,
+hoat_dong_trong_ngay,Hoạt động trong ngày,Daily activities,
+di_bo_trong_ngay,Đi bộ trong ngày,Walking,
+so_phut_di_bo_moi_ngay,Số phút đi bộ mỗi ngày,Minutes,
+them_muc_tieu_thanh_cong,Thêm mục tiêu thành công,Add goal,
 xep_hang_thoi_gian_van_dong,Xếp hạng thời gian vận động,
-binh_quan_trong_nhom_tuoi_cua_toi,Bình quân trong nhóm tuổi của tôi,BINH QUAN TRONG NHOM TUOI CUA TOI
-xu_huong_dot_calo,Xu hướng đốt calo,CALORIES BURNED TRENDS
-nang_luong_dot_chay_tren_ngay,Năng lượng đốt cháy / ngày,CALORIES BURNED/DAY
-nang_luong_dot_chay_tren_tuan,Năng lượng đốt cháy / tuần,CALORIES BURNED/WEEK
-tong_cong,Tổng cộng,TOTAL
-ban_chua_nhap_thoi_gian_van_dong,Bạn chưa nhập thời gian vận động,PLEASE ENTER YOUR EXERCISE DURATION
-xu_huong_thoi_gian,Xu hướng thời gian,XU HUONG THOI GIAN
-so_phut_van_dong_moi_ngay,Số phút vận động mỗi ngày,DURATION/DAY
-so_phut_van_dong_moi_tuan,Số phút vận động mỗi tuần,DURATION/WEEK
-chinh_sua_van_dong,Chỉnh sửa vận động,EDIT
-nhap_chi_so_van_dong,Nhập chỉ số vận động,ENTER
-che_do_tap_luyen_doi_voi_benh_tieu_duong,Chế độ tập luyện đối với bệnh tiểu đường,EXERCISE REGIMEN FOR DIABETES
-luong_calo_ban_da_tieu_hao,Lượng calo bạn đã tiêu hao,HOW MANY CALORIES HAVE YOU BURNED?
-them_hoat_dong,Thêm hoạt động,MORE ACTIVITIES
-chinh_sua_thoi_gian,Chỉnh sửa thời gian,EDIT TIME
-ky_luc,Tuyệt vời! Bạn đã phá kỷ lục thời gian tập luyện. Kỷ lục hiện tại của bạn với bộ môn này là,WONDERFUL! YOU HAVE BROKE THE RECORD. YOUR CURRENT RECORD WITH THIS EXERCISE IS
-chuc_mung,Chúc mừng!,CONGRATULATIONS!
-hoat_dong_lower_case,hoạt động,WORK
-ban_chua_chon_hoat_dong,Bạn chưa chọn hoạt động,YOU HAVE NOT SELECTED AN ACTIVITY
-chon_cuong_do_hoat_dong,Chọn cường độ hoạt động,CHOOSE INTENSITY
-ban_chua_chon_cuong_do,Bạn chưa chọn cường độ,YOU HAVE NOT SELECTED THE INTENSITY
-chon_hinh_thuc_hoat_dong,Chọn hình thức hoạt động,CHOOSE MODE
-thoi_gian_van_dong,Thời gian vận động,TIME
-ban_chua_chon_hinh_thuc,Bạn chưa chọn hình thức,YOU HAVE NOT SELECTED A FORM
-ban_chua_chon_thoi_gian,Bạn chưa chọn thời gian,YOU HAVE NOT CHOSEN TIME
-chon_loai_van_dong,Chọn loại vận động,CHOOSE TYPE OF EXERCISE
-tim_kiem_hoat_dong,Tìm kiếm hoạt động,SEARCH ACTIVITY
-hoat_dong_pho_bien,Hoạt động phổ biến,POPULAR ACTIVITIES
-hoat_dong_thuong_xuyen,Hoạt động thường xuyên,REGULAR ACTIVITIES
-cac_hoat_dong_khac,Các hoạt động khác,OTHER ACTIVITIES
-FoodScreen,#ERROR!,#ERROR!
-nang_luong_nap_tren_ngay,Năng lượng nạp / ngày,ENERGY INTAKE / DAY
-ban_chua_nhap_gia_tri,Bạn chưa nhập giá trị,YOU HAVE NOT ENTERED THE VALUE
-ban_chua_nhap_thong_tin,Bạn chưa nhập thông tin,YOU HAVE NOT ENTERED INFORMATION
-tinh_lai_theo_cong_thuc_tdee,Tính lại theo công thức TDEE,RECALCULATE BY TDEE . FORMULA
-tinh_theo_tdee,Tính theo TDEE,CALCULATED IN TDEE
-nam_sinh,Năm sinh,YEAR OF BIRTH
-nhap_nam_sinh,Nhập năm sinh,ENTER YEAR OF BIRTH
-cuong_do_tap_luyen,Cường độ tập luyện,EXERCISE INTENSITY
-chon_cuong_do_tap_luyen,Chọn cường độ tập luyện,CHOOSE INTENSITY
-ban_chua_nhap_can_nang,Bạn chưa nhập cân nặng,YOU HAVE NOT ENTERED YOUR WEIGHT
-ban_chua_nhap_chieu_cao,Bạn chưa nhập chiều cao,YOU HAVE NOT ENTERED YOUR HEIGHT
-ban_chua_nhap_nam_sinh,Bạn chưa nhập năm sinh,YOU HAVE NOT ENTERED THE YEAR OF BIRTH
-ban_chua_chon_cuong_do_tap_luyen,Bạn chưa chọn cường độ tập luyện,YOU HAVEN'T CHOSEN THE INTENSITY OF YOUR WORKOUT YET
-da_chon,Đã chọn,SELECTED
-mon,món,DISH
-nang_luong,Năng lượng,ENERGY
-dinh_duong_da_nap_theo_ngay,Dinh dưỡng đã nạp theo ngày,NUTRITION INTAKE BY DAY
-chat_bot_duong,Chất bột đường,CARBOHYDRATE
-calo,Calo,CALORIES
-beo,Béo,FAT
-duong,Đường,SUGAR
-dam,Đạm,PROTEIN
-xo,Xơ,FIBER
-khau_phan,Khẩu phần,RATION
-bao_gom,bao gồm,CONSISTS OF
-khau_phan_cua_ban,Khẩu phần của bạn,YOUR RATIONS
-ban_chua_nhap_du_lieu,Bạn chưa nhập dữ liệu,YOU HAVE NOT ENTERED DATA
-mon_an,món ăn,DISH
-da_an,Đã ăn,ATE
-nang_luong_phan_bo,Năng lượng phân bổ,DISTRIBUTED ENERGY
-chon_mon,Chọn món,CHOOSE A DISH
-xu_huong_dinh_duong,Xu hướng dinh dưỡng,NUTRITION TRENDS
-nhap_mon_an,Nhập món ăn,ENTER FOOD
-tim_kiem_mon_an,Tìm kiếm món ăn,SEARCH
-tinh_bot,Tinh bột,STARCH
-cap_nhat_chi_so_dinh_duong,Cập nhật chỉ số dinh dưỡng,NUTRITION INDEX UPDATE
-nhap_chi_so_dinh_duong,Nhập chỉ số dinh dưỡng,ENTER NUTRITION INDEX
-che_do_dinh_duong_benh_tieu_duong,Chế độ dinh dưỡng bệnh tiểu đường,DIABETES DIET
-luong_calo_ban_da_nap,Lượng calo bạn đã nạp,THE AMOUNT OF CALORIES YOU HAVE INTAKEN
-them_mon_an,Thêm món ăn,MORE DISHES
-ban_chua_chon_mon_an,Bạn chưa chọn món ăn,YOU HAVE NOT SELECTED A DISH YET
-food_advice,"Chế độ dinh dưỡng có khoa học giúp kiểm soát tình trạng bệnh tiểu đường tốt hơn. Theo đó, những thực phẩm người bệnh tiểu đường nên ăn bao gồm","SCIENTIFIC NUTRITION HELPS CONTROL DIABETES BETTER. ACCORDINGLY, THE FOODS PEOPLE WITH DIABETES SHOULD EAT INCLUDE:"
-nhom_duong_bot,Nhóm đường bột,CARBOHYDRATE
-nhom_duong_bot_description,"Ngũ cốc nguyên hạt, đậu đỗ, gạo còn vỏ cám, rau củ... được chế biến bằng cách hấp, luộc, nướng, hạn chế tối đa rán, xào... Các loại củ như khoai sắn cũng cung cấp khá nhiều tinh bột, nên nếu người bệnh tiểu đường ăn các loại này thì cần phải giảm hoặc cắt cơm.","WHOLE GRAINS, BEANS, RICE WITH BRAN ON, VEGETABLES... ARE PROCESSED BY STEAMING, BOILING, BAKING, MINIMIZING FRYING, STIR-FRYING... ROOT VEGETABLES LIKE TAPIOCA ALSO PROVIDE QUITE A LOT OF CARB, SO IF PEOPLE WITH DIABETES EAT THESE TYPES, THEY NEED TO REDUCE OR CUT RICE."
-nhom_thit_ca,Nhóm thịt cá,GROUP OF MEAT AND FISH
-nhom_thit_ca_description,"Người bệnh tiểu đường nên ăn cá, thịt nạc, thịt gia cầm bỏ da, thịt lọc bỏ mỡ, các loại đậu đỗ... được chế biến đơn giản như hấp, luộc, áp chảo nhằm loại bớt mỡ.","PEOPLE WITH DIABETES SHOULD EAT FISH, LEAN MEAT, SKINLESS POULTRY, FAT-REMOVED MEAT, LEGUMES... WHICH ARE SIMPLY PROCESSED SUCH AS STEAMING, BOILING, PAN-FRYING TO REMOVE FAT."
-nhom_chat_beo_duong_description,"Các thực phẩm có chất béo không bão hòa được ưu tiên trong chế độ ăn của người bệnh tiểu đường như dầu đậu nành, vừng, dầu cá, mỡ cá, olive...","FOODS WITH UNSATURATED FATS ARE PREFERRED IN THE DIET OF DIABETICS SUCH AS SOYBEAN OIL, SESAME, FISH OIL, FISH FAT, OLIVE ..."
-nhom_rau,Nhóm rau,VEGETABLE GROUP
-nhom_rau_description,"Người bệnh tiểu đường nên ăn rau nhiều hơn trong thực đơn của mình thông qua các cách chế biến đơn giản như ăn sống, hấp, luộc, rau trộn nhưng không nên sử dụng nhiều loại sốt có chất béo.","DIABETICS SHOULD EAT MORE VEGETABLES IN THEIR MENU THROUGH SIMPLE PROCESSING METHODS SUCH AS EATING RAW, STEAMING, BOILING, MIXED VEGETABLES BUT SHOULD NOT USE MANY TYPES OF SAUCES WITH FAT."
-nhom_hoa_qua,Hoa quả,FRUIT
-nhom_hoa_qua_description,"Người bệnh tiểu đường cần tăng cường ăn trái cây tươi, không nên chế biến thêm bằng cách cho thêm kem, sữa, hạn chế ăn các loại quả chín ngọt như: sầu riêng, hồng chín, xoài chín,...","DIABETICS NEED TO INCREASE THEIR INTAKE OF FRESH FRUIT, DO NOT ADD MORE INGREDIENT LIKE ICE CREAM, MILK, AND LIMIT THE INTAKE OF SWEET AND RIPE FRUITS SUCH AS DURIAN, RIPE PERSIMMON, RIPE MANGO, ETC."
-when,Lúc,AT THE TIME
-mon_an_gan_day,Món ăn gần đây,RECENT DISHES
-mon_yeu_thich,Món yêu thích,FAVORITE FOOD
-danh_muc,Danh mục,CATEGORY
-kcal_input,Số Kcal đã nạp,NUMBER OF KCALS LOADED
-enter_kcal_hint,Nhập số Kcal đã nạp,ENTER THE AMOUNT OF KCAL LOADED
-invalid_kcal,Số Kcal phải lớn hơn 0,THE NUMBER OF KCAL MUST BE GREATER THAN 0
-Hba1cScreen,#ERROR!,#ERROR!
-tim_hieu_them,Tìm hiểu thêm,MORE INFORMATION
-bai_viet_noi_bat,Bài viết nổi bật,FEATURED POSTS
-xu_huong_hba1c,Xu hướng HbA1c,HBA1C TRENDS
-xem_nguong_hba1c,Xem nguỡng HbA1c,SEE HBA1C RANGE
-filter,Bộ lọc,FILTER
-sau_thang,6 tháng,6 MONTHS
-mot_nam,1 năm,ONE YEAR
-hai_nam,2 năm,2 YEARS
-loc_theo_thoi_gian,Lọc theo thời gian,FILTER BY TIME
-cap_nhat_chi_so_hba1c,Cập nhật chỉ số HbA1c,UPDATE HBA1C
-nhap_chi_so_hba1c,Nhập chỉ số HbA1c,ENTER HBA1C
-chi_so_hba1c_doi_voi_benh_tieu_duong,Chỉ số HbA1c đối với bệnh tiểu đường,HBA1C FOR DIABETES
-ban_chua_nhap_chi_so_hba1c,Bạn chưa nhập chỉ số HbA1c,YOU HAVE NOT ENTERED YOUR HBA1C
-invalid_hba1c,"Chúng tôi xin lỗi, số liệu mà bạn nhập không trong phạm vi cho phép. Giá trị kỳ vọng nằm trong ngưỡng 1 - 30","WE ARE SORRY, THE DATA YOU ENTERED IS NOT WITHIN THE ALLOWED RANGE. EXPECTED VALUE IS IN THE RANGE 1 - 30"
-bang_chi_so_hba1c_va_duong_huyet,Bảng chỉ số HbA1c & đường huyết,TABLE OF HBA1C & BLOOD GLUCOSE
-HomeScreen,#ERROR!,#ERROR!
-thanh_vien_co_ban,Thành viên cơ bản,BASIC MEMBER
-share_with_diab,Điều gì tạo động lực sống khỏe hơn mỗi ngày cho bạn? Hãy chia sẻ cùng DiaB nhé!,WHAT MOTIVATES YOU TO LIVE HEALTHIER EVERY DAY? PLEASE SHARE WITH DIAB!
-viet_dong_luc,Viết động lực,WRITE MOTIVATION
-vui_ve,Vui vẻ,FUNNY
-buon_ngu,Buồn ngủ,SLEEPY
-om,Ốm,SICK
-dinh_duong_va_van_dong,Dinh dưỡng & Vận động,NUTRITION & EXERCISE
-ti_le_so_voi_lan_truoc,% so với lần trước!,% FROM LAST TIME!
-da_nap,Đã nạp,INTAKE
-tieu_hao,Tiêu hao,OUTAKE
-LoginScreen,#ERROR!,#ERROR!
-mat_khau_moi_it_nhat_6_ky_tu,Mật khẩu mới ít nhất 6 ký tự,NEW PASSWORD AT LEAST 6 CHARACTERS
-mat_khau_hien_tai,Mật khẩu hiện tại,CURRENT PASSWORD
-nhap_mat_khau,Nhập mật khẩu,ENTER PASSWORD
-mat_khau_moi,Mật khẩu mới,A NEW PASSWORD
-nhap_mat_khau_moi,Nhập mật khẩu mới,ENTER YOUR NEW PASSWORD
-xac_nhan_mat_khau_moi,Xác nhận mật khẩu mới,CONFIRM NEW PASSWORD
-nhap_lai_mat_khau_moi,Nhập lại mật khẩu mới,ENTER A NEW PASSWORD
-luu_mat_khau,Lưu mật khẩu,SAVE PASSWORD
-doi_mat_khau,Đổi mật khẩu,CHANGE PASSWORD
-ban_chua_nhap_mat_khau,Bạn chưa nhập mật khẩu,YOU HAVE NOT ENTERED YOUR PASSWORD
-tao_mat_khau_moi,Tạo mật khẩu mới,CREATE A NEW PASSWORD
-mat_khau_khong_chua_khoang_trang,Mật khẩu không chứa khoảng trắng,PASSWORD DOES NOT CONTAIN SPACES
-mat_khau_khong_trung_khop,Mật khẩu không trùng khớp,PASSWORD DOES NOT MATCH
-doi_mat_khau_thanh_cong,"Đổi mật khẩu thành công, bạn có thể đăng nhập lại với mật khẩu mới","CHANGE PASSWORD SUCCESSFULLY, YOU CAN LOGIN AGAIN WITH NEW PASSWORD"
-mat_khau_hien_tai_khong_dung,Mật khẩu hiện tại không đúng,CURRENT PASSWORD IS INCORRECT
-reset_mat_khau_thanh_cong,"Reset mật khẩu thành công, bạn có thể đăng nhập lại với mật khẩu mới","PASSWORD RESET IS SUCCESSFUL, YOU CAN LOGIN AGAIN WITH NEW PASSWORD"
-phone_number_for_otp,Nhập số điện thoại bạn đã đăng ký trước đó để chúng tôi gửi mã xác nhận đổi mật khẩu,ENTER THE PHONE NUMBER YOU REGISTERED BEFORE SO THAT WE WILL SEND A CONFIRMATION CODE TO CHANGE YOUR PASSWORD
-so_dien_thoai,Số điện thoại,PHONE NUMBER
-nhap_so_dien_thoai,Nhập số điện thoại,ENTER YOUR PHONE NUMBER
-quyen_mat_khau,Quên mật khẩu,FORGOT PASSWORD
-ban_chua_nhap_so_dien_thoai,Bạn chưa nhập số điện thoại,YOU DID NOT ENTER A PHONE NUMBER
-so_dien_thoai_khong_ton_tai,Số điện thoại không tồn tại. Vui lòng đăng nhập hoặc dùng số điện thoại khác để đăng ký!,PHONE NUMBER DOES NOT EXIST. PLEASE LOGIN OR USE ANOTHER PHONE NUMBER TO REGISTER!
-da_gui_otp_5_lan_cho_so_dien_thoai,Đã gửi OTP 5 lần cho số điện thoại,SENT OTP 5 TIMES FOR PHONE NUMBER
-dang_ky_lai_hom_sau,.\nVui lòng kiểm tra lại hoặc đăng ký vào ngày hôm sau!,PLEASE CHECK AGAIN OR TRY THE NEXT DAY!
-hoac_dang_nhap_bang,Hoặc đăng nhập bằng,OR LOGIN WITH
-chua_co_tai_khoan,Chưa có tài khoản?,NO ACCOUNT?
-tao_tai_khoan_moi,Tạo tài khoản mới,CREATE A NEW ACCOUNT
-mat_khau_khong_chinh_xac,Mật khẩu không chính xác. Vui lòng kiểm tra lại,INCORRECT PASSWORD. PLEASE CHECK AGAIN
-so_dien_thoai_khong_chinh_xac,Số điện thoại không tồn tại. Vui lòng kiểm tra lại,PHONE NUMBER DOES NOT EXIST. PLEASE CHECK AGAIN
-tai_khoan_het_hieu_luc,"Tài khoản của bạn đã hết hiệu lực, vui lòng liên lạc quản trị viên để được hỗ trợ","YOUR ACCOUNT HAS EXPIRED, PLEASE CONTACT YOUR ADMINISTRATOR FOR ASSISTANCE"
-tai_khoan_can_nang_cap,"Xin lỗi bạn, tài khoản của bạn chưa thể sử dụng tính năng này. Vui lòng liên hệ DiaB để được tư vấn nâng cấp tài khoản.","SORRY, YOUR ACCOUNT CANNOT USE THIS FEATURE YET. PLEASE CONTACT DIAB FOR ADVICE ON UPGRADING YOUR ACCOUNT."
-so_dien_thoai_da_ton_tai,Số điện thoại đã tồn tại. Vui lòng đăng nhập hoặc dùng số điện thoại khác để đăng ký!,PHONE NUMBER ALREADY EXISTS. PLEASE LOGIN OR USE ANOTHER PHONE NUMBER TO REGISTER!
-user_name_default,Tài khoản nguời dùng,USER ACCOUNTS
-xac_nhan_mat_khau,Xác nhận mật khẩu,CONFIRM PASSWORD
-nhap_lai_mat_khau,Nhập lại mật khẩu,ENTER THE PASSWORD
-tao_tai_khoan,Tạo tài khoản,CREATE ACCOUNT
-da_co_tai_khoan,Đã có tài khoản,ALREADY HAVE AN ACCOUNT
-ban_chua_nhap_lai_mat_khau,Bạn chưa nhập lại mật khẩu,YOU HAVE NOT RE-ENTERED YOUR PASSWORD
-nhap_lai_mat_khau_khong_chinh_xac,Nhập lại mật khẩu không chính xác,RE-ENTER INCORRECT PASSWORD
-dieu_khoan_va_dieu_kien,Điều khoản & điều kiện,TERMS & CONDITIONS
-toi_dong_y,Tôi đồng ý,I AGREE
-dong_hanh_va_se_chia,Đồng hành & sẻ chia,COMPANION & SHARING
-dong_hanh_va_se_chia_description,Hướng đến những thay đổi lành mạnh cùng đội ngũ huấn luyện sức khỏe (Health Coach),TOWARDS HEALTHY CHANGES WITH A HEALTH COACHING TEAM (HEALTH COACH)
-hieu_de_yeu_ban_than_hon,Hiểu để yêu bản thân hơn,LEARN TO LOVE YOURSELF MORE
-hieu_de_yeu_ban_than_hon_description,"Theo dõi sức khỏe dễ dàng, học cách yêu thương bản thân hơn chỉ trên một ứng dụng","TRACK YOUR HEALTH EASILY, LEARN TO LOVE YOURSELF MORE ON JUST ONE APP"
-va_khong_chi_co_ban,Và không chỉ có bạn...,AND IT'S NOT JUST YOU...
+binh_quan_trong_nhom_tuoi_cua_toi,Bình quân trong nhóm tuổi của tôi,Binh quan trong nhom tuoi cua toi,
+xu_huong_dot_calo,Xu hướng đốt calo,Calories burned trends,
+nang_luong_dot_chay_tren_ngay,Năng lượng đốt cháy / ngày,Calories burned/day,
+nang_luong_dot_chay_tren_tuan,Năng lượng đốt cháy / tuần,Calories burned/week,
+tong_cong,Tổng cộng,Total,
+ban_chua_nhap_thoi_gian_van_dong,Bạn chưa nhập thời gian vận động,Please enter your exercise duration,
+xu_huong_thoi_gian,Xu hướng thời gian,Xu huong thoi gian,
+so_phut_van_dong_moi_ngay,Số phút vận động mỗi ngày,Duration/day,
+so_phut_van_dong_moi_tuan,Số phút vận động mỗi tuần,Duration/week,
+chinh_sua_van_dong,Chỉnh sửa vận động,Edit,
+nhap_chi_so_van_dong,Nhập chỉ số vận động,Enter,
+che_do_tap_luyen_doi_voi_benh_tieu_duong,Chế độ tập luyện đối với bệnh tiểu đường,Exercise regimen for diabetes,
+luong_calo_ban_da_tieu_hao,Lượng calo bạn đã tiêu hao,How many calories have you burned?,
+them_hoat_dong,Thêm hoạt động,More activities,
+chinh_sua_thoi_gian,Chỉnh sửa thời gian,Edit time,
+ky_luc,Tuyệt vời! Bạn đã phá kỷ lục thời gian tập luyện. Kỷ lục hiện tại của bạn với bộ môn này là,Wonderful! you have broke the record. your current record with this exercise is,
+chuc_mung,Chúc mừng!,Congratulations!,
+hoat_dong_lower_case,hoạt động,Work,
+ban_chua_chon_hoat_dong,Bạn chưa chọn hoạt động,You have not selected an activity,
+chon_cuong_do_hoat_dong,Chọn cường độ hoạt động,Choose intensity,
+ban_chua_chon_cuong_do,Bạn chưa chọn cường độ,You have not selected the intensity,
+chon_hinh_thuc_hoat_dong,Chọn hình thức hoạt động,Choose mode,
+thoi_gian_van_dong,Thời gian vận động,Time,
+ban_chua_chon_hinh_thuc,Bạn chưa chọn hình thức,You have not selected a form,
+ban_chua_chon_thoi_gian,Bạn chưa chọn thời gian,You have not chosen time,
+chon_loai_van_dong,Chọn loại vận động,Choose type of exercise,
+tim_kiem_hoat_dong,Tìm kiếm hoạt động,Search activity,
+hoat_dong_pho_bien,Hoạt động phổ biến,Popular activities,
+hoat_dong_thuong_xuyen,Hoạt động thường xuyên,Regular activities,
+cac_hoat_dong_khac,Các hoạt động khác,Other activities,
+FoodScreen,#ERROR!,#ERROR!,
+nang_luong_nap_tren_ngay,Năng lượng nạp / ngày,Energy intake / day,
+ban_chua_nhap_gia_tri,Bạn chưa nhập giá trị,You have not entered the value,
+ban_chua_nhap_thong_tin,Bạn chưa nhập thông tin,You have not entered information,
+tinh_lai_theo_cong_thuc_tdee,Tính lại theo công thức TDEE,Recalculate by tdee . formula,
+tinh_theo_tdee,Tính theo TDEE,Calculated in tdee,
+nam_sinh,Năm sinh,Year of birth,
+nhap_nam_sinh,Nhập năm sinh,Enter year of birth,
+cuong_do_tap_luyen,Cường độ tập luyện,Exercise intensity,
+chon_cuong_do_tap_luyen,Chọn cường độ tập luyện,Choose intensity,
+ban_chua_nhap_can_nang,Bạn chưa nhập cân nặng,You have not entered your weight,
+ban_chua_nhap_chieu_cao,Bạn chưa nhập chiều cao,You have not entered your height,
+ban_chua_nhap_nam_sinh,Bạn chưa nhập năm sinh,You have not entered the year of birth,
+ban_chua_chon_cuong_do_tap_luyen,Bạn chưa chọn cường độ tập luyện,You haven't chosen the intensity of your workout yet,
+da_chon,Đã chọn,Selected,
+mon,món,Dish,
+nang_luong,Năng lượng,Energy,
+dinh_duong_da_nap_theo_ngay,Dinh dưỡng đã nạp theo ngày,Nutrition intake by day,
+chat_bot_duong,Chất bột đường,Carbohydrate,
+calo,Calo,Calories,
+beo,Béo,Fat,
+duong,Đường,Sugar,
+dam,Đạm,Protein,
+xo,Xơ,Fiber,
+khau_phan,Khẩu phần,Ration,
+bao_gom,bao gồm,Consists of,
+khau_phan_cua_ban,Khẩu phần của bạn,Your rations,
+ban_chua_nhap_du_lieu,Bạn chưa nhập dữ liệu,You have not entered data,
+mon_an,món ăn,Dish,
+da_an,Đã ăn,Ate,
+nang_luong_phan_bo,Năng lượng phân bổ,Distributed energy,
+chon_mon,Chọn món,Choose a dish,
+xu_huong_dinh_duong,Xu hướng dinh dưỡng,Nutrition trends,
+nhap_mon_an,Nhập món ăn,Enter food,
+tim_kiem_mon_an,Tìm kiếm món ăn,Search,
+tinh_bot,Tinh bột,Starch,
+cap_nhat_chi_so_dinh_duong,Cập nhật chỉ số dinh dưỡng,Nutrition index update,
+nhap_chi_so_dinh_duong,Nhập chỉ số dinh dưỡng,Enter nutrition index,
+che_do_dinh_duong_benh_tieu_duong,Chế độ dinh dưỡng bệnh tiểu đường,Diabetes diet,
+luong_calo_ban_da_nap,Lượng calo bạn đã nạp,The amount of calories you have intaken,
+them_mon_an,Thêm món ăn,More dishes,
+ban_chua_chon_mon_an,Bạn chưa chọn món ăn,You have not selected a dish yet,
+food_advice,"Chế độ dinh dưỡng có khoa học giúp kiểm soát tình trạng bệnh tiểu đường tốt hơn. Theo đó, những thực phẩm người bệnh tiểu đường nên ăn bao gồm","Scientific nutrition helps control diabetes better. accordingly, the foods people with diabetes should eat include:",
+nhom_duong_bot,Nhóm đường bột,Carbohydrate,
+nhom_duong_bot_description,"Ngũ cốc nguyên hạt, đậu đỗ, gạo còn vỏ cám, rau củ... được chế biến bằng cách hấp, luộc, nướng, hạn chế tối đa rán, xào... Các loại củ như khoai sắn cũng cung cấp khá nhiều tinh bột, nên nếu người bệnh tiểu đường ăn các loại này thì cần phải giảm hoặc cắt cơm.","Whole grains, beans, rice with bran on, vegetables... are processed by steaming, boiling, baking, minimizing frying, stir-frying... root vegetables like tapioca also provide quite a lot of carb, so if people with diabetes eat these types, they need to reduce or cut rice.",
+nhom_thit_ca,Nhóm thịt cá,Group of meat and fish,
+nhom_thit_ca_description,"Người bệnh tiểu đường nên ăn cá, thịt nạc, thịt gia cầm bỏ da, thịt lọc bỏ mỡ, các loại đậu đỗ... được chế biến đơn giản như hấp, luộc, áp chảo nhằm loại bớt mỡ.","People with diabetes should eat fish, lean meat, skinless poultry, fat-removed meat, legumes... which are simply processed such as steaming, boiling, pan-frying to remove fat.",
+nhom_chat_beo_duong_description,"Các thực phẩm có chất béo không bão hòa được ưu tiên trong chế độ ăn của người bệnh tiểu đường như dầu đậu nành, vừng, dầu cá, mỡ cá, olive...","Foods with unsaturated fats are preferred in the diet of diabetics such as soybean oil, sesame, fish oil, fish fat, olive ...",
+nhom_rau,Nhóm rau,Vegetable group,
+nhom_rau_description,"Người bệnh tiểu đường nên ăn rau nhiều hơn trong thực đơn của mình thông qua các cách chế biến đơn giản như ăn sống, hấp, luộc, rau trộn nhưng không nên sử dụng nhiều loại sốt có chất béo.","Diabetics should eat more vegetables in their menu through simple processing methods such as eating raw, steaming, boiling, mixed vegetables but should not use many types of sauces with fat.",
+nhom_hoa_qua,Hoa quả,Fruit,
+nhom_hoa_qua_description,"Người bệnh tiểu đường cần tăng cường ăn trái cây tươi, không nên chế biến thêm bằng cách cho thêm kem, sữa, hạn chế ăn các loại quả chín ngọt như: sầu riêng, hồng chín, xoài chín,...","Diabetics need to increase their intake of fresh fruit, do not add more ingredient like ice cream, milk, and limit the intake of sweet and ripe fruits such as durian, ripe persimmon, ripe mango, etc.",
+when,Lúc,At the time,
+mon_an_gan_day,Món ăn gần đây,Recent dishes,
+mon_yeu_thich,Món yêu thích,Favorite food,
+danh_muc,Danh mục,Category,
+kcal_input,Số Kcal đã nạp,Number of kcals loaded,
+enter_kcal_hint,Nhập số Kcal đã nạp,Enter the amount of kcal loaded,
+invalid_kcal,Số Kcal phải lớn hơn 0,The number of kcal must be greater than 0,
+Hba1cScreen,#ERROR!,#ERROR!,
+tim_hieu_them,Tìm hiểu thêm,More information,
+bai_viet_noi_bat,Bài viết nổi bật,Featured posts,
+xu_huong_hba1c,Xu hướng HbA1c,Hba1c trends,
+xem_nguong_hba1c,Xem nguỡng HbA1c,See hba1c range,
+filter,Bộ lọc,Filter,
+sau_thang,6 tháng,6 months,
+mot_nam,1 năm,One year,
+hai_nam,2 năm,2 years,
+loc_theo_thoi_gian,Lọc theo thời gian,Filter by time,
+cap_nhat_chi_so_hba1c,Cập nhật chỉ số HbA1c,Update hba1c,
+nhap_chi_so_hba1c,Nhập chỉ số HbA1c,Enter hba1c,
+chi_so_hba1c_doi_voi_benh_tieu_duong,Chỉ số HbA1c đối với bệnh tiểu đường,Hba1c for diabetes,
+ban_chua_nhap_chi_so_hba1c,Bạn chưa nhập chỉ số HbA1c,You have not entered your hba1c,
+invalid_hba1c,"Chúng tôi xin lỗi, số liệu mà bạn nhập không trong phạm vi cho phép. Giá trị kỳ vọng nằm trong ngưỡng 1 - 30","We are sorry, the data you entered is not within the allowed range. expected value is in the range 1 - 30",
+bang_chi_so_hba1c_va_duong_huyet,Bảng chỉ số HbA1c & đường huyết,Table of hba1c & blood glucose,
+HomeScreen,#ERROR!,#ERROR!,
+thanh_vien_co_ban,Thành viên cơ bản,Basic member,
+share_with_diab,Điều gì tạo động lực sống khỏe hơn mỗi ngày cho bạn? Hãy chia sẻ cùng DiaB nhé!,What motivates you to live healthier every day? please share with diab!,
+viet_dong_luc,Viết động lực,Write motivation,
+vui_ve,Vui vẻ,Funny,
+buon_ngu,Buồn ngủ,Sleepy,
+om,Ốm,Sick,
+dinh_duong_va_van_dong,Dinh dưỡng & Vận động,Nutrition & exercise,
+ti_le_so_voi_lan_truoc,% so với lần trước!,% from last time!,
+da_nap,Đã nạp,Intake,
+tieu_hao,Tiêu hao,Outake,
+LoginScreen,#ERROR!,#ERROR!,
+mat_khau_moi_it_nhat_6_ky_tu,Mật khẩu mới ít nhất 6 ký tự,New password at least 6 characters,
+mat_khau_hien_tai,Mật khẩu hiện tại,Current password,
+nhap_mat_khau,Nhập mật khẩu,Enter password,
+mat_khau_moi,Mật khẩu mới,A new password,
+nhap_mat_khau_moi,Nhập mật khẩu mới,Enter your new password,
+xac_nhan_mat_khau_moi,Xác nhận mật khẩu mới,Confirm new password,
+nhap_lai_mat_khau_moi,Nhập lại mật khẩu mới,Enter a new password,
+luu_mat_khau,Lưu mật khẩu,Save password,
+doi_mat_khau,Đổi mật khẩu,Change password,
+ban_chua_nhap_mat_khau,Bạn chưa nhập mật khẩu,You have not entered your password,
+tao_mat_khau_moi,Tạo mật khẩu mới,Create a new password,
+mat_khau_khong_chua_khoang_trang,Mật khẩu không chứa khoảng trắng,Password does not contain spaces,
+mat_khau_khong_trung_khop,Mật khẩu không trùng khớp,Password does not match,
+doi_mat_khau_thanh_cong,"Đổi mật khẩu thành công, bạn có thể đăng nhập lại với mật khẩu mới","Change password successfully, you can login again with new password",
+mat_khau_hien_tai_khong_dung,Mật khẩu hiện tại không đúng,Current password is incorrect,
+reset_mat_khau_thanh_cong,"Reset mật khẩu thành công, bạn có thể đăng nhập lại với mật khẩu mới","Password reset is successful, you can login again with new password",
+phone_number_for_otp,Nhập số điện thoại bạn đã đăng ký trước đó để chúng tôi gửi mã xác nhận đổi mật khẩu,Enter the phone number you registered before so that we will send a confirmation code to change your password,
+so_dien_thoai,Số điện thoại,Phone number,
+nhap_so_dien_thoai,Nhập số điện thoại,Enter your phone number,
+quyen_mat_khau,Quên mật khẩu,Forgot password,
+ban_chua_nhap_so_dien_thoai,Bạn chưa nhập số điện thoại,You did not enter a phone number,
+so_dien_thoai_khong_ton_tai,Số điện thoại không tồn tại. Vui lòng đăng nhập hoặc dùng số điện thoại khác để đăng ký!,Phone number does not exist. please login or use another phone number to register!,
+da_gui_otp_5_lan_cho_so_dien_thoai,Đã gửi OTP 5 lần cho số điện thoại,Sent otp 5 times for phone number,
+dang_ky_lai_hom_sau,.\nVui lòng kiểm tra lại hoặc đăng ký vào ngày hôm sau!,Please check again or try the next day!,
+hoac_dang_nhap_bang,Hoặc đăng nhập bằng,Or login with,
+chua_co_tai_khoan,Chưa có tài khoản?,No account?,
+tao_tai_khoan_moi,Tạo tài khoản mới,Create a new account,
+mat_khau_khong_chinh_xac,Mật khẩu không chính xác. Vui lòng kiểm tra lại,Incorrect password. please check again,
+so_dien_thoai_khong_chinh_xac,Số điện thoại không tồn tại. Vui lòng kiểm tra lại,Phone number does not exist. please check again,
+tai_khoan_het_hieu_luc,"Tài khoản của bạn đã hết hiệu lực, vui lòng liên lạc quản trị viên để được hỗ trợ","Your account has expired, please contact your administrator for assistance",
+tai_khoan_can_nang_cap,"Xin lỗi bạn, tài khoản của bạn chưa thể sử dụng tính năng này. Vui lòng liên hệ DiaB để được tư vấn nâng cấp tài khoản.","Sorry, your account cannot use this feature yet. please contact diab for advice on upgrading your account.",
+so_dien_thoai_da_ton_tai,Số điện thoại đã tồn tại. Vui lòng đăng nhập hoặc dùng số điện thoại khác để đăng ký!,Phone number already exists. please login or use another phone number to register!,
+user_name_default,Tài khoản nguời dùng,User accounts,
+xac_nhan_mat_khau,Xác nhận mật khẩu,Confirm password,
+nhap_lai_mat_khau,Nhập lại mật khẩu,Enter the password,
+tao_tai_khoan,Tạo tài khoản,Create account,
+da_co_tai_khoan,Đã có tài khoản,Already have an account,
+ban_chua_nhap_lai_mat_khau,Bạn chưa nhập lại mật khẩu,You have not re-entered your password,
+nhap_lai_mat_khau_khong_chinh_xac,Nhập lại mật khẩu không chính xác,Re-enter incorrect password,
+dieu_khoan_va_dieu_kien,Điều khoản & điều kiện,Terms & conditions,
+toi_dong_y,Tôi đồng ý,I agree,
+dong_hanh_va_se_chia,Đồng hành & sẻ chia,Companion & sharing,
+dong_hanh_va_se_chia_description,Hướng đến những thay đổi lành mạnh cùng đội ngũ huấn luyện sức khỏe (Health Coach),Towards healthy changes with a health coaching team (health coach),
+hieu_de_yeu_ban_than_hon,Hiểu để yêu bản thân hơn,Learn to love yourself more,
+hieu_de_yeu_ban_than_hon_description,"Theo dõi sức khỏe dễ dàng, học cách yêu thương bản thân hơn chỉ trên một ứng dụng","Track your health easily, learn to love yourself more on just one app",
+va_khong_chi_co_ban,Và không chỉ có bạn...,And it's not just you...,
 va_khong_chi_co_ban_description,,
-version,Version,VERSION
-hay_de_diab_thau_hieu_ban_hon,Hãy để DiaB \nthấu hiểu bạn hơn!,LET DIAB GET TO KNOW YOU BETTER!
-hay_de_diab_thau_hieu_ban_hon_single_line,Hãy để DiaB thấu hiểu bạn hơn!,LET DIAB UNDERSTAND YOU BETTER!
-chao_mung,Chào mừng,WELCOME
-ban,Bạn,FRIEND
-ho_va_ten,Họ & tên,FIRST AND LAST NAME
-nhap_ho_ten,Nhập họ tên,ENTER YOUR FIRST AND LAST NAME
-chon_ngay_sinh,Chọn ngày sinh,CHOOSE YOUR DATE OF BIRTH
-gioi_tinh,Giới tính,GENDER
-chon_gioi_tinh,Chọn giới tính,CHOOSE YOUR GENDER
-nam,Nam,MALE
-nu,Nữ,FEMALE
-tinh_trang_benh_tieu_duong,Tình trạng bệnh tiểu đường,DIABETES STATUS
-chon_tinh_trang_benh,Chọn tình trạng bệnh,CHOOSE A MEDICAL CONDITION
-chon_nam,Chọn năm,SELECT YEAR
-luu_thong_tin,Lưu thông tin,SAVE INFORMATION
-loai_benh,Loại bệnh,TYPE OF DISEASE
-ban_chua_nhap_ho_ten,Bạn chưa nhập họ tên,YOU HAVE NOT ENTERED YOUR NAME
-ban_chua_chon_ngay_sinh,Bạn chưa chọn ngày sinh,YOU HAVE NOT SELECTED A DATE OF BIRTH
-ban_chua_chon_gioi_tinh,Bạn chưa chọn giới tính,YOU HAVEN'T CHOSEN A GENDER YET
-ban_chua_chon_tinh_trang_benh_tieu_duong,Bạn chưa chọn tình trạng bệnh tiểu đường,YOU HAVE NOT SELECTED YOUR DIABETES STATUS
-ban_chua_chon_nam_phat_hien_benh,Bạn chưa chọn năm phát hiện bệnh,YOU HAVE NOT SELECTED THE YEAR OF DIAGNOSIS
-so_dien_thoai_da_ton_tai_trong_he_thong,"Số điện thoại này đã tồn tại trong hệ thống, vui lòng kiểm tra lại","THIS PHONE NUMBER ALREADY EXISTS IN THE SYSTEM, PLEASE REVIEW"
-nhap_otp,Nhập 4 số trong tin nhắn văn bản đã gửi đến,ENTER 4 NUMBERS IN THE TEXT MESSAGE SENT
-otp_khong_chinh_xac,Mã xác nhận không chính xác. Vui lòng kiểm tra lại,CONFIRMATION CODE IS INCORRECT. PLEASE CHECK AGAIN
-gui_lai_ma,Gửi lại mã,RESEND CODE
-thay_doi_so_dien_thoai,Thay đổi số điện thoại,CHANGE PHONE NUMBER
-xac_nhan_so_dien_thoai,Xác nhận số điện thoại,CONFIRM PHONE NUMBER
-da_gui_lai_otp,Đã gửi lại mã OTP.\nVui lòng kiểm tra tin nhắn,OTP HAS BEEN SENT BACK.\NPLEASE CHECK YOUR MESSAGE
-NotificationScreen,#ERROR!,#ERROR!
-not_read_yet,Chưa đọc,UNREAD
-read,Đã đọc,READ
-mes_detele_notificaiton,Xoá thông báo?,DELETE NOTIFICATIONS?
-mes_comfirm_detele_notificaiton,Bạn chắc chắn muốn xoá thông báo này?,ARE YOU SURE YOU WANT TO REMOVE THIS MESSAGE?
-detele_notificaiton,Xoá\nthông báo,DELETE NOTICE
-later,Để sau,LATER
-ProfileScreen,#ERROR!,#ERROR!
-every_day,Hàng ngày,DAILY
-every_day_except_sunday,Hàng ngày trừ Chủ Nhật,DAILY EXCEPT SUNDAY
-every_week,Hàng tuần,WEEKLY
-every_30_minutes,Mỗi 30 phút,EVERY 30 MINUTES
-edit_reminder_calendar,Chỉnh sửa lịch nhắc nhở,EDIT REMINDER CALENDAR
-add_reminder_calendar,Thêm lịch nhắc nhở,ADD A REMINDER CALENDAR
-reminder_calendar,Lịch nhắc nhở,CALENDAR REMINDER
-status,Trạng thái,STATUS
-time_reminder,Thời gian nhắc nhở,REMINDER TIME
-repeat,Lặp lại,REPEAT
-reminder_name,Tên nhắc nhở,REMINDER NAME
-enter_reminder_name,Nhập tên nhắc nhở,ENTER THE REMINDER NAME
-content_reminder,Nội dung nhắc nhở,REMINDER CONTENT
-enter_content_reminder,Nhập nội dung nhắc nhở,ENTER THE REMINDER TEXT
-mes_reminder_name_empty,Bạn chưa nhập tên nhắc nhở,YOU HAVE NOT ENTERED THE REMINDER NAME
-mes_time_reminder_empty,Bạn chưa nhập thời gian nhắc nhở,YOU HAVE NOT ENTERED THE REMINDER TIME
-address,Địa chỉ,ADDRESS
-specific_address,Địa chỉ cụ thể,SPECIFIC ADDRESS
-enter_your_address,Nhập địa chỉ của bạn,ENTER YOUR ADDRESS
-province,Tỉnh thành,PROVINCE
-choose,Chọn,CHOOSE
-mes_province_empty,Bạn chưa chọn tỉnh thành,YOU HAVE NOT SELECTED A PROVINCE
-district,Quận/Huyện,DISTRICT
-mes_district_empty,Bạn chưa chọn quận/huyện,YOU HAVE NOT SELECTED A DISTRICT
-wards,Phường/Xã,WARDS
-mes_address_empty,Bạn chưa nhập địa chỉ,YOU DO NOT ENTER AN ADDRESS
-mes_wards_empty,Bạn chưa chọn phuờng/xã,YOU HAVE NOT SELECTED A WARD/COMMUNE
-contact_diab,Liên hệ với DiaB,CONTACT DIAB
-hotline,Hotline: {},HOTLINE: {}
-mes_call_diab,Bạn muốn gọi đến Hotline của DiaB để được trợ giúp?,WANT TO CALL DIAB'S HOTLINE FOR HELP?
-call,Gọi,CALL
-goal_setting,Thiết lập mục tiêu,GOAL SETTING
-goal_setting_done,Đã thiết lập,DONE
-minutes_exercise_per_week,Số phút vận động hằng tuần,WEEKLY EXERCISE MINUTES
-energy_take_per_day,Năng lượng thu nạp / ngày,ENERGY INTAKE / DAY
-user_manual,Hướng dẫn sử dụng,USER MANUAL
-motivational_diary,Nhật ký động lực,MOTIVATIONAL DIARY
-profile_file,Hồ sơ,FILE
-user_id,Mã người dùng: {},USER CODE: {}
-coaching_package,Gói Coaching,COACHING PACKAGE
-remind,Nhắc nhở,REMIND
-personal_schedule,Lịch sinh hoạt\ncá nhân,ACTIVITIES PERSONAL SCHEDULE
-personal_schedule_single_line,Lịch sinh hoạt cá nhân,PERSONAL SCHEDULE
-blood_sugar_schedule,Lịch đo\nđường huyết,BLOOD SUGAR TEST SCHEDULE
-blood_sugar_schedule_single_line,Lịch đo đường huyết,BLOOD SUGAR TEST SCHEDULE
-personal_info,Thông tin cá nhân,PERSONAL INFORMATION
-information_security,Bảo mật thông tin,INFORMATION SECURITY
-update_phone_number,Cập nhật số điện thoại,UPDATE PHONE NUMBER
-let_diab_remind_you,Để DiaB giúp bạn ghi nhớ và nhắc nhở những việc cần làm nhé!,LET DIAB HELP YOU REMEMBER AND REMIND WHAT TO DO!
-setup_personal_schedule,Thiết lập lại thời gian cho phù hợp với lịch sinh hoạt cá nhân trong ngày của bạn,RESET THE TIME TO FIT YOUR PERSONAL SCHEDULE FOR THE DAY
-wake_up,Thức giấc,WAKE UP
-morning,sáng,MORNING
-mes_set_all_time_frame,Bạn phải thiết lập thời gian tất cả khung giờ,YOU MUST SET ALL TIME FRAMES
-default_time_to_measure_blood_sugar,Thời điểm đo đường huyết mặc định là,THE DEFAULT TIME TO MEASURE BLOOD GLUCOSE IS
-suggest_time_to_measure_blood_sugar,"30p trước ăn, 150p sau ăn và 30p trước khi đi ngủ","30 MINUTES BEFORE MEAL, 150 MINUTES AFTER MEAL AND 30 MINUTES BEFORE BED"
-time_to_measure_blood_sugar,"{}p trước ăn, {}p sau ăn và {}p trước khi đi ngủ","BEFORE MEAL, AFTER MEAL AND BEFORE BED"
-setup,Thiết lập,SET
-sunday,CN,SUNDAY
-day_in_week,T{},T{}
-the_morning,Buổi sáng,MORNING
-the_noon,Buổi trưa,NOON
-the_evening,Buổi tối,NIGHT
-sleep_time,Giờ ngủ,SLEEP TIME
-before_sleep,Trước khi ngủ,BEFORE BED
-setup_reminder_time_and_unit,Đặt lại thời gian nhắc nhở cho mỗi khung giờ và đơn vị đo phù hợp với nhu cầu của bạn,RESET REMINDER TIMES FOR EACH TIME FRAME AND UNIT OF MEASURE TO SUIT YOUR NEEDS
-blood_sugar_unit,Đơn vị đo dường huyết,BLOOD GLUCOSE UNIT
-my_motivation,Động lực của tôi,MY MOTIVATION
-view_log,Xem nhật ký,VIEW DIARY
-new_motivation,Động lực mới,NEW MOTIVATION
-add_new_motivation,Nhập động lực mới,ENTER NEW MOTIVATION
-new_motivaiton_suggest,Điều gì tạo động lực sống khoẻ cho bạn?,WHAT MOTIVATES YOU TO LIVE A HEALTHY LIFE?
-enter_motivation,Viết động lực,WRITE MOTIVATION
-general_info,Thông tin chung,GENERAL INFORMATION
-last_name_and_first_name,Họ và tên,FIRST AND LAST NAME
-updating,Đang cập nhật,UPDATING
-pathological_info,Thông tin bệnh lý,MEDICAL INFORMATION
-year_illness_start,Năm phát bệnh,YEAR OF ILLNESS
-body_info,Chỉ số cơ thể,BODY INDEX
-not_updated_yet,Chưa cập nhật,NOT UPDATE
-contact_info,Thông tin liên lạc,CONTACT INFORMATION
-phone_number_1,Số điện thoại 1,PHONE NUMBER 1
-phone_number_2,Số điện thoại 2,PHONE NUMBER 2
-enter_phone_number_1,Nhập số điện thoại 1,ENTER PHONE NUMBER 1
-enter_phone_number_2,Nhập số điện thoại 2,ENTER PHONE NUMBER 2
-not_connected_yet,Chưa kết nối,NOT CONNECTED YET
-account_already_used,"Tài khoản này đã được liên kết, vui lòng sử dụng tài khoản khác","THIS ACCOUNT IS ALREADY LINKED, PLEASE USE ANOTHER ACCOUNT"
-unlinked,Đã huỷ liên kết,UNLINKED
-enter_first_name_and_last_name,Nhập họ và tên,ENTER YOUR FIRST AND LAST NAME
-mes_name_empty,Bạn chưa nhập tên,YOU HAVE NOT ENTERED YOUR NAME
-mes_weight_must_greater_than_zero,Cân nặng phải lớn hơn 0,WEIGHT MUST BE GREATER THAN 0
-mes_height_must_greater_than_zero,Chiều cao phải lớn hơn 0,HEIGHT MUST BE GREATER THAN 0
-enter_your_email,Nhập email của bạn,ENTER YOUR EMAIL
-mes_invalid_email,Email không hợp lệ,INVALID EMAIL
-edit_motivation,Chỉnh sửa động lực,MOTIVATIONAL EDITING
-letters_left_count,Còn {} ký tự,LEFT {} CHARACTERS
-mes_motivation_content_empty,Bạn chưa nhập nội dung,YOU DID NOT ENTER CONTENT
-TabbarScreen,#ERROR!,#ERROR!
-choose_other_info,Chọn chỉ số khác,CHOOSE ANOTHER INDICATOR
-your_status_info,Trạng thái chỉ số của bạn,YOUR STAT STATUS
-warning_info,Các chỉ số ở mức cảnh báo:,INDICATORS AT WARNING LEVEL:
-tends_to_negative,Có xu hướng trở nên tiêu cực,TENDS TO BE NEGATIVE
-not_changeed,Không thay đổi,CONSTANT
-tends_to_posiitive,Có xu hướng trở nên tích cực,TENDS TO BE POSITIVE
-good_successed,Tốt / đạt mục tiêu,GOOD / HIT THE TARGET
-mes_new_version_available,Phiên bản mới {}.\nBấm cập nhật để trải nghiệm những tính năng mới,NEW VERSION {}.\NCLICK UPDATE TO EXPERIENCE NEW FEATURES
-update_weight,Cập nhật cân nặng,WEIGHT UPDATE
-update_weight_description,Vui lòng cho chúng tôi biết số cân nặng của bạn trước khi nhập dữ liệu để ghi nhận chính xác hơn,PLEASE LET US KNOW YOUR WEIGHT BEFORE ENTERING DATA FOR MORE ACCURATE RECORDING
-FoodMenuScreen,#ERROR!,#ERROR!
-food_menu,Thực đơn mẫu,SAMPLE MENU
-change_food_info,Sửa chỉ số,EDIT STATS
-total_kcals,{} kcals,{} KCALS
-total_starch,{}g bột đường,{}G CARB
-attention,Lưu ý:,NOTE:
-note,Chú thích:,NOTE:
-dessert,Món tráng miệng,DESSERTS
-choose_alternative_dish,Chọn món ăn thay thế,CHOOSE AN ALTERNATIVE DISH
-food_quantity_recommand,"Để phù hợp với thực đơn mẫu, bạn nên ăn","TO MATCH THE SAMPLE MENU, YOU SHOULD EAT"
-for_this_food,cho khẩu phần này,FOR THIS SERVING
-suggest_food_empty,Rất tiếc! Chúng tôi chưa tìm được món ăn phù hợp để gợi ý cho bạn!,SORRY! WE HAVEN'T FOUND A SUITABLE DISH TO RECOMMEND FOR YOU!
-food_menu_empty,Rất tiếc! Chúng tôi chưa có thực đơn mẫu nằm trong khung năng lượng của bạn.,SORRY! WE DON'T HAVE A SAMPLE MENU IN YOUR ENERGY FRAME YET.
-food_menu_update_required,Vui lòng nâng cấp tài khoản lên gói Đồng hành để xem đầy đủ thực đơn mẫu cho cả tuần!,PLEASE UPGRADE YOUR ACCOUNT TO THE COMPANION PLAN TO SEE THE FULL WEEK'S SAMPLE MENU!
-energy_use_per_day,Mức tiêu hao năng lượng/ngày của bạn,YOUR DAILY ENERGY CONSUMPTION
-food_from_menu,"Theo thực đơn mẫu, có phải bạn đã ăn","ACCORDING TO THE SAMPLE MENU, HAVE YOU EATEN"
+version,Version,Version,
+hay_de_diab_thau_hieu_ban_hon,Hãy để DiaB \nthấu hiểu bạn hơn!,Let diab get to know you better!,
+hay_de_diab_thau_hieu_ban_hon_single_line,Hãy để DiaB thấu hiểu bạn hơn!,Let diab understand you better!,
+chao_mung,Chào mừng,Welcome,
+ban,Bạn,Friend,
+ho_va_ten,Họ & tên,First and last name,
+nhap_ho_ten,Nhập họ tên,Enter your first and last name,
+chon_ngay_sinh,Chọn ngày sinh,Choose your date of birth,
+gioi_tinh,Giới tính,Gender,
+chon_gioi_tinh,Chọn giới tính,Choose your gender,
+nam,Nam,Male,
+nu,Nữ,Female,
+tinh_trang_benh_tieu_duong,Tình trạng bệnh tiểu đường,Diabetes status,
+chon_tinh_trang_benh,Chọn tình trạng bệnh,Choose a medical condition,
+chon_nam,Chọn năm,Select year,
+luu_thong_tin,Lưu thông tin,Save information,
+loai_benh,Loại bệnh,Type of disease,
+ban_chua_nhap_ho_ten,Bạn chưa nhập họ tên,You have not entered your name,
+ban_chua_chon_ngay_sinh,Bạn chưa chọn ngày sinh,You have not selected a date of birth,
+ban_chua_chon_gioi_tinh,Bạn chưa chọn giới tính,You haven't chosen a gender yet,
+ban_chua_chon_tinh_trang_benh_tieu_duong,Bạn chưa chọn tình trạng bệnh tiểu đường,You have not selected your diabetes status,
+ban_chua_chon_nam_phat_hien_benh,Bạn chưa chọn năm phát hiện bệnh,You have not selected the year of diagnosis,
+so_dien_thoai_da_ton_tai_trong_he_thong,"Số điện thoại này đã tồn tại trong hệ thống, vui lòng kiểm tra lại","This phone number already exists in the system, please review",
+nhap_otp,Nhập 4 số trong tin nhắn văn bản đã gửi đến,Enter 4 numbers in the text message sent,
+otp_khong_chinh_xac,Mã xác nhận không chính xác. Vui lòng kiểm tra lại,Confirmation code is incorrect. please check again,
+gui_lai_ma,Gửi lại mã,Resend code,
+thay_doi_so_dien_thoai,Thay đổi số điện thoại,Change phone number,
+xac_nhan_so_dien_thoai,Xác nhận số điện thoại,Confirm phone number,
+da_gui_lai_otp,Đã gửi lại mã OTP.\nVui lòng kiểm tra tin nhắn,Otp has been sent back.\nplease check your message,
+NotificationScreen,#ERROR!,#ERROR!,
+not_read_yet,Chưa đọc,Unread,
+read,Đã đọc,Read,
+mes_detele_notificaiton,Xoá thông báo?,Delete notifications?,
+mes_comfirm_detele_notificaiton,Bạn chắc chắn muốn xoá thông báo này?,Are you sure you want to remove this message?,
+detele_notificaiton,Xoá\nthông báo,Delete notice,
+later,Để sau,Later,
+ProfileScreen,#ERROR!,#ERROR!,
+every_day,Hàng ngày,Daily,
+every_day_except_sunday,Hàng ngày trừ Chủ Nhật,Daily except sunday,
+every_week,Hàng tuần,Weekly,
+every_30_minutes,Mỗi 30 phút,Every 30 minutes,
+edit_reminder_calendar,Chỉnh sửa lịch nhắc nhở,Edit reminder calendar,
+add_reminder_calendar,Thêm lịch nhắc nhở,Add a reminder calendar,
+reminder_calendar,Lịch nhắc nhở,Calendar reminder,
+status,Trạng thái,Status,
+time_reminder,Thời gian nhắc nhở,Reminder time,
+repeat,Lặp lại,Repeat,
+reminder_name,Tên nhắc nhở,Reminder name,
+enter_reminder_name,Nhập tên nhắc nhở,Enter the reminder name,
+content_reminder,Nội dung nhắc nhở,Reminder content,
+enter_content_reminder,Nhập nội dung nhắc nhở,Enter the reminder text,
+mes_reminder_name_empty,Bạn chưa nhập tên nhắc nhở,You have not entered the reminder name,
+mes_time_reminder_empty,Bạn chưa nhập thời gian nhắc nhở,You have not entered the reminder time,
+address,Địa chỉ,Address,
+specific_address,Địa chỉ cụ thể,Specific address,
+enter_your_address,Nhập địa chỉ của bạn,Enter your address,
+province,Tỉnh thành,Province,
+choose,Chọn,Choose,
+mes_province_empty,Bạn chưa chọn tỉnh thành,You have not selected a province,
+district,Quận/Huyện,District,
+mes_district_empty,Bạn chưa chọn quận/huyện,You have not selected a district,
+wards,Phường/Xã,Wards,
+mes_address_empty,Bạn chưa nhập địa chỉ,You do not enter an address,
+mes_wards_empty,Bạn chưa chọn phuờng/xã,You have not selected a ward/commune,
+contact_diab,Liên hệ với DiaB,Contact diab,
+hotline,Hotline: {},Hotline: {},
+mes_call_diab,Bạn muốn gọi đến Hotline của DiaB để được trợ giúp?,Want to call diab's hotline for help?,
+call,Gọi,Call,
+goal_setting,Thiết lập mục tiêu,Goal setting,
+goal_setting_done,Đã thiết lập,Done,
+minutes_exercise_per_week,Số phút vận động hằng tuần,Weekly exercise minutes,
+energy_take_per_day,Năng lượng thu nạp / ngày,Energy intake / day,
+user_manual,Hướng dẫn sử dụng,User manual,
+motivational_diary,Nhật ký động lực,Motivational diary,
+profile_file,Hồ sơ,File,
+user_id,Mã người dùng: {},User code: {},
+coaching_package,Gói Coaching,Coaching package,
+remind,Nhắc nhở,Remind,
+personal_schedule,Lịch sinh hoạt\ncá nhân,Activities personal schedule,
+personal_schedule_single_line,Lịch sinh hoạt cá nhân,Personal schedule,
+blood_sugar_schedule,Lịch đo\nđường huyết,Blood sugar test schedule,
+blood_sugar_schedule_single_line,Lịch đo đường huyết,Blood sugar test schedule,
+personal_info,Thông tin cá nhân,Personal information,
+information_security,Bảo mật thông tin,Information security,
+update_phone_number,Cập nhật số điện thoại,Update phone number,
+let_diab_remind_you,Để DiaB giúp bạn ghi nhớ và nhắc nhở những việc cần làm nhé!,Let diab help you remember and remind what to do!,
+setup_personal_schedule,Thiết lập lại thời gian cho phù hợp với lịch sinh hoạt cá nhân trong ngày của bạn,Reset the time to fit your personal schedule for the day,
+wake_up,Thức giấc,Wake up,
+morning,sáng,Morning,
+mes_set_all_time_frame,Bạn phải thiết lập thời gian tất cả khung giờ,You must set all time frames,
+default_time_to_measure_blood_sugar,Thời điểm đo đường huyết mặc định là,The default time to measure blood glucose is,
+suggest_time_to_measure_blood_sugar,"30p trước ăn, 150p sau ăn và 30p trước khi đi ngủ","30 minutes before meal, 150 minutes after meal and 30 minutes before bed",
+time_to_measure_blood_sugar,"{}p trước ăn, {}p sau ăn và {}p trước khi đi ngủ","Before meal, after meal and before bed",
+setup,Thiết lập,Set,
+sunday,CN,Sunday,
+day_in_week,T{},T{},
+the_morning,Buổi sáng,Morning,
+the_noon,Buổi trưa,Noon,
+the_evening,Buổi tối,Night,
+sleep_time,Giờ ngủ,Sleep time,
+before_sleep,Trước khi ngủ,Before bed,
+setup_reminder_time_and_unit,Đặt lại thời gian nhắc nhở cho mỗi khung giờ và đơn vị đo phù hợp với nhu cầu của bạn,Reset reminder times for each time frame and unit of measure to suit your needs,
+blood_sugar_unit,Đơn vị đo dường huyết,Blood glucose unit,
+my_motivation,Động lực của tôi,My motivation,
+view_log,Xem nhật ký,View diary,
+new_motivation,Động lực mới,New motivation,
+add_new_motivation,Nhập động lực mới,Enter new motivation,
+new_motivaiton_suggest,Điều gì tạo động lực sống khoẻ cho bạn?,What motivates you to live a healthy life?,
+enter_motivation,Viết động lực,Write motivation,
+general_info,Thông tin chung,General information,
+last_name_and_first_name,Họ và tên,First and last name,
+updating,Đang cập nhật,Updating,
+pathological_info,Thông tin bệnh lý,Medical information,
+year_illness_start,Năm phát bệnh,Year of illness,
+body_info,Chỉ số cơ thể,Body index,
+not_updated_yet,Chưa cập nhật,Not update,
+contact_info,Thông tin liên lạc,Contact information,
+phone_number_1,Số điện thoại 1,Phone number 1,
+phone_number_2,Số điện thoại 2,Phone number 2,
+enter_phone_number_1,Nhập số điện thoại 1,Enter phone number 1,
+enter_phone_number_2,Nhập số điện thoại 2,Enter phone number 2,
+not_connected_yet,Chưa kết nối,Not connected yet,
+account_already_used,"Tài khoản này đã được liên kết, vui lòng sử dụng tài khoản khác","This account is already linked, please use another account",
+unlinked,Đã huỷ liên kết,Unlinked,
+enter_first_name_and_last_name,Nhập họ và tên,Enter your first and last name,
+mes_name_empty,Bạn chưa nhập tên,You have not entered your name,
+mes_weight_must_greater_than_zero,Cân nặng phải lớn hơn 0,Weight must be greater than 0,
+mes_height_must_greater_than_zero,Chiều cao phải lớn hơn 0,Height must be greater than 0,
+enter_your_email,Nhập email của bạn,Enter your email,
+mes_invalid_email,Email không hợp lệ,Invalid email,
+edit_motivation,Chỉnh sửa động lực,Motivational editing,
+letters_left_count,Còn {} ký tự,Left {} characters,
+mes_motivation_content_empty,Bạn chưa nhập nội dung,You did not enter content,
+TabbarScreen,#ERROR!,#ERROR!,
+choose_other_info,Chọn chỉ số khác,Choose another indicator,
+your_status_info,Trạng thái chỉ số của bạn,Your stat status,
+warning_info,Các chỉ số ở mức cảnh báo:,Indicators at warning level:,
+tends_to_negative,Có xu hướng trở nên tiêu cực,Tends to be negative,
+not_changeed,Không thay đổi,Constant,
+tends_to_posiitive,Có xu hướng trở nên tích cực,Tends to be positive,
+good_successed,Tốt / đạt mục tiêu,Good / hit the target,
+mes_new_version_available,Phiên bản mới {}.\nBấm cập nhật để trải nghiệm những tính năng mới,New version {}.\nclick update to experience new features,
+update_weight,Cập nhật cân nặng,Weight update,
+update_weight_description,Vui lòng cho chúng tôi biết số cân nặng của bạn trước khi nhập dữ liệu để ghi nhận chính xác hơn,Please let us know your weight before entering data for more accurate recording,
+FoodMenuScreen,#ERROR!,#ERROR!,
+food_menu,Thực đơn mẫu,Sample menu,
+change_food_info,Sửa chỉ số,Edit stats,
+total_kcals,{} kcals,{} kcals,
+total_starch,{}g bột đường,{}g carb,
+attention,Lưu ý:,Note:,
+note,Chú thích:,Note:,
+dessert,Món tráng miệng,Desserts,
+choose_alternative_dish,Chọn món ăn thay thế,Choose an alternative dish,
+food_quantity_recommand,"Để phù hợp với thực đơn mẫu, bạn nên ăn","To match the sample menu, you should eat",
+for_this_food,cho khẩu phần này,For this serving,
+suggest_food_empty,Rất tiếc! Chúng tôi chưa tìm được món ăn phù hợp để gợi ý cho bạn!,Sorry! we haven't found a suitable dish to recommend for you!,
+food_menu_empty,Rất tiếc! Chúng tôi chưa có thực đơn mẫu nằm trong khung năng lượng của bạn.,Sorry! we don't have a sample menu in your energy frame yet.,
+food_menu_update_required,Vui lòng nâng cấp tài khoản lên gói Đồng hành để xem đầy đủ thực đơn mẫu cho cả tuần!,Please upgrade your account to the companion plan to see the full week's sample menu!,
+energy_use_per_day,Mức tiêu hao năng lượng/ngày của bạn,Your daily energy consumption,
+food_from_menu,"Theo thực đơn mẫu, có phải bạn đã ăn","According to the sample menu, have you eaten",
 MyPlanScreen,#ERROR!,
-my_plan,Lịch trình của tôi,MY PLAN
-schedule,Lịch trình,PLAN
-activity,Hoạt động,ACTIVITY
-title_lesson,Bài học,LESSONS
-title_activity,Hoạt động,ACTIVITIES
-title_exercise,Vận động,EXERCISE
-title_route,Lộ trình,ROUTE
-title_suggest,Gợi ý,SUGGESTION
-search_by_key,Tìm kiếm từ khoá,SEARCH BY KEYWORD
-stop_exercise_warning,Bạn muốn dừng bài học?,DO YOU WANT TO STOP THE LESSON?
-stop_exercise_warning_description,"Việc thoát ra sẽ gây gián đoạn quá trình học bài tập vận động, bạn vẫn chắc chắn muốn thoát?","EXITING WILL INTERRUPT THE PROCESS, DO YOU STILL WANT TO EXIT?"
-exercise_level_1,Bài tập quá nhẹ,EXERCISE IS TOO LIGHT
-exercise_level_2,Bài tập nhẹ,EXERCISE IS LIGHT
-exercise_level_3,Bài tập vừa sức,MODERATE EXERCISE!
-exercise_level_4,Bài tập nặng,EXERCISE IS INTENSIVE
-exercise_level_5,Bài tập quá nặng,EXERCISE IS TOO INTENSIVE
-send_feedback,Gửi đánh giá,SEND FEEDBACK
-thank_you_for_feedback,Cảm ơn bạn đã để lại đánh giá!,THANKS FOR YOUR FEEDBACK!
-thank_you_for_feedback_description,Chúng tôi rất trân trọng những phản hồi của bạn để làm tốt hơn mỗi ngày,WE APPRECIATE YOUR FEEDBACK TO MAKE IT BETTER EVERY DAY
-change_road_map,Thay đổi lộ trình,CHANGE YOUR ROUTE
-select_road_map,Chọn lộ trình,SELECT A ROUTE
-change_road_map_success,Chọn lộ trình thành công!,ROUTE SELECTED SUCCESSFULLY!
-today_is_day_off,Hôm nay là ngày nghỉ!,DAY OFF!
-today_is_day_off_description,Hãy dành thời gian nghỉ ngơi\nvà thư giãn nhé!,TAKE YOUR TIME TO REST AND RELAX!
-today_is_day_no_exercise,Lộ trình hôm nay không có bài tập nào!,NO EXERCISES TODAY!
-start_exercise,Bắt đầu tập,START EXERCISING
-show_instruction,Xem hướng dẫn,SEE THE INSTRUCTIONS
-lesson_category,Danh mục bài học,LIST OF LESSONS
-section_position,Phần {},PART {}
-no_matched_lesson,Không tìm thấy bài học phù hợp!,NO MATCHING LESSONS FOUND!
-no_matched_lesson_description,Bạn hãy tạo lại bộ lọc để tìm kiếm các kết quả khác nhé.,PLEASE RECREATE THE FILTER TO SEARCH FOR OTHER RESULTS.
-lesson_locked,Bài học chưa mở khoá!,LOCKED!
-lesson_locked_warning,Bạn chưa hoàn thành các bài tập trước!\nVui lòng học theo đúng lộ trình để mở khoá bài tập này.,YOU HAVEN'T FINISHED THE PREVIOUS EXERCISES! PLEASE FOLLOW THE CORRECT ROUTE TO UNLOCK THIS EXERCISE.
-exercise_lesson_locked,Bài tập chưa mở khoá!,LOCKED!
-exercise_lesson_locked_warning,Bạn chưa hoàn thành các bài tập trước!\nVui lòng học theo đúng lộ trình để mở khoá bài tập này.,YOU HAVEN'T FINISHED THE PREVIOUS EXERCISES! PLEASE FOLLOW THE CORRECT ROUTE TO UNLOCK THIS EXERCISE.
-filter_by_key_word,Lọc theo từ khoá,FILTER BY KEYWORD
-filter_by_lesson_name,Lọc theo tên bài học,FILTER BY LESSON NAME
-enter_lesson_name,Nhập tên bài học,ENTER THE LESSON NAME
-enter_key_word,Nhập từ khoá,ENTER THE KEYWORD
-filtering,Lọc kết quả,FILTER
-remake_filter,Tạo lại bộ lọc,RECREATE THE FILTER
-filter_not_learnt_lesson_yet,Lọc bài chưa học,FILTER LESSON HASN'T LEARNED YET
-lesson_not_learnt_yet,Chưa học,HASN'T LEARNED YET
-lesson_not_unlock_yet,Chưa mở khoá,LOCKED
-lesson_can_not_learn,Không được học,UNVAILBLE
-exercise_done,Chúc mừng bạn hoàn thành bài tập của ngày hôm nay!,CONGRATULATIONS ON COMPLETING TODAY'S EXERCISE!
-joining,Đang tham gia,JOINING
-ask_for_change_roadmap,"Bạn đang học {}, bạn có chắc muốn đổi lộ trình khác không?","YOU ARE WORKING ON {}, ARE YOU SURE YOU WANT TO CHANGE THE ROUTE?"
-road_map_changed,Bạn đã chọn {}. Lộ trình bao gồm {} bài học.,YOU HAVE SELECTED {}. THE ROUTE INCLUDES {} LESSONS.
-lesson_empty_no_filter,Tuần này bạn không có bài học nào!,NO LESSONS THIS WEEK!
-lesson_empty_no_filter_description,Hãy dành thời gian nghỉ ngơi và thư giãn nhé!,TAKE YOUR TIME TO REST AND RELAX!
-goal_of_day,Hôm nay,THIS DAY
-goal_of_week,Tuần này,THIS WEEK
-setup_smart_goal_title,Cài đặt mục tiêu,GOAL SETTING
-smart_goal_blood_sugar,Đo đường huyết,MEASURE BLOOD GLUCOSE
-smart_goal_blood_pressure,Đo huyết áp,MEASURE BLOOD PRESSURE
-smart_goal_weight,Đo cân nặng,MEASURE WEIGHT
-smart_goal_food,Cập nhật bữa ăn,UPDATE MEAL
-smart_goal_hba1c,Đo HbA1c,MEASURE HBA1C
-smart_goal_emotion,Nhập cảm xúc,ENTER MOOD
-smart_goal_exercise,Vận động,EXERCISING
-smart_goal_lesson,Học bài,LEARNING
-smart_goal_exercise_lesson,Bài tập vận động,EXERCISE
-goal_record_type_time,Thời gian thực hiện,TIME
-goal_record_type_frequency,Số lần thực hiện,FREQUENCY
-select_smart_goal,Chọn loại\nmục tiêu,SELECT GOAL TYPE
-setup_smart_goal,Chi tiết\nmục tiêu,GOAL DETAIL
-smart_goal_name_empty,{} là bắt buộc,{} IS REQUIRED
-smart_goal_repeat_day_empty,Ngày lặp lại là bắt buộc,REPEAT DAY IS REQUIRED
-smart_goal_exercise_time_empty,Chưa nhập số phút vận động,EXERCISE MINUTES IS EMPTY
-smart_goal_exercise_frequency_empty,Chưa nhập số lần thực hiện,EXECUTION FREQUENCY IS EMPTY
-select_smart_goal_type,Chọn loại mục tiêu,SELECT GOAL TYPE
-create_new_habit,Tạo thói quen mới,CREATE A NEW HABIT
-do_a_favorite_thing,Làm một việc yêu thích,DO A FAVORITE THING
-biometric_monitoring_frequency,Tần suất theo dõi chỉ số sinh học,BIOMETRIC MONITORING FREQUENCY
-personal_smart_goal,Mục tiêu cá nhân,PERSONAL GOAL
-smart_setup_completed,Bạn đã cài đặt mục tiêu thành công!,SUCCESSFUL GOAL SETTING!
-smart_goal_name,Mục tiêu của bạn là gì,WHAT IS YOUR GOAL?
-select_start_date,Chọn ngày bắt đầu hoạt động,SELECT THE START DAY
-select_end_date,Ngày kết thúc mục tiêu này,SELECT THE END DAY
-smart_goal_record_type_title,Tính mục tiêu đề ra,CALCULATE THE STATED GOAL
-smart_goal_record_type_description,(Vui lòng chọn 1 trong 2 cách),(PLEASE SELECT 1 OF 2)
-frequency_per_day,Số lần <thực hiện hoạt động> trong ngày,FREQUENCY <EXECUTE ACTIVITY> PER DAY
-enter_smart_goal_name,"Đọc sách mỗi ngày, thư giãn...","READ A BOOK EVERYDAY, RELAX..."
-please_select_roadmap,Vui lòng lựa chọn một lộ trình phù hợp\nđể bắt đầu trải nghiệm các bài tập cùng DiaB!,PLEASE SELECT A SUITABLE ROUTE TO START EXPERIENCING EXERCISES WITH DIAB!
-select_frequency,Độ thường xuyên của mục tiêu,GOAL FREQUENCY
-my_progress,Tiến độ của tôi,MY PROGRESS
-report,Báo cáo,REPORT
-goal,Mục tiêu,GOAL
-coach11,Coach 1 - 1,COACH 1-1
-coach1n,Coach 1 - n,COACH GROUP
-lesson_learned,Bài học đã học,LESSON LEARNED
-lesson_unlocked,Bài học đã mở khoá,UNLOCKED
-lesson_not_learned,Bài học chưa học,LESSON HASN'T LEARN YET
-dia_recommand,DiaB khuyến nghị:,DIAB RECOMMENDS:
-cancel_smart_goal,Huỷ mục tiêu,CANCEL THE GOAL
-confirm_cancel_smart_goal,Xác nhận huỷ mục tiêu,CONFIRM GOAL CANCELLATION
-confirm_cancel_smart_goal_description,"Mục tiêu này trong tương lai cũng sẽ bị huỷ, bạn chắc chắn huỷ mục tiêu chứ?","THIS GOAL WILL ALSO BE CANCELED IN THE FUTURE, DO YOU STILL WANT TO CANCEL THIS GOAL?"
-congratulation_achive_daily,Chúc mừng bạn đã hoàn thành mục tiêu ngày hôm nay!,CONGRATULATIONS ON COMPLETING TODAY'S GOAL!
-congratulation_achive_weekly,Chúc mừng bạn đã hoàn thành mục tiêu tuần này!,CONGRATULATIONS ON COMPLETING THIS WEEK'S GOAL!
-create_smart_goal,Thêm mục tiêu,CREATE A NEW GOAL
+my_plan,Lịch trình của tôi,My plan,
+schedule,Lịch trình,Plan,
+activity,Hoạt động,Activity,
+title_lesson,Bài học,Lessons,
+title_activity,Hoạt động,Activities,
+title_exercise,Vận động,Exercise,
+title_route,Lộ trình,Route,
+title_suggest,Gợi ý,Suggestion,
+search_by_key,Tìm kiếm từ khoá,Search by keyword,
+stop_exercise_warning,Bạn muốn dừng bài học?,Do you want to stop the lesson?,
+stop_exercise_warning_description,"Việc thoát ra sẽ gây gián đoạn quá trình học bài tập vận động, bạn vẫn chắc chắn muốn thoát?","Exiting will interrupt the process, do you still want to exit?",
+exercise_level_1,Bài tập quá nhẹ,Exercise is too light,
+exercise_level_2,Bài tập nhẹ,Exercise is light,
+exercise_level_3,Bài tập vừa sức,Moderate exercise!,
+exercise_level_4,Bài tập nặng,Exercise is intensive,
+exercise_level_5,Bài tập quá nặng,Exercise is too intensive,
+send_feedback,Gửi đánh giá,Send feedback,
+thank_you_for_feedback,Cảm ơn bạn đã để lại đánh giá!,Thanks for your feedback!,
+thank_you_for_feedback_description,Chúng tôi rất trân trọng những phản hồi của bạn để làm tốt hơn mỗi ngày,We appreciate your feedback to make it better every day,
+change_road_map,Thay đổi lộ trình,Change your route,
+select_road_map,Chọn lộ trình,Select a route,
+change_road_map_success,Chọn lộ trình thành công!,Route selected successfully!,
+today_is_day_off,Hôm nay là ngày nghỉ!,Day off!,
+today_is_day_off_description,Hãy dành thời gian nghỉ ngơi\nvà thư giãn nhé!,Take your time to rest and relax!,
+today_is_day_no_exercise,Lộ trình hôm nay không có bài tập nào!,No exercises today!,
+start_exercise,Bắt đầu tập,Start exercising,
+show_instruction,Xem hướng dẫn,See the instructions,
+lesson_category,Danh mục bài học,List of lessons,
+section_position,Phần {},Part {},
+no_matched_lesson,Không tìm thấy bài học phù hợp!,No matching lessons found!,
+no_matched_lesson_description,Bạn hãy tạo lại bộ lọc để tìm kiếm các kết quả khác nhé.,Please recreate the filter to search for other results.,
+lesson_locked,Bài học chưa mở khoá!,Locked!,
+lesson_locked_warning,Bạn chưa hoàn thành các bài tập trước!\nVui lòng học theo đúng lộ trình để mở khoá bài tập này.,You haven't finished the previous exercises! please follow the correct route to unlock this exercise.,
+exercise_lesson_locked,Bài tập chưa mở khoá!,Locked!,
+exercise_lesson_locked_warning,Bạn chưa hoàn thành các bài tập trước!\nVui lòng học theo đúng lộ trình để mở khoá bài tập này.,You haven't finished the previous exercises! please follow the correct route to unlock this exercise.,
+filter_by_key_word,Lọc theo từ khoá,Filter by keyword,
+filter_by_lesson_name,Lọc theo tên bài học,Filter by lesson name,
+enter_lesson_name,Nhập tên bài học,Enter the lesson name,
+enter_key_word,Nhập từ khoá,Enter the keyword,
+filtering,Lọc kết quả,Filter,
+remake_filter,Tạo lại bộ lọc,Recreate the filter,
+filter_not_learnt_lesson_yet,Lọc bài chưa học,Filter lesson hasn't learned yet,
+lesson_not_learnt_yet,Chưa học,Hasn't learned yet,
+lesson_not_unlock_yet,Chưa mở khoá,Locked,
+lesson_can_not_learn,Không được học,Unvailble,
+exercise_done,Chúc mừng bạn hoàn thành bài tập của ngày hôm nay!,Congratulations on completing today's exercise!,
+joining,Đang tham gia,Joining,
+ask_for_change_roadmap,"Bạn đang học {}, bạn có chắc muốn đổi lộ trình khác không?","You are working on {}, are you sure you want to change the route?",
+road_map_changed,Bạn đã chọn {}. Lộ trình bao gồm {} bài học.,You have selected {}. the route includes {} lessons.,
+lesson_empty_no_filter,Tuần này bạn không có bài học nào!,No lessons this week!,
+lesson_empty_no_filter_description,Hãy dành thời gian nghỉ ngơi và thư giãn nhé!,Take your time to rest and relax!,
+goal_of_day,Hôm nay,This day,
+goal_of_week,Tuần này,This week,
+setup_smart_goal_title,Cài đặt mục tiêu,Goal setting,
+smart_goal_blood_sugar,Đo đường huyết,Measure blood glucose,
+smart_goal_blood_pressure,Đo huyết áp,Measure blood pressure,
+smart_goal_weight,Đo cân nặng,Measure weight,
+smart_goal_food,Cập nhật bữa ăn,Update meal,
+smart_goal_hba1c,Đo HbA1c,Measure hba1c,
+smart_goal_emotion,Nhập cảm xúc,Enter mood,
+smart_goal_exercise,Vận động,Exercising,
+smart_goal_lesson,Học bài,Learning,
+smart_goal_exercise_lesson,Bài tập vận động,Exercise,
+goal_record_type_time,Thời gian thực hiện,Time,
+goal_record_type_frequency,Số lần thực hiện,Frequency,
+select_smart_goal,Chọn loại\nmục tiêu,Select goal type,
+setup_smart_goal,Chi tiết\nmục tiêu,Goal detail,
+smart_goal_name_empty,{} là bắt buộc,{} is required,
+smart_goal_repeat_day_empty,Ngày lặp lại là bắt buộc,Repeat day is required,
+smart_goal_exercise_time_empty,Chưa nhập số phút vận động,Exercise minutes is empty,
+smart_goal_exercise_frequency_empty,Chưa nhập số lần thực hiện,Execution frequency is empty,
+select_smart_goal_type,Chọn loại mục tiêu,Select goal type,
+create_new_habit,Tạo thói quen mới,Create a new habit,
+do_a_favorite_thing,Làm một việc yêu thích,Do a favorite thing,
+biometric_monitoring_frequency,Tần suất theo dõi chỉ số sinh học,Biometric monitoring frequency,
+personal_smart_goal,Mục tiêu cá nhân,Personal goal,
+smart_setup_completed,Bạn đã cài đặt mục tiêu thành công!,Successful goal setting!,
+smart_goal_name,Mục tiêu của bạn là gì,What is your goal?,
+select_start_date,Chọn ngày bắt đầu hoạt động,Select the start day,
+select_end_date,Ngày kết thúc mục tiêu này,Select the end day,
+smart_goal_record_type_title,Tính mục tiêu đề ra,Calculate the stated goal,
+smart_goal_record_type_description,(Vui lòng chọn 1 trong 2 cách),(please select 1 of 2),
+frequency_per_day,Số lần <thực hiện hoạt động> trong ngày,Frequency <execute activity> per day,
+enter_smart_goal_name,"Đọc sách mỗi ngày, thư giãn...","Read a book everyday, relax...",
+please_select_roadmap,Vui lòng lựa chọn một lộ trình phù hợp\nđể bắt đầu trải nghiệm các bài tập cùng DiaB!,Please select a suitable route to start experiencing exercises with diab!,
+select_frequency,Độ thường xuyên của mục tiêu,Goal frequency,
+my_progress,Tiến độ của tôi,My progress,
+report,Báo cáo,Report,
+goal,Mục tiêu,Goal,
+coach11,Coach 1 - 1,Coach 1-1,
+coach1n,Coach 1 - n,Coach group,
+lesson_learned,Bài học đã học,Lesson learned,
+lesson_unlocked,Bài học đã mở khoá,Unlocked,
+lesson_not_learned,Bài học chưa học,Lesson hasn't learn yet,
+dia_recommand,DiaB khuyến nghị:,Diab recommends:,
+cancel_smart_goal,Huỷ mục tiêu,Cancel the goal,
+confirm_cancel_smart_goal,Xác nhận huỷ mục tiêu,Confirm goal cancellation,
+confirm_cancel_smart_goal_description,"Mục tiêu này trong tương lai cũng sẽ bị huỷ, bạn chắc chắn huỷ mục tiêu chứ?","This goal will also be canceled in the future, do you still want to cancel this goal?",
+congratulation_achive_daily,Chúc mừng bạn đã hoàn thành mục tiêu ngày hôm nay!,Congratulations on completing today's goal!,
+congratulation_achive_weekly,Chúc mừng bạn đã hoàn thành mục tiêu tuần này!,Congratulations on completing this week's goal!,
+create_smart_goal,Thêm mục tiêu,Create a new goal,
 Common,#ERROR!,
-huyet_ap,Huyết áp,BLOOD PRESSURE
-duong_huyet,Đường huyết,BLOOD GLUCOSE
-bmi,BMI,BMI
-hba1c,HbA1c,HBA1C
-cam_xuc,Cảm xúc,MOOD
-dinh_duong,Dinh dưỡng,DIET
-van_dong,Vận động,EXERCISE
-can_nang,Cân nặng,WEIGHT
-high,Cao,HIGH
-very_high,Rất cao,VERY HIGH
-low,Thấp,LOW
-very_low,Rất thấp,VERY LOW
-good,Tốt,GOOD
-great,Tuyệt vời,GREAT
-chu_thich,Chú thích,NOTE
-thoi_gian,Thời gian,TIME
-khung_gio,Khung giờ,TIME SLOT
-chi_so,Chỉ số,INDEX
-xem_chi_tiet,Xem chi tiết,DETAILS
-ly_do,Lý do,REASON
-nhap_ly_do,Nhập lý do,ENTER REASON
-chon_khung_gio,Chọn khung giờ,SELECT PERIOD
-ghi_chu,Ghi chú,NOTE
-nhap_ghi_chu_cua_ban,Nhập ghi chú của bạn,ENTER YOUR NOTES
-xoa_du_lieu,Xoá dữ liệu,DELETE DATA
-xoa_thanh_cong,Xoá thành công,SUCCESSFULLY DELETED
-ban_chua_nhap_ly_do,Bạn chưa nhập lý do,REASON IS EMPTY
-ban_chua_nhap_thoi_gian,Bạn chưa nhập thời gian,TIME IS EMPTY
-ban_chua_chon_khung_gio,Bạn chưa chọn khung giờ,NO PERIOD SELECTED
-ban_muon_xoa_du_lieu,Bạn muốn xoá dữ liệu?,YOU WANT TO DELETE DATA?
-confirm_to_remove_data,"Các thống kê sẽ thay đổi khi dữ liệu bị xoá, bạn vẫn chắc chắn muốn xoá?","THE STATISTICS WILL CHANGE WHEN THE DATA IS DELETED, ARE YOU STILL SURE YOU WANT TO DELETE?"
-ban_muon_quay_lai,Bạn muốn quay lại ?,YOU WANT TO GO BACK?
-confirm_to_back,"Dữ liệu đang nhập sẽ không được lưu lại, bạn vẫn chắc chắn muốn thoát?","THE INPUT DATA WILL NOT BE SAVED, DO YOU STILL WANT TO EXIT?"
-van_o_lai,Vẫn ở lại,CANCEL
-exit,Thoát,EXIT
-chon_trong_thu_vien,Chọn trong thư viện,SELECT FROM THE LIBRARY
-chup_anh,Chụp ảnh,CAMERA
-max_image_select,Chỉ đuợc chọn tối đa 5 ảnh,ONLY UP TO 5 PHOTOS CAN BE SELECTED
-allowed,Cấp quyền,GRANT PERMISSION
-ask_for_permission,Bạn cần cấp quyền truy cập để sử dụng tính năng này,YOU NEED TO GRANT ACCESS TO USE THIS FEATURE
-pick_date,Chọn ngày,SELECT DATE
-pick_time,Chọn thời gian,SELECT TIME
-bieu_do,Biểu đồ,CHART
-detail,Chi tiết,DETAIL
-all,Tất cả,ALL
-truoc_an,Trước ăn,ALL
-sau_an,Sau ăn,BEFORE MEAL
-truoc_tap,Trước tập,BEFORE EXERCISE
-truoc_tap_luyen,Truớc tập luyện,BEFORE EXERCISE
-sau_tap,Sau tập,AFTER EXERCISE
-sau_tap_luyen,Sau tập luyện,AFTER EXERCISE
-nua_dem,Nửa đêm,MIDNIGHT
-mg_dl,mg/dL,MG/DL
-mmol_l,mmol/L,MMOL/L
-ngay_sinh,Ngày sinh,DAY OF BIRTH
-nam_phat_hien_benh,Năm phát hiện bệnh,YEAR OF DIAGNOSIS
-kg,kg,KG
-gram,g,GRAM
-cm,cm,CM
-ban_chua_nhap_ghi_chu,Bạn chưa nhập ghi chú,YOU HAVEN'T ENTERED A NOTE
-tiep_tuc,Tiếp tục,CONTINUE
-muc_tieu,Mục tiêu,GOAL
-muc_tieu_moi,Mục tiêu mới,NEW GOAL
-chon_cuong_do_van_dong,Chọn cường độ vận động,SELECT THE EXERCISE INTENSITY
-cap_nhat,Cập nhật,UPDATE
-chinh_sua,Chỉnh sửa,EDIT
-khac,Khác,OTHER
-chon_hinh_thuc,Chọn hình thức,SELECT FORM
-kcal,kcal,KCAL
-minute,phút,MINUTE
-minute_upper_case_first,Phút,MINUTE
-hour,giờ,HOUR
-hour_upper_case_first,Giờ,HOUR
-single_time,lần,TIME
-week_upper_case_first,Tuần,WEEK
-nhap_thoi_gian,Nhập thời gian,ENTER TIME
+huyet_ap,Huyết áp,Blood pressure,
+duong_huyet,Đường huyết,Blood glucose,
+bmi,BMI,Bmi,
+hba1c,HbA1c,Hba1c,
+cam_xuc,Cảm xúc,Mood,
+dinh_duong,Dinh dưỡng,Diet,
+van_dong,Vận động,Exercise,
+can_nang,Cân nặng,Weight,
+high,Cao,High,
+very_high,Rất cao,Very high,
+low,Thấp,Low,
+very_low,Rất thấp,Very low,
+good,Tốt,Good,
+great,Tuyệt vời,Great,
+chu_thich,Chú thích,Note,
+thoi_gian,Thời gian,Time,
+khung_gio,Khung giờ,Time slot,
+chi_so,Chỉ số,Index,
+xem_chi_tiet,Xem chi tiết,Details,
+ly_do,Lý do,Reason,
+nhap_ly_do,Nhập lý do,Enter reason,
+chon_khung_gio,Chọn khung giờ,Select period,
+ghi_chu,Ghi chú,Note,
+nhap_ghi_chu_cua_ban,Nhập ghi chú của bạn,Enter your notes,
+xoa_du_lieu,Xoá dữ liệu,Delete data,
+xoa_thanh_cong,Xoá thành công,Successfully deleted,
+ban_chua_nhap_ly_do,Bạn chưa nhập lý do,Reason is empty,
+ban_chua_nhap_thoi_gian,Bạn chưa nhập thời gian,Time is empty,
+ban_chua_chon_khung_gio,Bạn chưa chọn khung giờ,No period selected,
+ban_muon_xoa_du_lieu,Bạn muốn xoá dữ liệu?,You want to delete data?,
+confirm_to_remove_data,"Các thống kê sẽ thay đổi khi dữ liệu bị xoá, bạn vẫn chắc chắn muốn xoá?","The statistics will change when the data is deleted, are you still sure you want to delete?",
+ban_muon_quay_lai,Bạn muốn quay lại ?,You want to go back?,
+confirm_to_back,"Dữ liệu đang nhập sẽ không được lưu lại, bạn vẫn chắc chắn muốn thoát?","The input data will not be saved, do you still want to exit?",
+van_o_lai,Vẫn ở lại,Cancel,
+exit,Thoát,Exit,
+chon_trong_thu_vien,Chọn trong thư viện,Select from the library,
+chup_anh,Chụp ảnh,Camera,
+max_image_select,Chỉ đuợc chọn tối đa 5 ảnh,Only up to 5 photos can be selected,
+allowed,Cấp quyền,Grant permission,
+ask_for_permission,Bạn cần cấp quyền truy cập để sử dụng tính năng này,You need to grant access to use this feature,
+pick_date,Chọn ngày,Select date,
+pick_time,Chọn thời gian,Select time,
+bieu_do,Biểu đồ,Chart,
+detail,Chi tiết,Detail,
+all,Tất cả,All,
+truoc_an,Trước ăn,All,
+sau_an,Sau ăn,Before meal,
+truoc_tap,Trước tập,Before exercise,
+truoc_tap_luyen,Truớc tập luyện,Before exercise,
+sau_tap,Sau tập,After exercise,
+sau_tap_luyen,Sau tập luyện,After exercise,
+nua_dem,Nửa đêm,Midnight,
+mg_dl,mg/dL,Mg/dl,
+mmol_l,mmol/L,Mmol/l,
+ngay_sinh,Ngày sinh,Day of birth,
+nam_phat_hien_benh,Năm phát hiện bệnh,Year of diagnosis,
+kg,kg,Kg,
+gram,g,Gram,
+cm,cm,Cm,
+ban_chua_nhap_ghi_chu,Bạn chưa nhập ghi chú,You haven't entered a note,
+tiep_tuc,Tiếp tục,Continue,
+muc_tieu,Mục tiêu,Goal,
+muc_tieu_moi,Mục tiêu mới,New goal,
+chon_cuong_do_van_dong,Chọn cường độ vận động,Select the exercise intensity,
+cap_nhat,Cập nhật,Update,
+chinh_sua,Chỉnh sửa,Edit,
+khac,Khác,Other,
+chon_hinh_thuc,Chọn hình thức,Select form,
+kcal,kcal,Kcal,
+minute,phút,Minute,
+minute_upper_case_first,Phút,Minute,
+hour,giờ,Hour,
+hour_upper_case_first,Giờ,Hour,
+single_time,lần,Time,
+week_upper_case_first,Tuần,Week,
+nhap_thoi_gian,Nhập thời gian,Enter time,
 unit_percent,{}%,
-phien_dang_nhap_het_han_vui_long_dang_nhap_lai,"Phiên đăng nhập hết hạn, vui lòng đăng nhập lại","SESSION EXPIRED, PLEASE LOGIN AGAIN"
-cong_ty_co_phan_cong_nghe_y_te,Công ty cổ phần công nghệ y tế,MEDICAL TECHNOLOGY JOINT STOCK COMPANY
-or,Hoặc,OR
-chieu_cao,Chiều cao,HEIGHT
-year,năm,YEAR
-total,Tổng,TOTAL
-gan_nhat,Gần nhất,NEAREST
-luu_thanh_cong,Lưu thành công,SAVED SUCCESSFULLY
-number_of_days,{} ngày,{} DAY
-plan,Kế hoạch,PLAN
-course,Khoá học,COURSE
-individual,Cá nhân,INDIVIDUAL
-list_service,Các gói dịch vụ của DiaB,DIAB'S SERVICE PACKS
-text_list_service,"Mong muốn mang đến những giá trị thiết thực cho những khách hàng của DiaB, chúng tôi đã kiến tạo 2 gói dịch vụ gồm:","WISHING TO BRING PRACTICAL VALUES TO DIAB'S CUSTOMERS, WE HAVE CREATED 2 SERVICE PACKS INCLUDING:"
-service_basic,Gói cơ bản,BASIC PACK
-service_pro,Gói Đồng hành,COMPANION PACK
-service_premium,Gói thay đổi lối sống,LIFESTYLE CHANGE PACK
-text_continue,Tiếp tục,CONTINUE
-interest_course,Bạn quan tâm đến khoá học của DiaB?,ARE YOU INTERESTED IN THE DIAB'S COURSE?
-option_already_register,Tôi đã đăng ký nhưng chưa được học.,I HAVE REGISTERED BUT NOT YET LEARNED.
-option_need_more_info,Tôi cần thêm thông tin về các khoá học.,I NEED MORE INFORMATION ABOUT COURSES.
-option_another,Khác,OTHER
-send,Gửi,SEND
-hint_msg_to_diab,Gửi lời nhắn tới DiaB,SEND A MESSAGE TO DIAB
-interest,Quan tâm,INTEREST
-diab_pro,Đồng hành,COMPANION
-package_pro,Gói Đồng hành,COMPANION PACK
-premium,Thay đổi lối sống,LIFESTYLE CHANGE
-description_diab_pro,"Gói cung cấp những tính năng chuyên sâu, hỗ trợ tốt hơn trong cuộc chiến với đái tháo đường","THE PACK PROVIDES IN-DEPTH FEATURES, BETTER SUPPORT IN THE FIGHT WITH DIABETES"
-diab_premium,Thấu cảm,EMPATHY
-package_premium,Gói Thấu cảm,EMPATHY PACK
-description_diab_basic,"Những huấn luyện viên của DiaB sẽ đồng hành cùng bạn, nhằm hỗ trợ một cách tối ưu nhất trong quá trình luyện tập.","THE DIAB'S HEALTH COACH WILL ACCOMPANY YOU, IN ORDER TO PROVIDE THE BEST SUPPORT DURING THE LEARNING PROCESS."
-ignore,Bỏ qua,IGNORE
-des_1_welcome_2,Giáo trình được xây dựng bởi đội ngũ chuyên gia giàu kinh nghiệm,THE CURRICULUM IS DEVELOPED BY A TEAM OF EXPERIENCED EXPERTS
-des_2_welcome_2,"Lộ trình khoa học được thiết kế hàng tuần, phù hợp với mỗi học viên","THE COURSE SCHEDULE IS DESIGNED WEEKLY, SUITABLE FOR EACH STUDENT"
-des_3_welcome_2,Củng cố kiến thức sau mỗi bài học,CONSOLIDATE KNOWLEDGE AFTER EACH LESSON
-des_1_welcome_3,"Có huấn luyện viên sát cánh, hỗ trợ theo hết khoá học",HEALTH COACHES ACCOMPANY AND SUPPORT THROUGHOUT THE COURSE
-des_2_welcome_3,"Hỏi đáp 24/7: Các chuyên gia luôn cố gắng giải đáp, thắc mắc",24/7 Q&A: EXPERTS ANSWER ANY QUESTIONS
-start,Bắt đầu,START
-upgrade_account,Nâng cấp tài khoản,UPGRADE ACCOUNT
-see_detail,Xem chi tiết,SEE DETAILS
-continue_basic_package,Tiếp tục sử dụng gói cơ bản,CONTINUE USING THE BASIC PACK
-feature,Tính năng,FEATURE
-basic,Cơ bản,BASIC
-pro,Pro,PRO
-payment,Thanh toán,PAYMENT
-number_month,{} tháng,{} MONTH
-number_year,{} năm,{} YEAR
-number_course,Bài học,LESSON
-number_hour,Giờ học,TIME
-period,Thời hạn:,DURATION:
-total_price,Tổng tiền:,TOTAL PRICE:
-notice_payment,Lưu ý: Các gói sẽ được thanh toán định kỳ khi hết thời hạn sử dụng.,NOTE: PACKS WILL BE PAID PERIODICALLY WHEN THE EXPIRY TIME IS OVER.
-success_story,Câu chuyện thành công,SUCCESS STORY
-price_per_month,{}/tháng,{} PER MONTH
-package_number_month,Gói {} tháng,PACK {} MONTH
-how_to_register,Cách thức đăng ký,HOW TO REGISTER
-time,Thời gian,TIME
-amount,Số tiền:,AMOUNT:
-account_number,Số tài khoản:,ACCOUNT NUMBER:
-bank,Ngân hàng:,BANK:
-receiver,Người nhận:,RECEIVER:
-content,Nội dung:,CONTENT:
-des_pro,Giải pháp toàn diện dành cho người mắc đái tháo đường,COMPREHENSIVE SOLUTION FOR PEOPLE WITH DIABETES
-morning_first_upper_case,Sáng,MORNING
-noon_first_upper_case,Trưa,NOON
-evening_first_upper_case,Tối,EVENING
-show_more,Xem thêm,SHOW MORE
-show_less,Thu gọn,SHOW LESS
-text_upgrade_to_pro,Bạn cần mua lại gói DiaB Pro để tiếp tục đăng ký gói Thay đổi lối sống.,YOU NEED TO RE-PURCHASE THE DIAB PRO PACK TO CONTINUE YOUR LIFESTYLE CHANGE SUBSCRIPTION.
-upgrade_to_pro,Nâng cấp tài khoản lên gói,UPGRADE ACCOUNT TO PACK
-upgrade_package_pro,Nâng cấp gói Đồng hành,COMPANION PACK UPGRADE
-renewal_package_pro,Nâng cấp gói Đồng hành,COMPANION PACK UPGRADE
-text_way_register_1,Bạn cần đảm bảo thời gian còn lại của gói Đồng hành được sử dụng bằng hoặc nhiều hơn thời gian kích hoạt gói Thay đổi lối sống.,YOU NEED TO ENSURE THAT THE REMAINING TIME OF THE COMPANION PACK IS USED EQUAL TO OR MORE THAN THE LIFESTYLE CHANGE PACK ACTIVATION TIME.
-text_way_register_2,Vui lòng chuyển khoản theo hướng dẫn dưới đây để hoàn tất đăng ký gói Thay đổi lối sống.,PLEASE TRANSFER ACCORDING TO THE INSTRUCTIONS BELOW TO COMPLETE THE LIFESTYLE CHAGE PACK REGISTRATION.
-my_package,Gói dịch vụ của tôi,MY SERVICE PACK
-text_upgrade_package,Bạn đang sử dụng gói cơ bản của DiaB. Để trải nghiệm nhiều tính năng hữu ích hãy nâng cấp gói DiaB Pro nhé!,"YOU ARE USING THE DIAB'S BASIC PACK. TO EXPERIENCE MANY USEFUL FEATURES, PLEASE UPGRADE THE DIAB PRO PACK!"
+phien_dang_nhap_het_han_vui_long_dang_nhap_lai,"Phiên đăng nhập hết hạn, vui lòng đăng nhập lại","Session expired, please login again",
+cong_ty_co_phan_cong_nghe_y_te,Công ty cổ phần công nghệ y tế,Medical technology joint stock company,
+or,Hoặc,Or,
+chieu_cao,Chiều cao,Height,
+year,năm,Year,
+total,Tổng,Total,
+gan_nhat,Gần nhất,Nearest,
+luu_thanh_cong,Lưu thành công,Saved successfully,
+number_of_days,{} ngày,{} day,
+plan,Kế hoạch,Plan,
+course,Khoá học,Course,
+individual,Cá nhân,Individual,
+list_service,Các gói dịch vụ của DiaB,Diab's service packs,
+text_list_service,"Mong muốn mang đến những giá trị thiết thực cho những khách hàng của DiaB, chúng tôi đã kiến tạo 2 gói dịch vụ gồm:","Wishing to bring practical values to diab's customers, we have created 2 service packs including:",
+service_basic,Gói cơ bản,Basic pack,
+service_pro,Gói Đồng hành,Companion pack,
+service_premium,Gói thay đổi lối sống,Lifestyle change pack,
+text_continue,Tiếp tục,Continue,
+interest_course,Bạn quan tâm đến khoá học của DiaB?,Are you interested in the diab's course?,
+option_already_register,Tôi đã đăng ký nhưng chưa được học.,I have registered but not yet learned.,
+option_need_more_info,Tôi cần thêm thông tin về các khoá học.,I need more information about courses.,
+option_another,Khác,Other,
+send,Gửi,Send,
+hint_msg_to_diab,Gửi lời nhắn tới DiaB,Send a message to diab,
+interest,Quan tâm,Interest,
+diab_pro,Đồng hành,Companion,
+package_pro,Gói Đồng hành,Companion pack,
+premium,Thay đổi lối sống,Lifestyle change,
+description_diab_pro,"Gói cung cấp những tính năng chuyên sâu, hỗ trợ tốt hơn trong cuộc chiến với đái tháo đường","The pack provides in-depth features, better support in the fight with diabetes",
+diab_premium,Thấu cảm,Empathy,
+package_premium,Gói Thấu cảm,Empathy pack,
+description_diab_basic,"Những huấn luyện viên của DiaB sẽ đồng hành cùng bạn, nhằm hỗ trợ một cách tối ưu nhất trong quá trình luyện tập.","The diab's health coach will accompany you, in order to provide the best support during the learning process.",
+ignore,Bỏ qua,Ignore,
+des_1_welcome_2,Giáo trình được xây dựng bởi đội ngũ chuyên gia giàu kinh nghiệm,The curriculum is developed by a team of experienced experts,
+des_2_welcome_2,"Lộ trình khoa học được thiết kế hàng tuần, phù hợp với mỗi học viên","The course schedule is designed weekly, suitable for each student",
+des_3_welcome_2,Củng cố kiến thức sau mỗi bài học,Consolidate knowledge after each lesson,
+des_1_welcome_3,"Có huấn luyện viên sát cánh, hỗ trợ theo hết khoá học",Health coaches accompany and support throughout the course,
+des_2_welcome_3,"Hỏi đáp 24/7: Các chuyên gia luôn cố gắng giải đáp, thắc mắc",24/7 q&a: experts answer any questions,
+start,Bắt đầu,Start,
+upgrade_account,Nâng cấp tài khoản,Upgrade account,
+see_detail,Xem chi tiết,See details,
+continue_basic_package,Tiếp tục sử dụng gói cơ bản,Continue using the basic pack,
+feature,Tính năng,Feature,
+basic,Cơ bản,Basic,
+pro,Pro,Pro,
+payment,Thanh toán,Payment,
+number_month,{} tháng,{} month,
+number_year,{} năm,{} year,
+number_course,Bài học,Lesson,
+number_hour,Giờ học,Time,
+period,Thời hạn:,Duration:,
+total_price,Tổng tiền:,Total price:,
+notice_payment,Lưu ý: Các gói sẽ được thanh toán định kỳ khi hết thời hạn sử dụng.,Note: packs will be paid periodically when the expiry time is over.,
+success_story,Câu chuyện thành công,Success story,
+price_per_month,{}/tháng,{} per month,
+package_number_month,Gói {} tháng,Pack {} month,
+how_to_register,Cách thức đăng ký,How to register,
+time,Thời gian,Time,
+amount,Số tiền:,Amount:,
+account_number,Số tài khoản:,Account number:,
+bank,Ngân hàng:,Bank:,
+receiver,Người nhận:,Receiver:,
+content,Nội dung:,Content:,
+des_pro,Giải pháp toàn diện dành cho người mắc đái tháo đường,Comprehensive solution for people with diabetes,
+morning_first_upper_case,Sáng,Morning,
+noon_first_upper_case,Trưa,Noon,
+evening_first_upper_case,Tối,Evening,
+show_more,Xem thêm,Show more,
+show_less,Thu gọn,Show less,
+text_upgrade_to_pro,Bạn cần mua lại gói DiaB Pro để tiếp tục đăng ký gói Thay đổi lối sống.,You need to re-purchase the diab pro pack to continue your lifestyle change subscription.,
+upgrade_to_pro,Nâng cấp tài khoản lên gói,Upgrade account to pack,
+upgrade_package_pro,Nâng cấp gói Đồng hành,Companion pack upgrade,
+renewal_package_pro,Nâng cấp gói Đồng hành,Companion pack upgrade,
+text_way_register_1,Bạn cần đảm bảo thời gian còn lại của gói Đồng hành được sử dụng bằng hoặc nhiều hơn thời gian kích hoạt gói Thay đổi lối sống.,You need to ensure that the remaining time of the companion pack is used equal to or more than the lifestyle change pack activation time.,
+text_way_register_2,Vui lòng chuyển khoản theo hướng dẫn dưới đây để hoàn tất đăng ký gói Thay đổi lối sống.,Please transfer according to the instructions below to complete the lifestyle chage pack registration.,
+my_package,Gói dịch vụ của tôi,My service pack,
+text_upgrade_package,Bạn đang sử dụng gói cơ bản của DiaB. Để trải nghiệm nhiều tính năng hữu ích hãy nâng cấp gói DiaB Pro nhé!,"You are using the diab's basic pack. to experience many useful features, please upgrade the diab pro pack!",
 history_transaction,Lịch sử mua gói,
-repurchase,Mua lại,PACK PURCHASE HISTORY
-service_price,Giá dịch vụ,REPURCHASE
-next_renewal,Ngày gia hạn tiếp theo,NEXT RENEWAL DATE
-status_expired,Đã kết thúc,EXPIRED
-status_actived,Đang diễn ra,ACTIVED
+repurchase,Mua lại,Pack purchase history,
+service_price,Giá dịch vụ,Repurchase,
+next_renewal,Ngày gia hạn tiếp theo,Next renewal date,
+status_expired,Đã kết thúc,Expired,
+status_actived,Đang diễn ra,Actived,
 time_period,{}-{},
-package_deactivate,Gói đã ngừng bán,STOP SELLING PACK
-sample_menu,Thực đơn mẫu,SAMPLE MENU
-text_intro_menu,Nhằm mục đích cung cấp cho bạn một chế độ ăn hiệu quả và đầy đủ chất dinh dưỡng. Các chuyên gia từ DiaB tư vấn bạn như sau:,AIMS TO PROVIDE YOU WITH AN EFFECTIVE AND NUTRITIONALLY COMPLETE DIET. DIAB'S EXPERTS ADVISE YOU AS FOLLOWS:
-step_1,Bước 1:,STEP 1
-text_step_1,Nhập chỉ số KCAL và số bữa phụ bạn nạp hằng ngày,ENTER YOUR KCAL INDEX AND THE NUMBER OF SNACKS YOU EAT EVERY DAY
-step_2,Bước 2:,STEP 2
-text_step_2,Tuỳ chỉnh món ăn phù hợp với cá nhân bạn,CUSTOMIZE THE DISH THAT'S RIGHT FOR YOU
-show_your_param,Cho DiaB biết thông số của bạn,LET DIAB KNOW YOUR PARAMETERS
-or_calculate_by_formula,Hoặc tính theo công thức,OR CALCULATE BY FORMULA
-have_3_meal,"Trong một ngày, bạn ăn 3 bữa chính và","IN A DAY, YOU EAT 3 MAIN MEALS AND"
-no_sub_meal,Không bữa phụ,NO SNACKS
-breakfast_meal,Bữa phụ sáng,BREAKFAST SNACKS
-lunch_meal,Bữa phụ xế,LUNCH SNACKS
-dinner_meal,Bữa phụ tối,DINNER SNACKS
-breakfast_sub_meal,Phụ sáng,BREAKFAST SNACKS
-lunch_sub_meal,Phụ trưa,LUNCH SNACKS
-dinner_sub_meal,Phụ tối,DINNER SNACKS
-text_if,Nếu đang,IF YOU ARE
-increase,tăng,GAINNING
-text_or,hoặc,OR
-decrease,giảm,LOSING
-text_warning_change_param,"cân, hãy điều chỉnh số kcal phù hợp theo ý kiến huấn luyện viên của bạn","WEIGHT, ADJUST THE NUMBER OF KCAL ACCORDINGLY ACCORDING TO YOUR COACH'S OPINION"
-confirm_change,Xác nhận thay đổi?,CONFIRM CHANGE?
-diab_parameter,Cho DiaB biết thông số của bạn,LET DIAB KNOW YOUR PARAMETERS
-recipe,Hoặc tính theo công thức,OR CALCULATE BY FORMULA
-consumption,Mức tiêu thụ năng lượng của bạn đã thay đổi. Xác nhận bằng cách chọn Đồng ý để cập nhật thực đơn mẫu mới.,YOUR ENERGY CONSUMPTION HAS CHANGED. CONFIRM BY SELECTING AGREE TO UPDATE THE NEW SAMPLE MENU.
-next,Tiếp tục,CONTINUE
-next_lesson,Tiếp theo,NEXT
-complete_lesson,Hoàn thành,COMPLETE
-agree,Đồng ý,AGREE
-text_congratulation,Chúc mừng bạn đã đăng ký thành công gói Đồng hành!,CONGRATULATIONS ON SUCCESSFULLY SIGNING UP FOR THE COMPANION PACK!
-text_please_bank,Vui lòng chuyển khoản theo hướng dẫn dưới đây để hoàn tất đăng ký gói Thấu cảm.,PLEASE TRANSFER ACCORDING TO THE INSTRUCTIONS BELOW TO COMPLETE THE SYMPATHY PACK REGISTRATION.
-text_need_2_steps_complete,Bạn cần hoàn thành lần lượt theo 2 bước sau:,YOU NEED TO COMPLETE THE FOLLOWING 2 STEPS IN TURN:
-text_notice_upgrade_premium,"Sau khi nâng cấp gói Đồng hành, bạn sẽ nhận được hướng dẫn tiếp theo để mua gói Thấu cảm.","AFTER UPGRADING THE COMPANION PACK, YOU WILL RECEIVE FURTHER INSTRUCTIONS FOR PURCHASING THE EMPATHY PACK."
-back_home,Quay trở về Trang chủ,BACK TO HOMEPAGE
-not_found_sku,Không tìm thấy khoá học phù hợp. Vui lòng liên lạc với Hotline của chúng tôi,NO MATCHING COURSES FOUND. PLEASE CONTACT HOTLINE
-knowledge_test,Trắc nghiệm kiến thức,KNOWLEDGE TEST
-overview_of_diabetes,Tổng quan về bệnh đái tháo đường,OVERVIEW OF DIABETES
-question_number,Câu {}:,QUESTION {}
-what_foods_should_people,Người bị bệnh tiểu đường nên ăn thực phẩm gì?,WHAT FOODS SHOULD PEOPLE WITH DIABETES EAT?
-what_should_people_with_diabetes_avoid,Người bị bệnh tiểu đường nên kiêng gì?,WHAT SHOULD PEOPLE WITH DIABETES AVOID?
-how_many_calories,Lượng calo trung bình một ngày nên nạp là bao nhiêu?,WHAT IS THE AVERAGE DAILY CALORIE INTAKE FOR A PERSON WITH DIABETES?
-see_the_picture,Xem ảnh sau và cho biết đây là hình thức xét nghiệm nào?,SEE THE PICTURE BELOW AND TELL ME WHAT KIND OF TEST THIS IS?
-selected_normal,Selected Normal,SELECTED NORMAL
-unselected_normal,Unselected Normal,UNSELECTED NORMAL
-congratulations_your_reply_is_correct,Chúc mừng! Bạn đã trả lời chính xác!,CONGRATULATIONS! YOUR REPLY IS CORRECT!
-regret_answer,Tiếc quá! Cùng thử lại một lần nữa nhé!,WHAT A PITY! LET'S TRY IT AGAIN!
-check,Kiểm tra,CHECK
-see_the_answer,Xem đáp án,SEE THE ANSWER
-previous_question,Câu trước,PREVIOUS
-next_question,Câu tiếp,NEXT
-evaluation_of_lesson,Đánh giá bài học 1,RATING LESSON 1
-rate_how_you_feel,Đánh giá cảm nhận của bạn về chất lượng của Bài học 1 để DiaB cải thiện hơn nữa nhé!,RATE HOW YOU FEEL ABOUT THE QUALITY OF LESSON 1 FOR DIAB TO IMPROVE EVEN MORE!
-feeling,Cảm nghĩ,FEELINGS
-enter_your_feeling,Nhập cảm nghĩ của bạn,ENTER YOUR FEELINGS
-sent_report,Gửi đánh giá,SUBMIT A REVIEW
-completed_quiz,Hoàn tất!,COMPLETED
-completed,Hoàn tất,COMPLETED
-you_have_successfully_completed,Bạn đã xuất sắc hoàn tất bài quiz và trả lời đúng {} câu!,YOU HAVE SUCCESSFULLY COMPLETED THE QUIZ AND ANSWERED {} QUESTIONS CORRECTLY!
-continue_learning,Tiếp tục học,CONTINUE LEARNING
-you_have_completed,Bạn đã hoàn tất bài quiz và trả lời đúng {} câu!,YOU HAVE COMPLETED THE QUIZ AND ANSWERED {} QUESTIONS CORRECTLY!
-challenge_yourself_again,Thử thách bản thân một lần nữa?,CHALLENGE YOURSELF AGAIN?
-skip,Bỏ qua,SKIP
-accept,Đồng ý,ACCEPT
-survey,Khảo sát,SURVEY
-part_number,Phần {}. Hiểu biết về bệnh đái tháo đường,PART {}. UNDERSTANDING DIABETES
-start_survey,Bắt đầu khảo sát,START SURVEY
-thank_you_for_survey,Cảm ơn bạn đã hoàn thành khảo sát!,THANK YOU FOR COMPLETING THE SURVEY!
-thank_you_for_survey_description,Ý kiến đóng góp của bạn rất có giá trị và quan trọng đối với chúng tôi.,YOUR CONTRIBUTING IDE IS VERY VALUABLE AND IMPORTANT TO US.
-survey_progress,Bạn đã hoàn thành {}% khảo sát!,YOU HAVE COMPLETED {}% OF THE SURVEY!
-explain,Giải thích,EXPLAIN
-book_coach,Đặt lịch coach,BOOKING COACH
-description_book_coach,Đặt lịch tư vấn cùng chuyên gia giúp bạn có nhiều kiến thức trong quá trình chữa trị đái tháo đường,SCHEDULE A CONSULTATION WITH EXPERT TO HELP YOU HAVE A LOT OF KNOWLEDGE IN THE PROCESS OF DIABETES TREATMENT
-date_book,Ngày đặt lịch,BOOKING DATE
-time_book,Thời gian đặt lịch,BOOKING TIME
-submit_booking,Đặt lịch,SUBMIT BOOKING
-my_plan_booking,Kế hoạch của tôi,MY BOOKING PLAN
-join,Tham gia,JOIN
-coach,Coach,COACH
-you_book_coach_success,Bạn đã đặt lịch thành công!,YOU HAVE SUCCESSFULLY BOOKING!
-booking_success,Đặt lịch thành công!,SUCCESSFULLY BOOKING!
-see_booking,Xem lịch hẹn,SEE BOOKING SCHEDULE
-select_time_booking_description,Bạn hãy chọn thời gian phù hợp để bắt đầu lịch tư vấn nhé!\nThời gian cho mỗi buổi tư vấn là 1 giờ.,PLEASE CHOOSE A SUITABLE TIME TO START THE CONSULTATION SCHEDULE! THE DURATION OF EACH CONSULTATION SESSION IS 1 HOUR.
-day_in_week_monday,Thứ hai,MONDAY
-day_in_week_tuesday,Thứ ba,TUESDAY
-day_in_week_wednesday,Thứ tư,WEDNESDAY
-day_in_week_thursday,Thứ năm,THURSDAY
-day_in_week_friday,Thứ sáu,FRIDAY
-day_in_week_saturday,Thứ bảy,SATURDAY
-day_in_week_sunday,Chủ nhật,SUNDAY
-statistical,Thống kê,STATISTICAL
-expert_comment,Nhận xét của chuyên gia,EXPERT'S COMMENT
-no_expert_comment,"Khi bạn tham gia các khoá học chuyên sâu của DiaB, bạn sẽ nhận được các nhận xét, khuyến nghị từ các chuyên gia DiaB.\nHiện tại bạn chưa có nhận xét, khuyến nghị nào từ các chuyên gia DiaB.","WHEN YOU JOIN THE INTENSIVE COURSES OF DIAB, YOU WILL RECEIVE COMMENTS AND RECOMMENDATIONS FROM DIAB EXPERTS. CURRENTLY, YOU HAVE NO COMMENTS OR RECOMMENDATIONS FROM DIAB EXPERTS."
-comment,Nhận xét,COMMENT
-next_action,Hành động tiếp theo,NEXT ACTION
-progress,Tiến độ,PROGRESS
-q_and_a,Hỏi đáp,Q&A
-ask_doctor,Đặt câu hỏi cho bác sỹ,ASK THE DOCTOR A QUESTION
-replied,Đã trả lời,REPLIED
-view_by_topic,Xem theo chủ đề,VIEW BY TOPIC
-question_doctor,Hỏi đáp chuyên gia,Q&A WITH EXPERTS
-ask_question,Đặt câu hỏi,MAKE A QUESTION
-select_topic,Chọn chủ đề,SELECT TOPIC
-topic,Chủ đề,TOPIC
-your_question,Câu hỏi của bạn,YOUR QUESTION
-send_question,Gửi câu hỏi,SEND QUESTION
-response_as_soon_as_possible,Chuyên gia của DiaB sẽ trả lời bạn trong thời gian sớm nhất.,DIAB EXPERTS WILL REPLY TO YOU AS SOON AS POSSIBLE.
-send_question_success,Gửi câu hỏi thành công!,QUESTION SUBMITTED SUCCESSFULLY!
-qa_title,Hỏi đáp,Q&A
-delete_question,Xóa câu hỏi,DELETE QUESTION
-confirm_delete_question,Bạn muốn xoá câu hỏi?,DO YOU WANT TO DELETE QUESTION?
-confirm_delete_question_subtitle,"Câu hỏi sẽ không còn nữa, bạn chắc chắn xoá câu hỏi này chứ?","THE QUESTION WILL BE NO MORE, ARE YOU SURE TO DELETE THIS QUESTION?"
-confirm_delete_comment,Bạn muốn xoá bình luận?,DO YOU WANT TO DELETE COMMENT?
-confirm_delete_comment_subtitle,"Bình luận sẽ không còn nữa, bạn chắc chắn xoá bình luận này chứ?","THE COMMENT WILL BE NO MORE, ARE YOU SURE TO DELETE THIS COMMENT?"
-delete_comment,Xóa bình luận,DELETE COMMENT
-question_answer_title,Hỏi đáp,Q&A
-no_data,Không có dữ liệu,NO DATA
-closed,Đã đóng,CLOSED
-waiting,Đang chờ,WAITING
-question_empty,"Bạn chưa đặt câu hỏi nào, đừng ngại đưa những thắc mắc với DiaB nhé!","YOU HAVEN'T ASKED ANY QUESTIONS, DO NOT HESITATE TO ASK QUESTIONS WITH DIAB!"
-mine,Của tôi,MINE
-input_comment_required,Nhập bình luận là bắt buộc,COMMENTS ARE REQUIRED
-input_topic_required,Chủ đề là bắt buộc,TOPIC IS REQUIRED
-input_question_required,Nội dung câu hỏi là bắt buộc,QUESTION IS REQUIRED
-no_result,Không có kết quả phù hợp,NO RESULT
-add_comment,Thêm bình luận,ADD COMMENT
-data_input_not_valid,Dữ liệu không hợp lệ,INVALID DATA
-food_menu_intro_title1,Thực đơn mẫu là gợi ý các món ăn theo khung năng lượng cần nạp mỗi ngày và cơ cấu dinh dưỡng khuyến nghị dành cho bữa ăn người đái tháo đường.,THE SAMPLE MENU IS A SUGGESTION OF FOODS ACCORDING TO THE ENERGY FRAME TO BE LOADED EACH DAY AND THE RECOMMENDED NUTRITIONAL STRUCTURE FOR DIABETIC MEALS.
-food_menu_intro_title21,"Căn cứ vào thực đơn mẫu gợi ý này, bạn có thể","BASED ON THIS SAMPLE MENU, YOU CAN"
-food_menu_intro_title22,ĐIỀU CHỈNH,ADJUST
-food_menu_intro_title23,các món ăn có mức năng lượng tương đương phù hợp.,THE DISHES WITH THE APPROPRIATE ENERGY EQUIVALENT.
-food_menu_intro_title3,Chúc bạn ăn ngon miệng và kiếm soát đường huyết thành công!,ENJOY YOUR MEAL AND SUCCESSFUL BLOOD SUGAR CONTROL!
-no_report,"Khi bạn tham gia các khoá học chuyên sâu của DiaB, bạn sẽ nhận được các báo cáo đánh giá từ các chuyên gia DiaB.\nHiện tại bạn chưa có báo cáo nào trong danh mục.","WHEN YOU TAKE COURSES OF DIAB, YOU WILL RECEIVE ASSESSMENT REPORTS FROM DIAB EXPERTS. YOU CURRENTLY HAVE NO REPORTS IN YOUR CATEGORY."
-qr_not_available,Hệ thống không xử lý,ERROR
-chat_with_coach,Chat với huấn luyện viên,CHAT WITH HEALTH COACH
-chat_with_group,Chat nhóm,GROUP CHAT
-today,Hôm nay,TODAY
-chua_hoan_thanh,Chưa hoàn thành,INCOMPLETED
-hoan_thanh,Hoàn thành,COMPLETED
-install_zalo,"Để bắt đầu trò chuyện, bạn sẽ được chuyển hướng để tải ứng dụng Zalo","TO START CHATTING, YOU WILL BE REDIRECTED TO DOWNLOAD THE ZALO APP"
-phone_not_available,Không tìm thấy số điện thoại của huấn luyện viên,COACH'S PHONE NUMBER UNAVAILABLE
-group_not_available,Không tìm thấy nhóm,GROUP UNAVAILABLE
-error_redirect_zalo,Có lỗi khi chuyển hướng sang Zalo,ERROR WHEN REDIRECTING TO ZALO
-wrong_phone_number,Số điện thoại không hợp lệ!,INVALID PHONE NUMBER!
-package_experience,Gói trải nghiệm,EXPERIENCE PACK
-package_experience_subtitle,"Gói cung cấp những tính năng cơ bản, theo dõi chỉ số sinh học, hỗ trợ tốt hơn trong cuộc chiến với đái tháo đường","THE PACK PROVIDES BASIC FEATURES, BIOLOGICAL INDEX MONITORING, BETTER SUPPORT IN THE FIGHT WITH DIABETES"
-package_roadmap,Gói lộ trình,ROUTE PACK
-package_roadmap_subtitle,"Gói cung cấp những tính năng cơ bản, theo dõi chỉ số sinh học, hỗ trợ tốt hơn trong cuộc chiến với đái tháo đường","THE PACK PROVIDES BASIC FEATURES, BIOLOGICAL INDEX MONITORING, BETTER SUPPORT IN THE FIGHT WITH DIABETES"
-update_profile_type,Cập nhật hồ sơ,UPDATE PROFILE
-coaching_11,Coaching 1:1,COACH 1:1
-coaching_1n,Coaching 1:n,COACH GROUP
-input_evaluate,Đánh giá đầu vào,ACCESS TEST
-output_evaluate,Đánh giá đầu ra,EXIT TEST
-other,Khác,OTHER
-contact_diab_info,Liên hệ để hỗ trợ,CONTACT
-month,Tháng,Month
+package_deactivate,Gói đã ngừng bán,Stop selling pack,
+sample_menu,Thực đơn mẫu,Sample menu,
+text_intro_menu,Nhằm mục đích cung cấp cho bạn một chế độ ăn hiệu quả và đầy đủ chất dinh dưỡng. Các chuyên gia từ DiaB tư vấn bạn như sau:,Aims to provide you with an effective and nutritionally complete diet. diab's experts advise you as follows:,
+step_1,Bước 1:,Step 1,
+text_step_1,Nhập chỉ số KCAL và số bữa phụ bạn nạp hằng ngày,Enter your kcal index and the number of snacks you eat every day,
+step_2,Bước 2:,Step 2,
+text_step_2,Tuỳ chỉnh món ăn phù hợp với cá nhân bạn,Customize the dish that's right for you,
+show_your_param,Cho DiaB biết thông số của bạn,Let diab know your parameters,
+or_calculate_by_formula,Hoặc tính theo công thức,Or calculate by formula,
+have_3_meal,"Trong một ngày, bạn ăn 3 bữa chính và","In a day, you eat 3 main meals and",
+no_sub_meal,Không bữa phụ,No snacks,
+breakfast_meal,Bữa phụ sáng,Breakfast snacks,
+lunch_meal,Bữa phụ xế,Lunch snacks,
+dinner_meal,Bữa phụ tối,Dinner snacks,
+breakfast_sub_meal,Phụ sáng,Breakfast snacks,
+lunch_sub_meal,Phụ trưa,Lunch snacks,
+dinner_sub_meal,Phụ tối,Dinner snacks,
+text_if,Nếu đang,If you are,
+increase,tăng,Gainning,
+text_or,hoặc,Or,
+decrease,giảm,Losing,
+text_warning_change_param,"cân, hãy điều chỉnh số kcal phù hợp theo ý kiến huấn luyện viên của bạn","Weight, adjust the number of kcal accordingly according to your coach's opinion",
+confirm_change,Xác nhận thay đổi?,Confirm change?,
+diab_parameter,Cho DiaB biết thông số của bạn,Let diab know your parameters,
+recipe,Hoặc tính theo công thức,Or calculate by formula,
+consumption,Mức tiêu thụ năng lượng của bạn đã thay đổi. Xác nhận bằng cách chọn Đồng ý để cập nhật thực đơn mẫu mới.,Your energy consumption has changed. confirm by selecting agree to update the new sample menu.,
+next,Tiếp tục,Continue,
+next_lesson,Tiếp theo,Next,
+complete_lesson,Hoàn thành,Complete,
+agree,Đồng ý,Agree,
+text_congratulation,Chúc mừng bạn đã đăng ký thành công gói Đồng hành!,Congratulations on successfully signing up for the companion pack!,
+text_please_bank,Vui lòng chuyển khoản theo hướng dẫn dưới đây để hoàn tất đăng ký gói Thấu cảm.,Please transfer according to the instructions below to complete the sympathy pack registration.,
+text_need_2_steps_complete,Bạn cần hoàn thành lần lượt theo 2 bước sau:,You need to complete the following 2 steps in turn:,
+text_notice_upgrade_premium,"Sau khi nâng cấp gói Đồng hành, bạn sẽ nhận được hướng dẫn tiếp theo để mua gói Thấu cảm.","After upgrading the companion pack, you will receive further instructions for purchasing the empathy pack.",
+back_home,Quay trở về Trang chủ,Back to homepage,
+not_found_sku,Không tìm thấy khoá học phù hợp. Vui lòng liên lạc với Hotline của chúng tôi,No matching courses found. please contact hotline,
+knowledge_test,Trắc nghiệm kiến thức,Knowledge test,
+overview_of_diabetes,Tổng quan về bệnh đái tháo đường,Overview of diabetes,
+question_number,Câu {}:,Question {},
+what_foods_should_people,Người bị bệnh tiểu đường nên ăn thực phẩm gì?,What foods should people with diabetes eat?,
+what_should_people_with_diabetes_avoid,Người bị bệnh tiểu đường nên kiêng gì?,What should people with diabetes avoid?,
+how_many_calories,Lượng calo trung bình một ngày nên nạp là bao nhiêu?,What is the average daily calorie intake for a person with diabetes?,
+see_the_picture,Xem ảnh sau và cho biết đây là hình thức xét nghiệm nào?,See the picture below and tell me what kind of test this is?,
+selected_normal,Selected Normal,Selected normal,
+unselected_normal,Unselected Normal,Unselected normal,
+congratulations_your_reply_is_correct,Chúc mừng! Bạn đã trả lời chính xác!,Congratulations! your reply is correct!,
+regret_answer,Tiếc quá! Cùng thử lại một lần nữa nhé!,What a pity! let's try it again!,
+check,Kiểm tra,Check,
+see_the_answer,Xem đáp án,See the answer,
+previous_question,Câu trước,Previous,
+next_question,Câu tiếp,Next,
+evaluation_of_lesson,Đánh giá bài học 1,Rating lesson 1,
+rate_how_you_feel,Đánh giá cảm nhận của bạn về chất lượng của Bài học 1 để DiaB cải thiện hơn nữa nhé!,Rate how you feel about the quality of lesson 1 for diab to improve even more!,
+feeling,Cảm nghĩ,Feelings,
+enter_your_feeling,Nhập cảm nghĩ của bạn,Enter your feelings,
+sent_report,Gửi đánh giá,Submit a review,
+completed_quiz,Hoàn tất!,Completed,
+completed,Hoàn tất,Completed,
+you_have_successfully_completed,Bạn đã xuất sắc hoàn tất bài quiz và trả lời đúng {} câu!,You have successfully completed the quiz and answered {} questions correctly!,
+continue_learning,Tiếp tục học,Continue learning,
+you_have_completed,Bạn đã hoàn tất bài quiz và trả lời đúng {} câu!,You have completed the quiz and answered {} questions correctly!,
+challenge_yourself_again,Thử thách bản thân một lần nữa?,Challenge yourself again?,
+skip,Bỏ qua,Skip,
+accept,Đồng ý,Accept,
+survey,Khảo sát,Survey,
+part_number,Phần {}. Hiểu biết về bệnh đái tháo đường,Part {}. understanding diabetes,
+start_survey,Bắt đầu khảo sát,Start survey,
+thank_you_for_survey,Cảm ơn bạn đã hoàn thành khảo sát!,Thank you for completing the survey!,
+thank_you_for_survey_description,Ý kiến đóng góp của bạn rất có giá trị và quan trọng đối với chúng tôi.,Your contributing ide is very valuable and important to us.,
+survey_progress,Bạn đã hoàn thành {}% khảo sát!,You have completed {}% of the survey!,
+explain,Giải thích,Explain,
+book_coach,Đặt lịch coach,Booking coach,
+description_book_coach,Đặt lịch tư vấn cùng chuyên gia giúp bạn có nhiều kiến thức trong quá trình chữa trị đái tháo đường,Schedule a consultation with expert to help you have a lot of knowledge in the process of diabetes treatment,
+date_book,Ngày đặt lịch,Booking date,
+time_book,Thời gian đặt lịch,Booking time,
+submit_booking,Đặt lịch,Submit booking,
+my_plan_booking,Kế hoạch của tôi,My booking plan,
+join,Tham gia,Join,
+coach,Coach,Coach,
+you_book_coach_success,Bạn đã đặt lịch thành công!,You have successfully booking!,
+booking_success,Đặt lịch thành công!,Successfully booking!,
+see_booking,Xem lịch hẹn,See booking schedule,
+select_time_booking_description,Bạn hãy chọn thời gian phù hợp để bắt đầu lịch tư vấn nhé!\nThời gian cho mỗi buổi tư vấn là 1 giờ.,Please choose a suitable time to start the consultation schedule! the duration of each consultation session is 1 hour.,
+day_in_week_monday,Thứ hai,Monday,
+day_in_week_tuesday,Thứ ba,Tuesday,
+day_in_week_wednesday,Thứ tư,Wednesday,
+day_in_week_thursday,Thứ năm,Thursday,
+day_in_week_friday,Thứ sáu,Friday,
+day_in_week_saturday,Thứ bảy,Saturday,
+day_in_week_sunday,Chủ nhật,Sunday,
+statistical,Thống kê,Statistical,
+expert_comment,Nhận xét của chuyên gia,Expert's comment,
+no_expert_comment,"Khi bạn tham gia các khoá học chuyên sâu của DiaB, bạn sẽ nhận được các nhận xét, khuyến nghị từ các chuyên gia DiaB.\nHiện tại bạn chưa có nhận xét, khuyến nghị nào từ các chuyên gia DiaB.","When you join the intensive courses of diab, you will receive comments and recommendations from diab experts. currently, you have no comments or recommendations from diab experts.",
+comment,Nhận xét,Comment,
+next_action,Hành động tiếp theo,Next action,
+progress,Tiến độ,Progress,
+q_and_a,Hỏi đáp,Q&A,
+ask_doctor,Đặt câu hỏi cho bác sỹ,Ask the doctor a question,
+replied,Đã trả lời,Replied,
+view_by_topic,Xem theo chủ đề,View by topic,
+question_doctor,Hỏi đáp chuyên gia,Q&a with experts,
+ask_question,Đặt câu hỏi,Make a question,
+select_topic,Chọn chủ đề,Select topic,
+topic,Chủ đề,Topic,
+your_question,Câu hỏi của bạn,Your question,
+send_question,Gửi câu hỏi,Send question,
+response_as_soon_as_possible,Chuyên gia của DiaB sẽ trả lời bạn trong thời gian sớm nhất.,Diab experts will reply to you as soon as possible.,
+send_question_success,Gửi câu hỏi thành công!,Question submitted successfully!,
+qa_title,Hỏi đáp,Q&a,
+delete_question,Xóa câu hỏi,Delete question,
+confirm_delete_question,Bạn muốn xoá câu hỏi?,Do you want to delete question?,
+confirm_delete_question_subtitle,"Câu hỏi sẽ không còn nữa, bạn chắc chắn xoá câu hỏi này chứ?","The question will be no more, are you sure to delete this question?",
+confirm_delete_comment,Bạn muốn xoá bình luận?,Do you want to delete comment?,
+confirm_delete_comment_subtitle,"Bình luận sẽ không còn nữa, bạn chắc chắn xoá bình luận này chứ?","The comment will be no more, are you sure to delete this comment?",
+delete_comment,Xóa bình luận,Delete comment,
+question_answer_title,Hỏi đáp,Q&a,
+no_data,Không có dữ liệu,No data,
+closed,Đã đóng,Closed,
+waiting,Đang chờ,Waiting,
+question_empty,"Bạn chưa đặt câu hỏi nào, đừng ngại đưa những thắc mắc với DiaB nhé!","You haven't asked any questions, do not hesitate to ask questions with diab!",
+mine,Của tôi,Mine,
+input_comment_required,Nhập bình luận là bắt buộc,Comments are required,
+input_topic_required,Chủ đề là bắt buộc,Topic is required,
+input_question_required,Nội dung câu hỏi là bắt buộc,Question is required,
+no_result,Không có kết quả phù hợp,No result,
+add_comment,Thêm bình luận,Add comment,
+data_input_not_valid,Dữ liệu không hợp lệ,Invalid data,
+food_menu_intro_title1,Thực đơn mẫu là gợi ý các món ăn theo khung năng lượng cần nạp mỗi ngày và cơ cấu dinh dưỡng khuyến nghị dành cho bữa ăn người đái tháo đường.,The sample menu is a suggestion of foods according to the energy frame to be loaded each day and the recommended nutritional structure for diabetic meals.,
+food_menu_intro_title21,"Căn cứ vào thực đơn mẫu gợi ý này, bạn có thể","Based on this sample menu, you can",
+food_menu_intro_title22,ĐIỀU CHỈNH,Adjust,
+food_menu_intro_title23,các món ăn có mức năng lượng tương đương phù hợp.,The dishes with the appropriate energy equivalent.,
+food_menu_intro_title3,Chúc bạn ăn ngon miệng và kiếm soát đường huyết thành công!,Enjoy your meal and successful blood sugar control!,
+no_report,"Khi bạn tham gia các khoá học chuyên sâu của DiaB, bạn sẽ nhận được các báo cáo đánh giá từ các chuyên gia DiaB.\nHiện tại bạn chưa có báo cáo nào trong danh mục.","When you take courses of diab, you will receive assessment reports from diab experts. you currently have no reports in your category.",
+qr_not_available,Hệ thống không xử lý,Error,
+chat_with_coach,Chat với huấn luyện viên,Chat with health coach,
+chat_with_group,Chat nhóm,Group chat,
+today,Hôm nay,Today,
+chua_hoan_thanh,Chưa hoàn thành,Incompleted,
+hoan_thanh,Hoàn thành,Completed,
+install_zalo,"Để bắt đầu trò chuyện, bạn sẽ được chuyển hướng để tải ứng dụng Zalo","To start chatting, you will be redirected to download the zalo app",
+phone_not_available,Không tìm thấy số điện thoại của huấn luyện viên,Coach's phone number unavailable,
+group_not_available,Không tìm thấy nhóm,Group unavailable,
+error_redirect_zalo,Có lỗi khi chuyển hướng sang Zalo,Error when redirecting to zalo,
+wrong_phone_number,Số điện thoại không hợp lệ!,Invalid phone number!,
+package_experience,Gói trải nghiệm,Experience pack,
+package_experience_subtitle,"Gói cung cấp những tính năng cơ bản, theo dõi chỉ số sinh học, hỗ trợ tốt hơn trong cuộc chiến với đái tháo đường","The pack provides basic features, biological index monitoring, better support in the fight with diabetes",
+package_roadmap,Gói lộ trình,Route pack,
+package_roadmap_subtitle,"Gói cung cấp những tính năng cơ bản, theo dõi chỉ số sinh học, hỗ trợ tốt hơn trong cuộc chiến với đái tháo đường","The pack provides basic features, biological index monitoring, better support in the fight with diabetes",
+update_profile_type,Cập nhật hồ sơ,Update profile,
+coaching_11,Coaching 1:1,Coach 1:1,
+coaching_1n,Coaching 1:n,Coach group,
+input_evaluate,Đánh giá đầu vào,Access test,
+output_evaluate,Đánh giá đầu ra,Exit test,
+other,Khác,Other,
+contact_diab_info,Liên hệ để hỗ trợ,Contact,
+month,Tháng,Month,
+voucher_list,Danh sách ưu đãi,,
+voucher_detail,Chi tiết ưu đãi,,
+voucher_have,Bạn đã có [NUMBER_VOUCHER] mã ưu đãi,,
+use_voucher,Sử dụng mã,,
+view_voucher,Xem chi tiết ưu đãi,,
+share_now,Chia sẻ ngay,,
+select_your_image,Thêm hình ảnh:,,
+note_max_media,Lưu ý: Gửi tối đa 3 hình ảnh,,
