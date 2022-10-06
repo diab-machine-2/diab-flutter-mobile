@@ -114,7 +114,7 @@ class ToastManager: NSObject {
 
     public func show(text: String? = nil, completion: (() -> Void)? = nil) {
         guard self.toastView != nil, text != nil, text != "", text!.count != 0, self.toastView?.alpha == 0 else { return }
-        uprint("check the Toast Message : \(String(describing: text))")
+        print("check the Toast Message : \(String(describing: text))")
         self.lbContent?.text = ""
 
         let rootWindow = UIApplication.shared.windows.first

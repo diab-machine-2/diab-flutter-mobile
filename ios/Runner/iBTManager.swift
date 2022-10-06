@@ -119,7 +119,6 @@ class iBTManager: NSObject {
     public func isStatePoweredOn() -> Bool {
         guard let manager = currManager else { return false }
         
-        bprint("check the centralManager's State = \(String(describing: manager.state))")
         return (manager.state == .poweredOn)
     }
     
@@ -151,7 +150,6 @@ class iBTManager: NSObject {
 
     // Stop Scan
     public func stopScan() {
-        bprint("stopScan is called")
         stopTimeoutMonitor()
         
         DispatchQueue.main.async {
@@ -277,7 +275,7 @@ class iBTManager: NSObject {
         var interval: DispatchTime = .now()
         switch type {
         case .None:
-            bprint("The Process Type should be set for checking the process")
+            print("The Process Type should be set for checking the process")
         case .Searching:
             interval = .now() + PROCESS_SEARCHING_INTERVAL
         case .Connecting, .Preparing:
@@ -325,21 +323,21 @@ extension iBTManager: CBCentralManagerDelegate {
         
         switch central.state {
         case .poweredOn:
-            bprint("Bluetooth is powered ON")
+            print("Bluetooth is powered ON")
             isBluetoothActive = true
             // Create the service Information
             if (m_delegate != nil) { m_delegate?.centralClientUpdateState(central) }
         case .poweredOff:
-            bprint("Bluetooth is powered OFF")
+            print("Bluetooth is powered OFF")
             if (m_delegate != nil) { m_delegate?.centralClientUpdateState(central) }
         case .unsupported:
-            bprint("Bluetooth is not support")
+            print("Bluetooth is not support")
             if (m_delegate != nil) { m_delegate?.centralClientUpdateState(central) }
         case .unauthorized:
-            bprint("Bluetooth is not authorized")
+            print("Bluetooth is not authorized")
             if (m_delegate != nil) { m_delegate?.centralClientUpdateState(central) }
         case .unknown:
-            bprint("unknown State")
+            print("unknown State")
             if (m_delegate != nil) { m_delegate?.centralClientUpdateState(central) }
         default:
             break
@@ -347,7 +345,7 @@ extension iBTManager: CBCentralManagerDelegate {
     }
     
     func centralManager(_ central: CBCentralManager, didDisconnectPeripheral peripheral: CBPeripheral, error: Error?) {
-        bprint("didDisconnectPeripheral is called")
+        print("didDisconnectPeripheral is called")
         
         if self.connectedbt != nil {
             self.connectedbt = nil
@@ -407,7 +405,7 @@ extension iBTManager: CBCentralManagerDelegate {
             }
             
             str += "=========================================="
-            bprint("\(str)")
+            //print("\(str)")
             
             searchedbt?.append(searched)
             searchedPeri?.append(peripheral)
@@ -421,7 +419,7 @@ extension iBTManager: CBCentralManagerDelegate {
     }
     
     func centralManager(_ central: CBCentralManager, didConnect peripheral: CBPeripheral) {
-        bprint("didConnect is called")
+        
         self.stopTimeoutMonitor()
         self.stopScan()
         
@@ -436,10 +434,7 @@ extension iBTManager: CBCentralManagerDelegate {
             self.connectedbt?.isConnected = true
             
             // ================================================================================================================ by isens
-            bprint("Name : \(String(describing: self.connectedbt?.periName))")
-            bprint("UUID : \(String(describing: self.connectedbt?.periUUID))")
-            bprint("RSSI : \(String(describing: self.connectedbt?.periRSSI))")
-            bprint("ADVE : \(String(describing: self.connectedbt?.advertise))")
+            
             
             self.startTimeoutMonitor(.Connecting)
             
@@ -459,7 +454,7 @@ extension iBTManager: CBCentralManagerDelegate {
     }
     
     func centralManager(_ central: CBCentralManager, didFailToConnect peripheral: CBPeripheral, error: Error?) {
-        bprint("didFailToConnect is called")
+        
         
         if self.connectedbt != nil {
             self.connectedbt = nil
@@ -480,7 +475,7 @@ extension iBTManager: CBPeripheralDelegate {
     func peripheral(_ peripheral: CBPeripheral, didDiscoverServices error: Error?) {
         if error != nil {
             // Error!!!
-            bprint("check the Error from the DiscoverService = \(String(describing: error))")
+            
             self.disconnect(self.connectedbt)
             
             if m_delegate != nil {
@@ -522,7 +517,7 @@ extension iBTManager: CBPeripheralDelegate {
     // check the write data
     func peripheral(_ peripheral: CBPeripheral, didWriteValueFor characteristic: CBCharacteristic, error: Error?) {
         if let e = error as NSError? {
-            bprint("Error : \(e), Description : \(e.userInfo.description)")
+            print("Error : \(e), Description : \(e.userInfo.description)")
             
             if e.domain == CBATTErrorDomain {
                 self.disconnect(self.connectedbt)
@@ -536,7 +531,7 @@ extension iBTManager: CBPeripheralDelegate {
         self.stopTimeoutMonitor()
         
         if let e = error as NSError? {
-            bprint("Error : \(e), Description : \(e.userInfo.description)")
+            print("Error : \(e), Description : \(e.userInfo.description)")
             
             if e.domain == CBATTErrorDomain {
                 self.disconnect(self.connectedbt)
@@ -546,7 +541,7 @@ extension iBTManager: CBPeripheralDelegate {
         
         // ================================================================================================================ by isens
         // After received Notification, do check the data on the device manager
-        bprint("didUpdateNotificationStateFor : \(String(describing: characteristic.value))")
+        print("didUpdateNotificationStateFor : \(String(describing: characteristic.value))")
         self.startTimeoutMonitor(.Preparing)
         self.connectedChar = characteristic
         iDeviceManager.shared.receivedNotification(peripheral, ch: characteristic)
@@ -556,7 +551,7 @@ extension iBTManager: CBPeripheralDelegate {
     // Data Received
     func peripheral(_ peripheral: CBPeripheral, didUpdateValueFor characteristic: CBCharacteristic, error: Error?) {
         if let e = error as NSError? {
-            bprint("Error : \(e), Description : \(e.userInfo.description)")
+            print("Error : \(e), Description : \(e.userInfo.description)")
             
             if e.domain == CBATTErrorDomain {
                 self.disconnect(self.connectedbt)
@@ -567,7 +562,7 @@ extension iBTManager: CBPeripheralDelegate {
         
         // ================================================================================================================ by isens
         // After received update value, do check the data on the device manager
-        bprint("didUpdateValueFor : \(String(describing: characteristic.value))")
+        //print("didUpdateValueFor : \(String(describing: characteristic.value))")
         self.connectedChar = characteristic
         iDeviceManager.shared.receivedData(peripheral, ch: characteristic)
         // ================================================================================================================ by isens

@@ -5,18 +5,20 @@ import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 
 class ListData extends StatefulWidget {
-  final List<Map<String, String>> data;
-  ListData({required this.data});
+  final List<Map<String, String>> glucoseData;
+  ListData({required Key key, required this.glucoseData}) : super(key: key);
 
   @override
   State<ListData> createState() => ListDataState();
 }
 
 class ListDataState extends State<ListData> {
+  List<Map<String, String>> glucoseData = [];
   Map<String, String>? glucose;
 
   @override
   void initState() {
+    glucoseData = widget.glucoseData;
     super.initState();
   }
 
@@ -27,7 +29,7 @@ class ListDataState extends State<ListData> {
         MediaQuery.of(context).padding.bottom -
         54;
 
-    final double countHight = widget.data.length * 48.0 + 216;
+    final double countHight = glucoseData.length * 48.0 + 216;
     return SafeArea(
         child: Container(
       height: height, //countHight > height ? height : countHight,
@@ -59,7 +61,7 @@ class ListDataState extends State<ListData> {
             Text('Chọn ngày bạn muốn cập nhật chỉ số.',
                 style: TextStyle(fontSize: 16, color: Color(0xff8E8E8E))),
             SizedBox(height: 32),
-            widget.data.length == 0
+            glucoseData.length == 0
                 ? Expanded(
                     child: SingleChildScrollView(
                       child: Column(children: [
@@ -82,13 +84,13 @@ class ListDataState extends State<ListData> {
                     child: ListView.separated(
                         shrinkWrap: true,
                         padding: EdgeInsets.all(0),
-                        itemCount: widget.data.length,
+                        itemCount: glucoseData.length,
                         separatorBuilder: (context, index) => Container(
                             height: 1,
                             color: R.color.grayBorder,
                             margin: EdgeInsets.only(bottom: 16, top: 16)),
                         itemBuilder: (BuildContext context, int index) {
-                          final data = widget.data[index];
+                          final data = glucoseData[index];
                           return Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [

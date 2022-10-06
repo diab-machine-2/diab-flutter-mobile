@@ -33,6 +33,7 @@ class _ConnectionInstructionsControllerState
   String userManual = '';
 
   GlobalKey<ListDevicesState> listDevicesKey = GlobalKey();
+  GlobalKey<ListDataState> listDataKey = GlobalKey();
 
   bool initSuccess = false;
   bool isScanning = false;
@@ -62,7 +63,6 @@ class _ConnectionInstructionsControllerState
       setState(() {});
       print(event.toString());
       print(data);
-
       if (event == 'ble_off') {
         Message.showToastMessage(context, 'Bạn chưa bật Bluetooth');
         //_channel.invokeMethod('init_IBle_Sdk');
@@ -80,6 +80,9 @@ class _ConnectionInstructionsControllerState
       } else if (event == 'device_connected') {
         if (widget.connectOnly == null || !widget.connectOnly!) {
           _channel.invokeMethod('get_data');
+        } else {
+          BotToast.closeAllLoading();
+          Message.showToastMessage(context, 'Kết nối thành công');
         }
 
         if (device != null) {
@@ -101,13 +104,20 @@ class _ConnectionInstructionsControllerState
         print(data);
         stopScan();
         // _channel.invokeMethod('dis_connect');
-        showModalBottomSheet(
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.vertical(top: Radius.circular(15))),
-            backgroundColor: R.color.white,
-            context: context,
-            isScrollControlled: true,
-            builder: (context) => ListData(data: data));
+        if (listDataKey.currentState != null) {
+          listDataKey.currentState!.glucoseData += data;
+          listDataKey.currentState!.setState(() {});
+        } else {
+          showModalBottomSheet(
+              shape: RoundedRectangleBorder(
+                  borderRadius:
+                      BorderRadius.vertical(top: Radius.circular(15))),
+              backgroundColor: R.color.white,
+              context: context,
+              isScrollControlled: true,
+              builder: (context) =>
+                  ListData(key: listDataKey, glucoseData: data));
+        }
       } else if (event == 'device_disconnect' ||
           event == 'connect_error' ||
           event == 'device_not_connect') {
@@ -134,7 +144,7 @@ class _ConnectionInstructionsControllerState
         }
       }
     });
-    //_channel.invokeMethod('request_permission');
+    _channel.invokeMethod('init_IBle_Sdk');
     await Permission.location.request();
     //await Permission.bluetooth.request();
   }
@@ -345,8 +355,11 @@ class _ConnectionInstructionsControllerState
             ),
             GestureDetector(
               onTap: () async {
-                final String blueToothPermission =
-                    await _channel.invokeMethod('request_permission');
+                final String blueToothPermission = Platform.isIOS
+                    ? (await Permission.bluetooth.isGranted
+                        ? 'ble_already'
+                        : 'ble_already') //ble_already
+                    : await _channel.invokeMethod('request_permission');
                 // !(await Permission.bluetooth.isPermanentlyDenied) &&
                 //     await Permission.bluetooth.isGranted;
                 final locationGranted = Platform.isIOS
