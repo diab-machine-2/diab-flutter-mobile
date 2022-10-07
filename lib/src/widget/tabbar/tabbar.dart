@@ -10,9 +10,11 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/app.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/app_setting/dynamic_link_config.dart';
+import 'package:medical/src/modal/base/referral_code_temp.dart';
 import 'package:medical/src/modal/error/error_model.dart';
 import 'package:medical/src/modal/user/user_model.dart';
 import 'package:medical/src/repo/user/user_client.dart';
+import 'package:medical/src/utils/app_storages.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/navigator_name.dart';
@@ -83,6 +85,10 @@ class _TabbarControllerState extends State<TabbarController>
 
   _checkUserReferralCode() async {
     DynamicLinkConfig.instance.createShareReferralLink();
+    ReferralCodeTemp? referralCodeData = await AppStorages.getReferralCode();
+    if (referralCodeData != null) {
+      AppStorages.removeReferralCode();
+    }
   }
 
   Future startTimer() async {

@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -254,8 +255,9 @@ class _StepListControllerState extends State<StepListController> {
                                               color: R.color.mainColor,
                                               width: 2)),
                                       child: Center(
-                                        child: Text(
+                                        child: AutoSizeText(
                                             R.string.da_co_tai_khoan.tr(),
+                                            maxLines: 1,
                                             style: TextStyle(
                                                 color: R.color.mainColor,
                                                 fontSize: 16,

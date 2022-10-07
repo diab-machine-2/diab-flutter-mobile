@@ -1502,7 +1502,7 @@ class _CustomTimePickerState extends State<CustomTimePicker> {
 String formatDate(int timeStamp) {
   final date = DateTime.fromMillisecondsSinceEpoch(timeStamp);
 
-  return 'Tháng ${date.month}, ${date.year}';
+  return '${R.string.month} ${date.month}, ${date.year}';
 }
 
 typedef NumCallback = Function(int?);
@@ -1825,7 +1825,7 @@ class CustomWeightPickerState extends State<CustomWeightPicker> {
                             borderRadius: BorderRadius.circular(200),
                           ),
                           child: Center(
-                            child: Text('Tiếp tục',
+                            child: Text(R.string.tiep_tuc,
                                 style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600)),
                           ),
                         ),

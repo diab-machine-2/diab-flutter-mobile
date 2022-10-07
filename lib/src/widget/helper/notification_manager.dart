@@ -78,8 +78,8 @@ class NotificationManager {
             navigatorKey.currentState!.context, model.data!.surveyId!);
         return;
       }
-      Observable.instance
-          .notifyObservers([], notifyName: "reload_notification");
+      // Observable.instance
+      //     .notifyObservers([], notifyName: "reload_notification");
 
       // if(model.body != null){
       //   model.body = parseHtmlString(model.body!);
@@ -111,7 +111,7 @@ class NotificationManager {
   navigateNotification(RemoteMessage? message) {
     print("Firebase Messaging - navigateNotification");
     if (message == null) return;
-    Observable.instance.notifyObservers([], notifyName: "reload_notification");
+    // Observable.instance.notifyObservers([], notifyName: "reload_notification");
     var user = AppSettings.userInfo;
 
     NotificationModel model = NotificationModel(
@@ -147,12 +147,15 @@ class NotificationManager {
       return;
     }
 
-    NotificationClient().readNotification(
-        model.data?.communicationId,
-        model.id ?? model.data?.notificationId,
-        AppSettings.userInfo?.id,
-        model.data?.notificationType,
-        true);
+    if (model.actionType != NotificationActionType.register_referral_success) {
+      NotificationClient().readNotification(
+          model.data?.communicationId,
+          model.id ?? model.data?.notificationId,
+          AppSettings.userInfo?.id,
+          model.data?.notificationType,
+          true);
+    }
+
     if (model.calendarId == null) {
       switch (model.actionType) {
         case NotificationActionType.redirect_to_activity_tab:

@@ -1,6 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/modal/user/user_model.dart';
+import 'package:medical/src/model/preference/app_preference.dart';
 import 'package:medical/src/model/response/content_welcome_response.dart';
 import '../../../../model/repository/app_repository.dart';
 import '../../../../model/response/common_response.dart';
@@ -9,12 +10,12 @@ import '../../../../model/service/network_exceptions.dart';
 import '../welcome_package_screen.dart';
 
 class WelcomePackageScreenCubit extends Cubit<WelcomePackageScreenState> {
-
   final AppRepository repository;
   ContentWelcomeResponseData? content;
   UserModel? user;
 
-  WelcomePackageScreenCubit(this.repository): super(WelcomePackageScreenInitial()) {}
+  WelcomePackageScreenCubit(this.repository)
+      : super(WelcomePackageScreenInitial()) {}
 
   Future<void> getContentWelcome() async {
 //    await Future.delayed(Duration.zero);
@@ -42,24 +43,28 @@ class WelcomePackageScreenCubit extends Cubit<WelcomePackageScreenState> {
     emit(WelcomePackageScreenInitial());
   }
 
-   Future<void> markDisplayedWelcome() async {
+  Future<void> markDisplayedWelcome() async {
     await Future.delayed(Duration.zero);
     emit(WelcomePackageScreenLoading());
     // final ReadWelcomeRequest request =
     //     ReadWelcomeRequest(id: '');
-    final ApiResult<CommonResponse> apiResult = await repository.markDisplayedWelcome();
+    final ApiResult<CommonResponse> apiResult =
+        await repository.markDisplayedWelcome();
     apiResult.when(success: (CommonResponse response) {
-       AppSettings.isDisplayedWelcome = true;
-       emit(const WelcomePackageScreenSuccess());
+      AppSettings.isDisplayedWelcome = true;
+      emit(const WelcomePackageScreenSuccess());
     }, failure: (NetworkExceptions error) {
-      emit(WelcomePackageScreenFailure(NetworkExceptions.getErrorMessage(error)));
+      emit(WelcomePackageScreenFailure(
+          NetworkExceptions.getErrorMessage(error)));
     });
   }
 
-  String getGender(int? gender){
-    if(gender == 1){
+  String getGender(int? gender) {
+    String appLanguage = AppPreference().appLanguage;
+    if (appLanguage == "en") return "you";
+    if (gender == 1) {
       return "anh";
-    } else if(gender == 2) {
+    } else if (gender == 2) {
       return "chị";
     } else {
       return "bạn";

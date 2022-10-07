@@ -30,7 +30,7 @@ class ConfirmDialog extends StatelessWidget {
                 Image.asset(R.drawable.ic_earse, width: 64, height: 64),
                 Padding(
                   padding: const EdgeInsets.only(top: 16.0),
-                  child: Text("Xoá tài khoản",
+                  child: Text('Xoá tài khoản',
                       textAlign: TextAlign.center,
                       style: TextStyle(
                           color: R.color.textDark,
@@ -61,7 +61,7 @@ class ConfirmDialog extends StatelessWidget {
                                     borderRadius: BorderRadius.circular(200),
                                     color: R.color.grayBorder),
                                 child: Center(
-                                  child: Text("Quay lại",
+                                  child: Text(R.string.back,
                                       style: TextStyle(
                                           color: R.color.textDark,
                                           fontSize: 16,
@@ -80,7 +80,7 @@ class ConfirmDialog extends StatelessWidget {
                                 borderRadius: BorderRadius.circular(200),
                               ),
                               child: Center(
-                                child: Text("Xoá",
+                                child: Text(R.string.delete,
                                     style: TextStyle(
                                         color: R.color.white,
                                         fontSize: 16,

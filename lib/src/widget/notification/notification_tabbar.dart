@@ -56,7 +56,7 @@ class _NotificationTabbarControllerState
         child: Column(children: [
           CustomAppBar(
             backgroundColor: R.color.transparent,
-            title: Text('Thông báo',
+            title: Text(R.string.notification,
                 style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w600,

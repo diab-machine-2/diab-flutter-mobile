@@ -51,7 +51,7 @@ class _RegisterSuccessState extends State<RegisterSuccess> {
                   Image.asset(R.drawable.img_register_success),
                   Column(children: [
                     SizedBox(height: 180),
-                    Text('Đăng ký thành công!',
+                    Text(R.string.sign_up_success,
                         style: TextStyle(color: R.color.mainColor, fontSize: 20, fontWeight: FontWeight.w600)),
                     SizedBox(height: 20),
                     Padding(

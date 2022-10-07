@@ -37,8 +37,6 @@ class DynamicLinkConfig {
 
     _subLink = FirebaseDynamicLinks.instance.onLink.listen((dynamicLinkData) {
       final Uri? deepLink = dynamicLinkData.link;
-      print("deepLink: $deepLink");
-
       if (deepLink != null) {
         dynamicLinkType.forEach((functionName) {
           String urlString = deepLink.toString();

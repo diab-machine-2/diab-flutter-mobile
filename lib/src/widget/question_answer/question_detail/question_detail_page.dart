@@ -111,6 +111,8 @@ class _QuestionDetailPageState extends State<QuestionDetailPage>
                 Message.showToastMessage(context, state.error);
               } else if (state is MakeCommentFailure) {
                 Message.showToastMessage(context, state.error);
+              } else if (state is RatingCommentSuccess) {
+                Message.showToastMessage(context, 'Gửi đánh giá thành công.');
               }
             }
           },
@@ -129,9 +131,9 @@ class _QuestionDetailPageState extends State<QuestionDetailPage>
       onWillPop: () => _backPressed(),
       child: GestureDetector(
         onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
-        child: Expanded(
-          child: SingleChildScrollView(
-            child: Column(
+        child: Stack(
+          children: [
+            Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 Expanded(
@@ -164,7 +166,7 @@ class _QuestionDetailPageState extends State<QuestionDetailPage>
                 _buildCommentTextBox(context),
               ],
             ),
-          ),
+          ],
         ),
       ),
     );
@@ -532,30 +534,24 @@ class _QuestionDetailPageState extends State<QuestionDetailPage>
   _buildListComment() {
     return _cubit.questionModel.answers!.isEmpty
         ? Container()
-        : Column(
-            children: _cubit.questionModel.answers!
-                .map((e) => _buildDoctorItemInQuestionItem(
-                    _cubit.questionModel.answers != null ? e : null))
-                .toList(),
+        : Expanded(
+            child: ListView.builder(
+              // separatorBuilder: (context, index) {
+              //   return Divider(height: 0.0);
+              // },
+              itemCount: _cubit.questionModel.answers?.length ?? 0,
+              shrinkWrap: true,
+              //  controller: _cubit.commentScrollController,
+              padding: EdgeInsets.zero,
+              physics: AlwaysScrollableScrollPhysics(),
+              itemBuilder: (context, position) {
+                return _buildDoctorItemInQuestionItem(
+                    _cubit.questionModel.answers != null
+                        ? _cubit.questionModel.answers![position]
+                        : null);
+              },
+            ),
           );
-    // : Expanded(
-    //     child: ListView.builder(
-    //       // separatorBuilder: (context, index) {
-    //       //   return Divider(height: 0.0);
-    //       // },
-    //       itemCount: _cubit.questionModel.answers?.length ?? 0,
-    //       shrinkWrap: true,
-    //       //  controller: _cubit.commentScrollController,
-    //       padding: EdgeInsets.zero,
-    //       physics: AlwaysScrollableScrollPhysics(),
-    //       itemBuilder: (context, position) {
-    //         return _buildDoctorItemInQuestionItem(
-    //             _cubit.questionModel.answers != null
-    //                 ? _cubit.questionModel.answers![position]
-    //                 : null);
-    //       },
-    //     ),
-    //   );
   }
 
   _enterAnswer(BuildContext context) {

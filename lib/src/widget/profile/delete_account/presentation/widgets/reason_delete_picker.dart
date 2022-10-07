@@ -30,7 +30,7 @@ class ReasonDeletePicker extends StatelessWidget {
     "Không dùng tài khoản",
     "Thay đổi số điện thoại",
     "Muốn dùng tài khoản mới",
-    "Khác"
+    R.string.khac
   ];
 
   @override
@@ -46,7 +46,7 @@ class ReasonDeletePicker extends StatelessWidget {
                 children: [
                   Expanded(
                     child: Text(
-                      "Chọn lý do huỷ",
+                      "Chọn lý do xoá",
                       style: TextStyle(
                         color: R.color.textDark,
                         fontWeight: FontWeight.w700,

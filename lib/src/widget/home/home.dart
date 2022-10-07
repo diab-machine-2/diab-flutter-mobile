@@ -1215,7 +1215,7 @@ class _HomeControllerState extends State<HomeController> with Observer {
                       style: const TextStyle(
                           fontSize: 16, fontWeight: FontWeight.w600)),
                   const SizedBox(height: 4),
-                  Text('Hôm nay',
+                  Text(R.string.today,
                       style: TextStyle(
                           color: R.color.captionColorGray,
                           fontSize: 12,
@@ -1277,9 +1277,9 @@ class _HomeControllerState extends State<HomeController> with Observer {
 
   getProgressStatus(ProcessCardModel model) {
     if (model.exerciseCompeleted! < model.exercise!) {
-      return 'Chưa hoàn thành\nbài tập vận động';
+      return '${R.string.chua_hoan_thanh}\n${R.string.smart_goal_exercise_lesson.toLowerCase()}';
     } else {
-      return 'Đã hoàn thành\nbài tập vận động';
+      return '${R.string.hoan_thanh}\n${R.string.smart_goal_exercise_lesson.toLowerCase()}';
     }
   }
 

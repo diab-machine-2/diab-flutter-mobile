@@ -204,7 +204,7 @@ class ImagePickerItem extends StatelessWidget {
           )
         ],
         cancelButton: CupertinoActionSheetAction(
-          child: Text("Huỷ",
+          child: Text(R.string.cancel,
               style: TextStyle(color: Color(0xff333333), fontSize: 14)),
           onPressed: () {
             Navigator.pop(context);
@@ -213,7 +213,7 @@ class ImagePickerItem extends StatelessWidget {
       );
       showCupertinoModalPopup(context: context, builder: (context) => action);
     } else {
-      Message.showToastMessage(context, 'Chỉ đuợc chọn tối đa $maxMedia ảnh');
+      Message.showToastMessage(context, R.string.max_image_select);
     }
   }
 

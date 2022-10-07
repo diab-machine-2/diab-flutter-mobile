@@ -157,7 +157,7 @@ class _ShareAppDetailState extends State<ShareAppDetail> {
       padding: EdgeInsets.all(0),
       children: [
         Text(
-          "Mời bạn và nhận thưởng",
+          "Chia sẻ ngay, nhận quà sức khỏe liền tay.",
           style: TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.w700,
@@ -165,7 +165,7 @@ class _ShareAppDetailState extends State<ShareAppDetail> {
         ),
         SizedBox(height: 20),
         Text(
-          "Khi chia sẻ app Diab thành công bạn sẽ nhận được Voucher khuyến mãi được áp dụng cho tất cả cửa hàng của Long Châu. Chia sẻ app DiaB giúp bạn bè cải thiện sức khoẻ tốt hơn.",
+          "Nhận ngay phiếu mua hàng trị giá 10K cho mỗi lượt chia sẽ ứng dụng DiaB thành công.",
           style: TextStyle(
             height: 1.4,
             fontSize: 16,
@@ -174,7 +174,7 @@ class _ShareAppDetailState extends State<ShareAppDetail> {
         ),
         SizedBox(height: 10),
         Text(
-          "Phần này anh Việt nhờ team MKT update thêm content giúp em với .... Diab thành công bạn sẽ nhận được Voucher khuyến mãi được áp dụng cho tất cả cửa hàng của Long Châu.",
+          "Hãy chia sẽ để giúp bạn bè, người thân biết cách sống khoẻ mạnh cùng với bệnh đái tháo đường của họ.",
           style: TextStyle(
             height: 1.4,
             fontSize: 16,

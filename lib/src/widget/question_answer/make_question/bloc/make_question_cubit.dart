@@ -67,7 +67,7 @@ class MakeQuestionCubit extends Cubit<MakeQuestionState> {
   }
 
   Future<void> sendQuestion(String? body) async {
-    if (currentLessonModule == null) return;
+    // if (currentLessonModule == null) return;
     var userInfo = AppSettings.userInfo;
     if (userInfo == null) return;
     body = body?.trim() ?? '';
@@ -81,7 +81,7 @@ class MakeQuestionCubit extends Cubit<MakeQuestionState> {
     emit(MakeQuestionLoading());
     final MakeQuestionRequest request = MakeQuestionRequest(
       body: body,
-      lessonModuleId: currentLessonModule!.id,
+      // lessonModuleId: currentLessonModule!.id,
       accountId: userInfo.accountId,
       pictures: pictures,
     );
