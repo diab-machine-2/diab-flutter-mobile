@@ -64,8 +64,12 @@ class _ConnectionInstructionsControllerState
       print(event.toString());
       print(data);
       if (event == 'ble_off') {
-        Message.showToastMessage(context, 'Bạn chưa bật Bluetooth');
+        //Message.showToastMessage(context, 'Bạn chưa bật Bluetooth');
+        //bleState = 'ble_off';
         //_channel.invokeMethod('init_IBle_Sdk');
+      } else if (event == 'ble_already') {
+        //bleState = 'ble_already';
+        //Message.showToastMessage(context, 'Bạn đã bật Bluetooth');
       } else if (event == 'init_success') {
         BotToast.closeAllLoading();
         //_channel.invokeMethod('start_scan');
@@ -355,11 +359,8 @@ class _ConnectionInstructionsControllerState
             ),
             GestureDetector(
               onTap: () async {
-                final String blueToothPermission = Platform.isIOS
-                    ? (await Permission.bluetooth.isGranted
-                        ? 'ble_already'
-                        : 'ble_already') //ble_already
-                    : await _channel.invokeMethod('request_permission');
+                final String blueToothPermission =
+                    await _channel.invokeMethod('request_permission');
                 // !(await Permission.bluetooth.isPermanentlyDenied) &&
                 //     await Permission.bluetooth.isGranted;
                 final locationGranted = Platform.isIOS

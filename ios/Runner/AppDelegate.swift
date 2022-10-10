@@ -26,7 +26,9 @@ import ibtFramework
     
         iBleMethodChannel.setMethodCallHandler({
             (call: FlutterMethodCall, result: @escaping FlutterResult) -> Void in
-            if call.method == "init_IBle_Sdk" {
+            if call.method == "request_permission" {
+                self.requestPermission(result: result)
+            } else if call.method == "init_IBle_Sdk" {
                 self.initIBle()
             } else if call.method == "start_scan" {
                 self.startScan()
@@ -53,6 +55,28 @@ import ibtFramework
         
         GeneratedPluginRegistrant.register(with: self)
         return super.application(application, didFinishLaunchingWithOptions: launchOptions)
+    }
+    
+    private func requestPermission(result: FlutterResult) {
+        
+        if #available(iOS 13.0, *) {
+            if (iBTManager.shared.isStatePoweredOn() && iBTManager.shared.checkPermission()) {
+                result("ble_already")
+                
+            } else {
+                result("ble_off")
+                
+            }
+        }
+        else {
+            if (iBTManager.shared.isStatePoweredOn()) {
+                result("ble_already")
+                
+            } else {
+                result("ble_off")
+                
+            }
+        }
     }
     
     private func initIBle() {
