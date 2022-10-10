@@ -1,8 +1,8 @@
 class Const {
   static const String ENVIRONMENT_DEFAULT = "staging"; //product or staging
 
-  static const String IS_DOMAIN = "is.diab.com.vn"; 
-  static const String IS_DOMAIN_STAGING = "is.staging.diab.com.vn"; 
+  static const String IS_DOMAIN = "is.diab.com.vn";
+  static const String IS_DOMAIN_STAGING = "is.staging.diab.com.vn";
 
   static const String DOMAIN = "api.diab.com.vn";
   static const String DOMAIN_STAGING = "api.staging.diab.com.vn";
@@ -68,6 +68,7 @@ class Const {
   static const String YEAR = "yyyy";
   static const String HOUR_MIN = "hh:mm";
   static const String TIME = "hh:mm aa";
+  static const String NIPRO_DEVICES = "nipro_devices";
 
   static const String key_app_language = "AppLanguage";
 

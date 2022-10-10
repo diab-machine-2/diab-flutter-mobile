@@ -18,6 +18,7 @@ class InputGlucoseModel {
   final String? backgroundColor;
   final String? borderColor;
   final List<ImagesModel> images;
+  final bool byDevice;
 
   InputGlucoseModel({
     required this.id,
@@ -34,10 +35,13 @@ class InputGlucoseModel {
     required this.backgroundColor,
     required this.borderColor,
     required this.images,
+    required this.byDevice,
   });
   @override
   factory InputGlucoseModel.fromJson(Map<String, dynamic> json) {
-    final unit = AppSettings.userInfo!.glucoseUnit == 1 ? R.string.mg_dl.tr() : R.string.mmol_l.tr();
+    final unit = AppSettings.userInfo!.glucoseUnit == 1
+        ? R.string.mg_dl.tr()
+        : R.string.mmol_l.tr();
     return InputGlucoseModel(
         id: json['id'],
         glucose: AppSettings.userInfo!.glucoseUnit == 1
@@ -54,7 +58,8 @@ class InputGlucoseModel {
         fontColor: json['fontColor'],
         backgroundColor: json['backgroundColor'],
         borderColor: json['borderColor'],
-        images: ImagesModel.toList(json['images']));
+        images: ImagesModel.toList(json['images']),
+        byDevice: json['byDevice']);
   }
 
   static List<InputGlucoseModel> toList(List<dynamic> items) {

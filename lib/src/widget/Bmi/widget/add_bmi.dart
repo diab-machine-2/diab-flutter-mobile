@@ -44,7 +44,11 @@ class AddBmiController extends StatefulWidget {
   final String? id;
   final String? goalId;
 
-  AddBmiController({this.type, this.id, this.goalId,});
+  AddBmiController({
+    this.type,
+    this.id,
+    this.goalId,
+  });
 
   @override
   _AddBmiControllerState createState() => _AddBmiControllerState();
@@ -75,7 +79,8 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
   @override
   void initState() {
     print(AppSettings.userInfo);
-    if (AppSettings.userInfo!.height != 0 && AppSettings.userInfo!.height != null) {
+    if (AppSettings.userInfo!.height != 0 &&
+        AppSettings.userInfo!.height != null) {
       selectedHeight = AppSettings.userInfo!.height!.toInt();
     }
     super.initState();
@@ -105,13 +110,15 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
     selectedHip = model!.waist == null ? 0 : model!.waist!.toInt();
     files.addAll(model!.images);
     selectedDate = DateTime.fromMillisecondsSinceEpoch(model!.date! * 1000);
-    selectedTimeFrame = TimeFrameModel(id: model!.timeFrameId, code: '', name: model!.timeFrameText);
+    selectedTimeFrame = TimeFrameModel(
+        id: model!.timeFrameId, code: '', name: model!.timeFrameText);
     setState(() {});
   }
 
   loadTimeFrame() async {
     BotToast.showLoading();
-    final timeFrames = await GlucoseClient().fetchFlucoseTimeFrame(time: selectedDate.millisecondsSinceEpoch ~/ 1000);
+    final timeFrames = await GlucoseClient().fetchFlucoseTimeFrame(
+        time: selectedDate.millisecondsSinceEpoch ~/ 1000);
     selectedTimeFrame = timeFrames.length == 0 ? null : timeFrames.first;
     BotToast.closeAllLoading();
     setState(() {});
@@ -136,15 +143,22 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
         child: Scaffold(
           backgroundColor: R.color.backgroundColor,
           body: Container(
-            decoration:
-                BoxDecoration(image: DecorationImage(image: AssetImage(R.drawable.bg_splash), fit: BoxFit.cover)),
+            decoration: BoxDecoration(
+                image: DecorationImage(
+                    image: AssetImage(R.drawable.bg_splash),
+                    fit: BoxFit.cover)),
             child: Column(
               children: [
                 CustomAppBar(
                   backgroundColor: R.color.transparent,
                   title: Text(
-                      widget.type == 'update' ? R.string.update_weight_info.tr() : R.string.enter_weight_info.tr(),
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: R.color.textDark)),
+                      widget.type == 'update'
+                          ? R.string.update_weight_info.tr()
+                          : R.string.enter_weight_info.tr(),
+                      style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w600,
+                          color: R.color.textDark)),
                   leadingIcon: IconButton(
                       splashColor: R.color.transparent,
                       highlightColor: R.color.transparent,
@@ -162,54 +176,73 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                       child: Padding(
                         padding: const EdgeInsets.only(left: 16, right: 16),
                         child: isClicked
-                            ? Image.asset(R.drawable.ic_help_circle_active, width: 24, height: 24)
-                            : Image.asset(R.drawable.ic_help_circle, width: 24, height: 24),
+                            ? Image.asset(R.drawable.ic_help_circle_active,
+                                width: 24, height: 24)
+                            : Image.asset(R.drawable.ic_help_circle,
+                                width: 24, height: 24),
                       ),
                     ),
                   ],
                 ),
                 Expanded(
                   child: ListView(
-                      keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+                      keyboardDismissBehavior:
+                          ScrollViewKeyboardDismissBehavior.onDrag,
                       padding: EdgeInsets.all(0),
                       children: [
                         Padding(
-                            padding: const EdgeInsets.only(left: 16, right: 16, bottom: 16),
+                            padding: const EdgeInsets.only(
+                                left: 16, right: 16, bottom: 16),
                             child: isClicked
                                 ? Description(
-                                    input: true, data: des, titleDetail: R.string.diabetes_weight_control.tr())
+                                    input: true,
+                                    data: des,
+                                    titleDetail:
+                                        R.string.diabetes_weight_control.tr())
                                 : SizedBox()),
                         Padding(
-                          padding: const EdgeInsets.only(bottom: 16, left: 16, right: 16),
+                          padding: const EdgeInsets.only(
+                              bottom: 16, left: 16, right: 16),
                           child: Container(
-                            decoration:
-                                BoxDecoration(borderRadius: BorderRadius.circular(16), color: R.color.color0xffB1DDDB),
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(16),
+                                color: R.color.color0xffB1DDDB),
                             padding: EdgeInsets.only(right: 20),
                             child: Row(
                               children: [
                                 Container(
-                                  margin: const EdgeInsets.only(left: 16, right: 32, top: 9),
-                                  child: Image.asset(R.drawable.img_male_weight, height: 131),
+                                  margin: const EdgeInsets.only(
+                                      left: 16, right: 32, top: 9),
+                                  child: Image.asset(R.drawable.img_male_weight,
+                                      height: 131),
                                 ),
                                 Expanded(
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Text('${R.string.your_bmi.tr()}: ',
                                           style: TextStyle(
-                                              color: R.color.textDark, fontSize: 14, fontWeight: FontWeight.w500)),
+                                              color: R.color.textDark,
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.w500)),
                                       SizedBox(height: 6),
                                       Row(
                                         children: [
                                           Text(roundNumber(bmiNumber!),
                                               style: TextStyle(
-                                                  color: R.color.textDark, fontSize: 24, fontWeight: FontWeight.w700)),
+                                                  color: R.color.textDark,
+                                                  fontSize: 24,
+                                                  fontWeight: FontWeight.w700)),
                                           Padding(
-                                            padding: const EdgeInsets.only(top: 2.0, left: 4),
+                                            padding: const EdgeInsets.only(
+                                                top: 2.0, left: 4),
                                             child: Text(
                                               R.string.kg_m_2.tr(),
                                               style: TextStyle(
-                                                  color: R.color.textDark, fontWeight: FontWeight.w400, fontSize: 16.0),
+                                                  color: R.color.textDark,
+                                                  fontWeight: FontWeight.w400,
+                                                  fontSize: 16.0),
                                             ),
                                           ),
                                         ],
@@ -222,7 +255,8 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                           ),
                         ),
                         Padding(
-                          padding: const EdgeInsets.only(bottom: 16, left: 16, right: 16),
+                          padding: const EdgeInsets.only(
+                              bottom: 16, left: 16, right: 16),
                           child: Container(
                             decoration: BoxDecoration(
                               color: R.color.white,
@@ -232,232 +266,328 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                             padding: EdgeInsets.all(20),
                             child: Column(
                               children: [
-                                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                                  Row(children: [
-                                    Image.asset(R.drawable.ic_scale, width: 22, height: 22),
-                                    SizedBox(width: 8),
-                                    Text(R.string.weight_and_height.tr(),
-                                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
-                                    // SizedBox(height: 16),
-                                  ]),
-                                  SizedBox(height: 16),
-                                  Center(
-                                    child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      children: [
-                                        Row(
+                                Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Row(children: [
+                                        Image.asset(R.drawable.ic_scale,
+                                            width: 22, height: 22),
+                                        SizedBox(width: 8),
+                                        Text(R.string.weight_and_height.tr(),
+                                            style: TextStyle(
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.w600)),
+                                        // SizedBox(height: 16),
+                                      ]),
+                                      SizedBox(height: 16),
+                                      Center(
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
                                           children: [
-                                            Column(
+                                            Row(
                                               children: [
-                                                GestureDetector(
-                                                  onTap: () {
-                                                    showDialog(
-                                                      barrierColor: R.color.color0xff003F38.withOpacity(0.5),
-                                                      context: context,
-                                                      builder: (_) => CustomWeightPicker(
-                                                          callback: (number) {
-                                                            setState(() {
-                                                              if (number != null) selectedWeight = number;
-                                                            });
-                                                            handleBMI();
-                                                          },
-                                                          title: R.string.enter_weight.tr(),
-                                                          max: 180,
-                                                          numberDefault: selectedWeight == 0 ? 50 : selectedWeight,
-                                                          unit: R.string.kg.tr()),
-                                                    );
-                                                  },
-                                                  child: Container(
-                                                      width: 80,
-                                                      child: Center(
-                                                        child: Text(
-                                                            selectedWeight == 0 ? '-' : Utils.showValue(selectedWeight),
-                                                            style: TextStyle(
-                                                                color: selectedWeight == 0
-                                                                    ? R.color.captionColorGray
-                                                                    : R.color.textDark,
-                                                                fontSize: 34,
-                                                                fontWeight: FontWeight.w500)),
-                                                      )),
+                                                Column(
+                                                  children: [
+                                                    GestureDetector(
+                                                      onTap: () {
+                                                        showDialog(
+                                                          barrierColor: R.color
+                                                              .color0xff003F38
+                                                              .withOpacity(0.5),
+                                                          context: context,
+                                                          builder: (_) =>
+                                                              CustomWeightPicker(
+                                                                  callback:
+                                                                      (number) {
+                                                                    setState(
+                                                                        () {
+                                                                      if (number !=
+                                                                          null)
+                                                                        selectedWeight =
+                                                                            number;
+                                                                    });
+                                                                    handleBMI();
+                                                                  },
+                                                                  title: R
+                                                                      .string
+                                                                      .enter_weight
+                                                                      .tr(),
+                                                                  max: 180,
+                                                                  numberDefault:
+                                                                      selectedWeight ==
+                                                                              0
+                                                                          ? 50
+                                                                          : selectedWeight,
+                                                                  unit: R
+                                                                      .string.kg
+                                                                      .tr()),
+                                                        );
+                                                      },
+                                                      child: Container(
+                                                          width: 80,
+                                                          child: Center(
+                                                            child: Text(
+                                                                selectedWeight ==
+                                                                        0
+                                                                    ? '-'
+                                                                    : Utils.showValue(
+                                                                        selectedWeight),
+                                                                style: TextStyle(
+                                                                    color: selectedWeight ==
+                                                                            0
+                                                                        ? R.color
+                                                                            .captionColorGray
+                                                                        : R.color
+                                                                            .textDark,
+                                                                    fontSize:
+                                                                        34,
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .w500)),
+                                                          )),
+                                                    ),
+                                                    Container(
+                                                        height: 1,
+                                                        width: 54,
+                                                        color: R.color
+                                                            .color0xffE5E5E5)
+                                                  ],
                                                 ),
-                                                Container(height: 1, width: 54, color: R.color.color0xffE5E5E5)
+                                                Text(R.string.kg.tr(),
+                                                    style: TextStyle(
+                                                      fontSize: 16,
+                                                    )),
+                                                SizedBox(
+                                                  width: 16,
+                                                )
                                               ],
                                             ),
-                                            Text(R.string.kg.tr(),
-                                                style: TextStyle(
-                                                  fontSize: 16,
-                                                )),
-                                            SizedBox(
-                                              width: 16,
-                                            )
-                                          ],
-                                        ),
-                                        (AppSettings.userInfo!.height == 0 || AppSettings.userInfo!.height == null)
-                                            ? Row(
-                                                children: [
-                                                  Padding(
-                                                    padding: const EdgeInsets.only(bottom: 8.0),
-                                                    child: Text('/',
-                                                        style: TextStyle(
-                                                          fontSize: 30,
-                                                        )),
-                                                  ),
-                                                  SizedBox(
-                                                    width: 16,
-                                                  ),
-                                                  Row(
+                                            (AppSettings.userInfo!.height ==
+                                                        0 ||
+                                                    AppSettings
+                                                            .userInfo!.height ==
+                                                        null)
+                                                ? Row(
                                                     children: [
-                                                      Column(
+                                                      Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                    .only(
+                                                                bottom: 8.0),
+                                                        child: Text('/',
+                                                            style: TextStyle(
+                                                              fontSize: 30,
+                                                            )),
+                                                      ),
+                                                      SizedBox(
+                                                        width: 16,
+                                                      ),
+                                                      Row(
                                                         children: [
-                                                          GestureDetector(
-                                                              onTap: () {
-                                                                showDialog(
-                                                                  barrierColor:
-                                                                      R.color.color0xff003F38.withOpacity(0.5),
-                                                                  context: context,
-                                                                  builder: (_) => CustomNumPicker(
-                                                                      callback: (num) {
-                                                                        if (num != null) {
-                                                                          setState(() {
-                                                                            selectedHeight = num;
-                                                                          });
-                                                                          handleBMI();
-                                                                        }
-                                                                      },
-                                                                      title: R.string.enter_height.tr(),
-                                                                      max: 250,
-                                                                      numberDefault:
-                                                                          selectedHeight == 0 ? 150 : selectedHeight,
-                                                                      unit: R.string.cm.tr()),
-                                                                );
-                                                              },
-                                                              child: Container(
-                                                                width: 80,
-                                                                child: Center(
-                                                                  child: Text(
-                                                                      selectedHeight == 0
-                                                                          ? '-'
-                                                                          : selectedHeight.toString(),
-                                                                      style: TextStyle(
-                                                                          color: selectedHeight == 0
-                                                                              ? R.color.captionColorGray
-                                                                              : R.color.textDark,
-                                                                          fontSize: 34,
-                                                                          fontWeight: FontWeight.w500)),
-                                                                ),
+                                                          Column(
+                                                            children: [
+                                                              GestureDetector(
+                                                                  onTap: () {
+                                                                    showDialog(
+                                                                      barrierColor: R
+                                                                          .color
+                                                                          .color0xff003F38
+                                                                          .withOpacity(
+                                                                              0.5),
+                                                                      context:
+                                                                          context,
+                                                                      builder: (_) => CustomNumPicker(
+                                                                          callback: (num) {
+                                                                            if (num !=
+                                                                                null) {
+                                                                              setState(() {
+                                                                                selectedHeight = num;
+                                                                              });
+                                                                              handleBMI();
+                                                                            }
+                                                                          },
+                                                                          title: R.string.enter_height.tr(),
+                                                                          max: 250,
+                                                                          numberDefault: selectedHeight == 0 ? 150 : selectedHeight,
+                                                                          unit: R.string.cm.tr()),
+                                                                    );
+                                                                  },
+                                                                  child:
+                                                                      Container(
+                                                                    width: 80,
+                                                                    child:
+                                                                        Center(
+                                                                      child: Text(
+                                                                          selectedHeight == 0
+                                                                              ? '-'
+                                                                              : selectedHeight
+                                                                                  .toString(),
+                                                                          style: TextStyle(
+                                                                              color: selectedHeight == 0 ? R.color.captionColorGray : R.color.textDark,
+                                                                              fontSize: 34,
+                                                                              fontWeight: FontWeight.w500)),
+                                                                    ),
+                                                                  )),
+                                                              Container(
+                                                                  height: 1,
+                                                                  width: 54,
+                                                                  color: R.color
+                                                                      .color0xffE5E5E5)
+                                                            ],
+                                                          ),
+                                                          Text(R.string.cm.tr(),
+                                                              style: TextStyle(
+                                                                fontSize: 16,
                                                               )),
-                                                          Container(
-                                                              height: 1, width: 54, color: R.color.color0xffE5E5E5)
                                                         ],
                                                       ),
-                                                      Text(R.string.cm.tr(),
-                                                          style: TextStyle(
-                                                            fontSize: 16,
-                                                          )),
                                                     ],
-                                                  ),
-                                                ],
-                                              )
-                                            : SizedBox(),
-                                      ],
-                                    ),
-                                  ),
-                                  textValidate.isNotEmpty
-                                      ? Column(
-                                          children: [
-                                            SizedBox(
-                                              height: 10,
-                                            ),
-                                            Text(textValidate,
-                                                textAlign: TextAlign.center,
-                                                style: TextStyle(
-                                                    fontSize: 14, color: R.color.red, fontWeight: FontWeight.w400)),
-                                          ],
-                                        )
-                                      : SizedBox(),
-                                ]),
-                                SizedBox(height: 20),
-                                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                                  Row(children: [
-                                    Image.asset(R.drawable.ic_ruler, width: 22, height: 22),
-                                    SizedBox(width: 8),
-                                    Text(R.string.waist.tr(),
-                                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
-                                    // SizedBox(height: 16),
-                                  ]),
-                                  SizedBox(height: 8),
-                                  Center(
-                                    child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      children: [
-                                        Row(
-                                          children: [
-                                            Column(
-                                              children: [
-                                                GestureDetector(
-                                                  onTap: () {
-                                                    showDialog(
-                                                      barrierColor: R.color.color0xff003F38.withOpacity(0.5),
-                                                      context: context,
-                                                      builder: (_) => CustomNumPicker(
-                                                          callback: (num) {
-                                                            if (num != null) {
-                                                              setState(() {
-                                                                selectedHip = num;
-                                                              });
-                                                            }
-                                                          },
-                                                          title: R.string.enter_waist.tr(),
-                                                          max: 180,
-                                                          numberDefault: selectedHip == 0 ? 60 : selectedHip,
-                                                          unit: R.string.cm.tr()),
-                                                    );
-                                                  },
-                                                  child: Container(
-                                                    width: 80,
-                                                    child: Center(
-                                                      child: Text(selectedHip == 0 ? '-' : selectedHip.toString(),
-                                                          style: TextStyle(
-                                                              color: selectedHip == 0
-                                                                  ? R.color.captionColorGray
-                                                                  : R.color.textDark,
-                                                              fontSize: 34,
-                                                              fontWeight: FontWeight.w500)),
-                                                    ),
-                                                  ),
-                                                ),
-                                                Container(height: 1, width: 54, color: R.color.color0xffE5E5E5)
-                                              ],
-                                            ),
-                                            Text(R.string.cm.tr(),
-                                                style: TextStyle(
-                                                  fontSize: 16,
-                                                )),
+                                                  )
+                                                : SizedBox(),
                                           ],
                                         ),
-                                      ],
-                                    ),
-                                  ),
-                                  textValidate.isNotEmpty
-                                      ? Column(
+                                      ),
+                                      textValidate.isNotEmpty
+                                          ? Column(
+                                              children: [
+                                                SizedBox(
+                                                  height: 10,
+                                                ),
+                                                Text(textValidate,
+                                                    textAlign: TextAlign.center,
+                                                    style: TextStyle(
+                                                        fontSize: 14,
+                                                        color: R.color.red,
+                                                        fontWeight:
+                                                            FontWeight.w400)),
+                                              ],
+                                            )
+                                          : SizedBox(),
+                                    ]),
+                                SizedBox(height: 20),
+                                Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Row(children: [
+                                        Image.asset(R.drawable.ic_ruler,
+                                            width: 22, height: 22),
+                                        SizedBox(width: 8),
+                                        Text(R.string.waist.tr(),
+                                            style: TextStyle(
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.w600)),
+                                        // SizedBox(height: 16),
+                                      ]),
+                                      SizedBox(height: 8),
+                                      Center(
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
                                           children: [
-                                            SizedBox(
-                                              height: 10,
+                                            Row(
+                                              children: [
+                                                Column(
+                                                  children: [
+                                                    GestureDetector(
+                                                      onTap: () {
+                                                        showDialog(
+                                                          barrierColor: R.color
+                                                              .color0xff003F38
+                                                              .withOpacity(0.5),
+                                                          context: context,
+                                                          builder: (_) =>
+                                                              CustomNumPicker(
+                                                                  callback:
+                                                                      (num) {
+                                                                    if (num !=
+                                                                        null) {
+                                                                      setState(
+                                                                          () {
+                                                                        selectedHip =
+                                                                            num;
+                                                                      });
+                                                                    }
+                                                                  },
+                                                                  title: R
+                                                                      .string
+                                                                      .enter_waist
+                                                                      .tr(),
+                                                                  max: 180,
+                                                                  numberDefault:
+                                                                      selectedHip ==
+                                                                              0
+                                                                          ? 60
+                                                                          : selectedHip,
+                                                                  unit: R
+                                                                      .string.cm
+                                                                      .tr()),
+                                                        );
+                                                      },
+                                                      child: Container(
+                                                        width: 80,
+                                                        child: Center(
+                                                          child: Text(
+                                                              selectedHip == 0
+                                                                  ? '-'
+                                                                  : selectedHip
+                                                                      .toString(),
+                                                              style: TextStyle(
+                                                                  color: selectedHip ==
+                                                                          0
+                                                                      ? R.color
+                                                                          .captionColorGray
+                                                                      : R.color
+                                                                          .textDark,
+                                                                  fontSize: 34,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w500)),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    Container(
+                                                        height: 1,
+                                                        width: 54,
+                                                        color: R.color
+                                                            .color0xffE5E5E5)
+                                                  ],
+                                                ),
+                                                Text(R.string.cm.tr(),
+                                                    style: TextStyle(
+                                                      fontSize: 16,
+                                                    )),
+                                              ],
                                             ),
-                                            Text(textValidate,
-                                                textAlign: TextAlign.center,
-                                                style: TextStyle(
-                                                    fontSize: 14, color: R.color.red, fontWeight: FontWeight.w400)),
                                           ],
-                                        )
-                                      : SizedBox(),
-                                ]),
+                                        ),
+                                      ),
+                                      textValidate.isNotEmpty
+                                          ? Column(
+                                              children: [
+                                                SizedBox(
+                                                  height: 10,
+                                                ),
+                                                Text(textValidate,
+                                                    textAlign: TextAlign.center,
+                                                    style: TextStyle(
+                                                        fontSize: 14,
+                                                        color: R.color.red,
+                                                        fontWeight:
+                                                            FontWeight.w400)),
+                                              ],
+                                            )
+                                          : SizedBox(),
+                                    ]),
                               ],
                             ),
                           ),
                         ),
                         Padding(
-                          padding: const EdgeInsets.only(bottom: 16, left: 16, right: 16),
+                          padding: const EdgeInsets.only(
+                              bottom: 16, left: 16, right: 16),
                           child: Container(
                             decoration: BoxDecoration(
                               color: R.color.white,
@@ -468,7 +598,8 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                               GestureDetector(
                                 onTap: () {
                                   showDialog(
-                                    barrierColor: R.color.color0xff003F38.withOpacity(0.5),
+                                    barrierColor: R.color.color0xff003F38
+                                        .withOpacity(0.5),
                                     context: context,
                                     builder: (_) => DateMultiPicker(
                                       initDate: selectedDate,
@@ -496,21 +627,33 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                                 child: Container(
                                   color: R.color.transparent,
                                   child: Column(children: [
-                                    Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                                      Image.asset(R.drawable.ic_calendar, width: 24, height: 24),
-                                      SizedBox(width: 8),
-                                      Row(
+                                    Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
                                         children: [
-                                          Text(
-                                              convertToUTC(
-                                                  selectedDate.millisecondsSinceEpoch ~/ 1000, 'HH:mm - dd/MM/yyyy'),
-                                              style: TextStyle(
-                                                  color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w400)),
-                                        ],
-                                      )
-                                    ]),
+                                          Image.asset(R.drawable.ic_calendar,
+                                              width: 24, height: 24),
+                                          SizedBox(width: 8),
+                                          Row(
+                                            children: [
+                                              Text(
+                                                  convertToUTC(
+                                                      selectedDate
+                                                              .millisecondsSinceEpoch ~/
+                                                          1000,
+                                                      'HH:mm - dd/MM/yyyy'),
+                                                  style: TextStyle(
+                                                      color: R.color.textDark,
+                                                      fontSize: 16,
+                                                      fontWeight:
+                                                          FontWeight.w400)),
+                                            ],
+                                          )
+                                        ]),
                                     SizedBox(height: 16),
-                                    Container(height: 1, color: R.color.color0xffE5E5E5),
+                                    Container(
+                                        height: 1,
+                                        color: R.color.color0xffE5E5E5),
                                     SizedBox(height: 8),
                                   ]),
                                 ),
@@ -519,7 +662,8 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                           ),
                         ),
                         Padding(
-                          padding: const EdgeInsets.only(bottom: 16, left: 16, right: 16),
+                          padding: const EdgeInsets.only(
+                              bottom: 16, left: 16, right: 16),
                           child: Container(
                             decoration: BoxDecoration(
                               color: R.color.white,
@@ -534,17 +678,25 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                                 child: Container(
                                   color: R.color.transparent,
                                   child: Column(children: [
-                                    Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                                      Image.asset(R.drawable.ic_clock, width: 24, height: 24),
-                                      SizedBox(width: 8),
-                                      Text(
-                                          selectedTimeFrame == null
-                                              ? R.string.chon_khung_gio.tr()
-                                              : selectedTimeFrame!.name!,
-                                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400))
-                                    ]),
+                                    Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Image.asset(R.drawable.ic_clock,
+                                              width: 24, height: 24),
+                                          SizedBox(width: 8),
+                                          Text(
+                                              selectedTimeFrame == null
+                                                  ? R.string.chon_khung_gio.tr()
+                                                  : selectedTimeFrame!.name!,
+                                              style: TextStyle(
+                                                  fontSize: 16,
+                                                  fontWeight: FontWeight.w400))
+                                        ]),
                                     SizedBox(height: 16),
-                                    Container(height: 1, color: R.color.color0xffE5E5E5),
+                                    Container(
+                                        height: 1,
+                                        color: R.color.color0xffE5E5E5),
                                     SizedBox(height: 8),
                                   ]),
                                 ),
@@ -553,7 +705,8 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                           ),
                         ),
                         Padding(
-                          padding: const EdgeInsets.only(bottom: 16, left: 16, right: 16),
+                          padding: const EdgeInsets.only(
+                              bottom: 16, left: 16, right: 16),
                           child: Container(
                             decoration: BoxDecoration(
                               color: R.color.white,
@@ -561,73 +714,120 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                             ),
                             // color: R.color.white,
                             padding: EdgeInsets.all(16),
-                            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                              Row(children: [
-                                Image.asset(R.drawable.ic_note_text, width: 24, height: 24),
-                                SizedBox(width: 8),
-                                Text(R.string.ghi_chu.tr(), style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600))
-                              ]),
-                              SizedBox(height: 24),
-                              TextField(
-                                  controller: _controllerNote,
-                                  style: TextStyle(color: R.color.black, fontSize: 16, fontWeight: FontWeight.w400),
-                                  decoration: InputDecoration(
-                                      hintText: R.string.nhap_ghi_chu_cua_ban.tr(),
-                                      contentPadding: EdgeInsets.only(bottom: 8),
-                                      border: InputBorder.none,
-                                      counterText: '',
-                                      hintStyle: TextStyle(
-                                          fontSize: 16, fontWeight: FontWeight.w400, color: R.color.primaryGreyColor))),
-                              Container(height: 1, color: R.color.color0xffE5E5E5),
-                              SizedBox(height: 8),
-                              GridView.builder(
-                                  physics: NeverScrollableScrollPhysics(),
-                                  shrinkWrap: true,
-                                  itemCount: files.length + 1,
-                                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                                      crossAxisCount: 3,
-                                      childAspectRatio: 1,
-                                      crossAxisSpacing: 16,
-                                      mainAxisSpacing: 16),
-                                  itemBuilder: (BuildContext context, int index) {
-                                    return GestureDetector(
-                                        onTap: () {
-                                          if (index == files.length) {
-                                            showActionSheet(context);
-                                          }
-                                        },
-                                        child: index == files.length
-                                            ? Container(child: Image.asset(R.drawable.ic_add_photo))
-                                            : GestureDetector(
-                                                onTap: () {
-                                                  Navigator.pushNamed(context, '/photo_view',
-                                                      arguments: {'files': files, 'index': index});
-                                                },
-                                                child: Stack(alignment: AlignmentDirectional.topEnd, children: [
-                                                  Positioned.fill(
-                                                    child: files[index] is PickedFile
-                                                        ? Image.file(
-                                                            File(files[index].path),
-                                                            fit: BoxFit.cover,
-                                                          )
-                                                        : NetWorkImageWidget(imageUrl: files[index].url, fit: BoxFit.cover),
-                                                  ),
-                                                  IconButton(
-                                                      icon: Image.asset(R.drawable.ic_trash),
-                                                      onPressed: () {
-                                                        setState(() {
-                                                          if (files[index] is PickedFile) {
-                                                            files.removeAt(index);
-                                                          } else {
-                                                            removeIDs.add(files[index].id);
-                                                            files.removeAt(index);
-                                                          }
-                                                        });
-                                                      })
-                                                ]),
-                                              ));
-                                  })
-                            ]),
+                            child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(children: [
+                                    Image.asset(R.drawable.ic_note_text,
+                                        width: 24, height: 24),
+                                    SizedBox(width: 8),
+                                    Text(R.string.ghi_chu.tr(),
+                                        style: TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w600))
+                                  ]),
+                                  SizedBox(height: 24),
+                                  TextField(
+                                      controller: _controllerNote,
+                                      style: TextStyle(
+                                          color: R.color.black,
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w400),
+                                      decoration: InputDecoration(
+                                          hintText: R
+                                              .string.nhap_ghi_chu_cua_ban
+                                              .tr(),
+                                          contentPadding:
+                                              EdgeInsets.only(bottom: 8),
+                                          border: InputBorder.none,
+                                          counterText: '',
+                                          hintStyle: TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w400,
+                                              color:
+                                                  R.color.primaryGreyColor))),
+                                  Container(
+                                      height: 1,
+                                      color: R.color.color0xffE5E5E5),
+                                  SizedBox(height: 8),
+                                  GridView.builder(
+                                      physics: NeverScrollableScrollPhysics(),
+                                      shrinkWrap: true,
+                                      itemCount: files.length + 1,
+                                      gridDelegate:
+                                          SliverGridDelegateWithFixedCrossAxisCount(
+                                              crossAxisCount: 3,
+                                              childAspectRatio: 1,
+                                              crossAxisSpacing: 16,
+                                              mainAxisSpacing: 16),
+                                      itemBuilder:
+                                          (BuildContext context, int index) {
+                                        return GestureDetector(
+                                            onTap: () {
+                                              if (index == files.length) {
+                                                showActionSheet(context);
+                                              }
+                                            },
+                                            child: index == files.length
+                                                ? Container(
+                                                    child: Image.asset(R
+                                                        .drawable.ic_add_photo))
+                                                : GestureDetector(
+                                                    onTap: () {
+                                                      Navigator.pushNamed(
+                                                          context,
+                                                          '/photo_view',
+                                                          arguments: {
+                                                            'files': files,
+                                                            'index': index
+                                                          });
+                                                    },
+                                                    child: Stack(
+                                                        alignment:
+                                                            AlignmentDirectional
+                                                                .topEnd,
+                                                        children: [
+                                                          Positioned.fill(
+                                                            child: files[index]
+                                                                    is PickedFile
+                                                                ? Image.file(
+                                                                    File(files[
+                                                                            index]
+                                                                        .path),
+                                                                    fit: BoxFit
+                                                                        .cover,
+                                                                  )
+                                                                : NetWorkImageWidget(
+                                                                    imageUrl:
+                                                                        files[index]
+                                                                            .url,
+                                                                    fit: BoxFit
+                                                                        .cover),
+                                                          ),
+                                                          IconButton(
+                                                              icon: Image.asset(R
+                                                                  .drawable
+                                                                  .ic_trash),
+                                                              onPressed: () {
+                                                                setState(() {
+                                                                  if (files[
+                                                                          index]
+                                                                      is PickedFile) {
+                                                                    files.removeAt(
+                                                                        index);
+                                                                  } else {
+                                                                    removeIDs.add(
+                                                                        files[index]
+                                                                            .id);
+                                                                    files.removeAt(
+                                                                        index);
+                                                                  }
+                                                                });
+                                                              })
+                                                        ]),
+                                                  ));
+                                      })
+                                ]),
                           ),
                         ),
                       ]),
@@ -649,56 +849,74 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                                   gradient: LinearGradient(
                                       begin: Alignment.topLeft,
                                       end: Alignment.centerRight,
-                                      colors: [R.color.greenGradientTop, R.color.greenGradientBottom])),
+                                      colors: [
+                                        R.color.greenGradientTop,
+                                        R.color.greenGradientBottom
+                                      ])),
                               child: Center(
                                   child: Text(R.string.save.tr(),
-                                      style:
-                                          TextStyle(color: R.color.white, fontWeight: FontWeight.w600, fontSize: 16)))),
+                                      style: TextStyle(
+                                          color: R.color.white,
+                                          fontWeight: FontWeight.w600,
+                                          fontSize: 16)))),
                         ),
                       )
                     : SafeArea(
                         top: false,
                         child: Container(
                             margin: EdgeInsets.all(16),
-                            child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                              GestureDetector(
-                                onTap: () {
-                                  _showDialogDelete(context);
-                                },
-                                child: Container(
-                                    height: 48,
-                                    width: 164,
-                                    decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(200),
-                                        border: Border.all(color: R.color.red, width: 2)),
-                                    child: Center(
-                                      child: Text(R.string.xoa_du_lieu.tr(),
-                                          style:
-                                              TextStyle(color: R.color.red, fontSize: 16, fontWeight: FontWeight.w600)),
-                                    )),
-                              ),
-                              GestureDetector(
-                                onTap: () {
-                                  editData();
-                                },
-                                child: Container(
-                                  height: 48,
-                                  width: 164,
-                                  decoration: BoxDecoration(
-                                      color: R.color.mainColor,
-                                      borderRadius: BorderRadius.circular(200),
-                                      gradient: LinearGradient(
-                                          begin: Alignment.topLeft,
-                                          end: Alignment.centerRight,
-                                          colors: [R.color.greenGradientTop, R.color.greenGradientBottom])),
-                                  child: Center(
-                                    child: Text(R.string.save.tr(),
-                                        style:
-                                            TextStyle(color: R.color.white, fontSize: 16, fontWeight: FontWeight.w600)),
+                            child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  GestureDetector(
+                                    onTap: () {
+                                      _showDialogDelete(context);
+                                    },
+                                    child: Container(
+                                        height: 48,
+                                        width: 164,
+                                        decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(200),
+                                            border: Border.all(
+                                                color: R.color.red, width: 2)),
+                                        child: Center(
+                                          child: Text(R.string.xoa_du_lieu.tr(),
+                                              style: TextStyle(
+                                                  color: R.color.red,
+                                                  fontSize: 16,
+                                                  fontWeight: FontWeight.w600)),
+                                        )),
                                   ),
-                                ),
-                              ),
-                            ])),
+                                  GestureDetector(
+                                    onTap: () {
+                                      editData();
+                                    },
+                                    child: Container(
+                                      height: 48,
+                                      width: 164,
+                                      decoration: BoxDecoration(
+                                          color: R.color.mainColor,
+                                          borderRadius:
+                                              BorderRadius.circular(200),
+                                          gradient: LinearGradient(
+                                              begin: Alignment.topLeft,
+                                              end: Alignment.centerRight,
+                                              colors: [
+                                                R.color.greenGradientTop,
+                                                R.color.greenGradientBottom
+                                              ])),
+                                      child: Center(
+                                        child: Text(R.string.save.tr(),
+                                            style: TextStyle(
+                                                color: R.color.white,
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.w600)),
+                                      ),
+                                    ),
+                                  ),
+                                ])),
                       ),
               ],
             ),
@@ -714,7 +932,8 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
       final result = await WeightClient().deleteIndexBmi(widget.id);
       if (result == true) {
         Message.showToastMessage(context, R.string.xoa_thanh_cong.tr());
-        Observable.instance.notifyObservers([], notifyName: "Weight_change_data");
+        Observable.instance
+            .notifyObservers([], notifyName: "Weight_change_data");
       }
       BotToast.closeAllLoading();
     } catch (e, _) {
@@ -779,7 +998,8 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
       if (result == true) {
         updateHeightProfile();
         Message.showToastMessage(context, R.string.luu_thanh_cong.tr());
-        Observable.instance.notifyObservers([], notifyName: "Weight_change_data");
+        Observable.instance
+            .notifyObservers([], notifyName: "Weight_change_data");
       }
 
       BotToast.closeAllLoading();
@@ -837,11 +1057,13 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
           selectedTimeFrame!.id);
       BotToast.closeAllLoading();
       if (result == true) {
-      //  if(widget.goalId != null && widget.goalId?.isNotEmpty == true){
-          await HomeClient().completeSmartGoal(selectedDate, widget.goalId ?? '', 1, ScheduleType.weight.typeIndex);
-      //  }
+        //  if(widget.goalId != null && widget.goalId?.isNotEmpty == true){
+        await HomeClient().completeSmartGoal(selectedDate, widget.goalId ?? '',
+            1, ScheduleType.weight.typeIndex);
+        //  }
         updateHeightProfile();
-        Observable.instance.notifyObservers([], notifyName: "Weight_change_data");
+        Observable.instance
+            .notifyObservers([], notifyName: "Weight_change_data");
       }
     } catch (e, _) {
       BotToast.closeAllLoading();
@@ -963,54 +1185,66 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                         padding: const EdgeInsets.only(top: 16.0),
                         child: Text(R.string.ban_muon_xoa_du_lieu.tr(),
                             textAlign: TextAlign.center,
-                            style: TextStyle(color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w600)),
+                            style: TextStyle(
+                                color: R.color.textDark,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600)),
                       ),
                       Padding(
                         padding: const EdgeInsets.only(top: 16.0),
                         child: Text(R.string.confirm_to_remove_data.tr(),
-                            textAlign: TextAlign.center, style: R.style.normalTextStyle),
+                            textAlign: TextAlign.center,
+                            style: R.style.normalTextStyle),
                       ),
                       Container(
                         margin: EdgeInsets.only(top: 16),
-                        child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                          Expanded(
-                            child: GestureDetector(
-                              onTap: () {
-                                Navigator.pop(context);
-                              },
-                              child: Container(
-                                  height: 43,
-                                  decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(200), color: R.color.grayBorder),
-                                  child: Center(
-                                    child: Text(R.string.back.tr(),
-                                        style: TextStyle(
-                                            color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w600)),
-                                  )),
-                            ),
-                          ),
-                          SizedBox(width: 14),
-                          Expanded(
-                            child: GestureDetector(
-                              onTap: () {
-                                Navigator.pop(context);
-                                deleteData();
-                              },
-                              child: Container(
-                                height: 43,
-                                decoration: BoxDecoration(
-                                  color: R.color.red,
-                                  borderRadius: BorderRadius.circular(200),
-                                ),
-                                child: Center(
-                                  child: Text(R.string.delete.tr(),
-                                      style:
-                                          TextStyle(color: R.color.white, fontSize: 16, fontWeight: FontWeight.w600)),
+                        child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Expanded(
+                                child: GestureDetector(
+                                  onTap: () {
+                                    Navigator.pop(context);
+                                  },
+                                  child: Container(
+                                      height: 43,
+                                      decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(200),
+                                          color: R.color.grayBorder),
+                                      child: Center(
+                                        child: Text(R.string.back.tr(),
+                                            style: TextStyle(
+                                                color: R.color.textDark,
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.w600)),
+                                      )),
                                 ),
                               ),
-                            ),
-                          ),
-                        ]),
+                              SizedBox(width: 14),
+                              Expanded(
+                                child: GestureDetector(
+                                  onTap: () {
+                                    Navigator.pop(context);
+                                    deleteData();
+                                  },
+                                  child: Container(
+                                    height: 43,
+                                    decoration: BoxDecoration(
+                                      color: R.color.red,
+                                      borderRadius: BorderRadius.circular(200),
+                                    ),
+                                    child: Center(
+                                      child: Text(R.string.delete.tr(),
+                                          style: TextStyle(
+                                              color: R.color.white,
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w600)),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ]),
                       ),
                     ],
                   ),
@@ -1044,7 +1278,11 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
         Navigator.pop(context);
         return;
       }
-    } else if (selectedWeight == 0 && selectedHip == 0 && note.isEmpty && note.isEmpty && files.length == 0) {
+    } else if (selectedWeight == 0 &&
+        selectedHip == 0 &&
+        note.isEmpty &&
+        note.isEmpty &&
+        files.length == 0) {
       Navigator.pop(context);
       return;
     }
@@ -1061,59 +1299,76 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Image.asset(R.drawable.ic_back_icon, width: 64, height: 64),
+                      Image.asset(R.drawable.ic_back_icon,
+                          width: 64, height: 64),
                       Padding(
                         padding: const EdgeInsets.only(top: 16.0),
                         child: Text(R.string.ban_muon_quay_lai.tr(),
                             textAlign: TextAlign.center,
-                            style: TextStyle(color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w600)),
+                            style: TextStyle(
+                                color: R.color.textDark,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600)),
                       ),
                       Padding(
                         padding: const EdgeInsets.only(top: 16.0),
                         child: Text(R.string.confirm_to_back.tr(),
-                            textAlign: TextAlign.center, style: R.style.normalTextStyle),
+                            textAlign: TextAlign.center,
+                            style: R.style.normalTextStyle),
                       ),
                       SizedBox(height: 16),
-                      Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                        Expanded(
-                          child: GestureDetector(
-                              onTap: () {
-                                Navigator.pop(context);
-                              },
-                              child: Container(
-                                  height: 43,
-                                  decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(200), color: R.color.grayBorder),
-                                  child: Center(
-                                    child: Text(R.string.van_o_lai.tr(),
-                                        style: TextStyle(
-                                            color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w600)),
-                                  ))),
-                        ),
-                        SizedBox(width: 14),
-                        Expanded(
-                          child: GestureDetector(
-                              onTap: () {
-                                Navigator.pop(context);
-                                Navigator.pop(context);
-                              },
-                              child: Container(
-                                height: 43,
-                                decoration: BoxDecoration(
-                                    color: R.color.red,
-                                    borderRadius: BorderRadius.circular(200),
-                                    gradient: LinearGradient(
-                                        begin: Alignment.topLeft,
-                                        end: Alignment.centerRight,
-                                        colors: [R.color.greenGradientTop, R.color.greenGradientBottom])),
-                                child: Center(
-                                  child: Text(R.string.exit.tr(),
-                                      style:
-                                          TextStyle(color: R.color.white, fontSize: 16, fontWeight: FontWeight.w600)),
-                                ),
-                              )),
-                        ),
-                      ])
+                      Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Expanded(
+                              child: GestureDetector(
+                                  onTap: () {
+                                    Navigator.pop(context);
+                                  },
+                                  child: Container(
+                                      height: 43,
+                                      decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(200),
+                                          color: R.color.grayBorder),
+                                      child: Center(
+                                        child: Text(R.string.van_o_lai.tr(),
+                                            style: TextStyle(
+                                                color: R.color.textDark,
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.w600)),
+                                      ))),
+                            ),
+                            SizedBox(width: 14),
+                            Expanded(
+                              child: GestureDetector(
+                                  onTap: () {
+                                    Navigator.pop(context);
+                                    Navigator.pop(context);
+                                  },
+                                  child: Container(
+                                    height: 43,
+                                    decoration: BoxDecoration(
+                                        color: R.color.red,
+                                        borderRadius:
+                                            BorderRadius.circular(200),
+                                        gradient: LinearGradient(
+                                            begin: Alignment.topLeft,
+                                            end: Alignment.centerRight,
+                                            colors: [
+                                              R.color.greenGradientTop,
+                                              R.color.greenGradientBottom
+                                            ])),
+                                    child: Center(
+                                      child: Text(R.string.exit.tr(),
+                                          style: TextStyle(
+                                              color: R.color.white,
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w600)),
+                                    ),
+                                  )),
+                            ),
+                          ])
                     ],
                   ),
                 ),
@@ -1134,7 +1389,8 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
 
   showActionFilter(BuildContext context) {
     showModalBottomSheet(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(15))),
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.vertical(top: Radius.circular(15))),
         backgroundColor: R.color.white,
         context: context,
         isScrollControlled: true,
@@ -1158,10 +1414,12 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
               padding: EdgeInsets.only(left: 8, right: 8),
               child: Row(
                 children: [
-                  Image.asset(R.drawable.ic_camera_black, width: 24, height: 24),
+                  Image.asset(R.drawable.ic_camera_black,
+                      width: 24, height: 24),
                   SizedBox(width: 16),
                   Text(R.string.chon_trong_thu_vien.tr(),
-                      style: TextStyle(color: R.color.color0xff333333, fontSize: 14)),
+                      style: TextStyle(
+                          color: R.color.color0xff333333, fontSize: 14)),
                 ],
               ),
             ),
@@ -1177,7 +1435,9 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                 children: [
                   Image.asset(R.drawable.ic_photo, width: 24, height: 24),
                   SizedBox(width: 16),
-                  Text(R.string.chup_anh.tr(), style: TextStyle(color: R.color.color0xff333333, fontSize: 14)),
+                  Text(R.string.chup_anh.tr(),
+                      style: TextStyle(
+                          color: R.color.color0xff333333, fontSize: 14)),
                 ],
               ),
             ),
@@ -1188,7 +1448,8 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
           )
         ],
         cancelButton: CupertinoActionSheetAction(
-          child: Text(R.string.cancel.tr(), style: TextStyle(color: R.color.color0xff333333, fontSize: 14)),
+          child: Text(R.string.cancel.tr(),
+              style: TextStyle(color: R.color.color0xff333333, fontSize: 14)),
           onPressed: () {
             Navigator.pop(context);
           },
@@ -1204,7 +1465,10 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
     try {
       final picker = ImagePicker();
       final pickedFile = await picker.getImage(
-          maxWidth: 512, maxHeight: 512, source: ImageSource.camera, preferredCameraDevice: CameraDevice.rear);
+          maxWidth: 512,
+          maxHeight: 512,
+          source: ImageSource.camera,
+          preferredCameraDevice: CameraDevice.rear);
       if (pickedFile != null) {
         files.add(pickedFile);
 
@@ -1218,7 +1482,8 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
   _openGallery(BuildContext context) async {
     try {
       final picker = ImagePicker();
-      final pickedFile = await picker.getImage(maxWidth: 512, maxHeight: 512, source: ImageSource.gallery);
+      final pickedFile = await picker.getImage(
+          maxWidth: 512, maxHeight: 512, source: ImageSource.gallery);
       if (pickedFile != null) {
         files.add(pickedFile);
 
@@ -1230,13 +1495,13 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
   }
 
   showAlertDialog(BuildContext context) {
-    Widget cancelButton = FlatButton(
+    Widget cancelButton = TextButton(
       child: Text(R.string.cancel.tr()),
       onPressed: () {
         Navigator.pop(context);
       },
     );
-    Widget continueButton = FlatButton(
+    Widget continueButton = TextButton(
       child: Text(R.string.allowed.tr()),
       onPressed: () {
         Navigator.pop(context);
@@ -1263,7 +1528,8 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
   handleBMI() async {
     BotToast.showLoading();
     if (selectedWeight != 0 && selectedHeight != 0) {
-      final result = await WeightClient().fetchCaculateBMI(selectedWeight, selectedHeight);
+      final result =
+          await WeightClient().fetchCaculateBMI(selectedWeight, selectedHeight);
       bmiNumber = result.bmi;
     }
     BotToast.closeAllLoading();
@@ -1322,18 +1588,26 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
                   children: [
                     Padding(
                       padding: EdgeInsets.only(left: 16, right: 4),
-                      child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                        Text(R.string.pick_date.tr(),
-                            style: TextStyle(color: R.color.black, fontSize: 16, fontWeight: FontWeight.w700)),
-                        IconButton(
-                            icon: Icon(Icons.close, color: R.color.color0xffBEC0C8),
-                            onPressed: () {
-                              Navigator.pop(context);
-                            })
-                      ]),
+                      child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(R.string.pick_date.tr(),
+                                style: TextStyle(
+                                    color: R.color.black,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w700)),
+                            IconButton(
+                                icon: Icon(Icons.close,
+                                    color: R.color.color0xffBEC0C8),
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                })
+                          ]),
                     ),
                     CustomCalendarDatePicker(
-                        initialDate: widget.initDate == null ? DateTime.now() : widget.initDate!,
+                        initialDate: widget.initDate == null
+                            ? DateTime.now()
+                            : widget.initDate!,
                         firstDate: DateTime.parse("1969-07-20 20:18:04Z"),
                         lastDate: DateTime.now(),
                         onDateChanged: (datetime) {
@@ -1345,7 +1619,10 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
                           width: 16,
                         ),
                         Text(R.string.pick_time.tr(),
-                            style: TextStyle(color: R.color.black, fontSize: 16, fontWeight: FontWeight.w700)),
+                            style: TextStyle(
+                                color: R.color.black,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w700)),
                       ],
                     ),
                     SizedBox(height: 20),
@@ -1366,20 +1643,27 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
                           },
                           child: Container(
                               height: 43,
-                              decoration:
-                                  BoxDecoration(color: R.color.grayBorder, borderRadius: BorderRadius.circular(21.5)),
+                              decoration: BoxDecoration(
+                                  color: R.color.grayBorder,
+                                  borderRadius: BorderRadius.circular(21.5)),
                               child: Center(
                                   child: Text(R.string.cancel.tr(),
-                                      style:
-                                          TextStyle(color: R.color.black, fontSize: 16, fontWeight: FontWeight.w700)))),
+                                      style: TextStyle(
+                                          color: R.color.black,
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w700)))),
                         ),
                       ),
                       SizedBox(width: 16),
                       Expanded(
                         child: GestureDetector(
                           onTap: () {
-                            selectedDate = DateTime(selectedDate!.year, selectedDate!.month, selectedDate!.day,
-                                selectedHour, selectedMinute);
+                            selectedDate = DateTime(
+                                selectedDate!.year,
+                                selectedDate!.month,
+                                selectedDate!.day,
+                                selectedHour,
+                                selectedMinute);
 
                             widget.callback!(selectedDate);
 
@@ -1387,12 +1671,15 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
                           },
                           child: Container(
                               height: 43,
-                              decoration:
-                                  BoxDecoration(color: R.color.mainColor, borderRadius: BorderRadius.circular(21.5)),
+                              decoration: BoxDecoration(
+                                  color: R.color.mainColor,
+                                  borderRadius: BorderRadius.circular(21.5)),
                               child: Center(
                                   child: Text(R.string.yes.tr(),
-                                      style:
-                                          TextStyle(color: R.color.white, fontSize: 16, fontWeight: FontWeight.w700)))),
+                                      style: TextStyle(
+                                          color: R.color.white,
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w700)))),
                         ),
                       ),
                       SizedBox(width: 16),
@@ -1441,7 +1728,8 @@ class _CustomTimePickerState extends State<CustomTimePicker> {
       selectedMinute = widget.selectedMinute;
     }
     hourController = FixedExtentScrollController(initialItem: selectedHour!);
-    minuteController = FixedExtentScrollController(initialItem: selectedMinute!);
+    minuteController =
+        FixedExtentScrollController(initialItem: selectedMinute!);
   }
 
   @override
@@ -1466,7 +1754,9 @@ class _CustomTimePickerState extends State<CustomTimePicker> {
                     .map((e) => Center(
                           child: Text(e.toString().length == 1 ? '0$e' : '$e',
                               style: TextStyle(
-                                  color: selectedHour == e ? R.color.mainColor : R.color.color0xffC0C2C5,
+                                  color: selectedHour == e
+                                      ? R.color.mainColor
+                                      : R.color.color0xffC0C2C5,
                                   fontSize: 24,
                                   fontWeight: FontWeight.bold)),
                         ))
@@ -1489,7 +1779,9 @@ class _CustomTimePickerState extends State<CustomTimePicker> {
                     .map((e) => Center(
                           child: Text(e.toString().length == 1 ? '0$e' : '$e',
                               style: TextStyle(
-                                  color: selectedMinute == e ? R.color.mainColor : R.color.color0xffC0C2C5,
+                                  color: selectedMinute == e
+                                      ? R.color.mainColor
+                                      : R.color.color0xffC0C2C5,
                                   fontSize: 24,
                                   fontWeight: FontWeight.bold)),
                         ))
@@ -1516,7 +1808,14 @@ class CustomNumPicker extends StatefulWidget {
   final String? unit;
   int? range;
 
-  CustomNumPicker({this.callback, this.title, this.subTitle, this.max, this.numberDefault, this.unit, this.range = 1});
+  CustomNumPicker(
+      {this.callback,
+      this.title,
+      this.subTitle,
+      this.max,
+      this.numberDefault,
+      this.unit,
+      this.range = 1});
 
   @override
   CustomNumPickerState createState() => CustomNumPickerState();
@@ -1530,7 +1829,7 @@ class CustomNumPickerState extends State<CustomNumPicker> {
   @override
   void initState() {
     list.clear();
-    for(int i = 0; i <= widget.max!; i = i + widget.range!){
+    for (int i = 0; i <= widget.max!; i = i + widget.range!) {
       list.add(i);
     }
     selectedNum = widget.numberDefault! ~/ widget.range!;
@@ -1563,16 +1862,24 @@ class CustomNumPickerState extends State<CustomNumPicker> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Expanded(
-                          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                            Text(widget.title.toString(), style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
-                            widget.subTitle == null
-                                ? SizedBox()
-                                : Padding(
-                                    padding: EdgeInsets.only(top: 8, right: 8),
-                                    child: Text(widget.subTitle!,
-                                        style: TextStyle(fontSize: 14, fontWeight: FontWeight.w400)),
-                                  )
-                          ]),
+                          child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(widget.title.toString(),
+                                    style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w700)),
+                                widget.subTitle == null
+                                    ? SizedBox()
+                                    : Padding(
+                                        padding:
+                                            EdgeInsets.only(top: 8, right: 8),
+                                        child: Text(widget.subTitle!,
+                                            style: TextStyle(
+                                                fontSize: 14,
+                                                fontWeight: FontWeight.w400)),
+                                      )
+                              ]),
                         ),
                         IconButton(
                             // padding: EdgeInsets.only(right: 30),
@@ -1598,10 +1905,14 @@ class CustomNumPickerState extends State<CustomNumPicker> {
                                 });
                               },
                               itemExtent: 47.0,
-                              children: list.map((e) => Center(
+                              children: list
+                                  .map((e) => Center(
                                         child: Text('$e',
                                             style: TextStyle(
-                                                color: selectedNum == (e / widget.range!) ? R.color.mainColor : R.color.color0xffC0C2C5,
+                                                color: selectedNum ==
+                                                        (e / widget.range!)
+                                                    ? R.color.mainColor
+                                                    : R.color.color0xffC0C2C5,
                                                 fontSize: 24,
                                                 fontWeight: FontWeight.bold)),
                                       ))
@@ -1612,43 +1923,55 @@ class CustomNumPickerState extends State<CustomNumPicker> {
                   ),
                   Container(
                     margin: EdgeInsets.only(top: 16, bottom: 16),
-                    child: Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
-                      GestureDetector(
-                        onTap: () {
-                          Navigator.pop(context);
-                        },
-                        child: Container(
-                            height: 43,
-                            width: 150,
-                            decoration:
-                                BoxDecoration(borderRadius: BorderRadius.circular(200), color: R.color.grayBorder),
-                            child: Center(
-                              child: Text(R.string.cancel.tr(),
-                                  style: TextStyle(color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w600)),
-                            )),
-                      ),
-                      GestureDetector(
-                        onTap: () {
-                          widget.callback!(selectedNum! * widget.range!);
-                          Navigator.pop(context);
-                        },
-                        child: Container(
-                          height: 43,
-                          width: 150,
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                                begin: Alignment.topLeft,
-                                end: Alignment.centerRight,
-                                colors: [R.color.greenGradientTop, R.color.greenGradientBottom]),
-                            borderRadius: BorderRadius.circular(200),
+                    child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.pop(context);
+                            },
+                            child: Container(
+                                height: 43,
+                                width: 150,
+                                decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(200),
+                                    color: R.color.grayBorder),
+                                child: Center(
+                                  child: Text(R.string.cancel.tr(),
+                                      style: TextStyle(
+                                          color: R.color.textDark,
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w600)),
+                                )),
                           ),
-                          child: Center(
-                            child: Text(R.string.tiep_tuc.tr(),
-                                style: TextStyle(color: R.color.white, fontSize: 16, fontWeight: FontWeight.w600)),
+                          GestureDetector(
+                            onTap: () {
+                              widget.callback!(selectedNum! * widget.range!);
+                              Navigator.pop(context);
+                            },
+                            child: Container(
+                              height: 43,
+                              width: 150,
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                    begin: Alignment.topLeft,
+                                    end: Alignment.centerRight,
+                                    colors: [
+                                      R.color.greenGradientTop,
+                                      R.color.greenGradientBottom
+                                    ]),
+                                borderRadius: BorderRadius.circular(200),
+                              ),
+                              child: Center(
+                                child: Text(R.string.tiep_tuc.tr(),
+                                    style: TextStyle(
+                                        color: R.color.white,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w600)),
+                              ),
+                            ),
                           ),
-                        ),
-                      ),
-                    ]),
+                        ]),
                   ),
                 ],
               ),
@@ -1691,10 +2014,12 @@ class CustomWeightPickerState extends State<CustomWeightPicker> {
   @override
   void initState() {
     selectedNum = widget.numberDefault.floor();
-    selectedNum2 = ((widget.numberDefault - widget.numberDefault.floor()) * 10).toInt();
+    selectedNum2 =
+        ((widget.numberDefault - widget.numberDefault.floor()) * 10).toInt();
     super.initState();
     numController = FixedExtentScrollController(initialItem: selectedNum);
-    num2Controller = FixedExtentScrollController(initialItem: selectedNum2 == 0 ? 0 : 1);
+    num2Controller =
+        FixedExtentScrollController(initialItem: selectedNum2 == 0 ? 0 : 1);
   }
 
   @override
@@ -1722,16 +2047,24 @@ class CustomWeightPickerState extends State<CustomWeightPicker> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Expanded(
-                          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                            Text(widget.title.toString(), style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
-                            widget.subTitle == null
-                                ? SizedBox()
-                                : Padding(
-                                    padding: EdgeInsets.only(top: 8, right: 8),
-                                    child: Text(widget.subTitle ?? '',
-                                        style: TextStyle(fontSize: 14, fontWeight: FontWeight.w400)),
-                                  )
-                          ]),
+                          child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(widget.title.toString(),
+                                    style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w700)),
+                                widget.subTitle == null
+                                    ? SizedBox()
+                                    : Padding(
+                                        padding:
+                                            EdgeInsets.only(top: 8, right: 8),
+                                        child: Text(widget.subTitle ?? '',
+                                            style: TextStyle(
+                                                fontSize: 14,
+                                                fontWeight: FontWeight.w400)),
+                                      )
+                              ]),
                         ),
                         IconButton(
                             // padding: EdgeInsets.only(right: 30),
@@ -1757,16 +2090,22 @@ class CustomWeightPickerState extends State<CustomWeightPicker> {
                                 });
                               },
                               itemExtent: 47.0,
-                              children: List<int>.generate(widget.max + 1, (i) => i)
-                                  .map((e) => Center(
-                                        child: Text('$e',
-                                            style: TextStyle(
-                                                color: selectedNum == e ? Color(0xff01645A) : Color(0xffC0C2C5),
-                                                fontSize: 24,
-                                                fontWeight: FontWeight.bold)),
-                                      ))
-                                  .toList())),
-                      Text(',', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                              children:
+                                  List<int>.generate(widget.max + 1, (i) => i)
+                                      .map((e) => Center(
+                                            child: Text('$e',
+                                                style: TextStyle(
+                                                    color: selectedNum == e
+                                                        ? Color(0xff01645A)
+                                                        : Color(0xffC0C2C5),
+                                                    fontSize: 24,
+                                                    fontWeight:
+                                                        FontWeight.bold)),
+                                          ))
+                                      .toList())),
+                      Text(',',
+                          style: TextStyle(
+                              fontSize: 20, fontWeight: FontWeight.bold)),
                       Container(
                           height: 150,
                           width: 106,
@@ -1783,7 +2122,9 @@ class CustomWeightPickerState extends State<CustomWeightPicker> {
                                   .map((e) => Center(
                                         child: Text('$e',
                                             style: TextStyle(
-                                                color: selectedNum2 == e ? Color(0xff01645A) : Color(0xffC0C2C5),
+                                                color: selectedNum2 == e
+                                                    ? Color(0xff01645A)
+                                                    : Color(0xffC0C2C5),
                                                 fontSize: 24,
                                                 fontWeight: FontWeight.bold)),
                                       ))
@@ -1794,43 +2135,56 @@ class CustomWeightPickerState extends State<CustomWeightPicker> {
                   ),
                   Container(
                     margin: EdgeInsets.only(top: 16, bottom: 16),
-                    child: Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
-                      GestureDetector(
-                        onTap: () {
-                          Navigator.pop(context);
-                        },
-                        child: Container(
-                            height: 43,
-                            width: 150,
-                            decoration:
-                                BoxDecoration(borderRadius: BorderRadius.circular(200), color: R.color.grayBorder),
-                            child: Center(
-                              child: Text('Huỷ',
-                                  style: TextStyle(color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w600)),
-                            )),
-                      ),
-                      GestureDetector(
-                        onTap: () {
-                          widget.callback(selectedNum + (selectedNum2 / 10));
-                          Navigator.pop(context);
-                        },
-                        child: Container(
-                          height: 43,
-                          width: 150,
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                                begin: Alignment.topLeft,
-                                end: Alignment.centerRight,
-                                colors: [R.color.greenGradientTop, R.color.greenGradientBottom]),
-                            borderRadius: BorderRadius.circular(200),
+                    child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.pop(context);
+                            },
+                            child: Container(
+                                height: 43,
+                                width: 150,
+                                decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(200),
+                                    color: R.color.grayBorder),
+                                child: Center(
+                                  child: Text('Huỷ',
+                                      style: TextStyle(
+                                          color: R.color.textDark,
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w600)),
+                                )),
                           ),
-                          child: Center(
-                            child: Text('Tiếp tục',
-                                style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600)),
+                          GestureDetector(
+                            onTap: () {
+                              widget
+                                  .callback(selectedNum + (selectedNum2 / 10));
+                              Navigator.pop(context);
+                            },
+                            child: Container(
+                              height: 43,
+                              width: 150,
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                    begin: Alignment.topLeft,
+                                    end: Alignment.centerRight,
+                                    colors: [
+                                      R.color.greenGradientTop,
+                                      R.color.greenGradientBottom
+                                    ]),
+                                borderRadius: BorderRadius.circular(200),
+                              ),
+                              child: Center(
+                                child: Text('Tiếp tục',
+                                    style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w600)),
+                              ),
+                            ),
                           ),
-                        ),
-                      ),
-                    ]),
+                        ]),
                   ),
                 ],
               ),

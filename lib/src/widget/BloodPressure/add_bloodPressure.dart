@@ -86,15 +86,15 @@ class _AddBloodPressureControllerState
     model = await BloodPressureClient().fetchBloodPressureDetail(widget.id);
     BotToast.closeAllLoading();
     print(model);
-    if(model != null){
+    if (model != null) {
       _controllerSystolic.text = model!.systolic?.toInt().toString() ?? '';
       _controllerDiastolic.text = model!.diastolic?.toInt().toString() ?? '';
       _controllerNote.text = model?.note ?? '';
       _controllerHeart.text = model!.pulseRate?.toInt().toString() ?? '';
       _controllerReason.text = model!.reason ?? '';
       selectedDate = DateTime.fromMillisecondsSinceEpoch(model!.date! * 1000);
-      selectedTimeFrame =
-          TimeFrameModel(id: model!.timeFrameId ?? '', code: '', name: model!.timeFrame ?? '');
+      selectedTimeFrame = TimeFrameModel(
+          id: model!.timeFrameId ?? '', code: '', name: model!.timeFrame ?? '');
       files.addAll(model!.images);
     }
     checkValidateInput();
@@ -162,10 +162,8 @@ class _AddBloodPressureControllerState
                       child: Padding(
                         padding: const EdgeInsets.only(left: 16, right: 16),
                         child: isClicked
-                            ? Image.asset(
-                                R.drawable.ic_help_circle_active,
-                                width: 24,
-                                height: 24)
+                            ? Image.asset(R.drawable.ic_help_circle_active,
+                                width: 24, height: 24)
                             : Image.asset(R.drawable.ic_help_circle,
                                 width: 24, height: 24),
                       ),
@@ -185,8 +183,9 @@ class _AddBloodPressureControllerState
                                 ? Description(
                                     input: true,
                                     data: des,
-                                    titleDetail:
-                                        R.string.blood_pressure_for_diabetes.tr())
+                                    titleDetail: R
+                                        .string.blood_pressure_for_diabetes
+                                        .tr())
                                 : SizedBox()),
                         Padding(
                           padding: const EdgeInsets.only(
@@ -253,7 +252,8 @@ class _AddBloodPressureControllerState
                                                         border:
                                                             InputBorder.none,
                                                         hintStyle: TextStyle(
-                                                            color: R.color.captionColorGray,
+                                                            color: R.color
+                                                                .captionColorGray,
                                                             fontSize: 34,
                                                             fontWeight:
                                                                 FontWeight
@@ -262,7 +262,8 @@ class _AddBloodPressureControllerState
                                               Container(
                                                   height: 1,
                                                   width: 54,
-                                                  color: R.color.color0xffE5E5E5)
+                                                  color:
+                                                      R.color.color0xffE5E5E5)
                                             ],
                                           ),
                                           Padding(
@@ -308,7 +309,8 @@ class _AddBloodPressureControllerState
                                                         border:
                                                             InputBorder.none,
                                                         hintStyle: TextStyle(
-                                                            color: R.color.captionColorGray,
+                                                            color: R.color
+                                                                .captionColorGray,
                                                             fontSize: 34,
                                                             fontWeight:
                                                                 FontWeight
@@ -317,7 +319,8 @@ class _AddBloodPressureControllerState
                                               Container(
                                                   height: 1,
                                                   width: 54,
-                                                  color: R.color.color0xffE5E5E5)
+                                                  color:
+                                                      R.color.color0xffE5E5E5)
                                             ],
                                           ),
                                           Text(R.string.mm_hg.tr(),
@@ -361,10 +364,8 @@ class _AddBloodPressureControllerState
                                           CrossAxisAlignment.start,
                                       children: [
                                         Row(children: [
-                                          Image.asset(
-                                              R.drawable.ic_note_text,
-                                              width: 24,
-                                              height: 24),
+                                          Image.asset(R.drawable.ic_note_text,
+                                              width: 24, height: 24),
                                           SizedBox(width: 8),
                                           Text(R.string.ly_do.tr(),
                                               style: TextStyle(
@@ -379,14 +380,16 @@ class _AddBloodPressureControllerState
                                                 fontSize: 16,
                                                 fontWeight: FontWeight.w400),
                                             decoration: InputDecoration(
-                                                hintText: R.string.nhap_ly_do.tr(),
+                                                hintText:
+                                                    R.string.nhap_ly_do.tr(),
                                                 contentPadding:
                                                     EdgeInsets.only(bottom: 8),
                                                 border: InputBorder.none,
                                                 hintStyle: TextStyle(
                                                     fontSize: 16,
                                                     fontWeight: FontWeight.w400,
-                                                    color: R.color.primaryGreyColor))),
+                                                    color: R.color
+                                                        .primaryGreyColor))),
                                         Container(
                                             height: 1,
                                             color: R.color.color0xffE5E5E5),
@@ -447,7 +450,8 @@ class _AddBloodPressureControllerState
                                                         border:
                                                             InputBorder.none,
                                                         hintStyle: TextStyle(
-                                                            color: R.color.captionColorGray,
+                                                            color: R.color
+                                                                .captionColorGray,
                                                             fontSize: 34,
                                                             fontWeight:
                                                                 FontWeight
@@ -456,7 +460,8 @@ class _AddBloodPressureControllerState
                                               Container(
                                                   height: 1,
                                                   width: 54,
-                                                  color: R.color.color0xffE5E5E5)
+                                                  color:
+                                                      R.color.color0xffE5E5E5)
                                             ],
                                           ),
                                           Text(R.string.time_per_minute.tr(),
@@ -482,8 +487,8 @@ class _AddBloodPressureControllerState
                               GestureDetector(
                                 onTap: () {
                                   showDialog(
-                                    barrierColor:
-                                        R.color.color0xff003F38.withOpacity(0.5),
+                                    barrierColor: R.color.color0xff003F38
+                                        .withOpacity(0.5),
                                     context: context,
                                     builder: (_) => DateMultiPicker(
                                       initDate: selectedDate,
@@ -513,10 +518,8 @@ class _AddBloodPressureControllerState
                                         mainAxisAlignment:
                                             MainAxisAlignment.spaceBetween,
                                         children: [
-                                          Image.asset(
-                                              R.drawable.ic_calendar,
-                                              width: 24,
-                                              height: 24),
+                                          Image.asset(R.drawable.ic_calendar,
+                                              width: 24, height: 24),
                                           SizedBox(width: 8),
                                           Row(
                                             children: [
@@ -536,7 +539,8 @@ class _AddBloodPressureControllerState
                                         ]),
                                     SizedBox(height: 16),
                                     Container(
-                                        height: 1, color: R.color.color0xffE5E5E5),
+                                        height: 1,
+                                        color: R.color.color0xffE5E5E5),
                                     SizedBox(height: 8),
                                   ]),
                                 ),
@@ -565,10 +569,8 @@ class _AddBloodPressureControllerState
                                         mainAxisAlignment:
                                             MainAxisAlignment.spaceBetween,
                                         children: [
-                                          Image.asset(
-                                              R.drawable.ic_clock,
-                                              width: 24,
-                                              height: 24),
+                                          Image.asset(R.drawable.ic_clock,
+                                              width: 24, height: 24),
                                           SizedBox(width: 8),
                                           Text(
                                               selectedTimeFrame == null
@@ -580,7 +582,8 @@ class _AddBloodPressureControllerState
                                         ]),
                                     SizedBox(height: 16),
                                     Container(
-                                        height: 1, color: R.color.color0xffE5E5E5),
+                                        height: 1,
+                                        color: R.color.color0xffE5E5E5),
                                     SizedBox(height: 8),
                                   ]),
                                 ),
@@ -617,16 +620,20 @@ class _AddBloodPressureControllerState
                                           fontSize: 16,
                                           fontWeight: FontWeight.w400),
                                       decoration: InputDecoration(
-                                          hintText: R.string.nhap_ghi_chu_cua_ban.tr(),
+                                          hintText: R
+                                              .string.nhap_ghi_chu_cua_ban
+                                              .tr(),
                                           contentPadding:
                                               EdgeInsets.only(bottom: 8),
                                           border: InputBorder.none,
                                           hintStyle: TextStyle(
                                               fontSize: 16,
                                               fontWeight: FontWeight.w400,
-                                              color: R.color.primaryGreyColor))),
+                                              color:
+                                                  R.color.primaryGreyColor))),
                                   Container(
-                                      height: 1, color: R.color.color0xffE5E5E5),
+                                      height: 1,
+                                      color: R.color.color0xffE5E5E5),
                                   SizedBox(height: 8),
                                   GridView.builder(
                                       physics: NeverScrollableScrollPhysics(),
@@ -648,23 +655,23 @@ class _AddBloodPressureControllerState
                                             },
                                             child: index == files.length
                                                 ? Container(
-                                                    child: Image.asset(
-                                                        R.drawable.ic_add_photo))
+                                                    child: Image.asset(R
+                                                        .drawable.ic_add_photo))
                                                 : GestureDetector(
-                                                onTap: () {
-                                                  Navigator.pushNamed(
-                                                      context,
-                                                      '/photo_view',
-                                                      arguments: {
-                                                        'files': files,
-                                                        'index': index
-                                                      });
-                                                },
-                                                child: Stack(
-                                                      alignment:
-                                                          AlignmentDirectional
-                                                              .topEnd,
-                                                      children: [
+                                                    onTap: () {
+                                                      Navigator.pushNamed(
+                                                          context,
+                                                          '/photo_view',
+                                                          arguments: {
+                                                            'files': files,
+                                                            'index': index
+                                                          });
+                                                    },
+                                                    child: Stack(
+                                                        alignment:
+                                                            AlignmentDirectional
+                                                                .topEnd,
+                                                        children: [
                                                           Positioned.fill(
                                                             child: files[index]
                                                                     is PickedFile
@@ -675,18 +682,21 @@ class _AddBloodPressureControllerState
                                                                     fit: BoxFit
                                                                         .cover,
                                                                   )
-                                                                : NetWorkImageWidget(imageUrl:
-                                                                    files[index]
-                                                                        .url,
+                                                                : NetWorkImageWidget(
+                                                                    imageUrl:
+                                                                        files[index]
+                                                                            .url,
                                                                     fit: BoxFit
                                                                         .cover),
                                                           ),
                                                           IconButton(
-                                                              icon: Image.asset(
-                                                                  R.drawable.ic_trash),
+                                                              icon: Image.asset(R
+                                                                  .drawable
+                                                                  .ic_trash),
                                                               onPressed: () {
                                                                 setState(() {
-                                                                  if (files[index]
+                                                                  if (files[
+                                                                          index]
                                                                       is PickedFile) {
                                                                     files.removeAt(
                                                                         index);
@@ -700,7 +710,7 @@ class _AddBloodPressureControllerState
                                                                 });
                                                               })
                                                         ]),
-                                                ));
+                                                  ));
                                       })
                                 ]),
                           ),
@@ -833,7 +843,8 @@ class _AddBloodPressureControllerState
           await BloodPressureClient().deleteBloodPressureInput(widget.id);
       if (result == true) {
         Message.showToastMessage(context, R.string.xoa_thanh_cong.tr());
-        Observable.instance.notifyObservers([], notifyName : "BloodPressure_change_data");
+        Observable.instance
+            .notifyObservers([], notifyName: "BloodPressure_change_data");
       }
       BotToast.closeAllLoading();
     } catch (e, _) {
@@ -903,7 +914,8 @@ class _AddBloodPressureControllerState
           removeIDs,
           paths);
       if (result == true) {
-        Observable.instance.notifyObservers([], notifyName : "BloodPressure_change_data");
+        Observable.instance
+            .notifyObservers([], notifyName: "BloodPressure_change_data");
       }
 
       BotToast.closeAllLoading();
@@ -942,8 +954,7 @@ class _AddBloodPressureControllerState
       return;
     }
     if (int.parse(pulseRate.splitMapJoin(',')) > 200) {
-      Message.showToastMessage(context,
-          R.string.mes_heart_rate_invalid.tr());
+      Message.showToastMessage(context, R.string.mes_heart_rate_invalid.tr());
       return;
     }
     if (selectedDate == null) {
@@ -975,10 +986,12 @@ class _AddBloodPressureControllerState
           reason,
           paths);
       if (result == true) {
-       // if(widget.goalId != null && widget.goalId?.isNotEmpty == true){
-          await HomeClient().completeSmartGoal(selectedDate, widget.goalId ?? '', 1, ScheduleType.blood_pressure.typeIndex);
-       // }
-        Observable.instance.notifyObservers([], notifyName : "BloodPressure_change_data");
+        // if(widget.goalId != null && widget.goalId?.isNotEmpty == true){
+        await HomeClient().completeSmartGoal(selectedDate, widget.goalId ?? '',
+            1, ScheduleType.blood_pressure.typeIndex);
+        // }
+        Observable.instance
+            .notifyObservers([], notifyName: "BloodPressure_change_data");
       }
 
       BotToast.closeAllLoading();
@@ -1005,8 +1018,7 @@ class _AddBloodPressureControllerState
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Image.asset(R.drawable.ic_earse,
-                          width: 64, height: 64),
+                      Image.asset(R.drawable.ic_earse, width: 64, height: 64),
                       Padding(
                         padding: const EdgeInsets.only(top: 16.0),
                         child: Text(R.string.ban_muon_xoa_du_lieu.tr(),
@@ -1018,8 +1030,7 @@ class _AddBloodPressureControllerState
                       ),
                       Padding(
                         padding: const EdgeInsets.only(top: 16.0),
-                        child: Text(
-                            R.string.confirm_to_remove_data.tr(),
+                        child: Text(R.string.confirm_to_remove_data.tr(),
                             textAlign: TextAlign.center,
                             style: R.style.normalTextStyle),
                       ),
@@ -1147,8 +1158,7 @@ class _AddBloodPressureControllerState
                       ),
                       Padding(
                         padding: const EdgeInsets.only(top: 16.0),
-                        child: Text(
-                            R.string.confirm_to_back.tr(),
+                        child: Text(R.string.confirm_to_back.tr(),
                             textAlign: TextAlign.center,
                             style: R.style.normalTextStyle),
                       ),
@@ -1250,11 +1260,11 @@ class _AddBloodPressureControllerState
               padding: EdgeInsets.only(left: 8, right: 8),
               child: Row(
                 children: [
-                  Image.asset(R.drawable.ic_photo,
-                      width: 24, height: 24),
+                  Image.asset(R.drawable.ic_photo, width: 24, height: 24),
                   SizedBox(width: 16),
                   Text(R.string.chon_trong_thu_vien.tr(),
-                      style: TextStyle(color: R.color.color0xff333333, fontSize: 14)),
+                      style: TextStyle(
+                          color: R.color.color0xff333333, fontSize: 14)),
                 ],
               ),
             ),
@@ -1272,7 +1282,8 @@ class _AddBloodPressureControllerState
                       width: 24, height: 24),
                   SizedBox(width: 16),
                   Text(R.string.chup_anh.tr(),
-                      style: TextStyle(color: R.color.color0xff333333, fontSize: 14)),
+                      style: TextStyle(
+                          color: R.color.color0xff333333, fontSize: 14)),
                 ],
               ),
             ),
@@ -1330,13 +1341,13 @@ class _AddBloodPressureControllerState
   }
 
   showAlertDialog(BuildContext context) {
-    Widget cancelButton = FlatButton(
+    Widget cancelButton = TextButton(
       child: Text(R.string.cancel.tr()),
       onPressed: () {
         Navigator.pop(context);
       },
     );
-    Widget continueButton = FlatButton(
+    Widget continueButton = TextButton(
       child: Text(R.string.allowed.tr()),
       onPressed: () {
         Navigator.pop(context);
@@ -1418,8 +1429,8 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
                                     fontSize: 16,
                                     fontWeight: FontWeight.w700)),
                             IconButton(
-                                icon:
-                                    Icon(Icons.close, color: R.color.color0xffBEC0C8),
+                                icon: Icon(Icons.close,
+                                    color: R.color.color0xffBEC0C8),
                                 onPressed: () {
                                   Navigator.pop(context);
                                 })
@@ -1547,7 +1558,8 @@ class _CustomTimePickerState extends State<CustomTimePicker> {
       selectedMinute = widget.selectedMinute;
     }
     hourController = FixedExtentScrollController(initialItem: selectedHour!);
-    minuteController = FixedExtentScrollController(initialItem: selectedMinute!);
+    minuteController =
+        FixedExtentScrollController(initialItem: selectedMinute!);
   }
 
   @override

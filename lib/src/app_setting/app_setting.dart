@@ -140,13 +140,30 @@ class AppSettings {
     }
   }
 
+  static Future<bool> saveNiproDevices(
+      List<Map<String, String>>? devices) async {
+    final jsonString = jsonEncode(devices);
+    appPreference.setData(Const.NIPRO_DEVICES, jsonString);
+    return true;
+  }
+
+  static List<Map<String, String>> getNiproDevices() {
+    final data = appPreference.getData(Const.NIPRO_DEVICES) ?? '';
+    if (data.isEmpty) {
+      return [];
+    }
+    final listData = json.decode(data) as List;
+    return listData.map((e) => Map<String, String>.from(e)).toList();
+  }
+
   static Future<bool> logout({bool isNavigateToStepListScreen = true}) async {
     try {
-      if(isNavigateToStepListScreen){
+      if (isNavigateToStepListScreen) {
         navigatorKey.currentState!.popUntil((route) => route.isFirst);
-        navigatorKey.currentState!.pushReplacementNamed(NavigatorName.step_list);
+        navigatorKey.currentState!
+            .pushReplacementNamed(NavigatorName.step_list);
       }
-      
+
       await FetchClient().checkNetwork();
       await LoginClient().logout();
       await deleteHomeData();

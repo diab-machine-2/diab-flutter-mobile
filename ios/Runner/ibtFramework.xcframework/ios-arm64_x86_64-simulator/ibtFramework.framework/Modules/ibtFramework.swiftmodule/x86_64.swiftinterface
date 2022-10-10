@@ -1,0 +1,95 @@
+// swift-interface-format-version: 1.0
+// swift-compiler-version: Apple Swift version 5.5.1 (swiftlang-1300.0.31.4 clang-1300.0.29.6)
+// swift-module-flags: -target x86_64-apple-ios12.0-simulator -enable-objc-interop -enable-library-evolution -swift-version 5 -enforce-exclusivity=checked -O -module-name ibtFramework
+import CoreBluetooth
+import Foundation
+import Swift
+import _Concurrency
+@_exported import ibtFramework
+public let charDeviceManufacturer: Swift.String
+public enum ServiceType : Swift.String {
+  case BloodNone
+  case BloodDevice
+  case BloodGlucose
+  case BloodPressure
+  case CurrentTime
+  case airDeviceInfo
+  case airGlucose
+  case airGetSet
+  public init?(rawValue: Swift.String)
+  public typealias RawValue = Swift.String
+  public var rawValue: Swift.String {
+    get
+  }
+}
+public enum TaskType : Swift.Int {
+  case with_idle
+  case total_count
+  case download_all
+  case download_after
+  case sync_time
+  public init?(rawValue: Swift.Int)
+  public typealias RawValue = Swift.Int
+  public var rawValue: Swift.Int {
+    get
+  }
+}
+public struct RecordInfo : Swift.Codable {
+  public var sequence: Swift.Int
+  public var glucose: Swift.Float
+  public var glucoseUnit: Swift.String
+  public var ketone: Swift.Float
+  public var ketoneUnit: Swift.String
+  public var flag_cs: Swift.Int
+  public var date: Swift.String
+  public var timeOffset: Swift.Int
+  public var HiLo: Swift.String
+  public var Meal: Swift.String
+  public func encode(to encoder: Swift.Encoder) throws
+  public init(from decoder: Swift.Decoder) throws
+}
+public protocol iDeviceManagerDelegate {
+  func receivedManufactureName(_ name: Swift.String, _ productName: Swift.String)
+  func receivedSWRevision(_ version: Swift.String)
+  func receivedSerialNumber(_ number: Swift.String)
+  func completeBonded()
+  func makeDisconnect()
+  func receivedTotalCount(_ count: Swift.Int, _ sequence: Swift.String)
+  func receivedGlucose(_ obj: ibtFramework.RecordInfo?)
+  func receivedContext(_ obj: ibtFramework.RecordInfo?)
+  func receivedLowVersion(_ bCheck: Swift.Bool)
+  func receivedSyncTime(_ str: Swift.String)
+  func receivedError(_ str: Swift.String)
+  func receivedDownloadComplete()
+  func receivedNoRecords()
+}
+@objc @_inheritsConvenienceInitializers @_hasMissingDesignatedInitializers open class iDeviceManager : ObjectiveC.NSObject {
+  public static let shared: ibtFramework.iDeviceManager
+  public var m_delegate: ibtFramework.iDeviceManagerDelegate?
+  public var bPrintOn: Swift.Bool
+  public var recordInfo: ibtFramework.RecordInfo?
+  public var allowedDevices: [CoreBluetooth.CBUUID]?
+  public var currServiceType: ibtFramework.ServiceType
+  public var connectedChars: [Swift.String : CoreBluetooth.CBCharacteristic]?
+  public var callType: ibtFramework.TaskType
+  public func initialize()
+  public func resetSettings()
+  public func setUnit(_ index: Swift.Int)
+  public func setCurrentPeripheral(_ control: CoreBluetooth.CBCentralManager? = nil)
+  public func receivedData(_ btControl: CoreBluetooth.CBPeripheral?, ch: CoreBluetooth.CBCharacteristic?, _ message: Swift.String? = nil)
+  public func receivedNotification(_ btControl: CoreBluetooth.CBPeripheral?, ch: CoreBluetooth.CBCharacteristic?)
+  public func getPeripheral() -> CoreBluetooth.CBPeripheral?
+  public func reqSyncCurrentTime(_ btControl: CoreBluetooth.CBPeripheral?)
+  public func reqManufacture(_ btControl: CoreBluetooth.CBPeripheral?)
+  public func reqCountofRecords(_ btControl: CoreBluetooth.CBPeripheral?)
+  public func reqDataMoreOrEqual(_ btControl: CoreBluetooth.CBPeripheral?, _ seq: Swift.Int)
+  public func reqDataCurrentAll(_ btControl: CoreBluetooth.CBPeripheral?)
+  public func operateTimer(_ bRun: Swift.Bool)
+  @objc deinit
+}
+extension ibtFramework.ServiceType : Swift.Equatable {}
+extension ibtFramework.ServiceType : Swift.Hashable {}
+extension ibtFramework.ServiceType : Swift.RawRepresentable {}
+extension ibtFramework.TaskType : Swift.Equatable {}
+extension ibtFramework.TaskType : Swift.Hashable {}
+extension ibtFramework.TaskType : Swift.RawRepresentable {}

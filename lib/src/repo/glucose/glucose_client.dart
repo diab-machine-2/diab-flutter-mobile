@@ -10,6 +10,7 @@ import 'package:medical/src/modal/glucose/glucose_input.dart';
 import 'package:medical/src/modal/glucose/glucose_timeFrame.dart';
 import 'package:medical/src/widget/helper/http_helper.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'dart:io' show Platform;
 
 class GlucoseClient extends FetchClient {
   Future<List<TimeFrameModel>> fetchFlucoseTimeFrame({int? time}) async {
@@ -24,9 +25,7 @@ class GlucoseClient extends FetchClient {
         throw error;
       }
     } catch (e) {
-      throw e is Error
-          ? e
-          : R.string.error_can_not_connect_to_server.tr();
+      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
@@ -53,9 +52,7 @@ class GlucoseClient extends FetchClient {
         throw error;
       }
     } catch (e) {
-      throw e is Error
-          ? e
-          : R.string.error_can_not_connect_to_server.tr();
+      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
     }
   }
   //============ lấy tất cả chỉ số Đường huyết theo chu kỳ =============/
@@ -95,9 +92,7 @@ class GlucoseClient extends FetchClient {
         throw error;
       }
     } catch (e) {
-      throw e is Error
-          ? e
-          : R.string.error_can_not_connect_to_server.tr();
+      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
     }
   }
 //============ lấy chi tiết chỉ số Đường huyết =============/
@@ -113,12 +108,26 @@ class GlucoseClient extends FetchClient {
         throw error;
       }
     } catch (e) {
-      throw e is Error
-          ? e
-          : R.string.error_can_not_connect_to_server.tr();
+      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
+  Future<String> fetchUserManual() async {
+    try {
+      final Response response = await super.fetchData(
+          url: Platform.isIOS
+              ? '/App/CommonConfigureTask/Key/Glucose.Device.Bluetooth.Guid.IOS'
+              : '/App/CommonConfigureTask/Key/Glucose.Device.Bluetooth.Guid.Android');
+      if (response.statusCode == 200) {
+        return response.data['data']['description'] ?? '';
+      } else {
+        final error = Error.fromJson(response);
+        throw error;
+      }
+    } catch (e) {
+      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+    }
+  }
   //============ nhập chỉ số Đường huyết =============/
 
   Future<bool> postIndexGlucose(
@@ -127,6 +136,7 @@ class GlucoseClient extends FetchClient {
       String glucoseInput,
       String? reason,
       String note,
+      bool byDevice,
       List<String> files) async {
     try {
       Map<String, String> params = {
@@ -134,7 +144,8 @@ class GlucoseClient extends FetchClient {
         'createDate': date.toString(),
         'unitType': AppSettings.userInfo!.glucoseUnit.toString(),
         'glucoseInput': glucoseInput,
-        'note': note
+        'note': note,
+        'byDevice': byDevice.toString()
       };
       if (reason != null) {
         params['reason'] = reason;
@@ -149,9 +160,7 @@ class GlucoseClient extends FetchClient {
         throw response.reasonPhrase!;
       }
     } catch (e) {
-      throw e is Error
-          ? e
-          : R.string.error_can_not_connect_to_server.tr();
+      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
@@ -170,9 +179,7 @@ class GlucoseClient extends FetchClient {
         throw error;
       }
     } catch (e) {
-      throw e is Error
-          ? e
-          : R.string.error_can_not_connect_to_server.tr();
+      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
@@ -206,9 +213,7 @@ class GlucoseClient extends FetchClient {
         throw error;
       }
     } catch (e) {
-      throw e is Error
-          ? e
-          : R.string.error_can_not_connect_to_server.tr();
+      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
@@ -231,9 +236,7 @@ class GlucoseClient extends FetchClient {
         throw error;
       }
     } catch (e) {
-      throw e is Error
-          ? e
-          : R.string.error_can_not_connect_to_server.tr();
+      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
     }
   }
   //============ update chỉ số đường huyết =============/
@@ -245,6 +248,7 @@ class GlucoseClient extends FetchClient {
       String glucoseInput,
       String? reason,
       String note,
+      bool byDevice,
       List<String?> removalImageIds,
       List<String> files) async {
     try {
@@ -255,7 +259,8 @@ class GlucoseClient extends FetchClient {
         'glucoseInput': glucoseInput,
         'unitType': AppSettings.userInfo!.glucoseUnit.toString(),
         'note': note,
-        'removalImageIdsStr': removalImageIds.join(';')
+        'removalImageIdsStr': removalImageIds.join(';'),
+        'byDevice': byDevice.toString()
       };
       if (reason != null) {
         params['reason'] = reason;
@@ -270,9 +275,7 @@ class GlucoseClient extends FetchClient {
         throw response.reasonPhrase!;
       }
     } catch (e) {
-      throw e is Error
-          ? e
-          : R.string.error_can_not_connect_to_server.tr();
+      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
     }
   }
 }
