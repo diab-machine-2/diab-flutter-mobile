@@ -415,10 +415,7 @@ class Utils {
   }
 
   static String capitalize(String value) {
-    String returnValue = value
-        .split(' ')
-        .map((word) => word.substring(0, 1).toUpperCase() + word.substring(1).toLowerCase())
-        .join(' ');
+    String returnValue = value.substring(0, 1).toUpperCase() + value.substring(1).toLowerCase();
     return returnValue;
   }
 }

@@ -18,6 +18,7 @@ import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/components/load_more.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
+import 'package:medical/src/widget/question_answer/all_question_answer/model/question_model.dart';
 import 'package:medical/src/widgets/network_image_widget.dart';
 
 import '../../modal/notification/notification_list_model.dart';
@@ -339,8 +340,16 @@ class NotificationReadControllerState extends State<NotificationReadController>
         case NotificationActionType.redirect_survey:
           break;
         case NotificationActionType.register_referral_success:
-          Navigator.pushNamed(context, NavigatorName.voucher_list,
-              arguments: {'type': 'input', 'voucherId': notificationModel.surveyId});
+          Navigator.pushNamed(context, NavigatorName.voucher_list, arguments: {
+            'type': 'input',
+            'voucherId': notificationModel.surveyId
+          });
+          break;
+        case NotificationActionType.doctor_answer_question:
+          QuestionModel questionModel =
+              QuestionModel(id: notificationModel.surveyId);
+          Navigator.pushNamed(context, NavigatorName.question_detail,
+              arguments: {'questionModel': questionModel, 'isAll': true});
           break;
       }
     }
@@ -453,7 +462,8 @@ class NotificationReadControllerState extends State<NotificationReadController>
   _delete(NotificationListModel model) async {
     try {
       BotToast.showLoading();
-      await NotificationClient().deleteNotification(model.notificationId, model.messageType);
+      await NotificationClient()
+          .deleteNotification(model.notificationId, model.messageType);
       refresh();
       BotToast.closeAllLoading();
     } catch (e, _) {

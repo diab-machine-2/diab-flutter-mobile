@@ -15,6 +15,7 @@ import 'package:medical/src/repo/notification/notification_client.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
+import 'package:medical/src/widget/question_answer/all_question_answer/model/question_model.dart';
 import 'package:medical/src/widget/shared_profile/pages/share_app_detail.dart';
 import 'package:medical/src/widget/voucher/presentation/voucher_modals/voucher_reward_modal.dart';
 import 'package:medical/src/widgets/share_profile_popup.dart';
@@ -194,6 +195,13 @@ class NotificationManager {
         case NotificationActionType.register_referral_success:
           VoucherModalReward.showModal(
               navigatorKey.currentState!.context, model.data!.surveyId!);
+          break;
+        case NotificationActionType.doctor_answer_question:
+          QuestionModel questionModel =
+              QuestionModel(id: model.data!.surveyId!);
+          Navigator.pushNamed(
+              navigatorKey.currentState!.context, NavigatorName.question_detail,
+              arguments: {'questionModel': questionModel, 'isAll': true});
           break;
       }
     }

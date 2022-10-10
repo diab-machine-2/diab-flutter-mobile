@@ -18,6 +18,7 @@ import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/components/load_more.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
+import 'package:medical/src/widget/question_answer/all_question_answer/model/question_model.dart';
 import 'package:medical/src/widgets/network_image_widget.dart';
 
 import '../../modal/notification/notification_list_model.dart';
@@ -291,7 +292,7 @@ class NotificationControllerState extends State<NotificationController>
         ),
       ),
     );
-  } 
+  }
 
   void _onTapNotify(NotificationListModel model) {
     if ((widget.isRemovealbe != true) && !model.isRead!) {
@@ -336,6 +337,11 @@ class NotificationControllerState extends State<NotificationController>
         case NotificationActionType.register_referral_success:
           Navigator.pushNamed(context, NavigatorName.voucher_list,
               arguments: {'type': 'input', 'voucherId': model.surveyId});
+          break;
+        case NotificationActionType.doctor_answer_question:
+          QuestionModel questionModel = QuestionModel(id: model.surveyId);
+          Navigator.pushNamed(context, NavigatorName.question_detail,
+              arguments: {'questionModel': questionModel, 'isAll': true});
           break;
       }
     }

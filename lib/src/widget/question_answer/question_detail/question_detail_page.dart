@@ -118,7 +118,9 @@ class _QuestionDetailPageState extends State<QuestionDetailPage>
           },
           child: BlocBuilder<QuestionDetailCubit, QuestionDetailState>(
             builder: (context, state) {
-              return _buildPage(context, state);
+              if (_cubit.questionModel.status != null)
+                return _buildPage(context, state);
+              return SizedBox();
             },
           ),
         ),
@@ -155,8 +157,8 @@ class _QuestionDetailPageState extends State<QuestionDetailPage>
                         ),
                         Visibility(
                             visible: _cubit.questionModel.answers!.isNotEmpty,
-                            child:
-                                Divider(height: 0.5, color: R.color.grayBorder)),
+                            child: Divider(
+                                height: 0.5, color: R.color.grayBorder)),
                         SizedBox(height: 8),
                         _buildListComment(),
                       ],
@@ -248,13 +250,16 @@ class _QuestionDetailPageState extends State<QuestionDetailPage>
                               (imageModel) => InkWell(
                                 onTap: () =>
                                     _showDialogImage(context, imageModel.url!),
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(9),
-                                  child: CachedNetworkImage(
-                                    imageUrl: imageModel.url!,
-                                    width: 48.h,
-                                    height: 48.h,
-                                    fit: BoxFit.cover,
+                                child: Padding(
+                                  padding: const EdgeInsets.only(right: 15),
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(9),
+                                    child: CachedNetworkImage(
+                                      imageUrl: imageModel.url!,
+                                      width: 48.h,
+                                      height: 48.h,
+                                      fit: BoxFit.cover,
+                                    ),
                                   ),
                                 ),
                               ),

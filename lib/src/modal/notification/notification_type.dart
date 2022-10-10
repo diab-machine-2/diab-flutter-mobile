@@ -8,6 +8,7 @@ enum NotificationActionType {
   redirect_date_detail,
   redirect_survey,
   register_referral_success,
+  doctor_answer_question,
 }
 
 enum NotificationType {
@@ -48,6 +49,8 @@ extension NotificationActionExtend on NotificationActionType {
           return NotificationActionType.redirect_survey;
         case "8":
           return NotificationActionType.register_referral_success;
+        case "9":
+          return NotificationActionType.doctor_answer_question;
         default:
           return NotificationActionType.redirect_to_url;
       }
@@ -78,6 +81,8 @@ extension NotificationActionExtend on NotificationActionType {
           return NotificationActionType.redirect_survey;
         case 8:
           return NotificationActionType.register_referral_success;
+        case 9:
+          return NotificationActionType.doctor_answer_question;
         default:
           return NotificationActionType.redirect_to_url;
       }

@@ -51,13 +51,20 @@ class _RegisterSuccessState extends State<RegisterSuccess> {
                   Image.asset(R.drawable.img_register_success),
                   Column(children: [
                     SizedBox(height: 180),
-                    Text(R.string.sign_up_success,
-                        style: TextStyle(color: R.color.mainColor, fontSize: 20, fontWeight: FontWeight.w600)),
+                    Text(R.string.sign_up_success.tr(),
+                        style: TextStyle(
+                            color: R.color.mainColor,
+                            fontSize: 20,
+                            fontWeight: FontWeight.w600)),
                     SizedBox(height: 20),
                     Padding(
                       padding: EdgeInsets.only(left: 32, right: 32),
-                      child: Text('Vui lòng cập nhật hồ sơ để\nDiaB có thể hỗ trợ bạn tốt hơn!',
-                          style: TextStyle(color: R.color.color0xff333333, fontSize: 16, fontWeight: FontWeight.w400),
+                      child: Text(
+                          'Vui lòng cập nhật hồ sơ để\nDiaB có thể hỗ trợ bạn tốt hơn!',
+                          style: TextStyle(
+                              color: R.color.color0xff333333,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w400),
                           textAlign: TextAlign.center),
                     )
                   ])
@@ -81,10 +88,16 @@ class _RegisterSuccessState extends State<RegisterSuccess> {
                           gradient: LinearGradient(
                               begin: Alignment.topLeft,
                               end: Alignment.centerRight,
-                              colors: [R.color.greenGradientTop, R.color.greenGradientBottom])),
+                              colors: [
+                                R.color.greenGradientTop,
+                                R.color.greenGradientBottom
+                              ])),
                       child: Center(
                           child: Text(R.string.update_profile_type.tr(),
-                              style: TextStyle(color: R.color.white, fontSize: 16, fontWeight: FontWeight.w600)))),
+                              style: TextStyle(
+                                  color: R.color.white,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600)))),
                 ),
               ),
             )
@@ -96,12 +109,13 @@ class _RegisterSuccessState extends State<RegisterSuccess> {
 
   getToken() async {
     if (widget.type != null) {
-      Navigator.pushReplacementNamed(context, NavigatorName.update_info, arguments: {
-        'type': widget.type,
-        'googleAccount': widget.googleAccount,
-        'appleAccount': widget.appleAccount,
-        'diabeteStates': widget.diabeteStates
-      });
+      Navigator.pushReplacementNamed(context, NavigatorName.update_info,
+          arguments: {
+            'type': widget.type,
+            'googleAccount': widget.googleAccount,
+            'appleAccount': widget.appleAccount,
+            'diabeteStates': widget.diabeteStates
+          });
     } else {
       BotToast.showLoading();
       final result = await LoginClient().login({
@@ -123,7 +137,11 @@ class _RegisterSuccessState extends State<RegisterSuccess> {
 
       // if (result.access_token != null) {
       Navigator.pushReplacementNamed(context, NavigatorName.update_info,
-          arguments: {'type': 'phone', 'referalCode': widget.referalCode, 'diabeteStates': diabeteStates});
+          arguments: {
+            'type': 'phone',
+            'referalCode': widget.referalCode,
+            'diabeteStates': diabeteStates
+          });
       // }
     }
   }
