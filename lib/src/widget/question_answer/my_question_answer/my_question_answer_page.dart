@@ -279,11 +279,11 @@ class _MyQuestionAnswerPageState extends State<MyQuestionAnswerPage>
   _buildMakeQuestion() {
     return MakeQuestionHeader(
       callback: () async {
-        if (userInfo?.isUserFree == true) {
-          NavigationUtil.showUpdateRequirePopup(
-              context: context, title: R.string.ask_doctor.tr());
-          return;
-        }
+        // if (userInfo?.isUserFree == true) {
+        //   NavigationUtil.showUpdateRequirePopup(
+        //       context: context, title: R.string.ask_doctor.tr());
+        //   return;
+        // }
 
         var result = await Navigator.pushNamed(
             context, NavigatorName.make_question,

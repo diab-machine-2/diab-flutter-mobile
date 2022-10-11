@@ -133,41 +133,36 @@ class _QuestionDetailPageState extends State<QuestionDetailPage>
       onWillPop: () => _backPressed(),
       child: GestureDetector(
         onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
-        child: Stack(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
-            Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Expanded(
-                  child: Container(
-                    padding:
-                        EdgeInsets.only(top: 8, left: 16, right: 16, bottom: 8),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        _buildHeaderItem(),
-                        SizedBox(height: 12),
-                        _buildTitleItem(),
-                        // _cubit.questionModel.answers!.isEmpty ? Flexible(child: _buildTitleItem()) : _buildTitleItem(),
-                        SizedBox(height: 16),
-                        _buildAuthor(_cubit.questionModel),
-                        Visibility(
-                          visible: _cubit.questionModel.answers!.isNotEmpty,
-                          child: SizedBox(height: 16),
-                        ),
-                        Visibility(
-                            visible: _cubit.questionModel.answers!.isNotEmpty,
-                            child: Divider(
-                                height: 0.5, color: R.color.grayBorder)),
-                        SizedBox(height: 8),
-                        _buildListComment(),
-                      ],
+            Expanded(
+              child: Container(
+                padding:
+                    EdgeInsets.only(top: 8, left: 16, right: 16, bottom: 8),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    _buildHeaderItem(),
+                    SizedBox(height: 12),
+                    _buildTitleItem(),
+                    // _cubit.questionModel.answers!.isEmpty ? Flexible(child: _buildTitleItem()) : _buildTitleItem(),
+                    SizedBox(height: 16),
+                    _buildAuthor(_cubit.questionModel),
+                    Visibility(
+                      visible: _cubit.questionModel.answers!.isNotEmpty,
+                      child: SizedBox(height: 16),
                     ),
-                  ),
+                    Visibility(
+                        visible: _cubit.questionModel.answers!.isNotEmpty,
+                        child: Divider(height: 0.5, color: R.color.grayBorder)),
+                    SizedBox(height: 8),
+                    _buildListComment(),
+                  ],
                 ),
-                _buildCommentTextBox(context),
-              ],
+              ),
             ),
+            _buildCommentTextBox(context),
           ],
         ),
       ),
@@ -254,7 +249,7 @@ class _QuestionDetailPageState extends State<QuestionDetailPage>
                                   padding: const EdgeInsets.only(right: 15),
                                   child: ClipRRect(
                                     borderRadius: BorderRadius.circular(9),
-                                    child: CachedNetworkImage(
+                                    child: NetWorkImageWidget(
                                       imageUrl: imageModel.url!,
                                       width: 48.h,
                                       height: 48.h,
@@ -404,6 +399,7 @@ class _QuestionDetailPageState extends State<QuestionDetailPage>
 
   Widget _buildDoctorItemInQuestionItem(Answer? answer) {
     if (answer == null) return Container();
+    bool isPatient = answer.account!.code!.contains("Patient");
     return Container(
       padding: EdgeInsets.symmetric(vertical: 8),
       child: Column(
@@ -460,7 +456,7 @@ class _QuestionDetailPageState extends State<QuestionDetailPage>
                   : Container(),
             ],
           ),
-          SizedBox(height: 8),
+          SizedBox(height: 10),
           Text(
             answer.body ?? '',
             style: TextStyle(
@@ -469,8 +465,8 @@ class _QuestionDetailPageState extends State<QuestionDetailPage>
               fontWeight: FontWeight.w400,
             ),
           ),
-          SizedBox(height: 10),
-          if (answer.accountId != _cubit.userInfo!.accountId)
+          SizedBox(height: 8),
+          if (answer.accountId != _cubit.userInfo!.accountId && !isPatient)
             Padding(
               padding: const EdgeInsets.only(bottom: 10),
               child: RatingBar.builder(
@@ -485,8 +481,8 @@ class _QuestionDetailPageState extends State<QuestionDetailPage>
                 itemCount: 5,
                 itemPadding: const EdgeInsets.only(right: 5),
                 itemBuilder: (context, _) => Icon(
-                  CupertinoIcons.star,
-                  color: R.color.accentColor,
+                  CupertinoIcons.star_fill,
+                  color: R.color.orange,
                 ),
                 onRatingUpdate: (rating) {
                   _cubit.ratingComment(
@@ -546,7 +542,7 @@ class _QuestionDetailPageState extends State<QuestionDetailPage>
               // },
               itemCount: _cubit.questionModel.answers?.length ?? 0,
               shrinkWrap: true,
-              //  controller: _cubit.commentScrollController,
+              controller: _cubit.commentScrollController,
               padding: EdgeInsets.zero,
               physics: AlwaysScrollableScrollPhysics(),
               itemBuilder: (context, position) {

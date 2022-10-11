@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:math';
 
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:easy_localization/src/public_ext.dart';
@@ -109,7 +110,7 @@ class _MakeQuestionPageState extends State<MakeQuestionPage> {
                 ),
               ),
             ),
-            _buildSendButton(),
+            // _buildSendButton(),
           ],
         ),
       ),
@@ -119,11 +120,46 @@ class _MakeQuestionPageState extends State<MakeQuestionPage> {
   _buildAppBar(BuildContext context) {
     return CustomAppBar(
       backgroundColor: R.color.transparent,
-      title: Text(R.string.ask_question.tr(),
-          style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w600,
-              color: R.color.textDark)),
+      title: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Text(R.string.ask_question.tr(),
+              style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                  color: R.color.textDark)),
+          Expanded(
+            child: GestureDetector(
+              onTap: () async {
+                await _submitData();
+              },
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Expanded(
+                    child: AutoSizeText(
+                      "Gửi câu hỏi",
+                      textAlign: TextAlign.end,
+                      style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                          color: R.color.accentColor),
+                    ),
+                  ),
+                  SizedBox(width: 5),
+                  Icon(
+                    Icons.send,
+                    size: 16,
+                    color: R.color.accentColor,
+                  )
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
       leadingIcon: IconButton(
         splashColor: R.color.transparent,
         highlightColor: R.color.transparent,
@@ -161,7 +197,8 @@ class _MakeQuestionPageState extends State<MakeQuestionPage> {
               hintStyle: TextStyle(color: R.color.gray),
               hintText: "Bạn muốn hỏi bác sỹ điều gì?",
               fillColor: R.color.white),
-          maxLines: 8,
+          minLines: 5,
+          maxLines: 15,
           maxLength: 5000,
           controller: _controller,
         ),

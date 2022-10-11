@@ -284,7 +284,6 @@ class _AllQuestionAnswerPageState extends State<AllQuestionAnswerPage>
         //   NavigationUtil.showUpdateRequirePopup(context: context, title: R.string.ask_doctor.tr());
         //   return;
         // }
-
         var result = await Navigator.pushNamed(
             context, NavigatorName.make_question,
             arguments: {'lessonModuleItems': _cubit.allLessonModules});

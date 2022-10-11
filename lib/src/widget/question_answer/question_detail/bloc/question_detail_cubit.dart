@@ -56,6 +56,7 @@ class QuestionDetailCubit extends Cubit<QuestionDetailState> {
       if (response.data != null) {
         questionModel = questionModel.copyWith(
           id: response.data!.id,
+          body: response.data!.body,
           status: response.data!.status,
           createDateTime: response.data!.createDateTime,
           creator: response.data!.creator,

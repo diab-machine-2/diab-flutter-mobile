@@ -122,8 +122,8 @@ class _QuestionItemState extends State<QuestionItem>
                   itemCount: 5,
                   itemPadding: const EdgeInsets.only(right: 5),
                   itemBuilder: (context, _) => Icon(
-                    CupertinoIcons.star,
-                    color: R.color.accentColor,
+                    CupertinoIcons.star_fill,
+                    color: R.color.orange,
                   ),
                   onRatingUpdate: (rating) {},
                 ),

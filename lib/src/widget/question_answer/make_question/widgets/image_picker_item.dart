@@ -222,6 +222,8 @@ class ImagePickerItem extends StatelessWidget {
       final ImagePicker picker = ImagePicker();
       final XFile? pickedFile = await picker.pickImage(
         source: ImageSource.gallery,
+        maxHeight: 1000,
+        maxWidth: 1000,
       );
       print("pickedFile: $pickedFile");
 
@@ -268,8 +270,8 @@ class ImagePickerItem extends StatelessWidget {
     try {
       final picker = ImagePicker();
       XFile? pickedFile = await picker.pickImage(
-          maxWidth: 512,
-          maxHeight: 512,
+          maxWidth: 1000,
+          maxHeight: 1000,
           source: ImageSource.camera,
           preferredCameraDevice: CameraDevice.rear);
       if (pickedFile != null) {

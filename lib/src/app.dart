@@ -114,7 +114,7 @@ class _AppState extends State<App> {
           child: MediaQuery(
             data: mediaData,
             child: MaterialApp(
-                useInheritedMediaQuery: true,
+                // useInheritedMediaQuery: true,
                 title: 'diaB',
                 color: Colors.white,
                 theme: AppTheme.theme,
