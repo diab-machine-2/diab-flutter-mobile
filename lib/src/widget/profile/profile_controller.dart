@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_observer/Observable.dart';
 import 'package:flutter_observer/Observer.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/app_setting/app_sharing.dart';
@@ -24,7 +25,9 @@ import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/my_package/my_package_page.dart';
+import 'package:medical/src/widget/shared_profile/pages/share_app_detail.dart';
 import 'package:medical/src/widget/shared_profile/shared_profile.dart';
+import 'package:medical/src/widgets/button_language_picker.dart';
 import 'package:share_plus/share_plus.dart';
 import '../food_menu_screens/food_menu/food_menu_page.dart';
 
@@ -110,6 +113,9 @@ class _ProfileControllerState extends State<ProfileController> with Observer {
               onPressed: () {
                 Navigator.pop(context);
               }),
+          actions: [
+            ButtonLanguagePicker(),
+          ],
         ),
         body: Container(
             color: R.color.color0xffB1DDDB.withOpacity(0.2),
@@ -246,27 +252,8 @@ class _ProfileControllerState extends State<ProfileController> with Observer {
                             NavigationUtil.navigatePage(
                                 context, const FoodMenuPage());
                           }),
-                    )
+                    ),
                   ]),
-                  buildItem(
-                      isShow: !isPro,
-                      isRow: true,
-                      color: R.color.color0xffFCF8DA,
-                      title: R.string.remind.tr(),
-                      image: R.drawable.ic_remind,
-                      onTap: () {
-                        Navigator.pushNamed(context, NavigatorName.reminder);
-                      }),
-                  const SizedBox(height: 12),
-                  buildItem(
-                      isRow: true,
-                      color: R.color.color0xffFDE9E9,
-                      title: R.string.personal_schedule_single_line.tr(),
-                      image: R.drawable.ic_personal_schedule,
-                      onTap: () {
-                        Navigator.pushNamed(
-                            context, NavigatorName.schedule_activity);
-                      }),
                   const SizedBox(height: 12),
                   // buildItem(
                   //     isRow: true,
@@ -292,6 +279,8 @@ class _ProfileControllerState extends State<ProfileController> with Observer {
                   // buildAction(R.string.contact_diab.tr(), R.drawable.ic_contact, 4),
                   buildAction(
                       R.string.password.tr(), R.drawable.ic_password, 5),
+                  buildAction("Ưu đãi của bạn", R.icons.ic_gift, 8),
+                  SizedBox(height: 15),
                 ],
               ),
             )));
@@ -346,6 +335,7 @@ class _ProfileControllerState extends State<ProfileController> with Observer {
   }
 
   Widget buildAction(String title, String icon, int index) {
+    bool isSvgIcon = icon.split('.').last == "svg";
     return GestureDetector(
       onTap: () async {
         if (index == 0) {
@@ -372,12 +362,11 @@ class _ProfileControllerState extends State<ProfileController> with Observer {
         } else if (index == 5) {
           Navigator.pushNamed(context, NavigatorName.change_password);
         } else if (index == 6) {
-          String? shareLink = DynamicLinkConfig.instance.shareLink;
-          if (shareLink != null) {
-            AppShare.instance.userReferralCode(context, shareLink);
-          }
+          Navigator.pushNamed(context, NavigatorName.share_app_detail);
         } else if (index == 7) {
           Navigator.pushNamed(context, NavigatorName.connect_device_app);
+        } else if (index == 8) {
+          Navigator.pushNamed(context, NavigatorName.voucher_list);
         }
       },
       child: Container(
@@ -387,7 +376,14 @@ class _ProfileControllerState extends State<ProfileController> with Observer {
             children: [
               Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
                 Row(children: [
-                  Image.asset(icon, width: 20, height: 20),
+                  isSvgIcon
+                      ? SvgPicture.asset(
+                          icon,
+                          width: 20,
+                          height: 20,
+                          color: R.color.accentColor,
+                        )
+                      : Image.asset(icon, width: 20, height: 20),
                   const SizedBox(width: 16),
                   Text(title, style: const TextStyle(fontSize: 16))
                 ]),

@@ -55,6 +55,9 @@ class NavigatorName {
   static const String my_progress = '/my_progress';
   static const String make_question = '/make_question';
   static const String question_detail = '/question_detail';
+  static const String voucher_list = '/voucher_list';
+  static const String voucher_detail = '/voucher_detail';
+  static const String share_app_detail = '/share_app_detail';
   static const String news_detail = '/news_detail';
   static const String connection_instructions = '/connection_instructions';
   static const String connect_device_app = '/connect_device_app';

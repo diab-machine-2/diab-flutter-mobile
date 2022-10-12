@@ -14,6 +14,11 @@
 	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
+	<key>CFBundleLocalizations</key>
+	<array>
+		<string>en</string>
+		<string>vi</string>
+	</array>
 	<key>CFBundleName</key>
 	<string>diaB</string>
 	<key>CFBundlePackageType</key>
@@ -39,6 +44,8 @@
 	<string>154356806592189</string>
 	<key>FacebookDisplayName</key>
 	<string>diaB</string>
+	<key>FirebaseAppDelegateProxyEnabled</key>
+	<false/>
 	<key>FirebaseDynamicLinksCustomDomains</key>
 	<array>
 		<string>https://news.diab.com.vn</string>

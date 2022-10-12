@@ -93,7 +93,7 @@ class _DropdownColumnWidgetState extends State<DropdownColumnWidget> {
               visible: Utils.isEmpty(widget.label),
               child: const SizedBox(height: 5)),
           if (sizeList == 0)
-            const Text("No data")
+            const Text('No data')
           else
             sizeList == 1
                 ? Row(

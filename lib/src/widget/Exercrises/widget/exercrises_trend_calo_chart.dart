@@ -235,7 +235,6 @@ class ExercrisesTrendCaloChartState extends State<ExercrisesTrendCaloChart>
                           ],
                         )),
                     SizedBox(height: 16),
-                    // buildDescription(model)
                   ]),
                 );
         }));
@@ -258,16 +257,6 @@ class ExercrisesTrendCaloChartState extends State<ExercrisesTrendCaloChart>
         Message.showToastMessage(context, e.toString());
       }
     }
-  }
-
-  Widget buildDescription(ExercriseTrendCaloModel model) {
-    // List<Widget> items = [];
-    // model.trendItems.items.forEach((element) {
-    //   items.add(buildDescriptionItem(element));
-    // });
-    return Container(
-        // mainAxisAlignment: MainAxisAlignment.spaceBetween, children: items);
-        child: Text('abc'));
   }
 
   Widget buildDescriptionItem(List model) {

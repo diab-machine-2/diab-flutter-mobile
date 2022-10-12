@@ -671,7 +671,7 @@ class _ExerciseTabPageState extends State<ExerciseTabPage> with AutomaticKeepAli
                         child: Image.asset(R.drawable.img_upgrade_package),
                       ),
                       Text(
-                        'Bài học chưa mở khoá!',
+                        R.string.lesson_locked,
                         textAlign: TextAlign.center,
                         style: TextStyle(color: R.color.textDark, fontSize: 20, fontWeight: FontWeight.w700),
                       ),

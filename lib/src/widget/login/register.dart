@@ -10,13 +10,16 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/dynamic_link_config.dart';
+import 'package:medical/src/modal/base/referral_code_temp.dart';
 import 'package:medical/src/modal/error/error_model.dart';
+import 'package:medical/src/model/preference/app_preference.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/response/user_info_referral_code_response.dart';
 import 'package:medical/src/model/service/api_result.dart';
 import 'package:medical/src/model/service/network_exceptions.dart';
 import 'package:medical/src/repo/login/login_client.dart';
 import 'package:medical/src/repo/user/user_client.dart';
+import 'package:medical/src/utils/app_storages.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/navigator_name.dart';
@@ -367,12 +370,11 @@ class _RegisterControllerState extends State<RegisterController> {
       return;
     }
 
-    if (referralCode != null && referralCode.isNotEmpty) {
+    if (referralCode.isNotEmpty) {
       final bool isReferralCodeExist = await _isReferralCodeExist(referralCode);
       if (!isReferralCodeExist) return;
     }
     try {
-      print(phone);
       final result = await LoginClient()
           .requestOTP({"password": password, "phoneNumber": phone});
       BotToast.closeAllLoading();
@@ -380,6 +382,13 @@ class _RegisterControllerState extends State<RegisterController> {
         _showDialogError();
         return;
       }
+
+      if (referralCode != "") {
+        ReferralCodeTemp referralCodeData =
+            ReferralCodeTemp(referralCode: referralCode, phoneNumber: phone);
+        AppStorages.setReferralCode(referralCodeData);
+      }
+
       Navigator.pushNamed(context, NavigatorName.verify, arguments: {
         'type': 'register',
         'otp': result.token,

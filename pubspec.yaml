@@ -32,10 +32,10 @@ dependencies:
   json_annotation: ^4.1.0
   bot_toast: ^4.0.1
   smooth_page_indicator: ^1.0.0+2
-  flutter_animated_dialog: ^2.0.1
+  # flutter_animated_dialog: ^2.0.1
   fluttertoast: ^8.0.8
   # image_picker: ^0.6.7+22
-  image_picker: 0.8.4+8
+  image_picker: ^0.8.5+3
   permission_handler: ^9.2.0
   # permission_handler: ^5.0.1+1
   flutter_datetime_picker: ^1.5.1
@@ -125,6 +125,8 @@ dependencies:
   auto_size_text: ^3.0.0
   timelines: ^0.1.0
   app_settings: ^4.1.8
+  dotted_border: ^2.0.0+2
+  sticky_headers: ^0.3.0+2
 
 dev_dependencies:
   flutter_test:

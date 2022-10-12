@@ -1454,7 +1454,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController>
               RichText(
                 textAlign: TextAlign.center,
                 text: TextSpan(
-                  text: 'Đã gửi OTP 5 lần cho số điện thoại ',
+                  text: '${R.string.da_gui_otp_5_lan_cho_so_dien_thoai} ',
                   style:
                       const TextStyle(color: Color(0xff172823), fontSize: 16),
                   children: <TextSpan>[
@@ -1462,9 +1462,8 @@ class _ProfileInfoControllerState extends State<ProfileInfoController>
                         text: phone,
                         style: const TextStyle(
                             fontWeight: FontWeight.bold, fontSize: 16)),
-                    const TextSpan(
-                        text:
-                            '.\nVui lòng kiểm tra lại hoặc đăng ký vào ngày hôm sau!',
+                    TextSpan(
+                        text: ".\n${R.string.dang_ky_lai_hom_sau}",
                         style:
                             TextStyle(color: Color(0xff172823), fontSize: 16)),
                   ],

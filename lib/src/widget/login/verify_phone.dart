@@ -197,7 +197,7 @@ class _VerifyPhoneControllerState extends State<VerifyPhoneController> {
                                       end: Alignment.centerRight,
                                       colors: [R.color.greenGradientTop, R.color.greenGradientBottom])),
                               child: Center(
-                                  child: Text('${R.string.gui_lai_ma.tr()} (Còn ${timeCount}s)',
+                                  child: Text('${R.string.gui_lai_ma.tr()} (${timeCount}s)',
                                       style:
                                           TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: R.color.white))),
                             ),

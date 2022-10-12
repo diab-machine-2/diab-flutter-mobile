@@ -1112,5 +1112,5 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
 String formatDate(int timeStamp) {
   final date = DateTime.fromMillisecondsSinceEpoch(timeStamp);
 
-  return 'Tháng ${date.month}, ${date.year}';
+  return '${R.string.month} ${date.month}, ${date.year}';
 }

@@ -442,4 +442,7 @@ class Drawables {
   String get ic_connect_apple => "lib/res/drawables/ic_connect_apple.png";
   String get ic_connect_samsung => "lib/res/drawables/ic_connect_samsung.png";
   String get ic_heart_connect => "lib/res/drawables/ic_heart_connect.png";
+	String get voucher_reward => "lib/res/drawables/voucher_reward.jpg";
+	String get voucher_reward_detail => "lib/res/drawables/voucher_reward_detail.png";
+	String get share_app_detail => "lib/res/drawables/share_app_detail.jpg";
 }

@@ -140,8 +140,8 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
                   backgroundColor: Colors.transparent,
                   title: Text(
                       widget.type == 'update'
-                          ? 'Cập nhật chỉ số dinh dưỡng'
-                          : 'Nhập chỉ số dinh dưỡng',
+                          ? R.string.cap_nhat_chi_so_dinh_duong
+                          : R.string.nhap_chi_so_dinh_duong,
                       style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.w600,
@@ -184,8 +184,8 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
                                 ? Description(
                                     input: true,
                                     data: des,
-                                    titleDetail:
-                                        'Chế độ dinh dưỡng bệnh tiểu đường')
+                                    titleDetail: R.string
+                                        .che_do_dinh_duong_benh_tieu_duong)
                                 : SizedBox()),
                         Padding(
                             padding: const EdgeInsets.only(
@@ -210,7 +210,7 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
                                       children: [
-                                        Text('Lượng calo bạn đã nạp:'),
+                                        Text('${R.string.luong_calo_ban_da_nap}:'),
                                         SizedBox(height: 8),
                                         Row(
                                           crossAxisAlignment:
@@ -394,7 +394,7 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
                                                       height: 24,
                                                     ),
                                                     SizedBox(width: 4),
-                                                    Text('Thêm món ăn',
+                                                    Text(R.string.them_mon_an,
                                                         style: TextStyle(
                                                             color: R.color
                                                                 .mainColor,
@@ -479,8 +479,8 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
                                                                     Text(
                                                                         selectedFoods[index].code ==
                                                                                 'OtherUneditable'
-                                                                            ? 'Đã ăn ${formatNumber((selectedFoods[index].quantity ?? 0) * (selectedFoods[index].calorie ?? 0))} kcal'
-                                                                            : 'Đã ăn ${roundAsFixed((selectedFoods[index].portion ?? 0) * (selectedFoods[index].quantity ?? 0))} ${selectedFoods[index].unit}, ${formatNumber((selectedFoods[index].quantity ?? 0) * (selectedFoods[index].calorie ?? 0))} kcal',
+                                                                            ? '${R.string.da_an} ${formatNumber((selectedFoods[index].quantity ?? 0) * (selectedFoods[index].calorie ?? 0))} kcal'
+                                                                            : '${R.string.da_an} ${roundAsFixed((selectedFoods[index].portion ?? 0) * (selectedFoods[index].quantity ?? 0))} ${selectedFoods[index].unit}, ${formatNumber((selectedFoods[index].quantity ?? 0) * (selectedFoods[index].calorie ?? 0))} kcal',
                                                                         style: TextStyle(
                                                                             color:
                                                                                 R.color.textDark,
@@ -537,7 +537,7 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
                                       children: [
-                                        Text('Lượng calo bạn đã nạp',
+                                        Text(R.string.luong_calo_ban_da_nap,
                                             style: TextStyle(
                                                 fontSize: 16,
                                                 fontWeight: FontWeight.w600)),
@@ -557,7 +557,7 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
                                                 fontWeight: FontWeight.w400),
                                             decoration: InputDecoration(
                                                 hintText:
-                                                    'Nhập lượng calo bạn đã nạp',
+                                                    R.string.luong_calo_ban_da_nap,
                                                 contentPadding:
                                                     EdgeInsets.only(bottom: 8),
                                                 border: InputBorder.none,
@@ -594,7 +594,7 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
                                     Image.asset(R.drawable.ic_note_text,
                                         width: 24, height: 24),
                                     SizedBox(width: 8),
-                                    Text('Ghi chú',
+                                    Text(R.string.note,
                                         style: TextStyle(
                                             fontSize: 16,
                                             fontWeight: FontWeight.w600))
@@ -722,7 +722,7 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
                                         R.color.greenGradientBottom
                                       ])),
                               child: Center(
-                                  child: Text('Lưu',
+                                  child: Text(R.string.save,
                                       style: TextStyle(
                                           color: Colors.white,
                                           fontWeight: FontWeight.w600,
@@ -750,7 +750,7 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
                                             border: Border.all(
                                                 color: R.color.red, width: 2)),
                                         child: Center(
-                                          child: Text('Xoá dữ liệu',
+                                          child: Text(R.string.xoa_du_lieu,
                                               style: TextStyle(
                                                   color: Colors.red,
                                                   fontSize: 16,
@@ -776,7 +776,7 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
                                                 R.color.greenGradientBottom
                                               ])),
                                       child: Center(
-                                        child: Text('Lưu',
+                                        child: Text(R.string.save,
                                             style: TextStyle(
                                                 color: Colors.white,
                                                 fontSize: 16,
@@ -841,7 +841,7 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
       BotToast.showLoading();
       final result = await FoodClient().deleteInputFood(widget.id);
       if (result == true) {
-        Message.showToastMessage(context, 'Xoá thành công');
+        Message.showToastMessage(context, R.string.xoa_thanh_cong);
         Observable.instance.notifyObservers([], notifyName: "food_change_data");
         // DartNotificationCenter.post(channel: 'food_change_data');
         Navigator.pop(context);
@@ -864,11 +864,11 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
     final note = _controllerNote.text;
 
     if (selectedDate == null) {
-      Message.showToastMessage(context, 'Bạn chưa nhập thời gian');
+      Message.showToastMessage(context, R.string.ban_chua_nhap_thoi_gian);
       return;
     }
     if (selectedTimeFrame == null) {
-      Message.showToastMessage(context, 'Bạn chưa chọn khung giờ');
+      Message.showToastMessage(context, R.string.ban_chua_chon_khung_gio);
       return;
     }
     if (addTotalCalo) {
@@ -881,12 +881,12 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
         return;
       }
       if (note.isEmpty) {
-        Message.showToastMessage(context, 'Bạn chưa nhập ghi chú');
+        Message.showToastMessage(context, R.string.ban_chua_nhap_ghi_chu);
         return;
       }
     } else {
       if (selectedFoods.length == 0) {
-        Message.showToastMessage(context, 'Bạn chưa chọn món ăn');
+        Message.showToastMessage(context, R.string.ban_chua_chon_mon_an);
         return;
       }
     }
@@ -931,7 +931,7 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
     final note = _controllerNote.text;
 
     if (selectedDate == null) {
-      Message.showToastMessage(context, 'Bạn chưa nhập thời gian');
+      Message.showToastMessage(context, R.string.ban_chua_nhap_thoi_gian);
       return;
     }
     if (selectedTimeFrame == null) {
@@ -953,7 +953,7 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
       }
     } else {
       if (selectedFoods.length == 0) {
-        Message.showToastMessage(context, 'Bạn chưa chọn món ăn');
+        Message.showToastMessage(context, R.string.ban_chua_chon_mon_an);
         return;
       }
     }
@@ -1006,7 +1006,7 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
                       Image.asset(R.drawable.ic_earse, width: 64, height: 64),
                       Padding(
                         padding: const EdgeInsets.only(top: 16.0),
-                        child: Text('Bạn muốn xoá dữ liệu?',
+                        child: Text(R.string.ban_muon_xoa_du_lieu,
                             textAlign: TextAlign.center,
                             style: TextStyle(
                                 color: R.color.textDark,
@@ -1015,8 +1015,7 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
                       ),
                       Padding(
                         padding: const EdgeInsets.only(top: 16.0),
-                        child: Text(
-                            'Các thống kê sẽ thay đổi khi dữ liệu bị xoá, bạn vẫn chắc chắn muốn xoá?',
+                        child: Text(R.string.confirm_to_remove_data,
                             textAlign: TextAlign.center,
                             style: R.style.normalTextStyle),
                       ),
@@ -1037,7 +1036,7 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
                                               BorderRadius.circular(200),
                                           color: R.color.grayBorder),
                                       child: Center(
-                                        child: Text('Quay lại',
+                                        child: Text(R.string.back,
                                             style: TextStyle(
                                                 color: R.color.textDark,
                                                 fontSize: 16,
@@ -1059,7 +1058,7 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
                                       borderRadius: BorderRadius.circular(200),
                                     ),
                                     child: Center(
-                                      child: Text('Xoá',
+                                      child: Text(R.string.delete,
                                           style: TextStyle(
                                               color: Colors.white,
                                               fontSize: 16,
@@ -1124,7 +1123,7 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
                           width: 64, height: 64),
                       Padding(
                         padding: const EdgeInsets.only(top: 16.0),
-                        child: Text('Bạn muốn quay lại ?',
+                        child: Text(R.string.ban_muon_quay_lai,
                             textAlign: TextAlign.center,
                             style: TextStyle(
                                 color: R.color.textDark,
@@ -1133,8 +1132,7 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
                       ),
                       Padding(
                         padding: const EdgeInsets.only(top: 16.0),
-                        child: Text(
-                            'Dữ liệu đang nhập sẽ không được lưu lại, bạn vẫn chắc chắn muốn thoát?',
+                        child: Text(R.string.confirm_to_back,
                             textAlign: TextAlign.center,
                             style: R.style.normalTextStyle),
                       ),
@@ -1154,7 +1152,7 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
                                               BorderRadius.circular(200),
                                           color: R.color.grayBorder),
                                       child: Center(
-                                        child: Text('Vẫn ở lại',
+                                        child: Text(R.string.van_o_lai,
                                             style: TextStyle(
                                                 color: R.color.textDark,
                                                 fontSize: 16,
@@ -1182,7 +1180,7 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
                                               R.color.greenGradientBottom
                                             ])),
                                     child: Center(
-                                      child: Text('Thoát',
+                                      child: Text(R.string.exit,
                                           style: TextStyle(
                                               color: Colors.white,
                                               fontSize: 16,
@@ -1268,7 +1266,7 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
           )
         ],
         cancelButton: CupertinoActionSheetAction(
-          child: Text("Huỷ",
+          child: Text(R.string.cancel,
               style: TextStyle(color: Color(0xff333333), fontSize: 14)),
           onPressed: () {
             Navigator.pop(context);
@@ -1277,7 +1275,7 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
       );
       showCupertinoModalPopup(context: context, builder: (context) => action);
     } else {
-      //Message.showToastMessage(context, 'Chỉ đuợc chọn tối đa 5 ảnh');
+      //Message.showToastMessage(context, R.string.max_image_select);
     }
   }
 
@@ -1316,13 +1314,13 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
 
   showAlertDialog(BuildContext context) {
     Widget cancelButton = TextButton(
-      child: Text("Huỷ"),
+      child: Text(R.string.cancel),
       onPressed: () {
         Navigator.pop(context);
       },
     );
     Widget continueButton = TextButton(
-      child: Text("Cấp quyền"),
+      child: Text(R.string.allowed),
       onPressed: () {
         Navigator.pop(context);
         openAppSettings();
@@ -1330,8 +1328,8 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
     );
 
     AlertDialog alert = AlertDialog(
-      title: Text("Thông báo"),
-      content: Text("Bạn cần cấp quyền truy cập để sử dụng tính năng này"),
+      title: Text(R.string.tab_notification),
+      content: Text(R.string.ask_for_permission),
       actions: [
         cancelButton,
         continueButton,
