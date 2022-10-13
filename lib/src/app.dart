@@ -90,6 +90,7 @@ class _AppState extends State<App> {
   @override
   void dispose() {
     // DeepLinkConfig.instance.dispose();
+    // /Users/phunguyen/development/flutter/.pub-cache/hosted/pub.dartlang.org/pull_to_refresh-2.0.0/lib/src/smart_refresher.dart
     super.dispose();
   }
 
@@ -107,6 +108,7 @@ class _AppState extends State<App> {
       designSize: const Size(375, 812),
       builder: (_, child) {
         return RefreshConfiguration(
+          headerTriggerDistance: 25,
           headerBuilder: () => MaterialClassicHeader(
             color: R.color.accentColor,
           ), // Configure the default header indicator. If you have the same header indicator for each page, you need to set this
