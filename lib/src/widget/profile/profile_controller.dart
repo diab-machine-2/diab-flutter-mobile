@@ -270,7 +270,7 @@ class _ProfileControllerState extends State<ProfileController> with Observer {
                       "Mời bạn bè dùng App DiaB", R.drawable.ic_share, 6),
                   buildAction(R.string.shared_profile_list.tr(),
                       R.drawable.ic_share, 1),
-                  buildAction('Kết nối sức khoẻ từ thiết bị và app',
+                  buildAction('Kết nối thiết bị, ứng dụng',
                       R.drawable.ic_heart_connect, 7),
                   buildAction(
                       R.string.user_manual.tr(), R.drawable.ic_question, 2),

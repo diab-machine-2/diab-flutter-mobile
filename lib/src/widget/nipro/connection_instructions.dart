@@ -75,7 +75,14 @@ class _ConnectionInstructionsControllerState
         //_channel.invokeMethod('start_scan');
       } else if (event == 'new_device' && data.length != 0) {
         BotToast.closeAllLoading();
-
+        final savedDevices = AppSettings.getNiproDevices();
+        savedDevices.forEach((element) {
+          data.asMap().forEach((index, value) {
+            if (element['address'] == value['address']) {
+              data.removeAt(index);
+            }
+          });
+        });
         devices = data;
         if (listDevicesKey.currentState != null) {
           listDevicesKey.currentState!.devices = devices;
