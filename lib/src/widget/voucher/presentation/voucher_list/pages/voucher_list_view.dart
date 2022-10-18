@@ -22,7 +22,8 @@ class _VoucherListViewState extends State<VoucherListView> {
   late BuildContext currentContext;
 
   Future<bool> _pullToRefresh() async {
-    BlocProvider.of<VoucherListBloc>(currentContext).add(EventGetVoucherList(isReload: true));
+    BlocProvider.of<VoucherListBloc>(currentContext)
+        .add(EventGetVoucherList(isReload: true));
     return true;
   }
 
@@ -52,58 +53,60 @@ class _VoucherListViewState extends State<VoucherListView> {
             );
           }
         },
-        child: Container(
-          color: R.color.color0xffB1DDDB,
-          child: RefreshIndicator(
-            onRefresh: _pullToRefresh,
-            child: Scaffold(
-              appBar: CustomAppBar(
-                backgroundColor: R.color.transparent,
-                title: Text(
-                  R.string.voucher_list.tr(),
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
-                    color: R.color.textDark,
-                  ),
-                ),
-                leadingIcon: IconButton(
-                  splashColor: R.color.transparent,
-                  highlightColor: R.color.transparent,
-                  icon: Icon(Icons.arrow_back, color: R.color.textDark),
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
+        child: RefreshIndicator(
+          onRefresh: _pullToRefresh,
+          child: Scaffold(
+            appBar: CustomAppBar(
+              backgroundColor: R.color.transparent,
+              title: Text(
+                R.string.voucher_list.tr(),
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                  color: R.color.textDark,
                 ),
               ),
-              body: Container(
-                padding: EdgeInsets.symmetric(vertical: 15, horizontal: 25),
-                color: R.color.color0xfff5f5f5,
-                child: BlocBuilder<VoucherListBloc, VoucherListState>(
-                    builder: (context, state) {
-                  currentContext = context;
-                  final List<VoucherModel>? voucherList = state.voucherList;
-                  if (voucherList == null) return SizedBox();
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Text(
-                        R.string.voucher_have.tr().replaceFirst(
-                            "[NUMBER_VOUCHER]", "${voucherList.length}"),
-                      ),
-                      SizedBox(height: 25),
-                      Expanded(
-                        child: ListView(
-                            children: voucherList
-                                .map((voucherData) => VoucherListItem(
-                                      voucherData: voucherData,
-                                    ))
-                                .toList()),
-                      ),
-                    ],
-                  );
-                }),
+              leadingIcon: IconButton(
+                splashColor: R.color.transparent,
+                highlightColor: R.color.transparent,
+                icon: Icon(Icons.arrow_back, color: R.color.textDark),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
               ),
+            ),
+            body: Container(
+              padding: EdgeInsets.symmetric(vertical: 15, horizontal: 25),
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                  fit: BoxFit.cover,
+                  image: AssetImage(R.drawable.bg_splash),
+                ),
+              ),
+              child: BlocBuilder<VoucherListBloc, VoucherListState>(
+                  builder: (context, state) {
+                currentContext = context;
+                final List<VoucherModel>? voucherList = state.voucherList;
+                if (voucherList == null) return SizedBox();
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Text(
+                      R.string.voucher_have.tr().replaceFirst(
+                          "[NUMBER_VOUCHER]", "${voucherList.length}"),
+                    ),
+                    SizedBox(height: 25),
+                    Expanded(
+                      child: ListView(
+                          children: voucherList
+                              .map((voucherData) => VoucherListItem(
+                                    voucherData: voucherData,
+                                  ))
+                              .toList()),
+                    ),
+                  ],
+                );
+              }),
             ),
           ),
         ),

@@ -54,18 +54,12 @@ class VoucherListItem extends StatelessWidget {
                 opacity: isUsed ? 0.5 : 1,
                 child: Padding(
                   padding: const EdgeInsets.all(15),
-                  child: voucherData.logo != null
-                      ? NetWorkImageWidget(
-                          imageUrl: voucherData.logo,
-                          width: 50,
-                          fit: BoxFit.cover,
-                        )
-                      : Image.asset(
-                          R.drawable.ic_crown_green,
-                          width: 40,
-                          height: 40,
-                          fit: BoxFit.contain,
-                        ),
+                  child: Image.asset(
+                    R.drawable.ic_voucher,
+                    width: 60,
+                    height: 60,
+                    fit: BoxFit.contain,
+                  ),
                 ),
               ),
             ),
@@ -160,6 +154,7 @@ class VoucherListItem extends StatelessWidget {
                       style: TextStyle(
                         fontWeight: FontWeight.w700,
                         fontSize: 14,
+                        color: isUsed ? R.color.color0xffA1A3A6 : R.color.textDark,
                       ),
                     ),
                     if (!isUsed)
