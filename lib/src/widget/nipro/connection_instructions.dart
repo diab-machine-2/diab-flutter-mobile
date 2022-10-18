@@ -84,6 +84,7 @@ class _ConnectionInstructionsControllerState
           });
         });
         devices = data;
+
         if (listDevicesKey.currentState != null) {
           listDevicesKey.currentState!.devices = devices;
           listDevicesKey.currentState!.setState(() {});
