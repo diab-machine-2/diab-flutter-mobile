@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/request/update_lesson_section_request.dart';
@@ -58,14 +59,14 @@ class CourseQuizCubit extends Cubit<CourseQuizState> {
   int get countAnswerRight {
     int countAnswerRight = 0;
     for (int index = 0; index < answer.length; index++) {
-      if (answer[index].toString() ==
-          listQuiz[index]
-              ?.quiz
-              ?.quizAnswers
-              ?.where((e) => e?.isCorrect == true)
-              .map((e) => e?.id)
-              .toList()
-              .toString()) {
+
+      final List<String?> selectedAnswers = answer[index] ?? [];
+      final List<String?> correctAnswers = listQuiz[index]?.quiz?.quizAnswers?.where((e) => e?.isCorrect == true).map((e) => e?.id).toList() ?? [];
+
+      selectedAnswers.sort((a,b) => (a ?? '').compareTo(b ?? ''));
+      correctAnswers.sort((a,b) => (a ?? '').compareTo(b ?? ''));
+
+      if (listEquals(selectedAnswers, correctAnswers)) {
         countAnswerRight++;
       }
     }
