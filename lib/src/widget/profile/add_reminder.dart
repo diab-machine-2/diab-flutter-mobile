@@ -73,7 +73,7 @@ class _AddReminderControllerState extends BaseState<AddReminderController> {
   String getName() {
     String name = '';
     if (model.remindType == 1) {
-      name = 'Hàng ngày';
+      name = R.string.every_day_except_sunday;
     } else {
       List<String> weeks = [];
       model.days?.forEach((element) {

@@ -21,7 +21,7 @@ class StatisticalPopup extends StatelessWidget {
         const Expanded(flex: 1, child: SizedBox()),
         if (hasRoadmapUser)
           _buildSingleButton(
-            title: 'Tiến độ của tôi',
+            title: R.string.my_progress,
             icon: R.drawable.ic_activity_process,
             onTap: () {
               NavigationUtil.pop(context, result: StatisticalAction.my_progress);
@@ -36,7 +36,7 @@ class StatisticalPopup extends StatelessWidget {
           },
         ),
         _buildSingleButton(
-          title: 'Nhận xét của chuyên gia',
+          title: R.string.expert_comment,
           icon: R.drawable.ic_chat,
           onTap: () {
             NavigationUtil.pop(context, result: StatisticalAction.chatting);

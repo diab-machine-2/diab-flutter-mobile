@@ -17,5 +17,5 @@ class R {
   static final color = Colors();
   static final dimen = Dimens();
   static final style = AppStyle();
-  static final icons = AppIcons();
+  static final icons = Icons();
 }

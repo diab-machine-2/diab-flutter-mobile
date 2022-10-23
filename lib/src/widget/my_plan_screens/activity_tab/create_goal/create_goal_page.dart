@@ -241,19 +241,19 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
   List<Widget> _buildSmartGoalDetailType1() {
     return [
       _buildSingleResultDetail(
-        title: 'Mục tiêu',
+        title: R.string.goal,
         description:
             _cubit.dataModel.type == ScheduleType.custom ? _cubit.dataModel.name : (_cubit.dataModel.type?.title ?? ''),
       ),
       _buildSingleResultDetail(
           title: _cubit.dataModel.goalRecordType == GoalRecordType.time ? 'Thời lượng' : 'Số lần',
           description:
-              '${_cubit.dataModel.goalTimeOrFrequency} ${_cubit.dataModel.goalRecordType == GoalRecordType.time ? 'phút' : 'lần'}'),
+              '${_cubit.dataModel.goalTimeOrFrequency} ${_cubit.dataModel.goalRecordType == GoalRecordType.time ? R.string.minute : 'lần'}'),
       if (_cubit.dataModel.isRepeat)
         _buildSingleResultDetail(
           title: 'Tần suất',
           description: _cubit.dataModel.repeatType == RepeatType.day
-              ? 'Hàng ngày'
+              ? R.string.every_day_except_sunday
               : 'Hàng tuần vào ${_cubit.dataModel.repeatDayList.map((e) => e.shortTitle).toList().join(',')}',
         ),
        _buildSingleResultDetail(
@@ -270,8 +270,8 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
 
   List<Widget> _buildSmartGoalDetailType2() {
     return [
-      _buildSingleResultDetail(title: 'Mục tiêu', description: 'Vận động trong ngày'),
-      _buildSingleResultDetail(title: 'Thời lượng', description: '${_cubit.dataModel.dailyTargetDurationNumber} phút'),
+      _buildSingleResultDetail(title: R.string.goal, description: 'Vận động trong ngày'),
+      _buildSingleResultDetail(title: 'Thời lượng', description: '${_cubit.dataModel.dailyTargetDurationNumber} ${R.string.minute}'),
       _buildSingleResultDetail(title: 'Ngày bắt đầu', description: convertToUTC(DateTime.now().millisecondsSinceEpoch ~/ 1000, 'dd/MM/yyyy')),
     ];
   }

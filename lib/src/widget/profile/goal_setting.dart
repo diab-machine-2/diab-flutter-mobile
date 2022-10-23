@@ -282,7 +282,7 @@ class _GoalSettingControllerState extends State<GoalSettingController> {
           barrierColor: R.color.color0xff003F38.withOpacity(0.5),
           context: context,
           builder: (_) => NoticeChangePage(
-              description: "Mức tiêu thụ năng lượng của bạn đã thay đổi. Xác nhận bằng cách chọn \"Đồng ý\" để cập nhật thực đơn mẫu mới.",
+              description: R.string.consumption,
               onClick: () {
                 Future.delayed(const Duration(milliseconds: 200), () {
                   _appRepository.createMenu(model!.createMenuRequest(

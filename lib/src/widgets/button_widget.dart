@@ -32,32 +32,33 @@ class ButtonWidget extends StatelessWidget {
         height: height ?? 50,
         alignment: Alignment.center,
         decoration: BoxDecoration(
-            color: onPressed == null
-                ? R.color.white
-                : (backgroundColor ?? R.color.accentColor),
-            gradient: backgroundColor == null && onPressed != null
-                ? const LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      Color(0xFF4BB2AB),
-                      Color(0xFF01857A),
-                      Color(0xFF008479)
-                    ],
-                  )
-                : null,
-            border: onPressed == null
-                ? Border.all(color: R.color.gray, width: 1.5)
-                : borderColor == null
-                    ? null
-                    : Border.all(
-                        color: onPressed == null
-                            ? R.color.gray
-                            : (borderColor ??
-                                backgroundColor ??
-                                R.color.accentColor),
-                        width: 1.5),
-            borderRadius: BorderRadius.circular(200)),
+          color: onPressed == null
+              ? R.color.white
+              : (backgroundColor ?? R.color.accentColor),
+          gradient: backgroundColor == null && onPressed != null
+              ? const LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Color(0xFF4BB2AB),
+                    Color(0xFF01857A),
+                    Color(0xFF008479)
+                  ],
+                )
+              : null,
+          border: onPressed == null
+              ? Border.all(color: R.color.gray, width: 1.5)
+              : borderColor == null
+                  ? null
+                  : Border.all(
+                      color: onPressed == null
+                          ? R.color.gray
+                          : (borderColor ??
+                              backgroundColor ??
+                              R.color.accentColor),
+                      width: 1.5),
+          borderRadius: BorderRadius.circular(radius ?? 200),
+        ),
         child: Text(
           title,
           style: TextStyle(

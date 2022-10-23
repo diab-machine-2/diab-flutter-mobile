@@ -1654,5 +1654,5 @@ class _CustomTimePickerState extends State<CustomTimePicker> {
 String formatDate(int timeStamp) {
   final date = DateTime.fromMillisecondsSinceEpoch(timeStamp);
 
-  return 'Tháng ${date.month}, ${date.year}';
+  return '${R.string.month} ${date.month}, ${date.year}';
 }

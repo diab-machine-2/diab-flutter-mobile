@@ -9,56 +9,41 @@ import 'package:medical/src/modal/error/error_model.dart';
 class QuestionAnswerClient extends FetchClient {
   Future<dynamic> makeQuestion(MakeQuestionRequest request) async {
     try {
-      final Response response = await super.postData(
-          url: '/App/Question/Input',
-          params: FormData.fromMap({
+      final response = await super.postHttp(
+          path: '/App/Question/Input',
+          params: {
             'body': request.body!,
-            'lessonModuleId': request.lessonModuleId!,
             'accountId': request.accountId!,
-          }));
+          },
+          files: request.pictures);
       if (response.statusCode == 200) {
         return true;
       } else {
-        final error = Error.fromJson(response);
-        throw error;
+        final error = (await response.stream.bytesToString());
+        throw Error.fromString(error);
       }
     } catch (e) {
       return e is Error ? e : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
-  // Future<dynamic> makeComment(MakeCommentRequest request) async {
-  //   try {
-  //     final Response response = await super.postData(
-  //         url: '/App/Question/CreateAnswer',
-  //         params: FormData.fromMap({
-  //           'body': request.body!,
-  //           'questionId': request.questionId!,
-  //           'accountId': request.accountId!,
-  //           'isComment': true,
-  //         }));
-  //     if (response.statusCode == 200) {
-  //       return true;
-  //     } else {
-  //       final error = Error.fromJson(response);
-  //       throw error;
-  //     }
-  //   } catch (e) {
-  //     return e is Error ? e : R.string.error_can_not_connect_to_server.tr();
-  //   }
-  // }
+  Future<dynamic> ratingComment({
+    required String commentId,
+    required String rate,
+  }) async {
+    // try {
+    final response = await super.postHttp(
+        path: '/App/Question/Mobile/RateAnwser',
+        params: {'rate': rate, 'answerId': commentId});
 
-  // Future<dynamic> deleteComment(String id) async {
-  //   try {
-  //     final Response response = await super.delete(url: '/App/Question/DeleteAnswer', params: {'id': id});
-  //     if (response.statusCode == 200) {
-  //       return true;
-  //     } else {
-  //       final error = Error.fromJson(response);
-  //       throw error;
-  //     }
-  //   } catch (e) {
-  //     return e is Error ? e : R.string.error_can_not_connect_to_server.tr();
-  //   }
-  // }
+    if (response.statusCode == 200) {
+      return true;
+    } else {
+      final error = (await response.stream.bytesToString());
+      throw Error.fromString(error);
+    }
+    // } catch (e) {
+    //   return e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+    // }
+  }
 }

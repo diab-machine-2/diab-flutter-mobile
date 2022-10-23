@@ -274,7 +274,7 @@ class _ReminderControllerState extends State<ReminderController> with Observer  
   String getTimeFrame(ScheduleReminderModel model) {
     List<String> names = [];
     if (model.isWakeUp == true) {
-      names.add('thức giấc');
+      names.add(R.string.wake_up.toLowerCase());
     }
     if (model.isBreakfast == true) {
       names.add('ăn sáng');

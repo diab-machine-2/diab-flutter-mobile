@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:medical/res/R.dart';
@@ -39,7 +40,7 @@ String getStringToday(int timeStamp) {
   final now = DateTime.now();
   final date = DateTime.fromMillisecondsSinceEpoch(timeStamp * 1000);
   if (now.day == date.day && now.month == date.month && now.year == date.year) {
-    return 'Hôm nay';
+    return R.string.today.tr();
   } else if (now.day - 1 == date.day && now.month == date.month && now.year == date.year) {
     return 'Hôm qua';
   } else {
@@ -56,7 +57,7 @@ String convertCustomDate(int timeStamp) {
   final date = DateTime.fromMillisecondsSinceEpoch(timeStamp * 1000);
   final now = DateTime.now();
   if (date.year == now.year && date.month == now.month && date.day == now.day) {
-    return 'Hôm nay';
+    return R.string.today.tr();
   } else {
     return '${date.day} tháng ${date.month} năm ${date.year}';
   }

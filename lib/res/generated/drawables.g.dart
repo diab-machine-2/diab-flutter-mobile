@@ -365,4 +365,8 @@ class Drawables {
 	String get img_welcome_3 => "lib/res/drawables/img_welcome_3.png";
 	String get img_workaround => "lib/res/drawables/img_workaround.png";
 	String get splash => "lib/res/drawables/splash.png";
+	String get voucher_reward => "lib/res/drawables/voucher_reward.jpg";
+	String get voucher_reward_detail => "lib/res/drawables/voucher_reward_detail.png";
+	String get share_app_detail => "lib/res/drawables/share_app_detail.jpg";
+	String get ic_voucher => "lib/res/drawables/ic_voucher.png";
 }

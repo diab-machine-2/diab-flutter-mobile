@@ -7,6 +7,8 @@ enum NotificationActionType {
   share_profile,
   redirect_date_detail,
   redirect_survey,
+  register_referral_success,
+  doctor_answer_question,
 }
 
 enum NotificationType {
@@ -25,7 +27,8 @@ enum NotificationType {
 }
 
 extension NotificationActionExtend on NotificationActionType {
-  static NotificationActionType getNotificationActionTypeFromIndex(String? index) {
+  static NotificationActionType getNotificationActionTypeFromIndex(
+      String? index) {
     if (index != null) {
       switch (index) {
         case "0":
@@ -44,6 +47,10 @@ extension NotificationActionExtend on NotificationActionType {
           return NotificationActionType.redirect_date_detail;
         case "7":
           return NotificationActionType.redirect_survey;
+        case "8":
+          return NotificationActionType.register_referral_success;
+        case "9":
+          return NotificationActionType.doctor_answer_question;
         default:
           return NotificationActionType.redirect_to_url;
       }
@@ -52,7 +59,8 @@ extension NotificationActionExtend on NotificationActionType {
     }
   }
 
-  static NotificationActionType getNotificationActionTypeFromIndexInteger(int? index) {
+  static NotificationActionType getNotificationActionTypeFromIndexInteger(
+      int? index) {
     if (index != null) {
       switch (index) {
         case 0:
@@ -71,6 +79,10 @@ extension NotificationActionExtend on NotificationActionType {
           return NotificationActionType.redirect_date_detail;
         case 7:
           return NotificationActionType.redirect_survey;
+        case 8:
+          return NotificationActionType.register_referral_success;
+        case 9:
+          return NotificationActionType.doctor_answer_question;
         default:
           return NotificationActionType.redirect_to_url;
       }

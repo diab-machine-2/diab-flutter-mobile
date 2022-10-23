@@ -23,7 +23,8 @@ class NavigatorName {
   static const String input_detail_exercrise = '/input_detail_exercrise';
   static const String blood_pressure_table = '/blood_pressure_table';
   static const String blood_sugar_table = '/blood_sugar_table';
-  static const String blood_sugar_distribution_table = '/blood_sugar_distribution_table';
+  static const String blood_sugar_distribution_table =
+      '/blood_sugar_distribution_table';
   static const String blood_sugar_compare_table = '/blood_sugar_compare_table';
   static const String detail_blood_pressure = '/detail_blood_pressure';
   static const String detail_bmi = '/detail_bmi';
@@ -54,5 +55,8 @@ class NavigatorName {
   static const String my_progress = '/my_progress';
   static const String make_question = '/make_question';
   static const String question_detail = '/question_detail';
+  static const String voucher_list = '/voucher_list';
+  static const String voucher_detail = '/voucher_detail';
+  static const String share_app_detail = '/share_app_detail';
   static const String news_detail = '/news_detail';
 }

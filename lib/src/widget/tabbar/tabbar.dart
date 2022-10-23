@@ -10,9 +10,11 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/app.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/app_setting/dynamic_link_config.dart';
+import 'package:medical/src/modal/base/referral_code_temp.dart';
 import 'package:medical/src/modal/error/error_model.dart';
 import 'package:medical/src/modal/user/user_model.dart';
 import 'package:medical/src/repo/user/user_client.dart';
+import 'package:medical/src/utils/app_storages.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/navigator_name.dart';
@@ -56,7 +58,6 @@ class _TabbarControllerState extends State<TabbarController>
     super.initState();
     tabs = [
       HomeController(sharedCode: widget.sharedCode),
-      //   MyPlanPage(index: widget.isRedirectFromNotification ? 0 : 1),
       MyPlanPage(index: 0),
       QuestionAnswerPage(),
       const ProfileController(hideAllBackButton: true),
@@ -84,6 +85,10 @@ class _TabbarControllerState extends State<TabbarController>
 
   _checkUserReferralCode() async {
     DynamicLinkConfig.instance.createShareReferralLink();
+    ReferralCodeTemp? referralCodeData = await AppStorages.getReferralCode();
+    if (referralCodeData != null) {
+      AppStorages.removeReferralCode();
+    }
   }
 
   Future startTimer() async {
@@ -130,6 +135,9 @@ class _TabbarControllerState extends State<TabbarController>
         Observable.instance
             .notifyObservers([], notifyName: Const.NAVIGATE_TO_EXERCISE_TAB);
       }
+    }
+    if (notifyName == Const.NAVIGATE_TO_PROFILE_TAB) {
+      jumpTo(0);
     }
   }
 

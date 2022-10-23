@@ -5,9 +5,11 @@ import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/modal/base/referral_code_temp.dart';
 import 'package:medical/src/modal/error/error_model.dart';
 import 'package:medical/src/modal/user/category_item_user_model.dart';
 import 'package:medical/src/repo/login/login_client.dart';
+import 'package:medical/src/utils/app_storages.dart';
 import 'package:medical/src/utils/length_limit_text_field.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/HbA1C/widget/CalendarPicker/custom_date_picker2.dart';
@@ -64,6 +66,14 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
                 : widget.type == 'apple'
                     ? '${widget.appleAccount?.familyName ?? ''} ${widget.appleAccount?.givenName ?? ''}'
                     : '');
+    check();
+  }
+
+  check() async {
+    ReferralCodeTemp? referralCodeData = await AppStorages.getReferralCode();
+    if (referralCodeData != null) {
+      final referalCode = referralCodeData.referralCode;
+    }
   }
 
   void dispose() {
@@ -73,7 +83,7 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
 
   @override
   Widget build(BuildContext context) {
-    final width = MediaQuery.of(context).size.width;
+    check();
     return GestureDetector(
       onTap: () {
         FocusScope.of(context).requestFocus(FocusNode());
@@ -93,22 +103,27 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
                     child: ListView(
                       //physics: NeverScrollableScrollPhysics(),
                       padding: EdgeInsets.only(bottom: 16),
-                      keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+                      keyboardDismissBehavior:
+                          ScrollViewKeyboardDismissBehavior.onDrag,
                       shrinkWrap: true,
                       children: [
                         Column(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Align(
-                                alignment: Alignment.topRight, child: Image.asset(R.drawable.img_parent, height: 175)),
+                                alignment: Alignment.topRight,
+                                child: Image.asset(R.drawable.img_parent,
+                                    height: 175)),
                             SizedBox(height: 8),
                             Padding(
-                              padding: const EdgeInsets.only(left: 16, right: 16),
+                              padding:
+                                  const EdgeInsets.only(left: 16, right: 16),
                               child: Align(
                                 alignment: Alignment.topLeft,
                                 child: Text(
                                     widget.type == 'phone'
-                                        ? R.string.hay_de_diab_thau_hieu_ban_hon.tr()
+                                        ? R.string.hay_de_diab_thau_hieu_ban_hon
+                                            .tr()
                                         : '${R.string.chao_mung.tr()} ${widget.type == 'google' ? widget.googleAccount!.displayName!.split(' ').last : widget.type == 'facebook' ? widget.userInfo['name'].split(' ').last : widget.appleAccount?.givenName ?? R.string.ban.tr()},\n${R.string.hay_de_diab_thau_hieu_ban_hon_single_line.tr()}',
                                     style: TextStyle(
                                         height: 1.5,
@@ -119,246 +134,358 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
                             ),
                             Padding(
                               padding: EdgeInsets.all(16),
-                              child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                                Column(
+                              child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    widget.type == 'phone'
-                                        ? SizedBox()
-                                        : Padding(
-                                            padding: EdgeInsets.only(bottom: 24),
-                                            child: TextFieldCustom(
-                                                key: phoneKey,
-                                                title: R.string.so_dien_thoai.tr(),
-                                                placeholder: R.string.nhap_so_dien_thoai.tr(),
-                                                autoFocus: false,
-                                                showStar: true,
-                                                maxLength: 10,
-                                                onChanged: (value) {
-                                                  phone = value;
-                                                }),
-                                          ),
-                                    Align(
-                                        alignment: Alignment.topLeft,
-                                        child: Row(
-                                          children: [
-                                            Text(R.string.ho_va_ten.tr(), style: TextStyle(color: R.color.textDark)),
-                                            Text(" *", style: TextStyle(color: R.color.red))
-                                          ],
-                                        )),
-                                    SizedBox(height: 12),
-                                    Container(
-                                      height: 52,
-                                      decoration: BoxDecoration(
-                                        color: R.color.white,
-                                        borderRadius: BorderRadius.circular(10),
-                                      ),
-                                      padding: EdgeInsets.only(left: 16, right: 16),
-                                      child: Row(
-                                        children: [
-                                          Expanded(
-                                            child: Column(
-                                              crossAxisAlignment: CrossAxisAlignment.start,
-                                              mainAxisAlignment: MainAxisAlignment.center,
+                                    Column(
+                                      children: [
+                                        widget.type == 'phone'
+                                            ? SizedBox()
+                                            : Padding(
+                                                padding:
+                                                    EdgeInsets.only(bottom: 24),
+                                                child: TextFieldCustom(
+                                                    key: phoneKey,
+                                                    title: R
+                                                        .string.so_dien_thoai
+                                                        .tr(),
+                                                    placeholder: R.string
+                                                        .nhap_so_dien_thoai
+                                                        .tr(),
+                                                    autoFocus: false,
+                                                    showStar: true,
+                                                    maxLength: 10,
+                                                    onChanged: (value) {
+                                                      phone = value;
+                                                    }),
+                                              ),
+                                        Align(
+                                            alignment: Alignment.topLeft,
+                                            child: Row(
                                               children: [
-                                                Container(
-                                                  height: 30,
-                                                  child: TextField(
-                                                    focusNode: nameFocus,
-                                                    maxLength: 50,
-                                                    inputFormatters: [
-                                                      LengthLimitingTextFieldFormatterFixed(50),
-                                                    ],
-                                                    controller: nameController,
-                                                    style: TextStyle(color: R.color.color0xff232527),
-                                                    decoration: InputDecoration(
-                                                        border: InputBorder.none,
-                                                        contentPadding: EdgeInsets.only(top: -16),
-                                                        hintText: R.string.nhap_ho_ten.tr(),
-                                                        counterText: '',
-                                                        hintStyle: TextStyle(color: R.color.color0xff232527)),
-                                                  ),
-                                                ),
+                                                Text(R.string.ho_va_ten.tr(),
+                                                    style: TextStyle(
+                                                        color:
+                                                            R.color.textDark)),
+                                                Text(" *",
+                                                    style: TextStyle(
+                                                        color: R.color.red))
                                               ],
+                                            )),
+                                        SizedBox(height: 12),
+                                        Container(
+                                          height: 52,
+                                          decoration: BoxDecoration(
+                                            color: R.color.white,
+                                            borderRadius:
+                                                BorderRadius.circular(10),
+                                          ),
+                                          padding: EdgeInsets.only(
+                                              left: 16, right: 16),
+                                          child: Row(
+                                            children: [
+                                              Expanded(
+                                                child: Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  children: [
+                                                    Container(
+                                                      height: 30,
+                                                      child: TextField(
+                                                        focusNode: nameFocus,
+                                                        maxLength: 50,
+                                                        inputFormatters: [
+                                                          LengthLimitingTextFieldFormatterFixed(
+                                                              50),
+                                                        ],
+                                                        controller:
+                                                            nameController,
+                                                        style: TextStyle(
+                                                            color: R.color
+                                                                .color0xff232527),
+                                                        decoration: InputDecoration(
+                                                            border: InputBorder
+                                                                .none,
+                                                            contentPadding:
+                                                                EdgeInsets.only(
+                                                                    top: -16),
+                                                            hintText: R.string
+                                                                .nhap_ho_ten
+                                                                .tr(),
+                                                            counterText: '',
+                                                            hintStyle: TextStyle(
+                                                                color: R.color
+                                                                    .color0xff232527)),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    SizedBox(
+                                      height: 24,
+                                    ),
+                                    Column(
+                                      children: [
+                                        Align(
+                                            alignment: Alignment.topLeft,
+                                            child: Row(
+                                              children: [
+                                                Text(R.string.ngay_sinh.tr(),
+                                                    style: TextStyle(
+                                                        color:
+                                                            R.color.textDark)),
+                                                Text(" *",
+                                                    style: TextStyle(
+                                                        color: R.color.red))
+                                              ],
+                                            )),
+                                        SizedBox(height: 12),
+                                        GestureDetector(
+                                          onTap: () {
+                                            nameFocus.unfocus();
+                                            showDatePicker(context);
+                                          },
+                                          child: Container(
+                                            height: 52,
+                                            decoration: BoxDecoration(
+                                              color: R.color.white,
+                                              borderRadius:
+                                                  BorderRadius.circular(10),
+                                            ),
+                                            padding: EdgeInsets.all(12),
+                                            child: Container(
+                                              color: R.color.transparent,
+                                              child: Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceBetween,
+                                                  children: [
+                                                    Text(
+                                                        selectedDate != null
+                                                            ? convertToUTC(
+                                                                selectedDate!
+                                                                        .millisecondsSinceEpoch ~/
+                                                                    1000,
+                                                                'dd/MM/yyyy')
+                                                            : R.string
+                                                                .chon_ngay_sinh
+                                                                .tr(),
+                                                        style: TextStyle(
+                                                            color: R
+                                                                .color.textDark,
+                                                            fontSize: 16,
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .w400)),
+                                                    Image.asset(
+                                                        R.drawable.ic_calendar,
+                                                        width: 24,
+                                                        height: 24),
+                                                  ]),
                                             ),
                                           ),
-                                        ],
-                                      ),
+                                        ),
+                                      ],
                                     ),
-                                  ],
-                                ),
-                                SizedBox(
-                                  height: 24,
-                                ),
-                                Column(
-                                  children: [
-                                    Align(
-                                        alignment: Alignment.topLeft,
-                                        child: Row(
-                                          children: [
-                                            Text(R.string.ngay_sinh.tr(), style: TextStyle(color: R.color.textDark)),
-                                            Text(" *", style: TextStyle(color: R.color.red))
-                                          ],
-                                        )),
-                                    SizedBox(height: 12),
-                                    GestureDetector(
-                                      onTap: () {
-                                        nameFocus.unfocus();
-                                        showDatePicker(context);
-                                      },
-                                      child: Container(
-                                        height: 52,
-                                        decoration: BoxDecoration(
-                                          color: R.color.white,
-                                          borderRadius: BorderRadius.circular(10),
-                                        ),
-                                        padding: EdgeInsets.all(12),
-                                        child: Container(
-                                          color: R.color.transparent,
-                                          child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                                            Text(
-                                                selectedDate != null
-                                                    ? convertToUTC(
-                                                        selectedDate!.millisecondsSinceEpoch ~/ 1000, 'dd/MM/yyyy')
-                                                    : R.string.chon_ngay_sinh.tr(),
-                                                style: TextStyle(
-                                                    color: R.color.textDark,
-                                                    fontSize: 16,
-                                                    fontWeight: FontWeight.w400)),
-                                            Image.asset(R.drawable.ic_calendar, width: 24, height: 24),
-                                          ]),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                SizedBox(height: 24),
-                                Column(
-                                  children: [
-                                    Align(
-                                        alignment: Alignment.topLeft,
-                                        child: Row(
-                                          children: [
-                                            Text(R.string.gioi_tinh.tr(), style: TextStyle(color: R.color.textDark)),
-                                            Text(" *", style: TextStyle(color: R.color.red))
-                                          ],
-                                        )),
-                                    SizedBox(height: 12),
-                                    GestureDetector(
-                                      onTap: () {
-                                        nameFocus.unfocus();
-                                        _showDialogUpdateGender();
-                                      },
-                                      child: Container(
-                                        height: 52,
-                                        decoration: BoxDecoration(
-                                          color: R.color.white,
-                                          borderRadius: BorderRadius.circular(10),
-                                        ),
-                                        padding: EdgeInsets.only(left: 16, right: 16),
-                                        child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                                          Text(
-                                              _choosenGender == null
-                                                  ? R.string.chon_gioi_tinh.tr()
-                                                  : _choosenGender == 1
-                                                      ? R.string.nam.tr()
-                                                      : R.string.nu.tr(),
-                                              style: TextStyle(
-                                                  color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w400)),
-                                          Icon(
-                                            Icons.keyboard_arrow_down_rounded,
-                                            color: R.color.mainColor,
-                                            size: 24,
+                                    SizedBox(height: 24),
+                                    Column(
+                                      children: [
+                                        Align(
+                                            alignment: Alignment.topLeft,
+                                            child: Row(
+                                              children: [
+                                                Text(R.string.gioi_tinh.tr(),
+                                                    style: TextStyle(
+                                                        color:
+                                                            R.color.textDark)),
+                                                Text(" *",
+                                                    style: TextStyle(
+                                                        color: R.color.red))
+                                              ],
+                                            )),
+                                        SizedBox(height: 12),
+                                        GestureDetector(
+                                          onTap: () {
+                                            nameFocus.unfocus();
+                                            _showDialogUpdateGender();
+                                          },
+                                          child: Container(
+                                            height: 52,
+                                            decoration: BoxDecoration(
+                                              color: R.color.white,
+                                              borderRadius:
+                                                  BorderRadius.circular(10),
+                                            ),
+                                            padding: EdgeInsets.only(
+                                                left: 16, right: 16),
+                                            child: Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
+                                                children: [
+                                                  Text(
+                                                      _choosenGender == null
+                                                          ? R.string
+                                                              .chon_gioi_tinh
+                                                              .tr()
+                                                          : _choosenGender == 1
+                                                              ? R.string.nam
+                                                                  .tr()
+                                                              : R.string.nu
+                                                                  .tr(),
+                                                      style: TextStyle(
+                                                          color:
+                                                              R.color.textDark,
+                                                          fontSize: 16,
+                                                          fontWeight:
+                                                              FontWeight.w400)),
+                                                  Icon(
+                                                    Icons
+                                                        .keyboard_arrow_down_rounded,
+                                                    color: R.color.mainColor,
+                                                    size: 24,
+                                                  ),
+                                                ]),
                                           ),
-                                        ]),
-                                      ),
+                                        )
+                                      ],
+                                    ),
+                                    SizedBox(height: 24),
+                                    Column(
+                                      children: [
+                                        Align(
+                                            alignment: Alignment.topLeft,
+                                            child: Row(
+                                              children: [
+                                                Text(
+                                                    R.string
+                                                        .tinh_trang_benh_tieu_duong
+                                                        .tr(),
+                                                    style: TextStyle(
+                                                        color:
+                                                            R.color.textDark)),
+                                                Text(" *",
+                                                    style: TextStyle(
+                                                        color: R.color.red))
+                                              ],
+                                            )),
+                                        SizedBox(height: 12),
+                                        GestureDetector(
+                                          onTap: () {
+                                            nameFocus.unfocus();
+                                            _showDialogUpdateDiabetesStatus();
+                                          },
+                                          child: Container(
+                                            height: 52,
+                                            decoration: BoxDecoration(
+                                              color: R.color.white,
+                                              borderRadius:
+                                                  BorderRadius.circular(10),
+                                            ),
+                                            padding: EdgeInsets.only(
+                                                left: 16, right: 16),
+                                            child: Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
+                                                children: [
+                                                  Text(
+                                                      diabetesStatus == null
+                                                          ? R.string
+                                                              .chon_tinh_trang_benh
+                                                              .tr()
+                                                          : diabetesStatus!
+                                                                  .value ??
+                                                              '',
+                                                      style: TextStyle(
+                                                          color:
+                                                              R.color.textDark,
+                                                          fontSize: 16,
+                                                          fontWeight:
+                                                              FontWeight.w400)),
+                                                  Icon(
+                                                    Icons
+                                                        .keyboard_arrow_down_rounded,
+                                                    color: R.color.mainColor,
+                                                    size: 24,
+                                                  ),
+                                                ]),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    SizedBox(height: 18),
+                                    Column(
+                                      children: [
+                                        Align(
+                                            alignment: Alignment.topLeft,
+                                            child: Row(
+                                              children: [
+                                                Text(
+                                                    R.string.nam_phat_hien_benh
+                                                        .tr(),
+                                                    style: TextStyle(
+                                                        color:
+                                                            R.color.textDark)),
+                                                Text(" *",
+                                                    style: TextStyle(
+                                                        color: R.color.red))
+                                              ],
+                                            )),
+                                        SizedBox(height: 12),
+                                        GestureDetector(
+                                          onTap: () {
+                                            nameFocus.unfocus();
+                                            showYearPicker(context);
+                                          },
+                                          child: Container(
+                                            height: 52,
+                                            decoration: BoxDecoration(
+                                              color: R.color.white,
+                                              borderRadius:
+                                                  BorderRadius.circular(10),
+                                            ),
+                                            padding: EdgeInsets.only(
+                                                left: 16, right: 16),
+                                            child: Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
+                                                children: [
+                                                  Text(
+                                                      selectedYear != null
+                                                          ? convertToUTC(
+                                                              selectedYear!
+                                                                      .millisecondsSinceEpoch ~/
+                                                                  1000,
+                                                              'yyyy')
+                                                          : R.string.chon_nam
+                                                              .tr(),
+                                                      style: TextStyle(
+                                                          color:
+                                                              R.color.textDark,
+                                                          fontSize: 16,
+                                                          fontWeight:
+                                                              FontWeight.w400)),
+                                                  Icon(
+                                                    Icons
+                                                        .keyboard_arrow_down_rounded,
+                                                    color: R.color.mainColor,
+                                                    size: 24,
+                                                  ),
+                                                ]),
+                                          ),
+                                        ),
+                                      ],
                                     )
-                                  ],
-                                ),
-                                SizedBox(height: 24),
-                                Column(
-                                  children: [
-                                    Align(
-                                        alignment: Alignment.topLeft,
-                                        child: Row(
-                                          children: [
-                                            Text(R.string.tinh_trang_benh_tieu_duong.tr(),
-                                                style: TextStyle(color: R.color.textDark)),
-                                            Text(" *", style: TextStyle(color: R.color.red))
-                                          ],
-                                        )),
-                                    SizedBox(height: 12),
-                                    GestureDetector(
-                                      onTap: () {
-                                        nameFocus.unfocus();
-                                        _showDialogUpdateDiabetesStatus();
-                                      },
-                                      child: Container(
-                                        height: 52,
-                                        decoration: BoxDecoration(
-                                          color: R.color.white,
-                                          borderRadius: BorderRadius.circular(10),
-                                        ),
-                                        padding: EdgeInsets.only(left: 16, right: 16),
-                                        child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                                          Text(
-                                              diabetesStatus == null
-                                                  ? R.string.chon_tinh_trang_benh.tr()
-                                                  : diabetesStatus!.value ?? '',
-                                              style: TextStyle(
-                                                  color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w400)),
-                                          Icon(
-                                            Icons.keyboard_arrow_down_rounded,
-                                            color: R.color.mainColor,
-                                            size: 24,
-                                          ),
-                                        ]),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                SizedBox(height: 18),
-                                Column(
-                                  children: [
-                                    Align(
-                                        alignment: Alignment.topLeft,
-                                        child: Row(
-                                          children: [
-                                            Text(R.string.nam_phat_hien_benh.tr(),
-                                                style: TextStyle(color: R.color.textDark)),
-                                            Text(" *", style: TextStyle(color: R.color.red))
-                                          ],
-                                        )),
-                                    SizedBox(height: 12),
-                                    GestureDetector(
-                                      onTap: () {
-                                        nameFocus.unfocus();
-                                        showYearPicker(context);
-                                      },
-                                      child: Container(
-                                        height: 52,
-                                        decoration: BoxDecoration(
-                                          color: R.color.white,
-                                          borderRadius: BorderRadius.circular(10),
-                                        ),
-                                        padding: EdgeInsets.only(left: 16, right: 16),
-                                        child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                                          Text(
-                                              selectedYear != null
-                                                  ? convertToUTC(selectedYear!.millisecondsSinceEpoch ~/ 1000, 'yyyy')
-                                                  : R.string.chon_nam.tr(),
-                                              style: TextStyle(
-                                                  color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w400)),
-                                          Icon(
-                                            Icons.keyboard_arrow_down_rounded,
-                                            color: R.color.mainColor,
-                                            size: 24,
-                                          ),
-                                        ]),
-                                      ),
-                                    ),
-                                  ],
-                                )
-                              ]),
+                                  ]),
                             ),
                             SizedBox(height: 24),
                             GestureDetector(
@@ -374,12 +501,18 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
                                         gradient: LinearGradient(
                                             begin: Alignment.topLeft,
                                             end: Alignment.centerRight,
-                                            colors: [R.color.greenGradientTop, R.color.greenGradientBottom]),
-                                        borderRadius: BorderRadius.circular(200)),
+                                            colors: [
+                                              R.color.greenGradientTop,
+                                              R.color.greenGradientBottom
+                                            ]),
+                                        borderRadius:
+                                            BorderRadius.circular(200)),
                                     child: Center(
                                         child: Text(R.string.luu_thong_tin.tr(),
                                             style: TextStyle(
-                                                color: R.color.white, fontSize: 16, fontWeight: FontWeight.w500)))),
+                                                color: R.color.white,
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.w500)))),
                               ),
                             ),
                           ],
@@ -406,7 +539,10 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
             children: [
               Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
                 Text(R.string.loai_benh.tr(),
-                    style: TextStyle(color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w600)),
+                    style: TextStyle(
+                        color: R.color.textDark,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600)),
                 GestureDetector(
                     child: Icon(Icons.close, color: R.color.color0xffBEC0C8),
                     onTap: () {
@@ -430,44 +566,57 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
                   )),
               Container(
                 margin: EdgeInsets.only(top: 16),
-                child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.pop(context);
-                    },
-                    child: Container(
-                        height: 48,
-                        width: 119,
-                        decoration: BoxDecoration(borderRadius: BorderRadius.circular(200), color: R.color.grayBorder),
-                        child: Center(
-                          child: Text(R.string.cancel.tr(),
-                              style: TextStyle(color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w600)),
-                        )),
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        diabetesStatus = status;
-                      });
-                      Navigator.pop(context);
-                    },
-                    child: Container(
-                      height: 48,
-                      width: 119,
-                      decoration: BoxDecoration(
-                          color: R.color.red,
-                          borderRadius: BorderRadius.circular(200),
-                          gradient: LinearGradient(
-                              begin: Alignment.topLeft,
-                              end: Alignment.centerRight,
-                              colors: [R.color.greenGradientTop, R.color.greenGradientBottom])),
-                      child: Center(
-                        child: Text(R.string.yes.tr(),
-                            style: TextStyle(color: R.color.white, fontSize: 16, fontWeight: FontWeight.w600)),
+                child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.pop(context);
+                        },
+                        child: Container(
+                            height: 48,
+                            width: 119,
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(200),
+                                color: R.color.grayBorder),
+                            child: Center(
+                              child: Text(R.string.cancel.tr(),
+                                  style: TextStyle(
+                                      color: R.color.textDark,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600)),
+                            )),
                       ),
-                    ),
-                  ),
-                ]),
+                      GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            diabetesStatus = status;
+                          });
+                          Navigator.pop(context);
+                        },
+                        child: Container(
+                          height: 48,
+                          width: 119,
+                          decoration: BoxDecoration(
+                              color: R.color.red,
+                              borderRadius: BorderRadius.circular(200),
+                              gradient: LinearGradient(
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.centerRight,
+                                  colors: [
+                                    R.color.greenGradientTop,
+                                    R.color.greenGradientBottom
+                                  ])),
+                          child: Center(
+                            child: Text(R.string.yes.tr(),
+                                style: TextStyle(
+                                    color: R.color.white,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600)),
+                          ),
+                        ),
+                      ),
+                    ]),
               ),
             ],
           )),
@@ -495,7 +644,10 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
             children: [
               Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
                 Text(R.string.gioi_tinh.tr(),
-                    style: TextStyle(color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w600)),
+                    style: TextStyle(
+                        color: R.color.textDark,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600)),
                 GestureDetector(
                     child: Icon(Icons.close, color: R.color.color0xffBEC0C8),
                     onTap: () {
@@ -503,47 +655,64 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
                     })
               ]),
               SizedBox(height: 16),
-              Container(height: 150, width: width - 36, child: GenderPicker(controller: controller)),
+              Container(
+                  height: 150,
+                  width: width - 36,
+                  child: GenderPicker(controller: controller)),
               Container(
                 margin: EdgeInsets.only(top: 16),
-                child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.pop(context);
-                    },
-                    child: Container(
-                        height: 48,
-                        width: 119,
-                        decoration: BoxDecoration(borderRadius: BorderRadius.circular(200), color: R.color.grayBorder),
-                        child: Center(
-                          child: Text(R.string.cancel.tr(),
-                              style: TextStyle(color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w600)),
-                        )),
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        _choosenGender = controller.selectedItem == 0 ? 1 : 2;
-                      });
-                      Navigator.pop(context);
-                    },
-                    child: Container(
-                      height: 48,
-                      width: 119,
-                      decoration: BoxDecoration(
-                          color: R.color.red,
-                          borderRadius: BorderRadius.circular(200),
-                          gradient: LinearGradient(
-                              begin: Alignment.topLeft,
-                              end: Alignment.centerRight,
-                              colors: [R.color.greenGradientTop, R.color.greenGradientBottom])),
-                      child: Center(
-                        child: Text(R.string.yes.tr(),
-                            style: TextStyle(color: R.color.white, fontSize: 16, fontWeight: FontWeight.w600)),
+                child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.pop(context);
+                        },
+                        child: Container(
+                            height: 48,
+                            width: 119,
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(200),
+                                color: R.color.grayBorder),
+                            child: Center(
+                              child: Text(R.string.cancel.tr(),
+                                  style: TextStyle(
+                                      color: R.color.textDark,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600)),
+                            )),
                       ),
-                    ),
-                  ),
-                ]),
+                      GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            _choosenGender =
+                                controller.selectedItem == 0 ? 1 : 2;
+                          });
+                          Navigator.pop(context);
+                        },
+                        child: Container(
+                          height: 48,
+                          width: 119,
+                          decoration: BoxDecoration(
+                              color: R.color.red,
+                              borderRadius: BorderRadius.circular(200),
+                              gradient: LinearGradient(
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.centerRight,
+                                  colors: [
+                                    R.color.greenGradientTop,
+                                    R.color.greenGradientBottom
+                                  ])),
+                          child: Center(
+                            child: Text(R.string.yes.tr(),
+                                style: TextStyle(
+                                    color: R.color.white,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600)),
+                          ),
+                        ),
+                      ),
+                    ]),
               ),
             ],
           )),
@@ -562,23 +731,30 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
         selectedDate = date;
       });
     },
-        currentTime: selectedDate == null ? DateTime.parse('1970-01-01 00:00:00.000Z') : selectedDate,
+        currentTime: selectedDate == null
+            ? DateTime.parse('1970-01-01 00:00:00.000Z')
+            : selectedDate,
         locale: LocaleType.vi);
   }
 
   showYearPicker(BuildContext context) {
     CustomCalendarYearPicker.showDatePicker(context,
-        maxTime: DateTime.now(), showTitleActions: true, onChanged: (year) {}, onConfirm: (year) {
+        maxTime: DateTime.now(),
+        showTitleActions: true,
+        onChanged: (year) {}, onConfirm: (year) {
       setState(() {
         selectedYear = year;
       });
-    }, currentTime: selectedYear == null ? DateTime.now() : selectedYear, locale: LocaleType.vi);
+    },
+        currentTime: selectedYear == null ? DateTime.now() : selectedYear,
+        locale: LocaleType.vi);
   }
 
   _submitData() async {
     final name = nameController.text;
     if (phone.isEmpty && widget.type != 'phone') {
-      phoneKey.currentState!.validate(R.string.ban_chua_nhap_so_dien_thoai.tr());
+      phoneKey.currentState!
+          .validate(R.string.ban_chua_nhap_so_dien_thoai.tr());
       return;
     }
     if (phone.length < 9 && widget.type != 'phone') {
@@ -601,12 +777,14 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
     }
 
     if (diabetesStatus == null) {
-      Message.showToastMessage(context, R.string.ban_chua_chon_tinh_trang_benh_tieu_duong.tr());
+      Message.showToastMessage(
+          context, R.string.ban_chua_chon_tinh_trang_benh_tieu_duong.tr());
       return;
     }
 
     if (selectedYear == null) {
-      Message.showToastMessage(context, R.string.ban_chua_chon_nam_phat_hien_benh.tr());
+      Message.showToastMessage(
+          context, R.string.ban_chua_chon_nam_phat_hien_benh.tr());
       return;
     }
 
@@ -615,16 +793,19 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
     try {
       Map<String, String> params = {
         'fullName': name,
-        'dateOfBirth':
-            selectedDate!.millisecondsSinceEpoch == 0 ? '0' : (selectedDate!.millisecondsSinceEpoch ~/ 1000).toString(),
+        'dateOfBirth': selectedDate!.millisecondsSinceEpoch == 0
+            ? '0'
+            : (selectedDate!.millisecondsSinceEpoch ~/ 1000).toString(),
         'gender': _choosenGender.toString(),
         'diabetesStatus': diabetesStatus?.key?.toString() ?? '1',
       };
-      if (widget.referalCode?.isNotEmpty == true) {
-        params['referalCode'] = widget.referalCode!;
+      ReferralCodeTemp? referralCodeData = await AppStorages.getReferralCode();
+      if (referralCodeData != null) {
+        params['referalCode'] = referralCodeData.referralCode;
       }
       if (selectedYear != null) {
-        params['diabetesDate'] = (selectedYear!.millisecondsSinceEpoch ~/ 1000).toString();
+        params['diabetesDate'] =
+            (selectedYear!.millisecondsSinceEpoch ~/ 1000).toString();
       }
       if (phone != null) {
         params['phoneNumber'] = phone;
@@ -694,7 +875,8 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
       BotToast.closeAllLoading();
       if (e is Error) {
         if (e.code == 'USER004') {
-          phoneKey.currentState!.validate(R.string.so_dien_thoai_da_ton_tai_trong_he_thong.tr());
+          phoneKey.currentState!
+              .validate(R.string.so_dien_thoai_da_ton_tai_trong_he_thong.tr());
         } else {
           Message.showToastMessage(context, e.message);
         }

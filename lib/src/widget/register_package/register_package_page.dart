@@ -85,34 +85,42 @@ class _RegisterPackagePageState extends State<RegisterPackagePage> {
                           SizedBox(
                             height: 35,
                           ),
-                          RichText(
-                            textAlign: TextAlign.start,
-                            text: TextSpan(
-                              text: "Bạn cần hoàn thành lần lượt theo ",
-                              style: TextStyle(
-                                color: R.color.textDark,
-                                fontSize: 16,
-                                height: 1.375,
-                              ),
-                              children: <TextSpan>[
-                                TextSpan(
-                                    text: "2 bước",
-                                    style: TextStyle(
-                                      color: R.color.textDark,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 16,
-                                      height: 1.375,
-                                    )),
-                                TextSpan(
-                                    text: " sau:",
-                                    style: TextStyle(
-                                      color: R.color.textDark,
-                                      fontSize: 16,
-                                      height: 1.375,
-                                    )),
-                              ],
+                          Text(
+                            R.string.text_need_2_steps_complete,
+                            style: TextStyle(
+                              color: R.color.textDark,
+                              fontSize: 16,
+                              height: 1.375,
                             ),
                           ),
+                          // RichText(
+                          //   textAlign: TextAlign.start,
+                          //   text: TextSpan(
+                          //     text: "Bạn cần hoàn thành lần lượt theo ",
+                          //     style: TextStyle(
+                          //       color: R.color.textDark,
+                          //       fontSize: 16,
+                          //       height: 1.375,
+                          //     ),
+                          //     children: <TextSpan>[
+                          //       TextSpan(
+                          //           text: "2 bước",
+                          //           style: TextStyle(
+                          //             color: R.color.textDark,
+                          //             fontWeight: FontWeight.bold,
+                          //             fontSize: 16,
+                          //             height: 1.375,
+                          //           )),
+                          //       TextSpan(
+                          //           text: " sau:",
+                          //           style: TextStyle(
+                          //             color: R.color.textDark,
+                          //             fontSize: 16,
+                          //             height: 1.375,
+                          //           )),
+                          //     ],
+                          //   ),
+                          // ),
                           SizedBox(
                             height: 24,
                           ),
@@ -122,7 +130,8 @@ class _RegisterPackagePageState extends State<RegisterPackagePage> {
                               padding: EdgeInsets.all(16),
                               borderWidth: 0,
                               borderColor: Colors.transparent,
-                              backgroundImage: R.drawable.bg_register_package_pro,
+                              backgroundImage:
+                                  R.drawable.bg_register_package_pro,
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
@@ -130,12 +139,11 @@ class _RegisterPackagePageState extends State<RegisterPackagePage> {
                                     R.string.step_1.tr().replaceAll(":", ""),
                                     textAlign: TextAlign.start,
                                     style: TextStyle(
-                                      color: R.color.accentColor,
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.bold,
-                                      height: 1.4,
-                                      letterSpacing: 0.4
-                                    ),
+                                        color: R.color.accentColor,
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold,
+                                        height: 1.4,
+                                        letterSpacing: 0.4),
                                   ),
                                   SizedBox(
                                     height: 8,
@@ -143,7 +151,7 @@ class _RegisterPackagePageState extends State<RegisterPackagePage> {
                                   RichText(
                                     textAlign: TextAlign.start,
                                     text: TextSpan(
-                                      text: "Nâng cấp tài khoản\nlên gói ",
+                                      text: "${R.string.upgrade_to_pro} ",
                                       style: TextStyle(
                                         color: R.color.textDark,
                                         fontSize: 16,
@@ -174,7 +182,8 @@ class _RegisterPackagePageState extends State<RegisterPackagePage> {
                               padding: EdgeInsets.all(16),
                               borderWidth: 0,
                               borderColor: Colors.transparent,
-                              backgroundImage: R.drawable.bg_register_package_premium,
+                              backgroundImage:
+                                  R.drawable.bg_register_package_premium,
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
@@ -186,8 +195,7 @@ class _RegisterPackagePageState extends State<RegisterPackagePage> {
                                         fontSize: 20,
                                         fontWeight: FontWeight.bold,
                                         height: 1.4,
-                                        letterSpacing: 0.4
-                                    ),
+                                        letterSpacing: 0.4),
                                   ),
                                   SizedBox(
                                     height: 8,
@@ -215,8 +223,10 @@ class _RegisterPackagePageState extends State<RegisterPackagePage> {
                                   ),
                                   SizedBox(height: 12),
                                   Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
                                     children: [
                                       Text(R.string.time.tr() + ":",
                                           textAlign: TextAlign.start,
@@ -229,7 +239,8 @@ class _RegisterPackagePageState extends State<RegisterPackagePage> {
                                       SizedBox(width: 10),
                                       Text(
                                           R.string.number_month.tr(args: [
-                                            (widget.priceData.monthUsed ?? 0).toString()
+                                            (widget.priceData.monthUsed ?? 0)
+                                                .toString()
                                           ]),
                                           textAlign: TextAlign.end,
                                           style: TextStyle(
@@ -243,8 +254,10 @@ class _RegisterPackagePageState extends State<RegisterPackagePage> {
                                   ),
                                   SizedBox(height: 12),
                                   Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
                                     children: [
                                       Text(R.string.service_price.tr() + ":",
                                           textAlign: TextAlign.start,
@@ -256,7 +269,8 @@ class _RegisterPackagePageState extends State<RegisterPackagePage> {
                                           )),
                                       SizedBox(width: 10),
                                       Text(
-                                          Utils.formatMoney(widget.priceData.totalPrice) ??
+                                          Utils.formatMoney(widget
+                                                  .priceData.totalPrice) ??
                                               "",
                                           textAlign: TextAlign.end,
                                           style: TextStyle(
@@ -279,11 +293,10 @@ class _RegisterPackagePageState extends State<RegisterPackagePage> {
                             R.string.text_notice_upgrade_premium.tr(),
                             textAlign: TextAlign.start,
                             style: TextStyle(
-                              color: R.color.textDark,
-                              fontSize: 16,
-                              height: 1.37,
-                              letterSpacing: 0.4
-                            ),
+                                color: R.color.textDark,
+                                fontSize: 16,
+                                height: 1.37,
+                                letterSpacing: 0.4),
                           ),
                           SizedBox(
                             height: 16,
@@ -297,7 +310,12 @@ class _RegisterPackagePageState extends State<RegisterPackagePage> {
                 child: ButtonWidget(
                   title: R.string.upgrade_package_pro.tr(),
                   onPressed: () {
-                    NavigationUtil.navigatePage(context, UpgradeAccountPage(code: 'Const.PRO', isBuyDirect: false,));
+                    NavigationUtil.navigatePage(
+                        context,
+                        UpgradeAccountPage(
+                          code: 'Const.PRO',
+                          isBuyDirect: false,
+                        ));
                   },
                 ),
               ),

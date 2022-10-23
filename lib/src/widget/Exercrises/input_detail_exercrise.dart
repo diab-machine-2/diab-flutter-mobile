@@ -98,8 +98,7 @@ class _InputDetailExercrisesControllerState
         body: Container(
           decoration: BoxDecoration(
               image: DecorationImage(
-                  image: AssetImage(R.drawable.bg_splash),
-                  fit: BoxFit.cover)),
+                  image: AssetImage(R.drawable.bg_splash), fit: BoxFit.cover)),
           child: Column(
             children: [
               CustomAppBar(
@@ -129,16 +128,17 @@ class _InputDetailExercrisesControllerState
                           decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(16),
                               image: DecorationImage(
-                                image:
-                                    AssetImage(R.drawable.bg_sub_exe),
+                                image: AssetImage(R.drawable.bg_sub_exe),
                                 fit: BoxFit.cover,
                               )),
                           child: Padding(
                             padding: const EdgeInsets.only(top: 16, bottom: 16),
                             child: Column(
                               children: [
-                                NetWorkImageWidget(imageUrl: widget.model!.cover!.url ?? '',
-                                    width: 50, height: 50),
+                                NetWorkImageWidget(
+                                    imageUrl: widget.model!.cover!.url ?? '',
+                                    width: 50,
+                                    height: 50),
                                 SizedBox(height: 6),
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
@@ -195,14 +195,14 @@ class _InputDetailExercrisesControllerState
                                       mainAxisAlignment:
                                           MainAxisAlignment.spaceBetween,
                                       children: [
-                                        Image.asset(
-                                            R.drawable.ic_bar_chart,
-                                            width: 24,
-                                            height: 24),
+                                        Image.asset(R.drawable.ic_bar_chart,
+                                            width: 24, height: 24),
                                         SizedBox(width: 8),
                                         Text(
                                             selectedintensity == null
-                                                ? R.string.chon_cuong_do_hoat_dong.tr()
+                                                ? R.string
+                                                    .chon_cuong_do_hoat_dong
+                                                    .tr()
                                                 : selectedintensity!.name!,
                                             style: TextStyle(
                                                 fontSize: 16,
@@ -210,7 +210,8 @@ class _InputDetailExercrisesControllerState
                                       ]),
                                   SizedBox(height: 16),
                                   Container(
-                                      height: 1, color: R.color.color0xffE5E5E5),
+                                      height: 1,
+                                      color: R.color.color0xffE5E5E5),
                                   SizedBox(height: 8),
                                 ]),
                               ),
@@ -254,8 +255,8 @@ class _InputDetailExercrisesControllerState
                                                 selectedintensity!.id,
                                             selected: selectedActive,
                                             title: widget.model!.category))
-                                    : Message.showToastMessage(
-                                        context, R.string.ban_chua_chon_cuong_do.tr());
+                                    : Message.showToastMessage(context,
+                                        R.string.ban_chua_chon_cuong_do.tr());
                               },
                               child: Container(
                                 color: R.color.transparent,
@@ -266,13 +267,14 @@ class _InputDetailExercrisesControllerState
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
                                       children: [
-                                        Image.asset(
-                                            R.drawable.ic_clock,
-                                            width: 24,
-                                            height: 24),
+                                        Image.asset(R.drawable.ic_clock,
+                                            width: 24, height: 24),
                                         SizedBox(width: 8),
                                         selectedActive == null
-                                            ? Text(R.string.chon_hinh_thuc_hoat_dong.tr(),
+                                            ? Text(
+                                                R.string
+                                                    .chon_hinh_thuc_hoat_dong
+                                                    .tr(),
                                                 style: TextStyle(
                                                     fontSize: 16,
                                                     fontWeight:
@@ -294,7 +296,8 @@ class _InputDetailExercrisesControllerState
                                       ]),
                                   SizedBox(height: 16),
                                   Container(
-                                      height: 1, color: R.color.color0xffE5E5E5),
+                                      height: 1,
+                                      color: R.color.color0xffE5E5E5),
                                   SizedBox(height: 8),
                                 ]),
                               ),
@@ -360,7 +363,8 @@ class _InputDetailExercrisesControllerState
                                                   child: Text(
                                                       selectedHour.toString(),
                                                       style: TextStyle(
-                                                          color: R.color.textDark,
+                                                          color:
+                                                              R.color.textDark,
                                                           fontSize: 30,
                                                           fontWeight:
                                                               FontWeight.w500)),
@@ -372,7 +376,8 @@ class _InputDetailExercrisesControllerState
                                               Container(
                                                   height: 1,
                                                   width: 54,
-                                                  color: R.color.color0xffE5E5E5)
+                                                  color:
+                                                      R.color.color0xffE5E5E5)
                                             ],
                                           ),
                                           Padding(
@@ -391,7 +396,8 @@ class _InputDetailExercrisesControllerState
                                                   child: Text(
                                                       selectedMinute.toString(),
                                                       style: TextStyle(
-                                                          color: R.color.textDark,
+                                                          color:
+                                                              R.color.textDark,
                                                           fontSize: 30,
                                                           fontWeight:
                                                               FontWeight.w500)),
@@ -403,7 +409,8 @@ class _InputDetailExercrisesControllerState
                                               Container(
                                                   height: 1,
                                                   width: 54,
-                                                  color: R.color.color0xffE5E5E5)
+                                                  color:
+                                                      R.color.color0xffE5E5E5)
                                             ],
                                           ),
                                           Padding(
@@ -452,7 +459,10 @@ class _InputDetailExercrisesControllerState
                         gradient: LinearGradient(
                             begin: Alignment.topLeft,
                             end: Alignment.centerRight,
-                            colors: [R.color.greenGradientTop, R.color.greenGradientBottom])),
+                            colors: [
+                              R.color.greenGradientTop,
+                              R.color.greenGradientBottom
+                            ])),
                     child: Center(
                         child: Text(R.string.save.tr(),
                             style: TextStyle(
@@ -514,10 +524,6 @@ class _InputDetailExercrisesControllerState
     } else if (selectedHour == 0 && selectedMinute == 0) {
       Message.showToastMessage(context, R.string.ban_chua_chon_thoi_gian.tr());
       return;
-      // }
-      // else if (calorisesNumber == 0) {
-      //   Message.showToastMessage(context, 'Tính lượng calories chưa hoàn tất!');
-      //   return;
     }
     if (description!.isNotEmpty) {
       showDialog(
@@ -547,8 +553,7 @@ class _InputDetailExercrisesControllerState
                                   fontSize: 20,
                                   fontWeight: FontWeight.w500)),
                           SizedBox(height: 16),
-                          Text(
-                              '${R.string.ky_luc.tr()}:',
+                          Text('${R.string.ky_luc.tr()}:',
                               textAlign: TextAlign.center),
                           SizedBox(height: 8),
                           Text(
@@ -675,23 +680,22 @@ class _CustomInputTimePickerState extends State<CustomInputTimePicker> {
                                 });
                               },
                               itemExtent: 47.0,
-                              children:
-                                  List<int>.generate(widget.maxHour, (i) => i)
-                                      .map((e) => Center(
-                                            child: Text(
-                                                // e.toString().length == 1
-                                                //     ? '0$e'
-                                                // :
-                                                '$e',
-                                                style: TextStyle(
-                                                    color: selectedHour == e
-                                                        ? R.color.mainColor
-                                                        : R.color.color0xffC0C2C5,
-                                                    fontSize: 24,
-                                                    fontWeight:
-                                                        FontWeight.bold)),
-                                          ))
-                                      .toList())),
+                              children: List<int>.generate(
+                                      widget.maxHour, (i) => i)
+                                  .map((e) => Center(
+                                        child: Text(
+                                            // e.toString().length == 1
+                                            //     ? '0$e'
+                                            // :
+                                            '$e',
+                                            style: TextStyle(
+                                                color: selectedHour == e
+                                                    ? R.color.mainColor
+                                                    : R.color.color0xffC0C2C5,
+                                                fontSize: 24,
+                                                fontWeight: FontWeight.bold)),
+                                      ))
+                                  .toList())),
                       Text(R.string.hour_upper_case_first.tr(),
                           style: TextStyle(fontWeight: FontWeight.w500)),
                       SizedBox(width: 24),
@@ -753,11 +757,12 @@ class _CustomInputTimePickerState extends State<CustomInputTimePicker> {
                           GestureDetector(
                             onTap: () {
                               if (selectedHour == 0 && selectedMinute == 0) {
-                                Message.showToastMessage(
-                                    context, R.string.ban_chua_nhap_thoi_gian.tr());
+                                Message.showToastMessage(context,
+                                    R.string.ban_chua_nhap_thoi_gian.tr());
                                 return;
                               }
-                              widget.callback!(selectedHour, selectedMinute * 5);
+                              widget.callback!(
+                                  selectedHour, selectedMinute * 5);
                               Navigator.pop(context);
                             },
                             child: Container(
@@ -800,5 +805,5 @@ class _CustomInputTimePickerState extends State<CustomInputTimePicker> {
 String formatDate(int timeStamp) {
   final date = DateTime.fromMillisecondsSinceEpoch(timeStamp);
 
-  return 'Tháng ${date.month}, ${date.year}';
+  return '${R.string.month} ${date.month}, ${date.year}';
 }

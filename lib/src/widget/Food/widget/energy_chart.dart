@@ -159,7 +159,7 @@ class EnergyChartState extends State<EnergyChart>
                                         .withOpacity(0.5),
                                     context: context,
                                     builder: (_) => NoticeChangePage(
-                                        description: "Mức tiêu thụ năng lượng của bạn đã thay đổi. Xác nhận bằng cách chọn \"Đồng ý\" để cập nhật thực đơn mẫu mới.",
+                                        description: R.string.consumption,
                                         onClick: () {
                                           updateGoal(newInputEnergy);
                                           Future.delayed(

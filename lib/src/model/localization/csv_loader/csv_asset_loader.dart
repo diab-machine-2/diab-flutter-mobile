@@ -1,10 +1,9 @@
 import 'dart:developer';
 import 'dart:ui';
-
 import 'package:csv/csv_settings_autodetection.dart';
 import 'package:flutter/services.dart';
 import 'package:medical/src/utils/logger.dart';
-
+import 'package:medical/src/utils/utils.dart';
 import 'asset_loader.dart';
 import 'package:csv/csv.dart';
 
@@ -24,7 +23,7 @@ class CsvAssetLoader extends AssetLoader {
     }
     Map<String, dynamic> parser = Map.from({});
     try {
-      parser =  csvParser!.getLanguageMap(locale.toString());
+      parser = csvParser!.getLanguageMap(locale.toString());
     } catch (e) {
       logger.e(e);
     }
@@ -53,8 +52,12 @@ class CSVParser {
 
     var translations = <String, dynamic>{};
     for (var i = 1; i < lines.length; i++) {
-      translations
-          .addAll({lines[i][0]: lines[i][indexLocale].replaceAll('\\n', '\n')});
+      if (lines[i].length > indexLocale && lines[i][indexLocale] != "") {
+        translations.addAll(
+            {lines[i][0]: lines[i][indexLocale].replaceAll('\\n', '\n')});
+      } else {
+        translations.addAll({lines[i][0]: lines[i][1]});
+      }
     }
     return translations;
   }

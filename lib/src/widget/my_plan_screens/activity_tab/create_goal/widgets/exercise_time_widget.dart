@@ -73,7 +73,7 @@ class _ExerciseTimeWidgetState extends State<ExerciseTimeWidget> {
               const SizedBox(width: 32),
               _buildTextField(
                 controller: _minuteController,
-                unit: 'phút',
+                unit: R.string.minute,
                 onChanged: (newValue) {
                   try {
                     _minute = int.parse(newValue);
