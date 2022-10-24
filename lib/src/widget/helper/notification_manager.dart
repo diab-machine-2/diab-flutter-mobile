@@ -105,8 +105,7 @@ class NotificationManager {
       navigateNotification(message);
     });
 
-    FirebaseMessaging.onBackgroundMessage(
-        (message) => myBackgroundMessageHandler(message));
+    FirebaseMessaging.onBackgroundMessage(myBackgroundMessageHandler);
   }
 
   navigateNotification(RemoteMessage? message) {
