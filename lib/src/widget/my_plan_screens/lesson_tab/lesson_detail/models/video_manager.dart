@@ -60,7 +60,9 @@ class VideoManager {
     if (url?.isNotEmpty != true) return;
     final BetterPlayerController newController = BetterPlayerController(
       BetterPlayerConfiguration(
-        placeholder: placeHolder == null ? Container(color: R.color.black) : _buildVideoPlaceholder(),
+        placeholder: placeHolder == null
+            ? Container(color: R.color.black)
+            : _buildVideoPlaceholder(),
         showPlaceholderUntilPlay: true,
         aspectRatio: 16 / 9,
         autoDispose: false,
@@ -78,12 +80,14 @@ class VideoManager {
       //  ),
     )..addEventsListener(
         (event) async {
-          if (event.betterPlayerEventType == BetterPlayerEventType.hideFullscreen && onExitFullScreen != null) {
+          if (event.betterPlayerEventType ==
+                  BetterPlayerEventType.hideFullscreen &&
+              onExitFullScreen != null) {
             await Future.delayed(const Duration(seconds: 1));
             onExitFullScreen!.call();
           }
           print('event.betterPlayerEventType = ${event.betterPlayerEventType}');
-          if (event.betterPlayerEventType == BetterPlayerEventType.play){
+          if (event.betterPlayerEventType == BetterPlayerEventType.play) {
             _placeholderStreamController.add(true);
           }
         },
@@ -96,25 +100,38 @@ class VideoManager {
     newController.setupDataSource(betterPlayerDataSource);
     newController.videoPlayerController?.addListener(() async {
       if (Platform.isIOS) {
-        if ((newController.videoPlayerController!.value.position.inMilliseconds) ==
-            newController.videoPlayerController!.value.duration!.inMilliseconds) {
-              if(Platform.isIOS){
-                try{
-                  await newController.pause();
-                } catch(e){
-                  print("${e.toString()}");
-                }
-              }
-              print('newController.pause()');
+        if ((newController
+                .videoPlayerController!.value.position.inMilliseconds) ==
+            newController
+                .videoPlayerController!.value.duration!.inMilliseconds) {
+          if (Platform.isIOS) {
+            try {
+              await newController.pause();
+            } catch (e) {
+              print("${e.toString()}");
+            }
+          }
+          print('newController.pause()');
         }
       }
+      // int compareTo(Duration other) => _duration.compareTo(other._duration);
       if (newController.videoPlayerController?.value != null &&
-          !newController.videoPlayerController!.value.isPlaying &&
-          newController.videoPlayerController!.value.initialized &&
-          (newController.videoPlayerController!.value.duration ==
-              newController.videoPlayerController!.value.position)) {
-                onCompleted?.call();
-                finishedVideo = true;
+              !newController.videoPlayerController!.value.isPlaying &&
+              newController.videoPlayerController!.value.initialized
+          // &&
+          // (newController.videoPlayerController!.value.duration ==
+          //     newController.videoPlayerController!.value.position
+          //     )
+          ) {
+        Duration? duration =
+            newController.videoPlayerController!.value.duration;
+        Duration? position =
+            newController.videoPlayerController!.value.position;
+        int compareTo = duration!.compareTo(position);
+        print("duration: ${duration.inSeconds}");
+        print("position: ${position.inSeconds}");
+        // onCompleted?.call();
+        // finishedVideo = true;
       }
     });
     hasVideo = true;
