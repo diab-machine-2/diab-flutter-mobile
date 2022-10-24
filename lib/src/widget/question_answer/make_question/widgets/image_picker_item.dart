@@ -236,13 +236,13 @@ class ImagePickerItem extends StatelessWidget {
   }
 
   showAlertDialog(BuildContext context) {
-    Widget cancelButton = FlatButton(
+    Widget cancelButton = TextButton(
       child: Text(R.string.cancel.tr()),
       onPressed: () {
         Navigator.pop(context);
       },
     );
-    Widget continueButton = FlatButton(
+    Widget continueButton = TextButton(
       child: Text(R.string.allowed.tr()),
       onPressed: () {
         Navigator.pop(context);
