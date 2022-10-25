@@ -114,24 +114,17 @@ class VideoManager {
           print('newController.pause()');
         }
       }
-      // int compareTo(Duration other) => _duration.compareTo(other._duration);
       if (newController.videoPlayerController?.value != null &&
-              !newController.videoPlayerController!.value.isPlaying &&
-              newController.videoPlayerController!.value.initialized
-          // &&
-          // (newController.videoPlayerController!.value.duration ==
-          //     newController.videoPlayerController!.value.position
-          //     )
-          ) {
+          !newController.videoPlayerController!.value.isPlaying &&
+          newController.videoPlayerController!.value.initialized) {
         Duration? duration =
             newController.videoPlayerController!.value.duration;
         Duration? position =
             newController.videoPlayerController!.value.position;
-        int compareTo = duration!.compareTo(position);
-        print("duration: ${duration.inSeconds}");
-        print("position: ${position.inSeconds}");
-        // onCompleted?.call();
-        // finishedVideo = true;
+        if (duration != null && duration.inSeconds / position.inSeconds <= 2) {
+          onCompleted?.call();
+          finishedVideo = true;
+        }
       }
     });
     hasVideo = true;
