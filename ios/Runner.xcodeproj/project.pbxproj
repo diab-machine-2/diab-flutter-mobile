@@ -10,6 +10,7 @@
 		1498D2341E8E89220040F4C2 /* GeneratedPluginRegistrant.m in Sources */ = {isa = PBXBuildFile; fileRef = 1498D2331E8E89220040F4C2 /* GeneratedPluginRegistrant.m */; };
 		242E7D7073E225E623BD00E4 /* Pods_Runner.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D66B980E95F8D45499C1516C /* Pods_Runner.framework */; };
 		3B3967161E833CAA004F5970 /* AppFrameworkInfo.plist in Resources */ = {isa = PBXBuildFile; fileRef = 3B3967151E833CAA004F5970 /* AppFrameworkInfo.plist */; };
+		5AA46BF828F7FEE9009E7CC5 /* GoogleService-Info.vn.com.diab.plist in Resources */ = {isa = PBXBuildFile; fileRef = 5AA46BF728F7FEE8009E7CC5 /* GoogleService-Info.vn.com.diab.plist */; };
 		600D316F28DB0B33000C7EE7 /* UIVIewController+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 600D316528DB0B2A000C7EE7 /* UIVIewController+Extension.swift */; };
 		600D317028DB0B33000C7EE7 /* UIColor+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 600D316628DB0B2B000C7EE7 /* UIColor+Extension.swift */; };
 		600D317128DB0B33000C7EE7 /* iBTManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 600D316728DB0B2C000C7EE7 /* iBTManager.swift */; };
@@ -20,7 +21,6 @@
 		600D317828DB0B33000C7EE7 /* ToastManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 600D316E28DB0B33000C7EE7 /* ToastManager.swift */; };
 		600D317928DB0D87000C7EE7 /* ibtFramework.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 600D316828DB0B2D000C7EE7 /* ibtFramework.xcframework */; };
 		600D317A28DB0D87000C7EE7 /* ibtFramework.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 600D316828DB0B2D000C7EE7 /* ibtFramework.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		5AA46BF828F7FEE9009E7CC5 /* GoogleService-Info.vn.com.diab.plist in Resources */ = {isa = PBXBuildFile; fileRef = 5AA46BF728F7FEE8009E7CC5 /* GoogleService-Info.vn.com.diab.plist */; };
 		60A6D331265F8670008272BB /* GoogleService-Info.com.cactusoftware.diab.plist in Resources */ = {isa = PBXBuildFile; fileRef = 60A6D330265F8670008272BB /* GoogleService-Info.com.cactusoftware.diab.plist */; };
 		6C731C20270ABB8800B4BC5B /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6C731C1F270ABB8800B4BC5B /* StoreKit.framework */; };
 		74858FAF1ED2DC5600515810 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74858FAE1ED2DC5600515810 /* AppDelegate.swift */; };
@@ -416,11 +416,12 @@
 			baseConfigurationReference = 7AFA3C8E1D35360C0083082E /* Release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon.stag;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = Runner/RunnerRelease.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 6;
+				CURRENT_PROJECT_VERSION = 4;
 				DEVELOPMENT_TEAM = Q4KKVXCYN6;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = Runner/Info.plist;
@@ -430,7 +431,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.2.4;
-				PRODUCT_BUNDLE_IDENTIFIER = com.cactusoftware.diab;
+				PRODUCT_BUNDLE_IDENTIFIER = vn.com.diab;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "Runner/Runner-Bridging-Header.h";
@@ -500,11 +501,12 @@
 			baseConfigurationReference = 9740EEB21CF90195004384FC /* Debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon.stag;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = Runner/RunnerDebug.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 4;
 				DEVELOPMENT_TEAM = Q4KKVXCYN6;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = Runner/Info.plist;
@@ -637,11 +639,12 @@
 			baseConfigurationReference = 9740EEB21CF90195004384FC /* Debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = Runner/RunnerDebug.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 6;
+				CURRENT_PROJECT_VERSION = 4;
 				DEVELOPMENT_TEAM = Q4KKVXCYN6;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = Runner/Info.plist;
@@ -667,11 +670,12 @@
 			baseConfigurationReference = 7AFA3C8E1D35360C0083082E /* Release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = Runner/RunnerRelease.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 6;
+				CURRENT_PROJECT_VERSION = 4;
 				DEVELOPMENT_TEAM = Q4KKVXCYN6;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = Runner/Info.plist;

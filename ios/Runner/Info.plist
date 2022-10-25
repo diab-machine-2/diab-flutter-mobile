@@ -69,6 +69,10 @@
 		<key>NSAllowsArbitraryLoads</key>
 		<true/>
 	</dict>
+	<key>NSBluetoothAlwaysUsageDescription</key>
+	<string>Luôn cho phép DiaB sử dụng Bluetooth để kết nối với máy đo đường huyết.</string>
+	<key>NSBluetoothPeripheralUsageDescription</key>
+	<string>Cho phép DiaB sử dụng Bluetooth để kết nối với máy đo đường huyết.</string>
 	<key>NSCameraUsageDescription</key>
 	<string>This app needs camera access to scan QR codes</string>
 	<key>NSMicrophoneUsageDescription</key>
@@ -103,9 +107,5 @@
 	<false/>
 	<key>io.flutter.embedded_views_preview</key>
 	<true/>
-	<key>NSBluetoothAlwaysUsageDescription</key>
-    <string>Luôn cho phép DiaB sử dụng Bluetooth để kết nối với máy đo đường huyết.</string>
-    <key>NSBluetoothPeripheralUsageDescription</key>
-    <string>Cho phép DiaB sử dụng Bluetooth để kết nối với máy đo đường huyết.</string>
 </dict>
 </plist>
