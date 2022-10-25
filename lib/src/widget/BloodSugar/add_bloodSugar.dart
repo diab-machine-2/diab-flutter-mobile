@@ -274,8 +274,15 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
                                       width: 74,
                                       color: R.color.color0xffE5E5E5)),
                               GestureDetector(
-                                onTap: () {
-                                  changeUnit();
+                                onTap: () async {
+                                  await changeUnit();
+                                  final glucose = roundAsFixed(
+                                      AppSettings.userInfo!.glucoseUnit == 1
+                                          ? number! * mmollToMgdlFactor
+                                          : number! / mmollToMgdlFactor);
+                                  _controller.text = glucose.toString();
+                                  number = glucose;
+                                  setState(() {});
                                 },
                                 child: Container(
                                   margin: EdgeInsets.only(top: 20),
@@ -356,11 +363,13 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
                             if (data != null && data is Map) {
                               fromNipro = true;
 
+                              if (AppSettings.userInfo!.glucoseUnit != 1) {
+                                await changeUnit();
+                              }
+
                               final glucose =
                                   double.tryParse(data['glucose']) ?? 0;
-                              number = AppSettings.userInfo!.glucoseUnit == 1
-                                  ? glucose
-                                  : (roundAsFixed(glucose / mmollToMgdlFactor));
+                              number = glucose;
                               _controller.text = number.toString();
 
                               showReason = (AppSettings.userInfo!.glucoseUnit ==
@@ -941,12 +950,6 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
       // DartNotificationCenter.post(channel: 'setup_schedule_change');
       // DartNotificationCenter.post(channel: 'refresh_home');
       BotToast.closeAllLoading();
-      final glucose = roundAsFixed(AppSettings.userInfo!.glucoseUnit == 1
-          ? number! * mmollToMgdlFactor
-          : number! / mmollToMgdlFactor);
-      _controller.text = glucose.toString();
-      number = glucose;
-      setState(() {});
     } catch (e, _) {
       BotToast.closeAllLoading();
       if (e is Error) {

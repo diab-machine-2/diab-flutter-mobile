@@ -61,22 +61,25 @@ class _ConnectionInstructionsControllerState
 
       dataText += (data.toString() + '/\/');
       setState(() {});
-      print(event.toString());
-      print(data);
+      // print(event.toString());
+      // print(data);
+      // showAboutDialog(context: context, applicationName: event);
       if (event == 'ble_off') {
-        //Message.showToastMessage(context, 'Bạn chưa bật Bluetooth');
-        //bleState = 'ble_off';
-        //_channel.invokeMethod('init_IBle_Sdk');
       } else if (event == 'ble_already') {
-        //bleState = 'ble_already';
-        //Message.showToastMessage(context, 'Bạn đã bật Bluetooth');
       } else if (event == 'init_success') {
         BotToast.closeAllLoading();
-        //_channel.invokeMethod('start_scan');
       } else if (event == 'new_device' && data.length != 0) {
         BotToast.closeAllLoading();
-
+        final savedDevices = AppSettings.getNiproDevices();
+        savedDevices.forEach((element) {
+          data.asMap().forEach((index, value) {
+            if (element['address'] == value['address']) {
+              data.removeAt(index);
+            }
+          });
+        });
         devices = data;
+
         if (listDevicesKey.currentState != null) {
           listDevicesKey.currentState!.devices = devices;
           listDevicesKey.currentState!.setState(() {});
@@ -107,7 +110,6 @@ class _ConnectionInstructionsControllerState
         BotToast.closeAllLoading();
         print(data);
         stopScan();
-        // _channel.invokeMethod('dis_connect');
         if (listDataKey.currentState != null) {
           listDataKey.currentState!.glucoseData += data;
           listDataKey.currentState!.setState(() {});
@@ -150,7 +152,6 @@ class _ConnectionInstructionsControllerState
     });
     _channel.invokeMethod('init_IBle_Sdk');
     await Permission.location.request();
-    //await Permission.bluetooth.request();
   }
 
   startScan() {

@@ -113,6 +113,8 @@ import ibtFramework
                 iBTManager.shared.connect(device: device)
             }
             
+        } else {
+            AppDelegate.sink!(["event":"device_not_connect", "data": []])
         }
     }
     

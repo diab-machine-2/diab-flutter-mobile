@@ -30,6 +30,13 @@ class ListDataState extends State<ListData> {
         54;
 
     final double countHight = glucoseData.length * 48.0 + 216;
+
+    glucoseData.sort(((a, b) {
+      return int.parse(b['date']!).compareTo(int.parse(a['date']!));
+    }));
+
+    print('data là: ' + glucoseData.toString());
+
     return SafeArea(
         child: Container(
       height: height, //countHight > height ? height : countHight,
