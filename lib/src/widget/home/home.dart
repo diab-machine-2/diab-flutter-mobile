@@ -1215,7 +1215,7 @@ class _HomeControllerState extends State<HomeController> with Observer {
                       style: const TextStyle(
                           fontSize: 16, fontWeight: FontWeight.w600)),
                   const SizedBox(height: 4),
-                  Text(R.string.today,
+                  Text(R.string.today.tr(),
                       style: TextStyle(
                           color: R.color.captionColorGray,
                           fontSize: 12,

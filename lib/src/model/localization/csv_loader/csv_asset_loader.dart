@@ -53,10 +53,8 @@ class CSVParser {
     var translations = <String, dynamic>{};
     for (var i = 1; i < lines.length; i++) {
       if (lines[i].length > indexLocale && lines[i][indexLocale] != "") {
-        translations.addAll({
-          lines[i][0]:
-              Utils.capitalize(lines[i][indexLocale].replaceAll('\\n', '\n'))
-        });
+        translations.addAll(
+            {lines[i][0]: lines[i][indexLocale].replaceAll('\\n', '\n')});
       } else {
         translations.addAll({lines[i][0]: lines[i][1]});
       }

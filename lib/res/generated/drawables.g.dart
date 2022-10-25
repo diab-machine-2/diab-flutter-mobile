@@ -445,4 +445,5 @@ class Drawables {
 	String get voucher_reward => "lib/res/drawables/voucher_reward.jpg";
 	String get voucher_reward_detail => "lib/res/drawables/voucher_reward_detail.png";
 	String get share_app_detail => "lib/res/drawables/share_app_detail.jpg";
+	String get ic_voucher => "lib/res/drawables/ic_voucher.png";
 }

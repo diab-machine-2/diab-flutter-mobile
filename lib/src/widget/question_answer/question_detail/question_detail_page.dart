@@ -18,6 +18,7 @@ import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/question_answer/all_question_answer/model/question_model.dart';
 import 'package:medical/src/widgets/block_bottom_sheet.dart';
 import 'package:medical/src/widgets/button_widget.dart';
+import 'package:medical/src/widgets/html_text_widget.dart';
 import 'package:medical/src/widgets/network_image_widget.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import '../question_answer_utils.dart';
@@ -399,7 +400,8 @@ class _QuestionDetailPageState extends State<QuestionDetailPage>
 
   Widget _buildDoctorItemInQuestionItem(Answer? answer) {
     if (answer == null) return Container();
-    bool isPatient = answer.account!.code!.contains("Patient");
+    bool isDoctorAnswer = !answer.account!.code!.contains("Patient") &&
+        answer.accountId != _cubit.userInfo!.accountId;
     return Container(
       padding: EdgeInsets.symmetric(vertical: 8),
       child: Column(
@@ -457,16 +459,18 @@ class _QuestionDetailPageState extends State<QuestionDetailPage>
             ],
           ),
           SizedBox(height: 10),
-          Text(
-            answer.body ?? '',
-            style: TextStyle(
-              color: R.color.black,
-              fontSize: 16,
-              fontWeight: FontWeight.w400,
+          if (isDoctorAnswer) WidgetHtmlText(answer.body),
+          if (!isDoctorAnswer)
+            Text(
+              answer.body ?? '',
+              style: TextStyle(
+                color: R.color.black,
+                fontSize: 16,
+                fontWeight: FontWeight.w400,
+              ),
             ),
-          ),
           SizedBox(height: 8),
-          if (answer.accountId != _cubit.userInfo!.accountId && !isPatient)
+          if (isDoctorAnswer)
             Padding(
               padding: const EdgeInsets.only(bottom: 10),
               child: RatingBar.builder(
