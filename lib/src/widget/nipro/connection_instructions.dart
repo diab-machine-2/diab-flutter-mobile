@@ -152,6 +152,11 @@ class _ConnectionInstructionsControllerState
     });
     _channel.invokeMethod('init_IBle_Sdk');
     await Permission.location.request();
+
+    final savedDevices = AppSettings.getNiproDevices();
+    if (savedDevices.length != 0) {
+      showPopupStartScan();
+    }
   }
 
   startScan() {
@@ -360,42 +365,7 @@ class _ConnectionInstructionsControllerState
             ),
             GestureDetector(
               onTap: () async {
-                final String blueToothPermission =
-                    await _channel.invokeMethod('request_permission');
-                // !(await Permission.bluetooth.isPermanentlyDenied) &&
-                //     await Permission.bluetooth.isGranted;
-                final locationGranted = Platform.isIOS
-                    ? true
-                    : (await Permission.location.isGranted &&
-                        await Permission.location.serviceStatus.isEnabled);
-                if (blueToothPermission != 'ble_already') {
-                  Message.showToastMessage(context, 'Bạn chưa bật Bluetooth');
-                } else if (!locationGranted) {
-                  Message.showToastMessage(context, 'Bạn chưa bật vị trí');
-                } else {
-                  // _channel.invokeMethod('request_permission');
-
-                  startScan();
-                  final result = await showModalBottomSheet(
-                      shape: RoundedRectangleBorder(
-                          borderRadius:
-                              BorderRadius.vertical(top: Radius.circular(15))),
-                      backgroundColor: R.color.white,
-                      context: context,
-                      isScrollControlled: true,
-                      builder: (context) => ListDevices(
-                          key: listDevicesKey,
-                          devices: devices,
-                          request: () {
-                            startScan();
-                          }));
-                  if (result != null) {
-                    device = result;
-                    BotToast.showLoading();
-                    _channel.invokeMethod('connect', device!['address']);
-                  }
-                  stopScan();
-                }
+                showPopupStartScan();
               },
               child: SafeArea(
                 top: false,
@@ -424,6 +394,41 @@ class _ConnectionInstructionsControllerState
         ),
       ),
     );
+  }
+
+  showPopupStartScan() async {
+    final String blueToothPermission =
+        await _channel.invokeMethod('request_permission');
+
+    final locationGranted = Platform.isIOS
+        ? true
+        : (await Permission.location.isGranted &&
+            await Permission.location.serviceStatus.isEnabled);
+    if (blueToothPermission != 'ble_already') {
+      Message.showToastMessage(context, 'Bạn chưa bật Bluetooth');
+    } else if (!locationGranted) {
+      Message.showToastMessage(context, 'Bạn chưa bật vị trí');
+    } else {
+      startScan();
+      final result = await showModalBottomSheet(
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.vertical(top: Radius.circular(15))),
+          backgroundColor: R.color.white,
+          context: context,
+          isScrollControlled: true,
+          builder: (context) => ListDevices(
+              key: listDevicesKey,
+              devices: devices,
+              request: () {
+                startScan();
+              }));
+      if (result != null) {
+        device = result;
+        BotToast.showLoading();
+        _channel.invokeMethod('connect', device!['address']);
+      }
+      stopScan();
+    }
   }
 
   _showDialogConnectFaild(BuildContext context) {
