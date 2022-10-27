@@ -50,7 +50,6 @@ class VoucherDetailBloc extends Bloc<VoucherDetailEvent, VoucherDetailState> {
         blocMessage: failure.message,
       ),
       (success) {
-        print("success: $success");
         return state.copyWith(
           blocStatus:
               success == true ? BlocStatus.useVoucherSuccess : BlocStatus.error,

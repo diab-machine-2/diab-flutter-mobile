@@ -71,7 +71,7 @@ import 'widget/Food/add_food.dart';
 import 'widget/helper/photo_view.dart';
 import 'widget/news_detail/presentation/news_detail_view.dart';
 import 'widget/profile/profile_controller.dart';
-import 'widget/shared_profile/pages/share_app_detail.dart';
+import 'widget/shared_profile/pages/share_app_detail/share_app_detail.dart';
 
 class App extends StatefulWidget {
   @override
