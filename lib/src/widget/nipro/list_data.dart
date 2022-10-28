@@ -1,5 +1,7 @@
+import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/repo/glucose/glucose_client.dart';
 import 'package:medical/src/widget/Bmi/widget/add_bmi.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
@@ -14,12 +16,35 @@ class ListData extends StatefulWidget {
 
 class ListDataState extends State<ListData> {
   List<Map<String, String>> glucoseData = [];
-  Map<String, String>? glucose;
+  List<Map<String, String>> selectedGlucose = [];
+  //Map<String, String>? glucose;
 
   @override
   void initState() {
-    glucoseData = widget.glucoseData;
     super.initState();
+    checkData();
+  }
+
+  checkData() async {
+    glucoseData = [];
+    try {
+      BotToast.showLoading();
+      final result =
+          await GlucoseClient().fetchGlucoseInputNotExist(widget.glucoseData);
+
+      result.forEach((element) {
+        glucoseData.add({
+          'glucose': element['glucose'].toString(),
+          'date': element['createDate'].toString()
+        });
+      });
+      selectedGlucose = [...glucoseData];
+      setState(() {});
+      BotToast.closeAllLoading();
+    } catch (e) {
+      BotToast.closeAllLoading();
+      print(e);
+    }
   }
 
   @override
@@ -34,8 +59,6 @@ class ListDataState extends State<ListData> {
     glucoseData.sort(((a, b) {
       return int.parse(b['date']!).compareTo(int.parse(a['date']!));
     }));
-
-    print('data là: ' + glucoseData.toString());
 
     return SafeArea(
         child: Container(
@@ -115,8 +138,11 @@ class ListDataState extends State<ListData> {
                                   : SizedBox(),
                               GestureDetector(
                                 onTap: () {
-                                  glucose = data;
-
+                                  if (isSelected(data)) {
+                                    selectedGlucose.remove(data);
+                                  } else {
+                                    selectedGlucose.add(data);
+                                  }
                                   setState(() {});
                                 },
                                 child: Container(
@@ -154,7 +180,7 @@ class ListDataState extends State<ListData> {
                                           ],
                                         ),
                                         Image.asset(
-                                            glucose == data
+                                            isSelected(data)
                                                 ? R.drawable.ic_active
                                                 : R.drawable.ic_unactive,
                                             height: 24)
@@ -167,13 +193,14 @@ class ListDataState extends State<ListData> {
                   ),
             GestureDetector(
               onTap: () async {
-                if (glucose == null) {
+                if (selectedGlucose.length == 0) {
                   Message.showToastMessage(
                       context, 'Bạn chưa chọn chỉ số dường huyết');
                   return;
                 }
-                Navigator.pop(context);
-                Navigator.of(context).pop(glucose);
+                submit();
+                // Navigator.pop(context);
+                // Navigator.of(context).pop(glucose);
               },
               child: SafeArea(
                 top: false,
@@ -202,5 +229,29 @@ class ListDataState extends State<ListData> {
         ),
       ),
     ));
+  }
+
+  bool isSelected(Map<String, String> glucose) {
+    bool isSelected = false;
+    selectedGlucose.forEach((element) {
+      if (element['glucose'] == glucose['glucose'] &&
+          element['date'] == glucose['date']) {
+        isSelected = true;
+      }
+    });
+    return isSelected;
+  }
+
+  submit() async {
+    try {
+      BotToast.showLoading();
+      await GlucoseClient().postGlucoseInputs(selectedGlucose);
+      BotToast.closeAllLoading();
+      Navigator.pop(context);
+      Navigator.pop(context);
+    } catch (e) {
+      BotToast.closeAllLoading();
+      print(e);
+    }
   }
 }
