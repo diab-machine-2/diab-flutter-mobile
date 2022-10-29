@@ -211,6 +211,7 @@ class FetchClient {
       'Content-Type': 'application/json',
       'User-Agent': 'Mobile'
     };
+    print(headers);
     final request = http.Request(
         'POST',
         Uri.parse(

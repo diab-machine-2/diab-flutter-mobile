@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
@@ -125,6 +127,57 @@ class GlucoseClient extends FetchClient {
         throw error;
       }
     } catch (e) {
+      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+    }
+  }
+
+  Future<List<dynamic>> fetchGlucoseInputNotExist(
+      List<Map<String, String>> glucoses) async {
+    try {
+      List<Map<String, dynamic>> params = [];
+      glucoses.forEach((element) {
+        params.add({
+          'glucose': double.tryParse(element['glucose']!) ?? 0,
+          'createDate': int.tryParse(element['date']!) ?? 0,
+          'unitType': 1
+        });
+      });
+      final response = await super.postHttp2(
+          path: '/App/Glucose/GlucoseInputsNotExist',
+          params: jsonEncode({'glucoseInputs': params}));
+      if (response.statusCode == 200) {
+        final data = await response.stream.bytesToString();
+
+        return jsonDecode(data)['data'];
+      } else {
+        throw response.reasonPhrase!;
+      }
+    } catch (e) {
+      print(e.toString());
+      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+    }
+  }
+
+  Future<bool> postGlucoseInputs(List<Map<String, String>> glucoses) async {
+    try {
+      List<Map<String, dynamic>> params = [];
+      glucoses.forEach((element) {
+        params.add({
+          'glucose': double.tryParse(element['glucose']!) ?? 0,
+          'createDate': int.tryParse(element['date']!) ?? 0,
+          'unitType': 1
+        });
+      });
+      final response = await super.postHttp2(
+          path: '/App/Glucose/Inputs',
+          params: jsonEncode({'glucoseInputs': params}));
+      if (response.statusCode == 200) {
+        return true;
+      } else {
+        throw response.reasonPhrase!;
+      }
+    } catch (e) {
+      print(e.toString());
       throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
     }
   }

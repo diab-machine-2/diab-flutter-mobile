@@ -1,5 +1,7 @@
+import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/repo/glucose/glucose_client.dart';
 import 'package:medical/src/widget/Bmi/widget/add_bmi.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
@@ -14,12 +16,35 @@ class ListData extends StatefulWidget {
 
 class ListDataState extends State<ListData> {
   List<Map<String, String>> glucoseData = [];
-  Map<String, String>? glucose;
+  List<Map<String, String>> selectedGlucose = [];
+  //Map<String, String>? glucose;
 
   @override
   void initState() {
-    glucoseData = widget.glucoseData;
     super.initState();
+    checkData();
+  }
+
+  checkData() async {
+    glucoseData = [];
+    try {
+      BotToast.showLoading();
+      final result =
+          await GlucoseClient().fetchGlucoseInputNotExist(widget.glucoseData);
+
+      result.forEach((element) {
+        glucoseData.add({
+          'glucose': element['glucose'].toString(),
+          'date': element['createDate'].toString()
+        });
+      });
+      selectedGlucose = [...glucoseData];
+      setState(() {});
+      BotToast.closeAllLoading();
+    } catch (e) {
+      BotToast.closeAllLoading();
+      print(e);
+    }
   }
 
   @override
@@ -34,8 +59,6 @@ class ListDataState extends State<ListData> {
     glucoseData.sort(((a, b) {
       return int.parse(b['date']!).compareTo(int.parse(a['date']!));
     }));
-
-    print('data là: ' + glucoseData.toString());
 
     return SafeArea(
         child: Container(
@@ -115,8 +138,11 @@ class ListDataState extends State<ListData> {
                                   : SizedBox(),
                               GestureDetector(
                                 onTap: () {
-                                  glucose = data;
-
+                                  if (isSelected(data)) {
+                                    selectedGlucose.remove(data);
+                                  } else {
+                                    selectedGlucose.add(data);
+                                  }
                                   setState(() {});
                                 },
                                 child: Container(
@@ -154,7 +180,7 @@ class ListDataState extends State<ListData> {
                                           ],
                                         ),
                                         Image.asset(
-                                            glucose == data
+                                            isSelected(data)
                                                 ? R.drawable.ic_active
                                                 : R.drawable.ic_unactive,
                                             height: 24)
@@ -167,13 +193,14 @@ class ListDataState extends State<ListData> {
                   ),
             GestureDetector(
               onTap: () async {
-                if (glucose == null) {
+                if (selectedGlucose.length == 0) {
                   Message.showToastMessage(
                       context, 'Bạn chưa chọn chỉ số dường huyết');
                   return;
                 }
-                Navigator.pop(context);
-                Navigator.of(context).pop(glucose);
+                submit();
+                // Navigator.pop(context);
+                // Navigator.of(context).pop(glucose);
               },
               child: SafeArea(
                 top: false,
@@ -202,5 +229,87 @@ class ListDataState extends State<ListData> {
         ),
       ),
     ));
+  }
+
+  bool isSelected(Map<String, String> glucose) {
+    bool isSelected = false;
+    selectedGlucose.forEach((element) {
+      if (element['glucose'] == glucose['glucose'] &&
+          element['date'] == glucose['date']) {
+        isSelected = true;
+      }
+    });
+    return isSelected;
+  }
+
+  submit() async {
+    try {
+      BotToast.showLoading();
+      await GlucoseClient().postGlucoseInputs(selectedGlucose);
+      BotToast.closeAllLoading();
+      showPopupSuccess();
+    } catch (e) {
+      BotToast.closeAllLoading();
+      Message.showToastMessage(context, e.toString());
+    }
+  }
+
+  showPopupSuccess() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return Container(
+          child: AlertDialog(
+              contentPadding: EdgeInsets.all(0),
+              content: Container(
+                padding: EdgeInsets.all(16),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.info_outline, size: 64),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 20),
+                      child: Text(
+                          'Đã đồng bộ các chỉ số đã chọn từ thiết bị thành công',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                              color: R.color.textDark,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600)),
+                    ),
+                    SizedBox(height: 20),
+                    GestureDetector(
+                        onTap: () {
+                          Navigator.pop(context);
+                          Navigator.pop(context);
+                          Navigator.pop(context);
+                        },
+                        child: Container(
+                          height: 43,
+                          width: 200,
+                          decoration: BoxDecoration(
+                              color: R.color.red,
+                              borderRadius: BorderRadius.circular(200),
+                              gradient: LinearGradient(
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.centerRight,
+                                  colors: [
+                                    R.color.greenGradientTop,
+                                    R.color.greenGradientBottom
+                                  ])),
+                          child: Center(
+                            child: Text('Hoàn tất',
+                                style: TextStyle(
+                                    color: R.color.white,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600)),
+                          ),
+                        ))
+                  ],
+                ),
+              )),
+        );
+      },
+    );
   }
 }
