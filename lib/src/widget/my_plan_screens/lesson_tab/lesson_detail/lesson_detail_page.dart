@@ -21,6 +21,8 @@ import 'widgets/bottom_sheet_widget.dart';
 
 import 'package:path_provider/path_provider.dart';
 
+import 'widgets/share_lesson_button.dart';
+
 class LessonDetailPage extends StatefulWidget {
   const LessonDetailPage({required this.lessonType, required this.lessonId});
   final int? lessonType;
@@ -96,27 +98,36 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
                                 Expanded(
-                                  child: Text(
-                                    R.string.section_position
-                                        .tr(args: [_cubit.sectionPosition]),
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: TextStyle(
-                                        fontSize: 16,
-                                        color: R.color.textDark,
-                                        fontWeight: FontWeight.w400),
+                                  child: Row(
+                                    children: [
+                                      GestureDetector(
+                                        onTap: () {
+                                          NavigationUtil.pop(context);
+                                        },
+                                        child: Icon(
+                                          Icons.clear_rounded,
+                                          size: 26,
+                                          color: R.color.grey_2,
+                                        ),
+                                      ),
+                                      SizedBox(width: 5),
+                                      Text(
+                                        R.string.section_position
+                                            .tr(args: [_cubit.sectionPosition]),
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: TextStyle(
+                                            fontSize: 16,
+                                            color: R.color.textDark,
+                                            fontWeight: FontWeight.w400),
+                                      ),
+                                    ],
                                   ),
                                 ),
-                                GestureDetector(
-                                  onTap: () {
-                                    NavigationUtil.pop(context);
-                                  },
-                                  child: Icon(
-                                    Icons.clear_rounded,
-                                    size: 24,
-                                    color: R.color.grey_2,
+                                if (_cubit.currentSectionDetail != null)
+                                  ShareLessonButton(
+                                    lesson: _cubit.currentSectionDetail!,
                                   ),
-                                ),
                               ],
                             ),
                           ),

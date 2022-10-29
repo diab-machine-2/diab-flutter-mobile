@@ -46,6 +46,7 @@ import 'package:medical/src/widget/login/rules.dart';
 import 'package:medical/src/widget/login/step_list.dart';
 import 'package:medical/src/widget/login/update_info.dart';
 import 'package:medical/src/widget/login/verify_phone.dart';
+import 'package:medical/src/widget/my_plan_screens/lesson_tab/lesson_detail/lesson_detail.dart';
 import 'package:medical/src/widget/notification/notification_detail.dart';
 import 'package:medical/src/widget/notification/notification_tabbar.dart';
 import 'package:medical/src/widget/profile/add_reminder.dart';
@@ -589,6 +590,15 @@ class _AppState extends State<App> {
                           settings,
                           ShareAppDetail(
                               isVoucherAvailable: data?['isVoucherAvailable']));
+                    case NavigatorName.lesson_detail:
+                      final data = settings.arguments as Map<String, dynamic>?;
+                      return _buildRoute(
+                        settings,
+                        LessonDetailPage(
+                          lessonId: data?['lessonId'],
+                          lessonType: data?['lessonType'],
+                        ),
+                      );
                     default:
                       return null;
                   }

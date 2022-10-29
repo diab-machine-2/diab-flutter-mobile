@@ -21,6 +21,7 @@ import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/home/widget/header.dart';
 import 'package:medical/src/widget/list_service/list_service_page.dart';
 import 'package:medical/src/widget/my_plan_screens/activity_tab/create_goal/create_goal_page.dart';
+import 'package:medical/src/widget/my_plan_screens/my_plan/models/plan_type.dart';
 import 'package:medical/src/widget/shared_profile/pages/share_app_detail/widgets/banner_share_app.dart';
 import 'package:medical/src/widgets/network_image_widget.dart';
 import 'package:medical/src/widgets/share_profile_popup.dart';

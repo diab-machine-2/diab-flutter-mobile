@@ -18,4 +18,14 @@ extension PlanTypeDetail on PlanType {
         return R.string.title_exercise.tr();
     }
   }
+  int get planTypeIndex {
+    switch (this) {
+      case PlanType.goal:
+        return 0;
+      case PlanType.lesson:
+        return 1;
+      case PlanType.activity:
+        return 2;
+    }
+  }
 }

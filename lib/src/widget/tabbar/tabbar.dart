@@ -29,6 +29,8 @@ import 'package:medical/src/widget/profile/profile_controller.dart';
 import 'package:medical/src/widget/question_answer/question_answer_page.dart';
 import 'package:medical/src/widget/tabbar/bottom_tabbar.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../my_plan_screens/lesson_tab/lesson_detail/lesson_detail_page.dart';
+import '../my_plan_screens/my_plan/models/plan_type.dart';
 
 class TabbarController extends StatefulWidget {
   const TabbarController(
@@ -81,6 +83,17 @@ class _TabbarControllerState extends State<TabbarController>
     });
     //   startTimer();
     _checkUserReferralCode();
+    // _checkExistLessonId();
+  }
+
+  _checkExistLessonId() async {
+    final String? lessonId = DynamicLinkConfig.instance.lessonId;
+    if (lessonId != null) {
+      Navigator.pushNamed(context, NavigatorName.lesson_detail, arguments: {
+        'lessonId': lessonId,
+        'lessonType': PlanType.lesson.planTypeIndex,
+      });
+    }
   }
 
   _checkUserReferralCode() async {
@@ -138,6 +151,9 @@ class _TabbarControllerState extends State<TabbarController>
     }
     if (notifyName == Const.NAVIGATE_TO_PROFILE_TAB) {
       jumpTo(0);
+    }
+    if (notifyName == Const.NAVIGATE_TO_LESSON_DETAIL) {
+      _checkExistLessonId();
     }
   }
 

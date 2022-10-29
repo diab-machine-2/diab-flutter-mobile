@@ -59,4 +59,5 @@ class NavigatorName {
   static const String voucher_detail = '/voucher_detail';
   static const String share_app_detail = '/share_app_detail';
   static const String news_detail = '/news_detail';
+  static const String lesson_detail = '/lesson_detail';
 }

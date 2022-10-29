@@ -1092,4 +1092,5 @@ class Strings {
   String get share_now => 'share_now';
 	String get select_your_image => 'select_your_image';
 	String get note_max_media => 'note_max_media';
+	String get share => 'share';
 }
