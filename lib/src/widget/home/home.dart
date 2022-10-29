@@ -21,6 +21,7 @@ import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/home/widget/header.dart';
 import 'package:medical/src/widget/list_service/list_service_page.dart';
 import 'package:medical/src/widget/my_plan_screens/activity_tab/create_goal/create_goal_page.dart';
+import 'package:medical/src/widget/shared_profile/pages/share_app_detail/widgets/banner_share_app.dart';
 import 'package:medical/src/widgets/network_image_widget.dart';
 import 'package:medical/src/widgets/share_profile_popup.dart';
 
@@ -483,28 +484,7 @@ class _HomeControllerState extends State<HomeController> with Observer {
                                           )),
                               ),
                             ),
-                            // buildServiceButton(),
-                            InkWell(
-                              onTap: () {
-                                Navigator.pushNamed(
-                                    context, NavigatorName.share_app_detail);
-                                // String? shareLink =
-                                //     DynamicLinkConfig.instance.shareLink;
-                                // if (shareLink != null) {
-                                //   AppShare.instance
-                                //       .userReferralCode(context, shareLink);
-                                // }
-                              },
-                              child: Padding(
-                                padding: const EdgeInsets.all(15.0),
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(12),
-                                  child: Image.asset(
-                                    R.drawable.banner_share_app,
-                                  ),
-                                ),
-                              ),
-                            ),
+                            BannerShareApp(),
                             CourseSuggest(key: courseSuggestKey, position: 1),
                             SizedBox(height: 25),
                           ],

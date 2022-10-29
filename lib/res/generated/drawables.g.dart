@@ -3,7 +3,7 @@
 // ignore_for_file: non_constant_identifier_names
 
 class Drawables {
-	String get banner_share_app => "lib/res/drawables/banner_share_app.png";
+	String get banner_share_app => "lib/res/drawables/banner_share_app.jpg";
 	String get bg_activity_empty => "lib/res/drawables/bg_activity_empty.png";
 	String get bg_apple_green => "lib/res/drawables/bg_apple_green.png";
 	String get bg_apple_home => "lib/res/drawables/bg_apple_home.png";
