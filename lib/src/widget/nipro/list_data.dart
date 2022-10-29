@@ -247,11 +247,69 @@ class ListDataState extends State<ListData> {
       BotToast.showLoading();
       await GlucoseClient().postGlucoseInputs(selectedGlucose);
       BotToast.closeAllLoading();
-      Navigator.pop(context);
-      Navigator.pop(context);
+      showPopupSuccess();
     } catch (e) {
       BotToast.closeAllLoading();
-      print(e);
+      Message.showToastMessage(context, e.toString());
     }
+  }
+
+  showPopupSuccess() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return Container(
+          child: AlertDialog(
+              contentPadding: EdgeInsets.all(0),
+              content: Container(
+                padding: EdgeInsets.all(16),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.info_outline, size: 64),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 20),
+                      child: Text(
+                          'Đã đồng bộ các chỉ số đã chọn từ thiết bị thành công',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                              color: R.color.textDark,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600)),
+                    ),
+                    SizedBox(height: 20),
+                    GestureDetector(
+                        onTap: () {
+                          Navigator.pop(context);
+                          Navigator.pop(context);
+                          Navigator.pop(context);
+                        },
+                        child: Container(
+                          height: 43,
+                          width: 200,
+                          decoration: BoxDecoration(
+                              color: R.color.red,
+                              borderRadius: BorderRadius.circular(200),
+                              gradient: LinearGradient(
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.centerRight,
+                                  colors: [
+                                    R.color.greenGradientTop,
+                                    R.color.greenGradientBottom
+                                  ])),
+                          child: Center(
+                            child: Text('Hoàn tất',
+                                style: TextStyle(
+                                    color: R.color.white,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600)),
+                          ),
+                        ))
+                  ],
+                ),
+              )),
+        );
+      },
+    );
   }
 }
