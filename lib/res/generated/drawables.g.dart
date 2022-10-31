@@ -370,4 +370,5 @@ class Drawables {
 	String get share_app_detail => "lib/res/drawables/share_app_detail.jpg";
 	String get share_app_detail_default => "lib/res/drawables/share_app_detail_default.png";
 	String get ic_voucher => "lib/res/drawables/ic_voucher.png";
+	String get banner_share_lesson => "lib/res/drawables/banner_share_lesson.png";
 }

@@ -9,13 +9,17 @@ import 'package:medical/res/R.dart';
 class VideoManager {
   VideoManager({
     required String? url,
-    this.onExitFullScreen,
     this.onCompleted,
     this.placeHolder,
+    this.onExitFullScreen,
+    this.callbackByPercentVideo,
+    this.percentCallbackDefault = 1,
   }) {
     initController(url: url);
   }
   BetterPlayerController? _controller;
+  final double percentCallbackDefault;
+  final VoidCallback? callbackByPercentVideo;
   final VoidCallback? onExitFullScreen;
   final VoidCallback? onCompleted;
   Widget? placeHolder;
@@ -121,10 +125,22 @@ class VideoManager {
             newController.videoPlayerController!.value.duration;
         Duration? position =
             newController.videoPlayerController!.value.position;
-        if (duration != null && duration.inSeconds / position.inSeconds <= 2) {
+
+        // WHEN COMPLETE VIDEO
+        if (duration == position) {
           onCompleted?.call();
           finishedVideo = true;
         }
+
+        // CALLBACK BY PERCENT VIDEO
+        if (callbackByPercentVideo != null && (duration != null && position.inSeconds / duration.inSeconds  >= percentCallbackDefault)) {
+          callbackByPercentVideo!.call();
+        }
+
+        // if (duration != null && duration.inSeconds / position.inSeconds <= 2) {
+        //   onCompleted?.call();
+        //   finishedVideo = true;
+        // }
       }
     });
     hasVideo = true;

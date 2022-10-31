@@ -13,12 +13,16 @@ import 'package:video_thumbnail/video_thumbnail.dart';
 class VideoWidget extends StatefulWidget {
   VideoWidget({
     required this.url,
-    required this.callback,
+    required this.onComplete,
+    this.callbackByPercentVideo,
+    this.percentCallbackDefault = 1,
     required this.setVideoManager,
   });
 
   final String url;
-  VoidCallback callback;
+  VoidCallback onComplete;
+  VoidCallback? callbackByPercentVideo;
+  double percentCallbackDefault;
   Function(VideoManager) setVideoManager;
 
   @override
@@ -50,23 +54,28 @@ class _VideoWidgetState extends State<VideoWidget> {
       //   imageFormat: ImageFormat.PNG,
       //   maxHeight: 190,
       //   quality: 10,
-        
+
       // ));
       // print('pathVideo = $path');
 
       videoManager = VideoManager(
           url: url,
-      //    placeHolder: path != null ? Image.file(File(path!)) : Container(),
-          placeHolder: Image.asset(R.drawable.ic_thumbnail1, fit: BoxFit.fill,),
+          //    placeHolder: path != null ? Image.file(File(path!)) : Container(),
+          placeHolder: Image.asset(
+            R.drawable.ic_thumbnail1,
+            fit: BoxFit.fill,
+          ),
           onExitFullScreen: () {},
+          callbackByPercentVideo: widget.callbackByPercentVideo,
+          percentCallbackDefault: widget.percentCallbackDefault,
           onCompleted: () {
-            widget.callback();
+            widget.onComplete();
             // sectionStatus?.isVideoCompleted = true;
             // checkSectionComplete();
           });
       widget.setVideoManager(videoManager!);
 
- //     setState(() {});
+      //     setState(() {});
     }
   }
 }

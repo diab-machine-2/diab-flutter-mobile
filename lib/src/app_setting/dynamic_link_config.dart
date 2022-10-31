@@ -103,9 +103,10 @@ class DynamicLinkConfig {
     final user = AppSettings.userInfo!;
     final dynamicLink = FirebaseDynamicLinks.instance;
 
-    String? lessonImage = lesson.image != null && lesson.image?.url != null
-        ? lesson.image?.url
-        : "https://diab.com.vn/wp-content/uploads/2022/02/hinh-1-banner-trang-chu.png";
+    // String? lessonImage = lesson.image != null && lesson.image?.url != null
+    //     ? lesson.image?.url
+    //     : "https://diab.com.vn/wp-content/uploads/2022/02/hinh-1-banner-trang-chu.png";
+    String? lessonImage = "https://api.diab.com.vn/App/Image/eb207076-b245-494b-3bf5-08da1055c57e?expires=1667227512&signature=4c338370f59b99a07030451198b2192f4361284899277033194957fec4830ea3";
     String lessonName = lesson.name ??
         "Ứng dụng hoàn toàn miễn phí giúp kiểm soát bệnh đái tháo đường và kết nối với chuyên gia.";
 

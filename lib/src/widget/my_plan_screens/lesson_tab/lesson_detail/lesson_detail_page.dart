@@ -5,7 +5,10 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/app_setting/app_sharing.dart';
+import 'package:medical/src/app_setting/dynamic_link_config.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
+import 'package:medical/src/model/response/lesson_section_list_response.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/my_plan_screens/exercise_tab/exercise_detail/models/video_manager.dart';
@@ -17,6 +20,7 @@ import 'package:medical/src/widgets/html_text_widget.dart';
 import '../course_quiz/course_quiz.dart';
 import 'lesson_detail.dart';
 import 'models/audio_data.dart';
+import 'widgets/bottom_sheet_share_lesson.dart';
 import 'widgets/bottom_sheet_widget.dart';
 
 import 'package:path_provider/path_provider.dart';
@@ -66,8 +70,16 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
             Message.showToastMessage(context, state.error);
           }
           if (state is LessonDetailCompleted) {
-            NavigationUtil.pop(context, result: 0);
-            BotToast.closeAllLoading();
+            BottomSheetShareLesson.showDialogDeleteAccount(
+              context,
+              onShare: () {
+                _onShareLesson(context, _cubit.currentSectionDetail!);
+              },
+              onCancel: () {
+                NavigationUtil.pop(context, result: 0);
+                BotToast.closeAllLoading();
+              },
+            );
           }
         },
         builder: (context, state) {
@@ -161,9 +173,22 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                                         url: _cubit.currentSectionDetail
                                                 ?.videoAddressLink ??
                                             '',
-                                        callback: () {
+                                        onComplete: () {
+                                          BottomSheetShareLesson
+                                              .showDialogDeleteAccount(
+                                            context,
+                                            onShare: () {},
+                                            onCancel: () {
+                                              NavigationUtil.pop(context,
+                                                  result: 0);
+                                              BotToast.closeAllLoading();
+                                            },
+                                          );
+                                        },
+                                        callbackByPercentVideo: () {
                                           _cubit.complete();
                                         },
+                                        percentCallbackDefault: 0.5,
                                         setVideoManager: (videoManager) {
                                           _cubit.setVideoManager(videoManager);
                                         },
@@ -279,6 +304,12 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
           ),
       ],
     );
+  }
+
+  _onShareLesson(BuildContext context, LessonSectionItem lesson) async {
+    String shareLink =
+        await DynamicLinkConfig.instance.createShareLessonLink(lesson: lesson);
+    AppShare.instance.lessonDetail(context, shareLink);
   }
 
   Widget _buildAudioController({
