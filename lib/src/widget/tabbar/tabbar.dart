@@ -66,10 +66,12 @@ class _TabbarControllerState extends State<TabbarController>
     ];
     Observable.instance.addObserver(this);
     NotificationManager.instance.requestFirebaseToken(context);
-    pageController =
-        PageController(initialPage: widget.isRedirectFromNotification ? 1 : 0);
+    final String? lessonId = DynamicLinkConfig.instance.lessonId;
+    pageController = PageController(
+        initialPage:
+            lessonId != null || widget.isRedirectFromNotification ? 1 : 0);
     _bottomTabbar = BottomTabbar(
-        index: widget.isRedirectFromNotification ? 1 : 0,
+        index: lessonId != null || widget.isRedirectFromNotification ? 1 : 0,
         callback: (index) {
           if (index == -1) {
             _showMaterialDialog();
@@ -83,7 +85,6 @@ class _TabbarControllerState extends State<TabbarController>
     });
     //   startTimer();
     _checkUserReferralCode();
-    // _checkExistLessonId();
   }
 
   _checkExistLessonId() async {
