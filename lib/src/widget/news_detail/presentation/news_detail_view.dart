@@ -1,5 +1,4 @@
 import 'package:intl/intl.dart';
-
 import 'blocs/newsDetail_bloc.dart';
 import 'package:medical/res/R.dart';
 import 'package:flutter/material.dart';
@@ -97,8 +96,8 @@ class _NewsDetailViewState extends State<NewsDetailView> {
                     (BuildContext context, bool innerBoxIsScrolled) {
                   return <Widget>[
                     SliverAppBar(
-                      backgroundColor: Colors.white,
-                      expandedHeight: hasBanner ? 340 : 0,
+                      backgroundColor: Color(0xFF006C5D),
+                      expandedHeight: hasBanner ? 350 : 0,
                       floating: false,
                       pinned: true,
                       leading: Row(
@@ -168,7 +167,7 @@ class _NewsDetailViewState extends State<NewsDetailView> {
                                   Positioned(
                                     top: 0,
                                     right: 0,
-                                    bottom: 0,
+                                    bottom: 25.h,
                                     left: 0,
                                     child: NetWorkImageWidget(
                                       imageUrl: newsDetail!.imageBannerUrl!.url,
@@ -200,7 +199,7 @@ class _NewsDetailViewState extends State<NewsDetailView> {
                                     bottom: 0,
                                     left: 0,
                                     child: Container(
-                                      height: 25,
+                                      height: 25.h,
                                       decoration: BoxDecoration(
                                         borderRadius: BorderRadius.vertical(
                                           top: Radius.circular(16),
