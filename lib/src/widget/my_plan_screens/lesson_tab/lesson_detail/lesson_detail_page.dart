@@ -38,6 +38,7 @@ class LessonDetailPage extends StatefulWidget {
 
 class _LessonDetailPageState extends State<LessonDetailPage> {
   late final LessonDetailCubit _cubit;
+  bool _isShowModal = false;
 
   @override
   void initState() {
@@ -68,18 +69,6 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
           }
           if (state is LessonDetailFailure) {
             Message.showToastMessage(context, state.error);
-          }
-          if (state is LessonDetailCompleted) {
-            BottomSheetShareLesson.showDialogDeleteAccount(
-              context,
-              onShare: () {
-                _onShareLesson(context, _cubit.currentSectionDetail!);
-              },
-              onCancel: () {
-                NavigationUtil.pop(context, result: 0);
-                BotToast.closeAllLoading();
-              },
-            );
           }
         },
         builder: (context, state) {
@@ -174,16 +163,25 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                                                 ?.videoAddressLink ??
                                             '',
                                         onComplete: () {
-                                          BottomSheetShareLesson
-                                              .showDialogDeleteAccount(
-                                            context,
-                                            onShare: () {},
-                                            onCancel: () {
-                                              NavigationUtil.pop(context,
-                                                  result: 0);
-                                              BotToast.closeAllLoading();
-                                            },
-                                          );
+                                          if (_cubit.sectionList.length == 1 &&
+                                              _isShowModal == false) {
+                                            BottomSheetShareLesson
+                                                .showDialogDeleteAccount(
+                                              context,
+                                              onShare: () => _onShareLesson(
+                                                    context,
+                                                    _cubit
+                                                        .currentSectionDetail!),
+                                              onCancel: () {
+                                                NavigationUtil.pop(context,
+                                                    result: 0);
+                                                BotToast.closeAllLoading();
+                                              },
+                                            );
+                                            setState(() {
+                                              _isShowModal = true;
+                                            });
+                                          }
                                         },
                                         callbackByPercentVideo: () {
                                           _cubit.complete();

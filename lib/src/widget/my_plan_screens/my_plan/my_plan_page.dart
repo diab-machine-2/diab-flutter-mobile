@@ -80,7 +80,6 @@ class _MyPlanPageState extends State<MyPlanPage> with Observer {
         create: (context) => _cubit,
         child: BlocConsumer<MyPlanCubit, MyPlanState>(
           listener: (context, state) {
-            print("state: $state");
             if (state is MyPlanFailure) {
               Message.showToastMessage(context, state.error);
             }

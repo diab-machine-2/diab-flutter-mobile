@@ -379,6 +379,7 @@ class AppRepository {
    */
   Future<ApiResult<MyLessonResponse>> getLessonsList(
       LessonFilterRequest request) async {
+    appClient = AppClient().appClient;
     try {
       final MyLessonResponse response = await appClient.getLessonsList(request);
       return ApiResult.success(data: response);

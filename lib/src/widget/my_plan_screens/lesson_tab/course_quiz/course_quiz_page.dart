@@ -7,6 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/app_setting/app_sharing.dart';
+import 'package:medical/src/app_setting/dynamic_link_config.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/response/lesson_section_list_response.dart';
 import 'package:medical/src/model/response/quiz_lesson.dart';
@@ -14,6 +16,7 @@ import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
+import 'package:medical/src/widget/my_plan_screens/lesson_tab/lesson_detail/widgets/bottom_sheet_share_lesson.dart';
 import 'package:medical/src/widgets/custom_bottom_bar_widget.dart';
 import 'package:medical/src/widgets/custom_scroll_physics.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
@@ -410,12 +413,23 @@ class _CourseQuizPageState extends State<CourseQuizPage> {
   }
 
   void onDoneQuiz() {
-    if (
-        //_cubit.isQuizLesson ||
-        widget.onDone == null) {
-      NavigationUtil.pop(context);
-      return;
-    }
-    widget.onDone!(_cubit.isPassed);
+    BottomSheetShareLesson.showDialogDeleteAccount(
+      context,
+      onShare: () => _onShareLesson(context, _cubit.lessonSectionItem!),
+      onCancel: () {
+        NavigationUtil.pop(context);
+        if (widget.onDone == null) {
+          NavigationUtil.pop(context);
+          return;
+        }
+        widget.onDone!(_cubit.isPassed);
+      },
+    );
+  }
+
+  _onShareLesson(BuildContext context, LessonSectionItem lesson) async {
+    String shareLink =
+        await DynamicLinkConfig.instance.createShareLessonLink(lesson: lesson);
+    AppShare.instance.lessonDetail(context, shareLink);
   }
 }

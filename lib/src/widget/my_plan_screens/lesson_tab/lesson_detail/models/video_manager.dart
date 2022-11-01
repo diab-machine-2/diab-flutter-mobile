@@ -90,7 +90,7 @@ class VideoManager {
             await Future.delayed(const Duration(seconds: 1));
             onExitFullScreen!.call();
           }
-          print('event.betterPlayerEventType = ${event.betterPlayerEventType}');
+          // print('event.betterPlayerEventType = ${event.betterPlayerEventType}');
           if (event.betterPlayerEventType == BetterPlayerEventType.play) {
             _placeholderStreamController.add(true);
           }
