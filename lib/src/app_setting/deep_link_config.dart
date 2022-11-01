@@ -17,8 +17,10 @@ class DeepLinkConfig {
       {required Function(String? code) onHaveLink}) {
     linkStream.listen((link) {
       if (link != null &&
-          !link.contains("click.diab.com.vn") &&
-          !link.contains("referralCode")) {
+          link.contains("click.diab.com.vn") &&
+          link.contains("referralCode")) {
+        DynamicLinkConfig.instance.progressDynamicLink(link);
+      } else {
         onHaveLink(getShareCodeFromUrl(link));
       }
     });
