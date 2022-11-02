@@ -259,8 +259,9 @@ class _AppState extends State<App> {
                           settings, ExercrisesDetailTabbarController(),
                           isPresent: true);
                     case NavigatorName.detail_blood_sugar:
-                      return _buildRoute(
-                          settings, BloodSugarDetailTabbarController(),
+                      final data = settings.arguments as Map<dynamic, dynamic>?;
+                      return _buildRoute(settings,
+                          BloodSugarDetailTabbarController(data: data),
                           isPresent: true);
                     case NavigatorName.hba1c_tabble:
                       return _buildRoute(settings, HbA1CTable(),
