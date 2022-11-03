@@ -66,15 +66,15 @@ class LessonDetailCubit extends Cubit<LessonDetailState> {
       if (isAllSectionCompleted && currentSection == (sectionList.length - 1)) {
         Observable.instance
             .notifyObservers([], notifyName: "goal_calo_changed");
-        emit(const LessonDetailCompleted());
+        emit(LessonDetailCompleted(showPopupShare: showQuizLesson == false));
         return;
       }
     }
 
-    if (newSection == sectionList.length && showQuizLesson == false) {
-      emit(const LessonDetailCompleted(showPopupShare: true));
-      return;
-    }
+    // if (newSection == sectionList.length && showQuizLesson == false) {
+    //   emit(const LessonDetailCompleted(showPopupShare: true));
+    //   return;
+    // }
     if (showQuizLesson == true &&
         (newSection < 0 || newSection >= sectionList.length)) {
       if (Navigator.canPop(context)) {
