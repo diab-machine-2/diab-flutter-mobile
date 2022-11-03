@@ -271,7 +271,7 @@ class ListDataState extends State<ListData> {
                     Padding(
                       padding: const EdgeInsets.only(top: 20),
                       child: Text(
-                          'Đã đồng bộ các chỉ số đã chọn từ thiết bị thành công',
+                          'Chúc mừng bạn đã động bộ thành công ${selectedGlucose.length} / ${selectedGlucose.length} chỉ số đã chọn từ thiết bị.',
                           textAlign: TextAlign.center,
                           style: TextStyle(
                               color: R.color.textDark,
