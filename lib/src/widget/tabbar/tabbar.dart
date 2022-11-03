@@ -90,10 +90,7 @@ class _TabbarControllerState extends State<TabbarController>
   _checkExistLessonId() async {
     final String? lessonId = DynamicLinkConfig.instance.lessonId;
     if (lessonId != null) {
-      Navigator.pushNamed(context, NavigatorName.lesson_detail, arguments: {
-        'lessonId': lessonId,
-        'lessonType': PlanType.lesson.planTypeIndex,
-      });
+      jumpTo(1);
     }
   }
 

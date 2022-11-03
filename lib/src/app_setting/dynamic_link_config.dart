@@ -98,17 +98,18 @@ class DynamicLinkConfig {
     _referalCode = null;
   }
 
-  Future<String> createShareLessonLink(
-      {required LessonSectionItem lesson}) async {
+  Future<String> createShareLessonLink({
+    required LessonSectionItem lesson,
+    required String? featureImage,
+  }) async {
     final user = AppSettings.userInfo!;
     final dynamicLink = FirebaseDynamicLinks.instance;
 
-    // String? lessonImage = lesson.image != null && lesson.image?.url != null
-    //     ? lesson.image?.url
-    //     : "https://diab.com.vn/wp-content/uploads/2022/02/hinh-1-banner-trang-chu.png";
-    String? lessonImage = "https://api.diab.com.vn/App/Image/eb207076-b245-494b-3bf5-08da1055c57e?expires=1667227512&signature=4c338370f59b99a07030451198b2192f4361284899277033194957fec4830ea3";
-    String lessonName = lesson.name ??
-        "Ứng dụng hoàn toàn miễn phí giúp kiểm soát bệnh đái tháo đường và kết nối với chuyên gia.";
+    String lessonImage = featureImage ??
+        "https://diab.com.vn/wp-content/uploads/2022/02/hinh-1-banner-trang-chu.png";
+
+    String lessonName =
+        "Tải ngay DiaB để xem bài học trên và còn nhiều hướng dẫn về chế độ dinh dưỡng, vận động, nghỉ ngơi cho người đái tháo đường!";
 
     String domain = "https://click.diab.com.vn/referralCode";
     String longDynamicLink = "https://click.diab.com.vn/referralCode";
@@ -126,32 +127,15 @@ class DynamicLinkConfig {
       longDynamicLink: Uri.parse(longDynamicLink),
       link: Uri.parse(
           'https://diab.com.vn/referralCode=${user.shareRefCode}?lessonId=${lesson.lessonId}'),
-      androidParameters: AndroidParameters(
-        packageName: "com.vbhc.diab",
-        minimumVersion: 70,
-        fallbackUrl: Uri.parse("https://diab.com.vn/giai-phap"),
-      ),
-      navigationInfoParameters:
-          NavigationInfoParameters(forcedRedirectEnabled: true),
-      iosParameters: IOSParameters(
-        minimumVersion: '1.10.0',
-        appStoreId: "1569353448",
-        bundleId: "com.cactusoftware.diab",
-        ipadFallbackUrl: Uri.parse("https://diab.com.vn/giai-phap"),
-        fallbackUrl: Uri.parse("https://diab.com.vn/giai-phap"),
-      ),
-      socialMetaTagParameters: SocialMetaTagParameters(
-        description:
-            "DIAB là ứng dụng hướng dẫn chế độ dinh dưỡng, vận động và thư giãn giúp quản lý đường huyết hiệu quả.",
-        imageUrl: Uri.parse(
-            "https://diab.com.vn/wp-content/uploads/2022/02/hinh-1-banner-trang-chu.png"),
-        title: "Diab | Giải pháp toàn diện cho người Đái tháo đường",
-      ),
     );
 
     final ShortDynamicLink dynamicUrl =
         await dynamicLink.buildShortLink(parameters);
     return dynamicUrl.shortUrl.toString();
+  }
+
+  removeLessonId() {
+    _lessonId = null;
   }
 
   static Future<String?> createShareNewsLink(

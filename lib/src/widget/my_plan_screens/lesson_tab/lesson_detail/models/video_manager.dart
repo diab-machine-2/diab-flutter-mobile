@@ -102,12 +102,13 @@ class VideoManager {
       url!,
     );
     newController.setupDataSource(betterPlayerDataSource);
+    print("newController.videoPlayerController: ${newController.videoPlayerController}");
     newController.videoPlayerController?.addListener(() async {
       if (Platform.isIOS) {
         if ((newController
                 .videoPlayerController!.value.position.inMilliseconds) ==
             newController
-                .videoPlayerController!.value.duration!.inMilliseconds) {
+                .videoPlayerController!.value.duration?.inMilliseconds) {
           if (Platform.isIOS) {
             try {
               await newController.pause();
@@ -133,7 +134,10 @@ class VideoManager {
         }
 
         // CALLBACK BY PERCENT VIDEO
-        if (callbackByPercentVideo != null && (duration != null && position.inSeconds / duration.inSeconds  >= percentCallbackDefault)) {
+        if (callbackByPercentVideo != null &&
+            (duration != null &&
+                position.inSeconds / duration.inSeconds >=
+                    percentCallbackDefault)) {
           callbackByPercentVideo!.call();
         }
 
@@ -143,6 +147,7 @@ class VideoManager {
         // }
       }
     });
+
     hasVideo = true;
     _controller = newController;
   }

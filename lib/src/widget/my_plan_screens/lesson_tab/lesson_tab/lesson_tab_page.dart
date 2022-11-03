@@ -70,6 +70,14 @@ class _LessonTabPageState extends State<LessonTabPage>
     if (notifyName == 'refresh_lesson_tab') {
       await _cubit.getInitData(isRefresh: true, showCurrentWeek: false);
     }
+    if (notifyName == Const.NAVIGATE_TO_LESSON_DETAIL) {
+      if (_cubit.lessonsList == null) {
+        await _cubit.getInitData(isRefresh: true, showCurrentWeek: false);
+        BotToast.showLoading();
+      } else {
+        _checkExistLessonId();
+      }
+    }
   }
 
   _checkExistLessonId() async {
@@ -79,6 +87,7 @@ class _LessonTabPageState extends State<LessonTabPage>
         'lessonId': lessonId,
         'lessonType': PlanType.lesson.planTypeIndex,
       });
+      DynamicLinkConfig.instance.removeLessonId();
     }
   }
 

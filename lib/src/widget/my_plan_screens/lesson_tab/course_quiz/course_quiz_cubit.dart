@@ -13,7 +13,8 @@ import '../../../../model/request/quiz_answer_request.dart';
 import 'course_quiz.dart';
 
 class CourseQuizCubit extends Cubit<CourseQuizState> {
-  CourseQuizCubit(this.repository, {required this.lessonId, required this.lessonSectionItem})
+  CourseQuizCubit(this.repository,
+      {required this.lessonId, required this.lessonSectionItem})
       : super(InitialCourseQuizState());
   final AppRepository repository;
 
@@ -28,6 +29,7 @@ class CourseQuizCubit extends Cubit<CourseQuizState> {
   List<QuizAnswerRequest> quizAnswerId = [];
 
   String quizName = '';
+  String? featureImage;
 
   bool isShowResult = false;
 
@@ -59,12 +61,17 @@ class CourseQuizCubit extends Cubit<CourseQuizState> {
   int get countAnswerRight {
     int countAnswerRight = 0;
     for (int index = 0; index < answer.length; index++) {
-
       final List<String?> selectedAnswers = answer[index] ?? [];
-      final List<String?> correctAnswers = listQuiz[index]?.quiz?.quizAnswers?.where((e) => e?.isCorrect == true).map((e) => e?.id).toList() ?? [];
+      final List<String?> correctAnswers = listQuiz[index]
+              ?.quiz
+              ?.quizAnswers
+              ?.where((e) => e?.isCorrect == true)
+              .map((e) => e?.id)
+              .toList() ??
+          [];
 
-      selectedAnswers.sort((a,b) => (a ?? '').compareTo(b ?? ''));
-      correctAnswers.sort((a,b) => (a ?? '').compareTo(b ?? ''));
+      selectedAnswers.sort((a, b) => (a ?? '').compareTo(b ?? ''));
+      correctAnswers.sort((a, b) => (a ?? '').compareTo(b ?? ''));
 
       if (listEquals(selectedAnswers, correctAnswers)) {
         countAnswerRight++;
@@ -73,7 +80,8 @@ class CourseQuizCubit extends Cubit<CourseQuizState> {
     return countAnswerRight;
   }
 
-  bool get isPassed => ((countAnswerRight / listQuiz.length) * 100) > minCompletePercent;
+  bool get isPassed =>
+      ((countAnswerRight / listQuiz.length) * 100) > minCompletePercent;
 
   Future<void> initData() async {
     if (!isQuizLesson) {
@@ -133,7 +141,8 @@ class CourseQuizCubit extends Cubit<CourseQuizState> {
 
   Future<void> getListQuiz() async {
     emit(const CourseQuizLoading());
-    final ApiResult<LessonSectionListResponse?> apiResult = await repository.getListQuiz(lessonId);
+    final ApiResult<LessonSectionListResponse?> apiResult =
+        await repository.getListQuiz(lessonId);
     apiResult.when(success: (LessonSectionListResponse? response) {
       minCompletePercent = response?.data?.minCompletePercent?.toDouble() ?? 80;
       if (response?.data?.quizLessons?.isNotEmpty != true) {
@@ -142,6 +151,7 @@ class CourseQuizCubit extends Cubit<CourseQuizState> {
         listQuiz = response?.data?.quizLessons ?? [];
       }
       quizName = response?.data?.name ?? '';
+      featureImage = response?.data?.image?.url;
       if (listQuiz.isNotEmpty != true) {
         emit(const CourseQuizDone());
       }
@@ -154,7 +164,8 @@ class CourseQuizCubit extends Cubit<CourseQuizState> {
   Future<void> completeLearningCurrentSection() async {
     await Future.delayed(Duration.zero);
     emit(const CourseQuizLoading());
-    final ApiResult<CommonResponse> apiResult = await repository.setCompletedLessonAccount(
+    final ApiResult<CommonResponse> apiResult =
+        await repository.setCompletedLessonAccount(
       UpdateLessonSectionRequest(
         lessonId: lessonId,
         type: lessonSectionItem?.type,
@@ -172,19 +183,19 @@ class CourseQuizCubit extends Cubit<CourseQuizState> {
     emit(InitialCourseQuizState());
   }
 
-  void setQuizAnswerEachQuiz(List<String> listAnswerId){
+  void setQuizAnswerEachQuiz(List<String> listAnswerId) {
     String? newQuizId = listQuiz[selectedCourseIndex]?.quiz?.id;
-    for(var quiz in quizAnswerId){
-      if(quiz.quizId == newQuizId){
+    for (var quiz in quizAnswerId) {
+      if (quiz.quizId == newQuizId) {
         quizAnswerId.remove(quiz);
         break;
       }
     }
 
-    for(var answerId in listAnswerId){
+    for (var answerId in listAnswerId) {
       quizAnswerId.add(
         QuizAnswerRequest(
-          quizId: newQuizId, 
+          quizId: newQuizId,
           quizAnswerId: answerId,
         ),
       );
@@ -194,7 +205,8 @@ class CourseQuizCubit extends Cubit<CourseQuizState> {
   Future<void> setCompletedLessonQuiz() async {
     await Future.delayed(Duration.zero);
     emit(const CourseQuizLoading());
-    final ApiResult<CommonResponse> apiResult = await repository.setCompletedLessonQuiz(UpdateQuizLessonRequest(
+    final ApiResult<CommonResponse> apiResult =
+        await repository.setCompletedLessonQuiz(UpdateQuizLessonRequest(
       lessonId: lessonId,
       quizAnswers: quizAnswerId,
     ));

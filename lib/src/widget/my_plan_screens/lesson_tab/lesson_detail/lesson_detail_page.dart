@@ -70,6 +70,19 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
           if (state is LessonDetailFailure) {
             Message.showToastMessage(context, state.error);
           }
+          if (state is LessonDetailCompleted) {
+            if (state.showPopupShare == true) {
+              BottomSheetShareLesson.showDialogDeleteAccount(
+                context,
+                onShare: () =>
+                    _onShareLesson(context, _cubit.currentSectionDetail!),
+                onCancel: () {
+                  NavigationUtil.pop(context, result: 0);
+                  BotToast.closeAllLoading();
+                },
+              );
+            }
+          }
         },
         builder: (context, state) {
           return _cubit.showQuizLesson
@@ -127,6 +140,7 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                                 ),
                                 if (_cubit.currentSectionDetail != null)
                                   ShareLessonButton(
+                                    featureImage: _cubit.featureImage,
                                     lesson: _cubit.currentSectionDetail!,
                                   ),
                               ],
@@ -169,9 +183,8 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                                                 .showDialogDeleteAccount(
                                               context,
                                               onShare: () => _onShareLesson(
-                                                    context,
-                                                    _cubit
-                                                        .currentSectionDetail!),
+                                                  context,
+                                                  _cubit.currentSectionDetail!),
                                               onCancel: () {
                                                 NavigationUtil.pop(context,
                                                     result: 0);
@@ -305,9 +318,9 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
   }
 
   _onShareLesson(BuildContext context, LessonSectionItem lesson) async {
-    String shareLink =
-        await DynamicLinkConfig.instance.createShareLessonLink(lesson: lesson);
-    AppShare.instance.lessonDetail(context, shareLink);
+    String shareLink = await DynamicLinkConfig.instance.createShareLessonLink(
+        lesson: lesson, featureImage: _cubit.featureImage);
+    AppShare.instance.lessonDetail(context, shareLink, lesson.name ?? "");
   }
 
   Widget _buildAudioController({

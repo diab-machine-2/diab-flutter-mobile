@@ -164,7 +164,7 @@ class _StepListControllerState extends State<StepListController> with Observer {
   void dispose() {
     _timer?.cancel();
     _timer = null;
-    DynamicLinkConfig.instance.dispose();
+    // DynamicLinkConfig.instance.dispose();
     Observable.instance.removeObserver(this);
     super.dispose();
   }

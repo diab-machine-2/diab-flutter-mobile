@@ -97,7 +97,7 @@ class _CourseQuizPageState extends State<CourseQuizPage> {
             if (state is CourseQuizFailure)
               Message.showToastMessage(context, state.error);
             if (state is CourseQuizDone) {
-              onDoneQuiz();
+              onDoneQuiz(context);
             }
           },
           builder: (context, state) {
@@ -141,7 +141,7 @@ class _CourseQuizPageState extends State<CourseQuizPage> {
                         icon: Icon(Icons.close, color: R.color.black),
                         onPressed: () {
                           if (_cubit.isShowResult) {
-                            onDoneQuiz();
+                            onDoneQuiz(context);
                             return;
                           }
                           NavigationUtil.pop(context);
@@ -164,6 +164,7 @@ class _CourseQuizPageState extends State<CourseQuizPage> {
                 ),
                 SizedBox(width: 10.w),
                 ShareLessonButton(
+                  featureImage: _cubit.featureImage,
                   lesson: _cubit.lessonSectionItem!,
                 ),
               ],
@@ -249,7 +250,7 @@ class _CourseQuizPageState extends State<CourseQuizPage> {
                 lengthQuiz != 0 && _cubit.selectedCourseIndex < lengthQuiz - 1,
             onTapNext: () {
               if (lengthQuiz == 0) {
-                onDoneQuiz();
+                onDoneQuiz(context);
                 return;
               }
 
@@ -272,7 +273,7 @@ class _CourseQuizPageState extends State<CourseQuizPage> {
                       duration: duration,
                       preferPosition: AutoScrollPosition.begin);
                 }, continueLearnCallback: () {
-                  onDoneQuiz();
+                  onDoneQuiz(context);
                 }, skipCallback: () {
                   _buildDialogCompleted(
                       rate: 90,
@@ -289,7 +290,7 @@ class _CourseQuizPageState extends State<CourseQuizPage> {
                             preferPosition: AutoScrollPosition.begin);
                       },
                       continueLearnCallback: () {
-                        onDoneQuiz();
+                        onDoneQuiz(context);
                       },
                       skipCallback: () {});
                 });
@@ -412,24 +413,32 @@ class _CourseQuizPageState extends State<CourseQuizPage> {
     );
   }
 
-  void onDoneQuiz() {
+  void onDoneQuiz(BuildContext context) {
     BottomSheetShareLesson.showDialogDeleteAccount(
       context,
-      onShare: () => _onShareLesson(context, _cubit.lessonSectionItem!),
+      onShare: () => _onShareLesson(
+        context,
+        lesson: _cubit.lessonSectionItem!,
+        featureImage: _cubit.featureImage,
+      ),
       onCancel: () {
         NavigationUtil.pop(context);
         if (widget.onDone == null) {
           NavigationUtil.pop(context);
           return;
-        }
+        } else {}
         widget.onDone!(_cubit.isPassed);
       },
     );
   }
 
-  _onShareLesson(BuildContext context, LessonSectionItem lesson) async {
-    String shareLink =
-        await DynamicLinkConfig.instance.createShareLessonLink(lesson: lesson);
-    AppShare.instance.lessonDetail(context, shareLink);
+  _onShareLesson(
+    BuildContext context, {
+    required LessonSectionItem lesson,
+    required String? featureImage,
+  }) async {
+    String shareLink = await DynamicLinkConfig.instance
+        .createShareLessonLink(lesson: lesson, featureImage: featureImage);
+    AppShare.instance.lessonDetail(context, shareLink, lesson.name ?? "");
   }
 }
