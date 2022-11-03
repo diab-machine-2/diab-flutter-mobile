@@ -29,6 +29,8 @@ import 'package:medical/src/widget/profile/profile_controller.dart';
 import 'package:medical/src/widget/question_answer/question_answer_page.dart';
 import 'package:medical/src/widget/tabbar/bottom_tabbar.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../my_plan_screens/lesson_tab/lesson_detail/lesson_detail_page.dart';
+import '../my_plan_screens/my_plan/models/plan_type.dart';
 
 class TabbarController extends StatefulWidget {
   const TabbarController(
@@ -64,10 +66,12 @@ class _TabbarControllerState extends State<TabbarController>
     ];
     Observable.instance.addObserver(this);
     NotificationManager.instance.requestFirebaseToken(context);
-    pageController =
-        PageController(initialPage: widget.isRedirectFromNotification ? 1 : 0);
+    final String? lessonId = DynamicLinkConfig.instance.lessonId;
+    pageController = PageController(
+        initialPage:
+            lessonId != null || widget.isRedirectFromNotification ? 1 : 0);
     _bottomTabbar = BottomTabbar(
-        index: widget.isRedirectFromNotification ? 1 : 0,
+        index: lessonId != null || widget.isRedirectFromNotification ? 1 : 0,
         callback: (index) {
           if (index == -1) {
             _showMaterialDialog();
@@ -81,6 +85,13 @@ class _TabbarControllerState extends State<TabbarController>
     });
     //   startTimer();
     _checkUserReferralCode();
+  }
+
+  _checkExistLessonId() async {
+    final String? lessonId = DynamicLinkConfig.instance.lessonId;
+    if (lessonId != null) {
+      jumpTo(1);
+    }
   }
 
   _checkUserReferralCode() async {
@@ -138,6 +149,9 @@ class _TabbarControllerState extends State<TabbarController>
     }
     if (notifyName == Const.NAVIGATE_TO_PROFILE_TAB) {
       jumpTo(0);
+    }
+    if (notifyName == Const.NAVIGATE_TO_LESSON_DETAIL) {
+      _checkExistLessonId();
     }
   }
 

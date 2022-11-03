@@ -5,7 +5,10 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/app_setting/app_sharing.dart';
+import 'package:medical/src/app_setting/dynamic_link_config.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
+import 'package:medical/src/model/response/lesson_section_list_response.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/my_plan_screens/exercise_tab/exercise_detail/models/video_manager.dart';
@@ -17,9 +20,12 @@ import 'package:medical/src/widgets/html_text_widget.dart';
 import '../course_quiz/course_quiz.dart';
 import 'lesson_detail.dart';
 import 'models/audio_data.dart';
+import 'widgets/bottom_sheet_share_lesson.dart';
 import 'widgets/bottom_sheet_widget.dart';
 
 import 'package:path_provider/path_provider.dart';
+
+import 'widgets/share_lesson_button.dart';
 
 class LessonDetailPage extends StatefulWidget {
   const LessonDetailPage({required this.lessonType, required this.lessonId});
@@ -32,6 +38,7 @@ class LessonDetailPage extends StatefulWidget {
 
 class _LessonDetailPageState extends State<LessonDetailPage> {
   late final LessonDetailCubit _cubit;
+  bool _isShowModal = false;
 
   @override
   void initState() {
@@ -64,8 +71,17 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
             Message.showToastMessage(context, state.error);
           }
           if (state is LessonDetailCompleted) {
-            NavigationUtil.pop(context, result: 0);
-            BotToast.closeAllLoading();
+            if (state.showPopupShare == true) {
+              BottomSheetShareLesson.showDialogDeleteAccount(
+                context,
+                onShare: () =>
+                    _onShareLesson(context, _cubit.currentSectionDetail!),
+                onCancel: () {
+                  NavigationUtil.pop(context, result: 0);
+                  BotToast.closeAllLoading();
+                },
+              );
+            }
           }
         },
         builder: (context, state) {
@@ -96,27 +112,37 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
                                 Expanded(
-                                  child: Text(
-                                    R.string.section_position
-                                        .tr(args: [_cubit.sectionPosition]),
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: TextStyle(
-                                        fontSize: 16,
-                                        color: R.color.textDark,
-                                        fontWeight: FontWeight.w400),
+                                  child: Row(
+                                    children: [
+                                      GestureDetector(
+                                        onTap: () {
+                                          NavigationUtil.pop(context);
+                                        },
+                                        child: Icon(
+                                          Icons.clear_rounded,
+                                          size: 26,
+                                          color: R.color.grey_2,
+                                        ),
+                                      ),
+                                      SizedBox(width: 5),
+                                      Text(
+                                        R.string.section_position
+                                            .tr(args: [_cubit.sectionPosition]),
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: TextStyle(
+                                            fontSize: 16,
+                                            color: R.color.textDark,
+                                            fontWeight: FontWeight.w400),
+                                      ),
+                                    ],
                                   ),
                                 ),
-                                GestureDetector(
-                                  onTap: () {
-                                    NavigationUtil.pop(context);
-                                  },
-                                  child: Icon(
-                                    Icons.clear_rounded,
-                                    size: 24,
-                                    color: R.color.grey_2,
+                                if (_cubit.currentSectionDetail != null)
+                                  ShareLessonButton(
+                                    featureImage: _cubit.featureImage,
+                                    lesson: _cubit.currentSectionDetail!,
                                   ),
-                                ),
                               ],
                             ),
                           ),
@@ -150,9 +176,30 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                                         url: _cubit.currentSectionDetail
                                                 ?.videoAddressLink ??
                                             '',
-                                        callback: () {
+                                        onComplete: () {
+                                          if (_cubit.sectionList.length == 1 &&
+                                              _isShowModal == false) {
+                                            BottomSheetShareLesson
+                                                .showDialogDeleteAccount(
+                                              context,
+                                              onShare: () => _onShareLesson(
+                                                  context,
+                                                  _cubit.currentSectionDetail!),
+                                              onCancel: () {
+                                                NavigationUtil.pop(context,
+                                                    result: 0);
+                                                BotToast.closeAllLoading();
+                                              },
+                                            );
+                                            setState(() {
+                                              _isShowModal = true;
+                                            });
+                                          }
+                                        },
+                                        callbackByPercentVideo: () {
                                           _cubit.complete();
                                         },
+                                        percentCallbackDefault: 0.5,
                                         setVideoManager: (videoManager) {
                                           _cubit.setVideoManager(videoManager);
                                         },
@@ -268,6 +315,12 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
           ),
       ],
     );
+  }
+
+  _onShareLesson(BuildContext context, LessonSectionItem lesson) async {
+    String shareLink = await DynamicLinkConfig.instance.createShareLessonLink(
+        lesson: lesson, featureImage: _cubit.featureImage);
+    AppShare.instance.lessonDetail(context, shareLink, lesson.name ?? "");
   }
 
   Widget _buildAudioController({

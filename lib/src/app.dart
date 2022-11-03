@@ -48,6 +48,7 @@ import 'package:medical/src/widget/login/update_info.dart';
 import 'package:medical/src/widget/login/verify_phone.dart';
 import 'package:medical/src/widget/nipro/connect_device_app.dart';
 import 'package:medical/src/widget/nipro/connection_instructions.dart';
+import 'package:medical/src/widget/my_plan_screens/lesson_tab/lesson_detail/lesson_detail.dart';
 import 'package:medical/src/widget/notification/notification_detail.dart';
 import 'package:medical/src/widget/notification/notification_tabbar.dart';
 import 'package:medical/src/widget/profile/add_reminder.dart';
@@ -73,7 +74,7 @@ import 'widget/Food/add_food.dart';
 import 'widget/helper/photo_view.dart';
 import 'widget/news_detail/presentation/news_detail_view.dart';
 import 'widget/profile/profile_controller.dart';
-import 'widget/shared_profile/pages/share_app_detail.dart';
+import 'widget/shared_profile/pages/share_app_detail/share_app_detail.dart';
 
 class App extends StatefulWidget {
   @override
@@ -600,7 +601,20 @@ class _AppState extends State<App> {
                             updateVoucherList: data?['updateVoucherList'],
                           ));
                     case NavigatorName.share_app_detail:
-                      return _buildRoute(settings, const ShareAppDetail());
+                      final data = settings.arguments as Map<String, dynamic>?;
+                      return _buildRoute(
+                          settings,
+                          ShareAppDetail(
+                              isVoucherAvailable: data?['isVoucherAvailable']));
+                    case NavigatorName.lesson_detail:
+                      final data = settings.arguments as Map<String, dynamic>?;
+                      return _buildRoute(
+                        settings,
+                        LessonDetailPage(
+                          lessonId: data?['lessonId'],
+                          lessonType: data?['lessonType'],
+                        ),
+                      );
                     default:
                       return null;
                   }

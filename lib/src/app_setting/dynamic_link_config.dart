@@ -1,10 +1,14 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter_observer/Observable.dart';
 import 'package:medical/src/app.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:medical/src/modal/learning/learning_post_model.dart';
+import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigator_name.dart';
+
+import '../model/response/lesson_section_list_response.dart';
 
 class DynamicLinkConfig {
   DynamicLinkConfig._privateConstructor();
@@ -21,9 +25,11 @@ class DynamicLinkConfig {
 
   StreamSubscription? _subLink;
   String? _referalCode;
+  String? _lessonId;
   late String _shareLink;
 
   String? get referalCode => _referalCode;
+  String? get lessonId => _lessonId;
   String? get shareLink => _shareLink;
 
   Future<void> setUpHandleDeepLink() async {
@@ -32,32 +38,13 @@ class DynamicLinkConfig {
     final Uri? deepLink = data?.link;
 
     if (deepLink != null) {
-      _referalCode = getShareCodeFromUrl(deepLink);
+      progressDynamicLink(deepLink);
     }
 
     _subLink = FirebaseDynamicLinks.instance.onLink.listen((dynamicLinkData) {
       final Uri? deepLink = dynamicLinkData.link;
       if (deepLink != null) {
-        dynamicLinkType.forEach((functionName) {
-          String urlString = deepLink.toString();
-          List<String> separatedString = urlString.split('$functionName=');
-          switch (functionName) {
-            case "referralCode":
-              if (urlString.contains(functionName)) {
-                _referalCode = separatedString[1];
-              }
-              break;
-            case "newsDetail":
-              if (urlString.contains(functionName)) {
-                String newsDetailId = separatedString[1];
-                Navigator.pushNamed(navigatorKey.currentState!.context,
-                    NavigatorName.news_detail,
-                    arguments: {'id': newsDetailId});
-              }
-              break;
-          }
-        });
-        _referalCode = getShareCodeFromUrl(deepLink);
+        progressDynamicLink(deepLink);
       }
     });
   }
@@ -111,6 +98,46 @@ class DynamicLinkConfig {
     _referalCode = null;
   }
 
+  Future<String> createShareLessonLink({
+    required LessonSectionItem lesson,
+    required String? featureImage,
+  }) async {
+    final user = AppSettings.userInfo!;
+    final dynamicLink = FirebaseDynamicLinks.instance;
+
+    String lessonImage = featureImage ??
+        "https://diab.com.vn/wp-content/uploads/2022/02/hinh-1-banner-trang-chu.png";
+
+    String lessonName =
+        "Tải ngay DiaB để xem bài học trên và còn nhiều hướng dẫn về chế độ dinh dưỡng, vận động, nghỉ ngơi cho người đái tháo đường!";
+
+    String domain = "https://click.diab.com.vn/referralCode";
+    String longDynamicLink = "https://click.diab.com.vn/referralCode";
+    longDynamicLink +=
+        "?link=https://diab.com.vn/referralCode=${user.shareRefCode}?lessonId=${lesson.lessonId}";
+    longDynamicLink += "&ofl=https://diab.com.vn/giai-phap";
+    longDynamicLink += "&apn=com.vbhc.diab";
+    longDynamicLink += "&ibi=com.cactusoftware.diab";
+    longDynamicLink += "&isi=1569353448";
+    longDynamicLink += "&sd=$lessonName";
+    longDynamicLink += "&si=$lessonImage";
+
+    final DynamicLinkParameters parameters = DynamicLinkParameters(
+      uriPrefix: domain,
+      longDynamicLink: Uri.parse(longDynamicLink),
+      link: Uri.parse(
+          'https://diab.com.vn/referralCode=${user.shareRefCode}?lessonId=${lesson.lessonId}'),
+    );
+
+    final ShortDynamicLink dynamicUrl =
+        await dynamicLink.buildShortLink(parameters);
+    return dynamicUrl.shortUrl.toString();
+  }
+
+  removeLessonId() {
+    _lessonId = null;
+  }
+
   static Future<String?> createShareNewsLink(
       LearningPostModel newsDetail) async {
     String _fallbackUrl = "https://diab.com.vn/cau-chuyen-thanh-cong";
@@ -154,15 +181,36 @@ class DynamicLinkConfig {
     final Uri? deepLink = data?.link;
 
     if (deepLink != null) {
-      _referalCode = getShareCodeFromUrl(deepLink);
+      _referalCode = progressDynamicLink(deepLink);
     }
     return null;
   }
 
-  static String getShareCodeFromUrl(Uri url) {
-    String urlString = url.toString();
-    List<String> separatedString = urlString.split('referralCode=');
-    return separatedString[1];
+  progressDynamicLink(deepLink) {
+    dynamicLinkType.forEach((functionName) {
+      String urlString = deepLink.toString();
+      List<String> separatedString = urlString.split('$functionName=');
+      switch (functionName) {
+        case "referralCode":
+          if (urlString.contains(functionName)) {
+            _referalCode = separatedString[1].substring(0, 6);
+          }
+          if (urlString.contains('lessonId')) {
+            _lessonId = urlString.split('lessonId=').last;
+            Observable.instance.notifyObservers([],
+                notifyName: Const.NAVIGATE_TO_LESSON_DETAIL);
+          }
+          break;
+        case "newsDetail":
+          if (urlString.contains(functionName)) {
+            String newsDetailId = separatedString[1];
+            Navigator.pushNamed(
+                navigatorKey.currentState!.context, NavigatorName.news_detail,
+                arguments: {'id': newsDetailId});
+          }
+          break;
+      }
+    });
   }
 
   void dispose() {

@@ -25,7 +25,7 @@ import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/my_package/my_package_page.dart';
-import 'package:medical/src/widget/shared_profile/pages/share_app_detail.dart';
+import 'package:medical/src/widget/shared_profile/pages/share_app_detail/share_app_detail.dart';
 import 'package:medical/src/widget/shared_profile/shared_profile.dart';
 import 'package:medical/src/widgets/button_language_picker.dart';
 import 'package:share_plus/share_plus.dart';

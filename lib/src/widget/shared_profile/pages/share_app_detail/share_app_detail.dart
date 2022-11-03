@@ -1,12 +1,14 @@
-import 'package:easy_localization/easy_localization.dart';
 import 'package:medical/res/R.dart';
 import 'package:flutter/material.dart';
+import 'package:medical/src/widgets/button_widget.dart';
 import 'package:medical/src/app_setting/app_sharing.dart';
 import 'package:medical/src/app_setting/dynamic_link_config.dart';
-import 'package:medical/src/widgets/button_widget.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class ShareAppDetail extends StatefulWidget {
-  const ShareAppDetail({Key? key}) : super(key: key);
+  final bool isVoucherAvailable;
+  const ShareAppDetail({Key? key, required this.isVoucherAvailable})
+      : super(key: key);
 
   @override
   State<ShareAppDetail> createState() => _ShareAppDetailState();
@@ -51,6 +53,7 @@ class _ShareAppDetailState extends State<ShareAppDetail> {
 
   @override
   Widget build(BuildContext context) {
+    bool isVoucherAvailable = widget.isVoucherAvailable;
     return Scaffold(
       bottomSheet: _btnShare(context),
       body: NestedScrollView(
@@ -94,7 +97,11 @@ class _ShareAppDetailState extends State<ShareAppDetail> {
                       right: 0,
                       bottom: 0,
                       left: 0,
-                      child: Image.asset(R.drawable.share_app_detail),
+                      child: Image.asset(
+                        isVoucherAvailable
+                            ? R.drawable.share_app_detail
+                            : R.drawable.share_app_detail_default,
+                      ),
                     ),
                     Positioned(
                       top: 0,
@@ -143,9 +150,59 @@ class _ShareAppDetailState extends State<ShareAppDetail> {
             bottom: 15,
           ),
           color: Color(0xFFF5FDFB),
-          child: _sectionContent(context),
+          child: isVoucherAvailable
+              ? _sectionContent(context)
+              : _sectionContentDefault(context),
         ),
       ),
+    );
+  }
+
+  Widget _sectionContentDefault(BuildContext context) {
+    double paddingBottom = MediaQuery.of(context).padding.bottom + 10;
+    return ListView(
+      shrinkWrap: true,
+      physics: NeverScrollableScrollPhysics(),
+      padding: EdgeInsets.all(0),
+      children: [
+        Text(
+          "Mời bạn bè và người thân tham gia diaB để xây dựng cộng đồng đái tháo đường khỏe mạnh.",
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+        SizedBox(height: 20),
+        Text(
+          "Lưu trữ và theo dõi các chỉ số và cảnh báo bạn khi các chỉ số vượt ngưỡng an toàn.",
+          style: TextStyle(
+            height: 1.4,
+            fontSize: 16,
+            color: R.color.color0xff666666,
+          ),
+        ),
+        SizedBox(height: 10),
+        Text(
+          "Kết nối với các bác sĩ, chuyên gia hàng đầu.",
+          style: TextStyle(
+            height: 1.4,
+            fontSize: 16,
+            color: R.color.color0xff666666,
+          ),
+        ),
+        SizedBox(height: 10),
+        Text(
+          "Chế độ ăn uống, tập luyện và nghỉ ngơi phù hợp với từng cá nhân.",
+          style: TextStyle(
+            height: 1.4,
+            fontSize: 16,
+            color: R.color.color0xff666666,
+          ),
+        ),
+        SizedBox(
+          height: 55 + paddingBottom,
+        )
+      ],
     );
   }
 
@@ -165,7 +222,7 @@ class _ShareAppDetailState extends State<ShareAppDetail> {
         ),
         SizedBox(height: 20),
         Text(
-          "Nhận ngay phiếu mua hàng trị giá 10K cho mỗi lượt chia sẽ ứng dụng DiaB thành công.",
+          "Nhận ngay phiếu mua hàng trị giá 10K cho mỗi lượt chia sẽ ứng dụng DiaB thành công. Áp dụng cho tất cả cửa hàng Pharmatcity.",
           style: TextStyle(
             height: 1.4,
             fontSize: 16,

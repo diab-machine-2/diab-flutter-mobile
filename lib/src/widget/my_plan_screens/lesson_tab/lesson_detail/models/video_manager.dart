@@ -9,13 +9,17 @@ import 'package:medical/res/R.dart';
 class VideoManager {
   VideoManager({
     required String? url,
-    this.onExitFullScreen,
     this.onCompleted,
     this.placeHolder,
+    this.onExitFullScreen,
+    this.callbackByPercentVideo,
+    this.percentCallbackDefault = 1,
   }) {
     initController(url: url);
   }
   BetterPlayerController? _controller;
+  final double percentCallbackDefault;
+  final VoidCallback? callbackByPercentVideo;
   final VoidCallback? onExitFullScreen;
   final VoidCallback? onCompleted;
   Widget? placeHolder;
@@ -60,7 +64,9 @@ class VideoManager {
     if (url?.isNotEmpty != true) return;
     final BetterPlayerController newController = BetterPlayerController(
       BetterPlayerConfiguration(
-        placeholder: placeHolder == null ? Container(color: R.color.black) : _buildVideoPlaceholder(),
+        placeholder: placeHolder == null
+            ? Container(color: R.color.black)
+            : _buildVideoPlaceholder(),
         showPlaceholderUntilPlay: true,
         aspectRatio: 16 / 9,
         autoDispose: false,
@@ -78,12 +84,14 @@ class VideoManager {
       //  ),
     )..addEventsListener(
         (event) async {
-          if (event.betterPlayerEventType == BetterPlayerEventType.hideFullscreen && onExitFullScreen != null) {
+          if (event.betterPlayerEventType ==
+                  BetterPlayerEventType.hideFullscreen &&
+              onExitFullScreen != null) {
             await Future.delayed(const Duration(seconds: 1));
             onExitFullScreen!.call();
           }
-          print('event.betterPlayerEventType = ${event.betterPlayerEventType}');
-          if (event.betterPlayerEventType == BetterPlayerEventType.play){
+          // print('event.betterPlayerEventType = ${event.betterPlayerEventType}');
+          if (event.betterPlayerEventType == BetterPlayerEventType.play) {
             _placeholderStreamController.add(true);
           }
         },
@@ -94,29 +102,52 @@ class VideoManager {
       url!,
     );
     newController.setupDataSource(betterPlayerDataSource);
+    print("newController.videoPlayerController: ${newController.videoPlayerController}");
     newController.videoPlayerController?.addListener(() async {
       if (Platform.isIOS) {
-        if ((newController.videoPlayerController!.value.position.inMilliseconds) ==
-            newController.videoPlayerController!.value.duration!.inMilliseconds) {
-              if(Platform.isIOS){
-                try{
-                  await newController.pause();
-                } catch(e){
-                  print("${e.toString()}");
-                }
-              }
-              print('newController.pause()');
+        if ((newController
+                .videoPlayerController!.value.position.inMilliseconds) ==
+            newController
+                .videoPlayerController!.value.duration?.inMilliseconds) {
+          if (Platform.isIOS) {
+            try {
+              await newController.pause();
+            } catch (e) {
+              print("${e.toString()}");
+            }
+          }
+          print('newController.pause()');
         }
       }
       if (newController.videoPlayerController?.value != null &&
           !newController.videoPlayerController!.value.isPlaying &&
-          newController.videoPlayerController!.value.initialized &&
-          (newController.videoPlayerController!.value.duration ==
-              newController.videoPlayerController!.value.position)) {
-                onCompleted?.call();
-                finishedVideo = true;
+          newController.videoPlayerController!.value.initialized) {
+        Duration? duration =
+            newController.videoPlayerController!.value.duration;
+        Duration? position =
+            newController.videoPlayerController!.value.position;
+
+        // WHEN COMPLETE VIDEO
+        if (duration == position) {
+          onCompleted?.call();
+          finishedVideo = true;
+        }
+
+        // CALLBACK BY PERCENT VIDEO
+        if (callbackByPercentVideo != null &&
+            (duration != null &&
+                position.inSeconds / duration.inSeconds >=
+                    percentCallbackDefault)) {
+          callbackByPercentVideo!.call();
+        }
+
+        // if (duration != null && duration.inSeconds / position.inSeconds <= 2) {
+        //   onCompleted?.call();
+        //   finishedVideo = true;
+        // }
       }
     });
+
     hasVideo = true;
     _controller = newController;
   }

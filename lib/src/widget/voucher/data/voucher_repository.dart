@@ -51,6 +51,25 @@ class VoucherRepository extends FetchClient {
     }
   }
 
+  Future<Either<Failure, bool>> checkVoucherAvailable() async {
+    final Response response = await super.fetchData(
+      url: 'App/Voucher/Mobile/TrackingVoucherAvailable',
+    );
+    try {
+      if (response.statusCode == 200) {
+        DefaultModelResponse responseData =
+            DefaultModelResponse.fromJson(response.data);
+        return Right(responseData.data['isAvailable']);
+      }
+      return Left(
+          Failure(message: R.string.error_can_not_connect_to_server.tr()));
+    } catch (e) {
+      return Left(
+        Failure(message: R.string.error_can_not_connect_to_server.tr()),
+      );
+    }
+  }
+
   Future<Either<Failure, bool>> useVoucher(String voucherId) async {
     final Response response = await super.putData2(
       url: '/App/Voucher/Mobile/ChangeStatus/$voucherId',

@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:flutter/services.dart' show PlatformException;
 import 'package:uni_links/uni_links.dart';
-
+import 'dart:io' show Platform;
 import 'dynamic_link_config.dart';
 
 class DeepLinkConfig {
@@ -20,6 +20,12 @@ class DeepLinkConfig {
           !link.contains("click.diab.com.vn") &&
           !link.contains("referralCode")) {
         onHaveLink(getShareCodeFromUrl(link));
+      } else if (link != null &&
+          link.contains("referralCode") &&
+          link.contains("lessonId")) {
+        if (Platform.isAndroid) {
+          DynamicLinkConfig.instance.progressDynamicLink(link);
+        }
       }
     });
   }

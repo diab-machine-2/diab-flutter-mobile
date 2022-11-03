@@ -34,14 +34,17 @@ class LessonDetailCubit extends Cubit<LessonDetailState> {
   VideoManager? videoManager;
   AudioManager? audioManager;
   SectionStatusData? sectionStatus;
+  String? featureImage;
 
   bool isQuizLesson = false;
 
   bool alreadyDoneLesson = true;
 
-  LessonSectionItem? get currentSectionDetail => sectionList.isEmpty ? null : sectionList[currentSection];
+  LessonSectionItem? get currentSectionDetail =>
+      sectionList.isEmpty ? null : sectionList[currentSection];
 
-  String get sectionPosition => '${sectionList.isEmpty ? 0 : currentSection + 1}/${sectionList.length}';
+  String get sectionPosition =>
+      '${sectionList.isEmpty ? 0 : currentSection + 1}/${sectionList.length}';
 
   bool get isLastSection => currentSection >= (sectionList.length - 1);
 
@@ -49,21 +52,34 @@ class LessonDetailCubit extends Cubit<LessonDetailState> {
 
   bool get reviewed => review?.rating != null;
 
-  bool get showQuizLesson => currentSectionDetail?.type == Const.LESSON_SECTION_TYPE_QUIZ || isQuizLesson;
+  bool get showQuizLesson =>
+      currentSectionDetail?.type == Const.LESSON_SECTION_TYPE_QUIZ ||
+      isQuizLesson;
 
-  void onChangeSection(BuildContext context, int newSection, {bool isFromList = false}) {
+  void onChangeSection(BuildContext context, int newSection,
+      {bool isFromList = false}) {
     //Check can complete the lesson and make sure that user tapped next button
-    if (isAllSectionCompleted && newSection > currentSection && !alreadyDoneLesson) {
+    if (isAllSectionCompleted &&
+        newSection > currentSection &&
+        !alreadyDoneLesson) {
       checkSectionComplete();
       if (isAllSectionCompleted && currentSection == (sectionList.length - 1)) {
-        Observable.instance.notifyObservers([], notifyName : "goal_calo_changed");
-        emit(const LessonDetailCompleted());
+        Observable.instance
+            .notifyObservers([], notifyName: "goal_calo_changed");
+        emit(LessonDetailCompleted(showPopupShare: showQuizLesson == false));
         return;
       }
     }
 
-    if (newSection < 0 || newSection >= sectionList.length) {
-      Navigator.pop(context, 1);
+    // if (newSection == sectionList.length && showQuizLesson == false) {
+    //   emit(const LessonDetailCompleted(showPopupShare: true));
+    //   return;
+    // }
+    if (showQuizLesson == true &&
+        (newSection < 0 || newSection >= sectionList.length)) {
+      if (Navigator.canPop(context)) {
+        Navigator.pop(context, 1);
+      }
       return;
     }
 
@@ -80,7 +96,8 @@ class LessonDetailCubit extends Cubit<LessonDetailState> {
     sectionStatus = SectionStatusData(
       hasVideo: currentSectionDetail?.videoAddressLink?.isNotEmpty == true,
       hasAudio: currentSectionDetail?.audioAddressLink?.isNotEmpty == true,
-      isQuizSection: currentSectionDetail?.type == Const.LESSON_SECTION_TYPE_QUIZ,
+      isQuizSection:
+          currentSectionDetail?.type == Const.LESSON_SECTION_TYPE_QUIZ,
     );
 
     if (!isFromList) {
@@ -145,7 +162,8 @@ class LessonDetailCubit extends Cubit<LessonDetailState> {
     sectionStatus = SectionStatusData(
       hasVideo: currentSectionDetail?.videoAddressLink?.isNotEmpty == true,
       hasAudio: currentSectionDetail?.audioAddressLink?.isNotEmpty == true,
-      isQuizSection: currentSectionDetail?.type == Const.LESSON_SECTION_TYPE_QUIZ,
+      isQuizSection:
+          currentSectionDetail?.type == Const.LESSON_SECTION_TYPE_QUIZ,
     );
 
     // videoManager = VideoManager(
@@ -200,10 +218,11 @@ class LessonDetailCubit extends Cubit<LessonDetailState> {
   Future<void> getSectionList() async {
     await Future.delayed(Duration.zero);
     emit(const LessonDetailLoading());
-    final ApiResult<LessonSectionListResponse> apiResult = await repository.getListLessonSection(lessonId);
+    final ApiResult<LessonSectionListResponse> apiResult =
+        await repository.getListLessonSection(lessonId);
     apiResult.when(success: (LessonSectionListResponse response) {
       sectionList = response.data?.lessonSections ?? [];
-
+      featureImage = response.data?.image?.url;
       if (response.data?.lessonReviews?.isNotEmpty == true) {
         review = response.data?.lessonReviews?.first;
       }
@@ -220,7 +239,8 @@ class LessonDetailCubit extends Cubit<LessonDetailState> {
   Future<void> completeLearningCurrentSection() async {
     await Future.delayed(Duration.zero);
     emit(const LessonDetailLoading());
-    final ApiResult<CommonResponse> apiResult = await repository.setCompletedLessonAccount(
+    final ApiResult<CommonResponse> apiResult =
+        await repository.setCompletedLessonAccount(
       UpdateLessonSectionRequest(
         lessonId: lessonId,
         type: currentSectionDetail?.type,

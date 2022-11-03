@@ -6,12 +6,15 @@ import 'package:flutter_observer/Observable.dart';
 import 'package:flutter_observer/Observer.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/app_setting/dynamic_link_config.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/response/my_lesson_response.dart';
 import 'package:medical/src/model/response/week_states_response.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigation_util.dart';
+import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
+import 'package:medical/src/widget/my_plan_screens/my_plan/models/plan_type.dart';
 import 'package:medical/src/widgets/button_widget.dart';
 import 'package:medical/src/widgets/lesson_status_widget.dart';
 import 'package:medical/src/widgets/network_image_widget.dart';
@@ -34,7 +37,8 @@ class LessonTabPage extends StatefulWidget {
   _LessonTabPageState createState() => _LessonTabPageState();
 }
 
-class _LessonTabPageState extends State<LessonTabPage> with AutomaticKeepAliveClientMixin<LessonTabPage>, Observer {
+class _LessonTabPageState extends State<LessonTabPage>
+    with AutomaticKeepAliveClientMixin<LessonTabPage>, Observer {
   late final LessonTabCubit _cubit;
   final RefreshController _controller = RefreshController();
   final ScrollController _lessonScrollController = ScrollController();
@@ -57,13 +61,33 @@ class _LessonTabPageState extends State<LessonTabPage> with AutomaticKeepAliveCl
   }
 
   @override
-  void update(Observable observable, String? notifyName, Map<dynamic, dynamic>? map) async {
+  void update(Observable observable, String? notifyName,
+      Map<dynamic, dynamic>? map) async {
     if (notifyName == 'switch_lesson_tab') {
       _cubit.scrollToLesson();
     }
 
-    if(notifyName == 'refresh_lesson_tab'){
+    if (notifyName == 'refresh_lesson_tab') {
       await _cubit.getInitData(isRefresh: true, showCurrentWeek: false);
+    }
+    if (notifyName == Const.NAVIGATE_TO_LESSON_DETAIL) {
+      if (_cubit.lessonsList == null) {
+        await _cubit.getInitData(isRefresh: true, showCurrentWeek: false);
+        BotToast.showLoading();
+      } else {
+        _checkExistLessonId();
+      }
+    }
+  }
+
+  _checkExistLessonId() async {
+    final String? lessonId = DynamicLinkConfig.instance.lessonId;
+    if (lessonId != null) {
+      Navigator.pushNamed(context, NavigatorName.lesson_detail, arguments: {
+        'lessonId': lessonId,
+        'lessonType': PlanType.lesson.planTypeIndex,
+      });
+      DynamicLinkConfig.instance.removeLessonId();
     }
   }
 
@@ -74,6 +98,9 @@ class _LessonTabPageState extends State<LessonTabPage> with AutomaticKeepAliveCl
       create: (context) => _cubit,
       child: BlocConsumer<LessonTabCubit, LessonTabState>(
         listener: (context, state) {
+          if (state is LessonTabSuccess) {
+            _checkExistLessonId();
+          }
           if (state is LessonTabLoading) {
             BotToast.showLoading();
           } else {
@@ -90,14 +117,15 @@ class _LessonTabPageState extends State<LessonTabPage> with AutomaticKeepAliveCl
           }
           if (state is LessonTabScrollToLesson) {
             if (_lessonScrollController.hasClients) {
-           //   if(_cubit.currentLessonTypeIndex == 0){
-                if(_cubit.lessonsList != null && _cubit.lessonsList!.length > 5){
-                  _lessonScrollController.jumpTo(
-                    127.0 * state.newIndex,
-                //    duration: const Duration(milliseconds: 10),
-                //    curve: Curves.ease,
-                  );
-                }
+              //   if(_cubit.currentLessonTypeIndex == 0){
+              if (_cubit.lessonsList != null &&
+                  _cubit.lessonsList!.length > 5) {
+                _lessonScrollController.jumpTo(
+                  127.0 * state.newIndex,
+                  //    duration: const Duration(milliseconds: 10),
+                  //    curve: Curves.ease,
+                );
+              }
               // } else {
               //   if(_cubit.lessonsListSuggest != null && _cubit.lessonsListSuggest!.length > 5){
               //     _lessonScrollController.animateTo(
@@ -134,8 +162,10 @@ class _LessonTabPageState extends State<LessonTabPage> with AutomaticKeepAliveCl
                       const Spacer(),
                       InkWell(
                         onTap: () async {
-                          final FilterData newFilter = _cubit.filterData.copyWith();
-                          final dynamic result = await NavigationUtil.navigatePage(
+                          final FilterData newFilter =
+                              _cubit.filterData.copyWith();
+                          final dynamic result =
+                              await NavigationUtil.navigatePage(
                             context,
                             LessonFilterPage(
                               newFilter,
@@ -173,7 +203,8 @@ class _LessonTabPageState extends State<LessonTabPage> with AutomaticKeepAliveCl
                                     decoration: BoxDecoration(
                                       color: R.color.greenGradientTop,
                                       shape: BoxShape.circle,
-                                      border: Border.all(width: 2, color: R.color.white),
+                                      border: Border.all(
+                                          width: 2, color: R.color.white),
                                     ),
                                   ),
                                 ),
@@ -197,29 +228,39 @@ class _LessonTabPageState extends State<LessonTabPage> with AutomaticKeepAliveCl
                           scrollController: _lessonScrollController,
                           onRefresh: () => _cubit.onRefresh(isRefresh: true),
                           child: _cubit.lessonsList!.isEmpty
-                              ? (state is LessonTabLoading || state is LessonTabWeekChanged) ? Container() : _buildEmptyLessonList()
+                              ? (state is LessonTabLoading ||
+                                      state is LessonTabWeekChanged)
+                                  ? Container()
+                                  : _buildEmptyLessonList()
                               : SingleChildScrollView(
                                   child: Column(
                                     children: List.generate(
                                       _cubit.lessonsList?.length ?? 0,
                                       (index) => _buildLessonWidget(
-                                          lessonDetail: _cubit.lessonsList?[index],
+                                          lessonDetail:
+                                              _cubit.lessonsList?[index],
                                           onTap: () async {
-                                            if (_cubit.lessonsList?[index]?.id?.isNotEmpty == true) {
-                                              var result = await NavigationUtil.navigatePage(
+                                            if (_cubit.lessonsList?[index]?.id
+                                                    ?.isNotEmpty ==
+                                                true) {
+                                              var result = await NavigationUtil
+                                                  .navigatePage(
                                                 context,
                                                 LessonDetailPage(
-                                                  lessonType: _cubit.lessonsList?[index]?.type,
-                                                  lessonId: _cubit.lessonsList![index]!.id!,
+                                                  lessonType: _cubit
+                                                      .lessonsList?[index]
+                                                      ?.type,
+                                                  lessonId: _cubit
+                                                      .lessonsList![index]!.id!,
                                                 ),
                                               );
                                               // if(result == 0) {
                                               _controller.requestRefresh();
                                               // }
-                                           //   if(result != null){
-                                           //     _cubit.getInitData(isRefresh: true,
-                                           //       showCurrentWeek: true, currentWeek: _cubit.filterData.currentWeek);
-                                           //   }
+                                              //   if(result != null){
+                                              //     _cubit.getInitData(isRefresh: true,
+                                              //       showCurrentWeek: true, currentWeek: _cubit.filterData.currentWeek);
+                                              //   }
                                             }
                                           }),
                                     )
@@ -291,7 +332,8 @@ class _LessonTabPageState extends State<LessonTabPage> with AutomaticKeepAliveCl
                       onSelect: () {
                         _cubit.onSelectWeek(index);
                       }),
-                )..add(SizedBox(width: MediaQuery.of(context).size.width - 96 * 2)),
+                )..add(SizedBox(
+                    width: MediaQuery.of(context).size.width - 96 * 2)),
               ),
             ),
           ),
@@ -303,7 +345,9 @@ class _LessonTabPageState extends State<LessonTabPage> with AutomaticKeepAliveCl
             child: Icon(
               Icons.chevron_right_rounded,
               size: 24,
-              color: _cubit.currentWeekIndex >= (_cubit.weekStatesList.length - 1) || _cubit.isFiltering
+              color: _cubit.currentWeekIndex >=
+                          (_cubit.weekStatesList.length - 1) ||
+                      _cubit.isFiltering
                   ? R.color.captionColorGray
                   : R.color.greenGradientBottom,
             ),
@@ -319,16 +363,23 @@ class _LessonTabPageState extends State<LessonTabPage> with AutomaticKeepAliveCl
     bool isDisable = false,
     VoidCallback? onSelect,
   }) {
-    final Color background = isSelected && state.completionStatus == CompletionStatus.not_start_yet
-        ? R.color.grey_6
-        : state.completionStatus.statusBackgroundColor;
-    final BoxBorder? border = isSelected && state.completionStatus != CompletionStatus.not_start_yet
-        ? Border.all(color: state.completionStatus.statusIconColor)
-        : (isSelected && state.completionStatus == CompletionStatus.not_start_yet) ? Border.all(color: R.color.mainColor) :null;
-    final Color textColor = isSelected && state.completionStatus == CompletionStatus.not_start_yet
-        ? R.color.mainColor
-        : state.completionStatus.statusIconColor;
-    final bool showIcon = !(isSelected && state.completionStatus == CompletionStatus.not_start_yet);
+    final Color background =
+        isSelected && state.completionStatus == CompletionStatus.not_start_yet
+            ? R.color.grey_6
+            : state.completionStatus.statusBackgroundColor;
+    final BoxBorder? border =
+        isSelected && state.completionStatus != CompletionStatus.not_start_yet
+            ? Border.all(color: state.completionStatus.statusIconColor)
+            : (isSelected &&
+                    state.completionStatus == CompletionStatus.not_start_yet)
+                ? Border.all(color: R.color.mainColor)
+                : null;
+    final Color textColor =
+        isSelected && state.completionStatus == CompletionStatus.not_start_yet
+            ? R.color.mainColor
+            : state.completionStatus.statusIconColor;
+    final bool showIcon = !(isSelected &&
+        state.completionStatus == CompletionStatus.not_start_yet);
 
     return GestureDetector(
       onTap: isDisable
@@ -377,7 +428,9 @@ class _LessonTabPageState extends State<LessonTabPage> with AutomaticKeepAliveCl
           Text(
             title,
             style: TextStyle(
-              color: isActive ? R.color.greenGradientBottom : R.color.captionColorGray,
+              color: isActive
+                  ? R.color.greenGradientBottom
+                  : R.color.captionColorGray,
               fontSize: 16,
               fontWeight: isActive ? FontWeight.w700 : FontWeight.w400,
             ),
@@ -415,7 +468,9 @@ class _LessonTabPageState extends State<LessonTabPage> with AutomaticKeepAliveCl
         Padding(
           padding: const EdgeInsets.fromLTRB(50, 24, 50, 6),
           child: Text(
-            _cubit.isFiltering ? R.string.no_matched_lesson.tr() : R.string.lesson_empty_no_filter.tr(),
+            _cubit.isFiltering
+                ? R.string.no_matched_lesson.tr()
+                : R.string.lesson_empty_no_filter.tr(),
             style: TextStyle(
               color: R.color.textDark,
               fontSize: 16,
@@ -457,7 +512,8 @@ class _LessonTabPageState extends State<LessonTabPage> with AutomaticKeepAliveCl
           Expanded(
             child: InkWell(
               onTap: () {
-                if (lessonDetail?.learningStatus == Const.LESSON_CAN_NOT_LEARN) {
+                if (lessonDetail?.learningStatus ==
+                    Const.LESSON_CAN_NOT_LEARN) {
                   showUpdateRequirePopup(context: context);
                   return;
                 }
@@ -473,8 +529,10 @@ class _LessonTabPageState extends State<LessonTabPage> with AutomaticKeepAliveCl
                       clipBehavior: Clip.hardEdge,
                       height: 87,
                       width: 87,
-                      decoration: BoxDecoration(borderRadius: BorderRadius.circular(8)),
-                      child: NetWorkImageWidget(imageUrl: lessonDetail?.image?.url)),
+                      decoration:
+                          BoxDecoration(borderRadius: BorderRadius.circular(8)),
+                      child: NetWorkImageWidget(
+                          imageUrl: lessonDetail?.image?.url)),
                   Expanded(
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 14),
@@ -640,19 +698,26 @@ class _LessonTabPageState extends State<LessonTabPage> with AutomaticKeepAliveCl
                   child: Column(
                     children: [
                       Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 30),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 30, vertical: 30),
                         child: Image.asset(R.drawable.img_upgrade_package),
                       ),
                       Text(
                         'Bài học chưa mở khoá!',
                         textAlign: TextAlign.center,
-                        style: TextStyle(color: R.color.textDark, fontSize: 20, fontWeight: FontWeight.w700),
+                        style: TextStyle(
+                            color: R.color.textDark,
+                            fontSize: 20,
+                            fontWeight: FontWeight.w700),
                       ),
                       const SizedBox(height: 6),
                       Text(
                         'Vui lòng nâng cấp tài khoản để tiếp tục học!',
                         textAlign: TextAlign.center,
-                        style: TextStyle(color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w400),
+                        style: TextStyle(
+                            color: R.color.textDark,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w400),
                       ),
                       Container(
                         margin: const EdgeInsets.only(top: 16),

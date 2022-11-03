@@ -51,7 +51,8 @@ class LessonDetailChangeType extends LessonDetailState {
 }
 
 class LessonDetailCompleted extends LessonDetailState {
-  const LessonDetailCompleted();
+  final bool showPopupShare;
+  const LessonDetailCompleted({this.showPopupShare = false});
   @override
   String toString() {
     return 'LessonDetailCompleted{}';

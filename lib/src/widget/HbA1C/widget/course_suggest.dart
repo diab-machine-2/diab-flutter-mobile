@@ -62,7 +62,7 @@ class CourseSuggestState extends State<CourseSuggest>
                   child: CarouselSlider.builder(
                     options: CarouselOptions(
                       autoPlay: true,
-                      aspectRatio: 2.2,
+                      aspectRatio: 2.16,
                       autoPlayInterval: Duration(seconds: 3),
                       viewportFraction: 0.6,
                       initialPage: 0,
@@ -107,7 +107,7 @@ class CourseSuggestState extends State<CourseSuggest>
                 fit: BoxFit.cover,
               ),
             ),
-            SizedBox(height: 12),
+            SizedBox(height: 12.h),
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
