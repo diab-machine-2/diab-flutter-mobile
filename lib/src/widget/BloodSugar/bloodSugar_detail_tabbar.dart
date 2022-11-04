@@ -21,6 +21,8 @@ import '../../widgets/button_widget.dart';
 import '../blood_sugar_survey_screens/blood_sugar_start_survey/blood_sugar_start_survey.dart';
 
 class BloodSugarDetailTabbarController extends StatefulWidget {
+  final Map<dynamic, dynamic>? data;
+  BloodSugarDetailTabbarController({this.data});
   @override
   _BloodSugarDetailTabbarControllerState createState() =>
       _BloodSugarDetailTabbarControllerState();
@@ -51,7 +53,12 @@ class _BloodSugarDetailTabbarControllerState
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(vsync: this, length: 2);
+    _tabController = TabController(
+        initialIndex: (widget.data != null && widget.data!['index'] != null
+            ? widget.data!['index']
+            : 0),
+        vsync: this,
+        length: 2);
     Observable.instance.addObserver(this);
     checkShowDes();
     loadDescription();
@@ -63,6 +70,9 @@ class _BloodSugarDetailTabbarControllerState
     if (notifyName == 'glucose_change_data') {
       overViewKey.currentState?.reloadData(periodFilterType);
       detailKey.currentState?.reloadData(periodFilterType);
+      if (map != null && map['index'] != null) {
+        _tabController!.animateTo(map['index']);
+      }
     }
   }
 

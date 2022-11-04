@@ -1,5 +1,6 @@
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_observer/Observable.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/repo/glucose/glucose_client.dart';
 import 'package:medical/src/widget/Bmi/widget/add_bmi.dart';
@@ -270,7 +271,7 @@ class ListDataState extends State<ListData> {
                     Padding(
                       padding: const EdgeInsets.only(top: 20),
                       child: Text(
-                          'Đã đồng bộ các chỉ số đã chọn từ thiết bị thành công',
+                          'Chúc mừng bạn đã động bộ thành công ${selectedGlucose.length} / ${selectedGlucose.length} chỉ số đã chọn từ thiết bị.',
                           textAlign: TextAlign.center,
                           style: TextStyle(
                               color: R.color.textDark,
@@ -280,9 +281,9 @@ class ListDataState extends State<ListData> {
                     SizedBox(height: 20),
                     GestureDetector(
                         onTap: () {
-                          Navigator.pop(context);
-                          Navigator.pop(context);
-                          Navigator.pop(context);
+                          Observable.instance.notifyObservers([],
+                              notifyName: "glucose_change_data",
+                              map: {'index': 1});
                         },
                         child: Container(
                           height: 43,

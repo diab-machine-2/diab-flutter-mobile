@@ -126,7 +126,7 @@ class _HomeControllerState extends State<HomeController> with Observer {
     }
     if (notifyName == 'glucose_change_data') {
       _refresh();
-      checkScreen(NavigatorName.detail_blood_sugar);
+      checkScreen(NavigatorName.detail_blood_sugar, map: map);
     }
     if (notifyName == 'Weight_change_data') {
       _refresh();
@@ -172,12 +172,12 @@ class _HomeControllerState extends State<HomeController> with Observer {
     }
   }
 
-  checkScreen(String routeName) {
+  checkScreen(String routeName, {Map<dynamic, dynamic>? map}) {
     Navigator.popUntil(context, (route) {
       if (route.settings.name == routeName) {
         return true;
       } else if (route.isFirst) {
-        Navigator.pushNamed(context, routeName);
+        Navigator.pushNamed(context, routeName, arguments: map);
         return true;
       }
       return false;
