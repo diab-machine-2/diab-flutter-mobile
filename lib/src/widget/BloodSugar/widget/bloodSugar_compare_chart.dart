@@ -14,6 +14,7 @@ import 'package:medical/src/widget/HbA1C/hba1c_tabble.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:medical/src/widgets/empty_data_box.dart';
 
 class BloodSugarCompareChart extends StatefulWidget {
   BloodSugarCompareChart({Key? key}) : super(key: key);
@@ -88,7 +89,8 @@ class BloodSugarCompareChartState extends State<BloodSugarCompareChart>
                                 decoration: BoxDecoration(
                                     color: R.color.white,
                                     borderRadius: BorderRadius.circular(200.0),
-                                    border: Border.all(color: R.color.grayBorder)),
+                                    border:
+                                        Border.all(color: R.color.grayBorder)),
                                 child: GestureDetector(
                                   onTap: () {
                                     showActionCompareFilter(context);
@@ -110,14 +112,13 @@ class BloodSugarCompareChartState extends State<BloodSugarCompareChart>
                         ),
                         SizedBox(height: 23),
                         model.length == 0
-                            ? GestureDetector(
+                            ? EmptyDataBox(
+                                text: "chỉ số đường huyết",
                                 onTap: () {
                                   Navigator.pushNamed(
                                       context, NavigatorName.add_blood_sugar,
                                       arguments: {'type': 'input', 'id': null});
                                 },
-                                child: Image.asset(
-                                    R.drawable.img_glucose_trend),
                               )
                             : Container(
                                 decoration: BoxDecoration(
@@ -295,25 +296,30 @@ class BloodSugarCompareChartState extends State<BloodSugarCompareChart>
             Row(children: [
               Container(width: 14, height: 14, color: R.color.mainColor),
               SizedBox(width: 8),
-              Text(comparerType == 1 ? R.string.truoc_an.tr() : R.string.truoc_tap_luyen.tr())
+              Text(comparerType == 1
+                  ? R.string.truoc_an.tr()
+                  : R.string.truoc_tap_luyen.tr())
             ]),
             Row(children: [
               Container(width: 14, height: 14, color: R.color.yellow),
               SizedBox(width: 8),
-              Text(comparerType == 1 ? R.string.sau_an.tr() : R.string.sau_tap_luyen.tr())
+              Text(comparerType == 1
+                  ? R.string.sau_an.tr()
+                  : R.string.sau_tap_luyen.tr())
             ])
           ]),
           SizedBox(height: 16),
           GestureDetector(
             onTap: () {
               print(name);
-              Navigator.pushNamed(context, NavigatorName.blood_sugar_compare_table,
+              Navigator.pushNamed(
+                  context, NavigatorName.blood_sugar_compare_table,
                   arguments: {'model': model, 'title': name});
             },
             child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-              Text(R.string.xem_chi_tiet.tr(), style: TextStyle(color: R.color.mainColor)),
-              Image.asset(R.drawable.ic_arrow_right,
-                  width: 20, height: 20)
+              Text(R.string.xem_chi_tiet.tr(),
+                  style: TextStyle(color: R.color.mainColor)),
+              Image.asset(R.drawable.ic_arrow_right, width: 20, height: 20)
             ]),
           )
         ],

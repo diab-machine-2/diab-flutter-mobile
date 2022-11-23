@@ -1,5 +1,5 @@
 class Const {
-  static const String ENVIRONMENT_DEFAULT = "staging"; //product or staging
+  static const String ENVIRONMENT_DEFAULT = "product"; //product or staging
 
   static const String IS_DOMAIN = "is.diab.com.vn";
   static const String IS_DOMAIN_STAGING = "is.staging.diab.com.vn";
@@ -150,6 +150,7 @@ class Const {
   static const String NAVIGATE_TO_EXERCISE_TAB = 'Navigate_to_exercise_tab';
   static const String NAVIGATE_TO_PROFILE_TAB = 'Navigate_to_profile_tab';
   static const String NAVIGATE_TO_LESSON_DETAIL = 'Navigate_to_lesson_detail';
+  static const String LANGUAGE_CHANGED = 'language_changed';
 
   static const List<int> hourList = [
     0,

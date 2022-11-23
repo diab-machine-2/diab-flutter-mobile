@@ -1,4 +1,5 @@
 import 'package:intl/intl.dart';
+import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'blocs/newsDetail_bloc.dart';
 import 'package:medical/res/R.dart';
 import 'package:flutter/material.dart';
@@ -29,6 +30,7 @@ class _NewsDetailViewState extends State<NewsDetailView> {
   void initState() {
     _scrollController.addListener(_scrollListener);
     super.initState();
+    TrackingManager.analytics.setCurrentScreen(screenName: "News Detail");
   }
 
   _scrollListener() {

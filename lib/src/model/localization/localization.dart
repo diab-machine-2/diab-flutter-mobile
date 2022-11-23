@@ -1,5 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_observer/Observable.dart';
 import 'package:medical/src/model/preference/app_preference.dart';
 import 'package:medical/src/utils/const.dart';
 
@@ -25,7 +26,8 @@ class Localization {
 
   static changeLanguage(BuildContext context, String newLanguageCode) {
     context.setLocale(Locale(newLanguageCode));
-    appPreference.saveAppLanguage(newLanguageCode) ;
+    appPreference.saveAppLanguage(newLanguageCode);
+    Observable.instance.notifyObservers([], notifyName: Const.LANGUAGE_CHANGED);
     // if (newLanguageCode == Const.EN) {
     //   context.setLocale(Localization.supportedLanguage[0]);
     //   appPreference

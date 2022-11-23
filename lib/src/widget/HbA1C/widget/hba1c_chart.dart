@@ -13,6 +13,7 @@ import 'package:medical/src/widget/HbA1C/hba1c_tabble.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:medical/src/widgets/empty_data_box.dart';
 
 class HbA1CChart extends StatefulWidget {
   HbA1CChart({Key? key}) : super(key: key);
@@ -30,7 +31,8 @@ class HbA1CChartState extends State<HbA1CChart>
 
   @override
   void initState() {
-    periodFilterType = Hba1cDetailTabbarController.of(context)!.periodFilterType;
+    periodFilterType =
+        Hba1cDetailTabbarController.of(context)!.periodFilterType;
     super.initState();
   }
 
@@ -75,14 +77,13 @@ class HbA1CChartState extends State<HbA1CChart>
                                 fontSize: 20, fontWeight: FontWeight.w700)),
                         SizedBox(height: 20),
                         model.trendItems == null
-                            ? GestureDetector(
+                            ? EmptyDataBox(
+                                text: "chỉ số HbA1c",
                                 onTap: () {
-                                  Navigator.pushNamed(context, NavigatorName.add_hba1c,
+                                  Navigator.pushNamed(
+                                      context, NavigatorName.add_hba1c,
                                       arguments: {'type': 'input', 'id': null});
                                 },
-                                child: Image.asset(
-                                  R.drawable.img_nothing,
-                                ),
                               )
                             : Container(
                                 width: width,
@@ -212,7 +213,8 @@ class HbA1CChartState extends State<HbA1CChart>
                       minY: minY.toDouble(),
                       barTouchData: BarTouchData(
                         enabled: true,
-                        touchCallback: (FlTouchEvent event, BarTouchResponse? barTouch) {
+                        touchCallback:
+                            (FlTouchEvent event, BarTouchResponse? barTouch) {
                           if (event is! FlLongPressEnd &&
                               event is! FlPanEndEvent) {
                             final value = barTouch!.spot!.touchedBarGroupIndex;
@@ -243,8 +245,8 @@ class HbA1CChartState extends State<HbA1CChart>
                               TextStyle(
                                 color: touchIndex == -1
                                     ? R.color.white
-                                    : toColor(model.trendItems!.items[touchIndex]
-                                        .fontColor),
+                                    : toColor(model.trendItems!
+                                        .items[touchIndex].fontColor),
                                 fontWeight: FontWeight.bold,
                               ),
                             );
@@ -271,16 +273,16 @@ class HbA1CChartState extends State<HbA1CChart>
                         ),
                         leftTitles: SideTitles(
                           showTitles: false,
-                          getTextStyles: (context, value) => TextStyle(
-                              color: R.color.black, fontSize: 14),
+                          getTextStyles: (context, value) =>
+                              TextStyle(color: R.color.black, fontSize: 14),
                         ),
                       ),
                       gridData: FlGridData(show: false),
                       borderData: FlBorderData(
                         show: false,
                       ),
-                      barGroups:
-                          List.generate(model.trendItems!.items.length, (index) {
+                      barGroups: List.generate(model.trendItems!.items.length,
+                          (index) {
                         return buildBarChartGroupData(model, index);
                       })),
                 )),

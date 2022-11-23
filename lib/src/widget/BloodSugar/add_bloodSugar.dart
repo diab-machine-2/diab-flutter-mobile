@@ -17,7 +17,6 @@ import 'package:medical/src/repo/home/home_client.dart';
 import 'package:medical/src/repo/user/user_client.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/BloodSugar/widget/action_list_trend.dart';
-import 'package:medical/src/widget/HbA1C/widget/CalendarPicker/custom_date_picker.dart';
 import 'package:medical/src/widget/HbA1C/widget/description/description.dart';
 
 import 'package:medical/src/widget/base/base_state.dart';
@@ -26,6 +25,7 @@ import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/nipro/list_devices.dart';
+import 'package:medical/src/widgets/btn_add_photo.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:image_picker/image_picker.dart';
@@ -33,6 +33,7 @@ import 'package:medical/src/modal/error/error_model.dart';
 import 'package:easy_localization/easy_localization.dart';
 
 import '../../model/repository/app_repository.dart';
+import '../../widgets/CalendarPicker/custom_date_picker.dart';
 import '../../widgets/network_image_widget.dart';
 import '../my_plan_screens/activity_tab/activity_tab/models/schedule_type.dart';
 
@@ -636,9 +637,7 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
                                               }
                                             },
                                             child: index == files.length
-                                                ? Container(
-                                                    child: Image.asset(R
-                                                        .drawable.ic_add_photo))
+                                                ? ButtonAddPhoto()
                                                 : GestureDetector(
                                                     onTap: () {
                                                       Navigator.pushNamed(

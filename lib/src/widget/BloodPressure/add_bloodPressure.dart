@@ -18,17 +18,18 @@ import 'package:medical/src/repo/HbA1C/HbA1C_client.dart';
 import 'package:medical/src/repo/blood_pressure/bloodPressure_client.dart';
 import 'package:medical/src/repo/glucose/glucose_client.dart';
 import 'package:medical/src/widget/BloodSugar/widget/action_list_trend.dart';
-import 'package:medical/src/widget/HbA1C/widget/CalendarPicker/custom_date_picker.dart';
 import 'package:medical/src/widget/HbA1C/widget/description/description.dart';
 import 'package:medical/src/widget/base/base_state.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
+import 'package:medical/src/widgets/btn_add_photo.dart';
 import 'package:medical/src/widgets/network_image_widget.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 import '../../repo/home/home_client.dart';
+import '../../widgets/CalendarPicker/custom_date_picker.dart';
 import '../my_plan_screens/activity_tab/activity_tab/models/schedule_type.dart';
 
 class AddBloodPressureController extends StatefulWidget {
@@ -654,9 +655,7 @@ class _AddBloodPressureControllerState
                                               }
                                             },
                                             child: index == files.length
-                                                ? Container(
-                                                    child: Image.asset(R
-                                                        .drawable.ic_add_photo))
+                                                ? ButtonAddPhoto()
                                                 : GestureDetector(
                                                     onTap: () {
                                                       Navigator.pushNamed(
@@ -1206,7 +1205,7 @@ class _AddBloodPressureControllerState
                                               R.color.greenGradientBottom
                                             ])),
                                     child: Center(
-                                      child: Text(R.string.exit.tr(),
+                                      child: Text(R.string.confirm.tr(),
                                           style: TextStyle(
                                               color: R.color.white,
                                               fontSize: 16,
@@ -1619,10 +1618,4 @@ class _CustomTimePickerState extends State<CustomTimePicker> {
       ],
     );
   }
-}
-
-String formatDate(int timeStamp) {
-  final date = DateTime.fromMillisecondsSinceEpoch(timeStamp);
-
-  return '${R.string.month} ${date.month}, ${date.year}';
 }

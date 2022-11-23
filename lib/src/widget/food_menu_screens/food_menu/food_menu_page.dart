@@ -12,6 +12,7 @@ import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/Food/widget/food_info.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
+import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widgets/common_page.dart';
 import 'package:medical/src/widgets/network_image_widget.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
@@ -42,6 +43,7 @@ class _FoodMenuPageState extends State<FoodMenuPage> {
     final AppRepository appRepository = AppRepository();
     _cubit = FoodMenuCubit(appRepository);
     _cubit.createMenu(request: widget.createMenuRequest);
+    TrackingManager.analytics.setCurrentScreen(screenName: "Standard Menu");
   }
 
   void updateKcal(BuildContext context) {

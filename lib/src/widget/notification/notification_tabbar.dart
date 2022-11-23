@@ -60,7 +60,7 @@ class _NotificationTabbarControllerState
                 style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w600,
-                    color: R.color.textDark)),
+                    color: R.color.textDark)).tr(),
             leadingIcon: IconButton(
                 splashColor: R.color.transparent,
                 highlightColor: R.color.transparent,

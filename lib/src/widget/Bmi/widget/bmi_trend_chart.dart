@@ -18,6 +18,7 @@ import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:medical/src/modal/error/error_model.dart';
+import 'package:medical/src/widgets/empty_data_box.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 
 import '../../../utils/utils.dart';
@@ -271,17 +272,13 @@ class BmiTrendChartState extends State<BmiTrendChart>
                                       ]),
                                 ),
                                 model.trendItems == null
-                                    ? GestureDetector(
-                                        onTap: () {
+                                    ? EmptyDataBox(text: "chỉ số cân nặng", onTap:  () {
                                           Navigator.pushNamed(
                                               context, NavigatorName.add_bmi,
                                               arguments: {
                                                 'type': 'input',
                                               });
-                                        },
-                                        child: Image.asset(
-                                            R.drawable.img_nothing_chart_weight),
-                                      )
+                                        },)
                                     : Container(
                                         decoration: BoxDecoration(
                                           borderRadius:

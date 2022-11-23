@@ -13,15 +13,16 @@ import 'package:medical/src/modal/HbA1C/HbA1C_Input.dart';
 import 'package:medical/src/modal/HbA1C/short_gui.dart';
 import 'package:medical/src/modal/error/error_model.dart';
 import 'package:medical/src/repo/HbA1C/HbA1C_client.dart';
-import 'package:medical/src/widget/HbA1C/widget/CalendarPicker/custom_date_picker.dart';
 import 'package:medical/src/widget/HbA1C/widget/description/description.dart';
 import 'package:medical/src/widget/base/base_state.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
+import 'package:medical/src/widgets/btn_add_photo.dart';
 import 'package:permission_handler/permission_handler.dart';
 
+import '../../widgets/CalendarPicker/custom_date_picker.dart';
 import '../../widgets/network_image_widget.dart';
 
 class AddHBA1CController extends StatefulWidget {
@@ -357,9 +358,7 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
                                               }
                                             },
                                             child: index == files.length
-                                                ? Container(
-                                                    child: Image.asset(R
-                                                        .drawable.ic_add_photo))
+                                                ? ButtonAddPhoto()
                                                 : GestureDetector(
                                                     onTap: () {
                                                       Navigator.pushNamed(
@@ -1107,10 +1106,4 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
       ),
     );
   }
-}
-
-String formatDate(int timeStamp) {
-  final date = DateTime.fromMillisecondsSinceEpoch(timeStamp);
-
-  return '${R.string.month} ${date.month}, ${date.year}';
 }

@@ -40,6 +40,7 @@ class _ReminderControllerState extends State<ReminderController> with Observer  
     //       loadData();
     //     });
     loadData();
+    TrackingManager.analytics.setCurrentScreen(screenName: "Reminder");
   }
 
   @override

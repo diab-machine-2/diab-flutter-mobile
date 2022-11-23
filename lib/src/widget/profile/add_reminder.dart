@@ -12,6 +12,7 @@ import 'package:medical/src/repo/user/user_client.dart';
 import 'package:medical/src/widget/base/base_state.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
+import 'package:medical/src/widget/helper/tracking_manager.dart';
 
 import 'popup_reminder.dart';
 
@@ -48,6 +49,7 @@ class _AddReminderControllerState extends BaseState<AddReminderController> {
     if (widget.type == 'update') {
       loadDetail();
     }
+    TrackingManager.analytics.setCurrentScreen(screenName: "Reminder");
   }
 
   loadDetail() async {

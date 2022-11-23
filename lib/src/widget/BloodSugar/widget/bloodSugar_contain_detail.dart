@@ -10,6 +10,7 @@ import 'package:medical/src/widget/components/samples/pie_chart/samples/indicato
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:medical/src/widgets/empty_data_box.dart';
 
 class BloodSugarDetail extends StatefulWidget {
   BloodSugarDetail({Key? key}) : super(key: key);
@@ -275,7 +276,9 @@ class BloodSugarDetailState extends State<BloodSugarDetail>
                                       Padding(
                                         padding:
                                             const EdgeInsets.only(left: 8.0),
-                                        child: Text(R.string.distribution_frequency.tr(),
+                                        child: Text(
+                                            R.string.distribution_frequency
+                                                .tr(),
                                             style: TextStyle(
                                                 color: R.color.black,
                                                 fontSize: 20,
@@ -286,17 +289,16 @@ class BloodSugarDetailState extends State<BloodSugarDetail>
                                   padding: const EdgeInsets.only(
                                       left: 8, right: 8, top: 16.0, bottom: 16),
                                   child: model.totalCount == 0
-                                      ? GestureDetector(
+                                      ? EmptyDataBox(
+                                          text: "chỉ số đường huyết",
                                           onTap: () {
-                                            Navigator.pushNamed(
-                                                context, NavigatorName.add_blood_sugar,
+                                            Navigator.pushNamed(context,
+                                                NavigatorName.add_blood_sugar,
                                                 arguments: {
                                                   'type': 'input',
                                                   'id': null
                                                 });
                                           },
-                                          child: Image.asset(
-                                              R.drawable.img_glucose_distribution),
                                         )
                                       : buildChart(model),
                                 )
@@ -393,8 +395,8 @@ class BloodSugarDetailState extends State<BloodSugarDetail>
                   children: <Widget>[
                     GestureDetector(
                       onTap: () {
-                        Navigator.pushNamed(
-                            context, NavigatorName.blood_sugar_distribution_table,
+                        Navigator.pushNamed(context,
+                            NavigatorName.blood_sugar_distribution_table,
                             arguments: {
                               'title': R.string.very_high.tr(),
                               'glucoseDistributionType': 5,
@@ -418,8 +420,8 @@ class BloodSugarDetailState extends State<BloodSugarDetail>
                     ),
                     GestureDetector(
                       onTap: () {
-                        Navigator.pushNamed(
-                            context, NavigatorName.blood_sugar_distribution_table,
+                        Navigator.pushNamed(context,
+                            NavigatorName.blood_sugar_distribution_table,
                             arguments: {
                               'title': R.string.high.tr(),
                               'glucoseDistributionType': 4,
@@ -428,9 +430,10 @@ class BloodSugarDetailState extends State<BloodSugarDetail>
                       },
                       child: Indicator(
                         color: toColor(model.highColor),
-                        number:
-                            (model.highCount! / total * 100).round().toString() +
-                                '%',
+                        number: (model.highCount! / total * 100)
+                                .round()
+                                .toString() +
+                            '%',
                         text: R.string.high.tr(),
                         textColor: toColor(model.highAttributesColor.fontColor),
                         isSquare: true,
@@ -441,8 +444,8 @@ class BloodSugarDetailState extends State<BloodSugarDetail>
                     ),
                     GestureDetector(
                       onTap: () {
-                        Navigator.pushNamed(
-                            context, NavigatorName.blood_sugar_distribution_table,
+                        Navigator.pushNamed(context,
+                            NavigatorName.blood_sugar_distribution_table,
                             arguments: {
                               'title': R.string.good.tr(),
                               'glucoseDistributionType': 3,
@@ -451,9 +454,10 @@ class BloodSugarDetailState extends State<BloodSugarDetail>
                       },
                       child: Indicator(
                         color: toColor(model.goodColor),
-                        number:
-                            (model.goodCount! / total * 100).round().toString() +
-                                '%',
+                        number: (model.goodCount! / total * 100)
+                                .round()
+                                .toString() +
+                            '%',
                         text: R.string.good.tr(),
                         textColor: toColor(model.goodAttributesColor.fontColor),
                         isSquare: true,
@@ -464,8 +468,8 @@ class BloodSugarDetailState extends State<BloodSugarDetail>
                     ),
                     GestureDetector(
                       onTap: () {
-                        Navigator.pushNamed(
-                            context, NavigatorName.blood_sugar_distribution_table,
+                        Navigator.pushNamed(context,
+                            NavigatorName.blood_sugar_distribution_table,
                             arguments: {
                               'title': R.string.low.tr(),
                               'glucoseDistributionType': 2,
@@ -487,8 +491,8 @@ class BloodSugarDetailState extends State<BloodSugarDetail>
                     ),
                     GestureDetector(
                       onTap: () {
-                        Navigator.pushNamed(
-                            context, NavigatorName.blood_sugar_distribution_table,
+                        Navigator.pushNamed(context,
+                            NavigatorName.blood_sugar_distribution_table,
                             arguments: {
                               'title': R.string.very_low.tr(),
                               'glucoseDistributionType': 1,

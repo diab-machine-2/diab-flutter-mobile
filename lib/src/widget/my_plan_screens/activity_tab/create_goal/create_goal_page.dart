@@ -10,6 +10,7 @@ import 'package:medical/src/model/response/smart_goal_list_reponse.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
+import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widgets/button_widget.dart';
 import 'package:medical/src/widgets/common_page.dart';
 import 'package:medical/src/widgets/custom_checkbox_widget.dart';
@@ -50,6 +51,7 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
     super.initState();
     final AppRepository appRepository = AppRepository();
     _cubit = CreateGoalCubit(appRepository, smartGoalDayList: widget.smartGoalDayList);
+    TrackingManager.analytics.setCurrentScreen(screenName: "Goal Setting Welcome Page");
   }
 
   @override

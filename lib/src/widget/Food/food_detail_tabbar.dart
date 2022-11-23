@@ -13,6 +13,7 @@ import 'package:medical/src/widget/HbA1C/widget/description/description.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/components/custom_action_descriptipn.dart';
 import 'package:medical/src/widget/food_menu_screens/food_menu/food_menu_page.dart';
+import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/tabbar/action_list_panel.dart';
 import 'package:medical/src/widget/tabbar/fillter_bloodSugar_panel.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -56,6 +57,7 @@ class _FoodDetailTabbarControllerState extends State<FoodDetailTabbarController>
     Observable.instance.addObserver(this);
     checkShowDes();
     loadDescription();
+    TrackingManager.analytics.setCurrentScreen(screenName: "Diet Detail");
   }
 
   @override
@@ -276,7 +278,7 @@ class ActionFilter extends StatefulWidget {
 }
 
 class _ActionFilterState extends State<ActionFilter> {
-  String name = R.string.number_of_days.tr(args: ['7']);
+  String name = R.string.filter_day.tr(args: ['7']);
   int selectedIndex = 0;
 
   @override

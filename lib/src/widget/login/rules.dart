@@ -8,6 +8,7 @@ import 'package:medical/src/modal/user/category_item_user_model.dart';
 import 'package:medical/src/repo/login/login_client.dart';
 import 'package:medical/src/repo/user/user_client.dart';
 import 'package:medical/src/utils/navigator_name.dart';
+import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -29,6 +30,7 @@ class _RulesControllerState extends State<RulesController> {
   void initState() {
     super.initState();
     loadData();
+    TrackingManager.analytics.setCurrentScreen(screenName: "Term And Condition");
   }
 
   loadData() async {

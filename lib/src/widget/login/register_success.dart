@@ -8,6 +8,7 @@ import 'package:medical/src/repo/login/login_client.dart';
 import 'package:medical/src/repo/user/user_client.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigator_name.dart';
+import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 class RegisterSuccess extends StatefulWidget {
@@ -33,6 +34,11 @@ class RegisterSuccess extends StatefulWidget {
 }
 
 class _RegisterSuccessState extends State<RegisterSuccess> {
+  @override
+  void initState() {
+    super.initState();
+    TrackingManager.analytics.setCurrentScreen(screenName: "Registration Congratulation");
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(

@@ -12,6 +12,7 @@ import 'package:medical/src/widget/Food/daily_nutrition/daily_nutrition.dart';
 import 'package:medical/src/widget/Food/food_detail_tabbar.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
+import 'package:medical/src/widgets/empty_data_box.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 
 import 'food_trend_chart_tab_bar.dart';
@@ -83,54 +84,53 @@ class FoodTrendChartState extends State<FoodTrendChart>
                   height: 491.5,
                   child: Center(child: CircularProgressIndicator()))
               : Container(
-                    color: R.color.transparent,
-                    padding:
-                        EdgeInsets.only(left: 18, right: 18, bottom: 18, top: 18),
-                    child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Row(
-                            children: [
-                              Text(R.string.xu_huong_dinh_duong.tr(),
-                                  style: TextStyle(
-                                      fontSize: 20, fontWeight: FontWeight.w600)),
-                            ],
-                          ),
-                          SizedBox(height: 23),
-                          (model.energyChart.items.length == 0)
-                              ? GestureDetector(
-                                  onTap: () {
-                                    NavigationUtil.navigatePage(
-                                      context,
-                                      DailyNutritionPage(
-                                        type: 'input',
-                                        id: null,
-                                      ),
-                                    );
-                                  },
-                                  child:
-                                      Image.asset(R.drawable.img_food_empty),
-                                )
-                              : Container(
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(16),
-                                    color: R.color.white,
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: R.color.grey.withOpacity(0.5),
-                                        spreadRadius: 1,
-                                        blurRadius: 7,
-                                        offset: Offset(
-                                            0, 2), // changes position of shadow
-                                      ),
-                                    ],
-                                  ),
-                                  child: buildChart(model),
-                                  ),
-                          // SizedBox(height: 26),
-                        ]),
-              );
+                  color: R.color.transparent,
+                  padding:
+                      EdgeInsets.only(left: 18, right: 18, bottom: 18, top: 18),
+                  child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Row(
+                          children: [
+                            Text(R.string.xu_huong_dinh_duong.tr(),
+                                style: TextStyle(
+                                    fontSize: 20, fontWeight: FontWeight.w600)),
+                          ],
+                        ),
+                        SizedBox(height: 23),
+                        (model.energyChart.items.length == 0)
+                            ? EmptyDataBox(
+                                text: "chỉ số Dinh dưỡng",
+                                onTap: () {
+                                  NavigationUtil.navigatePage(
+                                    context,
+                                    DailyNutritionPage(
+                                      type: 'input',
+                                      id: null,
+                                    ),
+                                  );
+                                },
+                              )
+                            : Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(16),
+                                  color: R.color.white,
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: R.color.grey.withOpacity(0.5),
+                                      spreadRadius: 1,
+                                      blurRadius: 7,
+                                      offset: Offset(
+                                          0, 2), // changes position of shadow
+                                    ),
+                                  ],
+                                ),
+                                child: buildChart(model),
+                              ),
+                        // SizedBox(height: 26),
+                      ]),
+                );
         }));
   }
 
@@ -151,16 +151,18 @@ class FoodTrendChartState extends State<FoodTrendChart>
           ),
           SizedBox(height: 36),
           Container(
-              height: 350,
-              child: PageView(
-                controller: pageController,
-                physics: NeverScrollableScrollPhysics(),
-                children: [
-                  FoodTrendChartTabView(model: foodTrendModel.energyChart, width: width, type: 0),
-                  FoodTrendChartTabView(model: foodTrendModel.carbChart, width: width, type: 1),
-                ],
-              ),
+            height: 350,
+            child: PageView(
+              controller: pageController,
+              physics: NeverScrollableScrollPhysics(),
+              children: [
+                FoodTrendChartTabView(
+                    model: foodTrendModel.energyChart, width: width, type: 0),
+                FoodTrendChartTabView(
+                    model: foodTrendModel.carbChart, width: width, type: 1),
+              ],
             ),
+          ),
         ],
       ),
     );

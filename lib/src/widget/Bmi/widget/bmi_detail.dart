@@ -39,7 +39,7 @@ class BmiDetailControllerState extends State<BmiDetailController>
     periodFilterType = BmiDetailTabbarController.of(context)!.periodFilterType;
     super.initState();
     initializeDateFormatting();
-    TrackingManager.analytics.setCurrentScreen(screenName: 'BMI Detail');
+    TrackingManager.analytics.setCurrentScreen(screenName: 'Weight Detail');
   }
 
   reloadData(int periodFilter) {

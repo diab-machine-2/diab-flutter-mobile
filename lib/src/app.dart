@@ -6,6 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/dynamic_link_config.dart';
+import 'package:medical/src/model/localization/localization.dart';
+import 'package:medical/src/model/preference/app_preference.dart';
 import 'package:medical/src/theme/app_theme.dart';
 import 'package:medical/src/widget/BloodPressure/add_bloodPressure.dart';
 import 'package:medical/src/widget/BloodPressure/bloodPressure_detail_tabbar.dart';
@@ -119,7 +121,7 @@ class _AppState extends State<App> {
           child: MediaQuery(
             data: mediaData,
             child: MaterialApp(
-                // useInheritedMediaQuery: true,
+                useInheritedMediaQuery: true,
                 title: 'diaB',
                 color: Colors.white,
                 theme: AppTheme.theme,
@@ -418,12 +420,35 @@ class _AppState extends State<App> {
                             otherActivity: data?['otherActivity'],
                             goalId: data?['goalId'],
                           ));
-                    case NavigatorName.detail_food:
-                      return _buildRoute(settings, FoodDetailTabbarController(),
-                          isPresent: true);
                     case NavigatorName.detail_emotion:
                       return _buildRoute(
                           settings, EmotionDetailTabbarController(),
+                          isPresent: true);
+                    case '/add_food':
+                      final data = settings.arguments as Map<String, dynamic>?;
+                      return _buildRoute(
+                          settings,
+                          AddFoodController(
+                            type: data?['type'],
+                            id: data?['id'],
+                          ));
+                    case NavigatorName.profile:
+                      return _buildRoute(settings, const ProfileController());
+                    case NavigatorName.profile_info:
+                      final data = settings.arguments as Map<String, dynamic>?;
+                      return _buildRoute(
+                          settings, ProfileInfoController(id: data?['id']));
+                    case NavigatorName.delete_account:
+                      return _buildRoute(settings, DeleteAccountController());
+                    case NavigatorName.notification_detail:
+                      final data = settings.arguments as Map<String, dynamic>?;
+                      return _buildRoute(
+                          settings,
+                          NotificationDetailController(
+                              id: data?['id'],
+                              communicationId: data?['communicationId']));
+                    case NavigatorName.detail_food:
+                      return _buildRoute(settings, FoodDetailTabbarController(),
                           isPresent: true);
                     case '/add_food':
                       final data = settings.arguments as Map<String, dynamic>?;
@@ -446,78 +471,9 @@ class _AppState extends State<App> {
                       return _buildRoute(settings, const ProfileController());
                     case NavigatorName.goal_setting:
                       return _buildRoute(settings, GoalSettingController());
-                    case NavigatorName.profile_info:
-                      final data = settings.arguments as Map<String, dynamic>?;
-                      return _buildRoute(
-                          settings, ProfileInfoController(id: data?['id']));
-                    case NavigatorName.delete_account:
-                      return _buildRoute(settings, DeleteAccountController());
                     case NavigatorName.notification:
                       return _buildRoute(
                           settings, NotificationTabbarController());
-                    case NavigatorName.notification_detail:
-                      final data = settings.arguments as Map<String, dynamic>?;
-                      return _buildRoute(
-                          settings,
-                          NotificationDetailController(
-                              id: data?['id'],
-                              communicationId: data?['communicationId']));
-                    // return _buildRoute(
-                    //     settings,
-                    //     NotificationDetailController(
-                    //       id: data?['id'],
-                    //       type: data?['type'],
-                    //       emotion: data?['emotion'],
-                    //       symptoms: data?['symptoms'],
-                    //       activities: data?['activities'],
-                    //       otherSymptom: data?['otherSymptom'],
-                    //       otherActivity: data?['otherActivity'],
-                    //       goalId: data?['goalId'],
-                    //     ));
-                    case NavigatorName.detail_food:
-                      return _buildRoute(settings, FoodDetailTabbarController(),
-                          isPresent: true);
-                    case NavigatorName.detail_emotion:
-                      return _buildRoute(
-                          settings, EmotionDetailTabbarController(),
-                          isPresent: true);
-                    case '/add_food':
-                      final data = settings.arguments as Map<String, dynamic>?;
-                      return _buildRoute(
-                          settings,
-                          AddFoodController(
-                            type: data?['type'],
-                            id: data?['id'],
-                          ));
-                    case NavigatorName.emotion_table:
-                      final data = settings.arguments as Map<String, dynamic>?;
-                      return _buildRoute(
-                          settings,
-                          EmotionTableController(
-                              title: data?['title'],
-                              emotionId: data?['emotionId'],
-                              periodFilterType: data?['periodFilterType']),
-                          isPresent: true);
-                    case NavigatorName.profile:
-                      return _buildRoute(settings, const ProfileController());
-                    case NavigatorName.goal_setting:
-                      return _buildRoute(settings, GoalSettingController());
-                    case NavigatorName.profile_info:
-                      final data = settings.arguments as Map<String, dynamic>?;
-                      return _buildRoute(
-                          settings, ProfileInfoController(id: data?['id']));
-                    case NavigatorName.delete_account:
-                      return _buildRoute(settings, DeleteAccountController());
-                    case NavigatorName.notification:
-                      return _buildRoute(
-                          settings, NotificationTabbarController());
-                    case NavigatorName.notification_detail:
-                      final data = settings.arguments as Map<String, dynamic>?;
-                      return _buildRoute(
-                          settings,
-                          NotificationDetailController(
-                              id: data?['id'],
-                              communicationId: data?['communicationId']));
                     case NavigatorName.schedule_activity:
                       return _buildRoute(
                           settings, ScheduleActivityController());

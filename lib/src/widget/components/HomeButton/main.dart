@@ -203,7 +203,7 @@ class FunkyOverlayState extends State<FunkyOverlay>
                         labelBackgroundColor: Colors.transparent,
                       ),
                       HorizontalMenuItem(
-                        label: R.string.chat_with_group,
+                        label: R.string.chat_with_group.tr(),
                         ontap: () {
                           if (user?.trainingGroups != null &&
                               user!.trainingGroups!.isNotEmpty) {

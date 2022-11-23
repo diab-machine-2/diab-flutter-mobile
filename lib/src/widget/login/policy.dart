@@ -1,7 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/widget/helper/tracking_manager.dart';
 
-class PolicyController extends StatelessWidget {
+class PolicyController extends StatefulWidget {
+  @override
+  State<PolicyController> createState() => _PolicyControllerState();
+}
+
+class _PolicyControllerState extends State<PolicyController> {
+
+  @override
+  void initState() {
+    super.initState();
+    TrackingManager.analytics.setCurrentScreen(screenName: "Policy");
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(

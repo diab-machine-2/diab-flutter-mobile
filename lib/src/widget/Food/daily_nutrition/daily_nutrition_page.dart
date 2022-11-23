@@ -18,10 +18,12 @@ import 'package:medical/src/widget/HbA1C/widget/description/description.dart';
 import 'package:medical/src/widget/food_menu_screens/change_menu/change_menu.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
+import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widgets/common_page.dart';
 import 'package:medical/src/widgets/network_image_widget.dart';
 import 'package:permission_handler/permission_handler.dart';
 
+import '../../../widgets/btn_add_photo.dart';
 import '../search_food_controller.dart';
 import '../widget/food_info.dart';
 import 'daily_nutrition.dart';
@@ -49,6 +51,7 @@ class _DailyNutritionPageState extends State<DailyNutritionPage> {
     _cubit = DailyNutritionCubit(appRepository, widget.goalId ?? '');
     _cubit.getInitialData(type: widget.type, id: widget.id);
     super.initState();
+    TrackingManager.analytics.setCurrentScreen(screenName: "Diet Input");
   }
 
   @override
@@ -137,37 +140,39 @@ class _DailyNutritionPageState extends State<DailyNutritionPage> {
                                     Image.asset(R.drawable.img_food_person,
                                         width: 113, height: 148),
                                     const SizedBox(width: 16),
-                                    Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                            '${R.string.luong_calo_ban_da_nap.tr()}:'),
-                                        const SizedBox(height: 8),
-                                        Row(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.end,
-                                          children: [
-                                            Text(
-                                              formatNumber(
-                                                  _cubit.totalKcalNumber),
-                                              style: TextStyle(
-                                                color: R.color.black,
-                                                fontSize: 24,
-                                                fontWeight: FontWeight.w600,
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                              '${R.string.luong_calo_ban_da_nap.tr()}:'),
+                                          const SizedBox(height: 8),
+                                          Row(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.end,
+                                            children: [
+                                              Text(
+                                                formatNumber(
+                                                    _cubit.totalKcalNumber),
+                                                style: TextStyle(
+                                                  color: R.color.black,
+                                                  fontSize: 24,
+                                                  fontWeight: FontWeight.w600,
+                                                ),
                                               ),
-                                            ),
-                                            const SizedBox(width: 4),
-                                            Padding(
-                                              padding: const EdgeInsets.only(
-                                                  bottom: 3),
-                                              child: Text(
-                                                R.string.kcal.tr(),
+                                              const SizedBox(width: 4),
+                                              Padding(
+                                                padding: const EdgeInsets.only(
+                                                    bottom: 3),
+                                                child: Text(
+                                                  R.string.kcal.tr(),
+                                                ),
                                               ),
-                                            ),
-                                          ],
-                                        )
-                                      ],
+                                            ],
+                                          )
+                                        ],
+                                      ),
                                     )
                                   ],
                                 )
@@ -274,7 +279,7 @@ class _DailyNutritionPageState extends State<DailyNutritionPage> {
                                   },
                                 ),
                                 const SizedBox(width: 8),
-                                const Text('Nhập tổng calo',
+                                Text(R.string.input_calories.tr(),
                                     style: TextStyle(
                                         color: Colors.black,
                                         fontSize: 16,
@@ -639,8 +644,7 @@ class _DailyNutritionPageState extends State<DailyNutritionPage> {
                                           }
                                         },
                                         child: index == _cubit.files.length
-                                            ? Image.asset(
-                                                R.drawable.ic_add_photo)
+                                            ? ButtonAddPhoto()
                                             : Stack(
                                                 alignment:
                                                     AlignmentDirectional.topEnd,

@@ -11,6 +11,7 @@ import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/response/lesson_section_list_response.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
+import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/my_plan_screens/exercise_tab/exercise_detail/models/video_manager.dart';
 import 'package:medical/src/widget/my_plan_screens/lesson_tab/lesson_detail/widgets/video_widget.dart';
 import 'package:medical/src/widgets/background_page.dart';
@@ -47,6 +48,7 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
 
     _cubit = LessonDetailCubit(appRepository);
     _cubit.initData(widget.lessonType, widget.lessonId);
+    TrackingManager.analytics.setCurrentScreen(screenName: "Lesson Detail");
   }
 
   @override

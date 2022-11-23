@@ -8,6 +8,7 @@ import 'package:medical/src/modal/food/food_model.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
+import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widgets/common_page.dart';
 
 import '../seach_food/search_food.dart';
@@ -42,6 +43,7 @@ class _ChangeMenuPageState extends State<ChangeMenuPage> {
       dateCode: widget.dateCode ?? 'T2',
       timeCode: widget.timeCode ?? 1,
     );
+    TrackingManager.analytics.setCurrentScreen(screenName: "Standard Menu - Update");
   }
 
   @override

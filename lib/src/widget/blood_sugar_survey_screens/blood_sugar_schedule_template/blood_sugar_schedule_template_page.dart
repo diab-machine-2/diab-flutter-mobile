@@ -9,6 +9,7 @@ import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
+import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/profile/schedule_glucose.dart';
 import 'package:medical/src/widgets/blood_sugar_result_layout_widget.dart';
 import 'package:medical/src/widgets/button_widget.dart';
@@ -39,6 +40,7 @@ class _BloodSugarScheduleTemplatePageState extends State<BloodSugarScheduleTempl
       templateCode: widget.templateCode,
     );
     _cubit.getTemplateDetail();
+    TrackingManager.analytics.setCurrentScreen(screenName: "Glucose Schedule");
   }
 
   @override

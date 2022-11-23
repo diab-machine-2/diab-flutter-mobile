@@ -12,6 +12,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
+import 'package:medical/src/model/preference/app_preference.dart';
 import 'package:path/path.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -357,6 +358,51 @@ class Utils {
     return str;
   }
 
+  static String getValueOfMonth(int month) {
+    late String returnValue = '';
+    String appLanguage = AppPreference().appLanguage;
+    if(appLanguage == 'vi') return "Tháng $month";
+    switch (month) {
+      case 1:
+        returnValue = "January";
+        break;
+      case 2:
+        returnValue = "February";
+        break;
+      case 3:
+        returnValue = "March";
+        break;
+      case 4:
+        returnValue = "April";
+        break;
+      case 5:
+        returnValue = "May";
+        break;
+      case 6:
+        returnValue = "June";
+        break;
+      case 7:
+        returnValue = "July";
+        break;
+      case 8:
+        returnValue = "August";
+        break;
+      case 9:
+        returnValue = "September";
+        break;
+      case 10:
+        returnValue = "October";
+        break;
+      case 11:
+        returnValue = "November";
+        break;
+      case 12:
+        returnValue = "December";
+        break;
+    }
+    return returnValue;
+  }
+
   static String getMediaUrl(String url, String token) {
     if (isEmpty(url)) return url;
     return getHostUrl() + "api/" + url + "token=$token";
@@ -415,7 +461,8 @@ class Utils {
   }
 
   static String capitalize(String value) {
-    String returnValue = value.substring(0, 1).toUpperCase() + value.substring(1).toLowerCase();
+    String returnValue =
+        value.substring(0, 1).toUpperCase() + value.substring(1).toLowerCase();
     return returnValue;
   }
 }

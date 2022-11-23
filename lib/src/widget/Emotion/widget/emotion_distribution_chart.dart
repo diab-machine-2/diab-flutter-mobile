@@ -9,8 +9,10 @@ import 'package:medical/src/widget/Emotion/emotion_detail_tabbar.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:medical/src/widgets/empty_data_box.dart';
 
 import '../../../widgets/network_image_widget.dart';
+
 class EmotionDistributionChart extends StatefulWidget {
   EmotionDistributionChart({Key? key}) : super(key: key);
   @override
@@ -79,6 +81,13 @@ class EmotionDistributionChartState extends State<EmotionDistributionChart>
               count += element.count!;
             });
           }
+          String dateString = periodFilterType == 1
+              ? '7'
+              : periodFilterType == 2
+                  ? '14'
+                  : periodFilterType == 3
+                      ? '30'
+                      : '90';
           return model == null
               ? Container(
                   height: 240,
@@ -99,7 +108,8 @@ class EmotionDistributionChartState extends State<EmotionDistributionChart>
                               Padding(
                                 padding: EdgeInsets.only(left: 16),
                                 child: Text(
-                                    '${R.string.cam_xuc_cua_ban.tr()} ${periodFilterType == 1 ? '7' : periodFilterType == 2 ? '14' : periodFilterType == 3 ? '30' : '90'} ${R.string.ngay_qua.tr()}',
+                                    '${R.string.cam_xuc_cua_ban.tr().replaceAll("[DATE]", dateString)}',
+                                    // '${R.string.cam_xuc_cua_ban.tr()} ${periodFilterType == 1 ? '7' : periodFilterType == 2 ? '14' : periodFilterType == 3 ? '30' : '90'} ${R.string.ngay_qua.tr()}',
                                     style: TextStyle(
                                         color: R.color.black,
                                         fontSize: 20,
@@ -107,16 +117,16 @@ class EmotionDistributionChartState extends State<EmotionDistributionChart>
                               ),
                             ]),
                         count == 0
-                            ? GestureDetector(
-                                onTap: () {
-                                  Navigator.pushNamed(context, NavigatorName.add_emo,
-                                      arguments: {'type': 'input'});
-                                },
-                                child: Padding(
-                                  padding: EdgeInsets.only(
-                                      top: 16, left: 16, right: 16),
-                                  child: Image.asset(
-                                      R.drawable.img_emotion_empty),
+                            ? Padding(
+                                padding: EdgeInsets.only(
+                                    top: 16, left: 16, right: 16),
+                                child: EmptyDataBox(
+                                  text: 'chỉ số cảm xúc',
+                                  onTap: () {
+                                    Navigator.pushNamed(
+                                        context, NavigatorName.add_emo,
+                                        arguments: {'type': 'input'});
+                                  },
                                 ),
                               )
                             : Column(children: [
@@ -136,8 +146,10 @@ class EmotionDistributionChartState extends State<EmotionDistributionChart>
                                                     padding:
                                                         const EdgeInsets.only(
                                                             bottom: 12.0),
-                                                    child: NetWorkImageWidget(imageUrl: 
-                                                      model.noteIcon!.url ?? '',
+                                                    child: NetWorkImageWidget(
+                                                      imageUrl:
+                                                          model.noteIcon!.url ??
+                                                              '',
                                                       width: 20,
                                                       height: 20,
                                                     ),
@@ -147,7 +159,8 @@ class EmotionDistributionChartState extends State<EmotionDistributionChart>
                                                   ),
                                                   Expanded(
                                                     child: Text(model.note!,
-                                                        style: R.style.normalTextStyle),
+                                                        style: R.style
+                                                            .normalTextStyle),
                                                   ),
                                                 ],
                                               ),
@@ -158,8 +171,9 @@ class EmotionDistributionChartState extends State<EmotionDistributionChart>
                                             Padding(
                                               padding: const EdgeInsets.only(
                                                   top: 10.0),
-                                              child: NetWorkImageWidget(imageUrl: 
-                                                model.noteImage!.url ?? '',
+                                              child: NetWorkImageWidget(
+                                                imageUrl:
+                                                    model.noteImage!.url ?? '',
                                                 width: 130,
                                                 height: 100,
                                               ),
@@ -243,7 +257,8 @@ class EmotionDistributionChartState extends State<EmotionDistributionChart>
                         model.emotions.length,
                         (index) => GestureDetector(
                               onTap: () {
-                                Navigator.pushNamed(context, NavigatorName.emotion_table,
+                                Navigator.pushNamed(
+                                    context, NavigatorName.emotion_table,
                                     arguments: {
                                       'title': model.emotions[index].text,
                                       'emotionId': model.emotions[index].id,
@@ -256,8 +271,9 @@ class EmotionDistributionChartState extends State<EmotionDistributionChart>
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    NetWorkImageWidget(imageUrl: 
-                                      model.emotions[index].icon.url ?? '',
+                                    NetWorkImageWidget(
+                                      imageUrl:
+                                          model.emotions[index].icon.url ?? '',
                                       width: 30,
                                       height: 30,
                                     ),
@@ -266,7 +282,8 @@ class EmotionDistributionChartState extends State<EmotionDistributionChart>
                                     ),
                                     Text(model.emotions[index].text!,
                                         style: TextStyle(
-                                            fontSize: 14, color: R.color.textDark))
+                                            fontSize: 14,
+                                            color: R.color.textDark))
                                   ],
                                 ),
                               ),
@@ -280,7 +297,8 @@ class EmotionDistributionChartState extends State<EmotionDistributionChart>
                         model.emotions.length,
                         (index) => GestureDetector(
                               onTap: () {
-                                Navigator.pushNamed(context, NavigatorName.emotion_table,
+                                Navigator.pushNamed(
+                                    context, NavigatorName.emotion_table,
                                     arguments: {
                                       'title': model.emotions[index].text,
                                       'emotionId': model.emotions[index].id,

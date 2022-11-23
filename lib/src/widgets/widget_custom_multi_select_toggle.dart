@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medical/res/R.dart';
@@ -63,7 +64,7 @@ class CustomMultiSelectToggle extends StatelessWidget {
           ),
           child: Center(
             child: Text(
-              toggleList[currentIndex],
+              toggleList[currentIndex].tr(),
               style: TextStyle(
                 color: isSelected ? R.color.white : R.color.textDark,
                 fontSize: 14,

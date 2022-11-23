@@ -12,6 +12,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:medical/src/widget/helper/tracking_manager.dart';
 
 import '../../widgets/network_image_widget.dart';
 
@@ -45,6 +46,7 @@ class _SearchExercrisesControllerState
 
   void initState() {
     super.initState();
+    TrackingManager.analytics.setCurrentScreen(screenName: "Exercise Searching");
   }
 
   void dispose() {

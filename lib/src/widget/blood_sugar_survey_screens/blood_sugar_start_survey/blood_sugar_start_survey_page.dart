@@ -6,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/utils/navigation_util.dart';
+import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widgets/button_widget.dart';
 import 'package:medical/src/widgets/common_page.dart';
 import 'package:medical/src/widgets/update_required_widget.dart';
@@ -35,6 +36,7 @@ class _BloodSugarStartSurveyPageState extends State<BloodSugarStartSurveyPage> {
     final AppRepository repository = AppRepository();
     _cubit = BloodSugarStartSurveyCubit(repository);
     _cubit.getCurrentUserInfo();
+    TrackingManager.analytics.setCurrentScreen(screenName: "Glucose Start Survey");
   }
 
   @override

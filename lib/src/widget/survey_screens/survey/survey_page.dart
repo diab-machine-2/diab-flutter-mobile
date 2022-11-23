@@ -9,6 +9,7 @@ import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/response/survey_data.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
+import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widgets/button_widget.dart';
 import 'package:medical/src/widgets/common_page.dart';
 
@@ -44,6 +45,7 @@ class _SurveyPageState extends State<SurveyPage> {
     if (widget.surveyData.sections != null) {
       _sectionSurvey = widget.surveyData.sections![widget.index];
     }
+    TrackingManager.analytics.setCurrentScreen(screenName: "Survey");
   }
 
   @override

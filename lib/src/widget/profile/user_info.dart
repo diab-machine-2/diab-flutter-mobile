@@ -85,7 +85,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController>
     diabetesStatus = getSelectedIndexDiabetes();
 
     loadMotivation();
-    TrackingManager.analytics.setCurrentScreen(screenName: 'Update Profile');
+    TrackingManager.analytics.setCurrentScreen(screenName: 'Profile');
   }
 
   loadMotivation() async {
@@ -434,7 +434,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController>
                               _buildItemProfile(
                                 icon: R.drawable.ic_user_job,
                                 title: 'Giáo viên',
-                                subTitle: 'Nghề nghiệp',
+                                subTitle: R.string.occupation.tr(),
                                 subIcon: Image.asset(R.drawable.ic_right,
                                     width: 18, height: 18),
                                 elementList: user.jobList!
@@ -444,7 +444,8 @@ class _ProfileInfoControllerState extends State<ProfileInfoController>
                                     .where((e) => e.selected ?? false)
                                     .map((e) => e.text ?? '')
                                     .toList(),
-                                selectedDialogTitle: "Chọn nghề nghiệp",
+                                selectedDialogTitle:
+                                    R.string.select_occupation.tr(),
                                 isShowSelectedDialog: true,
                                 callback: (selectedIndexList) {
                                   updateCategoryUser(
@@ -457,7 +458,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController>
                               _buildItemProfile(
                                 icon: R.drawable.ic_user_education,
                                 title: 'Đại học',
-                                subTitle: 'Trình độ văn hoá',
+                                subTitle: R.string.education.tr(),
                                 subIcon: Image.asset(R.drawable.ic_right,
                                     width: 18, height: 18),
                                 elementList: user.educationLevelList!
@@ -467,7 +468,8 @@ class _ProfileInfoControllerState extends State<ProfileInfoController>
                                     .where((e) => e.selected ?? false)
                                     .map((e) => e.text ?? '')
                                     .toList(),
-                                selectedDialogTitle: "Chọn học vấn",
+                                selectedDialogTitle:
+                                    R.string.select_education.tr(),
                                 isShowSelectedDialog: true,
                                 callback: (selectedIndexList) {
                                   updateCategoryUser(
@@ -541,9 +543,8 @@ class _ProfileInfoControllerState extends State<ProfileInfoController>
                         ),
                         if (isHasRoadMap)
                           _buildCardLayout(
-                            title: 'Chủ đề quan tâm',
-                            description:
-                                'Hãy chọn các chủ đề mà bạn quan tâm để diaB gợi ý các bài học phù hợp nhất với bạn.',
+                            title: R.string.interested_topics.tr(),
+                            description: R.string.pls_select_topics.tr(),
                             showIcon: true,
                             onTap: () {
                               showActionFilter(
@@ -595,14 +596,14 @@ class _ProfileInfoControllerState extends State<ProfileInfoController>
                           ),
                         if (isHasRoadMap)
                           _buildCardLayout(
-                            title: 'Tiêu chí chọn huấn luyện viên sức khỏe',
+                            title: R.string.match_coach.tr(),
                             description:
-                                'Hãy mô tả chi tiết hơn về bản thân để diaB tìm huấn luyện viên phù hợp với bạn',
+                                R.string.briefly_yourself,
                             children: [
                               _buildItemProfile(
                                 image: R.drawable.ic_person,
                                 title: 'Hướng ngoại',
-                                subTitle: 'Tính cách',
+                                subTitle: R.string.persionality.tr(),
                                 subIcon: Image.asset(R.drawable.ic_right,
                                     width: 18, height: 18),
                                 elementList: user.personalityRuleList!
@@ -612,7 +613,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController>
                                     .where((e) => e.selected ?? false)
                                     .map((e) => e.text ?? '')
                                     .toList(),
-                                selectedDialogTitle: "Chọn tính cách",
+                                selectedDialogTitle: R.string.persionality.tr(),
                                 isShowSelectedDialog: true,
                                 isRequiredSelection: false,
                                 callback: (selectedIndexList) {
@@ -651,7 +652,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController>
                               _buildItemProfile(
                                 icon: R.drawable.ic_user_exercise,
                                 title: 'Cầu lông, xe đạp',
-                                subTitle: 'Môn thể thao yêu thích',
+                                subTitle: R.string.favorite_sports.tr(),
                                 subIcon: Image.asset(R.drawable.ic_right,
                                     width: 18, height: 18),
                                 elementList: user.favouriteSportRuleList!
@@ -661,7 +662,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController>
                                     .where((e) => e.selected ?? false)
                                     .map((e) => e.text ?? '')
                                     .toList(),
-                                selectedDialogTitle: "Chọn môn thể thao",
+                                selectedDialogTitle: R.string.choose_sports.tr(),
                                 isShowSelectedDialog: true,
                                 isRequiredSelection: false,
                                 isMultipleChoice: true,
@@ -676,7 +677,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController>
                               _buildItemProfile(
                                 icon: R.drawable.ic_user_mental_exercise,
                                 title: 'Không',
-                                subTitle: 'Thực hành tâm thức',
+                                subTitle: R.string.mindfulness_practices.tr(),
                                 subIcon: Image.asset(R.drawable.ic_right,
                                     width: 18, height: 18),
                                 elementList: user.consciousnessPracticeRuleList!
@@ -701,7 +702,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController>
                               _buildItemProfile(
                                 icon: R.drawable.ic_user_religion,
                                 title: 'Không',
-                                subTitle: 'Tôn giáo',
+                                subTitle: R.string.religions.tr(),
                                 subIcon: Image.asset(R.drawable.ic_right,
                                     width: 18, height: 18),
                                 elementList: user.religionRuleList!
@@ -725,7 +726,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController>
                               _buildItemProfile(
                                 icon: R.drawable.ic_user_in_diet,
                                 title: 'Không',
-                                subTitle: 'Ăn chay',
+                                subTitle: R.string.vegan.tr(),
                                 subIcon: Image.asset(R.drawable.ic_right,
                                     width: 18, height: 18),
                                 elementList: user.vegetarianRuleList!
@@ -750,7 +751,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController>
                                 icon: R.drawable.ic_user_schedule,
                                 title: 'Buổi sáng; Bao gồm thứ 7',
                                 subTitle:
-                                    'Khung giờ làm việc với huấn luyện viên',
+                                    R.string.available_time_slot.tr(),
                                 subIcon: Image.asset(R.drawable.ic_right,
                                     width: 18, height: 18),
                                 elementList: user.workingHourRuleList!
@@ -776,13 +777,13 @@ class _ProfileInfoControllerState extends State<ProfileInfoController>
                             ],
                           ),
                         _buildCardLayout(
-                          title: 'Cơ sở dịch vụ đã giới thiệu',
+                          title: R.string.refferal_base.tr(),
                           children: [
                             _buildItemProfile(
                               icon: R.drawable.ic_user_hospital,
                               title: user.nameOfAgency ??
                                   R.string.not_updated_yet.tr(),
-                              subTitle: 'Bệnh viện / Phòng khám',
+                              subTitle: R.string.hospitals_clinics.tr(),
                               isTitleFromSelectedCategory: false,
                               callback: (selectedIndexList) {},
                             ),
@@ -790,7 +791,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController>
                               icon: R.drawable.ic_user_doctor,
                               title: user.nameOfDoctor ??
                                   R.string.not_updated_yet.tr(),
-                              subTitle: 'Bác sĩ giới thiệu',
+                              subTitle: R.string.doctors.tr(),
                               isTitleFromSelectedCategory: false,
                               callback: (selectedIndexList) {},
                             ),

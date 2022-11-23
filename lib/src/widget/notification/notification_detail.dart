@@ -6,6 +6,7 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/notification/notification_model.dart';
 import 'package:medical/src/repo/notification/notification_client.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
+import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widgets/network_image_widget.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -28,6 +29,7 @@ class _NotificationDetailControllerState extends State<NotificationDetailControl
   void initState() {
     super.initState();
     _loadData();
+    TrackingManager.analytics.setCurrentScreen(screenName: "Notification Detail");
   }
 
   _loadData() async {

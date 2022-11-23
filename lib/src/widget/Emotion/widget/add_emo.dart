@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/HbA1C/short_gui.dart';
 import 'package:medical/src/modal/emotion/emotion_model.dart';
+import 'package:medical/src/model/preference/app_preference.dart';
 import 'package:medical/src/repo/HbA1C/HbA1C_client.dart';
 import 'package:medical/src/repo/emotion/emotion_client.dart';
 import 'package:medical/src/utils/navigator_name.dart';
@@ -15,6 +16,7 @@ import 'package:medical/src/widget/components/card_horizontal/card_horizontal.da
 import 'package:medical/src/widget/components/card_horizontal/card_item.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:medical/src/widget/helper/tracking_manager.dart';
 
 import '../../../widgets/network_image_widget.dart';
 
@@ -46,6 +48,7 @@ class _AddEmoControllerState extends BaseState<AddEmoController> {
     }
     loadData();
     loadDescription();
+    TrackingManager.analytics.setCurrentScreen(screenName: "Emotion Input");
   }
 
   void dispose() {
@@ -76,17 +79,17 @@ class _AddEmoControllerState extends BaseState<AddEmoController> {
 
   @override
   Widget build(BuildContext context) {
+    String appLanguage = AppPreference().appLanguage;
     return GestureDetector(
       onTap: () {
         FocusScope.of(context).unfocus();
       },
       child: Scaffold(
-        backgroundColor:  R.color.backgroundColor,
+        backgroundColor: R.color.backgroundColor,
         body: Container(
           decoration: BoxDecoration(
               image: DecorationImage(
-                  image: AssetImage(R.drawable.bg_splash),
-                  fit: BoxFit.cover)),
+                  image: AssetImage(R.drawable.bg_splash), fit: BoxFit.cover)),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -136,7 +139,9 @@ class _AddEmoControllerState extends BaseState<AddEmoController> {
                           ? Description(
                               input: true,
                               data: des,
-                              titleDetail: R.string.kiem_soat_cam_xuc_benh_tieu_duong.tr())
+                              titleDetail: R
+                                  .string.kiem_soat_cam_xuc_benh_tieu_duong
+                                  .tr())
                           : SizedBox(),
                     ),
                     Expanded(
@@ -144,7 +149,8 @@ class _AddEmoControllerState extends BaseState<AddEmoController> {
                         shrinkWrap: true,
                         children: [
                           Center(
-                            child: Text(R.string.hom_nay_ban_cam_thay_the_nao.tr(),
+                            child: Text(
+                                R.string.hom_nay_ban_cam_thay_the_nao.tr(),
                                 style: TextStyle(
                                     color: R.color.textDark,
                                     fontSize: 24,
@@ -153,8 +159,7 @@ class _AddEmoControllerState extends BaseState<AddEmoController> {
                           ),
                           SizedBox(height: 10),
                           Center(
-                            child: Text(
-                                R.string.scroll_to_select_emotion.tr(),
+                            child: Text(R.string.scroll_to_select_emotion.tr(),
                                 style: R.style.normalTextStyle),
                           ),
                           SizedBox(height: 30),
@@ -166,12 +171,14 @@ class _AddEmoControllerState extends BaseState<AddEmoController> {
                                   : HorizontalCardPager(
                                       initialPage: model.lastIndexWhere(
                                           (element) =>
-                                              element.id == selectedEmotion!.id),
+                                              element.id ==
+                                              selectedEmotion!.id),
                                       onPageChanged: (page) {
                                         if (page != null)
-                                        setState(() {
-                                          selectedEmotion = model[page.toInt()];
-                                        });
+                                          setState(() {
+                                            selectedEmotion =
+                                                model[page.toInt()];
+                                          });
                                       },
                                       items:
                                           List.generate(model.length, (index) {
@@ -185,8 +192,9 @@ class _AddEmoControllerState extends BaseState<AddEmoController> {
                                                     ? 0
                                                     : 12),
                                             //color: R.color.red,
-                                            child: NetWorkImageWidget(imageUrl:
-                                              model[index].imageUrl ?? '',
+                                            child: NetWorkImageWidget(
+                                              imageUrl:
+                                                  model[index].imageUrl ?? '',
                                               // width: selectedEmotion.id ==
                                               //         model[index].id
                                               //     ? 100
@@ -204,7 +212,9 @@ class _AddEmoControllerState extends BaseState<AddEmoController> {
                               Text(
                                 model.length == 0
                                     ? ''
-                                    : selectedEmotion!.vietnameseName!,
+                                    : appLanguage == "vi"
+                                        ? selectedEmotion!.vietnameseName!
+                                        : selectedEmotion!.englishName!,
                                 style: TextStyle(
                                     fontSize: 18, fontWeight: FontWeight.w400),
                               )
@@ -219,11 +229,12 @@ class _AddEmoControllerState extends BaseState<AddEmoController> {
               GestureDetector(
                 onTap: () async {
                   if (widget.type == 'input') {
-                    Navigator.pushNamed(context, NavigatorName.add_symbo, arguments: {
-                      'type': 'input',
-                      'emotion': selectedEmotion,
-                      'goalId': widget.goalId,
-                    });
+                    Navigator.pushNamed(context, NavigatorName.add_symbo,
+                        arguments: {
+                          'type': 'input',
+                          'emotion': selectedEmotion,
+                          'goalId': widget.goalId,
+                        });
                   } else {
                     widget.callback!(selectedEmotion);
                     Navigator.pop(context);
@@ -241,10 +252,15 @@ class _AddEmoControllerState extends BaseState<AddEmoController> {
                           gradient: LinearGradient(
                               begin: Alignment.topLeft,
                               end: Alignment.centerRight,
-                              colors: [R.color.greenGradientTop, R.color.greenGradientBottom])),
+                              colors: [
+                                R.color.greenGradientTop,
+                                R.color.greenGradientBottom
+                              ])),
                       child: Center(
                           child: Text(
-                              widget.type == 'input' ? R.string.tiep_tuc.tr() : R.string.cap_nhat.tr(),
+                              widget.type == 'input'
+                                  ? R.string.tiep_tuc.tr()
+                                  : R.string.cap_nhat.tr(),
                               style: TextStyle(
                                   color: R.color.white,
                                   fontWeight: FontWeight.w600,

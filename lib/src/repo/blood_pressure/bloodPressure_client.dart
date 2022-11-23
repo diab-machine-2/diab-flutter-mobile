@@ -49,7 +49,7 @@ class BloodPressureClient extends FetchClient {
       if (page != null) {
         params['page'] = page.toString();
       }
-      print(params);
+      // print(params);
       final Response response = await super
           .fetchData(url: '/App/BloodPressure/Input', params: params);
       if (response.statusCode == 200) {
@@ -215,7 +215,7 @@ class BloodPressureClient extends FetchClient {
           path: '/App/BloodPressure/Input', params: params, files: files);
 
       if (response.statusCode == 200) {
-        print(await response.stream.bytesToString());
+        // print(await response.stream.bytesToString());
         return true;
       } else {
         throw response.reasonPhrase!;
@@ -232,7 +232,7 @@ class BloodPressureClient extends FetchClient {
     try {
       final Response response =
           await super.fetchData(url: '/App/BloodPressure/Input/$id');
-      print(response);
+      // print(response);
       if (response.statusCode == 200) {
         return BloodPressureModel.fromJson(response.data['data']);
       } else {

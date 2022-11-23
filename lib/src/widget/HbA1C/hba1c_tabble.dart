@@ -1,8 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:medical/src/widget/helper/tracking_manager.dart';
 
-class HbA1CTable extends StatelessWidget {
+class HbA1CTable extends StatefulWidget {
+  @override
+  State<HbA1CTable> createState() => _HbA1CTableState();
+}
+
+class _HbA1CTableState extends State<HbA1CTable> {
+
+  @override
+  void initState() {
+    super.initState();
+    TrackingManager.analytics.setCurrentScreen(screenName: "HbA1c");
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(

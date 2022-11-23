@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:medical/src/widget/helper/tracking_manager.dart';
 
 import '../../widgets/network_image_widget.dart';
 
@@ -21,6 +22,7 @@ class _PhotoViewState extends State<PhotoView> {
   void initState() {
     super.initState();
     controller = PageController(initialPage: widget.index);
+    TrackingManager.analytics.setCurrentScreen(screenName: "Picture Preview");
   }
 
   @override

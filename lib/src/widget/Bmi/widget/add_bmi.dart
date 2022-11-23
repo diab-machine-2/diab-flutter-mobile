@@ -15,13 +15,13 @@ import 'package:medical/src/repo/glucose/glucose_client.dart';
 import 'package:medical/src/repo/user/user_client.dart';
 import 'package:medical/src/repo/weight/weight_client.dart';
 import 'package:medical/src/widget/BloodSugar/widget/action_list_trend.dart';
-import 'package:medical/src/widget/HbA1C/widget/CalendarPicker/custom_date_picker.dart';
 import 'package:medical/src/widget/HbA1C/widget/description/description.dart';
 import 'package:medical/src/widget/base/base_state.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
+import 'package:medical/src/widgets/btn_add_photo.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:image_picker/image_picker.dart';
@@ -36,6 +36,7 @@ import '../../../model/service/api_result.dart';
 import '../../../model/service/network_exceptions.dart';
 import '../../../repo/home/home_client.dart';
 import '../../../utils/utils.dart';
+import '../../../widgets/CalendarPicker/custom_date_picker.dart';
 import '../../../widgets/network_image_widget.dart';
 import '../../my_plan_screens/activity_tab/activity_tab/models/schedule_type.dart';
 
@@ -90,7 +91,7 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
       loadTimeFrame();
     }
     loadDescription();
-    TrackingManager.analytics.setCurrentScreen(screenName: 'BMI Input');
+    TrackingManager.analytics.setCurrentScreen(screenName: 'Weight Input');
   }
 
   @override
@@ -221,7 +222,7 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
-                                      Text('${R.string.your_bmi.tr()}: ',
+                                      Text(R.string.your_bmi.tr(),
                                           style: TextStyle(
                                               color: R.color.textDark,
                                               fontSize: 14,
@@ -769,9 +770,7 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                                               }
                                             },
                                             child: index == files.length
-                                                ? Container(
-                                                    child: Image.asset(R
-                                                        .drawable.ic_add_photo))
+                                                ? ButtonAddPhoto()
                                                 : GestureDetector(
                                                     onTap: () {
                                                       Navigator.pushNamed(
@@ -854,7 +853,7 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                                         R.color.greenGradientBottom
                                       ])),
                               child: Center(
-                                  child: Text(R.string.save.tr(),
+                                  child: Text(R.string.text_continue.tr(),
                                       style: TextStyle(
                                           color: R.color.white,
                                           fontWeight: FontWeight.w600,
@@ -2149,7 +2148,7 @@ class CustomWeightPickerState extends State<CustomWeightPicker> {
                                     borderRadius: BorderRadius.circular(200),
                                     color: R.color.grayBorder),
                                 child: Center(
-                                  child: Text('Huỷ',
+                                  child: Text(R.string.cancel.tr(),
                                       style: TextStyle(
                                           color: R.color.textDark,
                                           fontSize: 16,
@@ -2176,7 +2175,7 @@ class CustomWeightPickerState extends State<CustomWeightPicker> {
                                 borderRadius: BorderRadius.circular(200),
                               ),
                               child: Center(
-                                child: Text(R.string.tiep_tuc,
+                                child: Text(R.string.tiep_tuc.tr(),
                                     style: TextStyle(
                                         color: Colors.white,
                                         fontSize: 16,

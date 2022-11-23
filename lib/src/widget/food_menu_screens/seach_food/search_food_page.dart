@@ -11,6 +11,7 @@ import 'package:medical/src/utils/debouncer.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/widget/components/load_more.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
+import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widgets/common_page.dart';
 
 import '../change_menu/widgets/food_item_widget.dart';
@@ -42,6 +43,7 @@ class _SearchFoodPageState extends State<SearchFoodPage> {
     final AppRepository appRepository = AppRepository();
     _cubit = SearchFoodCubit(appRepository);
     _cubit.searchFood();
+    TrackingManager.analytics.setCurrentScreen(screenName: "Diet Search Food");
   }
 
   @override

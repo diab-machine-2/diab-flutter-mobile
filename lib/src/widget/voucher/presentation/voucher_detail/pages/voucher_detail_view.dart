@@ -7,6 +7,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
+import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widgets/button_widget.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import '../../../data/models/voucherList_response.dart';
@@ -25,6 +26,13 @@ class VoucherDetailView extends StatefulWidget {
 
 class _VoucherDetailViewState extends State<VoucherDetailView> {
   late BuildContext currentContext;
+
+  @override
+  void initState() {
+    super.initState();
+    TrackingManager.analytics.setCurrentScreen(screenName: "Voucher Detail");
+  }
+  
   @override
   Widget build(BuildContext context) {
     return BlocProvider<VoucherDetailBloc>(

@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/widget/base/customDropdown.dart';
 import 'package:medical/src/widget/base/text_field_custom.dart';
+import 'package:medical/src/widget/helper/tracking_manager.dart';
 
 import '../blocs/deleteAccount_bloc.dart';
 import '../widgets/widgets.dart';
@@ -22,6 +23,12 @@ class _DeleteAccountControllerState extends State<DeleteAccountController> {
   final GlobalKey<TextFieldCustomState> passwordKey = GlobalKey();
   String password = '';
   bool isCorrectPassword = false;
+
+  @override
+  void initState() {
+    super.initState();
+    TrackingManager.analytics.setCurrentScreen(screenName: "Delete Account");
+  }
 
   @override
   Widget build(BuildContext context) {

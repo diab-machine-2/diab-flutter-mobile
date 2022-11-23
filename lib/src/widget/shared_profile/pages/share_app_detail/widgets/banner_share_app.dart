@@ -1,7 +1,7 @@
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:medical/res/R.dart';
 import 'package:flutter/material.dart';
-import 'package:medical/src/widget/profile/delete_account/presentation/widgets/widgets.dart';
 import '../blocs/shareAppDetail_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/src/utils/navigator_name.dart';
@@ -62,8 +62,8 @@ class _BannerShareAppState extends State<BannerShareApp> {
                           children: [
                             AutoSizeText(
                               isVoucherAvailable
-                                  ? "Mời bạn bè và nhận thêm 10K tiền thưởng"
-                                  : "Mời bạn bè",
+                                  ? R.string.event_share_app_title.tr()
+                                  : R.string.diab_refferal.tr(),
                               maxLines: 2,
                               minFontSize: 15,
                               style: TextStyle(
@@ -74,8 +74,8 @@ class _BannerShareAppState extends State<BannerShareApp> {
                             ),
                             Text(
                               isVoucherAvailable
-                                  ? "Nhận ngay phiếu quà tặng mua thuốc khi giới thiệu DiaB App đến bạn bè và người thân thành công."
-                                  : "Sử dụng DiaB để biết cách ăn uống, vận động, nghỉ ngơi đúng cách cho người đái tháo đường.",
+                                  ? R.string.event_share_app_content.tr()
+                                  : R.string.refferal_content.tr(),
                               style: TextStyle(
                                 fontSize: 12,
                                 color: Color(0xFF172823),
@@ -84,7 +84,7 @@ class _BannerShareAppState extends State<BannerShareApp> {
                             ),
                             Container(
                               height: 28,
-                              width: 72,
+                              width: 82,
                               alignment: Alignment.center,
                               decoration: BoxDecoration(
                                 gradient: LinearGradient(
@@ -98,7 +98,7 @@ class _BannerShareAppState extends State<BannerShareApp> {
                                 borderRadius: BorderRadius.circular(200),
                               ),
                               child: Text(
-                                "Mời ngay",
+                                R.string.invite_now.tr(),
                                 style: TextStyle(
                                   fontSize: 11,
                                   color: R.color.white,

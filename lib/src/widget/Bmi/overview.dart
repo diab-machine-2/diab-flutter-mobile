@@ -22,7 +22,7 @@ class BmiOverviewControllerState extends State<BmiOverviewController>
   @override
   void initState() {
     super.initState();
-    TrackingManager.analytics.setCurrentScreen(screenName: 'BMI Dashboard');
+    TrackingManager.analytics.setCurrentScreen(screenName: 'Weight Dashboard');
   }
 
   reloadData(int periodFilterType) {

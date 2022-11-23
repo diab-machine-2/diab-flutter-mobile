@@ -15,6 +15,7 @@ import 'package:medical/src/utils/date_utils.dart';
 import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
+import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/question_answer/all_question_answer/model/question_model.dart';
 import 'package:medical/src/widgets/block_bottom_sheet.dart';
 import 'package:medical/src/widgets/button_widget.dart';
@@ -54,6 +55,7 @@ class _QuestionDetailPageState extends State<QuestionDetailPage>
 
     _cubit =
         QuestionDetailCubit(appRepository, widget.isAll, widget.questionModel);
+    TrackingManager.analytics.setCurrentScreen(screenName: "Quetion Detail");
   }
 
   @override

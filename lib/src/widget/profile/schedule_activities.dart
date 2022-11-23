@@ -35,7 +35,7 @@ class _ScheduleActivityControllerState
   void initState() {
     super.initState();
     loadData();
-    TrackingManager.analytics.setCurrentScreen(screenName: 'Schedule Activity');
+    TrackingManager.analytics.setCurrentScreen(screenName: 'Exercise Schedule');
   }
 
   loadData() async {

@@ -11,6 +11,7 @@ import 'package:medical/src/widget/Food/food_detail_tabbar.dart';
 import 'package:medical/src/widget/components/samples/pie_chart/samples/indicator.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
+import 'package:medical/src/widgets/empty_data_box.dart';
 
 class FoodDistributionChart extends StatefulWidget {
   FoodDistributionChart({Key? key}) : super(key: key);
@@ -93,7 +94,8 @@ class FoodDistributionChartState extends State<FoodDistributionChart>
                               fontWeight: FontWeight.w600)),
                       SizedBox(height: 16),
                       total == 0
-                          ? GestureDetector(
+                          ? EmptyDataBox(
+                              text: "chỉ số Dinh dưỡng",
                               onTap: () {
                                 NavigationUtil.navigatePage(
                                   context,
@@ -103,9 +105,6 @@ class FoodDistributionChartState extends State<FoodDistributionChart>
                                   ),
                                 );
                               },
-                              child: Image.asset(
-                                R.drawable.img_food_empty,
-                              ),
                             )
                           : Container(
                               decoration: BoxDecoration(
@@ -146,17 +145,20 @@ class FoodDistributionChartState extends State<FoodDistributionChart>
                                                   border: Border.all(
                                                       color: isEnergyTab
                                                           ? R.color.mainColor
-                                                          : R.color.primaryGreyColor,
+                                                          : R.color
+                                                              .primaryGreyColor,
                                                       width: 0.5),
                                                   borderRadius:
                                                       BorderRadius.circular(
                                                           16)),
                                               child: Center(
-                                                child: Text(R.string.nang_luong.tr(),
+                                                child: Text(
+                                                    R.string.nang_luong.tr(),
                                                     style: TextStyle(
                                                         color: isEnergyTab
                                                             ? R.color.white
-                                                            : R.color.primaryGreyColor,
+                                                            : R.color
+                                                                .primaryGreyColor,
                                                         fontSize: 14,
                                                         fontWeight: isEnergyTab
                                                             ? FontWeight.w700
@@ -179,17 +181,21 @@ class FoodDistributionChartState extends State<FoodDistributionChart>
                                                       : R.color.mainColor,
                                                   border: Border.all(
                                                       color: isEnergyTab
-                                                          ? R.color.primaryGreyColor
+                                                          ? R.color
+                                                              .primaryGreyColor
                                                           : R.color.white,
                                                       width: 0.5),
                                                   borderRadius:
                                                       BorderRadius.circular(
                                                           16)),
                                               child: Center(
-                                                child: Text(R.string.chat_bot_duong.tr(),
+                                                child: Text(
+                                                    R.string.chat_bot_duong
+                                                        .tr(),
                                                     style: TextStyle(
                                                         color: isEnergyTab
-                                                            ? R.color.primaryGreyColor
+                                                            ? R.color
+                                                                .primaryGreyColor
                                                             : R.color.white,
                                                         fontSize: 14,
                                                         fontWeight: isEnergyTab
@@ -265,8 +271,8 @@ class FoodDistributionChartState extends State<FoodDistributionChart>
                                                   child: Indicator(
                                                     color:
                                                         toColor(item.colorCode),
-                                                    number: roundNumber(
-                                                            item.percentValue!) +
+                                                    number: roundNumber(item
+                                                            .percentValue!) +
                                                         '%',
                                                     text: item.text,
                                                     textColor: R.color.white,

@@ -6,6 +6,7 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/user/secure.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/helper/notification_manager.dart';
+import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:package_info/package_info.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -18,6 +19,13 @@ class ContactController extends StatefulWidget {
 }
 
 class _ContactControllerState extends State<ContactController> {
+
+  @override
+  void initState() {
+    super.initState();
+    TrackingManager.analytics.setCurrentScreen(screenName: "Contact Us");
+  }
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(

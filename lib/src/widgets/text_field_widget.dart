@@ -6,7 +6,7 @@ import 'package:medical/src/utils/utils.dart';
 
 class TextFieldWidget extends StatefulWidget {
   const TextFieldWidget({
-    required this.controller,
+    this.controller,
     this.textInputAction = TextInputAction.next,
     this.isEnable = true,
     this.autoFocus = true,
@@ -33,7 +33,7 @@ class TextFieldWidget extends StatefulWidget {
     this.onSubmitted,
   });
 
-  final TextEditingController controller;
+  final TextEditingController? controller;
   final bool isEnable;
   final bool autoFocus;
   final EdgeInsets padding;
@@ -140,7 +140,7 @@ class _TextFieldWidgetState extends State<TextFieldWidget> {
                       padding: const EdgeInsets.only(right: 15),
                       child: widget.suffixIcon),
                 )
-              : Utils.isEmpty(widget.controller.text) ||
+              : Utils.isEmpty(widget.controller?.text) ||
                       (!widget.isPassword && !Utils.isEmpty(widget.errorText))
                   ? null
                   : (widget.isPassword

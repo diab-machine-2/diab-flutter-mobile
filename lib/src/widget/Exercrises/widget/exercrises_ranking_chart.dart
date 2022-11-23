@@ -9,6 +9,7 @@ import 'package:medical/src/modal/exercrises/excercise_rank_model.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/Exercrises/exercrises_detail_tabbar.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
+import 'package:medical/src/widgets/empty_data_box.dart';
 
 class ExercrisesRankingChart extends StatefulWidget {
   ExercrisesRankingChart({Key? key}) : super(key: key);
@@ -120,7 +121,8 @@ class ExercrisesRankingChartState extends State<ExercrisesRankingChart>
                         ),
                         SizedBox(height: 20),
                         1 == 2
-                            ? GestureDetector(
+                            ? EmptyDataBox(
+                                text: "chỉ số HbA1C",
                                 onTap: () {
                                   Navigator.pushNamed(
                                       context, NavigatorName.add_exercrises,
@@ -128,9 +130,6 @@ class ExercrisesRankingChartState extends State<ExercrisesRankingChart>
                                         'type': 'input',
                                       });
                                 },
-                                child: Image.asset(
-                                  R.drawable.img_nothing,
-                                ),
                               )
                             : Container(
                                 width: width,
@@ -214,7 +213,8 @@ class ExercrisesRankingChartState extends State<ExercrisesRankingChart>
                                                   width: 8,
                                                   height: 8,
                                                   decoration: BoxDecoration(
-                                                    color: R.color.color0xff72CB9C,
+                                                    color:
+                                                        R.color.color0xff72CB9C,
                                                     borderRadius:
                                                         BorderRadius.circular(
                                                             4),
@@ -224,14 +224,16 @@ class ExercrisesRankingChartState extends State<ExercrisesRankingChart>
                                               ),
                                               Text(
                                                   '${R.string.binh_quan_trong_nhom_tuoi_cua_toi.tr()}: ',
-                                                  style: R.style.normalTextStyle),
+                                                  style:
+                                                      R.style.normalTextStyle),
                                               Text(
                                                   model.averagePercent!
                                                           .round()
                                                           .toString() +
                                                       '%',
                                                   style: TextStyle(
-                                                      color: R.color.color0xff72CB9C,
+                                                      color: R.color
+                                                          .color0xff72CB9C,
                                                       fontWeight:
                                                           FontWeight.w600,
                                                       fontSize: 14.0)),

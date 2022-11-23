@@ -14,6 +14,7 @@ import 'package:medical/src/model/response/lesson_module_response.dart';
 import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
+import 'package:medical/src/widget/helper/tracking_manager.dart';
 //import 'package:medical/src/widgets/custom_dropdown.dart';
 import 'make_question.dart';
 import 'widgets/index.dart';
@@ -40,6 +41,7 @@ class _MakeQuestionPageState extends State<MakeQuestionPage> {
     // _searchLessonModuleController = TextEditingController(text: '');
     final AppRepository appRepository = AppRepository();
     _cubit = MakeQuestionCubit(appRepository, widget.lessonModuleItems);
+    TrackingManager.analytics.setCurrentScreen(screenName: "Q&A");
   }
 
   @override

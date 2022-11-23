@@ -17,19 +17,18 @@ enum SurveyQuestionTypes { SingleChoice, MultipleChoice, Text, Range }
 class CardCourseQuizSurveyPage extends StatefulWidget {
   final int index;
   final QuizData quizData;
-  final ValueChanged<QuestionAnswerResults> onSubmitAnswer;
+  final Function(QuestionAnswerResults, bool) onSubmitAnswer;
   final String surveySectionId;
   final int? status;
 
-  const CardCourseQuizSurveyPage(
-      {Key? key,
-      required this.quizData,
-      required this.index,
-      required this.onSubmitAnswer,
-      required this.surveySectionId,
-      this.status = 0,
-      })
-      : super(key: key);
+  const CardCourseQuizSurveyPage({
+    Key? key,
+    required this.quizData,
+    required this.index,
+    required this.onSubmitAnswer,
+    required this.surveySectionId,
+    this.status = 0,
+  }) : super(key: key);
 
   @override
   CardCourseQuizSurveyPageState createState() =>
@@ -55,17 +54,22 @@ class CardCourseQuizSurveyPageState extends State<CardCourseQuizSurveyPage>
         surveySectionId: widget.surveySectionId,
         surveyAnswerIdList: _cubit.listAnswerChoosing,
       ),
+      false,
     );
-    if(widget.quizData.results != null && widget.quizData.answers?.isEmpty == true){
-      String text = widget.quizData.results!.isNotEmpty ? widget.quizData.results!.last.content ?? '' : '';
+    if (widget.quizData.results != null &&
+        widget.quizData.answers?.isEmpty == true) {
+      String text = widget.quizData.results!.isNotEmpty
+          ? widget.quizData.results!.last.content ?? ''
+          : '';
       _textController.text = text;
-      if(text.isNotEmpty){
-        widget.onSubmitAnswer(QuestionAnswerResults(
-            surveyQuestionId: widget.quizData.id, 
-            surveySectionId: widget.surveySectionId,
-            content: text.trim(),
-          ),
-        );
+      if (text.isNotEmpty) {
+        widget.onSubmitAnswer(
+            QuestionAnswerResults(
+              surveyQuestionId: widget.quizData.id,
+              surveySectionId: widget.surveySectionId,
+              content: text.trim(),
+            ),
+            false);
       }
     }
     super.initState();
@@ -84,36 +88,41 @@ class CardCourseQuizSurveyPageState extends State<CardCourseQuizSurveyPage>
           create: (context) => _cubit,
           child: BlocConsumer<CardCourseQuizCubit, CardCourseQuizState>(
             listener: (context, state) {
-              if (state is CardCourseQuizFailure){
+              print("state: $state");
+              if (state is CardCourseQuizFailure) {
                 Message.showToastMessage(context, state.error);
               }
               if (state is CardCourseQuizFillText) {
                 _textController.text = state.text;
                 if (widget.onSubmitAnswer != null && state.text != null) {
-                  widget.onSubmitAnswer(QuestionAnswerResults(
-                      surveyQuestionId: widget.quizData.id,
-                      surveySectionId: widget.surveySectionId,
-                      content: state.text.trim()));
+                  widget.onSubmitAnswer(
+                      QuestionAnswerResults(
+                          surveyQuestionId: widget.quizData.id,
+                          surveySectionId: widget.surveySectionId,
+                          content: state.text.trim()),
+                      false);
                 }
               }
               if (state is CardCourseQuizFillTextField) {
                 _textController.text = state.text;
                 if (widget.onSubmitAnswer != null && state.text != null) {
-                  widget.onSubmitAnswer(QuestionAnswerResults(
-                      surveyQuestionId: widget.quizData.id,
-                      surveySectionId: widget.surveySectionId,
-                      content: state.text.trim()));
+                  widget.onSubmitAnswer(
+                      QuestionAnswerResults(
+                          surveyQuestionId: widget.quizData.id,
+                          surveySectionId: widget.surveySectionId,
+                          content: state.text.trim()),
+                      false);
                 }
               }
               if (state is ChooseAnswerSuccess) {
                 if (widget.onSubmitAnswer != null) {
                   widget.onSubmitAnswer(
-                    QuestionAnswerResults(
-                      surveyQuestionId: widget.quizData.id,
-                      surveySectionId: widget.surveySectionId,
-                      surveyAnswerIdList: _cubit.listAnswerChoosing,
-                    ),
-                  );
+                      QuestionAnswerResults(
+                        surveyQuestionId: widget.quizData.id,
+                        surveySectionId: widget.surveySectionId,
+                        surveyAnswerIdList: _cubit.listAnswerChoosing,
+                      ),
+                      false);
                 }
               }
             },
@@ -176,7 +185,7 @@ class CardCourseQuizSurveyPageState extends State<CardCourseQuizSurveyPage>
                 fontWeight: FontWeight.w700,
                 color: R.color.textDark,
                 height: 1.4),
-        //    maxLines: 2,
+            //    maxLines: 2,
           ),
           SizedBox(height: 20.h),
           Expanded(
@@ -197,18 +206,20 @@ class CardCourseQuizSurveyPageState extends State<CardCourseQuizSurveyPage>
         alignment: Alignment.topCenter,
         child: TextFieldWidget(
           autoFocus: false,
-          controller: _textController,
+          // controller: _textController,
           borderColor: R.color.accentColor,
           maxLength: 1000,
           readOnly: isCompletedSurvey,
-          onChanged: (text) {
+          onSubmitted: (text) {
             if (text != null) {
-              widget.onSubmitAnswer(QuestionAnswerResults(
-                  surveyQuestionId: quizData.id, 
+              widget.onSubmitAnswer(
+                QuestionAnswerResults(
+                  surveyQuestionId: quizData.id,
                   surveySectionId: widget.surveySectionId,
                   content: text.trim(),
                   isTyping: true,
                 ),
+                true,
               );
             }
           },
@@ -237,20 +248,20 @@ class CardCourseQuizSurveyPageState extends State<CardCourseQuizSurveyPage>
           itemBuilder: (context, indexQuestion) {
             final AnswerData data = (quizData.answers ?? [])[indexQuestion];
             return buildQuestion(
-              isCompletedSurvey: isCompletedSurvey,
+                isCompletedSurvey: isCompletedSurvey,
                 data: data,
-      //          isAnsweredQuestion: isAnsweredQuestion,
+                //          isAnsweredQuestion: isAnsweredQuestion,
                 isSingleChoice: getTypeQuestion(quizData.type) ==
                     SurveyQuestionTypes.SingleChoice);
           });
     }
   }
 
-  Widget buildQuestion({
-    required AnswerData data,
-    bool isCompletedSurvey = false,
- // bool isAnsweredQuestion = false, 
-  bool isSingleChoice = true}) {
+  Widget buildQuestion(
+      {required AnswerData data,
+      bool isCompletedSurvey = false,
+      // bool isAnsweredQuestion = false,
+      bool isSingleChoice = true}) {
     final String id = data.id ?? "";
     final bool isSelected = _cubit.listAnswerChoosing.contains(id);
     return Container(
@@ -266,7 +277,7 @@ class CardCourseQuizSurveyPageState extends State<CardCourseQuizSurveyPage>
       child: GestureDetector(
         behavior: HitTestBehavior.translucent,
         onTap: () {
-          if(!isCompletedSurvey){
+          if (!isCompletedSurvey) {
             _cubit.checkBox(id, isSingleChoice);
           }
         },
@@ -286,7 +297,7 @@ class CardCourseQuizSurveyPageState extends State<CardCourseQuizSurveyPage>
                         activeColor: R.color.accentColor,
                         splashRadius: 20,
                         onChanged: (value) {
-                          if(!isCompletedSurvey){
+                          if (!isCompletedSurvey) {
                             _cubit.checkBox(id, isSingleChoice);
                           }
                         },
@@ -297,7 +308,7 @@ class CardCourseQuizSurveyPageState extends State<CardCourseQuizSurveyPage>
                         activeColor: R.color.accentColor,
                         splashRadius: 20,
                         onChanged: (value) {
-                          if(!isCompletedSurvey){
+                          if (!isCompletedSurvey) {
                             _cubit.checkBox(id, isSingleChoice);
                           }
                         }),

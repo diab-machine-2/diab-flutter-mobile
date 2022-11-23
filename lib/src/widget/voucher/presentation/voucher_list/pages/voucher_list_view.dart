@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
+import 'package:medical/src/widget/helper/tracking_manager.dart';
 
 import '../../../data/models/voucherList_response.dart';
 import '../blocs/voucherList_bloc.dart';
@@ -25,6 +26,12 @@ class _VoucherListViewState extends State<VoucherListView> {
     BlocProvider.of<VoucherListBloc>(currentContext)
         .add(EventGetVoucherList(isReload: true));
     return true;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    TrackingManager.analytics.setCurrentScreen(screenName: "Voucher List");
   }
 
   @override

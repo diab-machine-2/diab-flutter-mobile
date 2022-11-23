@@ -12,16 +12,17 @@ import 'package:medical/src/repo/login/login_client.dart';
 import 'package:medical/src/utils/app_storages.dart';
 import 'package:medical/src/utils/length_limit_text_field.dart';
 import 'package:medical/src/utils/navigator_name.dart';
-import 'package:medical/src/widget/HbA1C/widget/CalendarPicker/custom_date_picker2.dart';
-import 'package:medical/src/widget/HbA1C/widget/CalendarPicker/custom_year_picker.dart';
 import 'package:medical/src/widget/base/text_field_custom.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
+import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/profile/widgets/diabetes_status_picker.dart';
 import 'package:medical/src/widget/profile/widgets/gender_picker.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 import '../../repo/user/user_client.dart';
+import '../../widgets/CalendarPicker/custom_date_picker2.dart';
+import '../../widgets/CalendarPicker/custom_year_picker.dart';
 
 class UpdateInfoController extends StatefulWidget {
   final String? type;
@@ -67,6 +68,7 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
                     ? '${widget.appleAccount?.familyName ?? ''} ${widget.appleAccount?.givenName ?? ''}'
                     : '');
     check();
+    TrackingManager.analytics.setCurrentScreen(screenName: "Registration Update Info");
   }
 
   check() async {

@@ -11,11 +11,11 @@ extension PlanTypeDetail on PlanType {
   String get title {
     switch (this) {
       case PlanType.goal:
-        return R.string.title_activity.tr();
+        return R.string.title_activity;
       case PlanType.lesson:
-        return R.string.title_lesson.tr();
+        return R.string.title_lesson;
       case PlanType.activity:
-        return R.string.title_exercise.tr();
+        return R.string.title_exercise;
     }
   }
   int get planTypeIndex {

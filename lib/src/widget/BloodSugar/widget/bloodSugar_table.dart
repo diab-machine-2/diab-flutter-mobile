@@ -7,6 +7,7 @@ import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:medical/src/widget/helper/tracking_manager.dart';
 
 class BloodSugarTableController extends StatefulWidget {
   final String? title;
@@ -28,6 +29,12 @@ BuildContext? currentContext;
 int periodFilterType = 1;
 
 class _BloodSugarTableControllerState extends State<BloodSugarTableController> {
+
+  @override
+  void initState() {
+    super.initState();
+    TrackingManager.analytics.setCurrentScreen(screenName: "Glucose Table");
+  }
   @override
   Widget build(BuildContext context) {
     final width = (MediaQuery.of(context).size.width - 45) / 3;

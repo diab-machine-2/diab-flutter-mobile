@@ -132,8 +132,8 @@ class LoginClient extends FetchClient {
     try {
       // final response = await super.postHttp(path: '/App/Patient/Input', params: params);
       final response = await super.postData(url: '/App/Patient/Input', params: FormData.fromMap(params));
-      logger.i(response.requestOptions);
-      logger.i(response.headers);
+      // logger.i(response.requestOptions);
+      // logger.i(response.headers);
       if (response.statusCode == 200) {
         print('register success');
         return true;

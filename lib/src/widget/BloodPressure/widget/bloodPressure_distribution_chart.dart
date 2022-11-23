@@ -10,6 +10,7 @@ import 'package:medical/src/widget/components/samples/pie_chart/samples/indicato
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:medical/src/widgets/empty_data_box.dart';
 
 class BloodPressureDistributionChart extends StatefulWidget {
   BloodPressureDistributionChart({Key? key}) : super(key: key);
@@ -101,17 +102,16 @@ class BloodPressureDistributionChartState
                       Padding(
                         padding: const EdgeInsets.all(16),
                         child: model.total == 0
-                            ? GestureDetector(
+                            ? EmptyDataBox(
+                                text: 'chỉ số huyết áp',
                                 onTap: () {
                                   Navigator.pushNamed(
                                       context, NavigatorName.add_blood_pressure,
                                       arguments: {'type': 'input', 'id': null});
                                 },
-                                child: Image.asset(
-                                    R.drawable.img_blood_pressure_distribution_empty),
                               )
                             : buildChart(model),
-                      )
+                      ),
                     ],
                   ),
                 );
@@ -208,7 +208,8 @@ class BloodPressureDistributionChartState
                   children: <Widget>[
                     GestureDetector(
                       onTap: () {
-                        Navigator.pushNamed(context, NavigatorName.blood_pressure_table,
+                        Navigator.pushNamed(
+                            context, NavigatorName.blood_pressure_table,
                             arguments: {
                               'title': R.string.grade_3_hypertension.tr(),
                               'bloodPressureType': 6,
@@ -231,7 +232,8 @@ class BloodPressureDistributionChartState
                     ),
                     GestureDetector(
                       onTap: () {
-                        Navigator.pushNamed(context, NavigatorName.blood_pressure_table,
+                        Navigator.pushNamed(
+                            context, NavigatorName.blood_pressure_table,
                             arguments: {
                               'title': R.string.grade_2_hypertension.tr(),
                               'bloodPressureType': 5,
@@ -254,7 +256,8 @@ class BloodPressureDistributionChartState
                     ),
                     GestureDetector(
                       onTap: () {
-                        Navigator.pushNamed(context, NavigatorName.blood_pressure_table,
+                        Navigator.pushNamed(
+                            context, NavigatorName.blood_pressure_table,
                             arguments: {
                               'title': R.string.grade_1_hypertension.tr(),
                               'bloodPressureType': 4,
@@ -277,7 +280,8 @@ class BloodPressureDistributionChartState
                     ),
                     GestureDetector(
                       onTap: () {
-                        Navigator.pushNamed(context, NavigatorName.blood_pressure_table,
+                        Navigator.pushNamed(
+                            context, NavigatorName.blood_pressure_table,
                             arguments: {
                               'title': R.string.normal_high.tr(),
                               'bloodPressureType': 3,
@@ -300,7 +304,8 @@ class BloodPressureDistributionChartState
                     ),
                     GestureDetector(
                       onTap: () {
-                        Navigator.pushNamed(context, NavigatorName.blood_pressure_table,
+                        Navigator.pushNamed(
+                            context, NavigatorName.blood_pressure_table,
                             arguments: {
                               'title': R.string.normal.tr(),
                               'bloodPressureType': 2,
@@ -322,7 +327,8 @@ class BloodPressureDistributionChartState
                     ),
                     GestureDetector(
                       onTap: () {
-                        Navigator.pushNamed(context, NavigatorName.blood_pressure_table,
+                        Navigator.pushNamed(
+                            context, NavigatorName.blood_pressure_table,
                             arguments: {
                               'title': R.string.low.tr(),
                               'bloodPressureType': 1,

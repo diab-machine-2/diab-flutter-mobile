@@ -9,6 +9,7 @@ import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/response/filter_data_response.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
+import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widgets/button_widget.dart';
 import 'package:medical/src/widgets/common_page.dart';
 import 'package:medical/src/widgets/custom_checkbox_widget.dart';
@@ -35,6 +36,7 @@ class _LessonFilterPageState extends State<LessonFilterPage> {
     final AppRepository appRepository = AppRepository();
     _cubit = LessonFilterCubit(appRepository, widget.filterData);
     _cubit.getFilterData();
+    TrackingManager.analytics.setCurrentScreen(screenName: "Lesson Filter");
   }
 
   @override

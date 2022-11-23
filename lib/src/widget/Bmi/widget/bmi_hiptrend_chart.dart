@@ -16,6 +16,7 @@ import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/modal/error/error_model.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:medical/src/widgets/empty_data_box.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 
 class BmiHipTrendChart extends StatefulWidget {
@@ -27,7 +28,6 @@ class BmiHipTrendChart extends StatefulWidget {
 
 class BmiHipTrendChartState extends State<BmiHipTrendChart>
     with AutomaticKeepAliveClientMixin<BmiHipTrendChart> {
-
   @override
   bool get wantKeepAlive => true;
 
@@ -84,203 +84,219 @@ class BmiHipTrendChartState extends State<BmiHipTrendChart>
               : VisibilityDetector(
                   key: Key('bmi_hiptrend_chart'),
                   onVisibilityChanged: (visibilityInfo) {
-                    var visiblePercentage = visibilityInfo.visibleFraction * 100;
-                    if(visiblePercentage == 0){
+                    var visiblePercentage =
+                        visibilityInfo.visibleFraction * 100;
+                    if (visiblePercentage == 0) {
                       previousDate = 0;
                     }
                   },
                   child: Container(
-                  color: R.color.transparent,
-                  padding: EdgeInsets.all(16),
-                  child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(R.string.waist_trend.tr(),
-                                style: TextStyle(
-                                    fontSize: 20, fontWeight: FontWeight.w700)),
-                            GestureDetector(
-                              onTap: () {
-                                showDialog(
-                                  barrierColor:
-                                      R.color.color0xff003F38.withOpacity(0.5),
-                                  context: context,
-                                  builder: (_) => CustomNumPicker(
-                                      callback: (number) {
-                                        if (number != null)
-                                        submitTarget(number);
-                                      },
-                                      title: R.string.muc_tieu_vong_eo.tr(),
-                                      max: 180,
-                                      numberDefault: (model!.goal ?? 60).toInt(),
-                                      unit: R.string.cm.tr()),
-                                );
-                              },
-                              child: Container(
-                                color: R.color.transparent,
-                                child: Row(
-                                  children: [
-                                    Image.asset(
-                                      R.drawable.ic_circle_plus_exe,
-                                      width: 24,
-                                      height: 24,
-                                    ),
-                                    SizedBox(width: 4),
-                                    Text(R.string.muc_tieu_moi.tr(),
-                                        style: TextStyle(
-                                            color: R.color.mainColor,
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.w700)),
-                                  ],
+                    color: R.color.transparent,
+                    padding: EdgeInsets.all(16),
+                    child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(R.string.waist_trend.tr(),
+                                  style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.w700)),
+                              GestureDetector(
+                                onTap: () {
+                                  showDialog(
+                                    barrierColor: R.color.color0xff003F38
+                                        .withOpacity(0.5),
+                                    context: context,
+                                    builder: (_) => CustomNumPicker(
+                                        callback: (number) {
+                                          if (number != null)
+                                            submitTarget(number);
+                                        },
+                                        title: R.string.muc_tieu_vong_eo.tr(),
+                                        max: 180,
+                                        numberDefault:
+                                            (model!.goal ?? 60).toInt(),
+                                        unit: R.string.cm.tr()),
+                                  );
+                                },
+                                child: Container(
+                                  color: R.color.transparent,
+                                  child: Row(
+                                    children: [
+                                      Image.asset(
+                                        R.drawable.ic_circle_plus_exe,
+                                        width: 24,
+                                        height: 24,
+                                      ),
+                                      SizedBox(width: 4),
+                                      Text(R.string.muc_tieu_moi.tr(),
+                                          style: TextStyle(
+                                              color: R.color.mainColor,
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.w700)),
+                                    ],
+                                  ),
                                 ),
                               ),
-                            ),
-                          ],
-                        ),
-                        SizedBox(height: 20),
-                        Container(
-                            width: width,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(16),
-                              color: R.color.white,
-                              boxShadow: [
-                                BoxShadow(
-                                  color: R.color.grey.withOpacity(0.5),
-                                  spreadRadius: 1,
-                                  blurRadius: 7,
-                                  offset: Offset(
-                                      0, 2), // changes position of shadow
-                                ),
-                              ],
-                            ),
-                            child: Column(
-                              children: [
-                                Padding(
-                                  padding: EdgeInsets.only(
-                                      top: 18, bottom: 18, left: 20, right: 20),
-                                  child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text(R.string.hien_tai.tr(),
-                                                style: R.style.normalTextStyle),
-                                            Row(
-                                              children: [
-                                                // model. ?
-                                                model == null ||
-                                                        model.current == 0
-                                                    ? Text('--',
-                                                        style: TextStyle(
-                                                            color: R.color.textDark,
-                                                            fontSize: 24,
-                                                            fontWeight:
-                                                                FontWeight
-                                                                    .w700))
-                                                    : Text(
-                                                        model.current!
-                                                            .toInt()
-                                                            .toString(),
-                                                        style: TextStyle(
-                                                            fontFamily: 'Viga',
-                                                            color: R.color.textDark,
-                                                            fontSize: 24,
-                                                            fontWeight:
-                                                                FontWeight
-                                                                    .w400)),
-                                                Padding(
-                                                  padding:
-                                                      const EdgeInsets.only(
-                                                          top: 6.0,
-                                                          left: 2,
-                                                          right: 2),
-                                                  child: Text(
-                                                    R.string.cm.tr(),
-                                                    style: R.style.normalTextStyle,
+                            ],
+                          ),
+                          SizedBox(height: 20),
+                          Container(
+                              width: width,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(16),
+                                color: R.color.white,
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: R.color.grey.withOpacity(0.5),
+                                    spreadRadius: 1,
+                                    blurRadius: 7,
+                                    offset: Offset(
+                                        0, 2), // changes position of shadow
+                                  ),
+                                ],
+                              ),
+                              child: Column(
+                                children: [
+                                  Padding(
+                                    padding: EdgeInsets.only(
+                                        top: 18,
+                                        bottom: 18,
+                                        left: 20,
+                                        right: 20),
+                                    child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text(R.string.hien_tai.tr(),
+                                                  style:
+                                                      R.style.normalTextStyle),
+                                              Row(
+                                                children: [
+                                                  // model. ?
+                                                  model == null ||
+                                                          model.current == 0
+                                                      ? Text('--',
+                                                          style: TextStyle(
+                                                              color: R.color
+                                                                  .textDark,
+                                                              fontSize: 24,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w700))
+                                                      : Text(
+                                                          model.current!
+                                                              .toInt()
+                                                              .toString(),
+                                                          style: TextStyle(
+                                                              fontFamily:
+                                                                  'Viga',
+                                                              color: R.color
+                                                                  .textDark,
+                                                              fontSize: 24,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w400)),
+                                                  Padding(
+                                                    padding:
+                                                        const EdgeInsets.only(
+                                                            top: 6.0,
+                                                            left: 2,
+                                                            right: 2),
+                                                    child: Text(
+                                                      R.string.cm.tr(),
+                                                      style: R.style
+                                                          .normalTextStyle,
+                                                    ),
                                                   ),
-                                                ),
-                                              ],
-                                            ),
-                                          ],
-                                        ),
-                                        SizedBox(
-                                          width: 16,
-                                        ),
-                                        Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text(R.string.muc_tieu.tr(),
-                                                style: R.style.normalTextStyle),
-                                            Row(
-                                              children: [
-                                                model.goal == null
-                                                    ? Text('--',
-                                                        style: TextStyle(
-                                                            color: R.color.textDark,
-                                                            fontSize: 24,
-                                                            fontWeight:
-                                                                FontWeight
-                                                                    .w700))
-                                                    : Text(
-                                                        model.goal!
-                                                            .toInt()
-                                                            .toString(),
-                                                        style: TextStyle(
-                                                            fontFamily: 'Viga',
-                                                            color:  R.color.green,
-                                                            fontSize: 24,
-                                                            fontWeight:
-                                                                FontWeight
-                                                                    .w400)),
-                                                Padding(
-                                                  padding:
-                                                      const EdgeInsets.only(
-                                                          top: 6.0, left: 2),
-                                                  child: Text(
-                                                    R.string.cm.tr(),
-                                                    style: R.style.normalTextStyle,
+                                                ],
+                                              ),
+                                            ],
+                                          ),
+                                          SizedBox(
+                                            width: 16,
+                                          ),
+                                          Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text(R.string.muc_tieu.tr(),
+                                                  style:
+                                                      R.style.normalTextStyle),
+                                              Row(
+                                                children: [
+                                                  model.goal == null
+                                                      ? Text('--',
+                                                          style: TextStyle(
+                                                              color: R.color
+                                                                  .textDark,
+                                                              fontSize: 24,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w700))
+                                                      : Text(
+                                                          model.goal!
+                                                              .toInt()
+                                                              .toString(),
+                                                          style: TextStyle(
+                                                              fontFamily:
+                                                                  'Viga',
+                                                              color:
+                                                                  R.color.green,
+                                                              fontSize: 24,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w400)),
+                                                  Padding(
+                                                    padding:
+                                                        const EdgeInsets.only(
+                                                            top: 6.0, left: 2),
+                                                    child: Text(
+                                                      R.string.cm.tr(),
+                                                      style: R.style
+                                                          .normalTextStyle,
+                                                    ),
                                                   ),
-                                                ),
-                                              ],
-                                            ),
-                                          ],
+                                                ],
+                                              ),
+                                            ],
+                                          ),
+                                        ]),
+                                  ),
+                                  model.trendItems == null
+                                      ? EmptyDataBox(
+                                          text: "chỉ số Cân nặng",
+                                          onTap: () {
+                                            Navigator.pushNamed(
+                                                context, NavigatorName.add_bmi,
+                                                arguments: {
+                                                  'type': 'input',
+                                                });
+                                          },
+                                        )
+                                      : Container(
+                                          decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(16),
+                                            color: R.color.white,
+                                          ),
+                                          child: Padding(
+                                              padding: const EdgeInsets.only(
+                                                  left: 16, right: 16),
+                                              child: buildChart(model)),
                                         ),
-                                      ]),
-                                ),
-                                model.trendItems == null
-                                    ? GestureDetector(
-                                        onTap: () {
-                                          Navigator.pushNamed(
-                                              context, NavigatorName.add_bmi,
-                                              arguments: {
-                                                'type': 'input',
-                                              });
-                                        },
-                                        child: Image.asset(
-                                            R.drawable.img_nothing_chart_weight),
-                                      )
-                                    : Container(
-                                        decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(16),
-                                          color: R.color.white,
-                                        ),
-                                        child: Padding(
-                                            padding: const EdgeInsets.only(
-                                                left: 16, right: 16),
-                                            child: buildChart(model)),
-                                      ),
-                              ],
-                            )),
-                        // buildDescription(model)
-                      ]),
-                ),);
+                                ],
+                              )),
+                          // buildDescription(model)
+                        ]),
+                  ),
+                );
         }));
   }
 
@@ -407,7 +423,9 @@ class BmiHipTrendChartState extends State<BmiHipTrendChart>
                                         color: R.color.grayComponentBorder,
                                       ),
                                     )))),
-                    model.goal == null || model.goal! < minY || model.goal! > maxY
+                    model.goal == null ||
+                            model.goal! < minY ||
+                            model.goal! > maxY
                         ? SizedBox()
                         : Container(
                             height: 300,
@@ -438,8 +456,10 @@ class BmiHipTrendChartState extends State<BmiHipTrendChart>
                         child: LineChart(
                           LineChartData(
                             lineTouchData: LineTouchData(
-                                 getTouchLineStart: (barData, index) => -double.infinity, // default: from bottom
-                                getTouchLineEnd: (barData, index) => double.infinity, //to top
+                                getTouchLineStart: (barData, index) =>
+                                    -double.infinity, // default: from bottom
+                                getTouchLineEnd: (barData, index) =>
+                                    double.infinity, //to top
                                 getTouchedSpotIndicator:
                                     (LineChartBarData barData,
                                         List<int> spotIndexes) {
@@ -483,7 +503,8 @@ class BmiHipTrendChartState extends State<BmiHipTrendChart>
                                         lineBarSpot.y.round() == lineBarSpot.y
                                             ? lineBarSpot.y.round().toString() +
                                                 ' ${R.string.cm.tr()}'
-                                            : lineBarSpot.y.toString() + ' ${R.string.cm.tr()}',
+                                            : lineBarSpot.y.toString() +
+                                                ' ${R.string.cm.tr()}',
                                         TextStyle(
                                             color: R.color.white,
                                             fontWeight: FontWeight.bold),
@@ -491,17 +512,18 @@ class BmiHipTrendChartState extends State<BmiHipTrendChart>
                                     }).toList();
                                   },
                                 ),
-                                touchCallback: (FlTouchEvent event, LineTouchResponse? lineTouch) {
+                                touchCallback: (FlTouchEvent event,
+                                    LineTouchResponse? lineTouch) {
                                   previousDate = 0;
                                   if (lineTouch?.lineBarSpots?.length == 1 &&
                                       event is! FlLongPressEnd &&
                                       event is! FlPanEndEvent) {
                                     final value = lineTouch?.lineBarSpots?[0].x;
-                                    
+
                                     if (value != null) {
-                                 //   setState(() {
+                                      //   setState(() {
                                       touchIndex = value.toInt();
-                                 //   });
+                                      //   });
                                     }
                                   } else {
                                     touchIndex = -1;
@@ -517,11 +539,9 @@ class BmiHipTrendChartState extends State<BmiHipTrendChart>
                                 reservedSize: -16,
                                 getTextStyles: (context, value) {
                                   return TextStyle(
-                                      color:
-                                        touchIndex == value.toInt() ? 
-                                        R.color.black
-                                            : R.color.color0xffC0C2C5
-                                        ,
+                                      color: touchIndex == value.toInt()
+                                          ? R.color.black
+                                          : R.color.color0xffC0C2C5,
                                       fontSize: 14,
                                       fontWeight: FontWeight.normal);
                                 },
@@ -530,15 +550,18 @@ class BmiHipTrendChartState extends State<BmiHipTrendChart>
                                     return '';
                                   }
                                   final date = dates[value.toInt()];
-                                  
-                                  if(previousDate == date) return '';
+
+                                  if (previousDate == date) return '';
                                   previousDate = date;
-                                  
+
                                   if (date == null) {
                                     return '';
                                   } else {
-                                    final dateTime = DateTime.fromMillisecondsSinceEpoch(date * 1000);
-                                    if(dateTime.hour > 0 && dateTime.hour < 7){
+                                    final dateTime =
+                                        DateTime.fromMillisecondsSinceEpoch(
+                                            date * 1000);
+                                    if (dateTime.hour > 0 &&
+                                        dateTime.hour < 7) {
                                       return convertToGMT0(date, 'dd/MM');
                                     } else {
                                       return convertToUTC(date, 'dd/MM');
@@ -582,8 +605,7 @@ class BmiHipTrendChartState extends State<BmiHipTrendChart>
                   width: 8,
                 ),
                 Expanded(
-                  child: Text(model.message!,
-                      style: R.style.normalTextStyle),
+                  child: Text(model.message!, style: R.style.normalTextStyle),
                 ),
               ],
             ),

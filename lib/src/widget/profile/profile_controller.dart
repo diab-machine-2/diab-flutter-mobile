@@ -266,11 +266,10 @@ class _ProfileControllerState extends State<ProfileController> with Observer {
                   //const SizedBox(height: 16),
                   buildAction(
                       R.string.profile_information.tr(), R.drawable.ic_user, 0),
-                  buildAction(
-                      "Mời bạn bè dùng App DiaB", R.drawable.ic_share, 6),
+                  buildAction(R.string.share_app.tr(), R.drawable.ic_share, 6),
                   buildAction(R.string.shared_profile_list.tr(),
                       R.drawable.ic_share, 1),
-                  buildAction('Kết nối thiết bị, ứng dụng',
+                  buildAction(R.string.connect_device.tr(),
                       R.drawable.ic_heart_connect, 7),
                   buildAction(
                       R.string.user_manual.tr(), R.drawable.ic_question, 2),
@@ -279,7 +278,7 @@ class _ProfileControllerState extends State<ProfileController> with Observer {
                   // buildAction(R.string.contact_diab.tr(), R.drawable.ic_contact, 4),
                   buildAction(
                       R.string.password.tr(), R.drawable.ic_password, 5),
-                  buildAction("Ưu đãi của bạn", R.icons.ic_gift, 8),
+                  buildAction(R.string.your_voucher.tr(), R.icons.ic_gift, 8),
                   SizedBox(height: 15),
                 ],
               ),
@@ -362,7 +361,10 @@ class _ProfileControllerState extends State<ProfileController> with Observer {
         } else if (index == 5) {
           Navigator.pushNamed(context, NavigatorName.change_password);
         } else if (index == 6) {
-          Navigator.pushNamed(context, NavigatorName.share_app_detail);
+          String? shareLink = DynamicLinkConfig.instance.shareLink;
+          if (shareLink != null) {
+            AppShare.instance.userReferralCode(context, shareLink);
+          }
         } else if (index == 7) {
           Navigator.pushNamed(context, NavigatorName.connect_device_app);
         } else if (index == 8) {

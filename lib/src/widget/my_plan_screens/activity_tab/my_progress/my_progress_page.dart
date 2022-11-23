@@ -10,6 +10,7 @@ import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/response/report_model.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
+import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widgets/common_page.dart';
 import 'package:medical/src/widgets/custom_progress_chart.dart';
 import 'package:medical/src/widgets/pdf_viewer_widget.dart';
@@ -46,6 +47,7 @@ class _MyProgressPageState extends State<MyProgressPage> {
     final AppRepository appRepository = AppRepository();
     _cubit = MyProgressCubit(appRepository, widget.reports, widget.hasNewReports);
     _cubit.initData();
+    TrackingManager.analytics.setCurrentScreen(screenName: 'My Progress');    
   }
 
   @override

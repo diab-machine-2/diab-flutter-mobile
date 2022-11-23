@@ -12,6 +12,7 @@ import 'package:medical/src/widget/BloodPressure/bloodPressure_detail_tabbar.dar
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:medical/src/widgets/empty_data_box.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 
 class HeartChart extends StatefulWidget {
@@ -80,14 +81,15 @@ class HeartChartState extends State<HeartChart>
                   height: 240,
                   child: Center(child: CircularProgressIndicator()))
               : VisibilityDetector(
-                key: Key('heart_chart'),
-                onVisibilityChanged: (visibilityInfo) {
-                  var visiblePercentage = visibilityInfo.visibleFraction * 100;
-                  if(visiblePercentage == 0){
-                    previousDate = 0;
-                  }
-                },
-                child: Container(
+                  key: Key('heart_chart'),
+                  onVisibilityChanged: (visibilityInfo) {
+                    var visiblePercentage =
+                        visibilityInfo.visibleFraction * 100;
+                    if (visiblePercentage == 0) {
+                      previousDate = 0;
+                    }
+                  },
+                  child: Container(
                     color: R.color.transparent,
                     padding: EdgeInsets.only(left: 18, right: 18),
                     child: Column(
@@ -108,14 +110,16 @@ class HeartChartState extends State<HeartChart>
                           ),
                           SizedBox(height: 14),
                           model.trendItems.items.length == 0
-                              ? GestureDetector(
+                              ? EmptyDataBox(
+                                  text: 'chỉ số huyết áp',
                                   onTap: () {
-                                    Navigator.pushNamed(
-                                        context, NavigatorName.add_blood_pressure,
-                                        arguments: {'type': 'input', 'id': null});
+                                    Navigator.pushNamed(context,
+                                        NavigatorName.add_blood_pressure,
+                                        arguments: {
+                                          'type': 'input',
+                                          'id': null
+                                        });
                                   },
-                                  child: Image.asset(
-                                      R.drawable.img_blood_pressure_trend_empty),
                                 )
                               : Container(
                                   decoration: BoxDecoration(
@@ -136,7 +140,7 @@ class HeartChartState extends State<HeartChart>
                           SizedBox(height: 26),
                         ]),
                   ),
-              );
+                );
         }));
   }
 
@@ -255,12 +259,13 @@ class HeartChartState extends State<HeartChart>
                                   previousDate = 0;
                                   if (event is! FlLongPressEnd &&
                                       event is! FlPanEndEvent) {
-                                    if (lineTouch?.lineBarSpots?.isNotEmpty == true) {
+                                    if (lineTouch?.lineBarSpots?.isNotEmpty ==
+                                        true) {
                                       final double value =
                                           lineTouch!.lineBarSpots!.first.x;
-                                   //   setState(() {
-                                        touchIndex = value.toInt();
-                                  //    });
+                                      //   setState(() {
+                                      touchIndex = value.toInt();
+                                      //    });
                                     }
                                   } else {
                                     touchIndex = -1;
@@ -276,11 +281,9 @@ class HeartChartState extends State<HeartChart>
                                 reservedSize: -16,
                                 getTextStyles: (context, value) {
                                   return TextStyle(
-                                      color: 
-                                      touchIndex == value.toInt() ? 
-                                      R.color.black
-                                          : R.color.color0xffC0C2C5
-                                          ,
+                                      color: touchIndex == value.toInt()
+                                          ? R.color.black
+                                          : R.color.color0xffC0C2C5,
                                       fontSize: 14,
                                       fontWeight: FontWeight.normal);
                                 },
@@ -289,13 +292,16 @@ class HeartChartState extends State<HeartChart>
                                     return '';
                                   }
                                   final date = dates[value.toInt()];
-                                  if(previousDate == date) return '';
+                                  if (previousDate == date) return '';
                                   previousDate = date;
                                   if (date == null) {
                                     return '';
                                   } else {
-                                    final dateTime = DateTime.fromMillisecondsSinceEpoch(date * 1000);
-                                    if(dateTime.hour > 0 && dateTime.hour < 7){
+                                    final dateTime =
+                                        DateTime.fromMillisecondsSinceEpoch(
+                                            date * 1000);
+                                    if (dateTime.hour > 0 &&
+                                        dateTime.hour < 7) {
                                       return convertToGMT0(date, 'dd/MM');
                                     } else {
                                       return convertToUTC(date, 'dd/MM');
@@ -326,12 +332,13 @@ class HeartChartState extends State<HeartChart>
           ]),
           GestureDetector(
             onTap: () {
-              Navigator.pushNamed(context, NavigatorName.blood_pressure_table, arguments: {
-                'title': '',
-                'bloodPressureType': null,
-                'periodFilterType': periodFilterType,
-                'isPulseRate': true
-              });
+              Navigator.pushNamed(context, NavigatorName.blood_pressure_table,
+                  arguments: {
+                    'title': '',
+                    'bloodPressureType': null,
+                    'periodFilterType': periodFilterType,
+                    'isPulseRate': true
+                  });
             },
             child: Container(
               color: R.color.transparent,
@@ -375,7 +382,8 @@ class HeartChartState extends State<HeartChart>
                       radius: trends.length - 1 == index ? 6.5 : 4,
                       color: toColor(model.colors!.first),
                       strokeWidth: trends.length - 1 == index ? 18 : 0,
-                      strokeColor: toColor(model.colors!.first).withOpacity(0.2),
+                      strokeColor:
+                          toColor(model.colors!.first).withOpacity(0.2),
                     );
                   }),
               belowBarData: BarAreaData(

@@ -10,6 +10,7 @@ import 'package:medical/src/modal/food/food_statistic_diet_model.dart';
 import 'package:medical/src/widget/Food/food_detail_tabbar.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
+import 'package:medical/src/widgets/empty_data_box.dart';
 
 import 'add_target_food.dart';
 
@@ -91,19 +92,16 @@ class FoodChartState extends State<FoodChart>
                         if (isEnergyTab
                             ? model.energyChart.isEmpty
                             : model.carbChart.isEmpty)
-                          GestureDetector(
+                          EmptyDataBox(
+                            text: "chỉ số Dinh dưỡng",
                             onTap: () {
                               showDialog(
                                 barrierColor:
                                     R.color.color0xff003F38.withOpacity(0.5),
                                 context: context,
-                                builder: (_) => const AddTargetFood(
-                                    goal: 23),
+                                builder: (_) => const AddTargetFood(goal: 23),
                               );
                             },
-                            child: Image.asset(
-                              R.drawable.img_food_empty,
-                            ),
                           )
                         else
                           Container(

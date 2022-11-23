@@ -6,6 +6,7 @@ import 'package:medical/src/modal/glucose/glucose_comparer.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:medical/src/widget/helper/tracking_manager.dart';
 
 class BloodSugarTableCompareController extends StatefulWidget {
   final List<ComparerModel>? model;
@@ -25,6 +26,13 @@ int periodFilterType = 1;
 
 class _BloodSugarTableCompareControllerState
     extends State<BloodSugarTableCompareController> {
+
+      @override
+  void initState() {
+    super.initState();
+    TrackingManager.analytics.setCurrentScreen(screenName: "Glucose Compare Table");
+  }
+
   @override
   Widget build(BuildContext context) {
     final width = (MediaQuery.of(context).size.width - 32) / 3;

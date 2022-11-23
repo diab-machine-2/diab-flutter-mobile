@@ -12,6 +12,7 @@ import 'package:medical/src/widget/BloodPressure/bloodPressure_detail_tabbar.dar
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:medical/src/widgets/empty_data_box.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 
 class BloodPressureChart extends StatefulWidget {
@@ -81,14 +82,15 @@ class BloodPressureChartState extends State<BloodPressureChart>
                   height: 240,
                   child: Center(child: CircularProgressIndicator()))
               : VisibilityDetector(
-                key: Key('blood_pressure_chart'),
-                onVisibilityChanged: (visibilityInfo) {
-                  var visiblePercentage = visibilityInfo.visibleFraction * 100;
-                  if(visiblePercentage == 0){
-                    previousDate = 0;
-                  }
-                },
-                child: Container(
+                  key: Key('blood_pressure_chart'),
+                  onVisibilityChanged: (visibilityInfo) {
+                    var visiblePercentage =
+                        visibilityInfo.visibleFraction * 100;
+                    if (visiblePercentage == 0) {
+                      previousDate = 0;
+                    }
+                  },
+                  child: Container(
                     color: R.color.transparent,
                     padding: EdgeInsets.only(left: 18, right: 18),
                     child: Column(
@@ -109,14 +111,16 @@ class BloodPressureChartState extends State<BloodPressureChart>
                           ),
                           SizedBox(height: 14),
                           model.trendItems.items.length == 0
-                              ? GestureDetector(
+                              ? EmptyDataBox(
+                                  text: 'chỉ số huyết áp',
                                   onTap: () {
-                                    Navigator.pushNamed(
-                                        context, NavigatorName.add_blood_pressure,
-                                        arguments: {'type': 'input', 'id': null});
+                                    Navigator.pushNamed(context,
+                                        NavigatorName.add_blood_pressure,
+                                        arguments: {
+                                          'type': 'input',
+                                          'id': null
+                                        });
                                   },
-                                  child: Image.asset(
-                                      R.drawable.img_blood_pressure_trend_empty),
                                 )
                               : Container(
                                   decoration: BoxDecoration(
@@ -137,7 +141,7 @@ class BloodPressureChartState extends State<BloodPressureChart>
                           SizedBox(height: 26),
                         ]),
                   ),
-              );
+                );
         }));
   }
 
@@ -219,8 +223,10 @@ class BloodPressureChartState extends State<BloodPressureChart>
                         child: LineChart(
                           LineChartData(
                             lineTouchData: LineTouchData(
-                                getTouchLineStart: (barData, index) => -double.infinity, // default: from bottom
-                                getTouchLineEnd: (barData, index) => double.infinity, //to top
+                                getTouchLineStart: (barData, index) =>
+                                    -double.infinity, // default: from bottom
+                                getTouchLineEnd: (barData, index) =>
+                                    double.infinity, //to top
                                 getTouchedSpotIndicator:
                                     (LineChartBarData barData,
                                         List<int> spotIndexes) {
@@ -262,15 +268,16 @@ class BloodPressureChartState extends State<BloodPressureChart>
                                     }).toList();
                                   },
                                 ),
-                                touchCallback: (FlTouchEvent event, LineTouchResponse? lineTouch) {
+                                touchCallback: (FlTouchEvent event,
+                                    LineTouchResponse? lineTouch) {
                                   previousDate = 0;
                                   if (event is! FlLongPressEnd &&
                                       event is! FlPanEndEvent) {
                                     final value = lineTouch?.lineBarSpots?[0].x;
                                     if (value != null) {
-                                    //  setState(() {
-                                        touchIndex = value.toInt();
-                                    //  });
+                                      //  setState(() {
+                                      touchIndex = value.toInt();
+                                      //  });
                                     }
                                   } else {
                                     touchIndex = -1;
@@ -286,11 +293,9 @@ class BloodPressureChartState extends State<BloodPressureChart>
                                 reservedSize: -16,
                                 getTextStyles: (context, value) {
                                   return TextStyle(
-                                      color: 
-                                        touchIndex == value.toInt() ? 
-                                        R.color.black
-                                            : R.color.color0xffC0C2C5
-                                        ,
+                                      color: touchIndex == value.toInt()
+                                          ? R.color.black
+                                          : R.color.color0xffC0C2C5,
                                       fontSize: 14,
                                       fontWeight: FontWeight.normal);
                                 },
@@ -299,13 +304,16 @@ class BloodPressureChartState extends State<BloodPressureChart>
                                     return '';
                                   }
                                   final date = dates[value.toInt()];
-                                  if(previousDate == date) return '';
+                                  if (previousDate == date) return '';
                                   previousDate = date;
                                   if (date == null) {
                                     return '';
                                   } else {
-                                    final dateTime = DateTime.fromMillisecondsSinceEpoch(date * 1000);
-                                    if(dateTime.hour > 0 && dateTime.hour < 7){
+                                    final dateTime =
+                                        DateTime.fromMillisecondsSinceEpoch(
+                                            date * 1000);
+                                    if (dateTime.hour > 0 &&
+                                        dateTime.hour < 7) {
                                       return convertToGMT0(date, 'dd/MM');
                                     } else {
                                       return convertToUTC(date, 'dd/MM');
@@ -351,20 +359,21 @@ class BloodPressureChartState extends State<BloodPressureChart>
           SizedBox(height: 16),
           GestureDetector(
             onTap: () {
-              Navigator.pushNamed(context, NavigatorName.blood_pressure_table, arguments: {
-                'title': '',
-                'bloodPressureType': null,
-                'periodFilterType': periodFilterType,
-                'isPulseRate': false
-              });
+              Navigator.pushNamed(context, NavigatorName.blood_pressure_table,
+                  arguments: {
+                    'title': '',
+                    'bloodPressureType': null,
+                    'periodFilterType': periodFilterType,
+                    'isPulseRate': false
+                  });
             },
             child: Container(
               color: R.color.transparent,
               child:
                   Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                Text(R.string.xem_chi_tiet.tr(), style: TextStyle(color: R.color.mainColor)),
-                Image.asset(R.drawable.ic_arrow_right,
-                    width: 20, height: 20)
+                Text(R.string.xem_chi_tiet.tr(),
+                    style: TextStyle(color: R.color.mainColor)),
+                Image.asset(R.drawable.ic_arrow_right, width: 20, height: 20)
               ]),
             ),
           )
@@ -400,7 +409,8 @@ class BloodPressureChartState extends State<BloodPressureChart>
                       radius: trends.length - 1 == index ? 6.5 : 4,
                       color: toColor(model.colors!.first),
                       strokeWidth: trends.length - 1 == index ? 18 : 0,
-                      strokeColor: toColor(model.colors!.first).withOpacity(0.2),
+                      strokeColor:
+                          toColor(model.colors!.first).withOpacity(0.2),
                     );
                   }),
               belowBarData: BarAreaData(

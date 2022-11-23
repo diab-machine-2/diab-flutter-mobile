@@ -11,6 +11,7 @@ import 'package:medical/src/widget/Emotion/widget/emotion_detail.dart';
 import 'package:medical/src/widget/HbA1C/widget/description/description.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/components/custom_action_descriptipn.dart';
+import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/tabbar/action_list_panel.dart';
 import 'package:medical/src/widget/tabbar/fillter_bloodSugar_panel.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -53,6 +54,7 @@ class _EmotionDetailTabbarControllerState extends State<EmotionDetailTabbarContr
     //     });
     checkShowDes();
     loadDescription();
+    TrackingManager.analytics.setCurrentScreen(screenName: "Emotion Detail");
   }
 
   @override
@@ -243,7 +245,7 @@ class ActionFilter extends StatefulWidget {
 }
 
 class _ActionFilterState extends State<ActionFilter> {
-  String name = R.string.number_of_days.tr(args: ['7']);
+  String name = R.string.filter_day.tr(args: ['7']);
   int selectedIndex = 0;
 
   @override

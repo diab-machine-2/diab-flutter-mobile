@@ -7,6 +7,7 @@ import 'package:medical/src/widget/base/text_field_custom.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/modal/error/error_model.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:medical/src/widget/helper/tracking_manager.dart';
 
 class ForgotPasswordController extends StatefulWidget {
   @override
@@ -17,6 +18,12 @@ class ForgotPasswordController extends StatefulWidget {
 class _ForgotPasswordControllerState extends State<ForgotPasswordController> {
   final GlobalKey<TextFieldCustomState> phoneKey = GlobalKey();
   String phone = '';
+
+  @override
+  void initState() {
+    super.initState();
+    TrackingManager.analytics.setCurrentScreen(screenName: "Forget Password");
+  }
   @override
   Widget build(BuildContext context) {
     return GestureDetector(

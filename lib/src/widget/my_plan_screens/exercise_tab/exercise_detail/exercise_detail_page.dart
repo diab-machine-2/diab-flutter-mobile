@@ -9,6 +9,7 @@ import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/response/exercise_movement_response.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
+import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widgets/button_widget.dart';
 
 import '../exercise_feedback/exercise_feedback.dart';
@@ -31,6 +32,7 @@ class _ExerciseDetailState extends State<ExerciseDetail> {
     final AppRepository appRepository = AppRepository();
     _cubit = ExerciseDetailCubit(appRepository);
     _cubit.initData(widget.exerciseData, context);
+    TrackingManager.analytics.setCurrentScreen(screenName: "Exercise Detail");
   }
 
   @override

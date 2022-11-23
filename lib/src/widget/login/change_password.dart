@@ -6,6 +6,7 @@ import 'package:medical/src/widget/base/text_field_custom.dart';
 import 'package:medical/src/modal/error/error_model.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:medical/src/widget/helper/tracking_manager.dart';
 
 class ChangePasswordController extends StatefulWidget {
   final String? phone;
@@ -24,6 +25,12 @@ class _ChangePasswordControllerState extends State<ChangePasswordController> {
   String currentPassword = '';
   String password = '';
   String newPassword = '';
+
+  @override
+  void initState() {
+    super.initState();
+    TrackingManager.analytics.setCurrentScreen(screenName: "Change Password");
+  }
 
   @override
   Widget build(BuildContext context) {

@@ -16,6 +16,7 @@ import 'package:medical/src/widget/base/base_state.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:medical/src/widget/helper/tracking_manager.dart';
 
 import '../../../widgets/network_image_widget.dart';
 
@@ -61,6 +62,7 @@ class _AddWorkControllerState extends BaseState<AddWorkController> {
     }
     loadData();
     loadDescription();
+    TrackingManager.analytics.setCurrentScreen(screenName: "Emotion Input");
   }
 
   void dispose() {

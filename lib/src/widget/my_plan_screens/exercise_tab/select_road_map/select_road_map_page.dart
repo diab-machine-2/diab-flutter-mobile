@@ -9,6 +9,7 @@ import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/response/list_roadmap_response.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
+import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/notice_change/notice_change_page.dart';
 import 'package:medical/src/widgets/button_widget.dart';
 import 'package:medical/src/widgets/common_page.dart';
@@ -33,6 +34,7 @@ class _SelectRoadMapPageState extends State<SelectRoadMapPage> {
     final AppRepository appRepository = AppRepository();
     _cubit = SelectRoadMapCubit(appRepository);
     _cubit.getRoadAppRoadMap();
+    TrackingManager.analytics.setCurrentScreen(screenName: "Exercise Route Selection");
   }
 
   @override

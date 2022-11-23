@@ -14,6 +14,7 @@ import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/card_course_quiz/card_course_quiz.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
+import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widgets/button_widget.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
 
@@ -28,9 +29,12 @@ class SurveyQuestionPage extends StatefulWidget {
   final SurveyData surveyData;
   List<String> listAnsweredQuestionId;
 
-  SurveyQuestionPage(
-      {Key? key, required this.index, required this.surveyData, required this.listAnsweredQuestionId,})
-      : super(key: key);
+  SurveyQuestionPage({
+    Key? key,
+    required this.index,
+    required this.surveyData,
+    required this.listAnsweredQuestionId,
+  }) : super(key: key);
 
   @override
   _SurveyQuestionPageState createState() => _SurveyQuestionPageState();
@@ -48,7 +52,8 @@ class _SurveyQuestionPageState extends State<SurveyQuestionPage> {
     final AppRepository repository = AppRepository();
     final SectionSurvey? _sectionSurvey =
         widget.surveyData.sections?[widget.index];
-    _cubit = SurveyQuestionCubit(repository, _sectionSurvey, widget.surveyData, widget.listAnsweredQuestionId);
+    _cubit = SurveyQuestionCubit(repository, _sectionSurvey, widget.surveyData,
+        widget.listAnsweredQuestionId);
     if (widget.surveyData.sections != null) {
       _sectionSurvey?.questions?.forEach((element) {
         listGlobal.add(GlobalKey<CardCourseQuizPageState>());
@@ -64,6 +69,7 @@ class _SurveyQuestionPageState extends State<SurveyQuestionPage> {
         }
       });
     });
+    TrackingManager.analytics.setCurrentScreen(screenName: "Survey Question");
   }
 
   // SurveyData? reOrderSectionQuestion(SurveyData? surveyData){
@@ -171,8 +177,10 @@ class _SurveyQuestionPageState extends State<SurveyQuestionPage> {
                       index: index,
                       quizData: data,
                       surveySectionId: _cubit.sectionSurvey?.id ?? '',
-                      onSubmitAnswer: (listAnswer) {
-                        if((listAnswer.content != null && listAnswer.content?.isNotEmpty == true) || listAnswer.isTyping == true) {
+                      onSubmitAnswer: (listAnswer, isAutoSubmit) {
+                        if ((listAnswer.content != null &&
+                                listAnswer.content?.isNotEmpty == true) ||
+                            listAnswer.isTyping == true) {
                           _cubit.currentText = listAnswer.content!;
                         }
                         _cubit.recordAnswer(
@@ -180,6 +188,9 @@ class _SurveyQuestionPageState extends State<SurveyQuestionPage> {
                           answerResult: listAnswer,
                           isTyping: listAnswer.isTyping,
                         );
+                        if(isAutoSubmit){
+                          submitAnswerQuestion();
+                        }
                       },
                     ),
                   ),
@@ -249,42 +260,45 @@ class _SurveyQuestionPageState extends State<SurveyQuestionPage> {
     );
   }
 
+  Future<void> submitAnswerQuestion() async {
+    if (widget.surveyData.id != null && _cubit.sectionSurvey?.id != null) {
+      if (widget.surveyData.status != ScheduleState.completed.stateIndex) {
+        await _cubit.submitAnswer(
+          surveyId: widget.surveyData.id!,
+          sectionId: _cubit.sectionSurvey!.id!,
+          questionId: _cubit.currentQuestion?.id ?? '',
+          isRelatedQuestion:
+              _cubit.currentQuestion?.isRelatedQuestions ?? false,
+        );
+      }
+    }
+    FocusScope.of(context).unfocus();
+    if (_cubit.selectedCourseIndex == _cubit.lengthQuiz - 1) {
+      final bool isLastPart =
+          widget.index + 1 == (widget.surveyData.sections?.length ?? 0);
+      _cubit.emit(SurveyQuestionHideProgressMessage());
+      if (isLastPart) {
+        NavigationUtil.navigatePage(context, SurveyResultPage());
+      } else {
+        NavigationUtil.navigatePage(
+            context,
+            SurveyPage(
+              index: widget.index + 1,
+              surveyData: widget.surveyData,
+              listAnsweredQuestionId: _cubit.listAnsweredQuestionId,
+            ));
+      }
+    } else {
+      final int newIndex = _cubit.selectedCourseIndex + 1;
+      jumpToQuiz(newIndex);
+    }
+  }
+
   Widget buildNextButton() {
     final bool isEnable = _cubit.nextButtonEnable;
     final VoidCallback? onTap = isEnable
         ? () async {
-            if (widget.surveyData.id != null &&
-                _cubit.sectionSurvey?.id != null) {
-            //    if(_cubit.currentQuestion?.hasUserAnswer != true){
-              if(widget.surveyData.status != ScheduleState.completed.stateIndex) {
-                await _cubit.submitAnswer(
-                  surveyId: widget.surveyData.id!,
-                  sectionId: _cubit.sectionSurvey!.id!,
-                  questionId: _cubit.currentQuestion?.id ?? '',
-                  isRelatedQuestion: _cubit.currentQuestion?.isRelatedQuestions ?? false,
-                );
-              }
-            }
-            FocusScope.of(context).unfocus();
-            if (_cubit.selectedCourseIndex == _cubit.lengthQuiz - 1) {
-              final bool isLastPart =
-                  widget.index + 1 == (widget.surveyData.sections?.length ?? 0);
-              _cubit.emit(SurveyQuestionHideProgressMessage());
-              if (isLastPart) {
-                NavigationUtil.navigatePage(context, SurveyResultPage());
-              } else {
-                NavigationUtil.navigatePage(
-                    context,
-                    SurveyPage(
-                      index: widget.index + 1,
-                      surveyData: widget.surveyData,
-                      listAnsweredQuestionId: _cubit.listAnsweredQuestionId,
-                    ));
-              }
-            } else {
-              final int newIndex = _cubit.selectedCourseIndex + 1;
-              jumpToQuiz(newIndex);
-            }
+            await submitAnswerQuestion();
           }
         : null;
     return _cubit.selectedCourseIndex == _cubit.lengthQuiz - 1

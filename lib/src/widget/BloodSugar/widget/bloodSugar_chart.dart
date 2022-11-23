@@ -15,6 +15,7 @@ import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/modal/glucose/glucose_trend.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:medical/src/widgets/empty_data_box.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 
 class BloodSugarChart extends StatefulWidget {
@@ -74,14 +75,15 @@ class BloodSugarChartState extends State<BloodSugarChart>
                   height: 450,
                   child: Center(child: CircularProgressIndicator()))
               : VisibilityDetector(
-                key: Key('blood_sugar_chart'),
-                onVisibilityChanged: (visibilityInfo) {
-                  var visiblePercentage = visibilityInfo.visibleFraction * 100;
-                  if(visiblePercentage == 0){
-                    previousDate = 0;
-                  }
-                },
-                child: Padding(
+                  key: Key('blood_sugar_chart'),
+                  onVisibilityChanged: (visibilityInfo) {
+                    var visiblePercentage =
+                        visibilityInfo.visibleFraction * 100;
+                    if (visiblePercentage == 0) {
+                      previousDate = 0;
+                    }
+                  },
+                  child: Padding(
                     padding: EdgeInsets.all(18),
                     child: Column(
                       children: [
@@ -100,7 +102,8 @@ class BloodSugarChartState extends State<BloodSugarChart>
                                 decoration: BoxDecoration(
                                     color: R.color.white,
                                     borderRadius: BorderRadius.circular(200.0),
-                                    border: Border.all(color: R.color.grayBorder)),
+                                    border:
+                                        Border.all(color: R.color.grayBorder)),
                                 child: GestureDetector(
                                   onTap: () {
                                     showActionTrendFilter(context);
@@ -132,13 +135,13 @@ class BloodSugarChartState extends State<BloodSugarChart>
                         ),
                         SizedBox(height: 23),
                         model.trendItems.items.length == 0
-                            ? GestureDetector(
+                            ? EmptyDataBox(
+                                text: "chỉ số đường huyết",
                                 onTap: () {
-                                  Navigator.pushNamed(context, NavigatorName.add_blood_sugar,
+                                  Navigator.pushNamed(
+                                      context, NavigatorName.add_blood_sugar,
                                       arguments: {'type': 'input', 'id': null});
                                 },
-                                child: Image.asset(
-                                    R.drawable.img_glucose_trend),
                               )
                             : Container(
                                 decoration: BoxDecoration(
@@ -161,12 +164,13 @@ class BloodSugarChartState extends State<BloodSugarChart>
 
                                   GestureDetector(
                                     onTap: () {
-                                      Navigator.pushNamed(
-                                          context, NavigatorName.blood_sugar_table,
+                                      Navigator.pushNamed(context,
+                                          NavigatorName.blood_sugar_table,
                                           arguments: {
                                             'title': trendType,
                                             'timeFrameType': trendTypeIndex,
-                                            'periodFilterType': periodFilterType,
+                                            'periodFilterType':
+                                                periodFilterType,
                                             'glucoseDistributionType': null
                                           });
                                     },
@@ -177,8 +181,8 @@ class BloodSugarChartState extends State<BloodSugarChart>
                                               MainAxisAlignment.center,
                                           children: [
                                             Text(R.string.xem_chi_tiet.tr(),
-                                                style:
-                                                    TextStyle(color: R.color.mainColor)),
+                                                style: TextStyle(
+                                                    color: R.color.mainColor)),
                                             Image.asset(
                                                 R.drawable.ic_arrow_right,
                                                 width: 20,
@@ -193,7 +197,7 @@ class BloodSugarChartState extends State<BloodSugarChart>
                       ],
                     ),
                   ),
-              );
+                );
         }));
   }
 
@@ -312,8 +316,10 @@ class BloodSugarChartState extends State<BloodSugarChart>
                     child: LineChart(
                       LineChartData(
                         lineTouchData: LineTouchData(
-                             getTouchLineStart: (barData, index) => -double.infinity, // default: from bottom
-                                getTouchLineEnd: (barData, index) => double.infinity, //to top
+                            getTouchLineStart: (barData, index) =>
+                                -double.infinity, // default: from bottom
+                            getTouchLineEnd: (barData, index) =>
+                                double.infinity, //to top
                             getTouchedSpotIndicator: (LineChartBarData barData,
                                 List<int> spotIndexes) {
                               return spotIndexes.map((index) {
@@ -369,9 +375,9 @@ class BloodSugarChartState extends State<BloodSugarChart>
                                   event is! FlPanEndEvent) {
                                 final value = lineTouch?.lineBarSpots?[0].x;
                                 if (value != null) {
-                              //    setState(() {
-                                    touchIndex = value.toInt();
-                              //    });
+                                  //    setState(() {
+                                  touchIndex = value.toInt();
+                                  //    });
                                 }
                               } else {
                                 touchIndex = -1;
@@ -389,11 +395,9 @@ class BloodSugarChartState extends State<BloodSugarChart>
                             reservedSize: -16,
                             getTextStyles: (context, value) {
                               return TextStyle(
-                                  color: 
-                                        touchIndex == value.toInt() ? 
-                                        R.color.black
-                                           : R.color.color0xffC0C2C5
-                                        ,
+                                  color: touchIndex == value.toInt()
+                                      ? R.color.black
+                                      : R.color.color0xffC0C2C5,
                                   fontSize: 14,
                                   fontWeight: FontWeight.normal);
                             },
@@ -402,15 +406,18 @@ class BloodSugarChartState extends State<BloodSugarChart>
                                 return '';
                               }
                               final date = dates[value.toInt()];
-                               print('duc2111 previousDate = $previousDate date = $date');
-                              if(previousDate == date) return '';
+                              print(
+                                  'duc2111 previousDate = $previousDate date = $date');
+                              if (previousDate == date) return '';
                               previousDate = date;
                               if (date == null) {
                                 return '';
                               } else {
-                                final dateTime = DateTime.fromMillisecondsSinceEpoch(date * 1000);
-                            //    print('duc2111 dateTime = ${convertToUTC(date, 'dd/MM/yyyy HH:mm')}, hour = ${dateTime.hour}');
-                                if(dateTime.hour > 0 && dateTime.hour < 7){
+                                final dateTime =
+                                    DateTime.fromMillisecondsSinceEpoch(
+                                        date * 1000);
+                                //    print('duc2111 dateTime = ${convertToUTC(date, 'dd/MM/yyyy HH:mm')}, hour = ${dateTime.hour}');
+                                if (dateTime.hour > 0 && dateTime.hour < 7) {
                                   return convertToGMT0(date, 'dd/MM');
                                 } else {
                                   return convertToUTC(date, 'dd/MM');
@@ -441,7 +448,6 @@ class BloodSugarChartState extends State<BloodSugarChart>
                               //         }
                               //       }
                               //     }
-
                             },
                           ),
                           leftTitles: SideTitles(

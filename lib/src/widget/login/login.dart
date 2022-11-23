@@ -17,6 +17,7 @@ import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/base/text_field_custom.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
+import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 class LoginController extends StatefulWidget {
@@ -35,6 +36,12 @@ class _LoginControllerState extends State<LoginController> {
   String phone = '';
   String password = '';
   TextEditingController userNameController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    TrackingManager.analytics.setCurrentScreen(screenName: "Login");
+  }
 
   @override
   Widget build(BuildContext context) {

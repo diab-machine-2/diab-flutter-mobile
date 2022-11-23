@@ -6,6 +6,7 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
+import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widgets/button_widget.dart';
 import 'package:medical/src/widgets/common_page.dart';
 
@@ -30,6 +31,7 @@ class _BloodSugarSurveyPageState extends State<BloodSugarSurveyPage> {
     final AppRepository repository = AppRepository();
     _cubit = BloodSugarSurveyCubit(repository);
     _cubit.initSurvey();
+    TrackingManager.analytics.setCurrentScreen(screenName: "Glucose Schedule Survey");
   }
 
   @override

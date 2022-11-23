@@ -7,6 +7,7 @@ import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
+import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/my_plan_screens/activity_tab/activity_tab/models/schedule_state.dart';
 import 'package:medical/src/widget/survey_screens/survey/survey.dart';
 import 'package:medical/src/widgets/button_widget.dart';
@@ -40,6 +41,7 @@ class _IntroduceSurveyPageState extends State<IntroduceSurveyPage> {
     _cubit.getDetailSurvey(surveyId, state);
     AppSettings.showed50Message = false;
     AppSettings.showed90Message = false;
+    TrackingManager.analytics.setCurrentScreen(screenName: "Survey Introduction");
   }
 
   @override

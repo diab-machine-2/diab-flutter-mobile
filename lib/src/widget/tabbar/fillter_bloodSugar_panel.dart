@@ -20,10 +20,10 @@ class FillterBloodPanel extends StatefulWidget {
 
 class _FillterBloodPanelState extends State<FillterBloodPanel> {
   List<String>? data = [
-    R.string.number_of_days.tr(args: ['7']),
-    R.string.number_of_days.tr(args: ['14']),
-    R.string.number_of_days.tr(args: ['30']),
-    R.string.number_of_days.tr(args: ['90']),
+    R.string.filter_day.tr(args: ['7']),
+    R.string.filter_day.tr(args: ['14']),
+    R.string.filter_day.tr(args: ['30']),
+    R.string.filter_day.tr(args: ['90']),
   ];
 
   int? selectedIndex = 0;

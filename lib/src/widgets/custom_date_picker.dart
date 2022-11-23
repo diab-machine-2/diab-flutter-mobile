@@ -1,7 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
-import 'package:medical/src/widget/HbA1C/widget/CalendarPicker/custom_date_picker.dart';
+import 'package:medical/src/widgets/CalendarPicker/custom_date_picker.dart';
 
 class CustomDatePicker extends StatefulWidget {
   const CustomDatePicker({

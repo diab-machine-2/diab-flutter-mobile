@@ -133,7 +133,7 @@ class ExercrisesDetailState extends State<ExercrisesDetail> with AutomaticKeepAl
                                             TextStyle(fontFamily: 'Viga', fontWeight: FontWeight.w400, fontSize: 40.0),
                                       ),
                                       Text(
-                                        "/${exercriseSummaryModel.targetDuration!.toInt().toString()} phút",
+                                        "/${exercriseSummaryModel.targetDuration!.toInt().toString()} " + R.string.minute.tr(),
                                         style: TextStyle(
                                             color: R.color.primaryGreyColor,
                                             fontWeight: FontWeight.w300,

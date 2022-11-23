@@ -11,6 +11,7 @@ import 'package:medical/src/repo/login/login_client.dart';
 import 'package:medical/src/repo/user/user_client.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigator_name.dart';
+import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
@@ -64,6 +65,7 @@ class _VerifyPhoneControllerState extends State<VerifyPhoneController> {
     // } else {
     startTimer();
     //}
+    TrackingManager.analytics.setCurrentScreen(screenName: "Registration OTP Verify");
   }
 
   void startTimer() {

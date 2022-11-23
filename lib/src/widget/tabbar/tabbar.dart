@@ -51,8 +51,7 @@ class _TabbarControllerState extends State<TabbarController>
     with SingleTickerProviderStateMixin, Observer {
   PageController? pageController;
   BottomTabbar? _bottomTabbar;
-
-  late final List<Widget> tabs;
+  late List<Widget> tabs;
   bool isNavigateToStepList = false;
 
   @override
@@ -152,6 +151,16 @@ class _TabbarControllerState extends State<TabbarController>
     }
     if (notifyName == Const.NAVIGATE_TO_LESSON_DETAIL) {
       _checkExistLessonId();
+    }
+    if (notifyName == Const.LANGUAGE_CHANGED) {
+      setState(() {
+        tabs = [
+          HomeController(sharedCode: widget.sharedCode),
+          MyPlanPage(index: 0),
+          QuestionAnswerPage(),
+          const ProfileController(hideAllBackButton: true),
+        ];
+      });
     }
   }
 

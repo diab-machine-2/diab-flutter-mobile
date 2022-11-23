@@ -38,14 +38,6 @@
           }
         },
         {
-          "client_id": "116899682757-fukdj6mse9tpqsbpe7ldtav9ljq4k8fs.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.vbhc.diab",
-            "certificate_hash": "b50ca733665921e2da3d7ab223d3e0debb311958"
-          }
-        },
-        {
           "client_id": "116899682757-g67f9qfvd5rto58clbp9bil9sm2veam3.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
@@ -59,14 +51,6 @@
           "android_info": {
             "package_name": "com.vbhc.diab",
             "certificate_hash": "0ee386e883aa8dacf7a04490d494c646edd52072"
-          }
-        },
-        {
-          "client_id": "116899682757-if7ldmnuts17bm73ulg31uptjhdglble.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.vbhc.diab",
-            "certificate_hash": "cbf2dd9ec6308402e4cf0b5122690d54dfb73ef8"
           }
         },
         {

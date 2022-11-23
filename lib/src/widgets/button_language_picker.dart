@@ -17,6 +17,7 @@ class ButtonLanguagePicker extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     String appLanguage = AppPreference().appLanguage;
+    print("appLanguage: $appLanguage");
 
     return GestureDetector(
       onTap: () {

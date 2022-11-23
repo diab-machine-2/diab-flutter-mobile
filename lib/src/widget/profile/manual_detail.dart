@@ -3,11 +3,23 @@ import 'package:flutter_html/flutter_html.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/user/manual.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
+import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-class ManualDetailController extends StatelessWidget {
+class ManualDetailController extends StatefulWidget {
   final ManualModel? model;
   ManualDetailController({this.model});
+
+  @override
+  State<ManualDetailController> createState() => _ManualDetailControllerState();
+}
+
+class _ManualDetailControllerState extends State<ManualDetailController> {
+  @override
+  void initState() {
+    super.initState();
+    TrackingManager.analytics.setCurrentScreen(screenName: "Information Security");
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -24,7 +36,7 @@ class ManualDetailController extends StatelessWidget {
             child: Column(children: [
               CustomAppBar(
                 backgroundColor: R.color.transparent,
-                title: Text(model!.question!,
+                title: Text(widget.model!.question!,
                     style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w600,
@@ -40,7 +52,7 @@ class ManualDetailController extends StatelessWidget {
               Expanded(
                 child: ListView(padding: EdgeInsets.all(0), children: [
                   Html(
-                      data: model!.answer,
+                      data: widget.model!.answer,
                       onLinkTap: (url, context, attributes, element) async {
                         await canLaunch(url!)
                             ? await launch(url,

@@ -2,14 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-
-
 import 'dart:math' as math;
+// import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:medical/res/R.dart';
-import 'package:medical/src/widget/HbA1C/add_hba1c.dart';
+import 'package:medical/src/utils/utils.dart';
 import 'date_utils.dart' as utils;
 
 const Duration _monthScrollDuration = Duration(milliseconds: 200);
@@ -834,6 +833,13 @@ class _MonthPickerState extends State<_MonthPicker> {
       ),
     );
   }
+
+  String formatDate(int timeStamp) {
+    final date = DateTime.fromMillisecondsSinceEpoch(timeStamp);
+    late String stringValue = Utils.getValueOfMonth(date.month);
+
+    return stringValue + ' ${date.month}, ${date.year}';
+  }
 }
 
 /// InheritedWidget indicating what the current focused date is for its children.
@@ -996,8 +1002,8 @@ class _DayPickerState extends State<_DayPicker> {
     // final TextStyle headerStyle = textTheme.caption?.apply(
     //   color: colorScheme.onSurface.withOpacity(0.60),
     // );
-    final TextStyle dayStyle =
-        TextStyle(color: R.color.color0xffC0C2C5, fontSize: 16); //textTheme.caption;
+    final TextStyle dayStyle = TextStyle(
+        color: R.color.color0xffC0C2C5, fontSize: 16); //textTheme.caption;
     final Color enabledDayColor =
         R.color.black; //colorScheme.onSurface.withOpacity(0.87);
     final Color disabledDayColor =

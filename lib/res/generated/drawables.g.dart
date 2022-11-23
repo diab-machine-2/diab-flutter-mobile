@@ -3,7 +3,7 @@
 // ignore_for_file: non_constant_identifier_names
 
 class Drawables {
-  String get banner_share_app => "lib/res/drawables/banner_share_app.png";
+  String get banner_share_app => "lib/res/drawables/banner_share_app.jpg";
   String get bg_activity_empty => "lib/res/drawables/bg_activity_empty.png";
   String get bg_apple_green => "lib/res/drawables/bg_apple_green.png";
   String get bg_apple_home => "lib/res/drawables/bg_apple_home.png";
@@ -54,7 +54,7 @@ class Drawables {
   String get ic_activity_5 => "lib/res/drawables/ic_activity_5.png";
   String get ic_activity_process => "lib/res/drawables/ic_activity_process.png";
   String get ic_add_excersire => "lib/res/drawables/ic_add_excersire.png";
-  String get ic_add_photo => "lib/res/drawables/ic_add_photo.png";
+  // String get ic_add_photo => "lib/res/drawables/ic_add_photo.png";
   String get ic_after_eat => "lib/res/drawables/ic_after_eat.png";
   String get ic_after_eat_selected =>
       "lib/res/drawables/ic_after_eat_selected.png";
@@ -326,10 +326,10 @@ class Drawables {
   String get img_activity_empty => "lib/res/drawables/img_activity_empty.png";
   String get img_add_hba1c => "lib/res/drawables/img_add_hba1c.png";
   String get img_banner => "lib/res/drawables/img_banner.png";
-  String get img_blood_pressure_distribution_empty =>
-      "lib/res/drawables/img_blood_pressure_distribution_empty.png";
-  String get img_blood_pressure_trend_empty =>
-      "lib/res/drawables/img_blood_pressure_trend_empty.png";
+  // String get img_blood_pressure_distribution_empty =>
+  //     "lib/res/drawables/img_blood_pressure_distribution_empty.png";
+  // String get img_blood_pressure_trend_empty =>
+  //     "lib/res/drawables/img_blood_pressure_trend_empty.png";
   String get img_blood_sugar_start_survey =>
       "lib/res/drawables/img_blood_sugar_start_survey.png";
   String get img_blood_sugar_survey_empty_result =>
@@ -353,21 +353,21 @@ class Drawables {
   String get img_des => "lib/res/drawables/img_des.png";
   String get img_des_person => "lib/res/drawables/img_des_person.png";
   String get img_email_support => "lib/res/drawables/img_email_support.png";
-  String get img_emotion_empty => "lib/res/drawables/img_emotion_empty.png";
+  // String get img_emotion_empty => "lib/res/drawables/img_emotion_empty.png";
   String get img_empty_food_suggestion =>
       "lib/res/drawables/img_empty_food_suggestion.png";
-  String get img_excerise_calo_empty =>
-      "lib/res/drawables/img_excerise_calo_empty.png";
-  String get img_excerise_trend_empty =>
-      "lib/res/drawables/img_excerise_trend_empty.png";
+  // String get img_excerise_calo_empty =>
+  //     "lib/res/drawables/img_excerise_calo_empty.png";
+  // String get img_excerise_trend_empty =>
+  //     "lib/res/drawables/img_excerise_trend_empty.png";
   String get img_favorite_food_empty =>
       "lib/res/drawables/img_favorite_food_empty.png";
-  String get img_food_empty => "lib/res/drawables/img_food_empty.png";
+  // String get img_food_empty => "lib/res/drawables/img_food_empty.png";
   String get img_food_person => "lib/res/drawables/img_food_person.png";
   String get img_forgot_pass => "lib/res/drawables/img_forgot_pass.png";
-  String get img_glucose_distribution =>
-      "lib/res/drawables/img_glucose_distribution.png";
-  String get img_glucose_trend => "lib/res/drawables/img_glucose_trend.png";
+  // String get img_glucose_distribution =>
+  //     "lib/res/drawables/img_glucose_distribution.png";
+  // String get img_glucose_trend => "lib/res/drawables/img_glucose_trend.png";
   String get img_goal => "lib/res/drawables/img_goal.png";
   String get img_gym_trainer => "lib/res/drawables/img_gym_trainer.png";
   String get img_hotline => "lib/res/drawables/img_hotline.png";
@@ -382,9 +382,9 @@ class Drawables {
   String get img_male_weight => "lib/res/drawables/img_male_weight.png";
   String get img_motivation => "lib/res/drawables/img_motivation.png";
   String get img_near_food_empty => "lib/res/drawables/img_near_food_empty.png";
-  String get img_nothing => "lib/res/drawables/img_nothing.png";
-  String get img_nothing_chart_weight =>
-      "lib/res/drawables/img_nothing_chart_weight.png";
+  // String get img_nothing => "lib/res/drawables/img_nothing.png";
+  // String get img_nothing_chart_weight =>
+  //     "lib/res/drawables/img_nothing_chart_weight.png";
   String get img_notification_empty =>
       "lib/res/drawables/img_notification_empty.png";
   String get img_parent => "lib/res/drawables/img_parent.png";

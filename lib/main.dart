@@ -39,6 +39,13 @@ class SimpleBlocObserver extends BlocObserver {
 //   }
 // }
 
+Future<void> _ensureScreenSize(window) async {
+  return window.viewConfiguration.geometry.isEmpty
+      ? Future.delayed(
+          const Duration(milliseconds: 10), () => _ensureScreenSize(window))
+      : Future.value();
+}
+
 Future<void> main() async {
   // SystemChrome.setSystemUIOverlayStyle(
   //   SystemUiOverlayStyle(statusBarBrightness: Brightness.light),
@@ -49,7 +56,7 @@ Future<void> main() async {
 
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
-  await EasyLocalization.ensureInitialized();
+  final window = WidgetsFlutterBinding.ensureInitialized().window;
 
   ByteData data =
       await PlatformAssetBundle().load('assets/ca/lets-encrypt-r3.pem');
@@ -64,11 +71,13 @@ Future<void> main() async {
   //   DeviceOrientation.portraitUp,
   // ]);
   //await initializeDateFormatting('vi_VN');
-  await Firebase.initializeApp();
   await TrackingManager.initializeFlutterFire();
+  await _ensureScreenSize(window);
+  await EasyLocalization.ensureInitialized();
 
   SystemChrome.setPreferredOrientations(
       [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]).then((_) {
     runApp(Localization.getLocalizationWidget(app: App()));
   });
+  await Firebase.initializeApp();
 }

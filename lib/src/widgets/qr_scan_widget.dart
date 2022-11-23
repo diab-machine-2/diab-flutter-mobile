@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
+import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 
 class QRScanWidget extends StatefulWidget {
@@ -27,6 +28,7 @@ class _QRScanWidgetState extends State<QRScanWidget> {
   void initState() {
     super.initState();
     _startTimer();
+    TrackingManager.analytics.setCurrentScreen(screenName: "Scan QR code");
   }
 
   @override
