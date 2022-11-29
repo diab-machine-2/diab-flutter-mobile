@@ -12,8 +12,17 @@ class _PolicyControllerState extends State<PolicyController> {
   @override
   void initState() {
     super.initState();
-    TrackingManager.analytics.setCurrentScreen(screenName: "Policy");
+    // TrackingManager.analytics.setCurrentScreen(screenName: "Policy");
+    firebaseSetup();
   }
+
+  Future firebaseSetup() async {
+    await TrackingManager.analytics.logScreenView(
+      screenName: "policy", 
+      screenClass: "PolicyController"
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

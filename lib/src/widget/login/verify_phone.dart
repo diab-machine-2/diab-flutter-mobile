@@ -65,8 +65,17 @@ class _VerifyPhoneControllerState extends State<VerifyPhoneController> {
     // } else {
     startTimer();
     //}
-    TrackingManager.analytics.setCurrentScreen(screenName: "Registration OTP Verify");
+    // TrackingManager.analytics.setCurrentScreen(screenName: "Registration OTP Verify");
+    firebaseSetup();
   }
+
+  Future firebaseSetup() async {
+    await TrackingManager.analytics.logScreenView(
+      screenName: "otp_verify", 
+      screenClass: "VerifyPhoneController"
+    );
+  }
+
 
   void startTimer() {
     timeCount = 60;

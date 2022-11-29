@@ -28,7 +28,15 @@ class _QRScanWidgetState extends State<QRScanWidget> {
   void initState() {
     super.initState();
     _startTimer();
-    TrackingManager.analytics.setCurrentScreen(screenName: "Scan QR code");
+    // TrackingManager.analytics.setCurrentScreen(screenName: "Scan QR code");
+    firebaseSetup();
+  }
+
+  Future firebaseSetup() async {
+    await TrackingManager.analytics.logScreenView(
+      screenName: "qr_scanner", 
+      screenClass: "QRScanWidget"
+    );
   }
 
   @override

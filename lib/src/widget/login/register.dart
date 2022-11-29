@@ -56,7 +56,15 @@ class _RegisterControllerState extends State<RegisterController> {
     super.initState();
     final String? referalCode = DynamicLinkConfig.instance.referalCode;
     referralCode = referalCode ?? "";
-    TrackingManager.analytics.setCurrentScreen(screenName: "Registration");
+    // TrackingManager.analytics.setCurrentScreen(screenName: "Registration");
+    firebaseSetup();
+  }
+
+  Future firebaseSetup() async {
+    await TrackingManager.analytics.logScreenView(
+      screenName: "sign_up", 
+      screenClass: "RegisterController"
+    );
   }
 
   @override

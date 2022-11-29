@@ -102,7 +102,15 @@ class _StepListControllerState extends State<StepListController> with Observer {
       FlutterNativeSplash.remove();
       checkReferralCode();
     });
-    TrackingManager.analytics.setCurrentScreen(screenName: "Registration Splash Screen");
+    // TrackingManager.analytics.setCurrentScreen(screenName: "Registration Splash Screen");
+    firebaseSetup();
+  }
+
+  Future firebaseSetup() async {
+    await TrackingManager.analytics.logScreenView(
+      screenName: "welcome", 
+      screenClass: "StepListController"
+    );
   }
 
   @override

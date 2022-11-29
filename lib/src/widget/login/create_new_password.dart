@@ -26,7 +26,15 @@ class _NewPasswordControllerState extends State<NewPasswordController> {
   @override
   void initState() {
     super.initState();
-    TrackingManager.analytics.setCurrentScreen(screenName: "New Password");
+    // TrackingManager.analytics.setCurrentScreen(screenName: "New Password");
+    firebaseSetup();
+  }
+
+  Future firebaseSetup() async {
+    await TrackingManager.analytics.logScreenView(
+      screenName: "new_password", 
+      screenClass: "NewPasswordController"
+    );
   }
 
   @override

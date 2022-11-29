@@ -18,6 +18,7 @@ import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/components/load_more.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
+import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/question_answer/all_question_answer/model/question_model.dart';
 import 'package:medical/src/widgets/network_image_widget.dart';
 
@@ -52,6 +53,14 @@ class NotificationControllerState extends State<NotificationController>
     //  if (widget.isRemovealbe != true) {
     Observable.instance.addObserver(this);
     //  }
+    firebaseSetup();
+  }
+
+  Future firebaseSetup() async {
+    await TrackingManager.analytics.logScreenView(
+      screenName: "notification_center", 
+      screenClass: "NotificationController"
+    );
   }
 
   @override

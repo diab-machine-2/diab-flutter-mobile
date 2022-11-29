@@ -74,10 +74,10 @@ Future<void> main() async {
   await TrackingManager.initializeFlutterFire();
   await _ensureScreenSize(window);
   await EasyLocalization.ensureInitialized();
+  await Firebase.initializeApp();
 
   SystemChrome.setPreferredOrientations(
       [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]).then((_) {
     runApp(Localization.getLocalizationWidget(app: App()));
   });
-  await Firebase.initializeApp();
 }

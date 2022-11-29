@@ -22,8 +22,17 @@ class _ForgotPasswordControllerState extends State<ForgotPasswordController> {
   @override
   void initState() {
     super.initState();
-    TrackingManager.analytics.setCurrentScreen(screenName: "Forget Password");
+    // TrackingManager.analytics.setCurrentScreen(screenName: "Forget Password");
+    firebaseSetup();
   }
+
+  Future firebaseSetup() async {
+    await TrackingManager.analytics.logScreenView(
+      screenName: "forget_password", 
+      screenClass: "ForgotPasswordController"
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(

@@ -115,6 +115,14 @@ class _HomeControllerState extends State<HomeController> with Observer {
       ShareProfilePopup.instance.onHasSharedCode(
           requestFromDoctor: true, code: user?.shareRefCode ?? '');
     }
+    firebaseSetup();
+  }
+
+  Future firebaseSetup() async {
+    await TrackingManager.analytics.logScreenView(
+      screenName: "home", 
+      screenClass: "HomeController"
+    );
   }
 
   @override

@@ -40,7 +40,22 @@ class _LoginControllerState extends State<LoginController> {
   @override
   void initState() {
     super.initState();
-    TrackingManager.analytics.setCurrentScreen(screenName: "Login");
+    // TrackingManager.analytics.setCurrentScreen(screenName: "Login");
+    firebaseSetup();
+  }
+
+  Future firebaseSetup() async {
+    await TrackingManager.analytics.logScreenView(
+      screenName: "Login", 
+      screenClass: "LoginController"
+    );
+    // await TrackingManager.analytics.logEvent(
+    //   name: 'screen_view',
+    //   parameters: {
+    //     'firebase_screen': "Login",
+    //     'firebase_screen_class': "LoginController",
+    //   },
+    // );
   }
 
   @override
@@ -94,6 +109,7 @@ class _LoginControllerState extends State<LoginController> {
                     GestureDetector(
                       onTap: () {
                         login();
+                        
                       },
                       child: Container(
                           height: 48,
@@ -206,6 +222,13 @@ class _LoginControllerState extends State<LoginController> {
   }
 
   login() async {
+    await TrackingManager.analytics.logEvent(
+      name: 'cta_button_clicked',
+      parameters: {
+        "screen_name": 'login',
+        'cta_button_name': 'cta_login_phone',
+      }
+    );
     FocusScope.of(context).unfocus();
     if (phone.isEmpty) {
       phoneKey.currentState!.validate(R.string.ban_chua_nhap_so_dien_thoai.tr());

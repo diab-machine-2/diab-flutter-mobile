@@ -68,7 +68,15 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
                     ? '${widget.appleAccount?.familyName ?? ''} ${widget.appleAccount?.givenName ?? ''}'
                     : '');
     check();
-    TrackingManager.analytics.setCurrentScreen(screenName: "Registration Update Info");
+    // TrackingManager.analytics.setCurrentScreen(screenName: "Registration Update Info");
+    firebaseSetup();
+  }
+
+  Future firebaseSetup() async {
+    await TrackingManager.analytics.logScreenView(
+      screenName: "register_information", 
+      screenClass: "UpdateInfoController"
+    );
   }
 
   check() async {

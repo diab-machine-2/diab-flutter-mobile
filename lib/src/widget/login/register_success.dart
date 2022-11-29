@@ -37,8 +37,17 @@ class _RegisterSuccessState extends State<RegisterSuccess> {
   @override
   void initState() {
     super.initState();
-    TrackingManager.analytics.setCurrentScreen(screenName: "Registration Congratulation");
+    // TrackingManager.analytics.setCurrentScreen(screenName: "Registration Congratulation");
+    firebaseSetup();
   }
+
+  Future firebaseSetup() async {
+    await TrackingManager.analytics.logScreenView(
+      screenName: "sign_up_success", 
+      screenClass: "RegisterSuccess"
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

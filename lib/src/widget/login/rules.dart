@@ -30,7 +30,15 @@ class _RulesControllerState extends State<RulesController> {
   void initState() {
     super.initState();
     loadData();
-    TrackingManager.analytics.setCurrentScreen(screenName: "Term And Condition");
+    // TrackingManager.analytics.setCurrentScreen(screenName: "Term And Condition");
+    firebaseSetup();
+  }
+
+  Future firebaseSetup() async {
+    await TrackingManager.analytics.logScreenView(
+      screenName: "privacy", 
+      screenClass: "RulesController"
+    );
   }
 
   loadData() async {
