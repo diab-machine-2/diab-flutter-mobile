@@ -5,6 +5,7 @@ import 'package:medical/src/modal/glucose/glucose_timeFrame.dart';
 import 'package:medical/src/repo/glucose/glucose_client.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:medical/src/widget/helper/tracking_manager.dart';
 
 typedef TimeCallback = Function(TimeFrameModel?);
 
@@ -26,6 +27,7 @@ class _ActionListTrendState extends State<ActionListTrend> {
     super.initState();
     selected = widget.selected;
     loadData();
+    firebaseSetup();
   }
 
   loadData() async {
@@ -33,6 +35,16 @@ class _ActionListTrendState extends State<ActionListTrend> {
     times = await GlucoseClient().fetchFlucoseTimeFrame();
     BotToast.closeAllLoading();
     setState(() {});
+  }
+
+  Future firebaseSetup() async {
+    await TrackingManager.analytics.logEvent(
+      name: 'component_displayed',
+      parameters: {
+        "screen_name": 'kpi_glycemic_add',
+        'component_name': 'time_section_glycemic',
+      }
+    );
   }
 
   @override
@@ -68,7 +80,14 @@ class _ActionListTrendState extends State<ActionListTrend> {
                     style:
                         TextStyle(fontSize: 20, fontWeight: FontWeight.w700)),
                 GestureDetector(
-                  onTap: () {
+                  onTap: () async {
+                    await TrackingManager.analytics.logEvent(
+                      name: 'cta_button_clicked',
+                      parameters: {
+                        "screen_name": 'time_section_glycemic',
+                        'cta_button_name': 'cate_cancel',
+                      },
+                    );
                     Navigator.pop(context);
                   },
                   child: Container(
@@ -99,7 +118,14 @@ class _ActionListTrendState extends State<ActionListTrend> {
             padding: EdgeInsets.only(bottom: 16),
             child: Center(
               child: GestureDetector(
-                onTap: () {
+                onTap: () async {
+                  await TrackingManager.analytics.logEvent(
+                    name: 'cta_button_clicked',
+                    parameters: {
+                      "screen_name": 'time_section_glycemic',
+                      'cta_button_name': 'cta_done',
+                    },
+                  );
                   if (selected == null) {
                     Message.showToastMessage(
                         context, R.string.choose_time_frame.tr());
@@ -137,7 +163,14 @@ class _ActionListTrendState extends State<ActionListTrend> {
       child: Column(
         children: [
           GestureDetector(
-            onTap: () {
+            onTap: () async {
+              await TrackingManager.analytics.logEvent(
+                name: 'component_clicked',
+                parameters: {
+                  "screen_name": 'time_section_glycemic',
+                  'cta_button_name': 'time_section_glycemic',
+                },
+              );
               setState(() {
                 selected = model;
               });

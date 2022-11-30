@@ -63,7 +63,14 @@ class _BloodSugarDetailTabbarControllerState
     Observable.instance.addObserver(this);
     checkShowDes();
     loadDescription();
-    TrackingManager.analytics.setCurrentScreen(screenName: "Glucose Detail");
+    firebaseSetup();
+  }
+
+  Future firebaseSetup() async {
+    await TrackingManager.analytics.logScreenView(
+      screenName: "kpi_glycemic", 
+      screenClass: "BloodSugarDetailTabbarController"
+    );
   }
 
   @override
@@ -122,7 +129,14 @@ class _BloodSugarDetailTabbarControllerState
                   fontWeight: FontWeight.w700,
                   color: R.color.textDark)),
           leadingIcon: GestureDetector(
-              onTap: () {
+              onTap: () async {
+                await TrackingManager.analytics.logEvent(
+                  name: 'cta_button_clicked',
+                  parameters: {
+                    "screen_name": 'kpi_glycemic',
+                    'cta_button_name': 'cta_add_glycemic_3',
+                  }
+                );
                 showDialog(
                   barrierColor: R.color.color0xff003F38.withOpacity(0.3),
                   useSafeArea: false,

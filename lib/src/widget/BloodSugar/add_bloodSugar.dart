@@ -78,7 +78,13 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
       loadTimeFrame();
     }
     loadDescription();
-    TrackingManager.analytics.setCurrentScreen(screenName: 'Glucose Input');
+    firebaseSetup();
+  }
+
+  Future firebaseSetup() async {
+    await TrackingManager.analytics.logScreenView(
+        screenName: "kpi_glycemic_add",
+        screenClass: "BloodSugarDetailController");
   }
 
   void dispose() {
@@ -474,7 +480,15 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
                             padding: EdgeInsets.all(16),
                             child: Column(children: [
                               GestureDetector(
-                                onTap: () {
+                                onTap: () async {
+                                  await TrackingManager.analytics.logEvent(
+                                      name: 'component_clicked',
+                                      parameters: {
+                                        "screen_name": 'kpi_glycemic_add',
+                                        'cta_button_name':
+                                            'date_picker_glycemic',
+                                      });
+
                                   showDialog(
                                     barrierColor: R.color.color0xff003F38
                                         .withOpacity(0.5),
@@ -542,7 +556,14 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
                             padding: EdgeInsets.all(16),
                             child: Column(children: [
                               GestureDetector(
-                                onTap: () {
+                                onTap: () async {
+                                  await TrackingManager.analytics.logEvent(
+                                    name: 'component_clicked',
+                                    parameters: {
+                                      "screen_name": 'kpi_glycemic_add',
+                                      'cta_button_name': 'time_section_glycemic',
+                                    },
+                                  );
                                   showActionFilter(context);
                                 },
                                 child: Container(
@@ -877,6 +898,13 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
   }
 
   _submitData() async {
+    await TrackingManager.analytics.logEvent(
+      name: 'cta_button_clicked',
+      parameters: {
+        "screen_name": 'kpi_glycemic_add',
+        'cta_button_name': 'cta_save_glycemic',
+      },
+    );
     FocusScope.of(context).unfocus();
     final reason = _controllerReason.text;
     final note = _controllerNote.text;
@@ -1344,7 +1372,18 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
       selectedHour = widget.initDate!.hour;
       selectedMinute = widget.initDate!.minute;
     }
+    firebaseSetup();
     super.initState();
+  }
+
+  Future firebaseSetup() async {
+    await TrackingManager.analytics.logEvent(
+      name: 'component_displayed',
+      parameters: {
+        "screen_name": 'kpi_glycemic_add',
+        'component_name': 'date_picker_glycemic',
+      },
+    );
   }
 
   @override
@@ -1381,7 +1420,14 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
                             IconButton(
                                 icon: Icon(Icons.close,
                                     color: R.color.color0xffBEC0C8),
-                                onPressed: () {
+                                onPressed: () async {
+                                  await TrackingManager.analytics.logEvent(
+                                    name: 'cta_button_clicked',
+                                    parameters: {
+                                      "screen_name": 'date_picker_glycemic',
+                                      'cta_button_name': 'cate_cancel',
+                                    },
+                                  );
                                   Navigator.pop(context);
                                 })
                           ]),
@@ -1392,7 +1438,14 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
                             : widget.initDate!,
                         firstDate: DateTime.parse("1969-07-20 20:18:04Z"),
                         lastDate: DateTime.now(),
-                        onDateChanged: (datetime) {
+                        onDateChanged: (datetime) async {
+                          await TrackingManager.analytics.logEvent(
+                            name: 'component_clicked',
+                            parameters: {
+                              "screen_name": 'date_picker_glycemic',
+                              'cta_button_name': 'time_section_glycemic',
+                            },
+                          );
                           selectedDate = datetime ?? DateTime.now();
                         }),
                     Row(
@@ -1411,7 +1464,14 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
                     CustomTimePicker(
                         selectedHour: selectedHour,
                         selectedMinute: selectedMinute,
-                        callback: (hour, minute) {
+                        callback: (hour, minute) async {
+                            await TrackingManager.analytics.logEvent(
+                              name: 'component_clicked',
+                              parameters: {
+                                "screen_name": 'date_picker_glycemic',
+                                'cta_button_name': 'time_section_glycemic',
+                              },
+                            );
                           selectedHour = hour ?? selectedHour;
                           selectedMinute = minute ?? selectedMinute;
                         }),
@@ -1420,7 +1480,14 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
                       SizedBox(width: 16),
                       Expanded(
                         child: GestureDetector(
-                          onTap: () {
+                          onTap: () async {
+                            await TrackingManager.analytics.logEvent(
+                              name: 'cta_button_clicked',
+                              parameters: {
+                                "screen_name": 'date_picker_glycemic',
+                                'cta_button_name': 'cate_cancel',
+                              },
+                            );
                             Navigator.pop(context);
                           },
                           child: Container(
@@ -1439,7 +1506,7 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
                       SizedBox(width: 16),
                       Expanded(
                         child: GestureDetector(
-                          onTap: () {
+                          onTap: () async {
                             selectedDate = DateTime(
                                 selectedDate!.year,
                                 selectedDate!.month,
@@ -1448,6 +1515,13 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
                                 selectedMinute);
 
                             widget.callback!(selectedDate);
+                            await TrackingManager.analytics.logEvent(
+                              name: 'cta_button_clicked',
+                              parameters: {
+                                "screen_name": 'date_picker_glycemic',
+                                'cta_button_name': 'cta_done',
+                              },
+                            );  
 
                             Navigator.pop(context);
                           },

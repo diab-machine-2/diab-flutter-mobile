@@ -24,8 +24,16 @@ class BloodSugarOverviewControllerState
   @override
   void initState() {
     super.initState();
-    TrackingManager.analytics.setCurrentScreen(screenName: 'Glucose Dashboard');
+    firebaseSetup();
   }
+
+  Future firebaseSetup() async {
+    await TrackingManager.analytics.logScreenView(
+      screenName: "kpi_glycemic", 
+      screenClass: "BloodSugarOverviewController"
+    );
+  }
+
 
   reloadData(int periodFilterType) {
     _scrollController.jumpTo(0);

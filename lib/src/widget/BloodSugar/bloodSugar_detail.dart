@@ -57,7 +57,14 @@ class BloodSugarDetailControllerState extends State<BloodSugarDetailController>
       }
     });
 
-    TrackingManager.analytics.setCurrentScreen(screenName: 'Glucose Detail');
+    firebaseSetup();
+  }
+
+  Future firebaseSetup() async {
+    await TrackingManager.analytics.logScreenView(
+      screenName: "kpi_glycemic", 
+      screenClass: "BloodSugarDetailController"
+    );
   }
 
   reloadData(int periodFilter) {
