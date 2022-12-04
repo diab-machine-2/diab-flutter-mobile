@@ -31,7 +31,6 @@ class _ReminderControllerState extends State<ReminderController> with Observer  
   @override
   void initState() {
     super.initState();
-    TrackingManager.analytics.setCurrentScreen(screenName: 'Schedule Glucose');
     Observable.instance.addObserver(this);
     // DartNotificationCenter.subscribe(
     //     channel: 'schedule_change',
@@ -40,7 +39,14 @@ class _ReminderControllerState extends State<ReminderController> with Observer  
     //       loadData();
     //     });
     loadData();
-    TrackingManager.analytics.setCurrentScreen(screenName: "Reminder");
+    firebaseSetup();
+  }
+
+  Future firebaseSetup() async {
+    await TrackingManager.analytics.logScreenView(
+      screenName: "remind", 
+      screenClass: "ReminderController"
+    );
   }
 
   @override
@@ -184,7 +190,14 @@ class _ReminderControllerState extends State<ReminderController> with Observer  
                 SizedBox(height: 32)
               ])),
           floatingActionButton: FloatingActionButton(
-            onPressed: () {
+            onPressed: () async {
+              await TrackingManager.analytics.logEvent(
+                name: 'cta_button_clicked',
+                parameters: {
+                  "screen_name": 'remind',
+                  'cta_button_name': 'cta_remind_add',
+                },
+              );
               Navigator.pushNamed(context, NavigatorName.add_reminder,
                   arguments: {'type': 'input'});
             },
@@ -236,7 +249,16 @@ class _ReminderControllerState extends State<ReminderController> with Observer  
                 CupertinoSwitch(
                   activeColor: R.color.greenGradientBottom,
                   value: models![index].isActive!,
-                  onChanged: (value) {
+                  onChanged: (value) async {
+                    await TrackingManager.analytics.logEvent(
+                      name: 'component_clicked',
+                      parameters: {
+                        "screen_name": 'remind',
+                        'component_name': 'switcher_remind_${value ? "on" : "off"}',
+                        'object_title': models![index].name ?? "",
+                        'object_index': index,
+                      },
+                    );
                     edit(models![index]);
                   },
                 )

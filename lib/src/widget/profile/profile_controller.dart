@@ -49,7 +49,12 @@ class _ProfileControllerState extends State<ProfileController> with Observer {
     super.initState();
     Observable.instance.addObserver(this);
     loadData();
-    TrackingManager.analytics.setCurrentScreen(screenName: 'Profile');
+    firebaseSetup();
+  }
+
+  Future firebaseSetup() async {
+    await TrackingManager.analytics
+        .logScreenView(screenName: "profile", screenClass: "ProfileController");
   }
 
   @override
@@ -114,7 +119,7 @@ class _ProfileControllerState extends State<ProfileController> with Observer {
                 Navigator.pop(context);
               }),
           actions: [
-            ButtonLanguagePicker(),
+            ButtonLanguagePicker(screenName: 'profile'),
           ],
         ),
         body: Container(
@@ -207,7 +212,15 @@ class _ProfileControllerState extends State<ProfileController> with Observer {
                           color: R.color.color0xffD3EFEE,
                           title: R.string.blood_sugar_schedule_single_line.tr(),
                           image: R.drawable.ic_blood_sugar_testing_schedule,
-                          onTap: () {
+                          onTap: () async {
+                            await TrackingManager.analytics.logEvent(
+                              name: 'cta_button_clicked',
+                              parameters: {
+                                "screen_name": 'profile',
+                                'cta_button_name':
+                                    'cta_profile_glycemic_schedule',
+                              },
+                            );
                             Navigator.pushNamed(
                                 context, NavigatorName.schedule_glucose);
                           }),
@@ -218,7 +231,14 @@ class _ProfileControllerState extends State<ProfileController> with Observer {
                           color: R.color.orange_6,
                           title: R.string.goal_setting.tr(),
                           image: R.drawable.ic_set_goal,
-                          onTap: () {
+                          onTap: () async {
+                            await TrackingManager.analytics.logEvent(
+                              name: 'cta_button_clicked',
+                              parameters: {
+                                "screen_name": 'profile',
+                                'cta_button_name': 'cta_profile_set_target',
+                              },
+                            );
                             Navigator.pushNamed(
                                 context, NavigatorName.goal_setting);
                           }),
@@ -232,7 +252,14 @@ class _ProfileControllerState extends State<ProfileController> with Observer {
                           color: R.color.color0xffFCF8DA,
                           title: R.string.remind.tr(),
                           image: R.drawable.ic_remind,
-                          onTap: () {
+                          onTap: () async {
+                            await TrackingManager.analytics.logEvent(
+                              name: 'cta_button_clicked',
+                              parameters: {
+                                "screen_name": 'profile',
+                                'cta_button_name': 'cta_profile_remind',
+                              },
+                            );
                             Navigator.pushNamed(
                                 context, NavigatorName.reminder);
                           }),
@@ -244,11 +271,18 @@ class _ProfileControllerState extends State<ProfileController> with Observer {
                           color: R.color.color0xffD3EFEE,
                           title: R.string.food_menu.tr(),
                           image: R.drawable.ic_food_menu,
-                          onTap: () {
+                          onTap: () async {
                             // if(userInfo?.ownPackage == null) {
                             //   NavigationUtil.showUpdateRequirePopup(context: context, title: R.string.food_menu.tr());
                             //   return;
                             // }
+                            await TrackingManager.analytics.logEvent(
+                              name: 'cta_button_clicked',
+                              parameters: {
+                                "screen_name": 'profile',
+                                'cta_button_name': 'cta_profile_sample_menu',
+                              },
+                            );
                             NavigationUtil.navigatePage(
                                 context, const FoodMenuPage());
                           }),
@@ -337,6 +371,14 @@ class _ProfileControllerState extends State<ProfileController> with Observer {
     bool isSvgIcon = icon.split('.').last == "svg";
     return GestureDetector(
       onTap: () async {
+        await TrackingManager.analytics.logEvent(
+          name: 'component_clicked',
+          parameters: {
+            "screen_name": 'profile',
+            'component_name': 'cta_profile_function',
+            'function_title': title,
+          },
+        );
         if (index == 0) {
           final String phoneNumber = AppSettings.userInfo?.phoneNumber ?? '';
           if (phoneNumber.isEmpty || phoneNumber.contains('User')) {

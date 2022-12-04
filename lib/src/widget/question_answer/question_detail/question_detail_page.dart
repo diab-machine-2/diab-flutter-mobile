@@ -55,7 +55,14 @@ class _QuestionDetailPageState extends State<QuestionDetailPage>
 
     _cubit =
         QuestionDetailCubit(appRepository, widget.isAll, widget.questionModel);
-    TrackingManager.analytics.setCurrentScreen(screenName: "Quetion Detail");
+    firebaseSetup();
+  }
+
+  Future firebaseSetup() async {
+    await TrackingManager.analytics.logScreenView(
+      screenName: "qna_detail",
+      screenClass: "QuestionDetailPage",
+    );
   }
 
   @override

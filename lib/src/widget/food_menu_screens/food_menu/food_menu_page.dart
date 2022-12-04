@@ -43,7 +43,14 @@ class _FoodMenuPageState extends State<FoodMenuPage> {
     final AppRepository appRepository = AppRepository();
     _cubit = FoodMenuCubit(appRepository);
     _cubit.createMenu(request: widget.createMenuRequest);
-    TrackingManager.analytics.setCurrentScreen(screenName: "Standard Menu");
+    firebaseSetup();
+  }
+
+  Future firebaseSetup() async {
+    await TrackingManager.analytics.logScreenView(
+      screenName: "sample_menu", 
+      screenClass: "FoodMenuPage"
+    );
   }
 
   void updateKcal(BuildContext context) {

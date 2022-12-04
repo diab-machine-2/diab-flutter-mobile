@@ -6,6 +6,7 @@ import 'package:medical/res/R.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:medical/src/model/response/lesson_module_response.dart';
 import 'package:medical/src/utils/date_utils.dart';
+import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/question_answer/all_question_answer/model/question_model.dart';
 import 'package:medical/src/widgets/network_image_widget.dart';
 
@@ -42,7 +43,7 @@ class _QuestionItemState extends State<QuestionItem>
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () async {
+      onTap: () {
         widget.callbackDetail();
       },
       child: _buildQuestionItemWithSlide(widget.questionModel),

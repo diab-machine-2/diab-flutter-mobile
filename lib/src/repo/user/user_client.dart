@@ -1,5 +1,5 @@
 import 'dart:convert';
-
+import 'package:intl/intl.dart';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
@@ -26,6 +26,7 @@ import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/helper/http_helper.dart';
 import 'package:medical/src/modal/error/error_model.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../model/repository/app_repository.dart';
@@ -96,10 +97,53 @@ class UserClient extends FetchClient {
     final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
     final SharedPreferences prefs = await _prefs;
     final userJson = prefs.getString('user');
+
     UserModel? user;
     if (userJson != null) {
       try {
         user = UserModel.fromJson(jsonDecode(userJson));
+        final CategoryItemUserModel levelOfDiabetesRuleList =
+            user.levelOfDiabetesRuleList!.firstWhere(
+                (element) => element.value == "${user?.diabetes?.status}");
+        List<String> interestNameList = [];
+
+        user.interestRuleList!.forEach((element) {
+          if (element.selected == true) {
+            interestNameList.add(element.text ?? "");
+          }
+        });
+
+        DateTime dateOfBirth =
+            DateTime.fromMillisecondsSinceEpoch(user.dateOfBirth! * 1000);
+
+        DateTime diabetesDate =
+            DateTime.fromMillisecondsSinceEpoch(user.diabetes!.date! * 1000);
+
+        TrackingManager.analytics.setUserId(id: user.id);
+        TrackingManager.analytics
+            .setUserProperty(name: 'gender', value: user.gender);
+        TrackingManager.analytics
+            .setUserProperty(name: 'referral_code', value: user.shareRefCode);
+        TrackingManager.analytics.setUserProperty(
+            name: 'interest', value: interestNameList.join('_'));
+        TrackingManager.analytics
+            .setUserProperty(name: 'age', value: "${user.age}");
+        TrackingManager.analytics.setUserProperty(
+            name: 'date_of_birth',
+            value: DateFormat('dd/MM/yyyy').format(dateOfBirth));
+        TrackingManager.analytics.setUserProperty(
+            name: 'pathological', value: levelOfDiabetesRuleList.text);
+        TrackingManager.analytics.setUserProperty(
+            name: 'pathological_year',
+            value: DateFormat('yyyy').format(diabetesDate));
+        TrackingManager.analytics
+            .setUserProperty(name: 'membership', value: user.packageName);
+        TrackingManager.analytics.setUserProperty(
+            name: 'referral_agency',
+            value: user.nameOfAgency ?? user.nameOfDoctor);
+        TrackingManager.analytics.setUserProperty(
+            name: 'google_connected',
+            value: user.isLinkedGoogle == true ? "Connected" : "None");
       } catch (error) {}
     }
     return user;

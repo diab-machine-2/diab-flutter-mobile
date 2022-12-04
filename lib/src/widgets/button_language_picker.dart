@@ -7,20 +7,28 @@ import 'package:medical/src/model/localization/localization.dart';
 import 'package:medical/src/model/preference/app_preference.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
+import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
 class ButtonLanguagePicker extends StatelessWidget {
+  final String? screenName;
   const ButtonLanguagePicker({
     Key? key,
+    this.screenName,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     String appLanguage = AppPreference().appLanguage;
-    print("appLanguage: $appLanguage");
-
     return GestureDetector(
-      onTap: () {
+      onTap: () async {
+        await TrackingManager.analytics.logEvent(
+          name: 'component_clicked',
+          parameters: {
+            "screen_name": screenName,
+            'cta_button_name': 'cta_profile_change_language',
+          },
+        );
         LanguagePicker.showBottomLanguages(context);
       },
       child: Container(

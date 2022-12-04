@@ -12,6 +12,7 @@ import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/response/lesson_module_response.dart';
 import 'package:medical/src/utils/date_utils.dart';
 import 'package:medical/src/utils/navigator_name.dart';
+import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/question_answer/all_question_answer/model/question_model.dart';
 import 'package:medical/src/widget/question_answer/all_question_answer/widget/make_question_header.dart';
 import 'package:medical/src/widget/question_answer/all_question_answer/widget/question_item.dart';
@@ -188,7 +189,15 @@ class _AllQuestionAnswerPageState extends State<AllQuestionAnswerPage>
                         return _buildLessonModuleItem(
                             item: lessonModule.name ?? '',
                             isSelected: _cubit.listSelectedLessonModule[index],
-                            onSelect: () {
+                            onSelect: () async {
+                              await TrackingManager.analytics.logEvent(
+                                name: 'component_clicked',
+                                parameters: {
+                                  "screen_name": 'qna_home',
+                                  'component_name': 'list_filter_qna',
+                                  'filter_title': '${lessonModule.name}',
+                                },
+                              );
                               _cubit.onSelectLessonModule(index);
                             });
                       return SizedBox();
@@ -308,7 +317,8 @@ class _AllQuestionAnswerPageState extends State<AllQuestionAnswerPage>
                 shrinkWrap: true,
                 controller: _questionScrollController,
                 itemBuilder: (context, position) {
-                  return _buildQuestionItem(_cubit.questions[position]);
+                  return _buildQuestionItem(
+                      _cubit.questions[position], position);
                 },
               )
             : (state is AllQuestionAnswerSuccess ||
@@ -324,6 +334,14 @@ class _AllQuestionAnswerPageState extends State<AllQuestionAnswerPage>
             _questionScrollController.position.maxScrollExtent &&
         !_questionScrollController.position.outOfRange) {
       //reach the bottom
+      await TrackingManager.analytics.logEvent(
+        name: 'component_loadmore',
+        parameters: {
+          "screen_name": 'qna_home',
+          'component_name': 'list_qna',
+          'page_index': _cubit.page + 1,
+        }
+      );
       await _cubit.loadmore();
     }
     if (_questionScrollController.offset <=
@@ -351,12 +369,21 @@ class _AllQuestionAnswerPageState extends State<AllQuestionAnswerPage>
     );
   }
 
-  _buildQuestionItem(QuestionModel questionModel) {
+  _buildQuestionItem(QuestionModel questionModel, int position) {
     return QuestionItem(
       questionModel: questionModel,
       currentAccountId: _cubit.userInfo!.accountId!,
       lessonModules: _cubit.lessonModules,
       callbackDetail: () async {
+        await TrackingManager.analytics.logEvent(
+          name: 'component_clicked',
+          parameters: {
+            "screen_name": 'qna_home',
+            'component_name': 'list_qna_item_$position',
+            'object_id': questionModel.id,
+            'object_title': questionModel.answers,
+          },
+        );
         var result = await Navigator.pushNamed(
             context, NavigatorName.question_detail,
             arguments: {'questionModel': questionModel, 'isAll': true});

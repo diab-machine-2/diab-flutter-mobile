@@ -9,6 +9,7 @@ import 'package:medical/res/R.dart';
 class VideoManager {
   VideoManager({
     required String? url,
+    this.onPlay,
     this.onCompleted,
     this.placeHolder,
     this.onExitFullScreen,
@@ -19,12 +20,14 @@ class VideoManager {
   }
   BetterPlayerController? _controller;
   final double percentCallbackDefault;
+  final VoidCallback? onPlay;
   final VoidCallback? callbackByPercentVideo;
   final VoidCallback? onExitFullScreen;
   final VoidCallback? onCompleted;
   Widget? placeHolder;
   bool finishedVideo = false;
   bool hasVideo = false;
+  bool hasPlayed = false;
 
   StreamController<bool> _placeholderStreamController =
       StreamController.broadcast();
@@ -84,6 +87,13 @@ class VideoManager {
       //  ),
     )..addEventsListener(
         (event) async {
+          print("object: ${event.betterPlayerEventType}");
+          if (event.betterPlayerEventType == BetterPlayerEventType.play &&
+              !hasPlayed &&
+              onPlay != null) {
+            onPlay!();
+            hasPlayed = true;
+          }
           if (event.betterPlayerEventType ==
                   BetterPlayerEventType.hideFullscreen &&
               onExitFullScreen != null) {
@@ -102,7 +112,6 @@ class VideoManager {
       url!,
     );
     newController.setupDataSource(betterPlayerDataSource);
-    print("newController.videoPlayerController: ${newController.videoPlayerController}");
     newController.videoPlayerController?.addListener(() async {
       if (Platform.isIOS) {
         if ((newController

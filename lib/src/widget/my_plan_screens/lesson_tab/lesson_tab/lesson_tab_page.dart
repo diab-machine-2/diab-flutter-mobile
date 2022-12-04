@@ -14,6 +14,7 @@ import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
+import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/my_plan_screens/my_plan/models/plan_type.dart';
 import 'package:medical/src/widgets/button_widget.dart';
 import 'package:medical/src/widgets/lesson_status_widget.dart';
@@ -243,6 +244,19 @@ class _LessonTabPageState extends State<LessonTabPage>
                                             if (_cubit.lessonsList?[index]?.id
                                                     ?.isNotEmpty ==
                                                 true) {
+                                              await TrackingManager.analytics
+                                                  .logEvent(
+                                                name: 'component_clicked',
+                                                parameters: {
+                                                  "screen_name": 'my_schedule',
+                                                  'component_name':
+                                                      'list_lession_item_$index',
+                                                  'object_id':
+                                                      '${_cubit.lessonsList![index]!.id!}',
+                                                  'object_title':
+                                                      '${_cubit.lessonsList![index]!.name!}',
+                                                },
+                                              );
                                               var result = await NavigationUtil
                                                   .navigatePage(
                                                 context,

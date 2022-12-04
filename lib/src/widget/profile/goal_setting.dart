@@ -40,7 +40,14 @@ class _GoalSettingControllerState extends State<GoalSettingController> {
   void initState() {
     super.initState();
     loadData();
-    TrackingManager.analytics.setCurrentScreen(screenName: 'Goal Setting');
+    firebaseSetup();
+  }
+
+  Future firebaseSetup() async {
+    await TrackingManager.analytics.logScreenView(
+      screenName: "set_target", 
+      screenClass: "GoalSettingController"
+    );
   }
 
   loadData() async {

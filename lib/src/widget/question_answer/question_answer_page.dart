@@ -1,5 +1,6 @@
 import 'package:medical/res/R.dart';
 import 'package:flutter/material.dart';
+import 'package:medical/src/widget/helper/tracking_manager.dart';
 import '../../app_setting/app_setting.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:flutter_observer/Observer.dart';
@@ -36,6 +37,14 @@ class _QuestionAnswerPageState extends State<QuestionAnswerPage> with Observer {
   void initState() {
     super.initState();
     Observable.instance.addObserver(this);
+    firebaseSetup();
+  }
+
+  Future firebaseSetup() async {
+    await TrackingManager.analytics.logScreenView(
+      screenName: 'qna_home',
+      screenClass: "QuestionAnswerPage",
+    );
   }
 
   @override
@@ -140,8 +149,25 @@ class _QuestionAnswerPageState extends State<QuestionAnswerPage> with Observer {
   @override
   update(Observable observable, String? notifyName, Map? map) {}
 
-  void changeQuestionAnswerType(int newIndex) {
+  Future<void> changeQuestionAnswerType(int newIndex) async {
     currentQuestionAnswerType = questionAnswerList[newIndex];
+    late String componentName;
+    switch (currentQuestionAnswerType) {
+      case QuestionAnswerType.All:
+        componentName = "all_qna";
+        break;
+      case QuestionAnswerType.Mine:
+        componentName = "my_qna";
+        break;
+    }
+    await TrackingManager.analytics.logEvent(
+      name: 'component_clicked',
+      parameters: {
+        "screen_name": 'qna_home',
+        'component_name': 'top_navigation_$componentName',
+      },
+    );
+
     _pageController.jumpToPage(newIndex);
     setState(() {});
   }

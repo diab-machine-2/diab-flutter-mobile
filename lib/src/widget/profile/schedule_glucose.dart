@@ -38,7 +38,6 @@ class _ScheduleGlucoseControllerState extends State<ScheduleGlucoseController> w
   @override
   void initState() {
     super.initState();
-    TrackingManager.analytics.setCurrentScreen(screenName: 'Schedule Glucose');
     final date = DateTime.now();
 
     selected = date.weekday - 1;
@@ -46,6 +45,14 @@ class _ScheduleGlucoseControllerState extends State<ScheduleGlucoseController> w
     loadSchedule();
     loadScheduleSetup();
     Observable.instance.addObserver(this);
+    firebaseSetup();
+  }
+
+  Future firebaseSetup() async {
+    await TrackingManager.analytics.logScreenView(
+      screenName: "glycemic_schedule", 
+      screenClass: "ScheduleGlucoseController"
+    );
   }
 
   @override

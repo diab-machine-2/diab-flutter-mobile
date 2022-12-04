@@ -49,7 +49,12 @@ class _AddReminderControllerState extends BaseState<AddReminderController> {
     if (widget.type == 'update') {
       loadDetail();
     }
-    TrackingManager.analytics.setCurrentScreen(screenName: "Reminder");
+    firebaseSetup();
+  }
+
+  Future firebaseSetup() async {
+    await TrackingManager.analytics.logScreenView(
+        screenName: "add_remind", screenClass: "ReminderController");
   }
 
   loadDetail() async {
@@ -149,7 +154,17 @@ class _AddReminderControllerState extends BaseState<AddReminderController> {
                               CupertinoSwitch(
                                 activeColor: R.color.greenGradientBottom,
                                 value: model.isActive == true,
-                                onChanged: (value) {
+                                onChanged: (value) async {
+                                  String ctaButtonName = value
+                                      ? "switcher_add_remind_on"
+                                      : "switcher_add_remind_off";
+                                  await TrackingManager.analytics.logEvent(
+                                    name: 'component_clicked',
+                                    parameters: {
+                                      "screen_name": 'add_remind',
+                                      'cta_button_name': ctaButtonName,
+                                    },
+                                  );
                                   setState(() {
                                     model.isActive = value;
                                   });
@@ -203,21 +218,35 @@ class _AddReminderControllerState extends BaseState<AddReminderController> {
                                     checked = model.isSleeping == true;
                                   }
                                   return GestureDetector(
-                                    onTap: () {
+                                    onTap: () async {
+                                      await TrackingManager.analytics.logEvent(
+                                        name: 'component_clicked',
+                                        parameters: {
+                                          "screen_name": 'add_remind',
+                                          "component_name":
+                                              'checkbox_remind_${checked ? "uncheck" : "check"}',
+                                          'object_title': timeFrame[index],
+                                        },
+                                      );
                                       if (index == 0) {
-                                        model.isWakeUp = !(model.isWakeUp ?? true);
+                                        model.isWakeUp =
+                                            !(model.isWakeUp ?? true);
                                       }
                                       if (index == 1) {
-                                        model.isBreakfast = !(model.isBreakfast ?? true);
+                                        model.isBreakfast =
+                                            !(model.isBreakfast ?? true);
                                       }
                                       if (index == 2) {
-                                        model.isLunch = !(model.isLunch ?? true);
+                                        model.isLunch =
+                                            !(model.isLunch ?? true);
                                       }
                                       if (index == 3) {
-                                        model.isDinner = !(model.isDinner ?? true);
+                                        model.isDinner =
+                                            !(model.isDinner ?? true);
                                       }
                                       if (index == 4) {
-                                        model.isSleeping = !(model.isSleeping ?? true);
+                                        model.isSleeping =
+                                            !(model.isSleeping ?? true);
                                       }
                                       setState(() {});
                                     },
@@ -234,7 +263,8 @@ class _AddReminderControllerState extends BaseState<AddReminderController> {
                                                         FontWeight.w400)),
                                             Image.asset(
                                                 checked
-                                                    ? R.drawable.ic_checkbox_green
+                                                    ? R.drawable
+                                                        .ic_checkbox_green
                                                     : R.drawable.ic_checkbox,
                                                 width: 24,
                                                 height: 24)
@@ -253,7 +283,14 @@ class _AddReminderControllerState extends BaseState<AddReminderController> {
                           padding: EdgeInsets.all(16),
                           child: Column(children: [
                             GestureDetector(
-                              onTap: () {
+                              onTap: () async {
+                                await TrackingManager.analytics.logEvent(
+                                  name: 'component_clicked',
+                                  parameters: {
+                                    "screen_name": 'add_remind',
+                                    "component_name": 'selector_remind_repeat',
+                                  },
+                                );
                                 showTimeFrame(context);
                               },
                               child: Container(
@@ -264,10 +301,8 @@ class _AddReminderControllerState extends BaseState<AddReminderController> {
                                         MainAxisAlignment.spaceBetween,
                                     children: [
                                       Row(children: [
-                                        Image.asset(
-                                            R.drawable.ic_clock,
-                                            width: 24,
-                                            height: 24),
+                                        Image.asset(R.drawable.ic_clock,
+                                            width: 24, height: 24),
                                         SizedBox(width: 8),
                                         Text(R.string.repeat.tr(),
                                             style: TextStyle(
@@ -282,7 +317,8 @@ class _AddReminderControllerState extends BaseState<AddReminderController> {
                                   ),
                                   SizedBox(height: 16),
                                   Container(
-                                      height: 1, color: R.color.color0xffE5E5E5),
+                                      height: 1,
+                                      color: R.color.color0xffE5E5E5),
                                   SizedBox(height: 8),
                                 ]),
                               ),
@@ -312,9 +348,11 @@ class _AddReminderControllerState extends BaseState<AddReminderController> {
                                 child: CupertinoTextField(
                                     controller: titleController,
                                     decoration: BoxDecoration(),
-                                    placeholder: R.string.enter_reminder_name.tr()),
+                                    placeholder:
+                                        R.string.enter_reminder_name.tr()),
                               ),
-                              Container(height: 1, color: R.color.color0xffE5E5E5),
+                              Container(
+                                  height: 1, color: R.color.color0xffE5E5E5),
                               SizedBox(height: 32),
                               Row(children: [
                                 Image.asset(R.drawable.ic_note_text,
@@ -329,10 +367,12 @@ class _AddReminderControllerState extends BaseState<AddReminderController> {
                               CupertinoTextField(
                                   controller: descriptionController,
                                   decoration: BoxDecoration(),
-                                  placeholder: R.string.enter_content_reminder.tr(),
+                                  placeholder:
+                                      R.string.enter_content_reminder.tr(),
                                   maxLines: null,
                                   maxLength: 1000),
-                              Container(height: 1, color: R.color.color0xffE5E5E5),
+                              Container(
+                                  height: 1, color: R.color.color0xffE5E5E5),
                               SizedBox(height: 8),
                             ]))
                       ]),
@@ -342,10 +382,10 @@ class _AddReminderControllerState extends BaseState<AddReminderController> {
                     FocusScope.of(context).unfocus();
 
                     if (model.isWakeUp != true &&
-                        model.isBreakfast  != true &&
-                        model.isLunch  != true &&
-                        model.isDinner != true  &&
-                        model.isSleeping != true ) {
+                        model.isBreakfast != true &&
+                        model.isLunch != true &&
+                        model.isDinner != true &&
+                        model.isSleeping != true) {
                       Message.showToastMessage(
                           context, 'Bạn chưa chọn khung giờ nhắc nhở');
                       return;
@@ -430,8 +470,7 @@ class _AddReminderControllerState extends BaseState<AddReminderController> {
                       ),
                       Padding(
                         padding: const EdgeInsets.only(top: 16.0),
-                        child: Text(
-                            R.string.confirm_to_back.tr(),
+                        child: Text(R.string.confirm_to_back.tr(),
                             textAlign: TextAlign.center,
                             style: R.style.normalTextStyle),
                       ),
@@ -516,7 +555,14 @@ class _AddReminderControllerState extends BaseState<AddReminderController> {
         builder: (context) => PopupReminder(
             selectedIndex: (model.remindType ?? 1) - 1,
             selectedItems: model.days ?? [],
-            callback: (index, items) {
+            callback: (index, items) async {
+              await TrackingManager.analytics.logEvent(
+                name: 'cta_button_clicked',
+                parameters: {
+                  "screen_name": 'add_remind',
+                  "cta_button_name": 'cta_remind_save',
+                },
+              );
               setState(() {
                 model.remindType = index + 1;
                 model.days = items;
@@ -536,7 +582,7 @@ class _AddReminderControllerState extends BaseState<AddReminderController> {
     try {
       BotToast.showLoading();
       await UserClient().inputScheduleReminder(model);
-      Observable.instance.notifyObservers([], notifyName : "schedule_change");
+      Observable.instance.notifyObservers([], notifyName: "schedule_change");
       // DartNotificationCenter.post(channel: 'schedule_change');
       Navigator.pop(context);
       BotToast.closeAllLoading();
@@ -560,7 +606,7 @@ class _AddReminderControllerState extends BaseState<AddReminderController> {
     try {
       BotToast.showLoading();
       await UserClient().editScheduleReminder(model);
-      Observable.instance.notifyObservers([], notifyName : "schedule_change");
+      Observable.instance.notifyObservers([], notifyName: "schedule_change");
       // DartNotificationCenter.post(channel: 'schedule_change');
       Navigator.pop(context);
       BotToast.closeAllLoading();

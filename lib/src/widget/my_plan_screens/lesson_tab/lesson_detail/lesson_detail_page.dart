@@ -23,9 +23,6 @@ import 'lesson_detail.dart';
 import 'models/audio_data.dart';
 import 'widgets/bottom_sheet_share_lesson.dart';
 import 'widgets/bottom_sheet_widget.dart';
-
-import 'package:path_provider/path_provider.dart';
-
 import 'widgets/share_lesson_button.dart';
 
 class LessonDetailPage extends StatefulWidget {
@@ -48,7 +45,12 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
 
     _cubit = LessonDetailCubit(appRepository);
     _cubit.initData(widget.lessonType, widget.lessonId);
-    TrackingManager.analytics.setCurrentScreen(screenName: "Lesson Detail");
+    firebaseSetup();
+  }
+
+  Future firebaseSetup() async {
+    await TrackingManager.analytics.logScreenView(
+        screenName: "lesson_detail", screenClass: "LessonDetailPage");
   }
 
   @override
@@ -117,7 +119,20 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                                   child: Row(
                                     children: [
                                       GestureDetector(
-                                        onTap: () {
+                                        onTap: () async {
+                                          
+                                          await TrackingManager.analytics
+                                              .logEvent(
+                                            name: 'component_clicked',
+                                            parameters: {
+                                              "screen_name": 'lesson_detail',
+                                              "component_name": 'close_lesson',
+                                              'object_id': _cubit
+                                                  .currentSectionDetail?.id,
+                                              'object_title': _cubit
+                                                  .currentSectionDetail?.name,
+                                            },
+                                          );
                                           NavigationUtil.pop(context);
                                         },
                                         child: Icon(
@@ -178,6 +193,21 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                                         url: _cubit.currentSectionDetail
                                                 ?.videoAddressLink ??
                                             '',
+                                        onPlay: () async {
+                                          await TrackingManager.analytics
+                                              .logEvent(
+                                            name: 'component_clicked',
+                                            parameters: {
+                                              "screen_name": 'lesson_detail',
+                                              "component_name":
+                                                  'video_player_lesson',
+                                              'object_id': _cubit
+                                                  .currentSectionDetail?.id,
+                                              'object_title': _cubit
+                                                  .currentSectionDetail?.name,
+                                            },
+                                          );
+                                        },
                                         onComplete: () {
                                           if (_cubit.sectionList.length == 1 &&
                                               _isShowModal == false) {
@@ -275,14 +305,34 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                         ),
                         CustomBottomBarWidget(
                           isPreviousButtonActive: _cubit.isFirstSection,
-                          onTapPrevious: () {
+                          onTapPrevious: () async {
+                            await TrackingManager.analytics.logEvent(
+                              name: 'cta_button_clicked',
+                              parameters: {
+                                "screen_name": 'lesson_detail',
+                                "component_name": 'cta_previous_lesson',
+                                'object_id': _cubit.currentSectionDetail?.id,
+                                'object_title':
+                                    _cubit.currentSectionDetail?.name,
+                              },
+                            );
                             _cubit.onChangeSection(
                                 context, _cubit.currentSection - 1);
                           },
                           isNextButtonActive: (!_cubit.isLastSection &&
                               (_cubit.currentSectionDetail?.isComplete ??
                                   false)),
-                          onTapNext: () {
+                          onTapNext: () async {
+                            await TrackingManager.analytics.logEvent(
+                              name: 'cta_button_clicked',
+                              parameters: {
+                                "screen_name": 'lesson_detail',
+                                "component_name": 'cta_next_lesson',
+                                'object_id': _cubit.currentSectionDetail?.id,
+                                'object_title':
+                                    _cubit.currentSectionDetail?.name,
+                              },
+                            );
                             _cubit.onChangeSection(
                                 context, _cubit.currentSection + 1);
                           },

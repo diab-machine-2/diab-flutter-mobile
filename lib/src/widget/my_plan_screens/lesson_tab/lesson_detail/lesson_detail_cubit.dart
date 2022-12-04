@@ -71,12 +71,7 @@ class LessonDetailCubit extends Cubit<LessonDetailState> {
       }
     }
 
-    // if (newSection == sectionList.length && showQuizLesson == false) {
-    //   emit(const LessonDetailCompleted(showPopupShare: true));
-    //   return;
-    // }
-    if (showQuizLesson == true &&
-        (newSection < 0 || newSection >= sectionList.length)) {
+    if (newSection < 0 || newSection >= sectionList.length) {
       if (Navigator.canPop(context)) {
         Navigator.pop(context, 1);
       }

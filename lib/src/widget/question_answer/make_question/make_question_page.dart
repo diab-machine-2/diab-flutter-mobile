@@ -41,7 +41,14 @@ class _MakeQuestionPageState extends State<MakeQuestionPage> {
     // _searchLessonModuleController = TextEditingController(text: '');
     final AppRepository appRepository = AppRepository();
     _cubit = MakeQuestionCubit(appRepository, widget.lessonModuleItems);
-    TrackingManager.analytics.setCurrentScreen(screenName: "Q&A");
+    firebaseSetup();
+  }
+
+  Future firebaseSetup() async {
+    await TrackingManager.analytics.logScreenView(
+      screenName: "qna_add", 
+      screenClass: "MakeQuestionPage"
+    );
   }
 
   @override
@@ -297,6 +304,13 @@ class _MakeQuestionPageState extends State<MakeQuestionPage> {
   }
 
   _submitData() async {
+    await TrackingManager.analytics.logEvent(
+      name: 'cta_button_clicked',
+      parameters: {
+        "screen_name": 'add_question',
+        'component_name': 'cta_add_question',
+      },
+    );
     if (!_cubit.isClickSend) {
       _cubit.setClickSend();
       // if (_cubit.currentLessonModule == null) {

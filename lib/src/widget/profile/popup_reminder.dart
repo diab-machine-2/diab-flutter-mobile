@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
@@ -19,7 +20,7 @@ class PopupReminder extends StatefulWidget {
 }
 
 class _PopupReminderState extends State<PopupReminder> {
-  final data = [R.string.every_day_except_sunday, 'Hàng tuần'];
+  final data = [R.string.every_day_except_sunday.tr(), 'Hàng tuần'];
   final weeks = [
     R.string.day_in_week_monday,
     R.string.day_in_week_tuesday,

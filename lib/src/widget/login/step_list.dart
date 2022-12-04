@@ -338,7 +338,7 @@ class _StepListControllerState extends State<StepListController> with Observer {
               Positioned(
                 top: 5,
                 right: 5,
-                child: ButtonLanguagePicker(),
+                child: ButtonLanguagePicker(screenName: 'welcome'),
               ),
             ],
           ),

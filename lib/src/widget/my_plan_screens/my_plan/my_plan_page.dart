@@ -12,6 +12,7 @@ import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
+import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widgets/common_page.dart';
 import 'package:medical/src/widgets/widget_custom_multi_select_toggle.dart';
 
@@ -39,7 +40,10 @@ class _MyPlanPageState extends State<MyPlanPage> with Observer {
   void initState() {
     super.initState();
     Observable.instance.addObserver(this);
-    if (user.isUserFree) {
+    final String? lessonId = DynamicLinkConfig.instance.lessonId;
+    if (lessonId != null) {
+      index = 1;
+    } else if (user.isUserFree) {
       index = 1;
     } else {
       index = widget.index;
@@ -48,6 +52,13 @@ class _MyPlanPageState extends State<MyPlanPage> with Observer {
     _pageController = PageController(initialPage: index);
     final AppRepository appRepository = AppRepository();
     _cubit = MyPlanCubit(appRepository, index);
+    firebaseSetup();
+    // _checkExistLessonId();
+  }
+
+  Future firebaseSetup() async {
+    await TrackingManager.analytics
+        .logScreenView(screenName: "my_schedule", screenClass: "MyPlanPage");
   }
 
   @override
@@ -107,7 +118,24 @@ class _MyPlanPageState extends State<MyPlanPage> with Observer {
                       toggleList:
                           _cubit.planTypeList.map((e) => e.title).toList(),
                       selectedIndex: _cubit.currentPlanTypeIndex,
-                      onChange: (index) {
+                      onChange: (index) async {
+                        late String screenName;
+                        switch (index) {
+                          case 0:
+                            screenName = 'activity';
+                            break;
+                          case 1:
+                            screenName = 'lesson';
+                            break;
+                          case 2:
+                            screenName = 'motion';
+                            break;
+                        }
+                        await TrackingManager.analytics
+                            .logEvent(name: 'component_clicked', parameters: {
+                          "screen_name": 'my_schedule',
+                          'component_name': 'top_navigation_' + screenName,
+                        });
                         Observable.instance.notifyObservers([],
                             notifyName: Const.HIDE_OVERLAY_KEY);
                         if (index == 1) {

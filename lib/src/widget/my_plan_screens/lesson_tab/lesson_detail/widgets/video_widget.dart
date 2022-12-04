@@ -14,6 +14,7 @@ class VideoWidget extends StatefulWidget {
   VideoWidget({
     required this.url,
     required this.onComplete,
+    this.onPlay,
     this.callbackByPercentVideo,
     this.percentCallbackDefault = 1,
     required this.setVideoManager,
@@ -21,6 +22,7 @@ class VideoWidget extends StatefulWidget {
 
   final String url;
   VoidCallback onComplete;
+  VoidCallback? onPlay;
   VoidCallback? callbackByPercentVideo;
   double percentCallbackDefault;
   Function(VideoManager) setVideoManager;
@@ -66,6 +68,7 @@ class _VideoWidgetState extends State<VideoWidget> {
             fit: BoxFit.fill,
           ),
           onExitFullScreen: () {},
+          onPlay: widget.onPlay,
           callbackByPercentVideo: widget.callbackByPercentVideo,
           percentCallbackDefault: widget.percentCallbackDefault,
           onCompleted: () {

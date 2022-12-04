@@ -10,6 +10,7 @@ import 'package:medical/src/repo/user/user_client.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
+import 'package:medical/src/widget/helper/tracking_manager.dart';
 
 import '../../modal/user/secure.dart';
 import '../../model/repository/app_repository.dart';

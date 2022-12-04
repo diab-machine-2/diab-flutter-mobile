@@ -255,7 +255,7 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
         _buildSingleResultDetail(
           title: 'Tần suất',
           description: _cubit.dataModel.repeatType == RepeatType.day
-              ? R.string.every_day_except_sunday
+              ? R.string.every_day_except_sunday.tr()
               : 'Hàng tuần vào ${_cubit.dataModel.repeatDayList.map((e) => e.shortTitle).toList().join(',')}',
         ),
        _buildSingleResultDetail(

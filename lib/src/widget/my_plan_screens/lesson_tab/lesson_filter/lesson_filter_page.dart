@@ -36,7 +36,17 @@ class _LessonFilterPageState extends State<LessonFilterPage> {
     final AppRepository appRepository = AppRepository();
     _cubit = LessonFilterCubit(appRepository, widget.filterData);
     _cubit.getFilterData();
-    TrackingManager.analytics.setCurrentScreen(screenName: "Lesson Filter");
+    firebaseSetup();
+  }
+
+  Future firebaseSetup() async {
+    await TrackingManager.analytics.logEvent(
+      name: 'component_displayed',
+      parameters: {
+        "screen_name": 'my_schedule',
+        'component_name': 'filter_lesson',
+      },
+    );
   }
 
   @override
@@ -49,7 +59,14 @@ class _LessonFilterPageState extends State<LessonFilterPage> {
           title: R.string.filter.tr(),
           background: R.drawable.bg_welcome,
           showCloseBackButton: true,
-          onTapClose: () {
+          onTapClose: () async {
+            await TrackingManager.analytics.logEvent(
+              name: 'component_clicked',
+              parameters: {
+                "screen_name": 'my_schedule',
+                'component_name': 'filter_lesson_close',
+              },
+            );
             NavigationUtil.pop(context);
           },
           onTapAppBar: () {
@@ -143,7 +160,16 @@ class _LessonFilterPageState extends State<LessonFilterPage> {
               fontSize: 14,
               fontWeight: FontWeight.w400,
             ),
-            onTap: () {
+            onTap: () async {
+              await TrackingManager.analytics.logEvent(
+                name: 'component_clicked',
+                parameters: {
+                  "screen_name": 'my_schedule',
+                  'component_name': 'filter_lesson_learned',
+                  'filter_learned_check':
+                      _cubit.filterData.isCompleted ? "uncheck" : 'check',
+                },
+              );
               _cubit.onToggleCheckBox();
             },
           ),
@@ -164,7 +190,30 @@ class _LessonFilterPageState extends State<LessonFilterPage> {
           child: ButtonWidget(
             title: R.string.filtering.tr(),
             textSize: 16,
-            onPressed: () {
+            onPressed: () async {
+              List<String> tagFilter = [];
+              List<String> nameFilter = [];
+              _cubit.filterData.tagFilter.forEach((element) {
+                if (tagFilter.length < 5) {
+                  tagFilter.add(element?.text ?? "");
+                }
+              });
+              _cubit.filterData.nameFilter.forEach((element) {
+                if (nameFilter.length < 5) {
+                  nameFilter.add(element?.text ?? "");
+                }
+              });
+              await TrackingManager.analytics.logEvent(
+                name: 'cta_button_clicked',
+                parameters: {
+                  "screen_name": 'my_schedule',
+                  'cta_button_name': 'cta_filter_lesson_done',
+                  'filter_keyword': tagFilter.join('_'),
+                  'filter_title': nameFilter.join('_'),
+                  'filter_learned_check':
+                      _cubit.filterData.isCompleted ? "uncheck" : 'check',
+                },
+              );
               _cubit.emit(const LessonFilterDone());
               _cubit.refresh();
             },
@@ -180,7 +229,14 @@ class _LessonFilterPageState extends State<LessonFilterPage> {
             backgroundColor: R.color.white,
             borderColor: R.color.greenGradientBottom,
             textColor: R.color.greenGradientBottom,
-            onPressed: () {
+            onPressed: () async {
+              await TrackingManager.analytics.logEvent(
+                name: 'cta_button_clicked',
+                parameters: {
+                  "screen_name": 'my_schedule',
+                  'cta_button_name': 'cta_filter_lesson_reset',
+                },
+              );
               _cubit.searchingStatus = SearchingStatus.none;
               _cubit.filterData.clearFilter();
               _cubit.refresh();
@@ -193,7 +249,9 @@ class _LessonFilterPageState extends State<LessonFilterPage> {
 
   Widget _buildSearchingPage() {
     final List<FilterDataItem?> selectedList =
-        _cubit.searchingStatus == SearchingStatus.keyWord ? _cubit.filterData.tagFilter : _cubit.filterData.nameFilter;
+        _cubit.searchingStatus == SearchingStatus.keyWord
+            ? _cubit.filterData.tagFilter
+            : _cubit.filterData.nameFilter;
     final String title = _cubit.searchingStatus == SearchingStatus.keyWord
         ? R.string.filter_by_key_word.tr()
         : R.string.filter_by_lesson_name.tr();
@@ -245,22 +303,36 @@ class _LessonFilterPageState extends State<LessonFilterPage> {
                         child: ListView.separated(
                           itemCount: _cubit.suggestWordFiltered.length,
                           itemBuilder: (context, index) {
-                            final bool isSelected = selectedList.indexWhere((element) =>
-                                    element != null && element.value == _cubit.suggestWordFiltered[index]?.value) !=
+                            final bool isSelected = selectedList.indexWhere(
+                                    (element) =>
+                                        element != null &&
+                                        element.value ==
+                                            _cubit.suggestWordFiltered[index]
+                                                ?.value) !=
                                 -1;
                             return InkWell(
                               onTap: () {
                                 if (!isSelected) {
-                                  _cubit.searchingStatus == SearchingStatus.keyWord
-                                      ? _cubit.filterData.tagFilter.add(_cubit.suggestWordFiltered[index])
-                                      : _cubit.filterData.nameFilter.add(_cubit.suggestWordFiltered[index]);
+                                  _cubit.searchingStatus ==
+                                          SearchingStatus.keyWord
+                                      ? _cubit.filterData.tagFilter.add(
+                                          _cubit.suggestWordFiltered[index])
+                                      : _cubit.filterData.nameFilter.add(
+                                          _cubit.suggestWordFiltered[index]);
                                 } else {
-                                  _cubit.searchingStatus == SearchingStatus.keyWord
-                                      ? _cubit.filterData.tagFilter.removeWhere((element) {
-                                          return element!.value! == _cubit.suggestWordFiltered[index]!.value!;
+                                  _cubit.searchingStatus ==
+                                          SearchingStatus.keyWord
+                                      ? _cubit.filterData.tagFilter
+                                          .removeWhere((element) {
+                                          return element!.value! ==
+                                              _cubit.suggestWordFiltered[index]!
+                                                  .value!;
                                         })
-                                      : _cubit.filterData.nameFilter.removeWhere((element) {
-                                          return element!.value! == _cubit.suggestWordFiltered[index]!.value!;
+                                      : _cubit.filterData.nameFilter
+                                          .removeWhere((element) {
+                                          return element!.value! ==
+                                              _cubit.suggestWordFiltered[index]!
+                                                  .value!;
                                         });
                                 }
                                 _cubit.refresh();
@@ -277,7 +349,9 @@ class _LessonFilterPageState extends State<LessonFilterPage> {
                                       child: Text(
                                         '${_cubit.suggestWordFiltered[index]?.text ?? ""}',
                                         style: TextStyle(
-                                          color: isSelected ? R.color.mainColor : R.color.textDark,
+                                          color: isSelected
+                                              ? R.color.mainColor
+                                              : R.color.textDark,
                                           fontSize: 14,
                                           fontWeight: FontWeight.w400,
                                         ),
@@ -477,7 +551,8 @@ class _LessonFilterPageState extends State<LessonFilterPage> {
           mainAxisSize: MainAxisSize.min,
           children: [
             Container(
-              constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width - 120),
+              constraints: BoxConstraints(
+                  maxWidth: MediaQuery.of(context).size.width - 120),
               child: Text(
                 title,
                 style: TextStyle(
