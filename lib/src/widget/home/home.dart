@@ -1266,9 +1266,9 @@ class _HomeControllerState extends State<HomeController> with Observer {
 
   getProgressStatus(ProcessCardModel model) {
     if (model.exerciseCompeleted! < model.exercise!) {
-      return '${R.string.chua_hoan_thanh}\n${R.string.smart_goal_exercise_lesson.toLowerCase()}';
+      return '${R.string.chua_hoan_thanh.tr()}\n${R.string.smart_goal_exercise_lesson.tr().toLowerCase()}';
     } else {
-      return '${R.string.hoan_thanh}\n${R.string.smart_goal_exercise_lesson.toLowerCase()}';
+      return '${R.string.hoan_thanh.tr()}\n${R.string.smart_goal_exercise_lesson.tr().toLowerCase()}';
     }
   }
 

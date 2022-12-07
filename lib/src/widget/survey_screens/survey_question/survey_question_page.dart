@@ -163,6 +163,7 @@ class _SurveyQuestionPageState extends State<SurveyQuestionPage> {
               itemCount: _cubit.lengthQuiz,
               itemBuilder: (context, index) {
                 final QuizData data = _cubit.questions[index];
+                        print("nextButtonEnable hihi: ${_cubit.nextButtonEnable}");
                 return AutoScrollTag(
                   key: ValueKey(index),
                   controller: _controller,
@@ -188,7 +189,8 @@ class _SurveyQuestionPageState extends State<SurveyQuestionPage> {
                           answerResult: listAnswer,
                           isTyping: listAnswer.isTyping,
                         );
-                        if(isAutoSubmit){
+                        print("isAutoSubmit: $isAutoSubmit");
+                        if(isAutoSubmit && _cubit.nextButtonEnable){
                           submitAnswerQuestion();
                         }
                       },
@@ -296,6 +298,8 @@ class _SurveyQuestionPageState extends State<SurveyQuestionPage> {
 
   Widget buildNextButton() {
     final bool isEnable = _cubit.nextButtonEnable;
+    print("isEnable: $isEnable");
+    print("selectedCourseIndex: ${_cubit.selectedCourseIndex == _cubit.lengthQuiz - 1}");
     final VoidCallback? onTap = isEnable
         ? () async {
             await submitAnswerQuestion();
