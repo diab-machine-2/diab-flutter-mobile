@@ -1,10 +1,36 @@
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/app_setting/health_setting.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'dart:io' show Platform;
 
-class ConnectDeviceApp extends StatelessWidget {
+import 'package:medical/src/widget/nipro/health_app/widgets/request_health_connect.dart';
+
+import 'health_app/sync_health_app_view.dart';
+
+class ConnectDeviceApp extends StatefulWidget {
+  @override
+  State<ConnectDeviceApp> createState() => _ConnectDeviceAppState();
+}
+
+class _ConnectDeviceAppState extends State<ConnectDeviceApp> {
+  bool hasPermission = false;
+
+  @override
+  void initState() {
+    onLoaded();
+    super.initState();
+  }
+
+  onLoaded() async {
+    bool? _hasPermission =
+        await HealthSetting.instance.checkConnectionPermission();
+    setState(() {
+      hasPermission = _hasPermission ?? false;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -68,37 +94,64 @@ class ConnectDeviceApp extends StatelessWidget {
                           )),
                     ),
                     SizedBox(height: 16),
-                    Container(
-                        decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(12)),
-                        padding: EdgeInsets.all(12),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Row(children: [
-                              Image.asset(
-                                  Platform.isIOS
-                                      ? R.drawable.ic_connect_apple
-                                      : R.drawable.ic_connect_samsung,
-                                  height: 48),
-                              SizedBox(width: 12),
-                              Text(
-                                  Platform.isIOS
-                                      ? 'Kết nối từ Apple Health'
-                                      : 'Kết nối từ Samsung Health',
-                                  style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
-                                      color: R.color.textDark))
-                            ]),
-                            Padding(
-                              padding: EdgeInsets.only(right: 8),
-                              child: Icon(Icons.arrow_forward_ios,
-                                  color: R.color.mainColor, size: 18),
-                            )
-                          ],
-                        ))
+                    GestureDetector(
+                      onTap: () {
+                        if (!hasPermission) {
+                          RequestHealthConnect().showModal(context);
+                        } else {
+                          SyncHealthApp().showModal(context);
+                        }
+                      },
+                      child: Container(
+                          decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(12)),
+                          padding: EdgeInsets.all(12),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Row(children: [
+                                Image.asset(
+                                    Platform.isIOS
+                                        ? R.drawable.logo_healthkit
+                                        : R.drawable.logo_googleFit,
+                                    height: 48),
+                                SizedBox(width: 12),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      Platform.isIOS
+                                          ? 'Kết nối từ Apple Health'
+                                          : 'Kết nối từ Google Fit',
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        color: R.color.textDark,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    Text(
+                                      hasPermission
+                                          ? 'Đã kết nối'
+                                          : 'Chưa kết nối',
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        color: hasPermission
+                                            ? R.color.greenGradientBottom
+                                            : R.color.gray,
+                                      ),
+                                    ),
+                                  ],
+                                )
+                              ]),
+                              Padding(
+                                padding: EdgeInsets.only(right: 8),
+                                child: Icon(Icons.arrow_forward_ios,
+                                    color: R.color.mainColor, size: 18),
+                              )
+                            ],
+                          )),
+                    )
                   ]))
             ])));
   }

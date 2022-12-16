@@ -448,4 +448,7 @@ class Drawables {
 	String get share_app_detail_default => "lib/res/drawables/share_app_detail_default.png";
 	String get ic_voucher => "lib/res/drawables/ic_voucher.png";
 	String get banner_share_lesson => "lib/res/drawables/banner_share_lesson.png";
+	String get logo_diab => "lib/res/drawables/logo_diab.png";
+	String get logo_healthkit => "lib/res/drawables/logo_healthkit.png";
+	String get logo_googleFit => "lib/res/drawables/logo_healthkit.png";
 }

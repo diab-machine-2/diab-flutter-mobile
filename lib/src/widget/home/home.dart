@@ -22,10 +22,14 @@ import 'package:medical/src/widget/home/widget/header.dart';
 import 'package:medical/src/widget/list_service/list_service_page.dart';
 import 'package:medical/src/widget/my_plan_screens/activity_tab/create_goal/create_goal_page.dart';
 import 'package:medical/src/widget/my_plan_screens/my_plan/models/plan_type.dart';
+import 'package:medical/src/widget/nipro/health_app/widgets/request_health_connect.dart';
 import 'package:medical/src/widget/shared_profile/pages/share_app_detail/widgets/banner_share_app.dart';
+import 'package:medical/src/widgets/block_bottom_sheet.dart';
+import 'package:medical/src/widgets/button_widget.dart';
 import 'package:medical/src/widgets/network_image_widget.dart';
 import 'package:medical/src/widgets/share_profile_popup.dart';
 
+import '../../app_setting/health_setting.dart';
 import '../../repo/user/user_client.dart';
 import '../my_plan_screens/activity_tab/my_progress/my_progress.dart';
 import 'welcome_package_screen/welcome_package_screen.dart';
@@ -111,7 +115,6 @@ class _HomeControllerState extends State<HomeController> with Observer {
     TrackingManager.analytics.setCurrentScreen(screenName: 'Home');
 
     if (user?.isShare == true) {
-      //    Future.delayed(Duration(milliseconds: 10));
       ShareProfilePopup.instance.onHasSharedCode(
           requestFromDoctor: true, code: user?.shareRefCode ?? '');
     }
@@ -119,10 +122,8 @@ class _HomeControllerState extends State<HomeController> with Observer {
   }
 
   Future firebaseSetup() async {
-    await TrackingManager.analytics.logScreenView(
-      screenName: "home", 
-      screenClass: "HomeController"
-    );
+    await TrackingManager.analytics
+        .logScreenView(screenName: "home", screenClass: "HomeController");
   }
 
   @override
