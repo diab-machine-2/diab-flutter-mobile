@@ -51,6 +51,7 @@ class HealthAppBloc extends Bloc<HealthAppEvent, HealthAppState> {
       switch (element) {
         case HealthDataType.STEPS:
           int? steps = await health.getTotalStepsInInterval(midnight, now);
+          print("steps: $steps");
           // TODO: Làm sau
           break;
         case HealthDataType.HEIGHT:
