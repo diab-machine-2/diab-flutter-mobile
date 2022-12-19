@@ -30,7 +30,14 @@ class FoodOverviewControllerState extends State<FoodOverviewController>
   @override
   void initState() {
     super.initState();
-    TrackingManager.analytics.setCurrentScreen(screenName: 'Diet Dashboard');
+    firebaseSetup();
+  }
+
+  Future firebaseSetup() async {
+    await TrackingManager.analytics.logScreenView(
+      screenName: "kpi_nutrition",
+      screenClass: "FoodOverviewController",
+    );
   }
 
   reloadData(int periodFilterType) {

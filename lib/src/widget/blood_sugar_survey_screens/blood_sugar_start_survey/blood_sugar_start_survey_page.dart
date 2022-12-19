@@ -36,7 +36,6 @@ class _BloodSugarStartSurveyPageState extends State<BloodSugarStartSurveyPage> {
     final AppRepository repository = AppRepository();
     _cubit = BloodSugarStartSurveyCubit(repository);
     _cubit.getCurrentUserInfo();
-    TrackingManager.analytics.setCurrentScreen(screenName: "Glucose Start Survey");
   }
 
   @override

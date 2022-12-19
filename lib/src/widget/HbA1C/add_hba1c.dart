@@ -56,8 +56,14 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
       loadDetail();
     }
     loadDescription();
+    firebaseSetup();
+  }
 
-    TrackingManager.analytics.setCurrentScreen(screenName: 'HbA1C Input');
+  Future firebaseSetup() async {
+    await TrackingManager.analytics.logScreenView(
+      screenName: "kpi_hba1c_add",
+      screenClass: "AddHBA1CController",
+    );
   }
 
   void dispose() {
@@ -845,6 +851,14 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
           note,
           paths);
       if (result == true) {
+        await TrackingManager.analytics.logEvent(
+          name: 'kpi_add_success',
+          parameters: {
+            "screen_name": 'kpi_hba1c_add',
+            'object_type': 'kpi_hba1c',
+            'object_title': 'Chỉ số HBA1C'
+          },
+        );
         Observable.instance
             .notifyObservers([], notifyName: "hba1c_change_data");
       }

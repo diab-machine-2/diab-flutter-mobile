@@ -22,7 +22,6 @@ class _PhotoViewState extends State<PhotoView> {
   void initState() {
     super.initState();
     controller = PageController(initialPage: widget.index);
-    TrackingManager.analytics.setCurrentScreen(screenName: "Picture Preview");
   }
 
   @override

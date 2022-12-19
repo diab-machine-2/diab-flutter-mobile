@@ -69,7 +69,6 @@ class _SurveyQuestionPageState extends State<SurveyQuestionPage> {
         }
       });
     });
-    TrackingManager.analytics.setCurrentScreen(screenName: "Survey Question");
   }
 
   // SurveyData? reOrderSectionQuestion(SurveyData? surveyData){

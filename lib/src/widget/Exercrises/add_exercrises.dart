@@ -77,7 +77,14 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
       loadTimeFrame();
     }
     loadDescription();
-    TrackingManager.analytics.setCurrentScreen(screenName: 'Exercise Input');
+    firebaseSetup();
+  }
+
+  Future firebaseSetup() async {
+    await TrackingManager.analytics.logScreenView(
+      screenName: "kpi_motion_add",
+      screenClass: "AddExercrisesController",
+    );
   }
 
   void dispose() {
@@ -1184,6 +1191,14 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
           selectedCategory,
           paths);
       if (result == true) {
+        await TrackingManager.analytics.logEvent(
+          name: 'kpi_add_success',
+          parameters: {
+            "screen_name": 'kpi_motion_add',
+            'object_type': 'kpi_motion',
+            'object_title': 'Chỉ số vận động'
+          },
+        );
         //  if(widget.goalId != null && widget.goalId?.isNotEmpty == true){
         // var totalDuration = 0.0;
         // for(var item in selectedCategory){

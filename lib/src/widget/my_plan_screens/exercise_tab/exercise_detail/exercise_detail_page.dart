@@ -32,7 +32,15 @@ class _ExerciseDetailState extends State<ExerciseDetail> {
     final AppRepository appRepository = AppRepository();
     _cubit = ExerciseDetailCubit(appRepository);
     _cubit.initData(widget.exerciseData, context);
-    TrackingManager.analytics.setCurrentScreen(screenName: "Exercise Detail");
+
+    firebaseSetup();
+  }
+
+  Future firebaseSetup() async {
+    await TrackingManager.analytics.logScreenView(
+      screenName: "excercise_detail",
+      screenClass: "ExerciseDetail",
+    );
   }
 
   @override
@@ -73,37 +81,37 @@ class _ExerciseDetailState extends State<ExerciseDetail> {
               },
               builder: (context, state) {
                 return Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      SizedBox(height: 120),
-                      Container(
-                        alignment: Alignment.center,
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                        ),
-                        child: _cubit.videoManager.controller != null
-                            ? BetterPlayer(
-                                controller: _cubit.videoManager.controller!)
-                            : const SizedBox.shrink(),
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(height: 120),
+                    Container(
+                      alignment: Alignment.center,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
                       ),
-                      SizedBox(height: 2),
-                      Expanded(
-                        child: Padding(
-                          padding: EdgeInsets.all(16.0),
-                          child: SingleChildScrollView(
-                            child: Text(
-                              _cubit.exerciseData.description ?? '',
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: R.color.white,
-                                height: 1.4,
-                              ),
+                      child: _cubit.videoManager.controller != null
+                          ? BetterPlayer(
+                              controller: _cubit.videoManager.controller!)
+                          : const SizedBox.shrink(),
+                    ),
+                    SizedBox(height: 2),
+                    Expanded(
+                      child: Padding(
+                        padding: EdgeInsets.all(16.0),
+                        child: SingleChildScrollView(
+                          child: Text(
+                            _cubit.exerciseData.description ?? '',
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: R.color.white,
+                              height: 1.4,
                             ),
                           ),
                         ),
                       ),
-                    ],
+                    ),
+                  ],
                 );
               },
             ),
@@ -200,7 +208,17 @@ class _ExerciseDetailState extends State<ExerciseDetail> {
                         child: ButtonWidget(
                             title: R.string.confirm.tr(),
                             height: 43,
-                            onPressed: () {
+                            onPressed: () async {
+                              await TrackingManager.analytics.logEvent(
+                                name: 'cta_button_clicked',
+                                parameters: {
+                                  "screen_name": 'excercise_detail',
+                                  'cta_button_name': 'cta_exercise_cancel',
+                                  'object_id': '${widget.exerciseData?.id}',
+                                  'object_title':
+                                      '${widget.exerciseData?.name}',
+                                },
+                              );
                               NavigationUtil.pop(context, result: true);
                             }),
                       ),
@@ -219,8 +237,8 @@ class _ExerciseDetailState extends State<ExerciseDetail> {
   }
 
   Future<void> _showDonePopup(BuildContext context) async {
-    Observable.instance.notifyObservers([], notifyName : "goal_calo_changed");
-    
+    Observable.instance.notifyObservers([], notifyName: "goal_calo_changed");
+
     await showDialog(
       barrierColor: R.color.color0xff003F38.withOpacity(0.5),
       context: context,
@@ -270,7 +288,16 @@ class _ExerciseDetailState extends State<ExerciseDetail> {
                 child: IconButton(
                   icon: const Icon(Icons.close_rounded),
                   iconSize: 24,
-                  onPressed: () {
+                  onPressed: () async {
+                    await TrackingManager.analytics.logEvent(
+                      name: 'cta_button_clicked',
+                      parameters: {
+                        "screen_name": 'excercise_detail',
+                        'cta_button_name': 'cta_exercise_complete',
+                        'object_id': '${widget.exerciseData?.id}',
+                        'object_title': '${widget.exerciseData?.name}',
+                      },
+                    );
                     NavigationUtil.pop(context);
                   },
                 ),

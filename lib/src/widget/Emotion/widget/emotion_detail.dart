@@ -42,8 +42,6 @@ class EmotionDetailControllerState extends State<EmotionDetailController>
         EmotionDetailTabbarController.of(context)!.periodFilterType;
     super.initState();
     initializeDateFormatting();
-
-    TrackingManager.analytics.setCurrentScreen(screenName: 'Emotion Detail');
   }
 
   reloadData(int periodFilter) {

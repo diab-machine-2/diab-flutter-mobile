@@ -48,7 +48,14 @@ class _AddEmoControllerState extends BaseState<AddEmoController> {
     }
     loadData();
     loadDescription();
-    TrackingManager.analytics.setCurrentScreen(screenName: "Emotion Input");
+    firebaseSetup();
+  }
+
+  Future firebaseSetup() async {
+    await TrackingManager.analytics.logScreenView(
+      screenName: "kpi_emotional_add",
+      screenClass: "AddEmoController",
+    );
   }
 
   void dispose() {

@@ -250,7 +250,8 @@ class _LessonTabPageState extends State<LessonTabPage>
                                                 parameters: {
                                                   "screen_name": 'my_schedule',
                                                   'component_name':
-                                                      'list_lession_item_$index',
+                                                      'list_lesson_item',
+                                                  'object_index': index,
                                                   'object_id':
                                                       '${_cubit.lessonsList![index]!.id!}',
                                                   'object_title':

@@ -45,7 +45,6 @@ class _SurveyPageState extends State<SurveyPage> {
     if (widget.surveyData.sections != null) {
       _sectionSurvey = widget.surveyData.sections![widget.index];
     }
-    TrackingManager.analytics.setCurrentScreen(screenName: "Survey");
   }
 
   @override

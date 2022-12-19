@@ -43,7 +43,6 @@ class _SearchFoodPageState extends State<SearchFoodPage> {
     final AppRepository appRepository = AppRepository();
     _cubit = SearchFoodCubit(appRepository);
     _cubit.searchFood();
-    TrackingManager.analytics.setCurrentScreen(screenName: "Diet Search Food");
   }
 
   @override

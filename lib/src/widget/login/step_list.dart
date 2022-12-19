@@ -102,15 +102,12 @@ class _StepListControllerState extends State<StepListController> with Observer {
       FlutterNativeSplash.remove();
       checkReferralCode();
     });
-    // TrackingManager.analytics.setCurrentScreen(screenName: "Registration Splash Screen");
     firebaseSetup();
   }
 
   Future firebaseSetup() async {
     await TrackingManager.analytics.logScreenView(
-      screenName: "welcome", 
-      screenClass: "StepListController"
-    );
+        screenName: "welcome", screenClass: "StepListController");
   }
 
   @override
@@ -197,8 +194,17 @@ class _StepListControllerState extends State<StepListController> with Observer {
                     SizedBox(height: 20),
                     Expanded(
                       child: PageView.builder(
-                          onPageChanged: (value) {
-                            currentPage = value;
+                          onPageChanged: (index) async {
+                            final name = data[index]['name']!;
+                            await TrackingManager.analytics.logEvent(
+                                name: 'component_clicked',
+                                parameters: {
+                                  "screen_name": 'welcome',
+                                  'object_index': index,
+                                  'object_title': name,
+                                  'component_name': 'slider_welcome',
+                                });
+                            currentPage = index;
                           },
                           controller: pageController,
                           itemCount: data.length,
@@ -235,6 +241,15 @@ class _StepListControllerState extends State<StepListController> with Observer {
                                     Expanded(
                                       child: GestureDetector(
                                         onTap: () async {
+                                          await TrackingManager.analytics
+                                              .logEvent(
+                                            name: 'cta_button_clicked',
+                                            parameters: {
+                                              "screen_name": 'welcome',
+                                              'cta_button_name':
+                                                  'cta_welcome_sign_up',
+                                            },
+                                          );
                                           Navigator.pushNamed(
                                             context,
                                             NavigatorName.register,
@@ -269,7 +284,16 @@ class _StepListControllerState extends State<StepListController> with Observer {
                                     SizedBox(width: 16),
                                     Expanded(
                                       child: GestureDetector(
-                                        onTap: () {
+                                        onTap: () async {
+                                          await TrackingManager.analytics
+                                              .logEvent(
+                                            name: 'cta_button_clicked',
+                                            parameters: {
+                                              "screen_name": 'welcome',
+                                              'cta_button_name':
+                                                  'cta_welcome_login',
+                                            },
+                                          );
                                           Navigator.pushNamed(
                                             context,
                                             NavigatorName.login,
@@ -305,6 +329,13 @@ class _StepListControllerState extends State<StepListController> with Observer {
                           ),
                           GestureDetector(
                             onTap: () async {
+                              await TrackingManager.analytics.logEvent(
+                                name: 'cta_button_clicked',
+                                parameters: {
+                                  "screen_name": 'welcome',
+                                  'cta_button_name': 'cta_welcome_support',
+                                },
+                              );
                               if (AppSettings.secureModel != null) {
                                 Navigator.pushNamed(
                                     context, NavigatorName.contact, arguments: {

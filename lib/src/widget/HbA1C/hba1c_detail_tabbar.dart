@@ -57,7 +57,6 @@ class _Hba1cDetailTabbarControllerState
 
     checkShowDes();
     loadDescription();
-    TrackingManager.analytics.setCurrentScreen(screenName: "HbA1c Detail");
   }
 
   @override

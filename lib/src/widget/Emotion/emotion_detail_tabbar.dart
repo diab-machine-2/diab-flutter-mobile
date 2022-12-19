@@ -54,7 +54,6 @@ class _EmotionDetailTabbarControllerState extends State<EmotionDetailTabbarContr
     //     });
     checkShowDes();
     loadDescription();
-    TrackingManager.analytics.setCurrentScreen(screenName: "Emotion Detail");
   }
 
   @override

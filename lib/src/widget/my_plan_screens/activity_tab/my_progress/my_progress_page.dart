@@ -47,7 +47,6 @@ class _MyProgressPageState extends State<MyProgressPage> {
     final AppRepository appRepository = AppRepository();
     _cubit = MyProgressCubit(appRepository, widget.reports, widget.hasNewReports);
     _cubit.initData();
-    TrackingManager.analytics.setCurrentScreen(screenName: 'My Progress');    
   }
 
   @override

@@ -68,9 +68,6 @@ class BloodPressureDetailControllerState
         }
       }
     });
-
-    TrackingManager.analytics
-        .setCurrentScreen(screenName: 'Blood Pressure Detail');
   }
 
   @override

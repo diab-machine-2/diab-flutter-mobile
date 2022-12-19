@@ -30,7 +30,6 @@ class _BloodSugarTableCompareControllerState
       @override
   void initState() {
     super.initState();
-    TrackingManager.analytics.setCurrentScreen(screenName: "Glucose Compare Table");
   }
 
   @override

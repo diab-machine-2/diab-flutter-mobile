@@ -51,7 +51,14 @@ class _DailyNutritionPageState extends State<DailyNutritionPage> {
     _cubit = DailyNutritionCubit(appRepository, widget.goalId ?? '');
     _cubit.getInitialData(type: widget.type, id: widget.id);
     super.initState();
-    TrackingManager.analytics.setCurrentScreen(screenName: "Diet Input");
+    firebaseSetup();
+  }
+
+  Future firebaseSetup() async {
+    await TrackingManager.analytics.logScreenView(
+      screenName: "kpi_nutrition_add",
+      screenClass: "DailyNutritionPage",
+    );
   }
 
   @override

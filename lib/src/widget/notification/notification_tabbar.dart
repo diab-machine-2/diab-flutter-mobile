@@ -39,7 +39,6 @@ class _NotificationTabbarControllerState
   void initState() {
     super.initState();
     _tabController = TabController(vsync: this, length: 3);
-    // TrackingManager.analytics.setCurrentScreen(screenName: 'Notification');
   }
 
   @override

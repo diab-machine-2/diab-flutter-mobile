@@ -70,7 +70,6 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
       loadTimeFrame();
     }
     loadDescription();
-    TrackingManager.analytics.setCurrentScreen(screenName: 'Diet Input');
   }
 
   void dispose() {
@@ -212,7 +211,8 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
                                       children: [
-                                        Text('${R.string.luong_calo_ban_da_nap}:'),
+                                        Text(
+                                            '${R.string.luong_calo_ban_da_nap}:'),
                                         SizedBox(height: 8),
                                         Row(
                                           crossAxisAlignment:
@@ -558,8 +558,8 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
                                                 fontSize: 16,
                                                 fontWeight: FontWeight.w400),
                                             decoration: InputDecoration(
-                                                hintText:
-                                                    R.string.luong_calo_ban_da_nap,
+                                                hintText: R.string
+                                                    .luong_calo_ban_da_nap,
                                                 contentPadding:
                                                     EdgeInsets.only(bottom: 8),
                                                 border: InputBorder.none,
@@ -974,6 +974,14 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
               : selectedFoods,
           paths);
       if (result == true) {
+        await TrackingManager.analytics.logEvent(
+          name: 'kpi_add_success',
+          parameters: {
+            "screen_name": 'kpi_nutrition_add',
+            'object_type': 'kpi_nutrition',
+            'object_title': 'Chỉ số dinh dưỡng'
+          },
+        );
         Observable.instance.notifyObservers([], notifyName: "food_change_data");
         // DartNotificationCenter.post(channel: 'food_change_data');
         Navigator.pop(context);

@@ -85,7 +85,6 @@ class _ProfileInfoControllerState extends State<ProfileInfoController>
     diabetesStatus = getSelectedIndexDiabetes();
 
     loadMotivation();
-    TrackingManager.analytics.setCurrentScreen(screenName: 'Profile');
   }
 
   loadMotivation() async {

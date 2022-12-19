@@ -108,7 +108,6 @@ class _HomeControllerState extends State<HomeController> with Observer {
   void initState() {
     super.initState();
     Observable.instance.addObserver(this);
-    TrackingManager.analytics.setCurrentScreen(screenName: 'Home');
 
     if (user?.isShare == true) {
       //    Future.delayed(Duration(milliseconds: 10));

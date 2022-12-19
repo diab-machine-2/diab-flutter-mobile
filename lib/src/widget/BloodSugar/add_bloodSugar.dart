@@ -363,63 +363,64 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
                             ]),
                           ),
                         ),
-                        GestureDetector(
-                          onTap: () async {
-                            final data = await Navigator.pushNamed(
-                                context, NavigatorName.connection_instructions);
-                            if (data != null && data is Map) {
-                              fromNipro = true;
+                        //TODO: Kết nối máy đo đường huyết
+                        // GestureDetector(
+                        //   onTap: () async {
+                        //     final data = await Navigator.pushNamed(
+                        //         context, NavigatorName.connection_instructions);
+                        //     if (data != null && data is Map) {
+                        //       fromNipro = true;
 
-                              if (AppSettings.userInfo!.glucoseUnit != 1) {
-                                await changeUnit();
-                              }
+                        //       if (AppSettings.userInfo!.glucoseUnit != 1) {
+                        //         await changeUnit();
+                        //       }
 
-                              final glucose =
-                                  double.tryParse(data['glucose']) ?? 0;
-                              number = glucose;
-                              _controller.text = number.toString();
+                        //       final glucose =
+                        //           double.tryParse(data['glucose']) ?? 0;
+                        //       number = glucose;
+                        //       _controller.text = number.toString();
 
-                              showReason = (AppSettings.userInfo!.glucoseUnit ==
-                                          1
-                                      ? (number! < 55 || number! > 250)
-                                      : (number! < 55 / mmollToMgdlFactor ||
-                                          number! > 250 / mmollToMgdlFactor)) &&
-                                  number! > 0;
-                              selectedDate =
-                                  DateTime.fromMillisecondsSinceEpoch(
-                                      (int.tryParse(data['date']) ?? 0) * 1000);
-                              loadTimeFrame();
-                              setState(() {});
-                            }
-                          },
-                          child: Container(
-                              margin: EdgeInsets.only(
-                                  bottom: 16, left: 16, right: 16),
-                              padding: EdgeInsets.all(16),
-                              decoration: BoxDecoration(
-                                color: R.color.white,
-                                borderRadius: BorderRadius.circular(16),
-                              ),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Row(
-                                    children: [
-                                      Image.asset(R.drawable.ic_device,
-                                          width: 24, height: 24),
-                                      SizedBox(width: 8),
-                                      Text('Kết nối thiết bị và app',
-                                          style: TextStyle(
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.w700)),
-                                    ],
-                                  ),
-                                  Icon(Icons.navigate_next,
-                                      color: R.color.grayCaption)
-                                ],
-                              )),
-                        ),
+                        //       showReason = (AppSettings.userInfo!.glucoseUnit ==
+                        //                   1
+                        //               ? (number! < 55 || number! > 250)
+                        //               : (number! < 55 / mmollToMgdlFactor ||
+                        //                   number! > 250 / mmollToMgdlFactor)) &&
+                        //           number! > 0;
+                        //       selectedDate =
+                        //           DateTime.fromMillisecondsSinceEpoch(
+                        //               (int.tryParse(data['date']) ?? 0) * 1000);
+                        //       loadTimeFrame();
+                        //       setState(() {});
+                        //     }
+                        //   },
+                        //   child: Container(
+                        //       margin: EdgeInsets.only(
+                        //           bottom: 16, left: 16, right: 16),
+                        //       padding: EdgeInsets.all(16),
+                        //       decoration: BoxDecoration(
+                        //         color: R.color.white,
+                        //         borderRadius: BorderRadius.circular(16),
+                        //       ),
+                        //       child: Row(
+                        //         mainAxisAlignment:
+                        //             MainAxisAlignment.spaceBetween,
+                        //         children: [
+                        //           Row(
+                        //             children: [
+                        //               Image.asset(R.drawable.ic_device,
+                        //                   width: 24, height: 24),
+                        //               SizedBox(width: 8),
+                        //               Text('Kết nối thiết bị và app',
+                        //                   style: TextStyle(
+                        //                       fontSize: 16,
+                        //                       fontWeight: FontWeight.w700)),
+                        //             ],
+                        //           ),
+                        //           Icon(Icons.navigate_next,
+                        //               color: R.color.grayCaption)
+                        //         ],
+                        //       )),
+                        // ),
                         !showReason
                             ? SizedBox()
                             : Padding(
@@ -485,7 +486,7 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
                                       name: 'component_clicked',
                                       parameters: {
                                         "screen_name": 'kpi_glycemic_add',
-                                        'cta_button_name':
+                                        'component_name':
                                             'date_picker_glycemic',
                                       });
 
@@ -561,7 +562,7 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
                                     name: 'component_clicked',
                                     parameters: {
                                       "screen_name": 'kpi_glycemic_add',
-                                      'cta_button_name': 'time_section_glycemic',
+                                      'component_name': 'time_section_glycemic',
                                     },
                                   );
                                   showActionFilter(context);
@@ -941,6 +942,14 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
           fromNipro,
           paths);
       if (result == true) {
+        await TrackingManager.analytics.logEvent(
+          name: 'kpi_add_success',
+          parameters: {
+            "screen_name": 'kpi_glycemic_add',
+            'object_type': 'kpi_glycemic',
+            'object_title': 'Chỉ số đường huyết'
+          },
+        );
         // if(widget.goalId != null && widget.goalId?.isNotEmpty == true){
         await HomeClient().completeSmartGoal(selectedDate, widget.goalId ?? '',
             1, ScheduleType.blood_sugar.typeIndex);
@@ -1443,7 +1452,7 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
                             name: 'component_clicked',
                             parameters: {
                               "screen_name": 'date_picker_glycemic',
-                              'cta_button_name': 'time_section_glycemic',
+                              'component_name': 'time_section_glycemic',
                             },
                           );
                           selectedDate = datetime ?? DateTime.now();
@@ -1465,13 +1474,13 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
                         selectedHour: selectedHour,
                         selectedMinute: selectedMinute,
                         callback: (hour, minute) async {
-                            await TrackingManager.analytics.logEvent(
-                              name: 'component_clicked',
-                              parameters: {
-                                "screen_name": 'date_picker_glycemic',
-                                'cta_button_name': 'time_section_glycemic',
-                              },
-                            );
+                          await TrackingManager.analytics.logEvent(
+                            name: 'component_clicked',
+                            parameters: {
+                              "screen_name": 'date_picker_glycemic',
+                              'component_name': 'time_section_glycemic',
+                            },
+                          );
                           selectedHour = hour ?? selectedHour;
                           selectedMinute = minute ?? selectedMinute;
                         }),
@@ -1521,7 +1530,7 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
                                 "screen_name": 'date_picker_glycemic',
                                 'cta_button_name': 'cta_done',
                               },
-                            );  
+                            );
 
                             Navigator.pop(context);
                           },

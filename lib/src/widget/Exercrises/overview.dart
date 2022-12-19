@@ -27,8 +27,14 @@ class ExercrisesOverviewControllerState
   @override
   void initState() {
     super.initState();
-    TrackingManager.analytics
-        .setCurrentScreen(screenName: 'Exercise Dashboard');
+    firebaseSetup();
+  }
+
+  Future firebaseSetup() async {
+    await TrackingManager.analytics.logScreenView(
+      screenName: "kpi_motion",
+      screenClass: "ExercrisesOverviewController",
+    );
   }
 
   reloadData(int periodFilterType) {

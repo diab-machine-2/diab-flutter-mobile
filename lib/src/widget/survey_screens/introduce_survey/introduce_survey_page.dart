@@ -41,7 +41,6 @@ class _IntroduceSurveyPageState extends State<IntroduceSurveyPage> {
     _cubit.getDetailSurvey(surveyId, state);
     AppSettings.showed50Message = false;
     AppSettings.showed90Message = false;
-    TrackingManager.analytics.setCurrentScreen(screenName: "Survey Introduction");
   }
 
   @override

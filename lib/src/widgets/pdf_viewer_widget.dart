@@ -20,7 +20,6 @@ class _PDFViewerWidgetState extends State<PDFViewerWidget> {
   @override
   void initState() {
     super.initState();
-    TrackingManager.analytics.setCurrentScreen(screenName: "Dowload Reports");
   }
 
   @override

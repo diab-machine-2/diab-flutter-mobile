@@ -16,6 +16,7 @@ import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
+import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/my_plan_screens/lesson_tab/lesson_detail/widgets/bottom_sheet_share_lesson.dart';
 import 'package:medical/src/widgets/custom_bottom_bar_widget.dart';
 import 'package:medical/src/widgets/custom_scroll_physics.dart';
@@ -389,13 +390,21 @@ class _CourseQuizPageState extends State<CourseQuizPage> {
     );
   }
 
-  void _buildDialogCompleted({
+  Future<void> _buildDialogCompleted({
     required VoidCallback seeResultCallback,
     required VoidCallback retryCallback,
     required VoidCallback continueLearnCallback,
     required VoidCallback skipCallback,
     double? rate,
-  }) {
+  }) async {
+    await TrackingManager.analytics.logEvent(
+      name: 'cta_button_clicked',
+      parameters: {
+        "screen_name": 'kpi_glycemic_add',
+        'object_id': _cubit.lessonSectionItem!.id,
+        'object_title': _cubit.lessonSectionItem!.name,
+      },
+    );
     showDialog(
       barrierColor: R.color.color0xff003F38.withOpacity(0.5),
       context: context,

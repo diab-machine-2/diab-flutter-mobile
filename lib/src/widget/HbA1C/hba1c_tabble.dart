@@ -13,7 +13,6 @@ class _HbA1CTableState extends State<HbA1CTable> {
   @override
   void initState() {
     super.initState();
-    TrackingManager.analytics.setCurrentScreen(screenName: "HbA1c");
   }
   @override
   Widget build(BuildContext context) {

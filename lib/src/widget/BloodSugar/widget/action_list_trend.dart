@@ -168,7 +168,7 @@ class _ActionListTrendState extends State<ActionListTrend> {
                 name: 'component_clicked',
                 parameters: {
                   "screen_name": 'time_section_glycemic',
-                  'cta_button_name': 'time_section_glycemic',
+                  'component_name': 'time_section_glycemic',
                 },
               );
               setState(() {

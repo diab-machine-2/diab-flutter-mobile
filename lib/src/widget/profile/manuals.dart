@@ -20,7 +20,6 @@ class _ManualControllerState extends State<ManualController> {
   void initState() {
     super.initState();
     loadData();
-    TrackingManager.analytics.setCurrentScreen(screenName: 'User Manual');
   }
 
   loadData() async {
