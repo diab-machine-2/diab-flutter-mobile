@@ -96,16 +96,7 @@ class HealthAppBloc extends Bloc<HealthAppEvent, HealthAppState> {
             }
           }
           break;
-        case HealthDataType.HEART_RATE:
-          var heartRate =
-              await health.getHealthDataFromTypes(midnight, now, [element]);
-          // print('heartRate:  $heartRate');
-          break;
-        case HealthDataType.BLOOD_PRESSURE_SYSTOLIC:
-          var bloodGlucose =
-              await health.getHealthDataFromTypes(midnight, now, [element]);
-          // print('bloodGlucose:  $bloodGlucose');
-          break;
+
         case HealthDataType.BLOOD_GLUCOSE:
           var bloodGlucoseList =
               await health.getHealthDataFromTypes(midnight, now, [element]);
@@ -135,6 +126,16 @@ class HealthAppBloc extends Bloc<HealthAppEvent, HealthAppState> {
                   false, []);
             }
           }
+          break;
+        case HealthDataType.HEART_RATE:
+          var heartRate =
+              await health.getHealthDataFromTypes(midnight, now, [element]);
+          // print('heartRate:  $heartRate');
+          break;
+        case HealthDataType.BLOOD_PRESSURE_SYSTOLIC:
+          var bloodGlucose =
+              await health.getHealthDataFromTypes(midnight, now, [element]);
+          // print('bloodGlucose:  $bloodGlucose');
           break;
         case HealthDataType.BLOOD_PRESSURE_DIASTOLIC:
           break;
