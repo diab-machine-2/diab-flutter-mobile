@@ -85,6 +85,14 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
       screenName: "kpi_motion_add",
       screenClass: "AddExercrisesController",
     );
+    await TrackingManager.analytics.logEvent(
+      name: 'kpi_add_begin',
+      parameters: {
+        "screen_name": 'kpi_motion_add',
+        'object_type': 'kpi_motion',
+        'object_title': 'Chỉ số vận động'
+      },
+    );
   }
 
   void dispose() {

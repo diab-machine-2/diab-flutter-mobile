@@ -64,6 +64,14 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
       screenName: "kpi_hba1c_add",
       screenClass: "AddHBA1CController",
     );
+    await TrackingManager.analytics.logEvent(
+      name: 'kpi_add_begin',
+      parameters: {
+        "screen_name": 'kpi_hba1c_add',
+        'object_type': 'kpi_hba1c',
+        'object_title': 'Chỉ số HBA1C'
+      },
+    );
   }
 
   void dispose() {

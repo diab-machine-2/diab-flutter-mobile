@@ -80,6 +80,14 @@ class _AddBloodPressureControllerState
     await TrackingManager.analytics.logScreenView(
         screenName: "kpi_blood_pressure_add",
         screenClass: "AddBloodPressureController");
+    await TrackingManager.analytics.logEvent(
+      name: 'kpi_glycemic_add',
+      parameters: {
+        "screen_name": 'kpi_blood_pressure_add',
+        'object_type': 'kpi_blood_pressure',
+        'object_title': 'Chỉ số huyết áp'
+      },
+    );
   }
 
   @override

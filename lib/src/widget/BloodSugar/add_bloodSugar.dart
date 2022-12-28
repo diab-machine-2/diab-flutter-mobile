@@ -85,6 +85,14 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
     await TrackingManager.analytics.logScreenView(
         screenName: "kpi_glycemic_add",
         screenClass: "BloodSugarDetailController");
+    await TrackingManager.analytics.logEvent(
+      name: 'kpi_add_begin',
+      parameters: {
+        "screen_name": 'kpi_glycemic_add',
+        'object_type': 'kpi_glycemic',
+        'object_title': 'Chỉ số đường huyết'
+      },
+    );
   }
 
   void dispose() {
@@ -364,63 +372,63 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
                           ),
                         ),
                         //TODO: Kết nối máy đo đường huyết
-                        // GestureDetector(
-                        //   onTap: () async {
-                        //     final data = await Navigator.pushNamed(
-                        //         context, NavigatorName.connection_instructions);
-                        //     if (data != null && data is Map) {
-                        //       fromNipro = true;
+                        GestureDetector(
+                          onTap: () async {
+                            final data = await Navigator.pushNamed(
+                                context, NavigatorName.connection_instructions);
+                            if (data != null && data is Map) {
+                              fromNipro = true;
 
-                        //       if (AppSettings.userInfo!.glucoseUnit != 1) {
-                        //         await changeUnit();
-                        //       }
+                              if (AppSettings.userInfo!.glucoseUnit != 1) {
+                                await changeUnit();
+                              }
 
-                        //       final glucose =
-                        //           double.tryParse(data['glucose']) ?? 0;
-                        //       number = glucose;
-                        //       _controller.text = number.toString();
+                              final glucose =
+                                  double.tryParse(data['glucose']) ?? 0;
+                              number = glucose;
+                              _controller.text = number.toString();
 
-                        //       showReason = (AppSettings.userInfo!.glucoseUnit ==
-                        //                   1
-                        //               ? (number! < 55 || number! > 250)
-                        //               : (number! < 55 / mmollToMgdlFactor ||
-                        //                   number! > 250 / mmollToMgdlFactor)) &&
-                        //           number! > 0;
-                        //       selectedDate =
-                        //           DateTime.fromMillisecondsSinceEpoch(
-                        //               (int.tryParse(data['date']) ?? 0) * 1000);
-                        //       loadTimeFrame();
-                        //       setState(() {});
-                        //     }
-                        //   },
-                        //   child: Container(
-                        //       margin: EdgeInsets.only(
-                        //           bottom: 16, left: 16, right: 16),
-                        //       padding: EdgeInsets.all(16),
-                        //       decoration: BoxDecoration(
-                        //         color: R.color.white,
-                        //         borderRadius: BorderRadius.circular(16),
-                        //       ),
-                        //       child: Row(
-                        //         mainAxisAlignment:
-                        //             MainAxisAlignment.spaceBetween,
-                        //         children: [
-                        //           Row(
-                        //             children: [
-                        //               Image.asset(R.drawable.ic_device,
-                        //                   width: 24, height: 24),
-                        //               SizedBox(width: 8),
-                        //               Text('Kết nối thiết bị và app',
-                        //                   style: TextStyle(
-                        //                       fontSize: 16,
-                        //                       fontWeight: FontWeight.w700)),
-                        //             ],
-                        //           ),
-                        //           Icon(Icons.navigate_next,
-                        //               color: R.color.grayCaption)
-                        //         ],
-                        //       )),
-                        // ),
+                              showReason = (AppSettings.userInfo!.glucoseUnit ==
+                                          1
+                                      ? (number! < 55 || number! > 250)
+                                      : (number! < 55 / mmollToMgdlFactor ||
+                                          number! > 250 / mmollToMgdlFactor)) &&
+                                  number! > 0;
+                              selectedDate =
+                                  DateTime.fromMillisecondsSinceEpoch(
+                                      (int.tryParse(data['date']) ?? 0) * 1000);
+                              loadTimeFrame();
+                              setState(() {});
+                            }
+                          },
+                          child: Container(
+                              margin: EdgeInsets.only(
+                                  bottom: 16, left: 16, right: 16),
+                              padding: EdgeInsets.all(16),
+                              decoration: BoxDecoration(
+                                color: R.color.white,
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Row(
+                                    children: [
+                                      Image.asset(R.drawable.ic_device,
+                                          width: 24, height: 24),
+                                      SizedBox(width: 8),
+                                      Text('Kết nối thiết bị và app',
+                                          style: TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w700)),
+                                    ],
+                                  ),
+                                  Icon(Icons.navigate_next,
+                                      color: R.color.grayCaption)
+                                ],
+                              )),
+                        ),
                         !showReason
                             ? SizedBox()
                             : Padding(

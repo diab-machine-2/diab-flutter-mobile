@@ -27,7 +27,8 @@ class LessonDetailFailure extends LessonDetailState {
 }
 
 class LessonDetailSuccess extends LessonDetailState {
-  const LessonDetailSuccess();
+  final bool lessonBegin;
+  const LessonDetailSuccess({this.lessonBegin = false});
   @override
   String toString() {
     return 'LessonDetailSuccess{}';

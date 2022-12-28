@@ -46,8 +46,14 @@ class _MakeQuestionPageState extends State<MakeQuestionPage> {
 
   Future firebaseSetup() async {
     await TrackingManager.analytics.logScreenView(
-      screenName: "qna_add", 
-      screenClass: "MakeQuestionPage"
+      screenName: "qna_add",
+      screenClass: "MakeQuestionPage",
+    );
+    await TrackingManager.analytics.logEvent(
+      name: 'qna_begin',
+      parameters: {
+        "screen_name": 'qna_add',
+      },
     );
   }
 
@@ -58,12 +64,18 @@ class _MakeQuestionPageState extends State<MakeQuestionPage> {
       body: BlocProvider(
         create: (context) => _cubit,
         child: BlocListener<MakeQuestionCubit, MakeQuestionState>(
-          listener: (context, state) {
+          listener: (context, state) async {
             if (state is MakeQuestionLoading) {
               BotToast.showLoading();
             } else {
               BotToast.closeAllLoading();
               if (state is SendQuestionSuccess) {
+                await TrackingManager.analytics.logEvent(
+                  name: 'qna_complete',
+                  parameters: {
+                    "screen_name": 'qna_add',
+                  },
+                );
                 showSuccessDialog();
               } else if (state is SendQuestionFailure) {
                 Message.showToastMessage(context, state.error);

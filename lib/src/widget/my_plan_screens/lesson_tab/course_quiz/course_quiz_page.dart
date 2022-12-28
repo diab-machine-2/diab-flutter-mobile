@@ -31,11 +31,16 @@ const Duration duration = Duration(milliseconds: 1);
 
 class CourseQuizPage extends StatefulWidget {
   const CourseQuizPage(
-      {Key? key, required this.lessonId, this.lessonSectionItem, this.onDone})
+      {Key? key,
+      required this.lessonId,
+      this.lessonSectionItem,
+      this.onDone,
+      required this.lessonDetail})
       : super(key: key);
 
   final String lessonId;
   final LessonSectionItem? lessonSectionItem;
+  final LessonSectionListResponseData lessonDetail;
   final Function(bool isPassed)? onDone;
 
   @override
@@ -50,11 +55,13 @@ class _CourseQuizPageState extends State<CourseQuizPage> {
 
   @override
   void initState() {
+    firebaseSetup();
     final AppRepository repository = AppRepository();
     _cubit = CourseQuizCubit(
       repository,
       lessonId: widget.lessonId,
       lessonSectionItem: widget.lessonSectionItem,
+      lessonDetail: widget.lessonDetail,
     );
     _cubit.initData();
     Utils.onWidgetDidBuild(() {
@@ -70,6 +77,13 @@ class _CourseQuizPageState extends State<CourseQuizPage> {
     super.initState();
   }
 
+  Future firebaseSetup() async {
+    await TrackingManager.analytics.logScreenView(
+      screenName: "quiz_lession",
+      screenClass: "CourseQuizPage",
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -77,7 +91,7 @@ class _CourseQuizPageState extends State<CourseQuizPage> {
       body: BlocProvider(
         create: (context) => _cubit,
         child: BlocConsumer<CourseQuizCubit, CourseQuizState>(
-          listener: (context, state) {
+          listener: (context, state) async {
             if (state is CourseQuizSuccess) {
               if (listGlobal.isEmpty) {
                 _cubit.listQuiz.forEach((element) {
@@ -196,7 +210,18 @@ class _CourseQuizPageState extends State<CourseQuizPage> {
               itemCount: lengthQuiz,
               itemBuilder: (context, index) => buildStep(
                   index: index,
-                  onTap: () {
+                  onTap: () async {
+                    QuizLessonQuiz? quiz = _cubit.listQuiz[index]?.quiz;
+                    await TrackingManager.analytics.logEvent(
+                      name: 'component_clicked',
+                      parameters: {
+                        "screen_name": 'quiz_lession',
+                        'component_name': 'list_quiz_question',
+                        'object_id': _cubit.lessonSectionItem?.id,
+                        'object_title': widget.lessonDetail.name,
+                        'object_index': index,
+                      },
+                    );
                     _controller.scrollToIndex(index,
                         duration: duration,
                         preferPosition: AutoScrollPosition.begin);
@@ -224,6 +249,17 @@ class _CourseQuizPageState extends State<CourseQuizPage> {
                     width: ScreenUtil().screenWidth - 80,
                     child: listGlobal.isNotEmpty
                         ? CardCourseQuizPage(
+                            onAnswerQuestion: (indexAnswer) async {
+                              await TrackingManager.analytics.logEvent(
+                                name: 'select_quiz_answer',
+                                parameters: {
+                                  "screen_name": 'quiz_lession',
+                                  'object_id': _cubit.lessonSectionItem?.id,
+                                  'object_title': _cubit.lessonDetail.name,
+                                  'object_index': indexAnswer,
+                                },
+                              );
+                            },
                             key: listGlobal[index],
                             index: index,
                             quizData: data,
@@ -240,7 +276,16 @@ class _CourseQuizPageState extends State<CourseQuizPage> {
             isPreviousButtonActive: _cubit.selectedCourseIndex == 0,
             onTapPrevious: _cubit.selectedCourseIndex == 0
                 ? null
-                : () {
+                : () async {
+                    await TrackingManager.analytics.logEvent(
+                      name: 'cta_button_clicked',
+                      parameters: {
+                        "screen_name": 'quiz_lession',
+                        'cta_button_name': 'cta_quiz_previous',
+                        'object_id': _cubit.lessonSectionItem?.id,
+                        'object_title': _cubit.lessonDetail.name,
+                      },
+                    );
                     final int newIndex = _cubit.selectedCourseIndex - 1;
                     _controller.scrollToIndex(newIndex,
                         duration: duration,
@@ -249,7 +294,16 @@ class _CourseQuizPageState extends State<CourseQuizPage> {
                   },
             isNextButtonActive:
                 lengthQuiz != 0 && _cubit.selectedCourseIndex < lengthQuiz - 1,
-            onTapNext: () {
+            onTapNext: () async {
+              await TrackingManager.analytics.logEvent(
+                name: 'cta_button_clicked',
+                parameters: {
+                  "screen_name": 'quiz_lession',
+                  'cta_button_name': 'cta_quiz_next',
+                  'object_id': _cubit.lessonSectionItem?.id,
+                  'object_title': widget.lessonDetail.name,
+                },
+              );
               if (lengthQuiz == 0) {
                 onDoneQuiz(context);
                 return;
@@ -263,19 +317,55 @@ class _CourseQuizPageState extends State<CourseQuizPage> {
                 //   if (_cubit.isPassed) {
                 _cubit.setCompleteQuiz();
                 //   }
-                _buildDialogCompleted(seeResultCallback: () {
+                _buildDialogCompleted(seeResultCallback: () async {
+                  await TrackingManager.analytics.logEvent(
+                    name: 'cta_button_clicked',
+                    parameters: {
+                      "screen_name": 'quiz_lession',
+                      'cta_button_name': 'cta_quiz_answer',
+                      'object_id': _cubit.lessonSectionItem?.id,
+                      'object_title': _cubit.lessonDetail.name,
+                    },
+                  );
                   _cubit.showAnswer();
                   _controller.scrollToIndex(0,
                       duration: duration,
                       preferPosition: AutoScrollPosition.begin);
-                }, retryCallback: () {
+                }, retryCallback: () async {
+                  await TrackingManager.analytics.logEvent(
+                    name: 'cta_button_clicked',
+                    parameters: {
+                      "screen_name": 'quiz_lession',
+                      'cta_button_name': 'cta_quiz_retry',
+                      'object_id': _cubit.lessonSectionItem?.id,
+                      'object_title': _cubit.lessonDetail.name,
+                    },
+                  );
                   _cubit.retryQuiz();
                   _controller.scrollToIndex(0,
                       duration: duration,
                       preferPosition: AutoScrollPosition.begin);
-                }, continueLearnCallback: () {
+                }, continueLearnCallback: () async {
+                  await TrackingManager.analytics.logEvent(
+                    name: 'cta_button_clicked',
+                    parameters: {
+                      "screen_name": 'quiz_lession',
+                      'cta_button_name': 'cta_quiz_continue',
+                      'object_id': _cubit.lessonSectionItem?.id,
+                      'object_title': _cubit.lessonDetail.name,
+                    },
+                  );
                   onDoneQuiz(context);
-                }, skipCallback: () {
+                }, skipCallback: () async {
+                  await TrackingManager.analytics.logEvent(
+                    name: 'cta_button_clicked',
+                    parameters: {
+                      "screen_name": 'quiz_lession',
+                      'cta_button_name': 'cta_quiz_skip',
+                      'object_id': _cubit.lessonSectionItem?.id,
+                      'object_title': _cubit.lessonDetail.name,
+                    },
+                  );
                   _buildDialogCompleted(
                       rate: 90,
                       seeResultCallback: () {
@@ -398,11 +488,12 @@ class _CourseQuizPageState extends State<CourseQuizPage> {
     double? rate,
   }) async {
     await TrackingManager.analytics.logEvent(
-      name: 'cta_button_clicked',
+      name: 'component_displayed',
       parameters: {
-        "screen_name": 'kpi_glycemic_add',
-        'object_id': _cubit.lessonSectionItem!.id,
-        'object_title': _cubit.lessonSectionItem!.name,
+        "screen_name": 'quiz_lession',
+        'component_name': 'popup_quiz_complete',
+        'object_id': _cubit.lessonSectionItem?.id,
+        'object_title': widget.lessonDetail.name,
       },
     );
     showDialog(
@@ -422,8 +513,16 @@ class _CourseQuizPageState extends State<CourseQuizPage> {
     );
   }
 
-  void onDoneQuiz(BuildContext context) {
-    BottomSheetShareLesson.showDialogDeleteAccount(
+  Future<void> onDoneQuiz(BuildContext context) async {
+    await TrackingManager.analytics.logEvent(
+      name: 'quiz_lesson_complete',
+      parameters: {
+        "screen_name": 'quiz_lession',
+        'object_id': _cubit.lessonSectionItem?.id,
+        'object_title': _cubit.lessonSectionItem?.name,
+      },
+    );
+    BottomSheetShareLesson.showDialogShareLesson(
       context,
       onShare: () => _onShareLesson(
         context,

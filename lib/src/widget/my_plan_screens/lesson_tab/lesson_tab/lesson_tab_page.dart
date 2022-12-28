@@ -258,6 +258,21 @@ class _LessonTabPageState extends State<LessonTabPage>
                                                       '${_cubit.lessonsList![index]!.name!}',
                                                 },
                                               );
+
+                                              await TrackingManager.analytics
+                                                  .logEvent(
+                                                name: 'select_content',
+                                                parameters: {
+                                                  "screen_name": 'my_schedule',
+                                                  'content_type': 'lesson',
+                                                  'item_id':
+                                                      '${_cubit.lessonsList![index]!.id!}',
+                                                  'item_name':
+                                                      '${_cubit.lessonsList![index]!.name!}',
+                                                  'index': index,
+                                                },
+                                              );
+
                                               var result = await NavigationUtil
                                                   .navigatePage(
                                                 context,

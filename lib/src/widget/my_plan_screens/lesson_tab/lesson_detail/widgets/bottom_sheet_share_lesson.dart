@@ -15,7 +15,7 @@ class BottomSheetShareLesson extends StatelessWidget {
     required this.onCancel,
   }) : super(key: key);
 
-  static showDialogDeleteAccount(
+  static showDialogShareLesson(
     BuildContext context, {
     required VoidCallback onShare,
     required VoidCallback onCancel,

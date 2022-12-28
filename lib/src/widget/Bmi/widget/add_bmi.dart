@@ -99,6 +99,14 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
       screenName: "kpi_body_weight_add",
       screenClass: "AddBmiController",
     );
+    await TrackingManager.analytics.logEvent(
+      name: 'kpi_add_begin',
+      parameters: {
+        "screen_name": 'kpi_body_weight_add',
+        'object_type': 'kpi_body_weight',
+        'object_title': 'Chỉ số cân nặng'
+      },
+    );
   }
 
   @override
