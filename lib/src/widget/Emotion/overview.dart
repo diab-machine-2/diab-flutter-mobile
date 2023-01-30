@@ -23,7 +23,14 @@ class EmotionOverviewControllerState extends State<EmotionOverviewController>
   @override
   void initState() {
     super.initState();
-    TrackingManager.analytics.setCurrentScreen(screenName: 'Emotion Dashboard');
+    firebaseSetup();
+  }
+
+  Future firebaseSetup() async {
+    await TrackingManager.analytics.logScreenView(
+      screenName: "kpi_emotional",
+      screenClass: "EmotionOverviewController",
+    );
   }
 
   reloadData(int periodFilterType) {

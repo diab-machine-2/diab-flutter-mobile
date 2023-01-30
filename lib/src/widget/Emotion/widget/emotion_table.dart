@@ -32,7 +32,6 @@ class _EmotionTableControllerState extends State<EmotionTableController> {
   @override
   void initState() {
     super.initState();
-    TrackingManager.analytics.setCurrentScreen(screenName: "Emotion Table");
   }
   @override
   Widget build(BuildContext context) {

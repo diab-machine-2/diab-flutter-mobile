@@ -25,7 +25,14 @@ class HbA1COverviewControllerState extends State<HbA1COverviewController>
   @override
   void initState() {
     super.initState();
-    TrackingManager.analytics.setCurrentScreen(screenName: 'HbA1C Dashboard');
+    firebaseSetup();
+  }
+
+  Future firebaseSetup() async {
+    await TrackingManager.analytics.logScreenView(
+      screenName: "kpi_hba1c",
+      screenClass: "HbA1COverviewController",
+    );
   }
 
   reloadData(int periodFilterType) {
@@ -53,8 +60,7 @@ class HbA1COverviewControllerState extends State<HbA1COverviewController>
               ],
               begin: Alignment.topRight,
               end: Alignment.bottomLeft, //FractionalOffset(1.0, 0.0),
-              stops: [0.0, 0.3, 0.8, 1.0])
-          ),
+              stops: [0.0, 0.3, 0.8, 1.0])),
       child: ListView(
           controller: _scrollController,
           physics: ClampingScrollPhysics(),

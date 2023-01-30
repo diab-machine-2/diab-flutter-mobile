@@ -3,15 +3,18 @@ import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/model/response/lesson_section_list_response.dart';
 import 'package:medical/src/utils/navigation_util.dart';
+import 'package:medical/src/widget/helper/tracking_manager.dart';
 
 class BottomSheetWidget extends StatefulWidget {
   const BottomSheetWidget({
+    required this.lessonDetail,
     required this.sectionList,
     required this.currentSection,
     required this.onChangeSection,
   });
 
   final List<LessonSectionItem?> sectionList;
+  final LessonSectionListResponseData lessonDetail;
   final int currentSection;
   final Function(int newIndex) onChangeSection;
 
@@ -69,7 +72,33 @@ class _BottomSheetWidgetState extends State<BottomSheetWidget> {
                         return _buildSingleLessonCategory(
                             sectionDetail: widget.sectionList[index],
                             isSelected: index == currentSection,
-                            onTap: () {
+                            onTap: () async {
+
+                              if (widget.sectionList[index]?.name ==
+                                  'Câu hỏi trắc nghiệm') {
+                                await TrackingManager.analytics.logEvent(
+                                  name: 'component_clicked',
+                                  parameters: {
+                                    "screen_name": 'lesson_detail',
+                                    "component_name": 'lesson_quiz',
+                                    'object_id': widget.lessonDetail.id,
+                                    'object_title': widget.lessonDetail.name,
+                                  },
+                                );
+                              } else {
+                                await TrackingManager.analytics.logEvent(
+                                  name: 'component_clicked',
+                                  parameters: {
+                                    "screen_name": 'lesson_detail',
+                                    "component_name": 'lesson_category',
+                                    'object_id': widget.lessonDetail.id,
+                                    'object_title': widget.lessonDetail.name,
+                                    "item_name":
+                                        widget.sectionList[index]?.name,
+                                  },
+                                );
+                              }
+
                               currentSection = index;
                               widget.onChangeSection(index);
                               setState(() {});

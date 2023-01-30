@@ -37,7 +37,6 @@ class _RegisterSuccessState extends State<RegisterSuccess> {
   @override
   void initState() {
     super.initState();
-    // TrackingManager.analytics.setCurrentScreen(screenName: "Registration Congratulation");
     firebaseSetup();
   }
 

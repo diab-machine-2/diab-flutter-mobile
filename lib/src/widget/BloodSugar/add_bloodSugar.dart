@@ -85,6 +85,14 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
     await TrackingManager.analytics.logScreenView(
         screenName: "kpi_glycemic_add",
         screenClass: "BloodSugarDetailController");
+    await TrackingManager.analytics.logEvent(
+      name: 'kpi_add_begin',
+      parameters: {
+        "screen_name": 'kpi_glycemic_add',
+        'object_type': 'kpi_glycemic',
+        'object_title': 'Chỉ số đường huyết'
+      },
+    );
   }
 
   void dispose() {
@@ -363,6 +371,7 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
                             ]),
                           ),
                         ),
+                        //TODO: Kết nối máy đo đường huyết
                         GestureDetector(
                           onTap: () async {
                             final data = await Navigator.pushNamed(
@@ -485,7 +494,7 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
                                       name: 'component_clicked',
                                       parameters: {
                                         "screen_name": 'kpi_glycemic_add',
-                                        'cta_button_name':
+                                        'component_name':
                                             'date_picker_glycemic',
                                       });
 
@@ -561,7 +570,7 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
                                     name: 'component_clicked',
                                     parameters: {
                                       "screen_name": 'kpi_glycemic_add',
-                                      'cta_button_name': 'time_section_glycemic',
+                                      'component_name': 'time_section_glycemic',
                                     },
                                   );
                                   showActionFilter(context);
@@ -941,6 +950,14 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
           fromNipro,
           paths);
       if (result == true) {
+        await TrackingManager.analytics.logEvent(
+          name: 'kpi_add_success',
+          parameters: {
+            "screen_name": 'kpi_glycemic_add',
+            'object_type': 'kpi_glycemic',
+            'object_title': 'Chỉ số đường huyết'
+          },
+        );
         // if(widget.goalId != null && widget.goalId?.isNotEmpty == true){
         await HomeClient().completeSmartGoal(selectedDate, widget.goalId ?? '',
             1, ScheduleType.blood_sugar.typeIndex);
@@ -1443,7 +1460,7 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
                             name: 'component_clicked',
                             parameters: {
                               "screen_name": 'date_picker_glycemic',
-                              'cta_button_name': 'time_section_glycemic',
+                              'component_name': 'time_section_glycemic',
                             },
                           );
                           selectedDate = datetime ?? DateTime.now();
@@ -1465,13 +1482,13 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
                         selectedHour: selectedHour,
                         selectedMinute: selectedMinute,
                         callback: (hour, minute) async {
-                            await TrackingManager.analytics.logEvent(
-                              name: 'component_clicked',
-                              parameters: {
-                                "screen_name": 'date_picker_glycemic',
-                                'cta_button_name': 'time_section_glycemic',
-                              },
-                            );
+                          await TrackingManager.analytics.logEvent(
+                            name: 'component_clicked',
+                            parameters: {
+                              "screen_name": 'date_picker_glycemic',
+                              'component_name': 'time_section_glycemic',
+                            },
+                          );
                           selectedHour = hour ?? selectedHour;
                           selectedMinute = minute ?? selectedMinute;
                         }),
@@ -1521,7 +1538,7 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
                                 "screen_name": 'date_picker_glycemic',
                                 'cta_button_name': 'cta_done',
                               },
-                            );  
+                            );
 
                             Navigator.pop(context);
                           },

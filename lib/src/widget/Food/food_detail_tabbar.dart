@@ -57,7 +57,6 @@ class _FoodDetailTabbarControllerState extends State<FoodDetailTabbarController>
     Observable.instance.addObserver(this);
     checkShowDes();
     loadDescription();
-    TrackingManager.analytics.setCurrentScreen(screenName: "Diet Detail");
   }
 
   @override

@@ -26,15 +26,12 @@ class _NewPasswordControllerState extends State<NewPasswordController> {
   @override
   void initState() {
     super.initState();
-    // TrackingManager.analytics.setCurrentScreen(screenName: "New Password");
     firebaseSetup();
   }
 
   Future firebaseSetup() async {
     await TrackingManager.analytics.logScreenView(
-      screenName: "new_password", 
-      screenClass: "NewPasswordController"
-    );
+        screenName: "new_password", screenClass: "NewPasswordController");
   }
 
   @override
@@ -96,7 +93,10 @@ class _NewPasswordControllerState extends State<NewPasswordController> {
                         gradient: LinearGradient(
                             begin: Alignment.topLeft,
                             end: Alignment.centerRight,
-                            colors: [R.color.greenGradientTop, R.color.greenGradientBottom])),
+                            colors: [
+                              R.color.greenGradientTop,
+                              R.color.greenGradientBottom
+                            ])),
                     child: Center(
                         child: Text(R.string.luu_mat_khau.tr(),
                             style: TextStyle(
@@ -135,25 +135,35 @@ class _NewPasswordControllerState extends State<NewPasswordController> {
   }
 
   submit() async {
+    await TrackingManager.analytics.logEvent(
+      name: 'cta_button_clicked',
+      parameters: {
+        "screen_name": 'new_password',
+        'cta_button_name': 'cta_forget_password_complete',
+      },
+    );
     FocusScope.of(context).unfocus();
     if (password.isEmpty || password.length < 6) {
-      passwordKey.currentState!.validate(R.string.password_least_character.tr());
+      passwordKey.currentState!
+          .validate(R.string.password_least_character.tr());
       return;
     }
     if (password.contains(' ')) {
-      passwordKey.currentState!.validate(R.string.mat_khau_khong_chua_khoang_trang.tr());
+      passwordKey.currentState!
+          .validate(R.string.mat_khau_khong_chua_khoang_trang.tr());
       return;
     }
     if (password != newPassword) {
-      confirmPasswordKey.currentState!.validate(R.string.mat_khau_khong_trung_khop.tr());
+      confirmPasswordKey.currentState!
+          .validate(R.string.mat_khau_khong_trung_khop.tr());
       return;
     }
 
     BotToast.showLoading();
     try {
       await LoginClient().resetPassword(widget.phone, password, widget.token);
-      Message.showToastMessage(context,
-          R.string.reset_mat_khau_thanh_cong.tr());
+      Message.showToastMessage(
+          context, R.string.reset_mat_khau_thanh_cong.tr());
       BotToast.closeAllLoading();
       Navigator.pop(context);
       Navigator.pop(context);

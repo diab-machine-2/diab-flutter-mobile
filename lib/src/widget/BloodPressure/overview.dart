@@ -28,8 +28,13 @@ class BloodPressureOverviewControllerState
   @override
   void initState() {
     super.initState();
-    TrackingManager.analytics
-        .setCurrentScreen(screenName: 'Blood Pressure Dashboard');
+    firebaseSetup();
+  }
+
+  Future firebaseSetup() async {
+    await TrackingManager.analytics.logScreenView(
+        screenName: "kpi_blood_pressure",
+        screenClass: "BloodPressureOverviewController");
   }
 
   reloadData(int periodFilterType) {
@@ -50,7 +55,7 @@ class BloodPressureOverviewControllerState
 
   @override
   bool get wantKeepAlive => true;
-  
+
   @override
   Widget build(BuildContext context) {
     super.build(context);
@@ -58,8 +63,7 @@ class BloodPressureOverviewControllerState
         body: Container(
       decoration: BoxDecoration(
           image: DecorationImage(
-              image: AssetImage(R.drawable.bg_hba1c_high),
-              fit: BoxFit.cover)),
+              image: AssetImage(R.drawable.bg_hba1c_high), fit: BoxFit.cover)),
       child: ListView(
           controller: _scrollController,
           physics: ClampingScrollPhysics(),

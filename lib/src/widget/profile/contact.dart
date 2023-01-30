@@ -23,7 +23,6 @@ class _ContactControllerState extends State<ContactController> {
   @override
   void initState() {
     super.initState();
-    TrackingManager.analytics.setCurrentScreen(screenName: "Contact Us");
   }
   
   @override

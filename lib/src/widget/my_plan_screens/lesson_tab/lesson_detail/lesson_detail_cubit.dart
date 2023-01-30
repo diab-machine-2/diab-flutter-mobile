@@ -28,6 +28,7 @@ class LessonDetailCubit extends Cubit<LessonDetailState> {
   String? path = '';
 
   List<LessonSectionItem?> sectionList = [];
+  LessonSectionListResponseData? lessonDetail;
   LessonSectionListResponseDataLessonReviews? review;
   bool? isEnabledRating;
   int currentSection = 0;
@@ -99,7 +100,7 @@ class LessonDetailCubit extends Cubit<LessonDetailState> {
       checkSectionComplete();
     }
 
-    emit(const LessonDetailSuccess());
+    emit(const LessonDetailSuccess(lessonBegin: true));
     emit(const LessonDetailInitial());
   }
 
@@ -216,6 +217,7 @@ class LessonDetailCubit extends Cubit<LessonDetailState> {
     final ApiResult<LessonSectionListResponse> apiResult =
         await repository.getListLessonSection(lessonId);
     apiResult.when(success: (LessonSectionListResponse response) {
+      lessonDetail = response.data;
       sectionList = response.data?.lessonSections ?? [];
       featureImage = response.data?.image?.url;
       if (response.data?.lessonReviews?.isNotEmpty == true) {
@@ -224,7 +226,7 @@ class LessonDetailCubit extends Cubit<LessonDetailState> {
       isEnabledRating = response.data?.isEnabledRating;
       alreadyDoneLesson = isAllSectionCompleted;
 
-      emit(const LessonDetailSuccess());
+      emit(const LessonDetailSuccess(lessonBegin: true));
     }, failure: (NetworkExceptions error) {
       emit(LessonDetailFailure(NetworkExceptions.getErrorMessage(error)));
     });

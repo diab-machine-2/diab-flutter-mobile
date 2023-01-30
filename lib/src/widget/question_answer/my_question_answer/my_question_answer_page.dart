@@ -318,7 +318,8 @@ class _MyQuestionAnswerPageState extends State<MyQuestionAnswerPage>
                 shrinkWrap: true,
                 controller: _questionScrollController,
                 itemBuilder: (context, position) {
-                  return _buildQuestionItem(_cubit.questions[position], position);
+                  return _buildQuestionItem(
+                      _cubit.questions[position], position);
                 },
               )
             : (state is MyQuestionAnswerSuccess ||
@@ -352,14 +353,12 @@ class _MyQuestionAnswerPageState extends State<MyQuestionAnswerPage>
             _questionScrollController.position.maxScrollExtent &&
         !_questionScrollController.position.outOfRange) {
       //reach the bottom
-      await TrackingManager.analytics.logEvent(
-        name: 'component_loadmore',
-        parameters: {
-          "screen_name": 'qna_home',
-          'component_name': 'list_qna',
-          'page_index': _cubit.page + 1,
-        }
-      );
+      await TrackingManager.analytics
+          .logEvent(name: 'component_loadmore', parameters: {
+        "screen_name": 'qna_home',
+        'component_name': 'list_qna',
+        'page_index': _cubit.page + 1,
+      });
       await _cubit.loadmore();
     }
     if (_questionScrollController.offset <=
@@ -379,9 +378,19 @@ class _MyQuestionAnswerPageState extends State<MyQuestionAnswerPage>
           name: 'component_clicked',
           parameters: {
             "screen_name": 'qna_home',
-            'component_name': 'list_qna_item_$position',
+            'component_name': 'list_qna_item',
             'object_id': questionModel.id,
-            'object_title': questionModel.answers,
+            'object_title': questionModel.body,
+          },
+        );
+        await TrackingManager.analytics.logEvent(
+          name: 'select_content',
+          parameters: {
+            "screen_name": 'qna_home',
+            "content_type": 'qna doctor',
+            "item_id": questionModel.id,
+            "item_name": questionModel.body,
+            "index": position,
           },
         );
         var result = await Navigator.pushNamed(

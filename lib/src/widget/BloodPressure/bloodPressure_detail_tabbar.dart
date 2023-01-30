@@ -58,7 +58,6 @@ class _BloodPressureDetailTabbarControllerState
     //     });
     checkShowDes();
     loadDescription();
-    TrackingManager.analytics.setCurrentScreen(screenName: "Blood Pressure Detail");
   }
 
   @override

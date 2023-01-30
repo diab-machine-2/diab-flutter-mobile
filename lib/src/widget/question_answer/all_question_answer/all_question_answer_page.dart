@@ -379,9 +379,19 @@ class _AllQuestionAnswerPageState extends State<AllQuestionAnswerPage>
           name: 'component_clicked',
           parameters: {
             "screen_name": 'qna_home',
-            'component_name': 'list_qna_item_$position',
+            'component_name': 'list_qna_item',
             'object_id': questionModel.id,
-            'object_title': questionModel.answers,
+            'object_title': questionModel.body,
+          },
+        );
+        await TrackingManager.analytics.logEvent(
+          name: 'select_content',
+          parameters: {
+            "screen_name": 'qna_home',
+            "content_type": 'qna doctor',
+            "item_id": questionModel.id,
+            "item_name": questionModel.body,
+            "index": position,
           },
         );
         var result = await Navigator.pushNamed(

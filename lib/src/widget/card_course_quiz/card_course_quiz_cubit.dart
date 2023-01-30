@@ -1,6 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/response/list_quiz_lesson_response.dart';
+import 'package:medical/src/widget/helper/tracking_manager.dart';
 
 import 'card_course_quiz.dart';
 
@@ -24,13 +25,15 @@ class CardCourseQuizCubit extends Cubit<CardCourseQuizState> {
     }
   }
 
-  void fillTextField(QuizData quizData){
-    if(quizData.results != null && quizData.answers?.isEmpty == true){
-      emit(CardCourseQuizFillTextField(quizData.results!.isNotEmpty == true ? quizData.results!.first.content ?? '' : ''));
+  void fillTextField(QuizData quizData) {
+    if (quizData.results != null && quizData.answers?.isEmpty == true) {
+      emit(CardCourseQuizFillTextField(quizData.results!.isNotEmpty == true
+          ? quizData.results!.first.content ?? ''
+          : ''));
     }
   }
 
-  void checkBox(String answerId, bool isSingleChoice) {
+  Future<void> checkBox(String answerId, bool isSingleChoice) async {
     emit(CardCourseQuizLoading());
     if (isSingleChoice) {
       listAnswerChoosing = [];

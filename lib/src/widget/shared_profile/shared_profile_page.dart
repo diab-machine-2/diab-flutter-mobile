@@ -32,7 +32,6 @@ class _SharedProfilePageState extends State<SharedProfilePage> {
     final AppRepository appRepository = AppRepository();
     _cubit = SharedProfileCubit(appRepository);
     _cubit.getSharedProfile();
-    TrackingManager.analytics.setCurrentScreen(screenName: "Shared Profile List");
   }
 
   @override

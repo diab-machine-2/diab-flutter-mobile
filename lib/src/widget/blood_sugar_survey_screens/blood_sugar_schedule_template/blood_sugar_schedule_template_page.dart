@@ -40,8 +40,6 @@ class _BloodSugarScheduleTemplatePageState extends State<BloodSugarScheduleTempl
       templateCode: widget.templateCode,
     );
     _cubit.getTemplateDetail();
-    TrackingManager.analytics.setCurrentScreen(screenName: "Glucose Schedule");
-    // TrackingManager.analytics.logEvent(name: '');
   }
 
   @override

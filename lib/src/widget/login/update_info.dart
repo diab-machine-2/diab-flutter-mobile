@@ -68,15 +68,13 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
                     ? '${widget.appleAccount?.familyName ?? ''} ${widget.appleAccount?.givenName ?? ''}'
                     : '');
     check();
-    // TrackingManager.analytics.setCurrentScreen(screenName: "Registration Update Info");
     firebaseSetup();
   }
 
   Future firebaseSetup() async {
     await TrackingManager.analytics.logScreenView(
-      screenName: "register_information", 
-      screenClass: "UpdateInfoController"
-    );
+        screenName: "register_information",
+        screenClass: "UpdateInfoController");
   }
 
   check() async {
@@ -761,6 +759,13 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
   }
 
   _submitData() async {
+    await TrackingManager.analytics.logEvent(
+      name: 'cta_button_clicked',
+      parameters: {
+        "screen_name": 'register_information',
+        'cta_button_name': 'cta_register_information',
+      },
+    );
     final name = nameController.text;
     if (phone.isEmpty && widget.type != 'phone') {
       phoneKey.currentState!

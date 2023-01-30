@@ -18,7 +18,6 @@ class _ManualDetailControllerState extends State<ManualDetailController> {
   @override
   void initState() {
     super.initState();
-    TrackingManager.analytics.setCurrentScreen(screenName: "Information Security");
   }
   @override
   Widget build(BuildContext context) {

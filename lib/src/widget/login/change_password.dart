@@ -29,7 +29,6 @@ class _ChangePasswordControllerState extends State<ChangePasswordController> {
   @override
   void initState() {
     super.initState();
-    // TrackingManager.analytics.setCurrentScreen(screenName: "Change Password");
     firebaseSetup();
   }
 

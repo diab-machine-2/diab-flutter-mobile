@@ -27,7 +27,6 @@ class _DeleteAccountControllerState extends State<DeleteAccountController> {
   @override
   void initState() {
     super.initState();
-    TrackingManager.analytics.setCurrentScreen(screenName: "Delete Account");
   }
 
   @override

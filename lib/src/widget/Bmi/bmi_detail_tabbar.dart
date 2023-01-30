@@ -54,7 +54,6 @@ class _BmiDetailTabbarControllerState extends State<BmiDetailTabbarController>
 
     checkShowDes();
     loadDescription();
-    TrackingManager.analytics.setCurrentScreen(screenName: "Weight Detail");
   }
 
   @override
@@ -116,7 +115,8 @@ class _BmiDetailTabbarControllerState extends State<BmiDetailTabbarController>
                       builder: (_) => ActionListPanel(selectedIndex: 5),
                     );
                   },
-                  child: Icon(Icons.format_list_bulleted, color: R.color.textDark)),
+                  child: Icon(Icons.format_list_bulleted,
+                      color: R.color.textDark)),
               actions: [
                 CustomActionDescription(
                     key: customActionDesKey,
@@ -154,8 +154,8 @@ class _BmiDetailTabbarControllerState extends State<BmiDetailTabbarController>
             onPressed: () {
               _showMaterialDialog();
             },
-            child: Image.asset(R.drawable.ic_button_plus,
-                width: 80, height: 80),
+            child:
+                Image.asset(R.drawable.ic_button_plus, width: 80, height: 80),
           )),
     );
   }

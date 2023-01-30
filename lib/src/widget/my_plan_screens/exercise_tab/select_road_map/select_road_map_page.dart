@@ -34,7 +34,6 @@ class _SelectRoadMapPageState extends State<SelectRoadMapPage> {
     final AppRepository appRepository = AppRepository();
     _cubit = SelectRoadMapCubit(appRepository);
     _cubit.getRoadAppRoadMap();
-    TrackingManager.analytics.setCurrentScreen(screenName: "Exercise Route Selection");
   }
 
   @override

@@ -49,7 +49,6 @@ class _ExercrisesDetailTabbarControllerState
     Observable.instance.addObserver(this);
     checkShowDes();
     loadDescription();
-    TrackingManager.analytics.setCurrentScreen(screenName: "Exercise Detail");
   }
 
   @override

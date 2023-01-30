@@ -29,7 +29,6 @@ class _NotificationDetailControllerState extends State<NotificationDetailControl
   void initState() {
     super.initState();
     _loadData();
-    TrackingManager.analytics.setCurrentScreen(screenName: "Notification Detail");
   }
 
   _loadData() async {

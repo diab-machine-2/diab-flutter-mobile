@@ -30,7 +30,6 @@ class _NewsDetailViewState extends State<NewsDetailView> {
   void initState() {
     _scrollController.addListener(_scrollListener);
     super.initState();
-    TrackingManager.analytics.setCurrentScreen(screenName: "News Detail");
   }
 
   _scrollListener() {

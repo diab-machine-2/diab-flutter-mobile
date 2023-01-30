@@ -39,8 +39,6 @@ class ExercrisesDetailControllerState extends State<ExercrisesDetailController>
     periodFilterType =
         ExercrisesDetailTabbarController.of(context)!.periodFilterType;
     super.initState();
-
-    TrackingManager.analytics.setCurrentScreen(screenName: 'Exercise Detail');
   }
 
   reloadData(int periodFilter) {

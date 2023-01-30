@@ -31,8 +31,6 @@ class _SettingScheduleGlucoseControllerState
   @override
   void initState() {
     super.initState();
-    TrackingManager.analytics
-        .setCurrentScreen(screenName: 'Setting Schedule Glucose');
     loadData();
   }
 

@@ -30,7 +30,6 @@ class _VoucherDetailViewState extends State<VoucherDetailView> {
   @override
   void initState() {
     super.initState();
-    TrackingManager.analytics.setCurrentScreen(screenName: "Voucher Detail");
   }
   
   @override

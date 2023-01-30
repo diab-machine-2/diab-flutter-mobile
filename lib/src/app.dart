@@ -130,7 +130,7 @@ class _AppState extends State<App> {
                 navigatorObservers: [
                   BotToastNavigatorObserver(),
                   routeObserver,
-                  TrackingManager.observerFirebase
+                  // TrackingManager.observerFirebase
                 ],
                 localizationsDelegates: context.localizationDelegates,
                 supportedLocales: context.supportedLocales,

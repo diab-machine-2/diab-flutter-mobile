@@ -13,13 +13,15 @@ import 'card_course_quiz.dart';
 class CardCourseQuizPage extends StatefulWidget {
   final int index;
   final QuizLesson? quizData;
+  final Function(int)? onAnswerQuestion;
   final ValueChanged<List<String>> onSubmitAnswer;
 
   const CardCourseQuizPage(
       {Key? key,
       required this.quizData,
       required this.index,
-      required this.onSubmitAnswer})
+      required this.onSubmitAnswer,
+      this.onAnswerQuestion})
       : super(key: key);
 
   @override
@@ -100,7 +102,7 @@ class CardCourseQuizPageState extends State<CardCourseQuizPage>
                 fontWeight: FontWeight.w700,
                 color: R.color.textDark,
                 height: 1.4),
-          //  maxLines: 2,
+            //  maxLines: 2,
           ),
           const SizedBox(height: 20),
           Expanded(
@@ -115,6 +117,7 @@ class CardCourseQuizPageState extends State<CardCourseQuizPage>
                       quizData.answers[indexQuestion];
                   return buildQuestion(
                     data: data,
+                    indexQuestion: indexQuestion,
                     isSingleChoice: isSingleChoice,
                   );
                 }),
@@ -139,8 +142,11 @@ class CardCourseQuizPageState extends State<CardCourseQuizPage>
     );
   }
 
-  Widget buildQuestion(
-      {required QuizLessonQuizQuizAnswers? data, bool isSingleChoice = true}) {
+  Widget buildQuestion({
+    required QuizLessonQuizQuizAnswers? data,
+    bool isSingleChoice = true,
+    required int indexQuestion,
+  }) {
     final String id = data?.id ?? "";
     final bool isSelected = _cubit.listAnswerChoosing.contains(id);
     final bool isAnswerRight = data?.isCorrect == true;
@@ -163,7 +169,12 @@ class CardCourseQuizPageState extends State<CardCourseQuizPage>
         behavior: HitTestBehavior.translucent,
         onTap: _cubit.isShowAnswer
             ? null
-            : () => _cubit.checkBox(id, isSingleChoice),
+            : () {
+                if (widget.onAnswerQuestion != null) {
+                  widget.onAnswerQuestion!(indexQuestion);
+                }
+                _cubit.checkBox(id, isSingleChoice);
+              },
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
@@ -182,6 +193,9 @@ class CardCourseQuizPageState extends State<CardCourseQuizPage>
                         onChanged: _cubit.isShowAnswer
                             ? null
                             : (value) {
+                                if (widget.onAnswerQuestion != null) {
+                                  widget.onAnswerQuestion!(indexQuestion);
+                                }
                                 _cubit.checkBox(id, isSingleChoice);
                               },
                         groupValue: true,
@@ -193,6 +207,9 @@ class CardCourseQuizPageState extends State<CardCourseQuizPage>
                         onChanged: _cubit.isShowAnswer
                             ? null
                             : (value) {
+                                if (widget.onAnswerQuestion != null) {
+                                  widget.onAnswerQuestion!(indexQuestion);
+                                }
                                 _cubit.checkBox(id, isSingleChoice);
                               }),
               ),

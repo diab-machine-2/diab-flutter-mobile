@@ -18,7 +18,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class EmotionDetailTabbarController extends StatefulWidget {
   @override
-  _EmotionDetailTabbarControllerState createState() => _EmotionDetailTabbarControllerState();
+  _EmotionDetailTabbarControllerState createState() =>
+      _EmotionDetailTabbarControllerState();
   static _EmotionDetailTabbarControllerState? of(BuildContext context) {
     final _EmotionDetailTabbarControllerState? navigator =
         context.findAncestorStateOfType<_EmotionDetailTabbarControllerState>();
@@ -26,7 +27,8 @@ class EmotionDetailTabbarController extends StatefulWidget {
   }
 }
 
-class _EmotionDetailTabbarControllerState extends State<EmotionDetailTabbarController>
+class _EmotionDetailTabbarControllerState
+    extends State<EmotionDetailTabbarController>
     with SingleTickerProviderStateMixin, Observer {
   TabController? _tabController;
   GlobalKey<CustomTabbarImageState> customTabbarKey = GlobalKey();
@@ -41,7 +43,7 @@ class _EmotionDetailTabbarControllerState extends State<EmotionDetailTabbarContr
   @override
   void initState() {
     super.initState();
-    _tabController = new TabController(vsync: this, length: 2);
+    _tabController = new TabController(vsync: this, length: 2, initialIndex: 1);
     Observable.instance.addObserver(this);
     // DartNotificationCenter.subscribe(
     //     channel: 'Emotion_change_data',
@@ -54,14 +56,15 @@ class _EmotionDetailTabbarControllerState extends State<EmotionDetailTabbarContr
     //     });
     checkShowDes();
     loadDescription();
-    TrackingManager.analytics.setCurrentScreen(screenName: "Emotion Detail");
   }
 
   @override
-  void update(Observable observable, String? notifyName, Map<dynamic, dynamic>? map) {
+  void update(
+      Observable observable, String? notifyName, Map<dynamic, dynamic>? map) {
     if (notifyName == 'Emotion_change_data') {
       overViewKey.currentState?.reloadData(periodFilterType);
       detailKey.currentState?.reloadData(periodFilterType);
+      // changeIndex(1);
     }
   }
 
@@ -97,7 +100,8 @@ class _EmotionDetailTabbarControllerState extends State<EmotionDetailTabbarContr
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
-        Observable.instance.notifyObservers([], notifyName: "refresh_activity_tab");
+        Observable.instance
+            .notifyObservers([], notifyName: "refresh_activity_tab");
         return true;
       },
       child: Container(
@@ -107,7 +111,10 @@ class _EmotionDetailTabbarControllerState extends State<EmotionDetailTabbarContr
                 backgroundColor: R.color.white,
                 title: Text(R.string.cam_xuc.tr(),
                     style: TextStyle(
-                        fontFamily: 'Montserrat', fontSize: 24, fontWeight: FontWeight.w700, color: R.color.textDark)),
+                        fontFamily: 'Montserrat',
+                        fontSize: 24,
+                        fontWeight: FontWeight.w700,
+                        color: R.color.textDark)),
                 leadingIcon: GestureDetector(
                     onTap: () {
                       showDialog(
@@ -117,17 +124,27 @@ class _EmotionDetailTabbarControllerState extends State<EmotionDetailTabbarContr
                         builder: (_) => ActionListPanel(selectedIndex: 6),
                       );
                     },
-                    child: Icon(Icons.format_list_bulleted, color: R.color.textDark)),
+                    child: Icon(Icons.format_list_bulleted,
+                        color: R.color.textDark)),
                 actions: [
-                  CustomActionDescription(
+                  if (des != null)
+                    CustomActionDescription(
                       key: customActionDesKey,
                       callback: (value) {
-                        customTabbarKey.currentState!.showDescription();
-                      }),
+                        Description.showTooltip(
+                          context,
+                          data: des!,
+                          title:
+                              R.string.kiem_soat_cam_xuc_benh_tieu_duong.tr(),
+                        );
+                        // customTabbarKey.currentState!.showDescription();
+                      },
+                    ),
                   IconButton(
                       icon: Icon(Icons.close, color: R.color.black),
                       onPressed: () {
-                        Observable.instance.notifyObservers([], notifyName: "refresh_activity_tab");
+                        Observable.instance.notifyObservers([],
+                            notifyName: "refresh_activity_tab");
                         Navigator.pop(context);
                       }),
                   SizedBox(
@@ -156,14 +173,16 @@ class _EmotionDetailTabbarControllerState extends State<EmotionDetailTabbarContr
               onPressed: () {
                 _showMaterialDialog();
               },
-              child: Image.asset(R.drawable.ic_button_plus, width: 80, height: 80),
+              child:
+                  Image.asset(R.drawable.ic_button_plus, width: 80, height: 80),
             )),
       ),
     );
   }
 
   _showMaterialDialog() {
-    Navigator.pushNamed(context, NavigatorName.add_emo, arguments: {'type': 'input', 'id': null});
+    Navigator.pushNamed(context, NavigatorName.add_emo,
+        arguments: {'type': 'input', 'id': null});
     // showDialog(
     //   barrierColor: R.color.color0xff003F38.withOpacity(0.8),
     //   useSafeArea: false,
@@ -174,7 +193,12 @@ class _EmotionDetailTabbarControllerState extends State<EmotionDetailTabbarContr
 }
 
 class CustomTabbarImage extends StatefulWidget {
-  CustomTabbarImage({Key? key, required this.tabController, this.callback, required this.data}) : super(key: key);
+  CustomTabbarImage(
+      {Key? key,
+      required this.tabController,
+      this.callback,
+      required this.data})
+      : super(key: key);
 
   final ActionFilterCallback? callback;
   final TabController? tabController;
@@ -203,7 +227,10 @@ class CustomTabbarImageState extends State<CustomTabbarImage> {
               ? Padding(
                   padding: EdgeInsets.only(left: 16, right: 16),
                   child: Description(
-                      input: false, data: widget.data, titleDetail: R.string.kiem_soat_cam_xuc_benh_tieu_duong.tr()),
+                      input: false,
+                      data: widget.data,
+                      titleDetail:
+                          R.string.kiem_soat_cam_xuc_benh_tieu_duong.tr()),
                 )
               : SizedBox(),
           Row(
@@ -213,9 +240,13 @@ class CustomTabbarImageState extends State<CustomTabbarImage> {
                 TabBar(
                     isScrollable: true,
                     labelColor: R.color.mainColor,
-                    labelStyle: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: R.color.mainColor),
+                    labelStyle: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: R.color.mainColor),
                     unselectedLabelColor: R.color.captionColorGray,
-                    unselectedLabelStyle: TextStyle(fontSize: 14, fontWeight: FontWeight.w400),
+                    unselectedLabelStyle:
+                        TextStyle(fontSize: 14, fontWeight: FontWeight.w400),
                     tabs: [
                       Tab(text: R.string.bieu_do.tr()),
                       Tab(text: R.string.detail.tr()),
@@ -263,7 +294,11 @@ class _ActionFilterState extends State<ActionFilter> {
             SizedBox(width: 6),
             Padding(
               padding: const EdgeInsets.only(top: 6),
-              child: Text(name, style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: R.color.textDark)),
+              child: Text(name,
+                  style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                      color: R.color.textDark)),
             ),
           ],
         ),
@@ -273,13 +308,15 @@ class _ActionFilterState extends State<ActionFilter> {
 
   showActionFilter(BuildContext context) {
     showModalBottomSheet(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(15))),
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.vertical(top: Radius.circular(15))),
         backgroundColor: R.color.white,
         context: context,
         isScrollControlled: true,
         builder: (context) => FillterBloodPanel(
             selectedIndex: selectedIndex,
             callback: (value, index) {
+
               if (index != null) {
                 setState(() {
                   name = value;

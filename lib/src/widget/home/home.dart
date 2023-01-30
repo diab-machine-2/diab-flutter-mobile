@@ -112,7 +112,6 @@ class _HomeControllerState extends State<HomeController> with Observer {
   void initState() {
     super.initState();
     Observable.instance.addObserver(this);
-    TrackingManager.analytics.setCurrentScreen(screenName: 'Home');
 
     if (user?.isShare == true) {
       ShareProfilePopup.instance.onHasSharedCode(

@@ -12,7 +12,6 @@ class _PolicyControllerState extends State<PolicyController> {
   @override
   void initState() {
     super.initState();
-    // TrackingManager.analytics.setCurrentScreen(screenName: "Policy");
     firebaseSetup();
   }
 

@@ -8,18 +8,23 @@ import 'package:medical/src/model/response/lesson_section_list_response.dart';
 import 'package:medical/src/model/response/quiz_lesson.dart';
 import 'package:medical/src/model/service/api_result.dart';
 import 'package:medical/src/model/service/network_exceptions.dart';
+import 'package:medical/src/widget/helper/tracking_manager.dart';
 
 import '../../../../model/request/quiz_answer_request.dart';
 import 'course_quiz.dart';
 
 class CourseQuizCubit extends Cubit<CourseQuizState> {
-  CourseQuizCubit(this.repository,
-      {required this.lessonId, required this.lessonSectionItem})
-      : super(InitialCourseQuizState());
+  CourseQuizCubit(
+    this.repository, {
+    required this.lessonId,
+    required this.lessonDetail,
+    required this.lessonSectionItem,
+  }) : super(InitialCourseQuizState());
   final AppRepository repository;
 
   final String lessonId;
   final LessonSectionItem? lessonSectionItem;
+  final LessonSectionListResponseData lessonDetail;
 
   List<QuizLesson?> listQuiz = [];
   Map<int, List<String>> answer = {};
@@ -90,6 +95,15 @@ class CourseQuizCubit extends Cubit<CourseQuizState> {
       quizName = lessonSectionItem?.name ?? '';
       if (listQuiz.isNotEmpty != true) {
         emit(const CourseQuizDone());
+      } else {
+        await TrackingManager.analytics.logEvent(
+          name: 'quiz_lesson_begin',
+          parameters: {
+            "screen_name": 'quiz_lession',
+            'object_id': lessonDetail.id,
+            'object_title': lessonDetail.name,
+          },
+        );
       }
       emit(const CourseQuizLoading());
       await Future.delayed(Duration.zero);
@@ -125,7 +139,7 @@ class CourseQuizCubit extends Cubit<CourseQuizState> {
     emit(RetryQuizSuccess());
   }
 
-  void jumpToIndexCourse(int index) {
+  Future<void> jumpToIndexCourse(int index) async {
     emit(const CourseQuizLoading());
     selectedCourseIndex = index;
     emit(InitialCourseQuizState());
@@ -203,6 +217,14 @@ class CourseQuizCubit extends Cubit<CourseQuizState> {
   }
 
   Future<void> setCompletedLessonQuiz() async {
+    await TrackingManager.analytics.logEvent(
+      name: 'lesson_complete',
+      parameters: {
+        "screen_name": 'quiz_lession',
+        'object_id': lessonDetail.id,
+        'object_title': lessonDetail.name,
+      },
+    );
     await Future.delayed(Duration.zero);
     emit(const CourseQuizLoading());
     final ApiResult<CommonResponse> apiResult =

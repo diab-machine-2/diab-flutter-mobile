@@ -56,7 +56,6 @@ class _RegisterControllerState extends State<RegisterController> {
     super.initState();
     final String? referalCode = DynamicLinkConfig.instance.referalCode;
     referralCode = referalCode ?? "";
-    // TrackingManager.analytics.setCurrentScreen(screenName: "Registration");
     firebaseSetup();
   }
 
@@ -336,6 +335,13 @@ class _RegisterControllerState extends State<RegisterController> {
   }
 
   verify() async {
+    await TrackingManager.analytics.logEvent(
+      name: 'cta_button_clicked',
+      parameters: {
+        "screen_name": 'sign_up',
+        'cta_button_name': 'cta_sign_up_phone',
+      },
+    );
     if (phone.isEmpty) {
       phoneKey.currentState!
           .validate(R.string.ban_chua_nhap_so_dien_thoai.tr());

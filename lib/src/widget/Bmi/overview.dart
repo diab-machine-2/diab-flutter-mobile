@@ -22,7 +22,12 @@ class BmiOverviewControllerState extends State<BmiOverviewController>
   @override
   void initState() {
     super.initState();
-    TrackingManager.analytics.setCurrentScreen(screenName: 'Weight Dashboard');
+    firebaseSetup();
+  }
+
+  Future firebaseSetup() async {
+    await TrackingManager.analytics.logScreenView(
+        screenName: "kpi_body_weight", screenClass: "BmiOverviewController");
   }
 
   reloadData(int periodFilterType) {

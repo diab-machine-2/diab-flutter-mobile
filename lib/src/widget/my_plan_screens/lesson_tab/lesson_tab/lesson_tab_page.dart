@@ -250,13 +250,29 @@ class _LessonTabPageState extends State<LessonTabPage>
                                                 parameters: {
                                                   "screen_name": 'my_schedule',
                                                   'component_name':
-                                                      'list_lession_item_$index',
+                                                      'list_lesson_item',
+                                                  'object_index': index,
                                                   'object_id':
                                                       '${_cubit.lessonsList![index]!.id!}',
                                                   'object_title':
                                                       '${_cubit.lessonsList![index]!.name!}',
                                                 },
                                               );
+
+                                              await TrackingManager.analytics
+                                                  .logEvent(
+                                                name: 'select_content',
+                                                parameters: {
+                                                  "screen_name": 'my_schedule',
+                                                  'content_type': 'lesson',
+                                                  'item_id':
+                                                      '${_cubit.lessonsList![index]!.id!}',
+                                                  'item_name':
+                                                      '${_cubit.lessonsList![index]!.name!}',
+                                                  'index': index,
+                                                },
+                                              );
+
                                               var result = await NavigationUtil
                                                   .navigatePage(
                                                 context,

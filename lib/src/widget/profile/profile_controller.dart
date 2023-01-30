@@ -376,7 +376,7 @@ class _ProfileControllerState extends State<ProfileController> with Observer {
           parameters: {
             "screen_name": 'profile',
             'component_name': 'cta_profile_function',
-            'function_title': title,
+            'object_title': title,
           },
         );
         if (index == 0) {

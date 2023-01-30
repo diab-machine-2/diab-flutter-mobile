@@ -73,8 +73,22 @@ class _AddBloodPressureControllerState
       loadTimeFrame();
     }
     loadDescription();
-    TrackingManager.analytics
-        .setCurrentScreen(screenName: 'Blood Pressure Input');
+    firebaseSetup();
+  }
+
+  Future firebaseSetup() async {
+    await TrackingManager.analytics.logScreenView(
+        screenName: "kpi_blood_pressure_add",
+        screenClass: "AddBloodPressureController");
+        
+    await TrackingManager.analytics.logEvent(
+      name: 'kpi_glycemic_add',
+      parameters: {
+        "screen_name": 'kpi_blood_pressure_add',
+        'object_type': 'kpi_blood_pressure',
+        'object_title': 'Chỉ số huyết áp'
+      },
+    );
   }
 
   @override
@@ -985,6 +999,14 @@ class _AddBloodPressureControllerState
           reason,
           paths);
       if (result == true) {
+        await TrackingManager.analytics.logEvent(
+          name: 'kpi_add_success',
+          parameters: {
+            "screen_name": 'kpi_blood_pressure_add',
+            'object_type': 'kpi_blood_pressure',
+            'object_title': 'Chỉ số huyết áp'
+          },
+        );
         // if(widget.goalId != null && widget.goalId?.isNotEmpty == true){
         await HomeClient().completeSmartGoal(selectedDate, widget.goalId ?? '',
             1, ScheduleType.blood_pressure.typeIndex);

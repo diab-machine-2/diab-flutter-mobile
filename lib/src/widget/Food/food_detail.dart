@@ -40,7 +40,6 @@ class FoodDetailControllerState extends State<FoodDetailController>
   void initState() {
     periodFilterType = FoodDetailTabbarController.of(context)!.periodFilterType;
     super.initState();
-    TrackingManager.analytics.setCurrentScreen(screenName: 'Diet Detail');
   }
 
   reloadData(int periodFilter) {

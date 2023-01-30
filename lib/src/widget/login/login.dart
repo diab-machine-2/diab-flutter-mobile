@@ -21,7 +21,6 @@ import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 class LoginController extends StatefulWidget {
-
   const LoginController(this.sharedCode);
 
   final String sharedCode;
@@ -40,22 +39,12 @@ class _LoginControllerState extends State<LoginController> {
   @override
   void initState() {
     super.initState();
-    // TrackingManager.analytics.setCurrentScreen(screenName: "Login");
     firebaseSetup();
   }
 
   Future firebaseSetup() async {
-    await TrackingManager.analytics.logScreenView(
-      screenName: "Login", 
-      screenClass: "LoginController"
-    );
-    // await TrackingManager.analytics.logEvent(
-    //   name: 'screen_view',
-    //   parameters: {
-    //     'firebase_screen': "Login",
-    //     'firebase_screen_class': "LoginController",
-    //   },
-    // );
+    await TrackingManager.analytics
+        .logScreenView(screenName: "login", screenClass: "LoginController");
   }
 
   @override
@@ -76,145 +65,204 @@ class _LoginControllerState extends State<LoginController> {
               )),
               child: Padding(
                 padding: const EdgeInsets.all(16),
-                child: Column(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                  const Padding(
-                    padding: EdgeInsets.only(top: 24),
-                  ),
-                  Column(children: [
-                    Row(children: [
-                      Text(
-                        R.string.login.tr(),
-                        style: TextStyle(color: R.color.textDark, fontSize: 28, fontWeight: FontWeight.w600),
+                child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Padding(
+                        padding: EdgeInsets.only(top: 24),
                       ),
-                    ]),
-                    const SizedBox(height: 24),
-                    TextFieldCustom(
-                        key: phoneKey,
-                        title: R.string.so_dien_thoai.tr(),
-                        placeholder: R.string.nhap_so_dien_thoai.tr(),
-                        autoFocus: true,
-                        onChanged: (value) {
-                          phone = value;
-                        }),
-                    const SizedBox(height: 20),
-                    TextFieldCustom(
-                        key: passwordKey,
-                        title: R.string.password.tr(),
-                        placeholder: R.string.nhap_mat_khau.tr(),
-                        isPassword: true,
-                        onChanged: (value) {
-                          password = value;
-                        }),
-                    const SizedBox(height: 30),
-                    GestureDetector(
-                      onTap: () {
-                        login();
-                        
-                      },
-                      child: Container(
-                          height: 48,
-                          width: 195,
-                          decoration: BoxDecoration(
-                              color: R.color.mainColor,
-                              borderRadius: BorderRadius.circular(200),
-                              gradient: LinearGradient(
-                                  begin: Alignment.topLeft,
-                                  end: Alignment.centerRight,
-                                  colors: [R.color.greenGradientTop, R.color.greenGradientBottom])),
-                          child: Center(
-                            child: Text(R.string.login.tr(),
-                                style: TextStyle(color: R.color.white, fontSize: 16, fontWeight: FontWeight.w600)),
-                          )),
-                    ),
-                    const SizedBox(height: 8),
-                    Container(
-                        height: 48,
-                        color: R.color.transparent,
-                        child: Center(
-                          child: InkWell(
-                            onTap: () {
-                              Navigator.pushNamed(context, NavigatorName.forgot_password);
-                            },
-                            child: Text(R.string.forgot_password.tr(),
-                                style: TextStyle(color: R.color.mainColor, fontSize: 16, fontWeight: FontWeight.w600)),
+                      Column(children: [
+                        Row(children: [
+                          Text(
+                            R.string.login.tr(),
+                            style: TextStyle(
+                                color: R.color.textDark,
+                                fontSize: 28,
+                                fontWeight: FontWeight.w600),
                           ),
-                        ))
-                  ]),
-                  Column(children: [
-                    Text(R.string.hoac_dang_nhap_bang.tr(),
-                        style: TextStyle(color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w400)),
-                    const SizedBox(height: 16),
-                    Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                      if (Platform.isIOS)
+                        ]),
+                        const SizedBox(height: 24),
+                        TextFieldCustom(
+                            key: phoneKey,
+                            title: R.string.so_dien_thoai.tr(),
+                            placeholder: R.string.nhap_so_dien_thoai.tr(),
+                            autoFocus: true,
+                            onChanged: (value) {
+                              phone = value;
+                            }),
+                        const SizedBox(height: 20),
+                        TextFieldCustom(
+                            key: passwordKey,
+                            title: R.string.password.tr(),
+                            placeholder: R.string.nhap_mat_khau.tr(),
+                            isPassword: true,
+                            onChanged: (value) {
+                              password = value;
+                            }),
+                        const SizedBox(height: 30),
                         GestureDetector(
                           onTap: () {
-                            loginApple();
+                            login();
                           },
-                          child: Padding(
-                            padding: const EdgeInsets.only(left: 8, right: 8),
-                            child: Container(
-                                height: 50,
-                                width: 50,
-                                decoration:
-                                    BoxDecoration(color: R.color.white, borderRadius: BorderRadius.circular(25)),
-                                child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                                  Image.asset(R.drawable.ic_login_apple, width: 26, height: 26),
-                                ])),
-                          ),
-                        ),
-                      GestureDetector(
-                        onTap: () {
-                          loginGG();
-                        },
-                        child: Padding(
-                          padding: const EdgeInsets.only(left: 8, right: 8),
                           child: Container(
-                              height: 50,
-                              width: 50,
-                              decoration: BoxDecoration(color: R.color.white, borderRadius: BorderRadius.circular(25)),
-                              child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                                Image.asset(R.drawable.ic_google, width: 26, height: 26),
-                              ])),
+                              height: 48,
+                              width: 195,
+                              decoration: BoxDecoration(
+                                  color: R.color.mainColor,
+                                  borderRadius: BorderRadius.circular(200),
+                                  gradient: LinearGradient(
+                                      begin: Alignment.topLeft,
+                                      end: Alignment.centerRight,
+                                      colors: [
+                                        R.color.greenGradientTop,
+                                        R.color.greenGradientBottom
+                                      ])),
+                              child: Center(
+                                child: Text(R.string.login.tr(),
+                                    style: TextStyle(
+                                        color: R.color.white,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w600)),
+                              )),
                         ),
-                      )
+                        const SizedBox(height: 8),
+                        Container(
+                            height: 48,
+                            color: R.color.transparent,
+                            child: Center(
+                              child: InkWell(
+                                onTap: () async {
+                                  await TrackingManager.analytics.logEvent(
+                                    name: 'cta_button_clicked',
+                                    parameters: {
+                                      "screen_name": 'login',
+                                      'cta_button_name':
+                                          'cta_login_forget_password',
+                                    },
+                                  );
+                                  Navigator.pushNamed(
+                                      context, NavigatorName.forgot_password);
+                                },
+                                child: Text(R.string.forgot_password.tr(),
+                                    style: TextStyle(
+                                        color: R.color.mainColor,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w600)),
+                              ),
+                            ))
+                      ]),
+                      Column(children: [
+                        Text(R.string.hoac_dang_nhap_bang.tr(),
+                            style: TextStyle(
+                                color: R.color.textDark,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w400)),
+                        const SizedBox(height: 16),
+                        Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              if (Platform.isIOS)
+                                GestureDetector(
+                                  onTap: () {
+                                    loginApple();
+                                  },
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(
+                                        left: 8, right: 8),
+                                    child: Container(
+                                        height: 50,
+                                        width: 50,
+                                        decoration: BoxDecoration(
+                                            color: R.color.white,
+                                            borderRadius:
+                                                BorderRadius.circular(25)),
+                                        child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              Image.asset(
+                                                  R.drawable.ic_login_apple,
+                                                  width: 26,
+                                                  height: 26),
+                                            ])),
+                                  ),
+                                ),
+                              GestureDetector(
+                                onTap: () {
+                                  loginGG();
+                                },
+                                child: Padding(
+                                  padding:
+                                      const EdgeInsets.only(left: 8, right: 8),
+                                  child: Container(
+                                      height: 50,
+                                      width: 50,
+                                      decoration: BoxDecoration(
+                                          color: R.color.white,
+                                          borderRadius:
+                                              BorderRadius.circular(25)),
+                                      child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            Image.asset(R.drawable.ic_google,
+                                                width: 26, height: 26),
+                                          ])),
+                                ),
+                              )
+                            ]),
+                        const SizedBox(height: 30),
+                        Text(R.string.chua_co_tai_khoan.tr(),
+                            style: const TextStyle(
+                                fontSize: 14, fontWeight: FontWeight.w400)),
+                        const SizedBox(height: 10),
+                        GestureDetector(
+                          onTap: () async {
+                            await TrackingManager.analytics.logEvent(
+                              name: 'cta_button_clicked',
+                              parameters: {
+                                "screen_name": 'login',
+                                'cta_button_name': 'cta_login_sign_up',
+                              },
+                            );
+                            Navigator.pushNamed(
+                                context, NavigatorName.register);
+                          },
+                          child: Container(
+                              height: 48,
+                              width: 195,
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(200),
+                                  color: R.color.white,
+                                  border: Border.all(
+                                      color: R.color.mainColor, width: 1)),
+                              child: Center(
+                                child: Text(R.string.tao_tai_khoan_moi.tr(),
+                                    style: TextStyle(
+                                        color: R.color.mainColor,
+                                        fontWeight: FontWeight.w600)),
+                              )),
+                        ),
+                        const SizedBox(height: 20),
+                      ])
                     ]),
-                    const SizedBox(height: 30),
-                    Text(R.string.chua_co_tai_khoan.tr(),
-                        style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w400)),
-                    const SizedBox(height: 10),
-                    GestureDetector(
-                      onTap: () {
-                        Navigator.pushNamed(context, NavigatorName.register);
-                      },
-                      child: Container(
-                          height: 48,
-                          width: 195,
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(200),
-                              color: R.color.white,
-                              border: Border.all(color: R.color.mainColor, width: 1)),
-                          child: Center(
-                            child: Text(R.string.tao_tai_khoan_moi.tr(),
-                                style: TextStyle(color: R.color.mainColor, fontWeight: FontWeight.w600)),
-                          )),
-                    ),
-                    const SizedBox(height: 20),
-                  ])
-                ]),
               )),
           Positioned(
             //Place it at the top, and not use the entire screen
             top: 0,
             left: 0,
             right: 0,
-            child: AppBar(leading: const SizedBox(), backgroundColor: R.color.transparent, actions: [
-              IconButton(
-                  padding: const EdgeInsets.only(right: 30),
-                  icon: Icon(Icons.close, color: R.color.black),
-                  onPressed: () {
-                    Navigator.pop(context);
-                  })
-            ]),
+            child: AppBar(
+                leading: const SizedBox(),
+                backgroundColor: R.color.transparent,
+                actions: [
+                  IconButton(
+                      padding: const EdgeInsets.only(right: 30),
+                      icon: Icon(Icons.close, color: R.color.black),
+                      onPressed: () {
+                        Navigator.pop(context);
+                      })
+                ]),
           )
         ]),
       ),
@@ -222,16 +270,15 @@ class _LoginControllerState extends State<LoginController> {
   }
 
   login() async {
-    await TrackingManager.analytics.logEvent(
-      name: 'cta_button_clicked',
-      parameters: {
-        "screen_name": 'login',
-        'cta_button_name': 'cta_login_phone',
-      }
-    );
+    await TrackingManager.analytics
+        .logEvent(name: 'cta_button_clicked', parameters: {
+      "screen_name": 'login',
+      'cta_button_name': 'cta_login_phone',
+    });
     FocusScope.of(context).unfocus();
     if (phone.isEmpty) {
-      phoneKey.currentState!.validate(R.string.ban_chua_nhap_so_dien_thoai.tr());
+      phoneKey.currentState!
+          .validate(R.string.ban_chua_nhap_so_dien_thoai.tr());
       return;
     }
     if (password.isEmpty) {
@@ -251,18 +298,25 @@ class _LoginControllerState extends State<LoginController> {
       BotToast.closeAllLoading();
       if (user == null) {
         final diabeteStates = await UserClient().fetchDiabeteStatesNoHeader();
-        Navigator.pushReplacementNamed(context, NavigatorName.update_info, arguments: {'type': 'phone', 'diabeteStates': diabeteStates});
+        Navigator.pushReplacementNamed(context, NavigatorName.update_info,
+            arguments: {'type': 'phone', 'diabeteStates': diabeteStates});
       } else {
         Navigator.popUntil(context, (route) => route.isFirst);
-        Navigator.pushReplacementNamed(context, NavigatorName.tabbar, arguments: widget.sharedCode,);
+        Navigator.pushReplacementNamed(
+          context,
+          NavigatorName.tabbar,
+          arguments: widget.sharedCode,
+        );
       }
     } catch (e, _) {
       BotToast.closeAllLoading();
       if (e is Error) {
         if (e.code == '1') {
-          passwordKey.currentState!.validate(R.string.mat_khau_khong_chinh_xac.tr());
+          passwordKey.currentState!
+              .validate(R.string.mat_khau_khong_chinh_xac.tr());
         } else if (e.code == '2') {
-          phoneKey.currentState!.validate(R.string.so_dien_thoai_khong_chinh_xac.tr());
+          phoneKey.currentState!
+              .validate(R.string.so_dien_thoai_khong_chinh_xac.tr());
         } else if (e.code == '3') {
           verifyPhone();
         } else if (e.code == '4') {
@@ -279,7 +333,8 @@ class _LoginControllerState extends State<LoginController> {
   verifyPhone() async {
     BotToast.showLoading();
     try {
-      final result = await LoginClient().requestOTP({"password": password, "phoneNumber": phone});
+      final result = await LoginClient()
+          .requestOTP({"password": password, "phoneNumber": phone});
       BotToast.closeAllLoading();
       if (result.remainingRequestCount! <= 0) {
         _showDialogError();
@@ -296,7 +351,8 @@ class _LoginControllerState extends State<LoginController> {
       BotToast.closeAllLoading();
       if (e is Error) {
         if (e.code == 'USER002') {
-          phoneKey.currentState!.validate(R.string.so_dien_thoai_da_ton_tai.tr());
+          phoneKey.currentState!
+              .validate(R.string.so_dien_thoai_da_ton_tai.tr());
         } else {
           Message.showToastMessage(context, e.message);
         }
@@ -324,17 +380,34 @@ class _LoginControllerState extends State<LoginController> {
                   text: R.string.da_gui_otp_5_lan_cho_so_dien_thoai.tr(),
                   style: TextStyle(color: R.color.textDark, fontSize: 16),
                   children: <TextSpan>[
-                    TextSpan(text: phone, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-                    TextSpan(text: phone, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                    TextSpan(
+                        text: phone,
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 16)),
+                    TextSpan(
+                        text: phone,
+                        style: const TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 16)),
                     TextSpan(
                         text: R.string.dang_ky_lai_hom_sau.tr(),
-                        style: TextStyle(color: R.color.textDark, fontSize: 16)),
+                        style:
+                            TextStyle(color: R.color.textDark, fontSize: 16)),
                   ],
                 ),
               )
             ],
           ),
         ));
+      },
+    );
+  }
+
+  loginSuccess(String loginFrom) async {
+    await TrackingManager.analytics.logEvent(
+      name: 'login',
+      parameters: {
+        "screen_name": 'login',
+        'method': loginFrom.toLowerCase(),
       },
     );
   }
@@ -361,23 +434,36 @@ class _LoginControllerState extends State<LoginController> {
           final user = await UserClient().fetchUser();
           BotToast.closeAllLoading();
           if (user == null) {
-            registerAccount(result.accessToken?.userId, result.accessToken?.token, 'Facebook',
-                profile['name'] ?? R.string.user_name_default.tr(), true);
+            registerAccount(
+                result.accessToken?.userId,
+                result.accessToken?.token,
+                'Facebook',
+                profile['name'] ?? R.string.user_name_default.tr(),
+                true);
             // Navigator.pushReplacementNamed(context, NavigatorName.update_info, arguments: {
             //   'type': 'facebook',
             //   'facebookAccount': result,
             //   'userInfo': profile
             // });
           } else {
+            loginSuccess('facebook');
             Navigator.popUntil(context, (route) => route.isFirst);
-            Navigator.pushReplacementNamed(context, NavigatorName.tabbar, arguments: widget.sharedCode,);
+            Navigator.pushReplacementNamed(
+              context,
+              NavigatorName.tabbar,
+              arguments: widget.sharedCode,
+            );
           }
         } catch (error) {
           BotToast.closeAllLoading();
           if (error is Error) {
             if (error.code == '5' && profile != null) {
-              registerAccount(result.accessToken?.userId, result.accessToken?.token, 'Facebook',
-                  profile['name'] ?? R.string.user_name_default.tr(), false);
+              registerAccount(
+                  result.accessToken?.userId,
+                  result.accessToken?.token,
+                  'Facebook',
+                  profile['name'] ?? R.string.user_name_default.tr(),
+                  false);
               // Navigator.pushReplacementNamed(context, NavigatorName.update_info,
               //     arguments: {
               //       'type': 'facebook',
@@ -400,6 +486,13 @@ class _LoginControllerState extends State<LoginController> {
   }
 
   loginGG() async {
+    await TrackingManager.analytics.logEvent(
+      name: 'cta_button_clicked',
+      parameters: {
+        "screen_name": 'login',
+        'cta_button_name': 'cta_login_google',
+      },
+    );
     final GoogleSignIn _googleSignIn = GoogleSignIn(
       scopes: [
         'email',
@@ -425,22 +518,28 @@ class _LoginControllerState extends State<LoginController> {
       final user = await UserClient().fetchUser();
       BotToast.closeAllLoading();
       if (user == null) {
-        registerAccount(
-            account.id, authen.accessToken, 'Google', account.displayName ?? R.string.user_name_default.tr(), true,
+        registerAccount(account.id, authen.accessToken, 'Google',
+            account.displayName ?? R.string.user_name_default.tr(), true,
             googleAccount: account, appleCredential: null);
         // Navigator.pushReplacementNamed(context, NavigatorName.update_info,
         //     arguments: {'type': 'google', 'googleAccount': account});
       } else {
+        loginSuccess('google');
         Navigator.popUntil(context, (route) => route.isFirst);
-        Navigator.pushReplacementNamed(context, NavigatorName.tabbar, arguments: widget.sharedCode,);
+        Navigator.pushReplacementNamed(
+          context,
+          NavigatorName.tabbar,
+          arguments: widget.sharedCode,
+        );
       }
     } catch (error) {
       if (error is Error && error.code == '5' && account != null) {
-        registerAccount(
-            account.id, authen.accessToken, 'Google', account.displayName ?? R.string.user_name_default.tr(), false,
+        registerAccount(account.id, authen.accessToken, 'Google',
+            account.displayName ?? R.string.user_name_default.tr(), false,
             googleAccount: account, appleCredential: null);
       } else if (error is PlatformException && error.code == 'network_error') {
-        Message.showToastMessage(context, R.string.error_can_not_connect_to_server.tr());
+        Message.showToastMessage(
+            context, R.string.error_can_not_connect_to_server.tr());
       } else {
         BotToast.closeAllLoading();
         Message.showToastMessage(context, error.toString());
@@ -449,6 +548,13 @@ class _LoginControllerState extends State<LoginController> {
   }
 
   loginApple() async {
+    await TrackingManager.analytics.logEvent(
+      name: 'cta_button_clicked',
+      parameters: {
+        "screen_name": 'login',
+        'cta_button_name': 'cta_login_apple',
+      },
+    );
     AuthorizationCredentialAppleID? credential;
     try {
       credential = await SignInWithApple.getAppleIDCredential(
@@ -480,21 +586,37 @@ class _LoginControllerState extends State<LoginController> {
       if (user == null) {
         // Navigator.pushReplacementNamed(context, NavigatorName.update_info,
         //     arguments: {'type': 'apple', 'appleAccount': credential});
-        registerAccount(credential.userIdentifier, credential.identityToken, 'Apple',
-            credential.givenName ?? R.string.user_name_default.tr(), true,
-            googleAccount: null, appleCredential: credential);
+        registerAccount(
+            credential.userIdentifier,
+            credential.identityToken,
+            'Apple',
+            credential.givenName ?? R.string.user_name_default.tr(),
+            true,
+            googleAccount: null,
+            appleCredential: credential);
       } else {
+        loginSuccess('apple');
         Navigator.popUntil(context, (route) => route.isFirst);
-        Navigator.pushReplacementNamed(context, NavigatorName.tabbar, arguments: widget.sharedCode,);
+        Navigator.pushReplacementNamed(
+          context,
+          NavigatorName.tabbar,
+          arguments: widget.sharedCode,
+        );
       }
     } catch (error) {
       BotToast.closeAllLoading();
       if (error is Error && error.code == '5' && credential != null) {
-        registerAccount(credential.userIdentifier, credential.identityToken, 'Apple',
-            credential.givenName ?? R.string.user_name_default.tr(), false,
-            googleAccount: null, appleCredential: credential);
+        registerAccount(
+            credential.userIdentifier,
+            credential.identityToken,
+            'Apple',
+            credential.givenName ?? R.string.user_name_default.tr(),
+            false,
+            googleAccount: null,
+            appleCredential: credential);
       } else if (error is PlatformException && error.code == 'network_error') {
-        Message.showToastMessage(context, R.string.error_can_not_connect_to_server.tr());
+        Message.showToastMessage(
+            context, R.string.error_can_not_connect_to_server.tr());
       } else {
         // Message.showToastMessage(context, error.toString());
       }
@@ -510,6 +632,7 @@ class _LoginControllerState extends State<LoginController> {
     GoogleSignInAccount? googleAccount,
     AuthorizationCredentialAppleID? appleCredential,
   }) async {
+    loginSuccess(provider);
     try {
       BotToast.showLoading();
       // if (!update) {
@@ -538,12 +661,13 @@ class _LoginControllerState extends State<LoginController> {
       // Navigator.pushReplacementNamed(context, NavigatorName.rules,
       //     arguments: {'googleAccount': googleAccount, 'appleCredential': appleCredential});
       //}
-      Navigator.pushReplacementNamed(context, NavigatorName.register_success, arguments: {
-        'type': provider.toLowerCase(),
-        'googleAccount': googleAccount,
-        'appleAccount': appleCredential,
-        'diabeteStates': diabeteStates
-      });
+      Navigator.pushReplacementNamed(context, NavigatorName.register_success,
+          arguments: {
+            'type': provider.toLowerCase(),
+            'googleAccount': googleAccount,
+            'appleAccount': appleCredential,
+            'diabeteStates': diabeteStates
+          });
       BotToast.closeAllLoading();
     } catch (error) {
       BotToast.closeAllLoading();

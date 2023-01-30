@@ -30,15 +30,12 @@ class _RulesControllerState extends State<RulesController> {
   void initState() {
     super.initState();
     loadData();
-    // TrackingManager.analytics.setCurrentScreen(screenName: "Term And Condition");
     firebaseSetup();
   }
 
   Future firebaseSetup() async {
-    await TrackingManager.analytics.logScreenView(
-      screenName: "privacy", 
-      screenClass: "RulesController"
-    );
+    await TrackingManager.analytics
+        .logScreenView(screenName: "privacy", screenClass: "RulesController");
   }
 
   loadData() async {
@@ -68,11 +65,15 @@ class _RulesControllerState extends State<RulesController> {
                 Padding(
                   padding: EdgeInsets.only(left: 16, top: 16),
                   child: Text(R.string.dieu_khoan_va_dieu_kien.tr(),
-                      style: TextStyle(color: R.color.black, fontWeight: FontWeight.bold, fontSize: 20)),
+                      style: TextStyle(
+                          color: R.color.black,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 20)),
                 ),
                 Expanded(
                   child: Padding(
-                    padding: const EdgeInsets.only(top: 30.0, left: 16, right: 16, bottom: 16),
+                    padding: const EdgeInsets.only(
+                        top: 30.0, left: 16, right: 16, bottom: 16),
                     child: Container(
                       decoration: BoxDecoration(
                         color: R.color.white,
@@ -81,13 +82,16 @@ class _RulesControllerState extends State<RulesController> {
                       child: ListView(padding: EdgeInsets.all(16), children: [
                         Padding(
                           padding: const EdgeInsets.only(top: 16, bottom: 16),
-                          child: Image.asset(R.drawable.img_logo, width: 87, height: 50),
+                          child: Image.asset(R.drawable.img_logo,
+                              width: 87, height: 50),
                         ),
                         Html(
                             data: term,
-                            onLinkTap: (url, context, attributes, element) async {
+                            onLinkTap:
+                                (url, context, attributes, element) async {
                               await canLaunch(url!)
-                                  ? await launch(url, forceSafariVC: false, forceWebView: false)
+                                  ? await launch(url,
+                                      forceSafariVC: false, forceWebView: false)
                                   : throw 'Could not launch $url';
                             })
                       ]),
@@ -99,8 +103,16 @@ class _RulesControllerState extends State<RulesController> {
                     margin: EdgeInsets.all(16),
                     child: GestureDetector(
                       onTap: () async {
+                        await TrackingManager.analytics.logEvent(
+                          name: 'cta_button_clicked',
+                          parameters: {
+                            "screen_name": 'privacy',
+                            'cta_button_name': 'cta_privacy_accept',
+                          },
+                        );
                         Navigator.popUntil(context, (route) => route.isFirst);
-                        Navigator.pushReplacementNamed(context, NavigatorName.tabbar);
+                        Navigator.pushReplacementNamed(
+                            context, NavigatorName.tabbar);
                       },
                       child: Container(
                           height: 48,
@@ -109,12 +121,18 @@ class _RulesControllerState extends State<RulesController> {
                             gradient: LinearGradient(
                                 begin: Alignment.topLeft,
                                 end: Alignment.centerRight,
-                                colors: [R.color.greenGradientTop, R.color.greenGradientBottom]),
+                                colors: [
+                                  R.color.greenGradientTop,
+                                  R.color.greenGradientBottom
+                                ]),
                             borderRadius: BorderRadius.circular(200),
                           ),
                           child: Center(
                               child: Text(R.string.toi_dong_y.tr(),
-                                  style: TextStyle(color: R.color.white, fontSize: 16, fontWeight: FontWeight.w500)))),
+                                  style: TextStyle(
+                                      color: R.color.white,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w500)))),
                     ),
                   ),
                 ),

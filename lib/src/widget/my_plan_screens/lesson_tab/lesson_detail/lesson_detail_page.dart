@@ -65,7 +65,19 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
     return BlocProvider(
       create: (context) => _cubit,
       child: BlocConsumer<LessonDetailCubit, LessonDetailState>(
-        listener: (context, state) {
+        listener: (context, state) async {
+          if (state is LessonDetailSuccess) {
+            if (state.lessonBegin) {
+              await TrackingManager.analytics.logEvent(
+                name: 'lesson_begin',
+                parameters: {
+                  "screen_name": 'lesson_detail',
+                  'object_id': _cubit.lessonDetail?.id,
+                  'object_title': _cubit.lessonDetail?.name,
+                },
+              );
+            }
+          }
           if (state is LessonDetailLoading) {
             BotToast.showLoading();
           } else {
@@ -76,7 +88,15 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
           }
           if (state is LessonDetailCompleted) {
             if (state.showPopupShare == true) {
-              BottomSheetShareLesson.showDialogDeleteAccount(
+              await TrackingManager.analytics.logEvent(
+                name: 'lesson_complete',
+                parameters: {
+                  "screen_name": 'lesson_detail',
+                  'object_id': _cubit.lessonDetail?.id,
+                  'object_title': _cubit.lessonDetail?.name,
+                },
+              );
+              BottomSheetShareLesson.showDialogShareLesson(
                 context,
                 onShare: () =>
                     _onShareLesson(context, _cubit.currentSectionDetail!),
@@ -98,7 +118,8 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                       : null,
                   onDone: (isPassed) async {
                     _cubit.onChangeSection(context, _cubit.currentSection + 1);
-                  })
+                  },
+                  lessonDetail: _cubit.lessonDetail!)
               : Scaffold(
                   body: BackgroundPage(
                     background: R.drawable.bg_lesson_detail,
@@ -120,17 +141,16 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                                     children: [
                                       GestureDetector(
                                         onTap: () async {
-                                          
                                           await TrackingManager.analytics
                                               .logEvent(
                                             name: 'component_clicked',
                                             parameters: {
                                               "screen_name": 'lesson_detail',
                                               "component_name": 'close_lesson',
-                                              'object_id': _cubit
-                                                  .currentSectionDetail?.id,
-                                              'object_title': _cubit
-                                                  .currentSectionDetail?.name,
+                                              'object_id':
+                                                  _cubit.lessonDetail?.id,
+                                              'object_title':
+                                                  _cubit.lessonDetail?.name,
                                             },
                                           );
                                           NavigationUtil.pop(context);
@@ -201,10 +221,10 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                                               "screen_name": 'lesson_detail',
                                               "component_name":
                                                   'video_player_lesson',
-                                              'object_id': _cubit
-                                                  .currentSectionDetail?.id,
-                                              'object_title': _cubit
-                                                  .currentSectionDetail?.name,
+                                              'object_id':
+                                                  _cubit.lessonDetail?.id,
+                                              'object_title':
+                                                  _cubit.lessonDetail?.name,
                                             },
                                           );
                                         },
@@ -212,7 +232,7 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                                           if (_cubit.sectionList.length == 1 &&
                                               _isShowModal == false) {
                                             BottomSheetShareLesson
-                                                .showDialogDeleteAccount(
+                                                .showDialogShareLesson(
                                               context,
                                               onShare: () => _onShareLesson(
                                                   context,
@@ -311,9 +331,8 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                               parameters: {
                                 "screen_name": 'lesson_detail',
                                 "component_name": 'cta_previous_lesson',
-                                'object_id': _cubit.currentSectionDetail?.id,
-                                'object_title':
-                                    _cubit.currentSectionDetail?.name,
+                                'object_id': _cubit.lessonDetail?.id,
+                                'object_title': _cubit.lessonDetail?.name,
                               },
                             );
                             _cubit.onChangeSection(
@@ -328,9 +347,8 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                               parameters: {
                                 "screen_name": 'lesson_detail',
                                 "component_name": 'cta_next_lesson',
-                                'object_id': _cubit.currentSectionDetail?.id,
-                                'object_title':
-                                    _cubit.currentSectionDetail?.name,
+                                'object_id': _cubit.lessonDetail?.id,
+                                'object_title': _cubit.lessonDetail?.name,
                               },
                             );
                             _cubit.onChangeSection(
@@ -424,6 +442,7 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
           onChangeSection: (int newSectionIndex) {
             _cubit.onChangeSection(context, newSectionIndex, isFromList: true);
           },
+          lessonDetail: _cubit.lessonDetail!,
         );
       },
     );

@@ -37,7 +37,6 @@ class HbA1CDetailControllerState extends State<HbA1CDetailController>
   void initState() {
     periodFilterType = Hba1cDetailTabbarController.of(context)!.periodFilterType;
     super.initState();
-    TrackingManager.analytics.setCurrentScreen(screenName: 'HbA1C Detail');
   }
 
   reloadData(int periodFilter) {

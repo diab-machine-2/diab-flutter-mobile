@@ -43,7 +43,6 @@ class _ChangeMenuPageState extends State<ChangeMenuPage> {
       dateCode: widget.dateCode ?? 'T2',
       timeCode: widget.timeCode ?? 1,
     );
-    TrackingManager.analytics.setCurrentScreen(screenName: "Standard Menu - Update");
   }
 
   @override

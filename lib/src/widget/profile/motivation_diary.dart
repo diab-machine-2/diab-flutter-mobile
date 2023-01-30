@@ -26,7 +26,6 @@ class _MotivationControllerState extends State<MotivationController> {
   void initState() {
     super.initState();
     loadData();
-    TrackingManager.analytics.setCurrentScreen(screenName: "Motivation Diary");
   }
 
   Future<bool> loadData() async {

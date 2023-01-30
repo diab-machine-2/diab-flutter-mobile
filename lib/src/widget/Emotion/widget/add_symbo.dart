@@ -56,7 +56,6 @@ class _AddSymboControllerState extends BaseState<AddSymboController> {
     }
     loadData();
     loadDescription();
-    TrackingManager.analytics.setCurrentScreen(screenName: "Emotion Input");
   }
 
   @override

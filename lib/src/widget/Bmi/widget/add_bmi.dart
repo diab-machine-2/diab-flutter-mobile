@@ -91,7 +91,22 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
       loadTimeFrame();
     }
     loadDescription();
-    TrackingManager.analytics.setCurrentScreen(screenName: 'Weight Input');
+    firebaseSetup();
+  }
+
+  Future firebaseSetup() async {
+    await TrackingManager.analytics.logScreenView(
+      screenName: "kpi_body_weight_add",
+      screenClass: "AddBmiController",
+    );
+    await TrackingManager.analytics.logEvent(
+      name: 'kpi_add_begin',
+      parameters: {
+        "screen_name": 'kpi_body_weight_add',
+        'object_type': 'kpi_body_weight',
+        'object_title': 'Chỉ số cân nặng'
+      },
+    );
   }
 
   @override
@@ -1056,6 +1071,14 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
           selectedTimeFrame!.id);
       BotToast.closeAllLoading();
       if (result == true) {
+        await TrackingManager.analytics.logEvent(
+          name: 'kpi_add_success',
+          parameters: {
+            "screen_name": 'kpi_body_weight_add',
+            'object_type': 'kpi_body_weight',
+            'object_title': 'Chỉ số cân nặng'
+          },
+        );
         //  if(widget.goalId != null && widget.goalId?.isNotEmpty == true){
         await HomeClient().completeSmartGoal(selectedDate, widget.goalId ?? '',
             1, ScheduleType.weight.typeIndex);

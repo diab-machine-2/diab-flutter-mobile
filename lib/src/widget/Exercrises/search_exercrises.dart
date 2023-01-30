@@ -46,7 +46,6 @@ class _SearchExercrisesControllerState
 
   void initState() {
     super.initState();
-    TrackingManager.analytics.setCurrentScreen(screenName: "Exercise Searching");
   }
 
   void dispose() {

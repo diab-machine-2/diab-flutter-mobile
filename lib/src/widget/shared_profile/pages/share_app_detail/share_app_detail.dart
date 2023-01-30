@@ -1,3 +1,4 @@
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:medical/res/R.dart';
 import 'package:flutter/material.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
@@ -24,7 +25,6 @@ class _ShareAppDetailState extends State<ShareAppDetail> {
   void initState() {
     _scrollController.addListener(_scrollListener);
     super.initState();
-    TrackingManager.analytics.setCurrentScreen(screenName: "Share App Detail");
   }
 
   _scrollListener() {

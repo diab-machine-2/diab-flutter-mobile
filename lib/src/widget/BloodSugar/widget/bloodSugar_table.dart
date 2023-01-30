@@ -33,7 +33,6 @@ class _BloodSugarTableControllerState extends State<BloodSugarTableController> {
   @override
   void initState() {
     super.initState();
-    TrackingManager.analytics.setCurrentScreen(screenName: "Glucose Table");
   }
   @override
   Widget build(BuildContext context) {

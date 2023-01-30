@@ -22,15 +22,12 @@ class _ForgotPasswordControllerState extends State<ForgotPasswordController> {
   @override
   void initState() {
     super.initState();
-    // TrackingManager.analytics.setCurrentScreen(screenName: "Forget Password");
     firebaseSetup();
   }
 
   Future firebaseSetup() async {
     await TrackingManager.analytics.logScreenView(
-      screenName: "forget_password", 
-      screenClass: "ForgotPasswordController"
-    );
+        screenName: "forget_password", screenClass: "ForgotPasswordController");
   }
 
   @override
@@ -51,8 +48,7 @@ class _ForgotPasswordControllerState extends State<ForgotPasswordController> {
             child: Padding(
               padding: EdgeInsets.only(top: 120.0, left: 16, right: 16),
               child: Column(children: [
-                Text(
-                    R.string.phone_number_for_otp.tr(),
+                Text(R.string.phone_number_for_otp.tr(),
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400),
                     textAlign: TextAlign.center),
                 Padding(
@@ -82,7 +78,10 @@ class _ForgotPasswordControllerState extends State<ForgotPasswordController> {
                         gradient: LinearGradient(
                             begin: Alignment.topLeft,
                             end: Alignment.centerRight,
-                            colors: [R.color.greenGradientTop, R.color.greenGradientBottom])),
+                            colors: [
+                              R.color.greenGradientTop,
+                              R.color.greenGradientBottom
+                            ])),
                     child: Center(
                         child: Text(R.string.tiep_tuc.tr(),
                             style: TextStyle(
@@ -121,9 +120,17 @@ class _ForgotPasswordControllerState extends State<ForgotPasswordController> {
   }
 
   verify(BuildContext context) async {
+    await TrackingManager.analytics.logEvent(
+      name: 'cta_button_clicked',
+      parameters: {
+        "screen_name": 'forget_password',
+        'cta_button_name': 'cta_forget_password',
+      },
+    );
     FocusScope.of(context).unfocus();
     if (phone.isEmpty) {
-      phoneKey.currentState!.validate(R.string.ban_chua_nhap_so_dien_thoai.tr());
+      phoneKey.currentState!
+          .validate(R.string.ban_chua_nhap_so_dien_thoai.tr());
       return;
     }
     BotToast.showLoading();
@@ -145,8 +152,8 @@ class _ForgotPasswordControllerState extends State<ForgotPasswordController> {
       BotToast.closeAllLoading();
       if (e is Error) {
         if (e.code == 'USER001') {
-          phoneKey.currentState!.validate(
-              R.string.so_dien_thoai_khong_ton_tai.tr());
+          phoneKey.currentState!
+              .validate(R.string.so_dien_thoai_khong_ton_tai.tr());
         } else {
           Message.showToastMessage(context, e.message);
         }
@@ -166,8 +173,7 @@ class _ForgotPasswordControllerState extends State<ForgotPasswordController> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Image.asset(R.drawable.ic_check_error,
-                  width: 64, height: 64),
+              Image.asset(R.drawable.ic_check_error, width: 64, height: 64),
               SizedBox(height: 8),
               RichText(
                 textAlign: TextAlign.center,
@@ -180,8 +186,7 @@ class _ForgotPasswordControllerState extends State<ForgotPasswordController> {
                         style: TextStyle(
                             fontWeight: FontWeight.bold, fontSize: 16)),
                     TextSpan(
-                        text:
-                            R.string.dang_ky_lai_hom_sau.tr(),
+                        text: R.string.dang_ky_lai_hom_sau.tr(),
                         style:
                             TextStyle(color: R.color.textDark, fontSize: 16)),
                   ],

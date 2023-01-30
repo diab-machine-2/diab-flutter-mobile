@@ -62,7 +62,6 @@ class _AddWorkControllerState extends BaseState<AddWorkController> {
     }
     loadData();
     loadDescription();
-    TrackingManager.analytics.setCurrentScreen(screenName: "Emotion Input");
   }
 
   void dispose() {
