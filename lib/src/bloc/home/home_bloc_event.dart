@@ -7,6 +7,6 @@ class FetchHome extends HomeEvent {
   FetchHome();
 }
 
-class SyncHealthApp extends HomeEvent {
-  SyncHealthApp();
-}
+// class SyncHealthApp extends HomeEvent {
+//   SyncHealthApp();
+// }

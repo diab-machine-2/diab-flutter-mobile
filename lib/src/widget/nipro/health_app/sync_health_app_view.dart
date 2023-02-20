@@ -3,15 +3,15 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:health/health.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/health_setting.dart';
+import 'package:medical/src/utils/app_storages.dart';
 import 'package:medical/src/widgets/block_bottom_sheet.dart';
 import 'package:medical/src/widgets/button_widget.dart';
-
 import 'blocs/healthApp_bloc.dart';
 
 class SyncHealthApp extends StatelessWidget {
   const SyncHealthApp({Key? key}) : super(key: key);
 
-  showModal(BuildContext context) {
+  static showModal(BuildContext context) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -24,7 +24,7 @@ class SyncHealthApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider<HealthAppBloc>(
-      create: (_) => HealthAppBloc()..add(SyncData()),
+      create: (_) => HealthAppBloc(),
       child: BlockBottomSheet(
         title: '',
         child: Padding(
@@ -79,6 +79,20 @@ class SyncHealthApp extends StatelessWidget {
                 backgroundColor: R.color.grayBorder,
                 onPressed: () {
                   Navigator.pop(context);
+                },
+              ),
+              ButtonWidget(
+                title: "Kết nỗi với Apple Health",
+                textColor: R.color.white,
+                backgroundColor: R.color.mainColor,
+                onPressed: () async {
+                  bool? _hasPermission = await HealthSetting.instance
+                      .requestConnectionPermission();
+                  if (_hasPermission != null) {
+                    AppStorages.setHealthAppPermission(_hasPermission);
+                    print('_hasPermission: $_hasPermission');
+                    Navigator.pop(context);
+                  }
                 },
               ),
             ],

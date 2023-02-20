@@ -19,9 +19,9 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     if (event is FetchHome) {
       yield* _fetchHomes();
     }
-    if (event is SyncHealthApp) {
-      yield* _syncHealthApp();
-    }
+    // if (event is SyncHealthApp) {
+    //   yield* _syncHealthApp();
+    // }
   }
 
   Stream<HomeState> _fetchHomes() async* {

@@ -24,34 +24,30 @@ class HealthSetting {
   HealthSetting._privateConstructor();
   static final HealthSetting instance = HealthSetting._privateConstructor();
 
-  Future<bool> requestConnect() async {
-    final rights = [
-      HealthDataAccess.READ_WRITE,
-      HealthDataAccess.READ_WRITE,
-      HealthDataAccess.READ_WRITE,
-      HealthDataAccess.READ_WRITE,
-      HealthDataAccess.READ_WRITE,
-      HealthDataAccess.READ_WRITE,
-    ];
-    bool requested =
+  final rights = [
+    HealthDataAccess.WRITE,
+    HealthDataAccess.WRITE,
+    HealthDataAccess.WRITE,
+    HealthDataAccess.WRITE,
+    HealthDataAccess.WRITE,
+    HealthDataAccess.WRITE,
+    HealthDataAccess.WRITE,
+  ];
+  Future<bool?> requestConnectionPermission() async {
+    bool? result =
         await health.requestAuthorization(types, permissions: permissions);
-    return requested;
-    // bool? hasPermissions =
-    //     await HealthFactory.hasPermissions(types, permissions: permissions);
-    // if (requested && hasPermissions == true) {
-    //   return requested;
-    // } else {
-    //   bool requested =
-    //       await health.requestAuthorization(types, permissions: rights);
-    //   return requested;
-    // }
+    return result;
   }
 
   Future<bool?> checkConnectionPermission() async {
-    bool? result =
-        await health.requestAuthorization(types, permissions: permissions);
-    print("result: $result");
-    return result;
+    bool hasPermissions = await health.requestAuthorization(
+        [HealthDataType.BLOOD_GLUCOSE],
+        permissions: [HealthDataAccess.READ]);
+
+    // bool? hasPermissions =
+    //     await HealthFactory.hasPermissions(types, permissions: rights);
+    print('checkConnectionPermission: $hasPermissions');
+    return hasPermissions;
   }
 
   Future getBloodGlucose() async {

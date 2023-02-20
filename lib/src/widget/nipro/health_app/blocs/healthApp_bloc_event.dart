@@ -7,20 +7,8 @@ class FetchBloodPressureTimeFrame extends HealthAppEvent {
   FetchBloodPressureTimeFrame();
 }
 
-class SyncData extends HealthAppEvent {
-  final String? password;
-  final String? deleteReason;
+class SubmitSyncData extends HealthAppEvent {
+  final bool isSyncing;
 
-  SyncData({
-    this.password,
-    this.deleteReason,
-  });
-}
-
-class EventSubmitDeleteAccount extends HealthAppEvent {
-  EventSubmitDeleteAccount();
-}
-
-class EventSubmitValidatePassword extends HealthAppEvent {
-  EventSubmitValidatePassword();
+  SubmitSyncData(this.isSyncing);
 }
