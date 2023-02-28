@@ -5,10 +5,12 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/app_setting/app_sharing.dart';
 import 'package:medical/src/app_setting/dynamic_link_config.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/response/lesson_section_list_response.dart';
+import 'package:medical/src/utils/firebase_tracking.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
@@ -26,7 +28,11 @@ import 'widgets/bottom_sheet_widget.dart';
 import 'widgets/share_lesson_button.dart';
 
 class LessonDetailPage extends StatefulWidget {
-  const LessonDetailPage({required this.lessonType, required this.lessonId});
+  final Function(String, int) onComplete;
+  const LessonDetailPage(
+      {required this.lessonType,
+      required this.lessonId,
+      required this.onComplete});
   final int? lessonType;
   final String lessonId;
 
@@ -51,6 +57,7 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
   Future firebaseSetup() async {
     await TrackingManager.analytics.logScreenView(
         screenName: "lesson_detail", screenClass: "LessonDetailPage");
+    AppSettings.currentScreenName = 'lesson_detail';
   }
 
   @override
@@ -76,6 +83,9 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                   'object_title': _cubit.lessonDetail?.name,
                 },
               );
+            } else {
+              widget.onComplete(
+                  _cubit.lessonDetail!.id!, _cubit.percentComplete);
             }
           }
           if (state is LessonDetailLoading) {
@@ -109,6 +119,7 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
           }
         },
         builder: (context, state) {
+          print('currentSection: ${_cubit.currentSection}');
           return _cubit.showQuizLesson
               ? CourseQuizPage(
                   key: Key(_cubit.currentSectionDetail?.id ?? ''),
@@ -210,6 +221,21 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                                       child:
                                           //BetterPlayer(controller: _cubit.videoManager!.controller!),
                                           VideoWidget(
+                                        callbackEventListener: (event) {
+                                          String? eventTraking;
+                                          print(
+                                              'callbackEventListener: $event');
+                                          if (eventTraking != null) {
+                                            FirebaseTracking.videoPlayerLesson(
+                                              objectValue: 'e',
+                                              objectTitle:
+                                                  _cubit.lessonDetail!.name!,
+                                              objectId:
+                                                  _cubit.lessonDetail!.id!,
+                                              componentAction: eventTraking,
+                                            );
+                                          }
+                                        },
                                         url: _cubit.currentSectionDetail
                                                 ?.videoAddressLink ??
                                             '',

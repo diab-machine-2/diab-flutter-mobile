@@ -3,6 +3,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/modal/HbA1C/short_gui.dart';
 import 'package:medical/src/modal/food/food_model.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
@@ -51,6 +52,7 @@ class _FoodMenuPageState extends State<FoodMenuPage> {
       screenName: "sample_menu", 
       screenClass: "FoodMenuPage"
     );
+    AppSettings.currentScreenName = 'sample_menu';
   }
 
   void updateKcal(BuildContext context) {

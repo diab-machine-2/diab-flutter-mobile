@@ -9,6 +9,7 @@ import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
 import 'package:medical/res/R.dart';
+import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/app_setting/dynamic_link_config.dart';
 import 'package:medical/src/modal/base/referral_code_temp.dart';
 import 'package:medical/src/modal/error/error_model.dart';
@@ -37,6 +38,11 @@ class RegisterController extends StatefulWidget {
 }
 
 class _RegisterControllerState extends State<RegisterController> {
+  FocusNode phoneFocusNode = FocusNode();
+  FocusNode passwordFocusNode = FocusNode();
+  FocusNode confirmPasswordFocusNode = FocusNode();
+  FocusNode referralCodeFocusNode = FocusNode();
+
   final AppRepository _appRepository = AppRepository();
 
   final GlobalKey<TextFieldCustomState> phoneKey = GlobalKey();
@@ -61,9 +67,120 @@ class _RegisterControllerState extends State<RegisterController> {
 
   Future firebaseSetup() async {
     await TrackingManager.analytics.logScreenView(
-      screenName: "sign_up", 
-      screenClass: "RegisterController"
-    );
+        screenName: "sign_up", screenClass: "RegisterController");
+    AppSettings.currentScreenName = 'sign_up';
+    phoneFocusNode.addListener(() async {
+      if (phoneFocusNode.hasFocus) {
+        await TrackingManager.analytics.logEvent(
+          name: 'text_field_focus',
+          parameters: {
+            "screen_name": 'sign_up',
+            'text_field_name': 'text_field_sign_up_phone',
+            'object_value': phone
+          },
+        );
+      } else {
+        bool isValid = phone.length == 9 || phone.length == 10;
+        await TrackingManager.analytics.logEvent(
+          name: 'text_field_input',
+          parameters: {
+            "screen_name": 'sign_up',
+            'text_field_name': 'text_field_sign_up_phone',
+            'object_value': phone,
+            'validate_state': isValid ? 'pass' : 'fail',
+            'error_message': isValid ? 'none' : R.string.phone_not_valid.tr(),
+          },
+        );
+      }
+    });
+    passwordFocusNode.addListener(() async {
+      if (passwordFocusNode.hasFocus) {
+        await TrackingManager.analytics.logEvent(
+          name: 'text_field_focus',
+          parameters: {
+            "screen_name": 'sign_up',
+            'text_field_name': 'text_field_sign_up_password',
+            'object_value': password
+          },
+        );
+      } else {
+        bool isValid = password.length >= 6;
+        await TrackingManager.analytics.logEvent(
+          name: 'text_field_input',
+          parameters: {
+            "screen_name": 'sign_up',
+            'text_field_name': 'text_field_sign_up_password',
+            'object_value': password.length,
+            'validate_state': isValid ? 'pass' : 'fail',
+            'error_message':
+                isValid ? 'none' : R.string.password_least_character.tr()
+          },
+        );
+      }
+    });
+    confirmPasswordFocusNode.addListener(() async {
+      if (passwordFocusNode.hasFocus) {
+        await TrackingManager.analytics.logEvent(
+          name: 'text_field_focus',
+          parameters: {
+            "screen_name": 'sign_up',
+            'text_field_name': 'text_field_sign_up_confirm',
+            'object_value': confirmPassword
+          },
+        );
+      } else {
+        String validateState = 'pass';
+        String errorMessage = 'none';
+        if (confirmPassword.isEmpty) {
+          errorMessage = R.string.ban_chua_nhap_lai_mat_khau.tr();
+          validateState = 'fail';
+        }
+        if (confirmPassword != password) {
+          errorMessage = R.string.nhap_lai_mat_khau_khong_chinh_xac.tr();
+          validateState = 'fail';
+        }
+        await TrackingManager.analytics.logEvent(
+          name: 'text_field_input',
+          parameters: {
+            "screen_name": 'sign_up',
+            'text_field_name': 'text_field_sign_up_confirm',
+            'object_value': confirmPassword.length,
+            'validate_state': validateState,
+            'error_message': errorMessage
+          },
+        );
+      }
+    });
+    referralCodeFocusNode.addListener(() async {
+      if (passwordFocusNode.hasFocus) {
+        await TrackingManager.analytics.logEvent(
+          name: 'text_field_focus',
+          parameters: {
+            "screen_name": 'sign_up',
+            'text_field_name': 'text_field_sign_up_referral',
+            'object_value': referralCode
+          },
+        );
+      } else {
+        String validateState = 'pass';
+        String errorMessage = 'none';
+        bool isValid = valideReferralCode(referralCode);
+        if (!isValid) {
+          errorMessage = R.string.data_input_not_valid.tr();
+          validateState = 'fail';
+        }
+        await TrackingManager.analytics.logEvent(
+          name: 'text_field_input',
+          parameters: {
+            "screen_name": 'sign_up',
+            'text_field_name': 'text_field_sign_up_referral',
+            'object_value': referralCode,
+            'validate_state': validateState,
+            'error_message': errorMessage
+          },
+        );
+      }
+    });
   }
 
   @override
@@ -115,15 +232,16 @@ class _RegisterControllerState extends State<RegisterController> {
                       child: Column(
                         children: [
                           TextFieldCustom(
+                              focusNode: phoneFocusNode,
                               key: phoneKey,
                               title: R.string.so_dien_thoai.tr(),
                               placeholder: R.string.nhap_so_dien_thoai.tr(),
-                              autoFocus: true,
                               onChanged: (value) {
                                 phone = value;
                               }),
                           const SizedBox(height: 20),
                           TextFieldCustom(
+                              focusNode: passwordFocusNode,
                               key: passwordKey,
                               title: R.string.password.tr(),
                               placeholder:
@@ -134,6 +252,7 @@ class _RegisterControllerState extends State<RegisterController> {
                               }),
                           const SizedBox(height: 20),
                           TextFieldCustom(
+                              focusNode: confirmPasswordFocusNode,
                               key: confirmPasswordKey,
                               title: R.string.xac_nhan_mat_khau.tr(),
                               placeholder: R.string.nhap_lai_mat_khau.tr(),
@@ -152,6 +271,13 @@ class _RegisterControllerState extends State<RegisterController> {
                               isSharedCode: true,
                               rightIcon: R.drawable.ic_qr_scan,
                               onRightWidgetClick: () async {
+                                await TrackingManager.analytics.logEvent(
+                                  name: 'component_clicked',
+                                  parameters: {
+                                    "screen_name": 'sign_up',
+                                    'component_name': 'icon_sign_up_scan',
+                                  },
+                                );
                                 final dynamic scanResult =
                                     await NavigationUtil.navigatePage(
                                         context, const QRScanWidget());
@@ -163,6 +289,13 @@ class _RegisterControllerState extends State<RegisterController> {
                                       .text = referralCode;
                                   referralCodeKey.currentState
                                       ?.valideReferralCode(referralCode);
+                                  await TrackingManager.analytics.logEvent(
+                                    name: 'scan_qr_success',
+                                    parameters: {
+                                      "screen_name": 'sign_up',
+                                      'object_title': scanResult,
+                                    },
+                                  );
                                 }
                               },
                               onChanged: (value) {
@@ -700,5 +833,11 @@ class _RegisterControllerState extends State<RegisterController> {
       BotToast.closeAllLoading();
       Message.showToastMessage(context, error.toString());
     }
+  }
+
+  bool valideReferralCode(String code) {
+    const String pattern = r'^[a-zA-Z0-9\+]*$';
+    final RegExp regExp = RegExp(pattern);
+    return regExp.hasMatch(code);
   }
 }

@@ -11,6 +11,7 @@ import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/response/my_lesson_response.dart';
 import 'package:medical/src/model/response/week_states_response.dart';
 import 'package:medical/src/utils/const.dart';
+import 'package:medical/src/utils/firebase_tracking.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
@@ -155,6 +156,10 @@ class _LessonTabPageState extends State<LessonTabPage>
                             title: _cubit.lessonTypeList[index].title,
                             isActive: _cubit.currentLessonTypeIndex == index,
                             onTap: () {
+                              if (_cubit.lessonTypeList[index] ==
+                                  LessonType.suggest) {
+                                FirebaseTracking.tabLessonRecommend();
+                              }
                               _cubit.changeLessonType(index);
                             },
                           );
@@ -227,7 +232,9 @@ class _LessonTabPageState extends State<LessonTabPage>
                         child: SmartRefresher(
                           controller: _controller,
                           scrollController: _lessonScrollController,
-                          onRefresh: () => _cubit.onRefresh(isRefresh: true),
+                          onRefresh: () {
+                            _cubit.onRefresh(isRefresh: true);
+                          },
                           child: _cubit.lessonsList!.isEmpty
                               ? (state is LessonTabLoading ||
                                       state is LessonTabWeekChanged)
@@ -282,10 +289,18 @@ class _LessonTabPageState extends State<LessonTabPage>
                                                       ?.type,
                                                   lessonId: _cubit
                                                       .lessonsList![index]!.id!,
+                                                  onComplete: (lessonId,
+                                                      percentComplete) {
+                                                    _cubit.updateStatusLesson(
+                                                      lessonId: lessonId,
+                                                      percentComplete:
+                                                          percentComplete,
+                                                    );
+                                                  },
                                                 ),
                                               );
-                                              // if(result == 0) {
-                                              _controller.requestRefresh();
+                                              // if (result == 0) {
+                                              // _controller.requestRefresh();
                                               // }
                                               //   if(result != null){
                                               //     _cubit.getInitData(isRefresh: true,
@@ -531,6 +546,10 @@ class _LessonTabPageState extends State<LessonTabPage>
     required MyLessonResponseData? lessonDetail,
     VoidCallback? onTap,
   }) {
+    if (lessonDetail!.id == "c6c996a0-0075-4743-c85f-08d9f022ae7d") {
+      print('lessonDetail?.percentComplete: ${lessonDetail.percentComplete}');
+      print('lessonDetail?.learningStatus: ${lessonDetail.learningStatus}');
+    }
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 20),
       height: 87,

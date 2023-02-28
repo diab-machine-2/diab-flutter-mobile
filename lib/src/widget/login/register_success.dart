@@ -3,6 +3,7 @@ import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/modal/user/category_item_user_model.dart';
 import 'package:medical/src/repo/login/login_client.dart';
 import 'package:medical/src/repo/user/user_client.dart';
@@ -45,6 +46,7 @@ class _RegisterSuccessState extends State<RegisterSuccess> {
       screenName: "sign_up_success", 
       screenClass: "RegisterSuccess"
     );
+    AppSettings.currentScreenName = 'sign_up_success';
   }
 
   @override

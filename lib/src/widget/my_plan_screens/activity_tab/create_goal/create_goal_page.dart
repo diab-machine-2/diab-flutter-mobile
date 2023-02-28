@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/response/smart_goal_list_reponse.dart';
 import 'package:medical/src/utils/navigation_util.dart';
@@ -61,6 +62,7 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
       screenName: "target_setting",
       screenClass: "CreateGoalPage",
     );
+    AppSettings.currentScreenName = 'target_setting';
   }
 
   @override

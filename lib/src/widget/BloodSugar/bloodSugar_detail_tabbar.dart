@@ -71,6 +71,7 @@ class _BloodSugarDetailTabbarControllerState
       screenName: "kpi_glycemic", 
       screenClass: "BloodSugarDetailTabbarController"
     );
+    AppSettings.currentScreenName = 'kpi_glycemic';
   }
 
   @override

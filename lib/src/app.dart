@@ -570,6 +570,7 @@ class _AppState extends State<App> {
                         LessonDetailPage(
                           lessonId: data?['lessonId'],
                           lessonType: data?['lessonType'],
+                          onComplete: (String, int) {},
                         ),
                       );
                     default:

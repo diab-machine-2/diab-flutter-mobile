@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/widget/Exercrises/widget/exercrises_contain_detail.dart';
 import 'package:medical/src/widget/Exercrises/widget/exercrises_ranking_chart.dart';
 import 'package:medical/src/widget/Exercrises/widget/exercrises_trend_calo_chart.dart';
@@ -35,6 +36,7 @@ class ExercrisesOverviewControllerState
       screenName: "kpi_motion",
       screenClass: "ExercrisesOverviewController",
     );
+    AppSettings.currentScreenName = 'kpi_motion';
   }
 
   reloadData(int periodFilterType) {

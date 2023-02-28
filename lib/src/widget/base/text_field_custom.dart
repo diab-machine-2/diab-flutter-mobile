@@ -16,22 +16,24 @@ class TextFieldCustom extends StatefulWidget {
   final Function(String)? onChanged;
   final String? rightIcon;
   final Function()? onRightWidgetClick;
+  final FocusNode? focusNode;
 
-  const TextFieldCustom(
-      {Key? key,
-      this.title = '',
-      this.placeholder = '',
-      this.hintTextSize = 15,
-      this.isPassword = false,
-      this.isSharedCode = false,
-      this.autoFocus = false,
-      this.showStar = false,
-      this.initText,
-      this.maxLength = 100,
-      this.rightIcon,
-      this.onRightWidgetClick,
-      this.onChanged})
-      : super(key: key);
+  const TextFieldCustom({
+    Key? key,
+    this.title = '',
+    this.placeholder = '',
+    this.hintTextSize = 15,
+    this.isPassword = false,
+    this.isSharedCode = false,
+    this.autoFocus = false,
+    this.showStar = false,
+    this.initText,
+    this.maxLength = 100,
+    this.rightIcon,
+    this.onRightWidgetClick,
+    this.onChanged,
+    this.focusNode,
+  }) : super(key: key);
 
   @override
   TextFieldCustomState createState() => TextFieldCustomState();
@@ -45,7 +47,6 @@ class TextFieldCustomState extends State<TextFieldCustom> {
   bool showPassword = false;
 
   TextEditingController textEditingController = TextEditingController();
-  FocusNode focusNode = FocusNode();
 
   validate(String text) {
     setState(() {
@@ -77,8 +78,12 @@ class TextFieldCustomState extends State<TextFieldCustom> {
         Column(children: [
           Row(
             children: [
-              Text(widget.title, style: TextStyle(color: R.color.textDark, fontSize: 16)),
-              if (widget.showStar) Text(" *", style: TextStyle(color: R.color.red)) else const SizedBox()
+              Text(widget.title,
+                  style: TextStyle(color: R.color.textDark, fontSize: 16)),
+              if (widget.showStar)
+                Text(" *", style: TextStyle(color: R.color.red))
+              else
+                const SizedBox()
             ],
           ),
           const SizedBox(height: 10),
@@ -93,64 +98,73 @@ class TextFieldCustomState extends State<TextFieldCustom> {
                   width: 2,
                   color: isCorrect && !widget.isSharedCode
                       ? R.color.greenGradientBottom
-                      : (showValidate ? R.color.color0xffFF5756 : R.color.white)),
+                      : (showValidate
+                          ? R.color.color0xffFF5756
+                          : R.color.white)),
             ),
             child: Row(children: [
-              Image.asset(icon, width: 20, height: 20, color: R.color.mainColor),
+              Image.asset(icon,
+                  width: 20, height: 20, color: R.color.mainColor),
               const SizedBox(width: 16),
               Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    if (widget.isPassword || widget.isSharedCode)
-                      Container(
-                        height: 25,
-                        width: width - 167,
-                        child: Center(
-                          child: TextField(
-                              controller: textEditingController,
-                              //keyboardType: TextInputType,
-                              inputFormatters: [
-                                LengthLimitingTextInputFormatter(widget.maxLength),
-                              ],
-                              autofocus: widget.autoFocus,
-                              maxLength: widget.maxLength,
-                              obscureText: !showPassword && widget.isPassword,
-                              style: TextStyle(
-                                  fontFamily: 'Viga',
-                                  color: R.color.textDark,
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w500),
-                              decoration: InputDecoration(
-                                  fillColor: R.color.textDark,
-                                  border: InputBorder.none,
-                                  contentPadding: const EdgeInsets.only(top: -22),
-                                  hintText: widget.placeholder,
-                                  counterText: "",
-                                  hintStyle: TextStyle(
-                                      fontFamily: 'roboto',
-                                      color: R.color.textDark,
-                                      fontSize: widget.hintTextSize,
-                                      fontWeight: FontWeight.w300)),
-                              onChanged: (value) {
-                                if (!widget.isSharedCode) {
-                                  isCorrect = value.isNotEmpty && value.length >= 6;
-                                  if (value.length < 6 && !widget.isSharedCode) {
-                                    showValidate = true;
-                                    validateText = R.string.password_least_character.tr();
-                                  } else if (value.isNotEmpty && showValidate) {
-                                    showValidate = false;
-                                  }
-                                } else {
-                                  valideReferralCode(value);
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if (widget.isPassword || widget.isSharedCode)
+                    Container(
+                      height: 25,
+                      width: width - 167,
+                      child: Center(
+                        child: TextField(
+                            focusNode: widget.focusNode,
+                            controller: textEditingController,
+                            //keyboardType: TextInputType,
+                            inputFormatters: [
+                              LengthLimitingTextInputFormatter(
+                                  widget.maxLength),
+                            ],
+                            autofocus: widget.autoFocus,
+                            maxLength: widget.maxLength,
+                            obscureText: !showPassword && widget.isPassword,
+                            style: TextStyle(
+                                fontFamily: 'Viga',
+                                color: R.color.textDark,
+                                fontSize: 18,
+                                fontWeight: FontWeight.w500),
+                            decoration: InputDecoration(
+                                fillColor: R.color.textDark,
+                                border: InputBorder.none,
+                                contentPadding: const EdgeInsets.only(top: -22),
+                                hintText: widget.placeholder,
+                                counterText: "",
+                                hintStyle: TextStyle(
+                                    fontFamily: 'roboto',
+                                    color: R.color.textDark,
+                                    fontSize: widget.hintTextSize,
+                                    fontWeight: FontWeight.w300)),
+                            onChanged: (value) {
+                              if (!widget.isSharedCode) {
+                                isCorrect =
+                                    value.isNotEmpty && value.length >= 6;
+                                if (value.length < 6 && !widget.isSharedCode) {
+                                  showValidate = true;
+                                  validateText =
+                                      R.string.password_least_character.tr();
+                                } else if (value.isNotEmpty && showValidate) {
+                                  showValidate = false;
                                 }
-                                setState(() {});
-                                widget.onChanged!(value);
-                              }),
-                        ),
-                      )
-                    else
-                      Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                              } else {
+                                valideReferralCode(value);
+                              }
+                              setState(() {});
+                              widget.onChanged!(value);
+                            }),
+                      ),
+                    )
+                  else
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
                         Text('+84',
                             style: TextStyle(
                                 fontFamily: 'Viga',
@@ -158,18 +172,20 @@ class TextFieldCustomState extends State<TextFieldCustom> {
                                 fontSize: 18,
                                 fontWeight: FontWeight.w500)),
                         const SizedBox(width: 8),
-                        Container(height: 20, width: 1, color: R.color.textDark),
+                        Container(
+                            height: 20, width: 1, color: R.color.textDark),
                         const SizedBox(width: 8),
                         Container(
                           height: 25,
                           width: width - 217,
                           child: Center(
                             child: TextField(
-                                focusNode: focusNode,
+                                focusNode: widget.focusNode,
                                 keyboardType: TextInputType.number,
                                 autofocus: widget.autoFocus,
                                 inputFormatters: [
-                                  LengthLimitingTextInputFormatter(widget.maxLength),
+                                  LengthLimitingTextInputFormatter(
+                                      widget.maxLength),
                                 ],
                                 maxLength: widget.maxLength,
                                 style: TextStyle(
@@ -179,7 +195,8 @@ class TextFieldCustomState extends State<TextFieldCustom> {
                                     fontWeight: FontWeight.w500),
                                 decoration: InputDecoration(
                                     border: InputBorder.none,
-                                    contentPadding: const EdgeInsets.only(top: -22),
+                                    contentPadding:
+                                        const EdgeInsets.only(top: -22),
                                     hintText: widget.placeholder,
                                     counterText: "",
                                     hintStyle: TextStyle(
@@ -189,12 +206,14 @@ class TextFieldCustomState extends State<TextFieldCustom> {
                                         fontWeight: FontWeight.w300),
                                     fillColor: R.color.textDark),
                                 onChanged: (value) {
-                                  const String pattern = r'(^(?:[+0]9)?[0-9]{9}|\d{10}$)';
+                                  const String pattern =
+                                      r'(^(?:[+0]9)?[0-9]{9}|\d{10}$)';
                                   final RegExp regExp = RegExp(pattern);
                                   isCorrect = regExp.hasMatch(value);
                                   if (value.length != 9 && value.length != 10) {
                                     showValidate = true;
-                                    validateText = R.string.phone_not_valid.tr();
+                                    validateText =
+                                        R.string.phone_not_valid.tr();
                                   } else if (value.isNotEmpty && showValidate) {
                                     showValidate = false;
                                   }
@@ -205,8 +224,8 @@ class TextFieldCustomState extends State<TextFieldCustom> {
                         )
                       ],
                     ),
-                  ],
-                ),
+                ],
+              ),
               SizedBox(
                 width: 70,
                 child: Row(mainAxisAlignment: MainAxisAlignment.end, children: [
@@ -214,13 +233,15 @@ class TextFieldCustomState extends State<TextFieldCustom> {
                   if (isCorrect && !widget.isSharedCode)
                     Padding(
                       padding: const EdgeInsets.only(left: 8),
-                      child: Image.asset(R.drawable.ic_correct, width: 24, height: 24),
+                      child: Image.asset(R.drawable.ic_correct,
+                          width: 24, height: 24),
                     )
                   else
                     showValidate
                         ? Padding(
                             padding: const EdgeInsets.only(left: 8),
-                            child: Image.asset(R.drawable.ic_warning, width: 24, height: 24),
+                            child: Image.asset(R.drawable.ic_warning,
+                                width: 24, height: 24),
                           )
                         : const SizedBox()
                 ]),
@@ -230,7 +251,10 @@ class TextFieldCustomState extends State<TextFieldCustom> {
           Padding(
             padding: const EdgeInsets.only(top: 4),
             child: Text(validateText,
-                style: TextStyle(color: R.color.color0xffFF5756, fontSize: 14, fontWeight: FontWeight.w400)),
+                style: TextStyle(
+                    color: R.color.color0xffFF5756,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w400)),
           )
         else
           const SizedBox()
@@ -238,36 +262,36 @@ class TextFieldCustomState extends State<TextFieldCustom> {
     );
   }
 
-  rightWidget(){
-     if (widget.isPassword && textEditingController.text.isNotEmpty) {
+  rightWidget() {
+    if (widget.isPassword && textEditingController.text.isNotEmpty) {
+      return GestureDetector(
+          onTap: () {
+            setState(() {
+              showPassword = !showPassword;
+            });
+          },
+          child: Container(
+              color: R.color.transparent,
+              child: Text(
+                  !showPassword ? R.string.show.tr() : R.string.hide.tr(),
+                  style: TextStyle(color: R.color.grey_2))));
+    } else {
+      if (widget.rightIcon != null) {
         return GestureDetector(
-            onTap: () {
-              setState(() {
-                showPassword = !showPassword;
-              });
-            },
-            child: Container(
-                color: R.color.transparent,
-                child: Text(!showPassword ? R.string.show.tr() : R.string.hide.tr(),
-                    style: TextStyle(color: R.color.grey_2))));
-     } else {
-       if(widget.rightIcon != null){
-         return GestureDetector(
-           onTap: () {
-            if(widget.onRightWidgetClick != null){
+          onTap: () {
+            if (widget.onRightWidgetClick != null) {
               widget.onRightWidgetClick!();
             }
-           },
-           child: Padding(
-             padding: const EdgeInsets.only(right: 4.0),
-             child: Image.asset(widget.rightIcon!, width: 25, height: 25),
-           ),
-         );
-       } else {
-         return SizedBox();
-       }
-     }
-                  
+          },
+          child: Padding(
+            padding: const EdgeInsets.only(right: 4.0),
+            child: Image.asset(widget.rightIcon!, width: 25, height: 25),
+          ),
+        );
+      } else {
+        return SizedBox();
+      }
+    }
   }
 
   void valideReferralCode(String code) {

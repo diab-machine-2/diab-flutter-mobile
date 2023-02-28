@@ -9,6 +9,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/response/lesson_module_response.dart';
 import 'package:medical/src/utils/utils.dart';
@@ -55,6 +56,7 @@ class _MakeQuestionPageState extends State<MakeQuestionPage> {
         "screen_name": 'qna_add',
       },
     );
+    AppSettings.currentScreenName = 'qna_add';
   }
 
   @override

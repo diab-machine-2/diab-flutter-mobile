@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/modal/glucose/glucose_input.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/src/bloc/glucose/glucose_bloc.dart';
@@ -65,6 +66,7 @@ class BloodSugarDetailControllerState extends State<BloodSugarDetailController>
       screenName: "kpi_glycemic", 
       screenClass: "BloodSugarDetailController"
     );
+    AppSettings.currentScreenName = 'kpi_glycemic';
   }
 
   reloadData(int periodFilter) {

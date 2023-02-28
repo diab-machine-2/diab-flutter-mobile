@@ -107,6 +107,7 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
         'object_title': 'Chỉ số cân nặng'
       },
     );
+    AppSettings.currentScreenName = 'kpi_body_weight_add';
   }
 
   @override

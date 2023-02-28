@@ -6,6 +6,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:medical/res/R.dart';
 
+enum CustomPlayerEventType {
+  videoPause,
+  videoFoward,
+  videoPrevious,
+  videoCompleted,
+  videoReplay,
+}
+
 class VideoManager {
   VideoManager({
     required String? url,
@@ -14,6 +22,7 @@ class VideoManager {
     this.placeHolder,
     this.onExitFullScreen,
     this.callbackByPercentVideo,
+    this.callbackEventListener,
     this.percentCallbackDefault = 1,
   }) {
     initController(url: url);
@@ -21,6 +30,7 @@ class VideoManager {
   BetterPlayerController? _controller;
   final double percentCallbackDefault;
   final VoidCallback? onPlay;
+  final Function(CustomPlayerEventType)? callbackEventListener;
   final VoidCallback? callbackByPercentVideo;
   final VoidCallback? onExitFullScreen;
   final VoidCallback? onCompleted;
@@ -28,6 +38,7 @@ class VideoManager {
   bool finishedVideo = false;
   bool hasVideo = false;
   bool hasPlayed = false;
+  int currentMillisecond = 0;
 
   StreamController<bool> _placeholderStreamController =
       StreamController.broadcast();
@@ -65,7 +76,7 @@ class VideoManager {
 
   void initController({required String? url}) {
     if (url?.isNotEmpty != true) return;
-    final BetterPlayerController newController = BetterPlayerController(
+    BetterPlayerController newController = BetterPlayerController(
       BetterPlayerConfiguration(
         placeholder: placeHolder == null
             ? Container(color: R.color.black)
@@ -87,7 +98,26 @@ class VideoManager {
       //  ),
     )..addEventsListener(
         (event) async {
-          print("object: ${event.betterPlayerEventType}");
+          if (event.betterPlayerEventType == BetterPlayerEventType.play &&
+              finishedVideo) {
+            checkCallbackEventListener(CustomPlayerEventType.videoReplay);
+          }
+          if (event.betterPlayerEventType == BetterPlayerEventType.pause) {
+            checkCallbackEventListener(CustomPlayerEventType.videoPause);
+          }
+          if (event.betterPlayerEventType == BetterPlayerEventType.progress && _controller != null) {
+            currentMillisecond = _controller!
+                .videoPlayerController!.value.position.inMilliseconds;
+          }
+          if (event.betterPlayerEventType == BetterPlayerEventType.seekTo) {
+            if (currentMillisecond >
+                _controller!
+                    .videoPlayerController!.value.position.inMilliseconds) {
+              checkCallbackEventListener(CustomPlayerEventType.videoPrevious);
+            } else {
+              checkCallbackEventListener(CustomPlayerEventType.videoFoward);
+            }
+          }
           if (event.betterPlayerEventType == BetterPlayerEventType.play &&
               !hasPlayed &&
               onPlay != null) {
@@ -125,9 +155,9 @@ class VideoManager {
               print("${e.toString()}");
             }
           }
-          print('newController.pause()');
         }
       }
+
       if (newController.videoPlayerController?.value != null &&
           !newController.videoPlayerController!.value.isPlaying &&
           newController.videoPlayerController!.value.initialized) {
@@ -138,6 +168,7 @@ class VideoManager {
 
         // WHEN COMPLETE VIDEO
         if (duration == position) {
+          checkCallbackEventListener(CustomPlayerEventType.videoCompleted);
           onCompleted?.call();
           finishedVideo = true;
         }
@@ -159,6 +190,13 @@ class VideoManager {
 
     hasVideo = true;
     _controller = newController;
+  }
+
+  checkCallbackEventListener(CustomPlayerEventType type) {
+    print('checkCallbackEventListener: $type');
+    if (callbackEventListener != null) {
+      // callbackEventListener();
+    }
   }
 
   Widget _buildVideoPlaceholder() {

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/widget/BloodPressure/widget/bloodPressure_chart.dart';
 import 'package:medical/src/widget/BloodPressure/widget/bloodPressure_distribution_chart.dart';
 import 'package:medical/src/widget/BloodPressure/widget/heart_chart.dart';
@@ -35,6 +36,7 @@ class BloodPressureOverviewControllerState
     await TrackingManager.analytics.logScreenView(
         screenName: "kpi_blood_pressure",
         screenClass: "BloodPressureOverviewController");
+    AppSettings.currentScreenName = 'kpi_blood_pressure';
   }
 
   reloadData(int periodFilterType) {

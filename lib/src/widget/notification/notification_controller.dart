@@ -61,6 +61,7 @@ class NotificationControllerState extends State<NotificationController>
       screenName: "notification_center", 
       screenClass: "NotificationController"
     );
+    AppSettings.currentScreenName = 'notification_center';
   }
 
   @override

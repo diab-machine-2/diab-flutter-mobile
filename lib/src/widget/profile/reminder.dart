@@ -7,6 +7,7 @@ import 'package:flutter_observer/Observer.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:loadmore/loadmore.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/modal/error/error_model.dart';
 import 'package:medical/src/modal/user/schedule_reminder_model.dart';
 import 'package:medical/src/repo/user/user_client.dart';
@@ -47,6 +48,7 @@ class _ReminderControllerState extends State<ReminderController> with Observer  
       screenName: "remind", 
       screenClass: "ReminderController"
     );
+    AppSettings.currentScreenName = 'remind';
   }
 
   @override

@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_observer/Observable.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/modal/HbA1C/short_gui.dart';
 import 'package:medical/src/modal/error/error_model.dart';
 import 'package:medical/src/modal/exercrises/exercrise_Input_detail_model.dart';
@@ -93,6 +94,7 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
         'object_title': 'Chỉ số vận động'
       },
     );
+    AppSettings.currentScreenName = 'kpi_motion_add';
   }
 
   void dispose() {

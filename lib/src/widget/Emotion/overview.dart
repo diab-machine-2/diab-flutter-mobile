@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/widget/Emotion/widget/emotion_activity_chart.dart';
 import 'package:medical/src/widget/Emotion/widget/emotion_symptom_chart.dart';
 import 'package:medical/src/widget/Emotion/widget/emotion_distribution_chart.dart';
@@ -31,6 +32,7 @@ class EmotionOverviewControllerState extends State<EmotionOverviewController>
       screenName: "kpi_emotional",
       screenClass: "EmotionOverviewController",
     );
+    AppSettings.currentScreenName = 'kpi_emotional';
   }
 
   reloadData(int periodFilterType) {

@@ -6,6 +6,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
@@ -36,6 +37,7 @@ class _QRScanWidgetState extends State<QRScanWidget> {
       screenName: "qr_scanner", 
       screenClass: "QRScanWidget"
     );
+    AppSettings.currentScreenName = 'qr_scanner';
   }
 
   @override

@@ -22,6 +22,7 @@ import 'package:medical/src/widget/Bmi/widget/add_bmi.dart';
 import 'package:medical/src/widget/components/HomeButton/main.dart';
 import 'package:medical/src/widget/helper/notification_manager.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
+import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/helper/version.dart';
 import 'package:medical/src/widget/home/home.dart';
 import 'package:medical/src/widget/my_plan_screens/my_plan/my_plan.dart';
@@ -117,6 +118,14 @@ class _TabbarControllerState extends State<TabbarController>
   Future<void> update(Observable observable, String? notifyName,
       Map<dynamic, dynamic>? map) async {
     if (notifyName == 'unauthorized') {
+      await TrackingManager.analytics.logEvent(
+        name: 'login_session_end',
+        parameters: {
+          "screen_name": AppSettings.currentScreenName,
+          'error_message':
+              R.string.phien_dang_nhap_het_han_vui_long_dang_nhap_lai.tr(),
+        },
+      );
       if (!isNavigateToStepList) {
         Message.showToastMessage(context,
             R.string.phien_dang_nhap_het_han_vui_long_dang_nhap_lai.tr());

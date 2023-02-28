@@ -691,8 +691,12 @@ class _ActivityTabPageState extends State<ActivityTabPage>
         await NavigationUtil.navigatePage(
             context,
             LessonDetailPage(
-                lessonType: lessonDetail?.type,
-                lessonId: lessonDetail?.id ?? ''));
+              lessonType: lessonDetail?.type,
+              lessonId: lessonDetail?.id ?? '',
+              onComplete: (String, int) {
+                
+              },
+            ));
         _cubit.refreshData(isRefresh: true);
         Observable.instance
             .notifyObservers([], notifyName: "refresh_lesson_tab");

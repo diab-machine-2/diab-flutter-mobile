@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_observer/Observable.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/response/exercise_movement_response.dart';
 import 'package:medical/src/utils/navigation_util.dart';
@@ -41,6 +42,7 @@ class _ExerciseDetailState extends State<ExerciseDetail> {
       screenName: "excercise_detail",
       screenClass: "ExerciseDetail",
     );
+    AppSettings.currentScreenName = 'excercise_detail';
   }
 
   @override

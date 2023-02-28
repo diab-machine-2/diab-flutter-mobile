@@ -122,6 +122,7 @@ class _HomeControllerState extends State<HomeController> with Observer {
       screenName: "home", 
       screenClass: "HomeController"
     );
+    AppSettings.currentScreenName = 'home';
   }
 
   @override

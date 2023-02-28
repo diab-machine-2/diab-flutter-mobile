@@ -36,6 +36,7 @@ class LessonDetailCubit extends Cubit<LessonDetailState> {
   AudioManager? audioManager;
   SectionStatusData? sectionStatus;
   String? featureImage;
+  int percentComplete = 0;
 
   bool isQuizLesson = false;
 
@@ -80,6 +81,7 @@ class LessonDetailCubit extends Cubit<LessonDetailState> {
     }
 
     currentSection = newSection;
+    percentComplete = ((currentSection + 1) / sectionList.length).round() * 100;
 
     videoManager?.refreshUrl(
       url: currentSectionDetail?.videoAddressLink,
@@ -151,6 +153,8 @@ class LessonDetailCubit extends Cubit<LessonDetailState> {
     for (int index = 0; index < sectionList.length; index++) {
       if (sectionList[index]?.isComplete == false) {
         currentSection = index;
+        percentComplete =
+            ((currentSection + 1) / sectionList.length * 100).round();
         break;
       }
     }
@@ -251,7 +255,7 @@ class LessonDetailCubit extends Cubit<LessonDetailState> {
       emit(const LessonDetailSuccess());
     }, failure: (NetworkExceptions error) {
       emit(LessonDetailFailure(NetworkExceptions.getErrorMessage(error)));
-      currentSectionDetail?.isComplete = false;
+      currentSectionDetail?.isComplete = true;
     });
     emit(const LessonDetailInitial());
   }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/widget/HbA1C/widget/course_suggest.dart';
 import 'package:medical/src/widget/HbA1C/widget/hba1c_chart.dart';
 import 'package:medical/src/widget/HbA1C/widget/hba1c_contain_detail.dart';
@@ -33,6 +34,7 @@ class HbA1COverviewControllerState extends State<HbA1COverviewController>
       screenName: "kpi_hba1c",
       screenClass: "HbA1COverviewController",
     );
+    AppSettings.currentScreenName = 'kpi_hba1c';
   }
 
   reloadData(int periodFilterType) {

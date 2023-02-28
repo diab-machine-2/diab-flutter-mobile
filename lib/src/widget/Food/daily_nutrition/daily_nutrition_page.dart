@@ -8,6 +8,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/modal/food/food_model.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/utils/const.dart';
@@ -67,6 +68,7 @@ class _DailyNutritionPageState extends State<DailyNutritionPage> {
         'object_title': 'Chỉ số dinh dưỡng'
       },
     );
+    AppSettings.currentScreenName = 'kpi_add_begin';
   }
 
   @override

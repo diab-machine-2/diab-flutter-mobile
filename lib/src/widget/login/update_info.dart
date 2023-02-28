@@ -5,11 +5,13 @@ import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/modal/base/referral_code_temp.dart';
 import 'package:medical/src/modal/error/error_model.dart';
 import 'package:medical/src/modal/user/category_item_user_model.dart';
 import 'package:medical/src/repo/login/login_client.dart';
 import 'package:medical/src/utils/app_storages.dart';
+import 'package:medical/src/utils/firebase_tracking.dart';
 import 'package:medical/src/utils/length_limit_text_field.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/base/text_field_custom.dart';
@@ -46,9 +48,10 @@ class UpdateInfoController extends StatefulWidget {
 }
 
 class _UpdateInfoControllerState extends State<UpdateInfoController> {
+  FocusNode nameFocusNode = FocusNode();
+
   final GlobalKey<TextFieldCustomState> phoneKey = GlobalKey();
   TextEditingController nameController = TextEditingController();
-  FocusNode nameFocus = FocusNode();
 
   String phone = '';
   DateTime? selectedDate;
@@ -75,6 +78,37 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
     await TrackingManager.analytics.logScreenView(
         screenName: "register_information",
         screenClass: "UpdateInfoController");
+    AppSettings.currentScreenName = 'register_information';
+    nameFocusNode.addListener(() async {
+      String nameValue = nameController.text;
+      if (nameFocusNode.hasFocus) {
+        await TrackingManager.analytics.logEvent(
+          name: 'text_field_focus',
+          parameters: {
+            "screen_name": 'register_information',
+            'text_field_name': 'text_field_register_infor_name',
+            'object_value': nameValue
+          },
+        );
+      } else {
+        String validateState = 'pass';
+        String errorMessage = 'none';
+        if (nameValue.isEmpty) {
+          validateState = 'fail';
+          errorMessage = R.string.ban_chua_nhap_ho_ten.tr();
+        }
+        await TrackingManager.analytics.logEvent(
+          name: 'text_field_input',
+          parameters: {
+            "screen_name": 'register_information',
+            'text_field_name': 'text_field_register_infor_name',
+            'object_value': nameValue,
+            'validate_state': validateState,
+            'error_message': errorMessage,
+          },
+        );
+      }
+    });
   }
 
   check() async {
@@ -202,7 +236,8 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
                                                     Container(
                                                       height: 30,
                                                       child: TextField(
-                                                        focusNode: nameFocus,
+                                                        focusNode:
+                                                            nameFocusNode,
                                                         maxLength: 50,
                                                         inputFormatters: [
                                                           LengthLimitingTextFieldFormatterFixed(
@@ -256,8 +291,10 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
                                             )),
                                         SizedBox(height: 12),
                                         GestureDetector(
-                                          onTap: () {
-                                            nameFocus.unfocus();
+                                          onTap: () async {
+                                            nameFocusNode.unfocus();
+                                            FirebaseTracking.onClickBirthDay(
+                                                selectedDate);
                                             showDatePicker(context);
                                           },
                                           child: Container(
@@ -321,7 +358,7 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
                                         SizedBox(height: 12),
                                         GestureDetector(
                                           onTap: () {
-                                            nameFocus.unfocus();
+                                            nameFocusNode.unfocus();
                                             _showDialogUpdateGender();
                                           },
                                           child: Container(
@@ -386,8 +423,10 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
                                             )),
                                         SizedBox(height: 12),
                                         GestureDetector(
-                                          onTap: () {
-                                            nameFocus.unfocus();
+                                          onTap: () async {
+                                            nameFocusNode.unfocus();
+                                            FirebaseTracking.onClickSickState(
+                                                diabetesStatus);
                                             _showDialogUpdateDiabetesStatus();
                                           },
                                           child: Container(
@@ -449,8 +488,10 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
                                             )),
                                         SizedBox(height: 12),
                                         GestureDetector(
-                                          onTap: () {
-                                            nameFocus.unfocus();
+                                          onTap: () async {
+                                            nameFocusNode.unfocus();
+                                            FirebaseTracking.onClickSickYear(
+                                                selectedYear);
                                             showYearPicker(context);
                                           },
                                           child: Container(
@@ -568,7 +609,9 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
                         : status!.key != null
                             ? status!.key! - 1
                             : null,
-                    onChanged: (data) {
+                    onChanged: (data) async {
+                      FirebaseTracking.onSelectSickState(
+                          widget.diabeteStates![data]);
                       status = widget.diabeteStates![data];
                     },
                   )),
@@ -734,7 +777,8 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
         maxTime: DateTime.now(),
         minTime: DateTime.parse('1900-01-01 00:00:00.000Z'),
         showTitleActions: true,
-        onChanged: (date) {}, onConfirm: (date) {
+        onChanged: (date) {}, onConfirm: (date) async {
+      FirebaseTracking.onSelectBirthDay(date);
       setState(() {
         selectedDate = date;
       });
@@ -749,7 +793,8 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
     CustomCalendarYearPicker.showDatePicker(context,
         maxTime: DateTime.now(),
         showTitleActions: true,
-        onChanged: (year) {}, onConfirm: (year) {
+        onChanged: (year) {}, onConfirm: (year) async {
+      FirebaseTracking.onSelectSickYear(year);
       setState(() {
         selectedYear = year;
       });

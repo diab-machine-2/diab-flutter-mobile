@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_observer/Observable.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/modal/error/error_model.dart';
 import 'package:medical/src/modal/user/goal_info.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
@@ -48,6 +49,7 @@ class _GoalSettingControllerState extends State<GoalSettingController> {
       screenName: "set_target", 
       screenClass: "GoalSettingController"
     );
+    AppSettings.currentScreenName = 'set_target';
   }
 
   loadData() async {

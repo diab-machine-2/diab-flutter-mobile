@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/widget/BloodSugar/widget/bloodSugar_chart.dart';
 import 'package:medical/src/widget/BloodSugar/widget/bloodSugar_compare_chart.dart';
 import 'package:medical/src/widget/HbA1C/widget/course_suggest.dart';
@@ -29,11 +30,10 @@ class BloodSugarOverviewControllerState
 
   Future firebaseSetup() async {
     await TrackingManager.analytics.logScreenView(
-      screenName: "kpi_glycemic", 
-      screenClass: "BloodSugarOverviewController"
-    );
+        screenName: "kpi_glycemic",
+        screenClass: "BloodSugarOverviewController");
+    AppSettings.currentScreenName = 'kpi_glycemic';
   }
-
 
   reloadData(int periodFilterType) {
     _scrollController.jumpTo(0);
@@ -56,8 +56,7 @@ class BloodSugarOverviewControllerState
         body: Container(
       decoration: BoxDecoration(
           image: DecorationImage(
-              image: AssetImage(R.drawable.bg_hba1c_high),
-              fit: BoxFit.cover)),
+              image: AssetImage(R.drawable.bg_hba1c_high), fit: BoxFit.cover)),
       child: ListView(
           controller: _scrollController,
           physics: ClampingScrollPhysics(),

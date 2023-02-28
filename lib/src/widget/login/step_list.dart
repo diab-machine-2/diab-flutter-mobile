@@ -108,6 +108,7 @@ class _StepListControllerState extends State<StepListController> with Observer {
   Future firebaseSetup() async {
     await TrackingManager.analytics.logScreenView(
         screenName: "welcome", screenClass: "StepListController");
+    AppSettings.currentScreenName = 'welcome';
   }
 
   @override

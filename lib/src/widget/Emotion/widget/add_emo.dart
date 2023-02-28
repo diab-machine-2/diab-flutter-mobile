@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/modal/HbA1C/short_gui.dart';
 import 'package:medical/src/modal/emotion/emotion_model.dart';
 import 'package:medical/src/model/preference/app_preference.dart';
@@ -64,6 +65,7 @@ class _AddEmoControllerState extends BaseState<AddEmoController> {
         'object_title': 'Chỉ số cảm xúc'
       },
     );
+    AppSettings.currentScreenName = 'kpi_emotional_add';
   }
 
   void dispose() {
