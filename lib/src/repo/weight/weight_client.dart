@@ -13,7 +13,7 @@ class WeightClient extends FetchClient {
   // nhập chỉ chỉ số cân nặng
   Future<bool> postWeightInput(int date, List<String> files, String weight,
       String? waist, String height, String note, String? timeFrameId) async {
-    try {
+    // try {
       Map<String, String> params = {
         'date': date.toString(),
         'weight': weight,
@@ -32,11 +32,11 @@ class WeightClient extends FetchClient {
       } else {
         throw response.reasonPhrase!;
       }
-    } catch (e) {
-      throw e is Error
-          ? e
-          : R.string.error_can_not_connect_to_server.tr();
-    }
+    // } catch (e) {
+    //   throw e is Error
+    //       ? e
+    //       : R.string.error_can_not_connect_to_server.tr();
+    // }
   }
   // //============ lấy danh sách chỉ số Weight =============/
 

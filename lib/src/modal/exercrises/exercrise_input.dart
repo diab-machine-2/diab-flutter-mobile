@@ -1,4 +1,5 @@
 import 'package:meta/meta.dart';
+
 @immutable
 class InputDataExercriseModel {
   final int? date;
@@ -62,6 +63,7 @@ class ListExercriseModel {
   final double? duration;
   final double? burnedCalorie;
   final String? unit;
+  final num? value;
   final ImagesUrlModel imageUrl;
 
   ListExercriseModel({
@@ -72,6 +74,7 @@ class ListExercriseModel {
     required this.burnedCalorie,
     required this.unit,
     required this.imageUrl,
+    this.value,
   });
   @override
   factory ListExercriseModel.fromJson(Map<String, dynamic> json) {
@@ -82,6 +85,7 @@ class ListExercriseModel {
       duration: json['duration'],
       burnedCalorie: json['burnedCalorie'],
       unit: json['unit'],
+      value: json['value'],
       imageUrl: ImagesUrlModel.fromJson(json['imageUrl']),
     );
   }

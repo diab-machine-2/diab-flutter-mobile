@@ -59,6 +59,7 @@ class HealthAppBloc extends Bloc<HealthAppEvent, HealthAppState> {
     required DateTime now,
     required int timeFrame,
   }) async {
+    DateTime midnight = DateTime(2021, 10, 10, 0, 0, 0);
     bool result = false;
     requestSyncData['syncSYSTOLICAndDIASTOLIC'] = true;
     // Tâm thu - Tâm trương - Nhịp tim
@@ -129,7 +130,7 @@ class HealthAppBloc extends Bloc<HealthAppEvent, HealthAppState> {
     required DateTime midnight,
     required DateTime now,
   }) async {
-    bool result = true;
+    bool result = false;
     requestSyncData['syncSTEP'] = true;
     StepListModel stepData = await stepRepository.getStepList(1);
     DateTime? lastDateSync = DateTime(now.year, now.month, now.day - 1);
@@ -180,15 +181,18 @@ class HealthAppBloc extends Bloc<HealthAppEvent, HealthAppState> {
 
     List<int> indexList = [];
     int index = 0;
-    stepCollected.forEach((item) {
-      final RequestSyncStepModel? valueExisted = stepCollected.firstWhereOrNull(
-          (element) =>
-              element.dateFrom == item.dateFrom && element.value == item.value);
-      if (valueExisted != null) {
-        indexList.add(index);
-      }
-      index++;
-    });
+    if (stepData.items.isNotEmpty) {
+      stepCollected.forEach((item) {
+        final StepItemModel? valueExisted = stepData.items.firstWhereOrNull(
+            (element) =>
+                element.dateFrom == item.dateFrom &&
+                element.value == item.value);
+        if (valueExisted != null) {
+          indexList.add(index);
+        }
+        index++;
+      });
+    }
     indexList.sort((a, b) => b.compareTo(a));
 
     indexList.forEach((index) {
@@ -207,7 +211,8 @@ class HealthAppBloc extends Bloc<HealthAppEvent, HealthAppState> {
     required DateTime now,
     required int timeFrame,
   }) async {
-    bool result = true;
+    DateTime midnight = DateTime(2021, 10, 10, 0, 0, 0);
+    bool result = false;
     requestSyncData['syncWeight'] = true;
     UserModel userInfo = AppSettings.userInfo!;
     var weightList = await health.getHealthDataFromTypes(
@@ -216,11 +221,13 @@ class HealthAppBloc extends Bloc<HealthAppEvent, HealthAppState> {
     double? height;
     if (weightList.length != 0) {
       weightList.forEach((element) {
-        if (element.type == HealthDataType.WEIGHT) {
-          weight = roundDouble(weightList.first.value);
+        if (element.type == HealthDataType.WEIGHT && weight == null) {
+          print('HealthDataType.WEIGHT: ${element.value}');
+          weight = roundDouble(element.value);
         }
-        if (element.type == HealthDataType.HEIGHT) {
-          height = roundDouble(weightList.first.value);
+        if (element.type == HealthDataType.HEIGHT && height == null) {
+          
+          height = roundDouble(element.value) * 100;
         }
       });
     }
@@ -255,7 +262,7 @@ class HealthAppBloc extends Bloc<HealthAppEvent, HealthAppState> {
     required DateTime now,
     required int timeFrame,
   }) async {
-    bool result = true;
+    bool result = false;
     requestSyncData['syncBlodGlucose'] = true;
     var bloodGlucoseList = await health
         .getHealthDataFromTypes(midnight, now, [HealthDataType.BLOOD_GLUCOSE]);
@@ -285,16 +292,16 @@ class HealthAppBloc extends Bloc<HealthAppEvent, HealthAppState> {
     final now = DateTime.now();
     final midnight = DateTime(now.year, now.month, now.day);
     int timeFrame = now.millisecondsSinceEpoch ~/ 1000;
-    Console.log(
-        "responseSyncData", responseSyncData.length == requestSyncData.length);
 
+    print('responseSyncData.length: ${responseSyncData.length}');
     if (responseSyncData.length == requestSyncData.length) {
+      Console.logJson("responseSyncData", responseSyncData);
       bool isDataUpdated = responseSyncData.values
           .firstWhere((element) => element == true, orElse: () => false);
       bool isNotCompleteRequest = requestSyncData.values
           .firstWhere((element) => element == false, orElse: () => false);
-      Console.log("isDataUpdated && !isNotCompleteRequest",
-          isDataUpdated && !isNotCompleteRequest);
+
+      Console.logJson("Có cần refresh Home không? ", isDataUpdated && !isNotCompleteRequest ? "Có" : "Không");
       if (isDataUpdated && !isNotCompleteRequest) {
         Observable.instance.notifyObservers([], notifyName: "refresh_home");
       }
