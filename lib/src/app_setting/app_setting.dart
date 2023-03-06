@@ -27,6 +27,7 @@ class AppSettings {
   static String environment = "";
   static SecureModel? secureModel;
   static bool isDisplayedWelcome = false;
+  static bool isFirstTimeSyncHealth = true;
 
   static bool showed50Message = false;
   static bool showed90Message = false;

@@ -94,25 +94,27 @@ class ExercrisesListCard extends StatelessWidget {
               borderRadius: BorderRadius.circular(16), color: R.color.white),
           child: Column(
             children: [
-              Padding(
-                padding: EdgeInsets.all(16),
-                child: Container(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                          convertToUTC(itemInput.date!, 'HH:mm') +
-                              ', ' +
-                              itemInput.timeFrame!,
-                          style: TextStyle(
-                              color: R.color.textDark,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600)),
-                      if (!dataSyncFromHealth) valueItem
-                    ],
-                  ),
-                ),
-              ),
+              dataSyncFromHealth
+                  ? SizedBox(height: 10)
+                  : Padding(
+                      padding: EdgeInsets.all(16),
+                      child: Container(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                                convertToUTC(itemInput.date!, 'HH:mm') +
+                                    ', ' +
+                                    itemInput.timeFrame!,
+                                style: TextStyle(
+                                    color: R.color.textDark,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600)),
+                            valueItem
+                          ],
+                        ),
+                      ),
+                    ),
               ListView.separated(
                   physics: NeverScrollableScrollPhysics(),
                   shrinkWrap: true,

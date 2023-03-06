@@ -2,11 +2,10 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/res/colors.dart';
 import 'package:medical/src/app_setting/health_setting.dart';
 import 'package:medical/src/utils/app_storages.dart';
-import 'package:medical/src/widgets/block_bottom_sheet.dart';
 import 'package:medical/src/widgets/button_widget.dart';
-
 import '../blocs/healthApp_bloc.dart';
 
 class RequestHealthConnect extends StatelessWidget {
@@ -31,8 +30,32 @@ class RequestHealthConnect extends StatelessWidget {
       create: (_) => HealthAppBloc()..add(SubmitSyncData(isSyncing)),
       child: BlocBuilder<HealthAppBloc, HealthAppState>(
         builder: (context, state) {
-          if (isSyncing == true) {
+          if (isSyncing == true && state.blocStatus == BlocStatus.success)
             return SizedBox();
+          if (isSyncing == true && state.blocStatus == BlocStatus.loading) {
+            return Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  SizedBox(
+                      width: 15,
+                      height: 15,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: AppColors.yellow,
+                      )),
+                  SizedBox(width: 15),
+                  Text(
+                    "Đang đồng bộ Health App",
+                    style: TextStyle(
+                      color: AppColors.yellow,
+                    ),
+                  ),
+                ],
+              ),
+            );
           }
           return Padding(
             padding: const EdgeInsets.only(

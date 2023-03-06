@@ -23,4 +23,5 @@ class HealthAppState {
 enum BlocStatus {
   error,
   loading,
+  success,
 }

@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_observer/Observable.dart';
 import 'package:flutter_observer/Observer.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/res/colors.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/app_setting/app_sharing.dart';
 import 'package:medical/src/app_setting/dynamic_link_config.dart';
@@ -128,8 +129,10 @@ class _HomeControllerState extends State<HomeController> with Observer {
     Future.delayed(Duration(milliseconds: 1000), () async {
       bool? hasHealthConnection = await AppStorages.getHealthAppPermission();
       if (hasHealthConnection == null) {
+        AppSettings.isFirstTimeSyncHealth = true;
         RequestHealthConnect.showModal(context);
       } else if (hasHealthConnection == true) {
+        AppSettings.isFirstTimeSyncHealth = false;
         setState(() {
           _hasHealthConnection = hasHealthConnection;
         });
@@ -273,8 +276,8 @@ class _HomeControllerState extends State<HomeController> with Observer {
                             GridView.builder(
                                 physics: const NeverScrollableScrollPhysics(),
                                 shrinkWrap: true,
-                                padding: const EdgeInsets.only(
-                                    left: 16, right: 16),
+                                padding:
+                                    const EdgeInsets.only(left: 16, right: 16),
                                 itemCount: data.length,
                                 gridDelegate:
                                     const SliverGridDelegateWithFixedCrossAxisCount(
@@ -282,8 +285,7 @@ class _HomeControllerState extends State<HomeController> with Observer {
                                         crossAxisSpacing: 24,
                                         mainAxisSpacing: 16,
                                         childAspectRatio: 160 / 140),
-                                itemBuilder:
-                                    (BuildContext context, int index) {
+                                itemBuilder: (BuildContext context, int index) {
                                   final name = data[index]['name'];
                                   final image = data[index]['image'];
                                   final icon = data[index]['icon'];
@@ -335,8 +337,7 @@ class _HomeControllerState extends State<HomeController> with Observer {
 
                                   if (index == 4 &&
                                       model != null &&
-                                      model!.energyCard!.consumedEnergy !=
-                                          0) {
+                                      model!.energyCard!.consumedEnergy != 0) {
                                     return _buildFood(
                                         context,
                                         index,
@@ -394,8 +395,7 @@ class _HomeControllerState extends State<HomeController> with Observer {
                                   padding: const EdgeInsets.only(
                                       left: 16, right: 16),
                                   child: model != null &&
-                                          (model!.energyCard!
-                                                      .consumedEnergy !=
+                                          (model!.energyCard!.consumedEnergy !=
                                                   0 ||
                                               model!.exercise!.index != 0)
                                       ? buildFoodAndExcercise(model!)
@@ -447,8 +447,8 @@ class _HomeControllerState extends State<HomeController> with Observer {
                                                               .detail_food);
                                                     },
                                                     child: Container(
-                                                        color: R.color
-                                                            .transparent),
+                                                        color: R
+                                                            .color.transparent),
                                                   )),
                                                   Expanded(
                                                       child: GestureDetector(
@@ -459,8 +459,8 @@ class _HomeControllerState extends State<HomeController> with Observer {
                                                               .detail_exercrises);
                                                     },
                                                     child: Container(
-                                                        color: R.color
-                                                            .transparent),
+                                                        color: R
+                                                            .color.transparent),
                                                   ))
                                                 ])
                                           ]),
@@ -470,12 +470,12 @@ class _HomeControllerState extends State<HomeController> with Observer {
                             Visibility(
                               visible: false,
                               child: Padding(
-                                padding: const EdgeInsets.only(
-                                    left: 16, right: 16),
+                                padding:
+                                    const EdgeInsets.only(left: 16, right: 16),
                                 child: GestureDetector(
                                     onTap: () {
-                                      Navigator.pushNamed(context,
-                                          NavigatorName.detail_hba1c);
+                                      Navigator.pushNamed(
+                                          context, NavigatorName.detail_hba1c);
                                     },
                                     child: model != null &&
                                             model!.hbA1CIndex.index != 0
@@ -486,20 +486,18 @@ class _HomeControllerState extends State<HomeController> with Observer {
                                               Positioned.fill(
                                                 child: Container(
                                                   padding:
-                                                      const EdgeInsets.all(
-                                                          16),
+                                                      const EdgeInsets.all(16),
                                                   decoration: BoxDecoration(
                                                       color: R.color.white,
                                                       borderRadius:
-                                                          BorderRadius
-                                                              .circular(10)),
+                                                          BorderRadius.circular(
+                                                              10)),
                                                   child: Text(
                                                       R.string.hba1c.tr(),
                                                       style: const TextStyle(
                                                           fontSize: 16,
                                                           fontWeight:
-                                                              FontWeight
-                                                                  .w600)),
+                                                              FontWeight.w600)),
                                                 ),
                                               ),
                                               Positioned(

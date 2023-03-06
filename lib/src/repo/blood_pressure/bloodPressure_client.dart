@@ -39,7 +39,7 @@ class BloodPressureClient extends FetchClient {
       String? bloodPressureType,
       int? page,
       {String size = '10'}) async {
-    try {
+    // try {
       Map<String, String> params = {
         'currentDateTime': '$currentDateTime',
         'periodFilterType': '$periodFilterType',
@@ -54,6 +54,7 @@ class BloodPressureClient extends FetchClient {
       // print(params);
       final Response response = await super
           .fetchData(url: '/App/BloodPressure/Input', params: params);
+          
       if (response.statusCode == 200) {
         return BloodPressureDataModel(
             inputs: BloodPressureModel.toList(response.data['data']),
@@ -62,9 +63,9 @@ class BloodPressureClient extends FetchClient {
         final error = Error.fromJson(response);
         throw error;
       }
-    } catch (e) {
-      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
-    }
+    // } catch (e) {
+    //   throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+    // }
   }
 
   // lấy chỉ số huyết áp và nhịp tim gần nhất

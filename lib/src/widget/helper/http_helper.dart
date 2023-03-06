@@ -6,6 +6,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:http/http.dart' as http;
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
+import 'package:medical/src/utils/app_log.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 import 'package:ua_client_hints/ua_client_hints.dart';
@@ -113,8 +114,9 @@ class FetchClient {
     final option = await options();
     final domain = baseIdentify ? identifyBaseURL : baseURL;
     final Dio dio = Dio();
-    logRequest(dio);
-    return dio.getUri(Uri.https(domain, url, params), options: option);
+    Uri uri = Uri.https(domain, url, params);
+    Console.log('fetchData', uri);
+    return dio.getUri(uri, options: option);
   }
 
   Future<Response> fetchDataNoHeaders(
@@ -302,13 +304,13 @@ class FetchClient {
   }
 
   logRequest(Dio dio) {
-    dio.interceptors.add(PrettyDioLogger(
-        requestHeader: true,
-        requestBody: true,
-        responseBody: true,
-        responseHeader: true,
-        compact: true,
-        error: true));
+    // dio.interceptors.add(PrettyDioLogger(
+    //     requestHeader: true,
+    //     requestBody: true,
+    //     responseBody: true,
+    //     responseHeader: true,
+    //     compact: true,
+    //     error: true));
   }
 
   checkNetwork() async {

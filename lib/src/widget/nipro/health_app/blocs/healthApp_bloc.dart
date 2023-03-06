@@ -16,6 +16,7 @@ import 'package:medical/src/repo/glucose/glucose_client.dart';
 import 'package:medical/src/repo/user/user_client.dart';
 import 'package:medical/src/repo/weight/weight_client.dart';
 import 'package:medical/src/utils/app_log.dart';
+import 'package:medical/src/utils/app_storages.dart';
 import 'package:medical/src/utils/date_utils.dart';
 import 'package:medical/src/widget/Exercrises/steps/data/models/getStepList_model.dart';
 import 'package:medical/src/widget/Exercrises/steps/data/models/requestSyncStep_model.dart';
@@ -35,8 +36,8 @@ class HealthAppBloc extends Bloc<HealthAppEvent, HealthAppState> {
   double mmollToMgdlFactor = 18.018;
   Map<String, bool> responseSyncData = {};
   Map<String, bool> requestSyncData = {};
-  late List<TimeFrameModel> timeFrames;
-  late TimeFrameModel? selectedTimeFrame;
+  // late List<TimeFrameModel> timeFrames;
+  // late TimeFrameModel? selectedTimeFrame;
 
   @override
   Stream<HealthAppState> mapEventToState(HealthAppEvent event) async* {
@@ -44,6 +45,9 @@ class HealthAppBloc extends Bloc<HealthAppEvent, HealthAppState> {
       if (event.isSyncing) {
         yield* _syncData(event);
       }
+    }
+    if (event is SyncDataSuccess) {
+      yield* syncDataSuccess(event);
     }
   }
 
@@ -54,12 +58,17 @@ class HealthAppBloc extends Bloc<HealthAppEvent, HealthAppState> {
   }
 
   // Tâm thu - Tâm trương - Nhịp tim
-  syncSYSTOLICAndDIASTOLIC({
-    required DateTime midnight,
-    required DateTime now,
-    required int timeFrame,
-  }) async {
-    DateTime midnight = DateTime(2021, 10, 10, 0, 0, 0);
+  syncSYSTOLICAndDIASTOLIC() async {
+    final dateTo = DateTime.now();
+    late DateTime dateFrom;
+    bool isFirstTimeSyncHealth = AppSettings.isFirstTimeSyncHealth;
+    if (isFirstTimeSyncHealth) {
+      dateFrom = DateTime(dateTo.year - 1, dateTo.month, dateTo.day);
+    } else {
+      dateFrom = DateTime(dateTo.year, dateTo.month, dateTo.day - 7);
+    }
+    DateTime? dateFromDataSync;
+    String? timeFrameId;
     bool result = false;
     requestSyncData['syncSYSTOLICAndDIASTOLIC'] = true;
     // Tâm thu - Tâm trương - Nhịp tim
@@ -70,7 +79,7 @@ class HealthAppBloc extends Bloc<HealthAppEvent, HealthAppState> {
     double? diastolic;
     double? heartRate;
     List<HealthDataPoint> bloodPressureData =
-        await health.getHealthDataFromTypes(midnight, now, [
+        await health.getHealthDataFromTypes(dateFrom, dateTo, [
       HealthDataType.BLOOD_PRESSURE_SYSTOLIC,
       HealthDataType.BLOOD_PRESSURE_DIASTOLIC,
       HealthDataType.HEART_RATE,
@@ -83,6 +92,7 @@ class HealthAppBloc extends Bloc<HealthAppEvent, HealthAppState> {
       if (element.type == HealthDataType.BLOOD_PRESSURE_SYSTOLIC &&
           systolic == null) {
         systolic = roundDouble(element.value);
+        dateFromDataSync = element.dateFrom;
       }
       if (element.type == HealthDataType.BLOOD_PRESSURE_DIASTOLIC &&
           diastolic == null) {
@@ -92,10 +102,25 @@ class HealthAppBloc extends Bloc<HealthAppEvent, HealthAppState> {
         heartRate = roundDouble(element.value);
       }
     });
+
+    if (dateFromDataSync != null) {
+      List<TimeFrameModel> timeFrames =
+          await glucoseClient.fetchFlucoseTimeFrame(
+              time: dateFromDataSync!.millisecondsSinceEpoch ~/ 1000);
+
+      if (timeFrames.isNotEmpty) {
+        timeFrameId = timeFrames.first.id;
+      }
+    }
+
     // Step 2: Lấy dữ liệu gần nhất trong ngày
-    if (systolic != null && diastolic != null) {
+    if (timeFrameId != null && systolic != null && diastolic != null) {
       BloodPressureDataModel model = await BloodPressureClient()
-          .fetchBloodPressureInput(timeFrame.toString(), '1', null, 1,
+          .fetchBloodPressureInput(
+              "${dateFromDataSync!.millisecondsSinceEpoch ~/ 1000}",
+              '1',
+              null,
+              1,
               size: '1');
 
       BloodPressureModel? latestData;
@@ -104,16 +129,15 @@ class HealthAppBloc extends Bloc<HealthAppEvent, HealthAppState> {
       }
 
       // Step 3: Kiểm tra dữ liệu cũ và dữ liệu từ Health App
-      //  (latestData != null && (latestData.diastolic != diastolic ||  latestData.systolic != systolic)
-      if (latestData == null ||
+      if ((latestData == null ||
           ((latestData.diastolic != diastolic ||
-              latestData.systolic != systolic))) {
+              latestData.systolic != systolic)))) {
         result = await BloodPressureClient().postBloodPressureInput(
             systolic.toString(),
             diastolic.toString(),
             heartRate != null ? heartRate.toString() : "0.0",
-            timeFrame,
-            selectedTimeFrame?.id,
+            dateFromDataSync!.millisecondsSinceEpoch ~/ 1000,
+            timeFrameId,
             "",
             "Đồng bộ dữ liệu từ Health App", []);
         Console.log("syncSYSTOLICAndDIASTOLIC result", result);
@@ -126,26 +150,17 @@ class HealthAppBloc extends Bloc<HealthAppEvent, HealthAppState> {
     // Step 4: Kiểm tra dữ liệu cũ và dữ liệu từ Health App
   }
 
-  syncSTEP({
-    required DateTime midnight,
-    required DateTime now,
-  }) async {
+  syncSTEP() async {
+    DateTime dateTo = DateTime.now();
+    DateTime dateFrom = DateTime(dateTo.year, dateTo.month, dateTo.day - 6);
     bool result = false;
     requestSyncData['syncSTEP'] = true;
     StepListModel stepData = await stepRepository.getStepList(1);
-    DateTime? lastDateSync = DateTime(now.year, now.month, now.day - 1);
-    if (stepData.items.isNotEmpty) {
-      lastDateSync =
-          DateUtil.parseTimespanToDateTime(stepData.items.last.dateFrom!);
-      print('lastDateSync: $lastDateSync');
-      lastDateSync =
-          DateTime(lastDateSync.year, lastDateSync.month, lastDateSync.day);
-    }
+
     List<HealthDataPoint> steps = await health
-        .getHealthDataFromTypes(lastDateSync, now, [HealthDataType.STEPS]);
+        .getHealthDataFromTypes(dateFrom, dateTo, [HealthDataType.STEPS]);
     List<RequestSyncStepModel> stepCollected = [];
     steps.forEach((element) {
-      print("element: ${element.dateFrom}");
       int dateFrom = DateTime(element.dateFrom.year, element.dateFrom.month,
                   element.dateFrom.day)
               .millisecondsSinceEpoch ~/
@@ -179,19 +194,23 @@ class HealthAppBloc extends Bloc<HealthAppEvent, HealthAppState> {
       }
     });
 
-    List<int> indexList = [];
+    // CHECK DATA IS UPDATED
     int index = 0;
+    List<int> indexList = [];
     if (stepData.items.isNotEmpty) {
-      stepCollected.forEach((item) {
-        final StepItemModel? valueExisted = stepData.items.firstWhereOrNull(
-            (element) =>
-                element.dateFrom == item.dateFrom &&
-                element.value == item.value);
-        if (valueExisted != null) {
-          indexList.add(index);
-        }
-        index++;
+      stepCollected.forEach((healthItem) {
+        stepData.items.forEach((stepItem) {
+          DateTime timeOfHealth =
+              DateUtil.parseTimespanToDateTime(healthItem.dateFrom);
+          DateTime timeOfData =
+              DateUtil.parseTimespanToDateTime(stepItem.dateFrom!);
+          int diffInDays = DateUtil.diffInDays(timeOfHealth, timeOfData);
+          if (diffInDays == 0 && healthItem.value == stepItem.value) {
+            indexList.add(index);
+          }
+        });
       });
+      index++;
     }
     indexList.sort((a, b) => b.compareTo(a));
 
@@ -206,17 +225,24 @@ class HealthAppBloc extends Bloc<HealthAppEvent, HealthAppState> {
     _requestSyncData();
   }
 
-  syncWeight({
-    required DateTime midnight,
-    required DateTime now,
-    required int timeFrame,
-  }) async {
-    DateTime midnight = DateTime(2021, 10, 10, 0, 0, 0);
+  syncWeight() async {
     bool result = false;
+    String? timeFrameId;
+    late DateTime dateFrom;
+    DateTime? dateFromDataSync;
+    DateTime dateTo = DateTime.now();
+    bool isFirstTimeSyncHealth = AppSettings.isFirstTimeSyncHealth;
+
+    if (isFirstTimeSyncHealth) {
+      dateFrom = DateTime(dateTo.year - 1, dateTo.month, dateTo.day);
+    } else {
+      dateFrom = DateTime(dateTo.year, dateTo.month - 1, dateTo.day);
+    }
+
     requestSyncData['syncWeight'] = true;
     UserModel userInfo = AppSettings.userInfo!;
     var weightList = await health.getHealthDataFromTypes(
-        midnight, now, [HealthDataType.WEIGHT, HealthDataType.HEIGHT]);
+        dateFrom, dateTo, [HealthDataType.WEIGHT, HealthDataType.HEIGHT]);
     double? weight;
     double? height;
     if (weightList.length != 0) {
@@ -224,24 +250,34 @@ class HealthAppBloc extends Bloc<HealthAppEvent, HealthAppState> {
         if (element.type == HealthDataType.WEIGHT && weight == null) {
           print('HealthDataType.WEIGHT: ${element.value}');
           weight = roundDouble(element.value);
+          dateFromDataSync = element.dateFrom;
         }
         if (element.type == HealthDataType.HEIGHT && height == null) {
-          
           height = roundDouble(element.value) * 100;
+          dateFromDataSync = element.dateFrom;
         }
       });
     }
+    if (dateFromDataSync != null) {
+      List<TimeFrameModel> timeFrames = await glucoseClient
+          .fetchFlucoseTimeFrame(time: dateTo.millisecondsSinceEpoch ~/ 1000);
+      if (timeFrames.isNotEmpty) {
+        timeFrameId = timeFrames.first.id;
+      }
+    }
 
-    if ((weight != null && weight != userInfo.weight) ||
-        (height != null && height != userInfo.height)) {
+    if (timeFrameId != null &&
+        ((weight != null && weight != userInfo.weight) ||
+            (height != null && height != userInfo.height))) {
       result = await WeightClient().postWeightInput(
-          (now.millisecondsSinceEpoch ~/ 1000).toInt(),
-          [],
-          weight != null ? weight.toString() : userInfo.weight.toString(),
-          null,
-          height != null ? height.toString() : userInfo.height.toString(),
-          'Đồng bộ dữ liệu từ Health App',
-          selectedTimeFrame!.id);
+        (dateTo.millisecondsSinceEpoch ~/ 1000).toInt(),
+        [],
+        weight != null ? weight.toString() : userInfo.weight.toString(),
+        null,
+        height != null ? height.toString() : userInfo.height.toString(),
+        'Đồng bộ dữ liệu từ Health App',
+        timeFrameId,
+      );
       if (result) {
         await UserClient().updateUserInfo(
           AppSettings.userInfo!.id,
@@ -257,43 +293,61 @@ class HealthAppBloc extends Bloc<HealthAppEvent, HealthAppState> {
     _requestSyncData();
   }
 
-  syncBlodGlucose({
-    required DateTime midnight,
-    required DateTime now,
-    required int timeFrame,
-  }) async {
+  syncBlodGlucose() async {
     bool result = false;
+    DateTime? dateFromDataSync;
+    DateTime dateTo = DateTime.now();
+    bool isFirstTimeSyncHealth = AppSettings.isFirstTimeSyncHealth;
+    DateTime dateFrom = DateTime(dateTo.year - 1, dateTo.month, dateTo.day);
+
+    if (isFirstTimeSyncHealth) {
+      dateFrom = DateTime(dateTo.year - 1, dateTo.month, dateTo.day);
+    } else {
+      InputGlucoseDataModel model = await glucoseClient.fetchInput(
+          '${dateTo.millisecondsSinceEpoch ~/ 1000}', '1', 1, null, null,
+          size: '1');
+      if (model.inputs.isNotEmpty) {
+        dateFrom =
+            DateUtil.parseTimespanToDateTime(model.inputs.first.createDate!);
+      }
+    }
+
     requestSyncData['syncBlodGlucose'] = true;
-    var bloodGlucoseList = await health
-        .getHealthDataFromTypes(midnight, now, [HealthDataType.BLOOD_GLUCOSE]);
+    var bloodGlucoseList = await health.getHealthDataFromTypes(
+        dateFrom, dateTo, [HealthDataType.BLOOD_GLUCOSE]);
+
     if (bloodGlucoseList.length != 0) {
       double bloodGlucose = roundDouble(bloodGlucoseList.first.value);
+      dateFromDataSync = bloodGlucoseList.first.dateFrom;
       bool isMilligramPerDeciliter = AppSettings.userInfo!.glucoseUnit == 1;
       final glucose = roundAsFixed(isMilligramPerDeciliter
           ? bloodGlucose
           : bloodGlucose / mmollToMgdlFactor);
 
-      InputGlucoseDataModel model = await glucoseClient
-          .fetchInput('$timeFrame', '1', 1, null, null, size: '1');
-      if ((model.inputs.isEmpty) ||
-          (model.inputs.length > 0 && model.inputs.first.glucose != glucose)) {
-        // final timeFrames =
-        //     await glucoseClient.fetchFlucoseTimeFrame(time: timeFrame);
+      if (dateFrom != dateFromDataSync) {
+        final timeFrames = await glucoseClient.fetchFlucoseTimeFrame(
+            time: dateFromDataSync.millisecondsSinceEpoch ~/ 1000);
 
-        result = await GlucoseClient().postIndexGlucose(selectedTimeFrame!.id,
-            timeFrame, glucose.toString(), null, '', false, []);
+        if (timeFrames.isNotEmpty) {
+          result = await GlucoseClient().postIndexGlucose(
+              timeFrames.first.id,
+              dateFromDataSync.millisecondsSinceEpoch ~/ 1000,
+              glucose.toString(),
+              null,
+              '',
+              false, []);
+        }
       }
     }
     responseSyncData['syncBlodGlucose'] = result;
     _requestSyncData();
   }
 
-  Future<void> _requestSyncData() async {
-    final now = DateTime.now();
-    final midnight = DateTime(now.year, now.month, now.day);
-    int timeFrame = now.millisecondsSinceEpoch ~/ 1000;
+  Stream<HealthAppState> syncDataSuccess(SyncDataSuccess event) async* {
+    yield state.copyWith(blocStatus: BlocStatus.success);
+  }
 
-    print('responseSyncData.length: ${responseSyncData.length}');
+  Future<void> _requestSyncData() async {
     if (responseSyncData.length == requestSyncData.length) {
       Console.logJson("responseSyncData", responseSyncData);
       bool isDataUpdated = responseSyncData.values
@@ -301,39 +355,33 @@ class HealthAppBloc extends Bloc<HealthAppEvent, HealthAppState> {
       bool isNotCompleteRequest = requestSyncData.values
           .firstWhere((element) => element == false, orElse: () => false);
 
-      Console.logJson("Có cần refresh Home không? ", isDataUpdated && !isNotCompleteRequest ? "Có" : "Không");
+      Console.logJson("Có cần refresh Home không? ",
+          isDataUpdated && !isNotCompleteRequest ? "Có" : "Không");
       if (isDataUpdated && !isNotCompleteRequest) {
         Observable.instance.notifyObservers([], notifyName: "refresh_home");
+        add(SyncDataSuccess());
       }
     } else {
       requestSyncData.forEach((key, value) async {
         switch (key) {
           case 'syncSYSTOLICAndDIASTOLIC':
             if (value == false) {
-              await syncSYSTOLICAndDIASTOLIC(
-                  midnight: midnight, now: now, timeFrame: timeFrame);
+              await syncSYSTOLICAndDIASTOLIC();
             }
             break;
           case 'syncSTEP':
             if (value == false) {
-              await syncSTEP(midnight: midnight, now: now);
+              await syncSTEP();
             }
             break;
-          // case 'syncHeight':
-          //   if (value == false) {
-          //     await syncHeight(midnight: midnight, now: now);
-          //   }
-          //   break;
           case 'syncWeight':
             if (value == false) {
-              await syncWeight(
-                  midnight: midnight, now: now, timeFrame: timeFrame);
+              await syncWeight();
             }
             break;
           case 'syncBlodGlucose':
             if (value == false) {
-              await syncBlodGlucose(
-                  midnight: midnight, now: now, timeFrame: timeFrame);
+              await syncBlodGlucose();
             }
             break;
         }
@@ -344,11 +392,6 @@ class HealthAppBloc extends Bloc<HealthAppEvent, HealthAppState> {
   Stream<HealthAppState> _syncData(SubmitSyncData event) async* {
     yield state.copyWith(blocStatus: BlocStatus.loading);
     final List<HealthDataType> _types = HealthSetting.instance.types;
-    final now = DateTime.now();
-    int timeFrame = now.millisecondsSinceEpoch ~/ 1000;
-    timeFrames = await glucoseClient.fetchFlucoseTimeFrame(time: timeFrame);
-    selectedTimeFrame = timeFrames.length == 0 ? null : timeFrames.first;
-
     requestSyncData = {
       'syncSYSTOLICAndDIASTOLIC': false,
       'syncSTEP': false,

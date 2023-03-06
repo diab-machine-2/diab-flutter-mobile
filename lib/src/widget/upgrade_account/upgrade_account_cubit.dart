@@ -7,12 +7,10 @@ import 'package:medical/src/model/response/detail_package_response.dart';
 import 'package:medical/src/model/response/user_info_response.dart';
 import 'package:medical/src/model/service/api_result.dart';
 import 'package:medical/src/model/service/network_exceptions.dart';
-import 'package:medical/src/utils/logger.dart';
-
+import 'package:medical/src/utils/app_log.dart';
 import 'upgrade_account.dart';
 
 class UpgradeAccountCubit extends Cubit<UpgradeAccountState> {
-
   final AppRepository appRepository;
 
   String? ownCode;
@@ -27,18 +25,20 @@ class UpgradeAccountCubit extends Cubit<UpgradeAccountState> {
   UpgradeAccountCubit(this.appRepository) : super(UpgradeAccountInitial());
 
   void getOwnPackageCode() async {
-    ApiResult<UserInfoResponse> apiResult = await appRepository.getCurrentUserInfo();
+    ApiResult<UserInfoResponse> apiResult =
+        await appRepository.getCurrentUserInfo();
     apiResult.when(success: (UserInfoResponse response) {
       // ownCode = response.data?.packageCode;
     }, failure: (NetworkExceptions error) {
-      logger.e(NetworkExceptions.getErrorMessage(error));
+      Console.log(
+          'getOwnPackageCode Error', NetworkExceptions.getErrorMessage(error));
     });
   }
 
-
   void getUpgradeAccount(String code, {bool isRefresh = false}) async {
     emit(isRefresh ? UpgradeAccountInitial() : UpgradeAccountLoading());
-    ApiResult<DetailPackageResponse> apiResult = await appRepository.getDetailPackage(code);
+    ApiResult<DetailPackageResponse> apiResult =
+        await appRepository.getDetailPackage(code);
     apiResult.when(success: (DetailPackageResponse response) {
       data = response.data;
       emit(UpgradeAccountSuccess());
@@ -49,9 +49,12 @@ class UpgradeAccountCubit extends Cubit<UpgradeAccountState> {
 
   void sendInterestFeedback(String? message) async {
     emit(UpgradeAccountLoading());
-    SendInterestRequest request = SendInterestRequest(packageId: data?.id, type: (selectedIndexInterest ?? 0) + 1, message: message);
+    SendInterestRequest request = SendInterestRequest(
+        packageId: data?.id,
+        type: (selectedIndexInterest ?? 0) + 1,
+        message: message);
     ApiResult<CommonResponse> apiResult =
-    await appRepository.sendInterestFeedback(request);
+        await appRepository.sendInterestFeedback(request);
     apiResult.when(success: (CommonResponse response) {
       emit(SendInterestSuccess());
     }, failure: (NetworkExceptions error) {
@@ -88,5 +91,4 @@ class UpgradeAccountCubit extends Cubit<UpgradeAccountState> {
     selectedCourse = index;
     emit(UpgradeAccountInitial());
   }
-
 }

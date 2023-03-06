@@ -12,3 +12,7 @@ class SubmitSyncData extends HealthAppEvent {
 
   SubmitSyncData(this.isSyncing);
 }
+
+class SyncDataSuccess extends HealthAppEvent {
+  SyncDataSuccess();
+}
