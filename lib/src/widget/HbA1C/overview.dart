@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
-import 'package:medical/src/app_setting/app_setting.dart';
+import 'package:medical/src/app_setting/firebase_tracking/kpi_hba1c_tracking.dart';
 import 'package:medical/src/widget/HbA1C/widget/course_suggest.dart';
 import 'package:medical/src/widget/HbA1C/widget/hba1c_chart.dart';
 import 'package:medical/src/widget/HbA1C/widget/hba1c_contain_detail.dart';
-import 'package:medical/src/widget/helper/tracking_manager.dart';
 
 class HbA1COverviewController extends StatefulWidget {
   HbA1COverviewController({
@@ -26,15 +25,7 @@ class HbA1COverviewControllerState extends State<HbA1COverviewController>
   @override
   void initState() {
     super.initState();
-    firebaseSetup();
-  }
-
-  Future firebaseSetup() async {
-    await TrackingManager.analytics.logScreenView(
-      screenName: "kpi_hba1c",
-      screenClass: "HbA1COverviewController",
-    );
-    AppSettings.currentScreenName = 'kpi_hba1c';
+    KpiHba1cTracking.firebaseSetup();
   }
 
   reloadData(int periodFilterType) {

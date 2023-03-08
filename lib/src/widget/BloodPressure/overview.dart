@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
+import 'package:medical/src/app_setting/firebase_tracking/kpi_blood_pressure_tracking.dart';
 import 'package:medical/src/widget/BloodPressure/widget/bloodPressure_chart.dart';
 import 'package:medical/src/widget/BloodPressure/widget/bloodPressure_distribution_chart.dart';
 import 'package:medical/src/widget/BloodPressure/widget/heart_chart.dart';
@@ -29,14 +30,7 @@ class BloodPressureOverviewControllerState
   @override
   void initState() {
     super.initState();
-    firebaseSetup();
-  }
-
-  Future firebaseSetup() async {
-    await TrackingManager.analytics.logScreenView(
-        screenName: "kpi_blood_pressure",
-        screenClass: "BloodPressureOverviewController");
-    AppSettings.currentScreenName = 'kpi_blood_pressure';
+    KpiBloodPressureTracking.firebaseSetup();
   }
 
   reloadData(int periodFilterType) {

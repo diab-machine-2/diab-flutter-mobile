@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_observer/Observable.dart';
 import 'package:flutter_observer/Observer.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/app_setting/firebase_tracking/kpi_hba1c_tracking.dart';
 import 'package:medical/src/modal/HbA1C/short_gui.dart';
 import 'package:medical/src/repo/HbA1C/HbA1C_client.dart';
 import 'package:medical/src/utils/navigator_name.dart';
@@ -116,7 +117,8 @@ class _Hba1cDetailTabbarControllerState
                       builder: (_) => ActionListPanel(selectedIndex: 0),
                     );
                   },
-                  child: Icon(Icons.format_list_bulleted, color: R.color.textDark)),
+                  child: Icon(Icons.format_list_bulleted,
+                      color: R.color.textDark)),
               actions: [
                 CustomActionDescription(
                     key: customActionDesKey,
@@ -154,8 +156,8 @@ class _Hba1cDetailTabbarControllerState
             onPressed: () {
               _showMaterialDialog();
             },
-            child: Image.asset(R.drawable.ic_button_plus,
-                width: 80, height: 80),
+            child:
+                Image.asset(R.drawable.ic_button_plus, width: 80, height: 80),
           )),
     );
   }
@@ -208,7 +210,8 @@ class CustomTabbarImageState extends State<CustomTabbarImage> {
                   child: Description(
                       input: false,
                       data: widget.data,
-                      titleDetail: R.string.chi_so_hba1c_doi_voi_benh_tieu_duong.tr()),
+                      titleDetail:
+                          R.string.chi_so_hba1c_doi_voi_benh_tieu_duong.tr()),
                 )
               : SizedBox(),
           Row(
@@ -227,7 +230,9 @@ class CustomTabbarImageState extends State<CustomTabbarImage> {
                         TextStyle(fontSize: 14, fontWeight: FontWeight.w400),
                     tabs: [
                       Tab(text: R.string.bieu_do.tr()),
-                      Tab(text: R.string.detail.tr()),
+                      GestureDetector(
+                          onTap: () => KpiHba1cTracking.clickDetailTab(),
+                          child: Tab(text: R.string.detail.tr())),
                     ],
                     controller: widget.tabController,
                     indicatorColor: R.color.mainColor,

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:loadmore/loadmore.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/app_setting/firebase_tracking/kpi_body_weight_tracking.dart';
 import 'package:medical/src/bloc/weight/weight_bloc.dart';
 import 'package:medical/src/modal/bmi/weight_input.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -138,6 +139,7 @@ class BmiDetailControllerState extends State<BmiDetailController>
                                             previousElement.date!));
                                 return GestureDetector(
                                     onTap: () {
+                                      KpiBodyWeightTracking.clickKpiItem();
                                       Navigator.pushNamed(
                                           context, NavigatorName.add_bmi,
                                           arguments: {

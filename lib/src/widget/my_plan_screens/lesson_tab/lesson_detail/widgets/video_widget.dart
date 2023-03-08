@@ -25,7 +25,7 @@ class VideoWidget extends StatefulWidget {
   VoidCallback onComplete;
   VoidCallback? onPlay;
   VoidCallback? callbackByPercentVideo;
-  final Function(CustomPlayerEventType)? callbackEventListener;
+  final Function(CustomPlayerEventType, Duration)? callbackEventListener;
   double percentCallbackDefault;
   Function(VideoManager) setVideoManager;
 
@@ -63,9 +63,9 @@ class _VideoWidgetState extends State<VideoWidget> {
       // print('pathVideo = $path');
 
       videoManager = VideoManager(
-          callbackEventListener: (event) {
+          callbackEventListener: (eventType, videoLength) {
             if (widget.callbackEventListener != null) {
-              widget.callbackEventListener!(event);
+              widget.callbackEventListener!(eventType, videoLength);
             }
           },
           url: url,

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:medical/src/app_setting/firebase_tracking/excercise_detail_tracking.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/request/complete_exercise_request.dart';
 import 'package:medical/src/model/response/common_response.dart';
@@ -21,7 +22,8 @@ class ExerciseDetailCubit extends Cubit<ExerciseDetailState> {
 
   bool exerciseCompleted = false;
 
-  void initData(ExerciseMovementResponseData? exerciseData, BuildContext context) async {
+  void initData(
+      ExerciseMovementResponseData? exerciseData, BuildContext context) async {
     if (exerciseData == null) return;
     this.exerciseData = exerciseData;
     videoManager = VideoManager.fromExerciseData(
@@ -29,6 +31,14 @@ class ExerciseDetailCubit extends Cubit<ExerciseDetailState> {
       exerciseData,
       onCompleteVideo: (exerciseCategoryId, duration) async {
         await completeVideo(exerciseCategoryId, duration);
+      },
+      callbackEventListener: (eventType, duration) {
+        ExcerciseDetailTracking.playVideo(
+          eventType: eventType,
+          videoDuration: duration,
+          objectId: exerciseData.id,
+          objectTitle: exerciseData.name,
+        );
       },
       onDone: () {
         if (!exerciseCompleted &&

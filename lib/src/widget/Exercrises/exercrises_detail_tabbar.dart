@@ -4,6 +4,7 @@ import 'package:flutter_observer/Observable.dart';
 import 'package:flutter_observer/Observer.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
+import 'package:medical/src/app_setting/firebase_tracking/kpi_motion_tracking.dart';
 import 'package:medical/src/modal/HbA1C/short_gui.dart';
 import 'package:medical/src/repo/HbA1C/HbA1C_client.dart';
 import 'package:medical/src/utils/navigator_name.dart';
@@ -219,7 +220,9 @@ class CustomTabbarImageState extends State<CustomTabbarImage> {
                         fontSize: 14, fontWeight: FontWeight.w400),
                     tabs: [
                       Tab(text: R.string.bieu_do.tr()),
-                      Tab(text: R.string.detail.tr()),
+                      GestureDetector(
+                          onTap: () => KpiMotionTracking.clickDetailTab(),
+                          child: Tab(text: R.string.detail.tr())),
                     ],
                     controller: widget.tabController,
                     indicatorColor: R.color.mainColor,

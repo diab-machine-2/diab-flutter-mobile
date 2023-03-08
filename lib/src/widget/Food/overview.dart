@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
+import 'package:medical/src/app_setting/firebase_tracking/kpi_nutrition_tracking.dart';
 import 'package:medical/src/widget/Food/widget/energy_chart.dart';
 import 'package:medical/src/widget/Food/widget/food_chart.dart';
 import 'package:medical/src/widget/Food/widget/food_distribution_chart.dart';
@@ -31,15 +32,7 @@ class FoodOverviewControllerState extends State<FoodOverviewController>
   @override
   void initState() {
     super.initState();
-    firebaseSetup();
-  }
-
-  Future firebaseSetup() async {
-    await TrackingManager.analytics.logScreenView(
-      screenName: "kpi_nutrition",
-      screenClass: "FoodOverviewController",
-    );
-    AppSettings.currentScreenName = 'kpi_nutrition';
+    KpiNutritionTracking.firebaseSetup();
   }
 
   reloadData(int periodFilterType) {

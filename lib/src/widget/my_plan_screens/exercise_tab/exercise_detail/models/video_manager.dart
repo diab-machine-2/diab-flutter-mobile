@@ -8,6 +8,7 @@ import 'package:flutter/services.dart';
 import 'package:medical/src/model/response/exercise_movement_response.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
+import 'package:medical/src/widget/my_plan_screens/lesson_tab/lesson_detail/models/video_manager.dart';
 
 class VideoManager {
   BetterPlayerController? controller;
@@ -17,6 +18,10 @@ class VideoManager {
   final VoidCallback? onDone;
   bool isLocked = false;
   Timer? _timer;
+  Duration? videoDuration;
+  int currentMillisecond = 0;
+  CustomPlayerEventType? currentEventState;
+  final Function(CustomPlayerEventType, Duration)? callbackEventListener;
   final Function(String, int)? onCompleteVideo;
 
   int count = 0;
@@ -35,20 +40,33 @@ class VideoManager {
     }
   }
 
-  VideoManager.fromExerciseData(BuildContext context, ExerciseMovementResponseData exerciseData, {this.onDone, this.onCompleteVideo}) {
+  VideoManager.fromExerciseData(
+    BuildContext context,
+    ExerciseMovementResponseData exerciseData, {
+    this.callbackEventListener,
+    this.onDone,
+    this.onCompleteVideo,
+  }) {
     sourceList.clear();
 
-    for (final ExerciseMovementResponseDataSections? data in exerciseData.sections ?? []) {
-      sourceList.add(VideoSourceData(url: data?.videoUrl ?? '', loopTimes: data?.replayTime ?? 1, exerciseCategoryId: data?.exerciseCategoryId ?? ''));
+    for (final ExerciseMovementResponseDataSections? data
+        in exerciseData.sections ?? []) {
+      sourceList.add(VideoSourceData(
+          url: data?.videoUrl ?? '',
+          loopTimes: data?.replayTime ?? 1,
+          exerciseCategoryId: data?.exerciseCategoryId ?? ''));
     }
 
     if (sourceList.isEmpty) {
-      sourceList.add(VideoSourceData(url: exerciseData.videoUrl ?? '', loopTimes: 1, exerciseCategoryId: ''));
+      sourceList.add(VideoSourceData(
+          url: exerciseData.videoUrl ?? '',
+          loopTimes: 1,
+          exerciseCategoryId: ''));
     }
 
     if (sourceList.isNotEmpty) {
       final BetterPlayerController newController = BetterPlayerController(
-       BetterPlayerConfiguration(
+        BetterPlayerConfiguration(
           placeholder: Image.asset(R.drawable.ic_thumbnail1, fit: BoxFit.fill),
           showPlaceholderUntilPlay: true,
           aspectRatio: 16 / 9,
@@ -61,7 +79,35 @@ class VideoManager {
             DeviceOrientation.portraitDown,
           ],
         ),
-      );
+      )..addEventsListener((event) async {
+          if (currentEventState == null &&
+              event.betterPlayerEventType == BetterPlayerEventType.play &&
+              !isCompleted) {
+            checkCallbackEventListener(CustomPlayerEventType.videoPlay);
+          }
+          if (event.betterPlayerEventType == BetterPlayerEventType.play &&
+              isCompleted) {
+            checkCallbackEventListener(CustomPlayerEventType.videoReplay);
+            isCompleted = false;
+          }
+          if (event.betterPlayerEventType == BetterPlayerEventType.pause) {
+            checkCallbackEventListener(CustomPlayerEventType.videoPause);
+          }
+          if (event.betterPlayerEventType == BetterPlayerEventType.progress &&
+              controller != null) {
+            currentMillisecond = controller!
+                .videoPlayerController!.value.position.inMilliseconds;
+          }
+          if (event.betterPlayerEventType == BetterPlayerEventType.seekTo) {
+            if (currentMillisecond >
+                controller!
+                    .videoPlayerController!.value.position.inMilliseconds) {
+              checkCallbackEventListener(CustomPlayerEventType.videoPrevious);
+            } else {
+              checkCallbackEventListener(CustomPlayerEventType.videoFoward);
+            }
+          }
+        });
       BetterPlayerDataSource betterPlayerDataSource = BetterPlayerDataSource(
         BetterPlayerDataSourceType.network,
         sourceList[currentSourceIndex].url,
@@ -70,11 +116,16 @@ class VideoManager {
 
       newController.videoPlayerController?.addListener(() async {
         if (Platform.isIOS) {
-          if ((newController.videoPlayerController!.value.position.inMilliseconds) ==
-              newController.videoPlayerController!.value.duration!.inMilliseconds) {
-        //    Message.showToastMessage(context, 'Paused');
+          if ((newController
+                  .videoPlayerController!.value.position.inMilliseconds) ==
+              newController
+                  .videoPlayerController!.value.duration!.inMilliseconds) {
+            //    Message.showToastMessage(context, 'Paused');
             await newController.pause();
           }
+        }
+        if (videoDuration == null) {
+          videoDuration = newController.videoPlayerController!.value.duration;
         }
         if (!isLocked &&
             newController.videoPlayerController?.value != null &&
@@ -82,12 +133,22 @@ class VideoManager {
             newController.videoPlayerController!.value.initialized &&
             (newController.videoPlayerController!.value.duration ==
                 newController.videoPlayerController!.value.position)) {
+          Duration? duration =
+              newController.videoPlayerController!.value.duration;
+          Duration? position =
+              newController.videoPlayerController!.value.position;
+
+          // WHEN COMPLETE VIDEO
+          if (duration == position) {
+            checkCallbackEventListener(CustomPlayerEventType.videoCompleted);
+            isCompleted = true;
+          }
           _startTimer();
           // if (Platform.isIOS) {
           //   Message.showToastMessage(context, 'Paused1');
           //   await this.controller?.pause();
           // }
-          await loopVideo();
+          // await loopVideo();
         }
       });
       this.controller = newController;
@@ -107,9 +168,9 @@ class VideoManager {
     await this.controller?.seekTo(Duration.zero);
     currentSourceIndex += 1;
     var dataSource = BetterPlayerDataSource(
-            BetterPlayerDataSourceType.network,
-            sourceList[currentSourceIndex].url,
-          );
+      BetterPlayerDataSourceType.network,
+      sourceList[currentSourceIndex].url,
+    );
     this.controller?.setupDataSource(dataSource);
     await this.controller?.retryDataSource();
     await this.controller?.seekTo(Duration.zero);
@@ -128,13 +189,26 @@ class VideoManager {
     }
   }
 
+  checkCallbackEventListener(CustomPlayerEventType type) {
+    if ((callbackEventListener != null &&
+            currentEventState != type &&
+            isCompleted == false) ||
+        type == CustomPlayerEventType.videoReplay) {
+      currentEventState = type;
+      callbackEventListener!(type, videoDuration!);
+    }
+  }
+
   void dispose() {
     this.controller?.dispose(forceDispose: true);
   }
 }
 
 class VideoSourceData {
-  VideoSourceData({required this.url, required this.loopTimes, required this.exerciseCategoryId});
+  VideoSourceData(
+      {required this.url,
+      required this.loopTimes,
+      required this.exerciseCategoryId});
   final String url;
   int loopTimes;
   String exerciseCategoryId;

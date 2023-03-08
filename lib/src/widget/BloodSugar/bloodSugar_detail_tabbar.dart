@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_observer/Observable.dart';
 import 'package:flutter_observer/Observer.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/app_setting/firebase_tracking/kpi_glycemic_tracking.dart';
 import 'package:medical/src/modal/HbA1C/short_gui.dart';
 import 'package:medical/src/repo/HbA1C/HbA1C_client.dart';
 import 'package:medical/src/utils/navigation_util.dart';
@@ -63,15 +64,7 @@ class _BloodSugarDetailTabbarControllerState
     Observable.instance.addObserver(this);
     checkShowDes();
     loadDescription();
-    firebaseSetup();
-  }
-
-  Future firebaseSetup() async {
-    await TrackingManager.analytics.logScreenView(
-      screenName: "kpi_glycemic", 
-      screenClass: "BloodSugarDetailTabbarController"
-    );
-    AppSettings.currentScreenName = 'kpi_glycemic';
+    KpiGlycemicTracking.firebaseSetup();
   }
 
   @override
@@ -131,13 +124,11 @@ class _BloodSugarDetailTabbarControllerState
                   color: R.color.textDark)),
           leadingIcon: GestureDetector(
               onTap: () async {
-                await TrackingManager.analytics.logEvent(
-                  name: 'cta_button_clicked',
-                  parameters: {
-                    "screen_name": 'kpi_glycemic',
-                    'cta_button_name': 'cta_add_glycemic_3',
-                  }
-                );
+                await TrackingManager.analytics
+                    .logEvent(name: 'cta_button_clicked', parameters: {
+                  "screen_name": 'kpi_glycemic',
+                  'cta_button_name': 'cta_add_glycemic_3',
+                });
                 showDialog(
                   barrierColor: R.color.color0xff003F38.withOpacity(0.3),
                   useSafeArea: false,
@@ -261,7 +252,12 @@ class CustomTabbarImageState extends State<CustomTabbarImage> {
                     const TextStyle(fontSize: 14, fontWeight: FontWeight.w400),
                 tabs: [
                   Tab(text: R.string.bieu_do.tr()),
-                  Tab(text: R.string.detail.tr()),
+                  GestureDetector(
+                    onTap: () {
+                      KpiGlycemicTracking.clickDetailTab();
+                    },
+                    child: Tab(text: R.string.detail.tr()),
+                  ),
                 ],
                 controller: widget.tabController,
                 indicatorColor: R.color.mainColor,

@@ -11,7 +11,7 @@ import 'package:medical/src/modal/error/error_model.dart';
 import 'package:medical/src/modal/user/category_item_user_model.dart';
 import 'package:medical/src/repo/login/login_client.dart';
 import 'package:medical/src/utils/app_storages.dart';
-import 'package:medical/src/utils/firebase_tracking.dart';
+import 'package:medical/src/app_setting/firebase_tracking/firebase_tracking.dart';
 import 'package:medical/src/utils/length_limit_text_field.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/base/text_field_custom.dart';

@@ -7,11 +7,13 @@ import 'package:flutter_observer/Observer.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/dynamic_link_config.dart';
+import 'package:medical/src/app_setting/firebase_tracking/activity_list_tracking.dart';
+import 'package:medical/src/app_setting/firebase_tracking/lesson_detail_tracking.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/response/my_lesson_response.dart';
 import 'package:medical/src/model/response/week_states_response.dart';
 import 'package:medical/src/utils/const.dart';
-import 'package:medical/src/utils/firebase_tracking.dart';
+import 'package:medical/src/app_setting/firebase_tracking/firebase_tracking.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
@@ -158,7 +160,7 @@ class _LessonTabPageState extends State<LessonTabPage>
                             onTap: () {
                               if (_cubit.lessonTypeList[index] ==
                                   LessonType.suggest) {
-                                FirebaseTracking.tabLessonRecommend();
+                                LessonDetailTracking.tabLessonRecommend();
                               }
                               _cubit.changeLessonType(index);
                             },
@@ -251,33 +253,13 @@ class _LessonTabPageState extends State<LessonTabPage>
                                             if (_cubit.lessonsList?[index]?.id
                                                     ?.isNotEmpty ==
                                                 true) {
-                                              await TrackingManager.analytics
-                                                  .logEvent(
-                                                name: 'component_clicked',
-                                                parameters: {
-                                                  "screen_name": 'my_schedule',
-                                                  'component_name':
-                                                      'list_lesson_item',
-                                                  'object_index': index,
-                                                  'object_id':
-                                                      '${_cubit.lessonsList![index]!.id!}',
-                                                  'object_title':
-                                                      '${_cubit.lessonsList![index]!.name!}',
-                                                },
-                                              );
-
-                                              await TrackingManager.analytics
-                                                  .logEvent(
-                                                name: 'select_content',
-                                                parameters: {
-                                                  "screen_name": 'my_schedule',
-                                                  'content_type': 'lesson',
-                                                  'item_id':
-                                                      '${_cubit.lessonsList![index]!.id!}',
-                                                  'item_name':
-                                                      '${_cubit.lessonsList![index]!.name!}',
-                                                  'index': index,
-                                                },
+                                              ActivityListTracking
+                                                  .clickLessonItem(
+                                                objectId: _cubit
+                                                    .lessonsList![index]!.id,
+                                                objectIndex: index,
+                                                objectTitle: _cubit
+                                                    .lessonsList![index]!.name,
                                               );
 
                                               var result = await NavigationUtil
@@ -546,10 +528,6 @@ class _LessonTabPageState extends State<LessonTabPage>
     required MyLessonResponseData? lessonDetail,
     VoidCallback? onTap,
   }) {
-    if (lessonDetail!.id == "c6c996a0-0075-4743-c85f-08d9f022ae7d") {
-      print('lessonDetail?.percentComplete: ${lessonDetail.percentComplete}');
-      print('lessonDetail?.learningStatus: ${lessonDetail.learningStatus}');
-    }
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 20),
       height: 87,

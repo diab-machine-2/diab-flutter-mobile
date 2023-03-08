@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
+import 'package:medical/src/app_setting/firebase_tracking/kpi_motion_tracking.dart';
 import 'package:medical/src/widget/Exercrises/widget/exercrises_contain_detail.dart';
 import 'package:medical/src/widget/Exercrises/widget/exercrises_ranking_chart.dart';
 import 'package:medical/src/widget/Exercrises/widget/exercrises_trend_calo_chart.dart';
@@ -28,15 +29,7 @@ class ExercrisesOverviewControllerState
   @override
   void initState() {
     super.initState();
-    firebaseSetup();
-  }
-
-  Future firebaseSetup() async {
-    await TrackingManager.analytics.logScreenView(
-      screenName: "kpi_motion",
-      screenClass: "ExercrisesOverviewController",
-    );
-    AppSettings.currentScreenName = 'kpi_motion';
+    KpiMotionTracking.firebaseSetup();
   }
 
   reloadData(int periodFilterType) {

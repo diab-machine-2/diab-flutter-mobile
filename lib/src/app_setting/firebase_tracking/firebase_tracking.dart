@@ -102,36 +102,4 @@ class FirebaseTracking {
       },
     );
   }
-
-  // LESSON (Bài học)
-  // 1. Nhấn Gợi ý trong Bài học
-  static Future<void> tabLessonRecommend() async {
-    await TrackingManager.analytics.logEvent(
-      name: 'component_clicked',
-      parameters: {
-        "screen_name": 'my_schedule',
-        'component_name': 'tab_lesson_recommend',
-      },
-    );
-  }
-
-  // 2. Tương tác video bài học (Ngoại trừ start video)
-  static Future<void> videoPlayerLesson({
-    required String objectValue,
-    required String objectTitle,
-    required String objectId,
-    required String componentAction,
-  }) async {
-    await TrackingManager.analytics.logEvent(
-      name: 'component_video_action',
-      parameters: {
-        "screen_name": 'lesson_detail',
-        'component_name': 'video_player_lesson',
-        'object_value': objectValue,
-        'object_title': objectTitle,
-        'object_id': objectId,
-        'component_action': componentAction,
-      },
-    );
-  }
 }

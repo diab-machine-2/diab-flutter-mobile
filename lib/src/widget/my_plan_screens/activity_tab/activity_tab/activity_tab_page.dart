@@ -7,6 +7,7 @@ import 'package:flutter_observer/Observer.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
+import 'package:medical/src/app_setting/firebase_tracking/activity_list_tracking.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/response/lesson_section_list_response.dart';
 import 'package:medical/src/model/response/smart_goal_list_reponse.dart';
@@ -16,6 +17,7 @@ import 'package:medical/src/utils/date_utils.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/utils/utils.dart';
+import 'package:medical/src/widget/BloodSugar/widget/action_list_trend.dart';
 import 'package:medical/src/widget/Food/daily_nutrition/daily_nutrition.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
@@ -153,6 +155,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
                         margin: const EdgeInsets.only(bottom: 12),
                         child: InkWell(
                           onTap: () async {
+                            ActivityListTracking.clickStatistical();
                             Observable.instance.notifyObservers([],
                                 notifyName: Const.HIDE_OVERLAY_KEY);
                             _showSelectActionPopup();
@@ -335,6 +338,12 @@ class _ActivityTabPageState extends State<ActivityTabPage>
                     state: _cubit.weekStatesList[index],
                     isSelected: index == _cubit.currentWeekIndex,
                     onSelect: () {
+                      ActivityListTracking.selectWeekActivity(
+                        objectIndex: index,
+                        objectTitle: _cubit.weekStatesList[index]?.weekTitle,
+                        completionStatus:
+                            _cubit.weekStatesList[index]!.completionStatus,
+                      );
                       Observable.instance.notifyObservers([],
                           notifyName: Const.HIDE_OVERLAY_KEY);
                       _animateToIndex(index);
@@ -693,9 +702,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
             LessonDetailPage(
               lessonType: lessonDetail?.type,
               lessonId: lessonDetail?.id ?? '',
-              onComplete: (String, int) {
-                
-              },
+              onComplete: (String, int) {},
             ));
         _cubit.refreshData(isRefresh: true);
         Observable.instance

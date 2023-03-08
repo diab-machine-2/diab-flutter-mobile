@@ -1,6 +1,5 @@
 import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_observer/Observable.dart';
@@ -8,9 +7,9 @@ import 'package:flutter_observer/Observer.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/app_setting/dynamic_link_config.dart';
+import 'package:medical/src/app_setting/firebase_tracking/activity_list_tracking.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/utils/const.dart';
-import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widgets/common_page.dart';
@@ -52,13 +51,8 @@ class _MyPlanPageState extends State<MyPlanPage> with Observer {
     _pageController = PageController(initialPage: index);
     final AppRepository appRepository = AppRepository();
     _cubit = MyPlanCubit(appRepository, index);
-    firebaseSetup();
+    ActivityListTracking.firebaseSetup();
     // _checkExistLessonId();
-  }
-
-  Future firebaseSetup() async {
-    await TrackingManager.analytics
-        .logScreenView(screenName: "my_schedule", screenClass: "MyPlanPage");
   }
 
   @override
