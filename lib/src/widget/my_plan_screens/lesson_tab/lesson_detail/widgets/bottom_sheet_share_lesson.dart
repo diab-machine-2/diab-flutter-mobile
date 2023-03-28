@@ -58,7 +58,7 @@ class BottomSheetShareLesson extends StatelessWidget {
             SizedBox(height: 10),
             RichText(
               text: TextSpan(
-                text: "Nếu bạn thấy bài học này bổ ích hãy chia sẽ cho",
+                text: "Nếu bạn thấy bài học này bổ ích hãy chia sẻ cho",
                 style: TextStyle(
                   color: R.color.textDark,
                   fontSize: 16,

@@ -20,7 +20,7 @@ class AppShare {
     final box = context.findRenderObject() as RenderBox?;
     final user = AppSettings.userInfo!;
     Share.share(
-      '${user.fullName} đã chia sẽ cho bạn bài học $lessonName từ ứng dụng DiaB - ứng dụng tự quản lý bệnh đái tháo đường và kết nối với chuyên gia.\n$_shareLink',
+      '${user.fullName} đã chia sẻ cho bạn bài học $lessonName từ ứng dụng DiaB - ứng dụng tự quản lý bệnh đái tháo đường và kết nối với chuyên gia.\n$_shareLink',
       subject: 'DIAB | Ứng dụng giúp quản lý đường huyết hiệu quả',
       sharePositionOrigin: box!.localToGlobal(Offset.zero) & box.size,
     );
