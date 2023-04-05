@@ -360,6 +360,8 @@ class HealthAppBloc extends Bloc<HealthAppEvent, HealthAppState> {
       if (isDataUpdated && !isNotCompleteRequest) {
         Observable.instance.notifyObservers([], notifyName: "refresh_home");
         add(SyncDataSuccess());
+      } else {
+        add(SyncDataSuccess());
       }
     } else {
       requestSyncData.forEach((key, value) async {
