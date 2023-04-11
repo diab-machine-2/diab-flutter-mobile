@@ -31,6 +31,7 @@ import 'package:medical/src/widgets/block_bottom_sheet.dart';
 import 'package:medical/src/widgets/button_widget.dart';
 import 'package:medical/src/widgets/network_image_widget.dart';
 import 'package:medical/src/widgets/share_profile_popup.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 import '../../app_setting/health_setting.dart';
 import '../../repo/user/user_client.dart';
@@ -125,7 +126,9 @@ class _HomeControllerState extends State<HomeController> with Observer {
     initHealthApp();
   }
 
-  initHealthApp() {
+  initHealthApp() async {
+    await Permission.activityRecognition.request();
+
     Future.delayed(Duration(milliseconds: 1000), () async {
       bool? hasHealthConnection = await AppStorages.getHealthAppPermission();
       if (hasHealthConnection == null) {
