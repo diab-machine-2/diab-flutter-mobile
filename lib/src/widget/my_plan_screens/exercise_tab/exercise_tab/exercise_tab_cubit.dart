@@ -26,7 +26,8 @@ class ExerciseTabCubit extends Cubit<ExerciseTabState> {
   List<WeekStatesResponseData> weekStatesList = [];
   ExerciseMovementResponse? exerciseMovementResponse;
 
-  int? get week => !isHasRoadmapUser ? null : currentWeekIndex == null ? 0 : weekStatesList[currentWeekIndex!].week;
+  int? get week => !isHasRoadmapUser ? null : currentWeekIndex == null ? 0 : currentWeekIndex;
+  // weekStatesList[currentWeekIndex!].week;
 
   int get dataLength => exerciseMovementResponse?.data?.length ?? 0;
 
