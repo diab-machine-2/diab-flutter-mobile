@@ -1,6 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/app_setting/firebase_tracking/kpi_motion_tracking.dart';
 import 'package:medical/src/modal/exercrises/exercrise_input.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/helper/helper.dart';
@@ -86,6 +87,7 @@ class ExercrisesListCard extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: 16),
       child: GestureDetector(
         onTap: () {
+          KpiMotionTracking.clickKpiItem();
           Navigator.pushNamed(context, NavigatorName.add_exercrises,
               arguments: {'type': 'update', 'id': itemInput.id});
         },

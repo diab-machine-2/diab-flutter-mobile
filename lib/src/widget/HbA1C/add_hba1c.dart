@@ -9,6 +9,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_observer/Observable.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/modal/HbA1C/HbA1C_Input.dart';
 import 'package:medical/src/modal/HbA1C/short_gui.dart';
 import 'package:medical/src/modal/error/error_model.dart';
@@ -72,6 +73,7 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
         'object_title': 'Chỉ số HBA1C'
       },
     );
+    AppSettings.currentScreenName = 'kpi_hba1c_add';
   }
 
   void dispose() {

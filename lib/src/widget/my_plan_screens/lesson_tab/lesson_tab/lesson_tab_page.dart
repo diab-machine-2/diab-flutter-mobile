@@ -7,10 +7,13 @@ import 'package:flutter_observer/Observer.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/dynamic_link_config.dart';
+import 'package:medical/src/app_setting/firebase_tracking/activity_list_tracking.dart';
+import 'package:medical/src/app_setting/firebase_tracking/lesson_detail_tracking.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/response/my_lesson_response.dart';
 import 'package:medical/src/model/response/week_states_response.dart';
 import 'package:medical/src/utils/const.dart';
+import 'package:medical/src/app_setting/firebase_tracking/firebase_tracking.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
@@ -155,6 +158,10 @@ class _LessonTabPageState extends State<LessonTabPage>
                             title: _cubit.lessonTypeList[index].title,
                             isActive: _cubit.currentLessonTypeIndex == index,
                             onTap: () {
+                              if (_cubit.lessonTypeList[index] ==
+                                  LessonType.suggest) {
+                                LessonDetailTracking.tabLessonRecommend();
+                              }
                               _cubit.changeLessonType(index);
                             },
                           );
@@ -227,7 +234,9 @@ class _LessonTabPageState extends State<LessonTabPage>
                         child: SmartRefresher(
                           controller: _controller,
                           scrollController: _lessonScrollController,
-                          onRefresh: () => _cubit.onRefresh(isRefresh: true),
+                          onRefresh: () {
+                            _cubit.onRefresh(isRefresh: true);
+                          },
                           child: _cubit.lessonsList!.isEmpty
                               ? (state is LessonTabLoading ||
                                       state is LessonTabWeekChanged)
@@ -244,33 +253,13 @@ class _LessonTabPageState extends State<LessonTabPage>
                                             if (_cubit.lessonsList?[index]?.id
                                                     ?.isNotEmpty ==
                                                 true) {
-                                              await TrackingManager.analytics
-                                                  .logEvent(
-                                                name: 'component_clicked',
-                                                parameters: {
-                                                  "screen_name": 'my_schedule',
-                                                  'component_name':
-                                                      'list_lesson_item',
-                                                  'object_index': index,
-                                                  'object_id':
-                                                      '${_cubit.lessonsList![index]!.id!}',
-                                                  'object_title':
-                                                      '${_cubit.lessonsList![index]!.name!}',
-                                                },
-                                              );
-
-                                              await TrackingManager.analytics
-                                                  .logEvent(
-                                                name: 'select_content',
-                                                parameters: {
-                                                  "screen_name": 'my_schedule',
-                                                  'content_type': 'lesson',
-                                                  'item_id':
-                                                      '${_cubit.lessonsList![index]!.id!}',
-                                                  'item_name':
-                                                      '${_cubit.lessonsList![index]!.name!}',
-                                                  'index': index,
-                                                },
+                                              ActivityListTracking
+                                                  .clickLessonItem(
+                                                objectId: _cubit
+                                                    .lessonsList![index]!.id,
+                                                objectIndex: index,
+                                                objectTitle: _cubit
+                                                    .lessonsList![index]!.name,
                                               );
 
                                               var result = await NavigationUtil
@@ -282,10 +271,18 @@ class _LessonTabPageState extends State<LessonTabPage>
                                                       ?.type,
                                                   lessonId: _cubit
                                                       .lessonsList![index]!.id!,
+                                                  onComplete: (lessonId,
+                                                      percentComplete) {
+                                                    _cubit.updateStatusLesson(
+                                                      lessonId: lessonId,
+                                                      percentComplete:
+                                                          percentComplete,
+                                                    );
+                                                  },
                                                 ),
                                               );
-                                              // if(result == 0) {
-                                              _controller.requestRefresh();
+                                              // if (result == 0) {
+                                              // _controller.requestRefresh();
                                               // }
                                               //   if(result != null){
                                               //     _cubit.getInitData(isRefresh: true,

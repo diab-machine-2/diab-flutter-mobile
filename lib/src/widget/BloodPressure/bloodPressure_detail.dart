@@ -5,6 +5,7 @@ import 'package:flutter_observer/Observable.dart';
 import 'package:flutter_observer/Observer.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/app_setting/firebase_tracking/kpi_blood_pressure_tracking.dart';
 import 'package:medical/src/bloc/bloodPressure/bloodPressure_bloc.dart';
 import 'package:medical/src/modal/blood_pressure/blood_pressure.dart';
 import 'package:medical/src/utils/navigator_name.dart';
@@ -216,6 +217,7 @@ class BloodPressureDetailControllerState
 
                             return GestureDetector(
                                 onTap: () {
+                                  KpiBloodPressureTracking.clickKpiItem();
                                   Navigator.pushNamed(
                                       context, NavigatorName.add_blood_pressure,
                                       arguments: {

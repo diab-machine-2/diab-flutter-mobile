@@ -4,6 +4,7 @@ import 'package:flutter_tags/flutter_tags.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:loadmore/loadmore.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/app_setting/firebase_tracking/kpi_body_weight_tracking.dart';
 import 'package:medical/src/bloc/emotion/emotion_bloc.dart';
 import 'package:medical/src/modal/emotion/input_emotion_model.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -142,6 +143,7 @@ class EmotionDetailControllerState extends State<EmotionDetailController>
                                             previousElement.date!));
                                 return GestureDetector(
                                     onTap: () {
+                                      KpiBodyWeightTracking.clickKpiItem();
                                       Navigator.pushNamed(
                                           context, NavigatorName.add_insight, arguments: {
                                         'type': 'update',

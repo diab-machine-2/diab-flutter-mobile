@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/app_setting/app_setting.dart';
+import 'package:medical/src/app_setting/firebase_tracking/kpi_body_weight_tracking.dart';
 import 'package:medical/src/widget/Bmi/widget/bmi_hiptrend_chart.dart';
 import 'package:medical/src/widget/Bmi/widget/bmi_scale_chart.dart';
 import 'package:medical/src/widget/Bmi/widget/bmi_trend_chart.dart';
@@ -22,12 +24,7 @@ class BmiOverviewControllerState extends State<BmiOverviewController>
   @override
   void initState() {
     super.initState();
-    firebaseSetup();
-  }
-
-  Future firebaseSetup() async {
-    await TrackingManager.analytics.logScreenView(
-        screenName: "kpi_body_weight", screenClass: "BmiOverviewController");
+    KpiBodyWeightTracking.firebaseSetup();
   }
 
   reloadData(int periodFilterType) {

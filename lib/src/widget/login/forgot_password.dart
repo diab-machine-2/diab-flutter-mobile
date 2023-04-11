@@ -1,6 +1,7 @@
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/repo/login/login_client.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/base/text_field_custom.dart';
@@ -28,6 +29,7 @@ class _ForgotPasswordControllerState extends State<ForgotPasswordController> {
   Future firebaseSetup() async {
     await TrackingManager.analytics.logScreenView(
         screenName: "forget_password", screenClass: "ForgotPasswordController");
+    AppSettings.currentScreenName = 'forget_password';
   }
 
   @override

@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/app_setting/app_sharing.dart';
 import 'package:medical/src/app_setting/dynamic_link_config.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
@@ -82,6 +83,7 @@ class _CourseQuizPageState extends State<CourseQuizPage> {
       screenName: "quiz_lession",
       screenClass: "CourseQuizPage",
     );
+    AppSettings.currentScreenName = 'quiz_lession';
   }
 
   @override

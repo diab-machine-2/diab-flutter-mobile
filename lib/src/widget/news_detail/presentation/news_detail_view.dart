@@ -1,4 +1,6 @@
+import 'package:flutter_observer/Observable.dart';
 import 'package:intl/intl.dart';
+import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'blocs/newsDetail_bloc.dart';
 import 'package:medical/res/R.dart';

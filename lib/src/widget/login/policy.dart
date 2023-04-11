@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 
 class PolicyController extends StatefulWidget {
@@ -20,6 +21,7 @@ class _PolicyControllerState extends State<PolicyController> {
       screenName: "policy", 
       screenClass: "PolicyController"
     );
+    AppSettings.currentScreenName = 'policy';
   }
 
   @override

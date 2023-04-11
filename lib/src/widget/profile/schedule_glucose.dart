@@ -53,6 +53,7 @@ class _ScheduleGlucoseControllerState extends State<ScheduleGlucoseController> w
       screenName: "glycemic_schedule", 
       screenClass: "ScheduleGlucoseController"
     );
+    AppSettings.currentScreenName = 'glycemic_schedule';
   }
 
   @override

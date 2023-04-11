@@ -85,6 +85,7 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
     await TrackingManager.analytics.logScreenView(
         screenName: "kpi_glycemic_add",
         screenClass: "BloodSugarDetailController");
+    AppSettings.currentScreenName = 'kpi_glycemic_add';
     await TrackingManager.analytics.logEvent(
       name: 'kpi_add_begin',
       parameters: {

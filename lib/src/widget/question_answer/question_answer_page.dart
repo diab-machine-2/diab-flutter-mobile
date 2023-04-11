@@ -45,6 +45,7 @@ class _QuestionAnswerPageState extends State<QuestionAnswerPage> with Observer {
       screenName: 'qna_home',
       screenClass: "QuestionAnswerPage",
     );
+    AppSettings.currentScreenName = 'qna_home';
   }
 
   @override

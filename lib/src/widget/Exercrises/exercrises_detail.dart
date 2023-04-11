@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:loadmore/loadmore.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/app_setting/firebase_tracking/kpi_motion_tracking.dart';
 import 'package:medical/src/bloc/exercrises/exercrises_bloc.dart';
 import 'package:medical/src/modal/exercrises/exercrise_input.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -153,7 +154,8 @@ class ExercrisesDetailControllerState extends State<ExercrisesDetailController>
                                               int index) {
                                             final itemInput =
                                                 item.exerciseInput[index];
-                                            return ExercrisesListCard(itemInput: itemInput);
+                                            return ExercrisesListCard(
+                                                itemInput: itemInput);
                                           }),
                                     ],
                                   ),

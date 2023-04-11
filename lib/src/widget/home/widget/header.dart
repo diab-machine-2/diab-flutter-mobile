@@ -42,7 +42,7 @@ class _HomeHeaderState extends State<HomeHeader> with Observer {
 
   int? notificationCount = 0;
   MotivationModel? motivation;
-  UserModel? user = AppSettings.userInfo;
+  late UserModel? user;
 
   @override
   void initState() {
@@ -79,6 +79,7 @@ class _HomeHeaderState extends State<HomeHeader> with Observer {
   }
 
   Future<void> initData() async {
+    user = AppSettings.userInfo;
     await Future.wait([
       loadNotification(),
       loadMotivation(),

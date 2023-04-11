@@ -10,6 +10,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/utils/date_utils.dart';
 import 'package:medical/src/utils/utils.dart';
@@ -63,6 +64,7 @@ class _QuestionDetailPageState extends State<QuestionDetailPage>
       screenName: "qna_detail",
       screenClass: "QuestionDetailPage",
     );
+    AppSettings.currentScreenName = 'qna_detail';
   }
 
   @override

@@ -146,6 +146,11 @@ class _HomeControllerState extends State<HomeController> with Observer {
   Future firebaseSetup() async {
     await TrackingManager.analytics
         .logScreenView(screenName: "home", screenClass: "HomeController");
+    await TrackingManager.analytics.logScreenView(
+      screenName: "home", 
+      screenClass: "HomeController"
+    );
+    AppSettings.currentScreenName = 'home';
   }
 
   @override

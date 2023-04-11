@@ -18,12 +18,14 @@ class VideoWidget extends StatefulWidget {
     this.callbackByPercentVideo,
     this.percentCallbackDefault = 1,
     required this.setVideoManager,
+    this.callbackEventListener,
   });
 
   final String url;
   VoidCallback onComplete;
   VoidCallback? onPlay;
   VoidCallback? callbackByPercentVideo;
+  final Function(CustomPlayerEventType, Duration)? callbackEventListener;
   double percentCallbackDefault;
   Function(VideoManager) setVideoManager;
 
@@ -61,6 +63,11 @@ class _VideoWidgetState extends State<VideoWidget> {
       // print('pathVideo = $path');
 
       videoManager = VideoManager(
+          callbackEventListener: (eventType, videoLength) {
+            if (widget.callbackEventListener != null) {
+              widget.callbackEventListener!(eventType, videoLength);
+            }
+          },
           url: url,
           //    placeHolder: path != null ? Image.file(File(path!)) : Container(),
           placeHolder: Image.asset(

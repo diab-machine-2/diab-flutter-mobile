@@ -16,12 +16,16 @@ import 'lesson_tab.dart';
 import 'models/lesson_type.dart';
 
 class LessonTabCubit extends Cubit<LessonTabState> {
-  LessonTabCubit(this.repository, this.myPlanCubit) : super(const LessonTabInitial());
+  LessonTabCubit(this.repository, this.myPlanCubit)
+      : super(const LessonTabInitial());
 
   final AppRepository repository;
   final MyPlanCubit myPlanCubit;
 
-  final List<LessonType> lessonTypeList = [LessonType.route, LessonType.suggest];
+  final List<LessonType> lessonTypeList = [
+    LessonType.route,
+    LessonType.suggest
+  ];
 
   FilterData filterData = FilterData();
 
@@ -31,7 +35,7 @@ class LessonTabCubit extends Cubit<LessonTabState> {
   List<MyLessonResponseData?>? lessonsListSuggest;
 
   List<MyLessonResponseData?>? get lessonsList {
-    if(currentLessonTypeIndex == 0){
+    if (currentLessonTypeIndex == 0) {
       return lessonsListRoadmap ?? [];
     } else {
       return lessonsListSuggest ?? [];
@@ -72,7 +76,31 @@ class LessonTabCubit extends Cubit<LessonTabState> {
     emit(const LessonTabInitial());
   }
 
-  Future<void> getInitData({bool isRefresh = false, bool showCurrentWeek = true, int? currentWeek}) async {
+  Future<void> updateStatusLesson({
+    required String lessonId,
+    required int percentComplete,
+  }) async {
+    // lessonsList.firstW(here((element) => element?.id == lessonId);
+    emit(LessonTabLoading());
+    int learningStatus = Const.LESSON_LEARNING;
+
+    print('percentComplete: $percentComplete');
+    if (percentComplete == 0) {
+      learningStatus = Const.LESSON_NOT_LEARN;
+    }
+    if (percentComplete == 100) {
+      learningStatus = Const.LESSON_LEARNT;
+    }
+    int index = lessonsList!.indexWhere((element) => element?.id == lessonId);
+    lessonsList![index]!.percentComplete = percentComplete;
+    lessonsList![index]!.learningStatus = learningStatus;
+    emit(LessonTabInitial());
+  }
+
+  Future<void> getInitData(
+      {bool isRefresh = false,
+      bool showCurrentWeek = true,
+      int? currentWeek}) async {
     if (myPlanCubit.userInfo == null || AppSettings.isReloadCurrentUserInfo) {
       await myPlanCubit.getCurrentUserInfo();
     }
@@ -106,10 +134,13 @@ class LessonTabCubit extends Cubit<LessonTabState> {
     await getLessonsList(isRefresh: isRefresh);
   }
 
-  Future<void> onRefresh({bool isRefresh = false, bool showCurrentWeek = false, int? currentWeek}) async {
-  //  await getLessonWeekStates(isRefresh: isRefresh);
+  Future<void> onRefresh(
+      {bool isRefresh = false,
+      bool showCurrentWeek = false,
+      int? currentWeek}) async {
+    //  await getLessonWeekStates(isRefresh: isRefresh);
 
-     if (currentWeek != null) {
+    if (currentWeek != null) {
       Timer(const Duration(milliseconds: 100), () {
         emit(LessonTabWeekChanged(filterData.currentWeek!));
       });
@@ -119,30 +150,36 @@ class LessonTabCubit extends Cubit<LessonTabState> {
           emit(LessonTabWeekChanged(filterData.currentWeek!));
         });
       }
-    }    
+    }
 
     await getLessonsList(isRefresh: isRefresh);
   }
 
-  Future<void> getLessonsList({bool isRefresh = false, bool isShowLoading = false, bool isRefreshData = true,}) async {
-    if(lessonsList?.isNotEmpty == true && !isRefreshData){
-   //   Timer(const Duration(milliseconds: 0), () {
-        emit(LessonTabScrollToLesson(firstLessonIndex));
-   //   });
+  Future<void> getLessonsList({
+    bool isRefresh = false,
+    bool isShowLoading = false,
+    bool isRefreshData = true,
+  }) async {
+    if (lessonsList?.isNotEmpty == true && !isRefreshData) {
+      //   Timer(const Duration(milliseconds: 0), () {
+      emit(LessonTabScrollToLesson(firstLessonIndex));
+      //   });
       emit(const LessonTabSuccess());
       emit(const LessonTabInitial());
       return;
     }
 
     await Future.delayed(Duration.zero);
-    if(isShowLoading){
+    if (isShowLoading) {
       emit(const LessonTabLoading());
     }
 
-    final LessonFilterRequest request = filterData.getRequest(type: currentLessonTypeIndex + 1);
-    final ApiResult<MyLessonResponse> apiResult = await repository.getLessonsList(request);
+    final LessonFilterRequest request =
+        filterData.getRequest(type: currentLessonTypeIndex + 1);
+    final ApiResult<MyLessonResponse> apiResult =
+        await repository.getLessonsList(request);
     apiResult.when(success: (MyLessonResponse response) {
-      if(currentLessonTypeIndex == 0){
+      if (currentLessonTypeIndex == 0) {
         lessonsListRoadmap = response.data ?? [];
       } else {
         lessonsListSuggest = response.data ?? [];
@@ -176,7 +213,7 @@ class LessonTabCubit extends Cubit<LessonTabState> {
 
   Future<void> getLessonWeekStates({bool isRefresh = false}) async {
     //  await Future.delayed(Duration.zero);
-    if(AppSettings.userInfo?.statistict?.lessons != null && !isRefresh) {
+    if (AppSettings.userInfo?.statistict?.lessons != null && !isRefresh) {
       weekStatesList.clear();
       for (final state in AppSettings.userInfo?.statistict?.lessons ?? []) {
         if (state != null) {
@@ -185,7 +222,8 @@ class LessonTabCubit extends Cubit<LessonTabState> {
       }
       weekStatesList.sort((a, b) => (a.week ?? 0) - (b.week ?? 0));
     } else {
-      final ApiResult<WeekStatesResponse> apiResult = await repository.getLessonWeekStates();
+      final ApiResult<WeekStatesResponse> apiResult =
+          await repository.getLessonWeekStates();
       apiResult.when(success: (WeekStatesResponse response) {
         weekStatesList.clear();
         for (final state in response.data ?? []) {

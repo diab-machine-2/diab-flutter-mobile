@@ -224,7 +224,7 @@ class _ShareAppDetailState extends State<ShareAppDetail> {
         ),
         SizedBox(height: 20),
         Text(
-          "Nhận ngay phiếu mua hàng trị giá 10K cho mỗi lượt chia sẽ ứng dụng DiaB thành công. Áp dụng cho tất cả cửa hàng Pharmatcity.",
+          "Nhận ngay phiếu mua hàng trị giá 10K cho mỗi lượt chia sẻ ứng dụng DiaB thành công. Áp dụng cho tất cả cửa hàng Pharmatcity.",
           style: TextStyle(
             height: 1.4,
             fontSize: 16,

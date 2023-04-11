@@ -1,6 +1,7 @@
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/repo/login/login_client.dart';
 import 'package:medical/src/widget/base/text_field_custom.dart';
 import 'package:medical/src/modal/error/error_model.dart';
@@ -32,6 +33,7 @@ class _NewPasswordControllerState extends State<NewPasswordController> {
   Future firebaseSetup() async {
     await TrackingManager.analytics.logScreenView(
         screenName: "new_password", screenClass: "NewPasswordController");
+    AppSettings.currentScreenName = 'new_password';
   }
 
   @override

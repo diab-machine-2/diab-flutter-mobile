@@ -6,6 +6,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_observer/Observable.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/modal/error/error_model.dart';
 import 'package:medical/src/modal/user/schedule_reminder_model.dart';
 import 'package:medical/src/repo/user/user_client.dart';
@@ -55,6 +56,7 @@ class _AddReminderControllerState extends BaseState<AddReminderController> {
   Future firebaseSetup() async {
     await TrackingManager.analytics.logScreenView(
         screenName: "add_remind", screenClass: "ReminderController");
+    AppSettings.currentScreenName = 'add_remind';
   }
 
   loadDetail() async {

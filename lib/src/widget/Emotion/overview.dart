@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/app_setting/app_setting.dart';
+import 'package:medical/src/app_setting/firebase_tracking/kpi_emotional_tracking.dart';
 import 'package:medical/src/widget/Emotion/widget/emotion_activity_chart.dart';
 import 'package:medical/src/widget/Emotion/widget/emotion_symptom_chart.dart';
 import 'package:medical/src/widget/Emotion/widget/emotion_distribution_chart.dart';
@@ -23,14 +25,7 @@ class EmotionOverviewControllerState extends State<EmotionOverviewController>
   @override
   void initState() {
     super.initState();
-    firebaseSetup();
-  }
-
-  Future firebaseSetup() async {
-    await TrackingManager.analytics.logScreenView(
-      screenName: "kpi_emotional",
-      screenClass: "EmotionOverviewController",
-    );
+    KpiEmotionalTracking.firebaseSetup();
   }
 
   reloadData(int periodFilterType) {

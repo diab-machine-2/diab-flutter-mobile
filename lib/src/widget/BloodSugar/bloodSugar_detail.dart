@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/app_setting/app_setting.dart';
+import 'package:medical/src/app_setting/firebase_tracking/kpi_glycemic_tracking.dart';
 import 'package:medical/src/modal/glucose/glucose_input.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/src/bloc/glucose/glucose_bloc.dart';
@@ -48,7 +50,8 @@ class BloodSugarDetailControllerState extends State<BloodSugarDetailController>
 
     itemPositionsListener.itemPositions.addListener(() {
       final lastIndex = itemPositionsListener.itemPositions.value.last.index;
-      final GlucoseState state = BlocProvider.of<GlucoseBloc>(currentContext).state;
+      final GlucoseState state =
+          BlocProvider.of<GlucoseBloc>(currentContext).state;
       if (state is GlucoseAlllLoaded) {
         final model = state.inputGlucoseModel;
         if (model.length - 2 == lastIndex) {
@@ -56,15 +59,6 @@ class BloodSugarDetailControllerState extends State<BloodSugarDetailController>
         }
       }
     });
-
-    firebaseSetup();
-  }
-
-  Future firebaseSetup() async {
-    await TrackingManager.analytics.logScreenView(
-      screenName: "kpi_glycemic", 
-      screenClass: "BloodSugarDetailController"
-    );
   }
 
   reloadData(int periodFilter) {
@@ -142,7 +136,8 @@ class BloodSugarDetailControllerState extends State<BloodSugarDetailController>
               final model = state.inputGlucoseModel;
               for (int i = 0; i < model.length; i++) {
                 if (model[i].id == glucoseID) {
-                  BloodSugarDetailTabbarController.of(context)!.glucoseID = null;
+                  BloodSugarDetailTabbarController.of(context)!.glucoseID =
+                      null;
                   itemScrollController.jumpTo(index: i);
                   Future.delayed(const Duration(seconds: 3), () {
                     setState(() {
@@ -189,6 +184,7 @@ class BloodSugarDetailControllerState extends State<BloodSugarDetailController>
 
                               return GestureDetector(
                                   onTap: () {
+                                    KpiGlycemicTracking.clickKpiItem();
                                     Navigator.pushNamed(
                                         context, NavigatorName.add_blood_sugar,
                                         arguments: {
@@ -372,7 +368,8 @@ class BloodSugarDetailControllerState extends State<BloodSugarDetailController>
                                                                     CrossAxisAlignment
                                                                         .start,
                                                                 children: [
-                                                                  Text('${R.string.ly_do.tr()}: ',
+                                                                  Text(
+                                                                      '${R.string.ly_do.tr()}: ',
                                                                       style: TextStyle(
                                                                           color: R
                                                                               .color

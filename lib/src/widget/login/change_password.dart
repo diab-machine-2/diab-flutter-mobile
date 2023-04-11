@@ -1,6 +1,7 @@
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/repo/login/login_client.dart';
 import 'package:medical/src/widget/base/text_field_custom.dart';
 import 'package:medical/src/modal/error/error_model.dart';
@@ -37,6 +38,7 @@ class _ChangePasswordControllerState extends State<ChangePasswordController> {
       screenName: "change_password", 
       screenClass: "ChangePasswordController"
     );
+    AppSettings.currentScreenName = 'change_password';
   }
 
   @override

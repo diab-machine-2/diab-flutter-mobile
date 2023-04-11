@@ -6,6 +6,7 @@ import 'package:flutter_observer/Observable.dart';
 import 'package:flutter_observer/Observer.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/app_setting/firebase_tracking/motion_list_tracking.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/response/exercise_movement_response.dart';
 import 'package:medical/src/model/response/week_states_response.dart';
@@ -51,6 +52,7 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
     final AppRepository appRepository = AppRepository();
     _cubit = ExerciseTabCubit(appRepository, _myPlanCubit);
     _cubit.initData();
+    MotionListTracking.firebaseSetup();
   }
 
   @override
@@ -267,6 +269,12 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
                     state: _cubit.weekStatesList[index],
                     isSelected: index == _cubit.currentWeekIndex,
                     onSelect: () {
+                      MotionListTracking.selectWeekWorkout(
+                        objectTitle:
+                            '${_cubit.weekStatesList[index].weekTitle}',
+                        objectIndex: '$index',
+                        status: _cubit.weekStatesList[index].completionStatus,
+                      );
                       _cubit.onSelectWeek(index);
                     });
               })
@@ -343,6 +351,11 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
                     'object_title': exerciseItem?.name,
                     'object_status': status,
                   },
+                );
+                MotionListTracking.selectDayWorkout(
+                  objectTitle: exerciseItem?.name,
+                  objectIndex: index,
+                  objectStatus: exerciseItem?.exerciseMovementStates,
                 );
                 if (exerciseItem?.exerciseMovementStates ==
                     Const.LESSON_CAN_NOT_LEARN) {
@@ -636,6 +649,7 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
   }
 
   Future<void> changeRoadMap() async {
+    MotionListTracking.clickChangeRoadMap();
     final newRoadmapId =
         await NavigationUtil.navigatePage(context, const SelectRoadMapPage());
     if (newRoadmapId is String &&

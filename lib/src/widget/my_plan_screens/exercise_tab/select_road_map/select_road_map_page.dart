@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_html/style.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/app_setting/firebase_tracking/motion_list_tracking.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/response/list_roadmap_response.dart';
 import 'package:medical/src/utils/navigation_util.dart';
@@ -165,16 +166,25 @@ class _SelectRoadMapPageState extends State<SelectRoadMapPage> {
                   height: 32,
                   textSize: 14,
                   onPressed: () {
+                    MotionListTracking.clickJoinRoadMap(
+                      objectId: '${itemData.id}',
+                      objectTitle: '${itemData.name}',
+                    );
                     showDialog(
                       barrierColor: R.color.color0xff003F38.withOpacity(0.5),
                       context: context,
                       builder: (_) => NoticeChangePage(
                           isShowTextHtml: true,
-                          htmlText: '''<p><span style="font-family: Arial, Helvetica, sans-serif; font-size: 15px;">Bạn đang học ${_cubit.formatRoadmapName(_cubit.currentRoadMap?.name ?? '')}, bạn c&oacute; chắc muốn đổi lộ tr&igrave;nh kh&aacute;c kh&ocirc;ng?</span></p>''',
+                          htmlText:
+                              '''<p><span style="font-family: Arial, Helvetica, sans-serif; font-size: 15px;">Bạn đang học ${_cubit.formatRoadmapName(_cubit.currentRoadMap?.name ?? '')}, bạn c&oacute; chắc muốn đổi lộ tr&igrave;nh kh&aacute;c kh&ocirc;ng?</span></p>''',
                           description: R.string.ask_for_change_roadmap
                               .tr(args: [_cubit.currentRoadMap?.name ?? '']),
                           positiveButtonTitle: R.string.confirm.tr(),
                           onClick: () {
+                            MotionListTracking.clickConfirmJoinRoadMap(
+                              objectId: '${itemData.id}',
+                              objectTitle: '${itemData.name}',
+                            );
                             _cubit.changeRoadMap(itemData);
                           },
                           gradientColor: true),
@@ -230,11 +240,17 @@ class _SelectRoadMapPageState extends State<SelectRoadMapPage> {
                       ),
                       const SizedBox(height: 12),
                       Html(
-                        data: '''<div><span style="font-family: Arial, Helvetica, sans-serif; font-size: 15px;">Bạn đ&atilde; chọn ${_cubit.formatRoadmapName(itemData?.name ?? '')}. Lộ tr&igrave;nh bao gồm ${(itemData?.exerciseMovementCount ?? 0).toString()} b&agrave;i học.</span></div>''',
-                        style: {"body": Style(padding: EdgeInsets.zero, margin: EdgeInsets.zero),},
+                        data:
+                            '''<div><span style="font-family: Arial, Helvetica, sans-serif; font-size: 15px;">Bạn đ&atilde; chọn ${_cubit.formatRoadmapName(itemData?.name ?? '')}. Lộ tr&igrave;nh bao gồm ${(itemData?.exerciseMovementCount ?? 0).toString()} b&agrave;i học.</span></div>''',
+                        style: {
+                          "body": Style(
+                              padding: EdgeInsets.zero,
+                              margin: EdgeInsets.zero),
+                        },
                         onLinkTap: (url, context, attributes, element) async {
                           await canLaunch(url!)
-                              ? await launch(url, forceSafariVC: false, forceWebView: false)
+                              ? await launch(url,
+                                  forceSafariVC: false, forceWebView: false)
                               : throw 'Could not launch $url';
                         },
                       ),

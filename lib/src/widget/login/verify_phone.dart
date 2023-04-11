@@ -71,6 +71,7 @@ class _VerifyPhoneControllerState extends State<VerifyPhoneController> {
   Future firebaseSetup() async {
     await TrackingManager.analytics.logScreenView(
         screenName: "otp_verify", screenClass: "VerifyPhoneController");
+    AppSettings.currentScreenName = 'otp_verify';
   }
 
   void startTimer() {

@@ -401,6 +401,8 @@ public class MainActivity extends FlutterActivity {
         mDeviceAdapter.clearDevices();
         try {
             if (mBluetoothAdapter.getState() == BluetoothAdapter.STATE_ON) {
+                String xStr = Integer.toString(Build.VERSION.SDK_INT);
+                emitData(xStr, null);
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     if (mScanCallback == null)
                         initCallbackLollipop();
