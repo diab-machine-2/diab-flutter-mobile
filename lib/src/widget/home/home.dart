@@ -185,6 +185,7 @@ class _HomeControllerState extends State<HomeController> with Observer {
       checkScreen(NavigatorName.detail_hba1c);
     }
     if (notifyName == 'goal_calo_changed' || notifyName == 'refresh_home') {
+      _hasHealthConnection = false;
       _refresh();
     }
     if (notifyName == Const.NAVIGATE_TO_PROFILE_TAB) {
