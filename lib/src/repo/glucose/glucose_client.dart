@@ -60,17 +60,17 @@ class GlucoseClient extends FetchClient {
   //============ lấy tất cả chỉ số Đường huyết theo chu kỳ =============/
 
   Future<InputGlucoseDataModel> fetchInput(
-    String? currentDateTime,
-    String? periodFilterType,
-    int? page,
-    String? timeFrameType,
-    String? glucoseDistributionType,
-  ) async {
+      String? currentDateTime,
+      String? periodFilterType,
+      int? page,
+      String? timeFrameType,
+      String? glucoseDistributionType,
+      {String size = '20'}) async {
     try {
       Map<String, String> params = {
         'currentDateTime': '$currentDateTime',
         'periodFilterType': '$periodFilterType',
-        'size': '20'
+        'size': size
       };
       if (timeFrameType != null && timeFrameType != 'null') {
         params['timeFrameType'] = timeFrameType.toString();

@@ -13,29 +13,30 @@ class WeightClient extends FetchClient {
   // nhập chỉ chỉ số cân nặng
   Future<bool> postWeightInput(int date, List<String> files, String weight,
       String? waist, String height, String note, String? timeFrameId) async {
-    try {
-      Map<String, String> params = {
-        'date': date.toString(),
-        'weight': weight,
-        'height': height,
-        'timeFrameId': timeFrameId ?? '',
-        'note': note,
-      };
-      if (waist != null) {
-        params['waist'] = waist;
-      }
-      final response = await super
-          .postHttp(path: '/App/Weight/Input', params: params, files: files);
-      if (response.statusCode == 200) {
-        return true;
-      } else {
-        throw response.reasonPhrase!;
-      }
-    } catch (e) {
-      throw e is Error
-          ? e
-          : R.string.error_can_not_connect_to_server.tr();
+    // try {
+    Map<String, String> params = {
+      'date': date.toString(),
+      'weight': weight,
+      'height': height,
+      'timeFrameId': timeFrameId ?? '',
+      'note': note,
+    };
+    if (waist != null) {
+      params['waist'] = waist;
     }
+    final response = await super
+        .postHttp(path: '/App/Weight/Input', params: params, files: files);
+
+    if (response.statusCode == 200) {
+      return true;
+    } else {
+      throw response.reasonPhrase!;
+    }
+    // } catch (e) {
+    //   throw e is Error
+    //       ? e
+    //       : R.string.error_can_not_connect_to_server.tr();
+    // }
   }
   // //============ lấy danh sách chỉ số Weight =============/
 
@@ -100,9 +101,7 @@ class WeightClient extends FetchClient {
         throw error;
       }
     } catch (e) {
-      throw e is Error
-          ? e
-          : R.string.error_can_not_connect_to_server.tr();
+      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
@@ -140,9 +139,7 @@ class WeightClient extends FetchClient {
         throw response.reasonPhrase!;
       }
     } catch (e) {
-      throw e is Error
-          ? e
-          : R.string.error_can_not_connect_to_server.tr();
+      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
@@ -154,7 +151,7 @@ class WeightClient extends FetchClient {
           await super.fetchData(url: '/App/Weight/Statistic/Weight', params: {
         'currentDateTime': currentDateTime,
         'periodFilterType': periodFilterType,
-        'page': '10'
+        'page': page ?? '10'
       });
       if (response.statusCode == 200) {
         return TrendWeightModel.fromJson(response.data['data']);
@@ -163,9 +160,7 @@ class WeightClient extends FetchClient {
         throw error;
       }
     } catch (e) {
-      throw e is Error
-          ? e
-          : R.string.error_can_not_connect_to_server.tr();
+      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
@@ -186,9 +181,7 @@ class WeightClient extends FetchClient {
         throw error;
       }
     } catch (e) {
-      throw e is Error
-          ? e
-          : R.string.error_can_not_connect_to_server.tr();
+      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
     }
   }
   //============ lấy tất cả chỉ số Đường huyết theo chu kỳ =============/
@@ -196,13 +189,14 @@ class WeightClient extends FetchClient {
   Future<InputWeightDataModel> fetchInput(
     String? currentDateTime,
     String? periodFilterType,
-    int? page,
-  ) async {
+    int? page, {
+    int? size,
+  }) async {
     try {
       Map<String, String> params = {
         'currentDateTime': '$currentDateTime',
         'periodFilterType': '$periodFilterType',
-        'size': '10'
+        'size': size != null ? size.toString() : '10'
       };
 
       if (page != null) {
@@ -220,9 +214,7 @@ class WeightClient extends FetchClient {
         throw error;
       }
     } catch (e) {
-      throw e is Error
-          ? e
-          : R.string.error_can_not_connect_to_server.tr();
+      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
     }
   }
   //============ lấy chi tiết chỉ số Cân nặng =============/
@@ -238,9 +230,7 @@ class WeightClient extends FetchClient {
         throw error;
       }
     } catch (e) {
-      throw e is Error
-          ? e
-          : R.string.error_can_not_connect_to_server.tr();
+      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
     }
   }
   //============ calculate BMI =============/
@@ -265,9 +255,7 @@ class WeightClient extends FetchClient {
         throw error;
       }
     } catch (e) {
-      throw e is Error
-          ? e
-          : R.string.error_can_not_connect_to_server.tr();
+      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
@@ -288,9 +276,7 @@ class WeightClient extends FetchClient {
         throw error;
       }
     } catch (e) {
-      throw e is Error
-          ? e
-          : R.string.error_can_not_connect_to_server.tr();
+      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
@@ -304,9 +290,7 @@ class WeightClient extends FetchClient {
         throw response.reasonPhrase!;
       }
     } catch (e) {
-      throw e is Error
-          ? e
-          : R.string.error_can_not_connect_to_server.tr();
+      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
@@ -320,9 +304,7 @@ class WeightClient extends FetchClient {
         throw response.reasonPhrase!;
       }
     } catch (e) {
-      throw e is Error
-          ? e
-          : R.string.error_can_not_connect_to_server.tr();
+      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
     }
   }
 }

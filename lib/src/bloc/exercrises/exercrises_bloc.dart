@@ -152,7 +152,7 @@ class ExercrisesBloc extends Bloc<ExercrisesEvent, ExercrisesState> {
 
   Stream<ExercrisesState> fetchInputExercrises(
       String? currentDateTime, String? periodFilterType, int? page) async* {
-    try {
+    // try {
       final client = ExercrisesClient();
       final ExercrisesState currenState = state;
       var model =
@@ -165,15 +165,15 @@ class ExercrisesBloc extends Bloc<ExercrisesEvent, ExercrisesState> {
       }
       yield ExercrisesDataLoaded(
           inputExercrisesModel: model.inputs, hasMore: model.hasMore);
-    } catch (e, _) {
-      if (e is Error) {
-        yield ExercrisesError(message: e.message);
-      } else {
-        yield ExercrisesError(
-            message:
-                R.string.error_can_not_connect_to_server.tr());
-      }
-    }
+    // } catch (e, _) {
+    //   if (e is Error) {
+    //     yield ExercrisesError(message: e.message);
+    //   } else {
+    //     yield ExercrisesError(
+    //         message:
+    //             R.string.error_can_not_connect_to_server.tr());
+    //   }
+    // }
   }
 
   Stream<ExercrisesState> fetchDataDaily(

@@ -4,7 +4,6 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/modal/login/login_model.dart';
 import 'package:medical/src/modal/register/register_model.dart';
-import 'package:medical/src/utils/logger.dart';
 import 'package:medical/src/widget/helper/http_helper.dart';
 import 'package:medical/src/modal/error/error_model.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -144,7 +143,6 @@ class LoginClient extends FetchClient {
         // throw Error.fromString(error);
       }
     } catch (e) {
-      logger.e(e.toString());
       throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
     }
   }

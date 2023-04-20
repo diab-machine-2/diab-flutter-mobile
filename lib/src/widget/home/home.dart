@@ -4,12 +4,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_observer/Observable.dart';
 import 'package:flutter_observer/Observer.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/res/colors.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/app_setting/app_sharing.dart';
 import 'package:medical/src/app_setting/dynamic_link_config.dart';
 import 'package:medical/src/bloc/home/home_bloc.dart';
 import 'package:medical/src/modal/home/home_model.dart';
 import 'package:medical/src/modal/home/package_account_home_model.dart';
+import 'package:medical/src/utils/app_storages.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/navigator_name.dart';
@@ -22,10 +24,16 @@ import 'package:medical/src/widget/home/widget/header.dart';
 import 'package:medical/src/widget/list_service/list_service_page.dart';
 import 'package:medical/src/widget/my_plan_screens/activity_tab/create_goal/create_goal_page.dart';
 import 'package:medical/src/widget/my_plan_screens/my_plan/models/plan_type.dart';
+import 'package:medical/src/widget/nipro/health_app/sync_health_app_view.dart';
+import 'package:medical/src/widget/nipro/health_app/widgets/request_health_connect.dart';
 import 'package:medical/src/widget/shared_profile/pages/share_app_detail/widgets/banner_share_app.dart';
+import 'package:medical/src/widgets/block_bottom_sheet.dart';
+import 'package:medical/src/widgets/button_widget.dart';
 import 'package:medical/src/widgets/network_image_widget.dart';
 import 'package:medical/src/widgets/share_profile_popup.dart';
+import 'package:permission_handler/permission_handler.dart';
 
+import '../../app_setting/health_setting.dart';
 import '../../repo/user/user_client.dart';
 import '../my_plan_screens/activity_tab/my_progress/my_progress.dart';
 import 'welcome_package_screen/welcome_package_screen.dart';
@@ -99,6 +107,7 @@ class _HomeControllerState extends State<HomeController> with Observer {
 
   int page = 1;
   bool isLoading = false;
+  bool _hasHealthConnection = false;
 
   var user = AppSettings.userInfo;
 
@@ -110,14 +119,33 @@ class _HomeControllerState extends State<HomeController> with Observer {
     Observable.instance.addObserver(this);
 
     if (user?.isShare == true) {
-      //    Future.delayed(Duration(milliseconds: 10));
       ShareProfilePopup.instance.onHasSharedCode(
           requestFromDoctor: true, code: user?.shareRefCode ?? '');
     }
     firebaseSetup();
+    initHealthApp();
+  }
+
+  initHealthApp() async {
+    await Permission.activityRecognition.request();
+
+    Future.delayed(Duration(milliseconds: 1000), () async {
+      bool? hasHealthConnection = await AppStorages.getHealthAppPermission();
+      if (hasHealthConnection == null) {
+        AppSettings.isFirstTimeSyncHealth = true;
+        RequestHealthConnect.showModal(context);
+      } else if (hasHealthConnection == true) {
+        AppSettings.isFirstTimeSyncHealth = false;
+        setState(() {
+          _hasHealthConnection = hasHealthConnection;
+        });
+      }
+    });
   }
 
   Future firebaseSetup() async {
+    await TrackingManager.analytics
+        .logScreenView(screenName: "home", screenClass: "HomeController");
     await TrackingManager.analytics.logScreenView(
       screenName: "home", 
       screenClass: "HomeController"
@@ -157,6 +185,7 @@ class _HomeControllerState extends State<HomeController> with Observer {
       checkScreen(NavigatorName.detail_hba1c);
     }
     if (notifyName == 'goal_calo_changed' || notifyName == 'refresh_home') {
+      _hasHealthConnection = false;
       _refresh();
     }
     if (notifyName == Const.NAVIGATE_TO_PROFILE_TAB) {
@@ -229,7 +258,7 @@ class _HomeControllerState extends State<HomeController> with Observer {
                 Future.delayed(Duration.zero, () async {
                   showWelcomeDialog(model?.packageAccount);
                 });
-              }
+              } else {}
             }
             isLoading = false;
           }
@@ -245,6 +274,8 @@ class _HomeControllerState extends State<HomeController> with Observer {
                 child: Column(
                   children: [
                     HomeHeader(sharedCode: widget.sharedCode),
+                    if (_hasHealthConnection == true)
+                      RequestHealthConnect(isSyncing: true),
                     Expanded(
                       child: SafeArea(
                         top: false,

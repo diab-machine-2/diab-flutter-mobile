@@ -8,7 +8,7 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/service/api_result.dart';
 import 'package:medical/src/model/service/network_exceptions.dart';
-import 'package:medical/src/utils/logger.dart';
+import 'package:medical/src/utils/app_log.dart';
 import 'package:medical/src/utils/utils.dart';
 
 import 'payment_package.dart';
@@ -26,7 +26,6 @@ class PaymentPackageCubit extends Cubit<PaymentPackageState> {
 
   Future<void> initConnect() async {
     var result = await FlutterInappPurchase.instance.initialize();
-    logger.i('result: $result');
     initPlatformState();
     getListSubscription();
   }
@@ -34,13 +33,10 @@ class PaymentPackageCubit extends Cubit<PaymentPackageState> {
   // Platform messages are asynchronous, so we initialize in an async method.
   Future<void> initPlatformState() async {
     _connectionSubscription =
-        FlutterInappPurchase.connectionUpdated.listen((connected) {
-      logger.i('connected: $connected');
-    });
+        FlutterInappPurchase.connectionUpdated.listen((connected) {});
 
     _purchaseUpdatedSubscription =
         FlutterInappPurchase.purchaseUpdated.listen((productItem) {
-      logger.i('purchase-updated: $productItem');
       if (productItem != null) {
         handlePurchase(productItem);
         FlutterInappPurchase.instance.finishTransaction(productItem);
@@ -49,7 +45,6 @@ class PaymentPackageCubit extends Cubit<PaymentPackageState> {
 
     _purchaseErrorSubscription =
         FlutterInappPurchase.purchaseError.listen((purchaseError) {
-      logger.i('purchase-error: $purchaseError');
       String? error = purchaseError?.message;
       handlePurchase(null, error: error);
     });
@@ -62,7 +57,6 @@ class PaymentPackageCubit extends Cubit<PaymentPackageState> {
       return;
     } else {
       String skuId = "pro_${monthUsed}_${Platform.isIOS ? "months" : "month"}";
-      logger.i(skuId);
       int indexSku =
           listItem.indexWhere((element) => element.productId == skuId);
       if (indexSku >= 0) {
@@ -84,7 +78,7 @@ class PaymentPackageCubit extends Cubit<PaymentPackageState> {
         apiResult.when(success: (dynamic response) {
           emit(PurchaseSuccess());
         }, failure: (NetworkExceptions error) {
-          logger.e(NetworkExceptions.getErrorMessage(error));
+          Console.log('handlePurchase Error', NetworkExceptions.getErrorMessage(error));
         });
       } else {
         emit(PurchaseSuccess());

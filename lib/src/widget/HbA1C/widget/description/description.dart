@@ -11,6 +11,24 @@ class Description extends StatelessWidget {
   final String titleDetail;
   Description(
       {required this.input, required this.data, required this.titleDetail});
+
+  static showTooltip(
+    context, {
+    required ShortGuiModel data,
+    required String title,
+  }) {
+    showDialog(
+      barrierColor: R.color.color0xff003F38.withOpacity(0.8),
+      useSafeArea: false,
+      context: context,
+      builder: (_) => DetailDescription(
+        input: false,
+        data: data,
+        title: title,
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     // final height = (MediaQuery.of(context).size.width - 32) * 153 / 343 - 54;

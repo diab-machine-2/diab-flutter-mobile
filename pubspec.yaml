@@ -128,6 +128,7 @@ dependencies:
   dotted_border: ^2.0.0+2
   sticky_headers: ^0.3.0+2
   flutter_share: ^2.0.0
+  health: ^4.4.0
 
 dev_dependencies:
   flutter_test:

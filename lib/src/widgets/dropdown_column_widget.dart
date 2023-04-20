@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
-import 'package:medical/src/utils/logger.dart';
+import 'package:medical/src/utils/app_log.dart';
 import 'package:medical/src/utils/utils.dart';
 
 class DropdownColumnWidget extends StatefulWidget {
@@ -41,7 +41,7 @@ class _DropdownColumnWidgetState extends State<DropdownColumnWidget> {
       try {
         if (list!.last != widget.listData.last) _selectedPos = null;
       } catch (e) {
-        logger.e(e.toString());
+        Console.log('DropdownColumnWidget Error', e.toString());
       }
       list = widget.listData;
       if (list!.contains(firstElement)) {

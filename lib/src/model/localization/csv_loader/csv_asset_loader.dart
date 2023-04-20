@@ -2,8 +2,7 @@ import 'dart:developer';
 import 'dart:ui';
 import 'package:csv/csv_settings_autodetection.dart';
 import 'package:flutter/services.dart';
-import 'package:medical/src/utils/logger.dart';
-import 'package:medical/src/utils/utils.dart';
+import 'package:medical/src/utils/app_log.dart';
 import 'asset_loader.dart';
 import 'package:csv/csv.dart';
 
@@ -25,7 +24,7 @@ class CsvAssetLoader extends AssetLoader {
     try {
       parser = csvParser!.getLanguageMap(locale.toString());
     } catch (e) {
-      logger.e(e);
+      Console.logJson('CsvAssetLoader Error', e);
     }
     return parser;
   }

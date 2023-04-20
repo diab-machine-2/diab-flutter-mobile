@@ -4,9 +4,8 @@ import 'package:medical/src/model/response/list_transaction_response.dart';
 import 'package:medical/src/model/response/user_info_response.dart';
 import 'package:medical/src/model/service/api_result.dart';
 import 'package:medical/src/model/service/network_exceptions.dart';
+import 'package:medical/src/utils/app_log.dart';
 import 'package:medical/src/utils/const.dart';
-import 'package:medical/src/utils/logger.dart';
-
 import 'my_package.dart';
 
 class MyPackageCubit extends Cubit<MyPackageState> {
@@ -25,7 +24,7 @@ class MyPackageCubit extends Cubit<MyPackageState> {
     apiResult.when(success: (UserInfoResponse response) {
       // ownCode = response.data?.packageCode;
     }, failure: (NetworkExceptions error) {
-      logger.e(NetworkExceptions.getErrorMessage(error));
+      Console.log('getOwnPackageCode Error', NetworkExceptions.getErrorMessage(error));
     });
   }
 

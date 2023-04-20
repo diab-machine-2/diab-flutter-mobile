@@ -8,6 +8,20 @@ class AppStorages {
     prefs.setString('referralCode', jsonEncode(referralCode!.toJson()));
   }
 
+  static Future setHealthAppPermission(bool value) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString('healthAppPermission', '$value');
+  }
+
+  static Future getHealthAppPermission() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    if (prefs.getString('healthAppPermission') != null) {
+      String prefData = prefs.getString('healthAppPermission').toString();
+      return prefData == 'true';
+    }
+    return null;
+  }
+
   static Future<ReferralCodeTemp?> getReferralCode() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     if (prefs.getString('referralCode') != null) {

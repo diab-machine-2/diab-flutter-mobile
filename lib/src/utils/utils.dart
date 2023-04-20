@@ -13,11 +13,11 @@ import 'package:intl/intl.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/model/preference/app_preference.dart';
+import 'package:medical/src/utils/app_log.dart';
 import 'package:path/path.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'const.dart';
-import 'logger.dart';
 
 class Utils {
   static Future<bool> checkConnection() async {
@@ -27,7 +27,7 @@ class Utils {
         return true;
       }
     } on SocketException catch (_) {
-      logger.d('Internet not connect');
+      Console.log('checkConnection Error', 'Internet not connect');
     }
     return false;
   }
@@ -90,7 +90,7 @@ class Utils {
     if (await canLaunch(url)) {
       await launch(url);
     } else {
-      logger.d('Đã có lỗi xảy ra');
+      Console.log('launchURL Error', 'Đã có lỗi xảy ra');
     }
   }
 
@@ -124,7 +124,7 @@ class Utils {
       try {
         date = DateFormat(format).format(dateTime);
       } on FormatException catch (e) {
-        logger.e(e.toString());
+        Console.log('parseDateToString Error', e.toString());
       }
     return date;
   }
@@ -137,7 +137,7 @@ class Utils {
         date = DateFormat(toFormat, "en_US")
             .format(DateFormat(fromFormat).parse(dateSv));
       } on FormatException catch (e) {
-        logger.d(e.toString());
+        Console.log('parseStringDateToString Error', e.toString());
       }
     return date;
   }
@@ -251,7 +251,7 @@ class Utils {
     try {
       return int.parse(newPrice);
     } catch (e) {
-      logger.e(e.toString());
+      Console.log('convertPriceToNumber Error', e.toString());
       return null;
     }
   }
