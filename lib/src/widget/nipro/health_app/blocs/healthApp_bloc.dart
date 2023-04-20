@@ -146,7 +146,7 @@ class HealthAppBloc extends Bloc<HealthAppEvent, HealthAppState> {
       result = true;
     }
     responseSyncData['syncSYSTOLICAndDIASTOLIC'] = result;
-    _requestSyncData();
+    // await _requestSyncData();
   }
 
   syncSTEP() async {
@@ -164,6 +164,7 @@ class HealthAppBloc extends Bloc<HealthAppEvent, HealthAppState> {
         dateFrom = dateTime;
       }
     }
+
     List<HealthDataPoint> steps = await health
         .getHealthDataFromTypes(dateFrom, dateTo, [HealthDataType.STEPS]);
 
@@ -234,13 +235,15 @@ class HealthAppBloc extends Bloc<HealthAppEvent, HealthAppState> {
       }
     }
     responseSyncData['syncSTEP'] = result;
-    _requestSyncData();
+    // await _requestSyncData();
   }
 
   syncWeight() async {
+    print("PHUONG syncWeight");
     bool result = false;
     DateTime dateTo = DateTime.now();
     DateTime dateFrom = releaseDate;
+    requestSyncData['syncWeight'] = true;
 
     // Lấy thời gian sync dữ liệu gần nhất
     InputWeightDataModel lastestSummaryModel = await client.fetchInput(
@@ -255,6 +258,8 @@ class HealthAppBloc extends Bloc<HealthAppEvent, HealthAppState> {
         dateFrom = dateTime;
       }
     }
+
+    print("PHUONG dateFrom $dateFrom");
 
     dateFrom = dateFrom.add(Duration(minutes: 1));
 
@@ -319,7 +324,7 @@ class HealthAppBloc extends Bloc<HealthAppEvent, HealthAppState> {
     }
 
     responseSyncData['syncWeight'] = result;
-    _requestSyncData();
+    // await _requestSyncData();
   }
 
   syncBlodGlucose() async {
@@ -377,7 +382,7 @@ class HealthAppBloc extends Bloc<HealthAppEvent, HealthAppState> {
     }
 
     responseSyncData['syncBlodGlucose'] = result;
-    _requestSyncData();
+    // await _requestSyncData();
   }
 
   Stream<HealthAppState> syncDataSuccess(SyncDataSuccess event) async* {
@@ -398,34 +403,52 @@ class HealthAppBloc extends Bloc<HealthAppEvent, HealthAppState> {
       }
       add(SyncDataSuccess());
     } else {
-      requestSyncData.forEach((key, value) async {
+      bool needRetry =
+          false; // Biến đánh dấu có cần gọi lại _requestSyncData() hay không
+      for (String key in requestSyncData.keys) {
         switch (key) {
           case 'syncSYSTOLICAndDIASTOLIC':
-            if (value == false) {
+            if (requestSyncData[key] == false) {
               await syncSystolicAndDiastolic();
+              needRetry =
+                  true; // Gọi lại _requestSyncData() sau khi hoàn thành syncSystolicAndDiastolic()
             }
             break;
           case 'syncSTEP':
-            if (value == false) {
+            if (requestSyncData[key] == false) {
               await syncSTEP();
+              needRetry =
+                  true; // Gọi lại _requestSyncData() sau khi hoàn thành syncSTEP()
             }
             break;
           case 'syncWeight':
-            if (value == false) {
+            if (requestSyncData[key] == false) {
               await syncWeight();
+              needRetry =
+                  true; // Gọi lại _requestSyncData() sau khi hoàn thành syncWeight()
             }
             break;
           case 'syncBlodGlucose':
-            if (value == false) {
+            if (requestSyncData[key] == false) {
               await syncBlodGlucose();
+              needRetry =
+                  true; // Gọi lại _requestSyncData() sau khi hoàn thành syncBlodGlucose()
             }
             break;
         }
-      });
+        if (needRetry) {
+          break; // Thoát vòng lặp nếu cần gọi lại _requestSyncData()
+        }
+      }
+
+      if (needRetry) {
+        await _requestSyncData(); // Gọi lại _requestSyncData() nếu cần
+      }
     }
   }
 
   Stream<HealthAppState> _syncData(SubmitSyncData event) async* {
+    print("PHUONG Stream<HealthAppState> _syncData");
     yield state.copyWith(blocStatus: BlocStatus.loading);
     final List<HealthDataType> _types = HealthSetting.instance.types;
     requestSyncData = {
