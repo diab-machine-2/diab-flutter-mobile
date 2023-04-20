@@ -143,10 +143,10 @@ class DynamicLinkConfig {
     String lessonName =
         "Tải ngay DiaB để xem bài học trên và còn nhiều hướng dẫn về chế độ dinh dưỡng, vận động, nghỉ ngơi cho người đái tháo đường!";
 
-    String domain = "https://zoom.9solutions.vn/referralCode";
-    String longDynamicLink = "https://zoom.9solutions.vn/referralCode";
-    longDynamicLink += "?link=https://diab.com.vn/newsDetail=1234567";
-    longDynamicLink += "&ofl=https://zoom.9solutions.vn";
+    String domain = "https://click.diab.com.vn/referralCode";
+    String longDynamicLink = "https://click.diab.com.vn/referralCode";
+    longDynamicLink += "?link=link=https://zoom.9solutions.vn/activityDetail=[ACTIVITY_ID]?zoomID=[ZOOM_ID]&password=[PASSWORD]";
+    longDynamicLink += "&ofl=https://zoom.9solutions.vn/";
     longDynamicLink += "&apn=com.vbhc.diab";
     longDynamicLink += "&ibi=com.cactusoftware.diab";
     longDynamicLink += "&isi=1569353448";
