@@ -134,6 +134,38 @@ class DynamicLinkConfig {
     return dynamicUrl.shortUrl.toString();
   }
 
+  Future<String> createZoomLink() async {
+    final dynamicLink = FirebaseDynamicLinks.instance;
+
+    String lessonImage =
+        "https://diab.com.vn/wp-content/uploads/2022/02/hinh-1-banner-trang-chu.png";
+
+    String lessonName =
+        "Tải ngay DiaB để xem bài học trên và còn nhiều hướng dẫn về chế độ dinh dưỡng, vận động, nghỉ ngơi cho người đái tháo đường!";
+
+    String domain = "https://zoom.9solutions.vn/referralCode";
+    String longDynamicLink = "https://zoom.9solutions.vn/referralCode";
+    longDynamicLink += "?link=https://diab.com.vn/newsDetail=1234567";
+    longDynamicLink += "&ofl=https://zoom.9solutions.vn";
+    longDynamicLink += "&apn=com.vbhc.diab";
+    longDynamicLink += "&ibi=com.cactusoftware.diab";
+    longDynamicLink += "&isi=1569353448";
+    longDynamicLink += "&sd=$lessonName";
+    longDynamicLink += "&si=$lessonImage";
+
+    print('PHUONG createZoomLink: $longDynamicLink');
+    final DynamicLinkParameters parameters = DynamicLinkParameters(
+      uriPrefix: domain,
+      longDynamicLink: Uri.parse(longDynamicLink),
+      link:
+          Uri.parse('https://diab.com.vn/referralCode=123123?lessonId=fdfdfd'),
+    );
+
+    final ShortDynamicLink dynamicUrl =
+        await dynamicLink.buildShortLink(parameters);
+    return dynamicUrl.shortUrl.toString();
+  }
+
   removeLessonId() {
     _lessonId = null;
   }
@@ -187,6 +219,7 @@ class DynamicLinkConfig {
   }
 
   progressDynamicLink(deepLink) {
+    print('PHUONG deepLink $deepLink');
     dynamicLinkType.forEach((functionName) {
       String urlString = deepLink.toString();
       List<String> separatedString = urlString.split('$functionName=');
