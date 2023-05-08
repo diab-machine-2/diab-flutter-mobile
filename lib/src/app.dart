@@ -77,6 +77,7 @@ import 'widget/helper/photo_view.dart';
 import 'widget/news_detail/presentation/news_detail_view.dart';
 import 'widget/profile/profile_controller.dart';
 import 'widget/shared_profile/pages/share_app_detail/share_app_detail.dart';
+import 'widget/zoom/zoom_view.dart';
 
 class App extends StatefulWidget {
   @override
@@ -573,6 +574,10 @@ class _AppState extends State<App> {
                           onComplete: (String, int) {},
                         ),
                       );
+                    case NavigatorName.zoom:
+                      final data = settings.arguments as Map<String, dynamic>?;
+                      return _buildRoute(
+                          settings, ZoomView(calendarID: data?['id']));
                     default:
                       return null;
                   }

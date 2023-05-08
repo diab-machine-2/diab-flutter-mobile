@@ -21,6 +21,7 @@ class DynamicLinkConfig {
   List<String> dynamicLinkType = [
     "referralCode",
     "newsDetail",
+    "calendar",
   ];
 
   StreamSubscription? _subLink;
@@ -141,19 +142,23 @@ class DynamicLinkConfig {
         "https://diab.com.vn/wp-content/uploads/2022/02/hinh-1-banner-trang-chu.png";
 
     String lessonName =
-        "Tải ngay DiaB để xem bài học trên và còn nhiều hướng dẫn về chế độ dinh dưỡng, vận động, nghỉ ngơi cho người đái tháo đường!";
+        "Tải ngay DiaB để xem bài học trên và còn nhiều hướng dẫn về chế độ dinh dưỡng, vận động, nghỉ ngơi cho người đái tháo đường!1";
 
     String domain = "https://click.diab.com.vn/referralCode";
     String longDynamicLink = "https://click.diab.com.vn/referralCode";
-    longDynamicLink += "?link=link=https://zoom.9solutions.vn/activityDetail=[ACTIVITY_ID]?zoomID=[ZOOM_ID]&password=[PASSWORD]";
-    longDynamicLink += "&ofl=https://zoom.9solutions.vn/";
+    String mobileLink =
+        "https://diab.com.vn/calendar=0386f35d-42ba-4f25-4c5e-08db41f224ee";
+    String desktopLink =
+        "https://zoom.9solutions.vn/0386f35d-42ba-4f25-4c5e-08db41f224ee";
+
+    longDynamicLink += "?link=$mobileLink";
+    longDynamicLink += "&ofl=$desktopLink";
     longDynamicLink += "&apn=com.vbhc.diab";
     longDynamicLink += "&ibi=com.cactusoftware.diab";
     longDynamicLink += "&isi=1569353448";
     longDynamicLink += "&sd=$lessonName";
     longDynamicLink += "&si=$lessonImage";
 
-    print('PHUONG createZoomLink: $longDynamicLink');
     final DynamicLinkParameters parameters = DynamicLinkParameters(
       uriPrefix: domain,
       longDynamicLink: Uri.parse(longDynamicLink),
@@ -219,7 +224,6 @@ class DynamicLinkConfig {
   }
 
   progressDynamicLink(deepLink) {
-    print('PHUONG deepLink $deepLink');
     dynamicLinkType.forEach((functionName) {
       String urlString = deepLink.toString();
       List<String> separatedString = urlString.split('$functionName=');
@@ -240,6 +244,16 @@ class DynamicLinkConfig {
             Navigator.pushNamed(
                 navigatorKey.currentState!.context, NavigatorName.news_detail,
                 arguments: {'id': newsDetailId});
+          }
+          break;
+        case "calendar":
+          if (urlString.contains(functionName)) {
+            String calendarID = separatedString[1];
+            Navigator.pushNamed(
+              navigatorKey.currentState!.context,
+              NavigatorName.zoom,
+              arguments: {'id': calendarID}
+            );
           }
           break;
       }

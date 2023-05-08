@@ -870,13 +870,14 @@ class _ActivityTabPageState extends State<ActivityTabPage>
       onTap: () async {
         await _cubit.markCompletedCalendar(smartGoal?.calendarId);
         Navigator.pop(context);
+        Navigator.pushNamed(context, NavigatorName.zoom, arguments: {'id': smartGoal?.calendarId});
 
-        if (smartGoal?.calendar?.meetingLink != null) {
-          await canLaunch(smartGoal!.calendar!.meetingLink!)
-              ? await launch(smartGoal.calendar!.meetingLink!,
-                  forceSafariVC: false, forceWebView: false)
-              : throw 'Could not launch ${smartGoal.calendar!.meetingLink!}';
-        }
+        // if (smartGoal?.calendar?.meetingLink != null) {
+        //   await canLaunch(smartGoal!.calendar!.meetingLink!)
+        //       ? await launch(smartGoal.calendar!.meetingLink!,
+        //           forceSafariVC: false, forceWebView: false)
+        //       : throw 'Could not launch ${smartGoal.calendar!.meetingLink!}';
+        // }
       },
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

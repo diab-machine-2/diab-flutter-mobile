@@ -243,18 +243,6 @@ class _HomeControllerState extends State<HomeController> with Observer {
                 child: Column(
                   children: [
                     HomeHeader(sharedCode: widget.sharedCode),
-                    GestureDetector(
-                      onTap: () async {
-                        String createZoomLink =
-                            await DynamicLinkConfig.instance.createZoomLink();
-                        print('PHUONG dynamic link: $createZoomLink');
-                      },
-                      child: Container(
-                        height: 300,
-                        width: 300,
-                        color: Colors.red,
-                      ),
-                    ),
                     Expanded(
                       child: SafeArea(
                         top: false,
