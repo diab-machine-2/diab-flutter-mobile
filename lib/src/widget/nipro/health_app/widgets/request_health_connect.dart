@@ -6,6 +6,7 @@ import 'package:medical/res/colors.dart';
 import 'package:medical/src/app_setting/health_setting.dart';
 import 'package:medical/src/utils/app_storages.dart';
 import 'package:medical/src/widgets/button_widget.dart';
+import 'package:permission_handler/permission_handler.dart';
 import '../blocs/healthApp_bloc.dart';
 
 class RequestHealthConnect extends StatelessWidget {
@@ -120,8 +121,11 @@ class RequestHealthConnect extends StatelessWidget {
                     ),
                     SizedBox(height: 15),
                     ButtonWidget(
-                      title: "Kết nỗi với $appTitle",
+                      title: "Kết nối với $appTitle",
                       onPressed: () async {
+                        if (Platform.isAndroid) {
+                          await Permission.activityRecognition.request();
+                        }
                         bool? _hasPermission = await HealthSetting.instance
                             .requestConnectionPermission();
                         if (_hasPermission != null) {

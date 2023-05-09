@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/app_setting/health_setting.dart';
+import 'package:medical/src/utils/app_storages.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'dart:io' show Platform;
@@ -22,8 +24,8 @@ class _ConnectDeviceAppState extends State<ConnectDeviceApp> {
   }
 
   onLoaded() async {
-    bool? _hasPermission =
-        await HealthSetting.instance.requestConnectionPermission();
+    bool? _hasPermission = await AppStorages.getHealthAppPermission();
+    //     await HealthSetting.instance.requestConnectionPermission();
     setState(() {
       hasPermission = _hasPermission ?? false;
     });
@@ -92,49 +94,58 @@ class _ConnectDeviceAppState extends State<ConnectDeviceApp> {
                         )),
                   ),
                   SizedBox(height: 16),
-                  Container(
-                    decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(12)),
-                    padding: EdgeInsets.all(12),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Row(
-                          children: [
-                            Image.asset(
-                                Platform.isIOS
-                                    ? R.drawable.logo_healthkit
-                                    : R.drawable.logo_googleFit,
-                                height: 48),
-                            SizedBox(width: 12),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
+                  GestureDetector(
+                    onTap: () {
+                      if (hasPermission == false) {
+                        RequestHealthConnect.showModal(context);
+                      }
+                    },
+                    child: Container(
+                      decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(12)),
+                      padding: EdgeInsets.all(12),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Row(
+                            children: [
+                              Image.asset(
                                   Platform.isIOS
-                                      ? 'Kết nối từ Apple Health'
-                                      : 'Kết nối từ Google Fit',
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    color: R.color.textDark,
-                                    fontWeight: FontWeight.bold,
+                                      ? R.drawable.logo_healthkit
+                                      : R.drawable.logo_googleFit,
+                                  height: 48),
+                              SizedBox(width: 12),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    Platform.isIOS
+                                        ? 'Kết nối từ Apple Health'
+                                        : 'Kết nối từ Google Fit',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      color: R.color.textDark,
+                                      fontWeight: FontWeight.bold,
+                                    ),
                                   ),
-                                ),
-                                Text(
-                                  hasPermission ? 'Đã kết nối' : 'Chưa kết nối',
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    color: hasPermission
-                                        ? R.color.greenGradientBottom
-                                        : R.color.gray,
+                                  Text(
+                                    hasPermission
+                                        ? 'Đã kết nối'
+                                        : 'Chưa kết nối',
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      color: hasPermission
+                                          ? R.color.greenGradientBottom
+                                          : R.color.gray,
+                                    ),
                                   ),
-                                ),
-                              ],
-                            )
-                          ],
-                        ),
-                      ],
+                                ],
+                              )
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
                   )
                 ],

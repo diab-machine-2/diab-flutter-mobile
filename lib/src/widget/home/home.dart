@@ -127,15 +127,11 @@ class _HomeControllerState extends State<HomeController> with Observer {
   }
 
   initHealthApp() async {
-    await Permission.activityRecognition.request();
-
     Future.delayed(Duration(milliseconds: 1000), () async {
       bool? hasHealthConnection = await AppStorages.getHealthAppPermission();
       if (hasHealthConnection == null) {
-        AppSettings.isFirstTimeSyncHealth = true;
         RequestHealthConnect.showModal(context);
       } else if (hasHealthConnection == true) {
-        AppSettings.isFirstTimeSyncHealth = false;
         setState(() {
           _hasHealthConnection = hasHealthConnection;
         });
