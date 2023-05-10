@@ -87,7 +87,7 @@ class ZoomView extends StatefulWidget {
 
 class _ZoomViewState extends State<ZoomView> {
   late final WebViewController _controller;
-  String zoomUrl = "https://zoom.9solutions.vn/";
+  String zoomUrl = "https://zoom.9solutions.vn?calendarId=";
 
   @override
   void initState() {
@@ -149,7 +149,7 @@ Page resource error:
           );
         },
       )
-      ..loadRequest(Uri.parse(zoomUrl + widget.calendarID + "?phone=${AppSettings.userInfo!.phoneNumber}"));
+      ..loadRequest(Uri.parse(zoomUrl + widget.calendarID + "&phone=${AppSettings.userInfo!.phoneNumber}"));
 
     // #docregion platform_features
     if (controller.platform is AndroidWebViewController) {
