@@ -5,6 +5,7 @@ import 'package:medical/src/app_setting/health_setting.dart';
 import 'package:medical/src/utils/app_storages.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
+import 'package:medical/src/widget/helper/show_message.dart';
 import 'dart:io' show Platform;
 import 'package:medical/src/widget/nipro/health_app/widgets/request_health_connect.dart';
 import 'health_app/sync_health_app_view.dart';
@@ -25,7 +26,6 @@ class _ConnectDeviceAppState extends State<ConnectDeviceApp> {
 
   onLoaded() async {
     bool? _hasPermission = await AppStorages.getHealthAppPermission();
-    //     await HealthSetting.instance.requestConnectionPermission();
     setState(() {
       hasPermission = _hasPermission ?? false;
     });
@@ -97,7 +97,14 @@ class _ConnectDeviceAppState extends State<ConnectDeviceApp> {
                   GestureDetector(
                     onTap: () {
                       if (hasPermission == false) {
-                        RequestHealthConnect.showModal(context);
+                        RequestHealthConnect.showModal(
+                          context,
+                          callback: () {
+                            setState(() {
+                              hasPermission = true;
+                            });
+                          },
+                        );
                       }
                     },
                     child: Container(

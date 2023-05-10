@@ -130,7 +130,7 @@ class _HomeControllerState extends State<HomeController> with Observer {
     Future.delayed(Duration(milliseconds: 1000), () async {
       bool? hasHealthConnection = await AppStorages.getHealthAppPermission();
       if (hasHealthConnection == null) {
-        RequestHealthConnect.showModal(context);
+        RequestHealthConnect.showModal(context, callback: () {});
       } else if (hasHealthConnection == true) {
         setState(() {
           _hasHealthConnection = hasHealthConnection;
@@ -142,10 +142,8 @@ class _HomeControllerState extends State<HomeController> with Observer {
   Future firebaseSetup() async {
     await TrackingManager.analytics
         .logScreenView(screenName: "home", screenClass: "HomeController");
-    await TrackingManager.analytics.logScreenView(
-      screenName: "home", 
-      screenClass: "HomeController"
-    );
+    await TrackingManager.analytics
+        .logScreenView(screenName: "home", screenClass: "HomeController");
     AppSettings.currentScreenName = 'home';
   }
 
@@ -271,7 +269,7 @@ class _HomeControllerState extends State<HomeController> with Observer {
                   children: [
                     HomeHeader(sharedCode: widget.sharedCode),
                     if (_hasHealthConnection == true)
-                      RequestHealthConnect(isSyncing: true),
+                      RequestHealthConnect(isSyncing: true, callback: () {}),
                     Expanded(
                       child: SafeArea(
                         top: false,

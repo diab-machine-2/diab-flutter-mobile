@@ -5,22 +5,31 @@ import 'package:medical/res/R.dart';
 import 'package:medical/res/colors.dart';
 import 'package:medical/src/app_setting/health_setting.dart';
 import 'package:medical/src/utils/app_storages.dart';
+import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widgets/button_widget.dart';
 import 'package:permission_handler/permission_handler.dart';
 import '../blocs/healthApp_bloc.dart';
 
 class RequestHealthConnect extends StatelessWidget {
   final bool isSyncing;
-  const RequestHealthConnect({Key? key, required this.isSyncing})
+  final Function callback;
+  const RequestHealthConnect(
+      {Key? key, required this.isSyncing, required this.callback})
       : super(key: key);
 
-  static showModal(BuildContext context) {
+  static showModal(
+    BuildContext context, {
+    required Function callback,
+  }) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       isDismissible: true,
       backgroundColor: Colors.white,
-      builder: (context) => RequestHealthConnect(isSyncing: false),
+      builder: (context) => RequestHealthConnect(
+        isSyncing: false,
+        callback: () => callback(),
+      ),
     );
   }
 
@@ -131,6 +140,9 @@ class RequestHealthConnect extends StatelessWidget {
                         if (_hasPermission != null) {
                           AppStorages.setHealthAppPermission(_hasPermission);
                           Navigator.pop(context);
+                          callback();
+                          Message.showToastMessage(
+                              context, "Đã hoàn thành kết nối với $appTitle");
                           context
                               .read<HealthAppBloc>()
                               .add(SubmitSyncData(true));
