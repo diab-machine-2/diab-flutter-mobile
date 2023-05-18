@@ -94,7 +94,9 @@ class LessonTabCubit extends Cubit<LessonTabState> {
     int index = lessonsList!.indexWhere((element) => element?.id == lessonId);
     lessonsList![index]!.percentComplete = percentComplete;
     lessonsList![index]!.learningStatus = learningStatus;
-    emit(LessonTabInitial());
+    lessonsList!.sort((a, b) => a!.percentComplete!.compareTo(b!.percentComplete!)); 
+    emit(LessonTabScrollToLesson(firstLessonIndex));
+    // emit(LessonTabInitial());
   }
 
   Future<void> getInitData(

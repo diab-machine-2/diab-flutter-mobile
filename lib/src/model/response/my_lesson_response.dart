@@ -164,7 +164,7 @@ class MyLessonResponseData {
     level = json['level']?.toString();
     module = json['module']?.toString();
     learningStatus = json['learningStatus']?.toInt();
-    percentComplete = json['percentComplete']?.toInt();
+    percentComplete = json['percentComplete'] != null ? json['percentComplete'].toInt() : 0;
     order = json['order']?.toInt();
     levelOrder = json['levelOrder']?.toInt();
     isNew = json['isNew'];

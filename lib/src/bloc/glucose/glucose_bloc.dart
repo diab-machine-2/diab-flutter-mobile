@@ -100,7 +100,7 @@ class GlucoseBloc extends Bloc<GlucoseEvent, GlucoseState> {
       int? page,
       String? timeFrameType,
       String? glucoseDistributionType) async* {
-    try {
+    // try {
       final client = GlucoseClient();
       final GlucoseState currenState = state;
       var model = await client.fetchInput(currentDateTime, periodFilterType,
@@ -113,15 +113,15 @@ class GlucoseBloc extends Bloc<GlucoseEvent, GlucoseState> {
       }
       yield GlucoseAlllLoaded(
           inputGlucoseModel: model.inputs, hasMore: model.hasMore);
-    } catch (e, _) {
-      if (e is Error) {
-        yield GlucoseError(message: e.message);
-      } else {
-        yield GlucoseError(
-            message:
-                R.string.error_can_not_connect_to_server.tr());
-      }
-    }
+    // } catch (e, _) {
+    //   if (e is Error) {
+    //     yield GlucoseError(message: e.message);
+    //   } else {
+    //     yield GlucoseError(
+    //         message:
+    //             R.string.error_can_not_connect_to_server.tr());
+    //   }
+    // }
   }
 
   Stream<GlucoseState> fetchComparerGlucose(String? currentDateTime,

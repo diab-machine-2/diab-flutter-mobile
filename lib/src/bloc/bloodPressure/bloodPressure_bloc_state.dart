@@ -28,7 +28,7 @@ class BloodPressureDataLoaded extends BloodPressureState {
 
 class BloodPressureDataHeartRateLoaded extends BloodPressureState {
   final BloodPressureHeartRateModel bloodPressureHeartRateModel;
-  final BloodPressureModel lastestSummaryModel;
+  final BloodPressureModel? lastestSummaryModel;
 
   BloodPressureDataHeartRateLoaded(
       {required this.bloodPressureHeartRateModel,

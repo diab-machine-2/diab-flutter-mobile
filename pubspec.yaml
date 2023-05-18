@@ -129,6 +129,7 @@ dependencies:
   sticky_headers: ^0.3.0+2
   flutter_share: ^2.0.0
   webview_flutter: ^4.0.7
+  health: ^4.4.0
 
 dev_dependencies:
   flutter_test:

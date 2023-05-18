@@ -67,11 +67,14 @@ class _TabbarControllerState extends State<TabbarController>
     Observable.instance.addObserver(this);
     NotificationManager.instance.requestFirebaseToken(context);
     final String? lessonId = DynamicLinkConfig.instance.lessonId;
-    pageController = PageController(
-        initialPage:
-            lessonId != null || widget.isRedirectFromNotification ? 1 : 0);
+    final String? zoomId = DynamicLinkConfig.instance.zoomId;
+    int initialPage = 0;
+    if (lessonId != null || widget.isRedirectFromNotification || zoomId != null) {
+      initialPage = 1;
+    }
+    pageController = PageController(initialPage: initialPage);
     _bottomTabbar = BottomTabbar(
-        index: lessonId != null || widget.isRedirectFromNotification ? 1 : 0,
+        index: initialPage,
         callback: (index) {
           if (index == -1) {
             _showMaterialDialog();
@@ -89,7 +92,8 @@ class _TabbarControllerState extends State<TabbarController>
 
   _checkExistLessonId() async {
     final String? lessonId = DynamicLinkConfig.instance.lessonId;
-    if (lessonId != null) {
+    final String? zoomId = DynamicLinkConfig.instance.zoomId;
+    if (lessonId != null || zoomId != null) {
       jumpTo(1);
     }
   }

@@ -11,13 +11,17 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
+import 'package:medical/src/utils/app_log.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 // #docregion platform_imports
 // Import for Android features.
 import 'package:webview_flutter_android/webview_flutter_android.dart';
 // Import for iOS features.
 import 'package:webview_flutter_wkwebview/webview_flutter_wkwebview.dart';
+
+import 'widgets/confirm_exit_zoom.dart';
 // #enddocregion platform_imports
 
 const String kNavigationExamplePage = '''
@@ -86,13 +90,13 @@ class ZoomView extends StatefulWidget {
 }
 
 class _ZoomViewState extends State<ZoomView> {
-  late final WebViewController _controller;
+  late WebViewController _controller;
   String zoomUrl = "https://zoom.9solutions.vn?calendarId=";
 
   @override
   void initState() {
     super.initState();
-
+    checkAndRequestPermission();
     // #docregion platform_features
     late final PlatformWebViewControllerCreationParams params;
     if (WebViewPlatform.instance is WebKitWebViewPlatform) {
@@ -149,7 +153,9 @@ Page resource error:
           );
         },
       )
-      ..loadRequest(Uri.parse(zoomUrl + widget.calendarID + "&phone=${AppSettings.userInfo!.phoneNumber}"));
+      ..loadRequest(Uri.parse(zoomUrl +
+          widget.calendarID +
+          "&phone=${AppSettings.userInfo!.phoneNumber}"));
 
     // #docregion platform_features
     if (controller.platform is AndroidWebViewController) {
@@ -163,10 +169,41 @@ Page resource error:
   }
 
   @override
+  void dispose() {
+    super.dispose();
+  }
+
+  void checkAndRequestPermission() async {
+    PermissionStatus statusMicrophone = await Permission.microphone.status;
+    Console.log('checkAndRequestPermission statusMicrophone', statusMicrophone);
+    if (statusMicrophone.isDenied) {
+      await Permission.microphone.request();
+      // Xử lý sau khi người dùng đưa ra quyết định
+    }
+    PermissionStatus statusCamera = await Permission.camera.request();
+    Console.log('checkAndRequestPermission statusCamera', statusMicrophone);
+    if (statusCamera.isDenied) {
+      await Permission.microphone.request();
+      // Xử lý sau khi người dùng đưa ra quyết định
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text("Zoom"),
+        leading: GestureDetector(
+          onTap: () async {},
+          child: GestureDetector(
+            onTap: () =>
+                ConfirmExitZoom.showDialogConfirm(context, onSubmit: () {
+              Navigator.pop(context);
+              Navigator.pop(context);
+            }),
+            child: Icon(Icons.arrow_back),
+          ),
+        ),
       ),
       body: WebViewWidget(controller: _controller),
     );

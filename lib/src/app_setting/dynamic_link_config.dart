@@ -27,10 +27,12 @@ class DynamicLinkConfig {
   StreamSubscription? _subLink;
   String? _referalCode;
   String? _lessonId;
+  String? _zoomId;
   late String _shareLink;
 
   String? get referalCode => _referalCode;
   String? get lessonId => _lessonId;
+  String? get zoomId => _zoomId;
   String? get shareLink => _shareLink;
 
   Future<void> setUpHandleDeepLink() async {
@@ -249,11 +251,12 @@ class DynamicLinkConfig {
         case "calendar":
           if (urlString.contains(functionName)) {
             String calendarID = separatedString[1];
+            _zoomId = calendarID;
             Navigator.pushNamed(
-              navigatorKey.currentState!.context,
-              NavigatorName.zoom,
-              arguments: {'id': calendarID}
-            );
+                navigatorKey.currentState!.context, NavigatorName.zoom,
+                arguments: {'id': calendarID});
+            Observable.instance.notifyObservers([],
+                notifyName: Const.NAVIGATE_TO_LESSON_DETAIL);
           }
           break;
       }

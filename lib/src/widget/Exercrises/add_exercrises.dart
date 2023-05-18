@@ -1194,6 +1194,7 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
       for (var file in files) {
         paths.add(file.path);
       }
+      
       final result = await ExercrisesClient().postIndexExercrises(
           (selectedDate.millisecondsSinceEpoch ~/ 1000).toInt(),
           selectedTimeFrame!.id,

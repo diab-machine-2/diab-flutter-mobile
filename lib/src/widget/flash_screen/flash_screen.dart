@@ -87,6 +87,14 @@ class _FlashScreenControllerState extends State<FlashScreenController> {
       final token = await AppSettings.getToken();
       AppSettings.environment = await AppSettings.getEnvironment();
       if (token.isNotEmpty) {
+        final refreshToken = await AppSettings.getRefreshToken();
+        
+        await LoginClient().login({
+          "client_id": Const.CLIENT_ID,
+          "client_secret": Const.CLIENT_SECRET,
+          "grant_type": "refresh_token",
+          "refresh_token": refreshToken
+        });
         // final refreshToken = await AppSettings.getRefreshToken();
         // await LoginClient().login({
         //   "client_id": Const.CLIENT_ID,

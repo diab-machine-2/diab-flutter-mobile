@@ -273,16 +273,17 @@ class _LessonTabPageState extends State<LessonTabPage>
                                                       .lessonsList![index]!.id!,
                                                   onComplete: (lessonId,
                                                       percentComplete) {
-                                                    _cubit.updateStatusLesson(
-                                                      lessonId: lessonId,
-                                                      percentComplete:
-                                                          percentComplete,
-                                                    );
+                                                        _controller.requestRefresh();
+                                                      // _cubit.updateStatusLesson(
+                                                      //   lessonId: lessonId,
+                                                      //   percentComplete:
+                                                      //       percentComplete,
+                                                      // );
                                                   },
                                                 ),
                                               );
                                               // if (result == 0) {
-                                              // _controller.requestRefresh();
+                                              _controller.requestRefresh();
                                               // }
                                               //   if(result != null){
                                               //     _cubit.getInitData(isRefresh: true,

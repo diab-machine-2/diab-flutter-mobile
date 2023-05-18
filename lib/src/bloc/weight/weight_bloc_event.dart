@@ -33,12 +33,12 @@ class FetchTrendHip extends WeightEvent {
 
 class FetchInputWeight extends WeightEvent {
   final String? currentDateTime;
-  final String? periodFilterType;
+  final String periodFilterType;
   final int? page;
 
   FetchInputWeight({
     this.currentDateTime,
-    this.periodFilterType,
+    required this.periodFilterType,
     this.page,
   });
 }

@@ -8,8 +8,9 @@ import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:medical/src/app.dart';
 import 'package:medical/src/model/localization/localization.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
-import 'src/utils/logger.dart';
 import 'package:easy_localization/easy_localization.dart';
+
+import 'src/utils/app_log.dart';
 
 class SimpleBlocObserver extends BlocObserver {
   @override
@@ -27,7 +28,7 @@ class SimpleBlocObserver extends BlocObserver {
   @override
   void onError(BlocBase bloc, Object error, StackTrace stacktrace) {
     super.onError(bloc, error, stacktrace);
-    logger.i("Error", error, stacktrace);
+    Console.log('onError', error);
   }
 }
 

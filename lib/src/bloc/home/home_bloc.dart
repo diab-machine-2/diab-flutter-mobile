@@ -19,6 +19,9 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     if (event is FetchHome) {
       yield* _fetchHomes();
     }
+    // if (event is SyncHealthApp) {
+    //   yield* _syncHealthApp();
+    // }
   }
 
   Stream<HomeState> _fetchHomes() async* {
@@ -31,10 +34,12 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       if (e is Error) {
         yield HomeError(message: e.message);
       } else {
-        yield HomeError(
-            message:
-                R.string.error_can_not_connect_to_server.tr());
+        yield HomeError(message: R.string.error_can_not_connect_to_server.tr());
       }
     }
+  }
+
+  Stream<HomeState> _syncHealthApp() async* {
+    
   }
 }

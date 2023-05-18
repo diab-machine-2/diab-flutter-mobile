@@ -105,7 +105,7 @@ class WeightBloc extends Bloc<WeightEvent, WeightState> {
 
   Stream<WeightState> fetchInputWeight(
     String? currentDateTime,
-    String? periodFilterType,
+    String periodFilterType,
     int? page,
   ) async* {
     try {

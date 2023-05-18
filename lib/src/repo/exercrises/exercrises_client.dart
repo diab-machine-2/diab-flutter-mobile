@@ -12,6 +12,7 @@ import 'package:medical/src/modal/exercrises/exercrises_Category.dart';
 import 'package:medical/src/modal/exercrises/exercrises_active.dart';
 import 'package:medical/src/modal/exercrises/exercrises_data_model.dart';
 import 'package:medical/src/modal/exercrises/exercises_intensity.dart';
+import 'package:medical/src/utils/app_log.dart';
 import 'package:medical/src/widget/helper/http_helper.dart';
 import 'package:medical/src/modal/error/error_model.dart';
 import 'package:easy_localization/easy_localization.dart';

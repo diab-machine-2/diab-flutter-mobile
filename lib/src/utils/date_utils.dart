@@ -1,5 +1,5 @@
 import 'package:intl/intl.dart';
-import 'logger.dart';
+import 'package:medical/src/utils/app_log.dart';
 
 class DateUtil {
   static bool? isAfter(int? dateTime1, int? dateTime2) {
@@ -26,7 +26,8 @@ class DateUtil {
   }
 
   static int getCurrentDayInMillis() {
-    DateTime dateTime0 = DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day, 0, 0, 0);
+    DateTime dateTime0 = DateTime(
+        DateTime.now().year, DateTime.now().month, DateTime.now().day, 0, 0, 0);
     int startDate = (dateTime0.millisecondsSinceEpoch ~/ 1000).toInt();
     return startDate;
   }
@@ -66,14 +67,18 @@ class DateUtil {
       date2 = DateTime(date2.year, date2.month, date2.day);
     }
     if (date1 != null && date2 != null) {
-      return date1.year == date2.year && date1.month == date2.month && date1.day == date2.day;
+      return date1.year == date2.year &&
+          date1.month == date2.month &&
+          date1.day == date2.day;
     } else {
       return false;
     }
   }
 
   static bool isSameDate(DateTime date1, DateTime date2) {
-    return date1.year == date2.year && date1.month == date2.month && date1.day == date2.day;
+    return date1.year == date2.year &&
+        date1.month == date2.month &&
+        date1.day == date2.day;
   }
 
   static DateTime parseTimespanToDateTime(int timestamp) {
@@ -87,29 +92,32 @@ class DateUtil {
       try {
         date = DateFormat(format).parse(dateStr);
       } on FormatException catch (e) {
-        logger.e(e.toString());
+        Console.log('parseStringToDate Error', e.toString());
       }
     return date;
   }
 
-  static String parseDateToString(DateTime? dateTime, String format, {String? locale}) {
+  static String parseDateToString(DateTime? dateTime, String format,
+      {String? locale}) {
     String date = "";
     if (dateTime != null)
       try {
         date = DateFormat(format, locale).format(dateTime);
       } on FormatException catch (e) {
-        logger.e(e.toString());
+        Console.log('parseDateToString Error', e.toString());
       }
     return date;
   }
 
-  static String? parseStringDateToString(String? dateSv, String fromFormat, String toFormat) {
+  static String? parseStringDateToString(
+      String? dateSv, String fromFormat, String toFormat) {
     String? date = dateSv;
     if (dateSv != null)
       try {
-        date = DateFormat(toFormat).format(DateFormat(fromFormat).parse(dateSv));
+        date =
+            DateFormat(toFormat).format(DateFormat(fromFormat).parse(dateSv));
       } on FormatException catch (e) {
-        logger.d(e.toString());
+        Console.log('parseStringDateToString Error', e.toString());
       }
     return date;
   }
@@ -120,7 +128,7 @@ class DateUtil {
       try {
         date = DateFormat(toFormat).format(DateTime.parse(dateSv));
       } on FormatException catch (e) {
-        logger.d(e.toString());
+        Console.log('parseDateDefault Error', e.toString());
       }
     return date;
   }
@@ -130,5 +138,14 @@ class DateUtil {
     final minutes = duration.inMinutes;
     final seconds = duration.inSeconds.remainder(60);
     return '${twoDigits(minutes)}:${twoDigits(seconds)}';
+  }
+
+  static int diffInDays(DateTime date1, DateTime date2) {
+    return ((date1.difference(date2) -
+                    Duration(hours: date1.hour) +
+                    Duration(hours: date2.hour))
+                .inHours /
+            24)
+        .round();
   }
 }

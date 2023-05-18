@@ -44,7 +44,7 @@ class _EmotionDetailTabbarControllerState
   @override
   void initState() {
     super.initState();
-    _tabController = new TabController(vsync: this, length: 2);
+    _tabController = new TabController(vsync: this, length: 2, initialIndex: 1);
     Observable.instance.addObserver(this);
     // DartNotificationCenter.subscribe(
     //     channel: 'Emotion_change_data',
@@ -65,6 +65,7 @@ class _EmotionDetailTabbarControllerState
     if (notifyName == 'Emotion_change_data') {
       overViewKey.currentState?.reloadData(periodFilterType);
       detailKey.currentState?.reloadData(periodFilterType);
+      // changeIndex(1);
     }
   }
 
@@ -127,11 +128,19 @@ class _EmotionDetailTabbarControllerState
                     child: Icon(Icons.format_list_bulleted,
                         color: R.color.textDark)),
                 actions: [
-                  CustomActionDescription(
+                  if (des != null)
+                    CustomActionDescription(
                       key: customActionDesKey,
                       callback: (value) {
-                        customTabbarKey.currentState!.showDescription();
-                      }),
+                        Description.showTooltip(
+                          context,
+                          data: des!,
+                          title:
+                              R.string.kiem_soat_cam_xuc_benh_tieu_duong.tr(),
+                        );
+                        // customTabbarKey.currentState!.showDescription();
+                      },
+                    ),
                   IconButton(
                       icon: Icon(Icons.close, color: R.color.black),
                       onPressed: () {
@@ -311,6 +320,7 @@ class _ActionFilterState extends State<ActionFilter> {
         builder: (context) => FillterBloodPanel(
             selectedIndex: selectedIndex,
             callback: (value, index) {
+
               if (index != null) {
                 setState(() {
                   name = value;

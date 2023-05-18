@@ -6,6 +6,7 @@ import 'package:medical/src/modal/blood_pressure/blood_pressure_distribution.dar
 import 'package:medical/src/modal/blood_pressure/blood_pressure_heart_rate.dart';
 import 'package:medical/src/modal/blood_pressure/blood_pressure_statistic.dart';
 import 'package:medical/src/modal/blood_pressure/blood_pressure_trend.dart';
+import 'package:medical/src/utils/app_log.dart';
 import 'package:medical/src/widget/helper/http_helper.dart';
 import 'package:medical/src/modal/error/error_model.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -28,20 +29,22 @@ class BloodPressureClient extends FetchClient {
         throw error;
       }
     } catch (e) {
-      throw e is Error
-          ? e
-          : R.string.error_can_not_connect_to_server.tr();
+      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
   // lấy danh sách huyết áp
-  Future<BloodPressureDataModel> fetchBloodPressureInput(String? currentDateTime,
-      String? periodFilterType, String? bloodPressureType, int? page) async {
+  Future<BloodPressureDataModel> fetchBloodPressureInput(
+      String? currentDateTime,
+      String? periodFilterType,
+      String? bloodPressureType,
+      int? page,
+      {String size = '10'}) async {
     try {
       Map<String, String> params = {
         'currentDateTime': '$currentDateTime',
         'periodFilterType': '$periodFilterType',
-        'size': '10'
+        'size': size
       };
       if (bloodPressureType != null && bloodPressureType != 'null') {
         params['bloodPressureType'] = bloodPressureType;
@@ -49,9 +52,9 @@ class BloodPressureClient extends FetchClient {
       if (page != null) {
         params['page'] = page.toString();
       }
-      // print(params);
       final Response response = await super
           .fetchData(url: '/App/BloodPressure/Input', params: params);
+
       if (response.statusCode == 200) {
         return BloodPressureDataModel(
             inputs: BloodPressureModel.toList(response.data['data']),
@@ -61,27 +64,24 @@ class BloodPressureClient extends FetchClient {
         throw error;
       }
     } catch (e) {
-      throw e is Error
-          ? e
-          : R.string.error_can_not_connect_to_server.tr();
+      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
   // lấy chỉ số huyết áp và nhịp tim gần nhất
-  Future<BloodPressureModel> fetchBloodPressureLatest() async {
+  Future<BloodPressureModel?> fetchBloodPressureLatest() async {
     try {
       final Response response =
           await super.fetchData(url: '/App/BloodPressure/Input/Latest');
-      if (response.statusCode == 200) {
+      if (response.statusCode == 200 &&
+          response.data != null &&
+          response.data['data'] != null) {
         return BloodPressureModel.fromJson(response.data['data']);
       } else {
-        final error = Error.fromJson(response);
-        throw error;
+        return null;
       }
     } catch (e) {
-      throw e is Error
-          ? e
-          : R.string.error_can_not_connect_to_server.tr();
+      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
@@ -102,9 +102,7 @@ class BloodPressureClient extends FetchClient {
         throw error;
       }
     } catch (e) {
-      throw e is Error
-          ? e
-          : R.string.error_can_not_connect_to_server.tr();
+      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
@@ -125,9 +123,7 @@ class BloodPressureClient extends FetchClient {
         throw error;
       }
     } catch (e) {
-      throw e is Error
-          ? e
-          : R.string.error_can_not_connect_to_server.tr();
+      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
@@ -148,9 +144,7 @@ class BloodPressureClient extends FetchClient {
         throw error;
       }
     } catch (e) {
-      throw e is Error
-          ? e
-          : R.string.error_can_not_connect_to_server.tr();
+      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
@@ -164,27 +158,28 @@ class BloodPressureClient extends FetchClient {
       String note,
       String reason,
       List<String> files) async {
-    try {
-      final Map<String, String> params = {
-        'systolic': systolic,
-        'diastolic': diastolic,
-        'pulseRate': pulseRate,
-        'date': date.toString(),
-        'timeFrameId': timeFrameId ?? '',
-        'reason': reason,
-        'note': note,
-      };
+    // try {
+    final Map<String, String> params = {
+      'systolic': systolic,
+      'diastolic': diastolic,
+      'pulseRate': pulseRate,
+      'date': date.toString(),
+      'timeFrameId': timeFrameId ?? '',
+      'reason': reason,
+      'note': note,
+    };
 
-      final response = await super.postHttp(
-          path: '/App/BloodPressure/Input', params: params, files: files);
-      if (response.statusCode == 200) {
-        return true;
-      } else {
-        throw response.reasonPhrase!;
-      }
-    } catch (e) {
-      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+    final response = await super.postHttp(
+        path: '/App/BloodPressure/Input', params: params, files: files);
+
+    if (response.statusCode == 200) {
+      return true;
+    } else {
+      throw response.reasonPhrase!;
     }
+    // } catch (e) {
+    //   throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+    // }
   }
 
   /// cập nhỉ chỉ số huyết áp
@@ -221,9 +216,7 @@ class BloodPressureClient extends FetchClient {
         throw response.reasonPhrase!;
       }
     } catch (e) {
-      throw e is Error
-          ? e
-          : R.string.error_can_not_connect_to_server.tr();
+      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
@@ -240,9 +233,7 @@ class BloodPressureClient extends FetchClient {
         throw error;
       }
     } catch (e) {
-      throw e is Error
-          ? e
-          : R.string.error_can_not_connect_to_server.tr();
+      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
@@ -258,9 +249,7 @@ class BloodPressureClient extends FetchClient {
         throw error;
       }
     } catch (e) {
-      throw e is Error
-          ? e
-          : R.string.error_can_not_connect_to_server.tr();
+      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
@@ -277,9 +266,7 @@ class BloodPressureClient extends FetchClient {
         throw error;
       }
     } catch (e) {
-      throw e is Error
-          ? e
-          : R.string.error_can_not_connect_to_server.tr();
+      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
@@ -300,9 +287,7 @@ class BloodPressureClient extends FetchClient {
         throw error;
       }
     } catch (e) {
-      throw e is Error
-          ? e
-          : R.string.error_can_not_connect_to_server.tr();
+      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
     }
   }
 }
