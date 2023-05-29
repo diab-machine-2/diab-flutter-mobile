@@ -130,6 +130,7 @@ dependencies:
   flutter_share: ^2.0.0
   webview_flutter: ^4.0.7
   health: ^4.4.0
+  flutter_inappwebview: ^5.7.2+3
 
 dev_dependencies:
   flutter_test:
