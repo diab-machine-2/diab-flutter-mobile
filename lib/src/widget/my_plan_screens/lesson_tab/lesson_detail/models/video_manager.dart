@@ -5,15 +5,7 @@ import 'package:better_player/better_player.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:medical/res/R.dart';
-
-enum CustomPlayerEventType {
-  videoPlay,
-  videoPause,
-  videoFoward,
-  videoPrevious,
-  videoCompleted,
-  videoReplay,
-}
+import 'package:medical/src/widget/my_plan_screens/my_plan/models/completion_status.dart';
 
 class VideoManager {
   VideoManager({

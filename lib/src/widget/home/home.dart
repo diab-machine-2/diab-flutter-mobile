@@ -27,6 +27,7 @@ import 'package:medical/src/widget/my_plan_screens/my_plan/models/plan_type.dart
 import 'package:medical/src/widget/nipro/health_app/sync_health_app_view.dart';
 import 'package:medical/src/widget/nipro/health_app/widgets/request_health_connect.dart';
 import 'package:medical/src/widget/shared_profile/pages/share_app_detail/widgets/banner_share_app.dart';
+import 'package:medical/src/widget/zoom/zoom_android_view.dart';
 import 'package:medical/src/widgets/block_bottom_sheet.dart';
 import 'package:medical/src/widgets/button_widget.dart';
 import 'package:medical/src/widgets/network_image_widget.dart';
@@ -127,16 +128,19 @@ class _HomeControllerState extends State<HomeController> with Observer {
   }
 
   initHealthApp() async {
-    Future.delayed(Duration(milliseconds: 1000), () async {
-      bool? hasHealthConnection = await AppStorages.getHealthAppPermission();
-      if (hasHealthConnection == null) {
-        RequestHealthConnect.showModal(context, callback: () {});
-      } else if (hasHealthConnection == true) {
-        setState(() {
-          _hasHealthConnection = hasHealthConnection;
-        });
-      }
-    });
+    final String? lessonId = DynamicLinkConfig.instance.lessonId;
+    if (lessonId == null) {
+      Future.delayed(Duration(milliseconds: 1000), () async {
+        bool? hasHealthConnection = await AppStorages.getHealthAppPermission();
+        if (hasHealthConnection == null) {
+          RequestHealthConnect.showModal(context, callback: () {});
+        } else if (hasHealthConnection == true) {
+          setState(() {
+            _hasHealthConnection = hasHealthConnection;
+          });
+        }
+      });
+    }
   }
 
   Future firebaseSetup() async {

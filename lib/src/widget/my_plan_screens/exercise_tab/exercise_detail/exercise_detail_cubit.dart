@@ -39,6 +39,12 @@ class ExerciseDetailCubit extends Cubit<ExerciseDetailState> {
           objectId: exerciseData.id,
           objectTitle: exerciseData.name,
         );
+        if (!exerciseCompleted &&
+            exerciseData.completionStatus != CompletionStatus.completed &&
+            eventType == CustomPlayerEventType.videoCompleted) {
+          exerciseCompleted = true;
+          completeExercise(exerciseData.id ?? '');
+        }
       },
       onDone: () {
         if (!exerciseCompleted &&

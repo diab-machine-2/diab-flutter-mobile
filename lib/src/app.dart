@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
@@ -70,6 +72,7 @@ import 'package:medical/src/widget/question_answer/question_detail/question_deta
 import 'package:medical/src/widget/tabbar/tabbar.dart';
 import 'package:medical/src/widget/voucher/presentation/voucher_detail/pages/voucher_detail_view.dart';
 import 'package:medical/src/widget/voucher/presentation/voucher_list/pages/voucher_list_view.dart';
+import 'package:medical/src/widget/zoom/zoom_android_view.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'utils/navigator_name.dart';
 import 'widget/Food/add_food.dart';
@@ -77,7 +80,7 @@ import 'widget/helper/photo_view.dart';
 import 'widget/news_detail/presentation/news_detail_view.dart';
 import 'widget/profile/profile_controller.dart';
 import 'widget/shared_profile/pages/share_app_detail/share_app_detail.dart';
-import 'widget/zoom/zoom_view.dart';
+import 'widget/zoom/zoom_ios_view.dart';
 
 class App extends StatefulWidget {
   @override
@@ -576,8 +579,14 @@ class _AppState extends State<App> {
                       );
                     case NavigatorName.zoom:
                       final data = settings.arguments as Map<String, dynamic>?;
-                      return _buildRoute(
-                          settings, ZoomView(calendarID: data?['id']));
+                      if (Platform.isAndroid) {
+                        return _buildRoute(
+                            settings, ZoomAndroidView(calendarID: data?['id']));
+                      } else {
+                        return _buildRoute(
+                            settings, ZoomIosView(calendarID: data?['id']));
+                      }
+
                     default:
                       return null;
                   }

@@ -42,6 +42,7 @@ class _MyPlanPageState extends State<MyPlanPage> with Observer {
     final String? lessonId = DynamicLinkConfig.instance.lessonId;
     final String? zoomId = DynamicLinkConfig.instance.zoomId;
     if (zoomId != null) {
+      // DynamicLinkConfig.instance.removeZoomId();
       index = PlanType.goal.index;
     } else if (lessonId != null || user.isUserFree) {
       index = PlanType.lesson.index;

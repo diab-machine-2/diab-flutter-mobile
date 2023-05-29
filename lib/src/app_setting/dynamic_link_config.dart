@@ -5,8 +5,10 @@ import 'package:medical/src/app.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:medical/src/modal/learning/learning_post_model.dart';
+import 'package:medical/src/modal/user/user_model.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigator_name.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 import '../model/response/lesson_section_list_response.dart';
 
@@ -137,44 +139,12 @@ class DynamicLinkConfig {
     return dynamicUrl.shortUrl.toString();
   }
 
-  Future<String> createZoomLink() async {
-    final dynamicLink = FirebaseDynamicLinks.instance;
-
-    String lessonImage =
-        "https://diab.com.vn/wp-content/uploads/2022/02/hinh-1-banner-trang-chu.png";
-
-    String lessonName =
-        "Tải ngay DiaB để xem bài học trên và còn nhiều hướng dẫn về chế độ dinh dưỡng, vận động, nghỉ ngơi cho người đái tháo đường!1";
-
-    String domain = "https://click.diab.com.vn/referralCode";
-    String longDynamicLink = "https://click.diab.com.vn/referralCode";
-    String mobileLink =
-        "https://diab.com.vn/calendar=0386f35d-42ba-4f25-4c5e-08db41f224ee";
-    String desktopLink =
-        "https://zoom.9solutions.vn/0386f35d-42ba-4f25-4c5e-08db41f224ee";
-
-    longDynamicLink += "?link=$mobileLink";
-    longDynamicLink += "&ofl=$desktopLink";
-    longDynamicLink += "&apn=com.vbhc.diab";
-    longDynamicLink += "&ibi=com.cactusoftware.diab";
-    longDynamicLink += "&isi=1569353448";
-    longDynamicLink += "&sd=$lessonName";
-    longDynamicLink += "&si=$lessonImage";
-
-    final DynamicLinkParameters parameters = DynamicLinkParameters(
-      uriPrefix: domain,
-      longDynamicLink: Uri.parse(longDynamicLink),
-      link:
-          Uri.parse('https://diab.com.vn/referralCode=123123?lessonId=fdfdfd'),
-    );
-
-    final ShortDynamicLink dynamicUrl =
-        await dynamicLink.buildShortLink(parameters);
-    return dynamicUrl.shortUrl.toString();
-  }
-
   removeLessonId() {
     _lessonId = null;
+  }
+
+  void removeZoomId() {
+    _zoomId = null;
   }
 
   static Future<String?> createShareNewsLink(
@@ -226,7 +196,7 @@ class DynamicLinkConfig {
   }
 
   progressDynamicLink(deepLink) {
-    dynamicLinkType.forEach((functionName) {
+    dynamicLinkType.forEach((functionName) async {
       String urlString = deepLink.toString();
       List<String> separatedString = urlString.split('$functionName=');
       switch (functionName) {
@@ -251,12 +221,26 @@ class DynamicLinkConfig {
         case "calendar":
           if (urlString.contains(functionName)) {
             String calendarID = separatedString[1];
-            _zoomId = calendarID;
-            Navigator.pushNamed(
-                navigatorKey.currentState!.context, NavigatorName.zoom,
-                arguments: {'id': calendarID});
-            Observable.instance.notifyObservers([],
-                notifyName: Const.NAVIGATE_TO_LESSON_DETAIL);
+            final UserModel? user = AppSettings.userInfo;
+            if (user != null && _zoomId == null) {
+              _zoomId = calendarID;
+              PermissionStatus statusMicrophone =
+                  await Permission.microphone.status;
+              if (statusMicrophone.isDenied) {
+                await Permission.microphone.request();
+              }
+              PermissionStatus statusCamera = await Permission.camera.request();
+              if (statusCamera.isDenied) {
+                await Permission.camera.request();
+              }
+              Navigator.pushNamed(
+                  navigatorKey.currentState!.context, NavigatorName.zoom,
+                  arguments: {'id': calendarID});
+            } else {
+              _zoomId = calendarID;
+            }
+            // Observable.instance.notifyObservers([],
+            //     notifyName: Const.NAVIGATE_TO_LESSON_DETAIL);
           }
           break;
       }

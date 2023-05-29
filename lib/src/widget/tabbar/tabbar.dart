@@ -29,6 +29,7 @@ import 'package:medical/src/widget/my_plan_screens/my_plan/my_plan.dart';
 import 'package:medical/src/widget/profile/profile_controller.dart';
 import 'package:medical/src/widget/question_answer/question_answer_page.dart';
 import 'package:medical/src/widget/tabbar/bottom_tabbar.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../my_plan_screens/lesson_tab/lesson_detail/lesson_detail_page.dart';
 import '../my_plan_screens/my_plan/models/plan_type.dart';
@@ -88,12 +89,29 @@ class _TabbarControllerState extends State<TabbarController>
     });
     //   startTimer();
     _checkUserReferralCode();
+    _checkExistZoomId();
+  }
+
+  _checkExistZoomId() async {
+    final String? zoomId = DynamicLinkConfig.instance.zoomId;
+    if (zoomId != null) {
+      PermissionStatus statusMicrophone = await Permission.microphone.status;
+      if (statusMicrophone.isDenied) {
+        await Permission.microphone.request();
+      }
+      PermissionStatus statusCamera = await Permission.camera.request();
+      if (statusCamera.isDenied) {
+        await Permission.camera.request();
+      }
+      Navigator.pushNamed(
+          navigatorKey.currentState!.context, NavigatorName.zoom,
+          arguments: {'id': zoomId});
+    }
   }
 
   _checkExistLessonId() async {
     final String? lessonId = DynamicLinkConfig.instance.lessonId;
-    final String? zoomId = DynamicLinkConfig.instance.zoomId;
-    if (lessonId != null || zoomId != null) {
+    if (lessonId != null) {
       jumpTo(1);
     }
   }
@@ -164,6 +182,10 @@ class _TabbarControllerState extends State<TabbarController>
     }
     if (notifyName == Const.NAVIGATE_TO_LESSON_DETAIL) {
       _checkExistLessonId();
+    }
+    if (notifyName == Const.NAVIGATE_TO_LESSON_TAB ||
+        notifyName == Const.NAVIGATE_TO_ACTIVITY_TAB) {
+      jumpTo(1);
     }
     if (notifyName == Const.LANGUAGE_CHANGED) {
       setState(() {

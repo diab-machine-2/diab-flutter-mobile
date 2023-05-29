@@ -7,6 +7,7 @@ import 'package:flutter_observer/Observer.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
+import 'package:medical/src/app_setting/dynamic_link_config.dart';
 import 'package:medical/src/app_setting/firebase_tracking/activity_list_tracking.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/response/lesson_section_list_response.dart';
@@ -76,8 +77,15 @@ class _ActivityTabPageState extends State<ActivityTabPage>
   }
 
   @override
-  void update(
-      Observable observable, String? notifyName, Map<dynamic, dynamic>? map) {
+  Future<void> update(Observable observable, String? notifyName,
+      Map<dynamic, dynamic>? map) async {
+    if (notifyName == 'mark_completed_calendar') {
+      String? calendarId = DynamicLinkConfig.instance.zoomId;
+      if (calendarId != null) {
+        await _cubit.markCompletedCalendar(calendarId);
+        DynamicLinkConfig.instance.removeZoomId();
+      }
+    }
     if (notifyName == 'refresh_activity_tab') {
       Future.delayed(Duration(milliseconds: 1000), () {
         if (_cubit != null && isVisible) {
@@ -868,16 +876,17 @@ class _ActivityTabPageState extends State<ActivityTabPage>
           DateTime.now().millisecondsSinceEpoch ~/ 1000,
           smartGoal?.appointmentDate),
       onTap: () async {
-        await _cubit.markCompletedCalendar(smartGoal?.calendarId);
         Navigator.pop(context);
-        Navigator.pushNamed(context, NavigatorName.zoom, arguments: {'id': smartGoal?.calendarId});
-
-        // if (smartGoal?.calendar?.meetingLink != null) {
-        //   await canLaunch(smartGoal!.calendar!.meetingLink!)
-        //       ? await launch(smartGoal.calendar!.meetingLink!,
-        //           forceSafariVC: false, forceWebView: false)
-        //       : throw 'Could not launch ${smartGoal.calendar!.meetingLink!}';
-        // }
+        if (smartGoal?.calendar?.meetingLink != null) {
+          Navigator.pushNamed(context, NavigatorName.zoom,
+              arguments: {'id': smartGoal?.calendarId});
+          //   await canLaunch(smartGoal!.calendar!.meetingLink!)
+          //       ? await launch(smartGoal.calendar!.meetingLink!,
+          //           forceSafariVC: false, forceWebView: false)
+          //       : throw 'Could not launch ${smartGoal.calendar!.meetingLink!}';
+        } else {
+          await _cubit.markCompletedCalendar(smartGoal?.calendarId);
+        }
       },
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

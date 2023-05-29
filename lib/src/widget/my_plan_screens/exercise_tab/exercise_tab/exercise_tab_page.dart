@@ -10,6 +10,7 @@ import 'package:medical/src/app_setting/firebase_tracking/motion_list_tracking.d
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/response/exercise_movement_response.dart';
 import 'package:medical/src/model/response/week_states_response.dart';
+import 'package:medical/src/utils/app_log.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
@@ -243,6 +244,7 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
   }
 
   Widget _buildWeekListWidget() {
+    Console.log("PHUONG _cubit.weekStatesList", _cubit.weekStatesList);
     if (_cubit.weekStatesList.isEmpty) return const SizedBox();
     return Row(
       children: [
@@ -580,8 +582,8 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildWeekListWidget(),
-          const SizedBox(height: 20),
+          // _buildWeekListWidget(),
+          // const SizedBox(height: 20),
           Container(
             alignment: Alignment.centerRight,
             padding: const EdgeInsets.symmetric(horizontal: 16),

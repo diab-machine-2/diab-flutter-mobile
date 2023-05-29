@@ -9,6 +9,7 @@ import 'package:medical/src/model/response/exercise_movement_response.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/my_plan_screens/lesson_tab/lesson_detail/models/video_manager.dart';
+import 'package:medical/src/widget/my_plan_screens/my_plan/models/completion_status.dart';
 
 class VideoManager {
   BetterPlayerController? controller;
@@ -121,7 +122,7 @@ class VideoManager {
               newController
                   .videoPlayerController!.value.duration!.inMilliseconds) {
             //    Message.showToastMessage(context, 'Paused');
-            await newController.pause();
+            // await newController.pause();
           }
         }
         if (videoDuration == null) {
