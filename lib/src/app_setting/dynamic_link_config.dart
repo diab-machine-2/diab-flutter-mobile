@@ -147,6 +147,10 @@ class DynamicLinkConfig {
     _zoomId = null;
   }
 
+  void setZoomId(String zoomId) {
+    _zoomId = zoomId;
+  }
+
   static Future<String?> createShareNewsLink(
       LearningPostModel newsDetail) async {
     String _fallbackUrl = "https://diab.com.vn/cau-chuyen-thanh-cong";
@@ -239,8 +243,6 @@ class DynamicLinkConfig {
             } else {
               _zoomId = calendarID;
             }
-            // Observable.instance.notifyObservers([],
-            //     notifyName: Const.NAVIGATE_TO_LESSON_DETAIL);
           }
           break;
       }

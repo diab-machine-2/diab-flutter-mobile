@@ -54,8 +54,8 @@ class WelcomePackageScreenCubit extends Cubit<WelcomePackageScreenState> {
       AppSettings.isDisplayedWelcome = true;
       emit(const WelcomePackageScreenSuccess());
     }, failure: (NetworkExceptions error) {
-      emit(WelcomePackageScreenFailure(
-          NetworkExceptions.getErrorMessage(error)));
+      // emit(WelcomePackageScreenFailure(
+      //     NetworkExceptions.getErrorMessage(error)));
     });
   }
 

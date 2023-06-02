@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:flutter_observer/Observable.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
+import 'package:medical/src/app_setting/dynamic_link_config.dart';
 import 'package:medical/src/modal/user/user_model.dart';
 import 'package:medical/src/repo/user/user_client.dart';
 import 'package:medical/src/utils/app_log.dart';
@@ -12,7 +13,10 @@ import 'widgets/confirm_exit_zoom.dart';
 class ZoomAndroidView extends StatefulWidget {
   final String calendarID;
 
-  const ZoomAndroidView({Key? key, required this.calendarID}) : super(key: key);
+  const ZoomAndroidView({
+    Key? key,
+    required this.calendarID,
+  }) : super(key: key);
   @override
   _ZoomAndroidViewState createState() => new _ZoomAndroidViewState();
 }
@@ -29,6 +33,7 @@ class _ZoomAndroidViewState extends State<ZoomAndroidView> {
   }
 
   initData() async {
+    DynamicLinkConfig.instance.setZoomId(widget.calendarID);
     late UserModel? user;
     if (AppSettings.isGetUser == false) {
       user = await UserClient().fetchUser();
@@ -62,6 +67,7 @@ class _ZoomAndroidViewState extends State<ZoomAndroidView> {
   Widget build(BuildContext context) {
     if (url == null) {
       BotToast.showLoading();
+      return SizedBox();
     } else {
       BotToast.closeAllLoading();
     }
@@ -72,12 +78,17 @@ class _ZoomAndroidViewState extends State<ZoomAndroidView> {
           onTap: () => ConfirmExitZoom.showDialogConfirm(context, onSubmit: () {
             Observable.instance.notifyObservers([],
                 notifyName: Const.NAVIGATE_TO_ACTIVITY_TAB);
-              _webViewController.evaluateJavascript(source: """
-                document.querySelector(".footer__leave-btn-container button").click()
-                document.querySelector(".leave-meeting-options__btn").click()
+            Observable.instance
+                .notifyObservers([], notifyName: "mark_completed_calendar");
+            Navigator.pop(context);
+            Navigator.pop(context);
+            _webViewController.evaluateJavascript(source: """
+                var exitBtn = document.querySelector(".footer__leave-btn-container button");
+                if(exitBtn){
+                  document.querySelector(".footer__leave-btn-container button").click();
+                  document.querySelector(".leave-meeting-options__btn").click()
+                }
               """);
-            Navigator.pop(context);
-            Navigator.pop(context);
           }),
           child: Icon(Icons.arrow_back),
         ),

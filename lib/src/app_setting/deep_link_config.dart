@@ -18,16 +18,19 @@ class DeepLinkConfig {
     linkStream.listen((link) {
       if (link != null &&
           !link.contains("click.diab.com.vn") &&
-          !link.contains("referralCode")) {
+          !link.contains("referralCode") &&
+          !link.contains("lessonId") &&
+          !link.contains("calendar")) {
         onHaveLink(getShareCodeFromUrl(link));
-      } else if (link != null &&
-          link.contains("referralCode") &&
-          link.contains("lessonId") &&
-          link.contains("calendar")) {
-        if (Platform.isAndroid) {
-          DynamicLinkConfig.instance.progressDynamicLink(link);
-        }
-      }
+      } 
+      // else if (link != null &&
+      //     link.contains("referralCode") &&
+      //     link.contains("lessonId") &&
+      //     link.contains("calendar")) {
+      //   if (Platform.isAndroid) {
+      //     DynamicLinkConfig.instance.progressDynamicLink(link);
+      //   }
+      // }
     });
   }
 
@@ -37,7 +40,8 @@ class DeepLinkConfig {
       print('LOG onInit link: $initialLink');
       if (initialLink != null &&
           !initialLink.contains("click.diab.com.vn") &&
-          !initialLink.contains("referralCode")) {
+          !initialLink.contains("referralCode") &&
+          !initialLink.contains("calendar") ) {
         sharedCode = getShareCodeFromUrl(initialLink);
         return sharedCode;
       }

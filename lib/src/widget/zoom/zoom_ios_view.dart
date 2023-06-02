@@ -2,6 +2,8 @@ import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_observer/Observable.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
+import 'package:medical/src/app_setting/dynamic_link_config.dart';
+import 'package:medical/src/utils/app_log.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:webview_flutter_android/webview_flutter_android.dart';
@@ -11,7 +13,10 @@ import 'widgets/confirm_exit_zoom.dart';
 class ZoomIosView extends StatefulWidget {
   final String calendarID;
 
-  const ZoomIosView({Key? key, required this.calendarID}) : super(key: key);
+  const ZoomIosView({
+    Key? key,
+    required this.calendarID,
+  }) : super(key: key);
 
   @override
   State<ZoomIosView> createState() => _ZoomIosViewState();
@@ -33,6 +38,8 @@ class _ZoomIosViewState extends State<ZoomIosView> {
     } else {
       params = const PlatformWebViewControllerCreationParams();
     }
+
+    DynamicLinkConfig.instance.setZoomId(widget.calendarID);
 
     final WebViewController controller =
         WebViewController.fromPlatformCreationParams(params);
@@ -98,10 +105,13 @@ class _ZoomIosViewState extends State<ZoomIosView> {
   }
 
   void runJS() async {
-    _controller.runJavaScript(
-        'document.querySelector(".footer__leave-btn-container button").click()');
-    _controller.runJavaScript(
-        'document.querySelector(".leave-meeting-options__btn").click()');
+    _controller.runJavaScript("""
+      var exitBtn = document.querySelector(".footer__leave-btn-container button");
+      if(exitBtn){
+        document.querySelector(".footer__leave-btn-container button").click();
+        document.querySelector(".leave-meeting-options__btn").click()
+      }
+    """);
   }
 
   @override
@@ -115,9 +125,9 @@ class _ZoomIosViewState extends State<ZoomIosView> {
                 notifyName: Const.NAVIGATE_TO_ACTIVITY_TAB);
             Observable.instance
                 .notifyObservers([], notifyName: "mark_completed_calendar");
+            Navigator.pop(context);
+            Navigator.pop(context);
             runJS();
-            // Navigator.pop(context);
-            // Navigator.pop(context);
           }),
           child: Icon(Icons.arrow_back),
         ),

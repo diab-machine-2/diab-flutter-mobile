@@ -13,6 +13,7 @@ import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/response/lesson_section_list_response.dart';
 import 'package:medical/src/model/response/smart_goal_list_reponse.dart';
 import 'package:medical/src/model/response/week_states_response.dart';
+import 'package:medical/src/utils/app_log.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/date_utils.dart';
 import 'package:medical/src/utils/navigation_util.dart';
@@ -29,6 +30,7 @@ import 'package:medical/src/widgets/button_widget.dart';
 import 'package:medical/src/widgets/day_in_week_widget.dart';
 import 'package:medical/src/widgets/network_image_widget.dart';
 import 'package:medical/src/widgets/pdf_viewer_widget.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:visibility_detector/visibility_detector.dart';
@@ -82,8 +84,11 @@ class _ActivityTabPageState extends State<ActivityTabPage>
     if (notifyName == 'mark_completed_calendar') {
       String? calendarId = DynamicLinkConfig.instance.zoomId;
       if (calendarId != null) {
-        await _cubit.markCompletedCalendar(calendarId);
         DynamicLinkConfig.instance.removeZoomId();
+        await _cubit.markCompletedCalendar(calendarId);
+        if (_cubit != null && isVisible) {
+          _cubit.refreshData(isRefresh: true);
+        }
       }
     }
     if (notifyName == 'refresh_activity_tab') {
@@ -878,8 +883,20 @@ class _ActivityTabPageState extends State<ActivityTabPage>
       onTap: () async {
         Navigator.pop(context);
         if (smartGoal?.calendar?.meetingLink != null) {
-          Navigator.pushNamed(context, NavigatorName.zoom,
-              arguments: {'id': smartGoal?.calendarId});
+          PermissionStatus statusMicrophone =
+              await Permission.microphone.status;
+          if (statusMicrophone.isDenied) {
+            await Permission.microphone.request();
+          }
+          PermissionStatus statusCamera = await Permission.camera.request();
+          Console.log('PHUONG statusCamera', statusCamera);
+          if (statusCamera.isDenied) {
+            await Permission.camera.request();
+          }
+          Navigator.pushNamed(context, NavigatorName.zoom, arguments: {
+            'id': smartGoal?.calendarId,
+            'isCompleted': smartGoal?.isCompleted,
+          });
           //   await canLaunch(smartGoal!.calendar!.meetingLink!)
           //       ? await launch(smartGoal.calendar!.meetingLink!,
           //           forceSafariVC: false, forceWebView: false)
