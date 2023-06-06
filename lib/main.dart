@@ -59,7 +59,7 @@ Future<void> main() async {
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
 
   if (Platform.isAndroid) {
-    await AndroidInAppWebViewController.setWebContentsDebuggingEnabled(true);
+    await AndroidInAppWebViewController.setWebContentsDebuggingEnabled(false);
 
     // var swAvailable = await AndroidWebViewFeature.isFeatureSupported(
     //     AndroidWebViewFeature.SERVICE_WORKER_BASIC_USAGE);

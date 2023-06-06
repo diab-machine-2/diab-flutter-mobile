@@ -41,7 +41,7 @@ class _ZoomAndroidViewState extends State<ZoomAndroidView> {
       user = AppSettings.userInfo;
     }
     String _url =
-        "https://zoom.9solutions.vn/index.html?calendarId=${widget.calendarID}&phone=${user!.phoneNumber}&userName=${user.fullName ?? ''}";
+        "https://zoom.diab.com.vn/index.html?calendarId=${widget.calendarID}&phone=${user!.phoneNumber}&userName=${user.fullName ?? ''}";
     setState(() {
       url = _url;
     });

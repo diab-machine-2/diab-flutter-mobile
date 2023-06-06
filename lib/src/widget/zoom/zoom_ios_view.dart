@@ -24,7 +24,7 @@ class ZoomIosView extends StatefulWidget {
 
 class _ZoomIosViewState extends State<ZoomIosView> {
   late WebViewController _controller;
-  String zoomUrl = "https://zoom.9solutions.vn/index.html?calendarId=";
+  String zoomUrl = "https://zoom.diab.com.vn/index.html?calendarId=";
 
   @override
   initState() {
