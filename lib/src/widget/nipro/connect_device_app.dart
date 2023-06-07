@@ -8,6 +8,7 @@ import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'dart:io' show Platform;
 import 'package:medical/src/widget/nipro/health_app/widgets/request_health_connect.dart';
+import 'package:medical/src/widget/nipro/roche_connection/roche_connection_view.dart';
 import 'health_app/sync_health_app_view.dart';
 
 class ConnectDeviceApp extends StatefulWidget {
@@ -80,6 +81,41 @@ class _ConnectDeviceAppState extends State<ConnectDeviceApp> {
                                   height: 48),
                               SizedBox(width: 12),
                               Text('Kết nối từ thiết bị',
+                                  style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                      color: R.color.textDark))
+                            ]),
+                            Padding(
+                              padding: EdgeInsets.only(right: 8),
+                              child: Icon(Icons.arrow_forward_ios,
+                                  color: R.color.mainColor, size: 18),
+                            )
+                          ],
+                        )),
+                  ),
+                  SizedBox(height: 16),
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (BuildContext context) =>
+                                  RocheConnectionView()));
+                    },
+                    child: Container(
+                        decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(12)),
+                        padding: EdgeInsets.all(12),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Row(children: [
+                              Image.asset(R.drawable.ic_connect_from_device,
+                                  height: 48),
+                              SizedBox(width: 12),
+                              Text('Kết nối từ Accu-chek',
                                   style: TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.bold,
