@@ -1,10 +1,8 @@
 import 'package:app_settings/app_settings.dart' as Settings;
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:medical/res/R.dart';
-import 'package:medical/src/utils/app_log.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class ConditionWidget extends StatefulWidget {
@@ -30,17 +28,8 @@ class _ConditionWidgetState extends State<ConditionWidget> {
     await Permission.bluetoothAdvertise.request();
     await Permission.bluetoothConnect.request();
 
-    // final String blueToothPermission =
-    //     await _channel.invokeMethod('request_permission');
-
-    // setState(() {
-    //   isActive = blueToothPermission == 'ble_already';
-    // });
-
     FlutterBluePlus.instance.state.listen((state) {
-      setState(() {
-        bluetoothState = state;
-      });
+      bluetoothState = state;
     });
   }
 
@@ -53,7 +42,7 @@ class _ConditionWidgetState extends State<ConditionWidget> {
           'Điều kiện kết nối bắt buộc',
           style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
         ),
-        SizedBox(height: 15),
+        SizedBox(height: 20),
         Column(
           children: [
             Row(
@@ -149,7 +138,7 @@ class _ConditionWidgetState extends State<ConditionWidget> {
                 ),
               ],
             ),
-            SizedBox(height: 15), 
+            SizedBox(height: 15),
             Row(
               children: [
                 Container(

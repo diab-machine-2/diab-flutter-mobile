@@ -14,6 +14,8 @@ class Const {
   // ignore: non_constant_identifier_names
   static String API_URL = "${HOST_URL}api/";
 
+  static double mmollToMgdlFactor = 18.018;
+
   static const String HOST_GOOGLE_MAP_URL =
       "https://maps.googleapis.com/maps/api/";
   static const String ANDROID_KEY = "AIzaSyAVRrZKBfIphjlPiua9y5Pk4CJ3oaddGp0";
@@ -145,6 +147,7 @@ class Const {
   static const String DINNER = 'Tối';
   static const String SUBMEAL = 'Nhẹ';
 
+  static const String NAVIGATE_HOME_TAB = 'Navigate_to_home_tab';
   static const String NAVIGATE_TO_MY_PLAN_TAB = 'Navigate_to_my_plan_tab';
   static const String NAVIGATE_TO_ACTIVITY_TAB = 'Navigate_to_activity_tab';
   static const String NAVIGATE_TO_LESSON_TAB = 'Navigate_to_lesson_tab';

@@ -1,8 +1,18 @@
+import 'dart:math';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
+import 'package:medical/src/utils/app_log.dart';
+import 'dart:typed_data';
 
+import 'data/models/GlucoseMeasurementRecord.dart';
+
+int FORMAT_UINT8 = 17;
+int FORMAT_UINT16 = 18;
 // UUID của các đặc tính
 const String uuidGlucoseMeasurement = '00002a18-0000-1000-8000-00805f9b34fb';
-const String uuidRACP = '00002a52-0000-1000-8000-00805f9b34fb';
+const String RECORD_ACCESS_CONTROL_POINT_CHARACTERISTIC_UUID =
+    '00002a52-0000-1000-8000-00805f9b34fb';
+const String GLUCOSE_MEASUREMENT_CONTEXT_CHARACTERISTIC_UUID =
+    "00002A34-0000-1000-8000-00805f9b34fb";
 
 // Thời gian bắt đầu (30 ngày trước)
 DateTime baseTime = DateTime.now().subtract(const Duration(days: 90));
@@ -10,17 +20,17 @@ int timeOffset = baseTime.difference(DateTime(1970)).inSeconds;
 
 class GlucoseFunctions {
   // Hàm thực hiện cấu hình CCCD
-  Future<void> configureCCCD(
-      BluetoothCharacteristic characteristic, List<int> value) async {
-    await characteristic.setNotifyValue(true);
-    await characteristic.write(value);
-  }
+  // Future<void> configureCCCD(
+  //     BluetoothCharacteristic values, List<int> value) async {
+  //   await characteristic.setNotifyValue(true);
+  //   await characteristic.write(value);
+  // }
 
-  // Hàm thực hiện yêu cầu gửi lệnh RACP
-  Future<void> sendRACPCommand(
-      BluetoothCharacteristic characteristic, List<int> value) async {
-    await characteristic.write(value);
-  }
+  // // Hàm thực hiện yêu cầu gửi lệnh RACP
+  // Future<void> sendRACPCommand(
+  //     BluetoothCharacteristic values, List<int> value) async {
+  //   await characteristic.write(value);
+  // }
 
 // Hàm đọc dữ liệu lịch sử từ characteristic Glucose Measurement
   Future<List<int>> readHistoryData(
@@ -60,7 +70,8 @@ class GlucoseFunctions {
     BluetoothCharacteristic? racpCharacteristic;
     for (BluetoothService service in services) {
       for (BluetoothCharacteristic characteristic in service.characteristics) {
-        if (characteristic.uuid.toString() == uuidRACP) {
+        if (characteristic.uuid.toString() ==
+            RECORD_ACCESS_CONTROL_POINT_CHARACTERISTIC_UUID) {
           racpCharacteristic = characteristic;
           break;
         }
@@ -68,20 +79,20 @@ class GlucoseFunctions {
     }
 
     // Cấu hình CCCD cho Glucose Measurement và RACP
-    await configureCCCD(glucoseMeasurementCharacteristic!,
-        [0x01, 0x00]); // Enable notifications
-    await configureCCCD(
-        racpCharacteristic!, [0x02, 0x00]); // Enable indications
+    // await configureCCCD(glucoseMeasurementCharacteristic!,
+    //     [0x01, 0x00]); // Enable notifications
+    // await configureCCCD(
+    //     racpCharacteristic!, [0x02, 0x00]); // Enable indications
 
-    // Gửi yêu cầu RACP với thời gian bắt đầu
-    await sendRACPCommand(racpCharacteristic,
-        [0x01, timeOffset & 0xFF, (timeOffset >> 8) & 0xFF]);
+    // // Gửi yêu cầu RACP với thời gian bắt đầu
+    // await sendRACPCommand(
+    //     racpvalues, [0x01, timeOffset & 0xFF, (timeOffset >> 8) & 0xFF]);
 
     // Đọc dữ liệu lịch sử từ Glucose Measurement
-    List<int> historyData =
-        await readHistoryData(glucoseMeasurementCharacteristic);
+    // List<int> historyData =
+    //     await readHistoryData(glucoseMeasurementCharacteristic);
 
-    print('Lịch sử đo đường huyết: $historyData');
+    // print('Lịch sử đo đường huyết: $historyData');
 
     // Ngắt kết nối với thiết bị
     // device?.disconnect();
@@ -89,18 +100,241 @@ class GlucoseFunctions {
 
   Future<void> writeData2A52(BluetoothCharacteristic racpCharacteristic) async {
     // Cấu hình CCCD cho Glucose Measurement và RACP
-    await configureCCCD(
-        racpCharacteristic, [0x01, 0x00]); // Enable notifications
-    await configureCCCD(racpCharacteristic, [0x02, 0x00]); // Enable indications
+    if (racpCharacteristic.uuid ==
+        Guid('00002a52-0000-1000-8000-00805f9b34fb')) {
+      // Đăng ký sự kiện lắng nghe dữ liệu từ characteristic
+      racpCharacteristic.setNotifyValue(true);
 
-    // Gửi yêu cầu RACP với thời gian bắt đầu
-    await sendRACPCommand(racpCharacteristic,
-        [0x01, timeOffset & 0xFF, (timeOffset >> 8) & 0xFF]);
+// Lắng nghe sự kiện thay đổi dữ liệu từ characteristic
+      racpCharacteristic.value.listen((data) {
+        print('PHUONG data: $data');
+      });
+      try {
+        print('PHUONG characteristic.uuid: ${racpCharacteristic.uuid}');
+        List<int> requestData = [0x01, 0x01]; // Op Code: 0x01
+        // List<int> requestData = [0x05, 0x04]; // Op Code: 0x01
+        // List<int> requestData = [0x01, 0x00]; // Op Code: 0x01
+        // List<int> requestData = [0x04, 0x06]; // Op Code: 0x01
+        await Future.delayed(const Duration(milliseconds: 400));
+        await racpCharacteristic.write(requestData);
+        // List<int> historyData = await readHistoryData(racpCharacteristic);
+        // print('PHUONG Lịch sử đo đường huyết: $historyData');
+      } catch (e) {
+        print('PHUONG $e');
+      }
+    }
+    // await configureCCCD(
+    //     racpvalues, [0x01, 0x06]); // Enable notifications
+    // // await configureCCCD(racpvalues, [0x02, 0x00]); // Enable indications
+
+    // // Gửi yêu cầu RACP với thời gian bắt đầu
+    // await sendRACPCommand(racpvalues,
+    //     [0x01, timeOffset & 0xFF, (timeOffset >> 8) & 0xFF]);
 
     // Đọc dữ liệu lịch sử từ Glucose Measurement
-    List<int> historyData = await readHistoryData(racpCharacteristic);
 
-    print('Lịch sử đo đường huyết: $historyData');
+    // Ngắt kết nối với thiết bị
+    // device?.disconnect();
   }
-  
+
+  Future<void> writeDataSubmit(List<BluetoothService> services) async {
+    BluetoothCharacteristic? racpCharacteristic;
+
+    for (BluetoothService service in services) {
+      for (BluetoothCharacteristic characteristic in service.characteristics) {
+        if (characteristic.uuid.toString() ==
+            RECORD_ACCESS_CONTROL_POINT_CHARACTERISTIC_UUID) {
+          racpCharacteristic = characteristic;
+          break;
+        }
+      }
+    }
+  }
+
+  int getIntValue(List<int> values, int type, int offset) {
+    // Đọc giá trị từ thuộc tính Bluetooth
+    // List<int>? values = await characteristic.read();
+    int unit8 = values[offset];
+
+    if (type == FORMAT_UINT16) {
+      Uint16List uint16List =
+          Uint16List.fromList([unit8]); // Chuyển đổi sang Uint16List
+      return uint16List[0]; // Lấy giá trị Uint16 đầu tiên
+    } else {
+      return unit8;
+    }
+  }
+
+  double getFloatValue(List<int> values, int offset) {
+    // Đọc giá trị từ thuộc tính Bluetooth
+    // List<int>? values = await characteristic.read();
+    int unit8 = values[offset];
+    return unit8 / 100000;
+  }
+
+  GlucoseMeasurementRecord readDataFrom2A18(List<int> values) {
+    var glucoseMeasurementRecord = GlucoseMeasurementRecord();
+    int offset = 0;
+    int flag = getIntValue(values, FORMAT_UINT8, offset);
+    Console.log("PHUONG $offset flag", flag);
+
+    offset++; // offset is 1
+
+    glucoseMeasurementRecord.sequenceNumber =
+        getIntValue(values, FORMAT_UINT16, 1);
+
+    Console.log("PHUONG $offset sequenceNumber",
+        glucoseMeasurementRecord.sequenceNumber);
+
+    offset += 2; // offset is 3
+    int baseTimeYear = 2023;
+
+    Console.log("PHUONG $offset baseTimeYear", baseTimeYear);
+    offset += 2; // offset is 5
+    int baseTimeMonth = getIntValue(values, FORMAT_UINT8, offset++);
+    Console.log("PHUONG $offset baseTimeMonth", baseTimeMonth);
+    int baseTimeDay = getIntValue(values, FORMAT_UINT8, offset++);
+    Console.log("PHUONG $offset baseTimeDay", baseTimeDay);
+    int baseTimeHours = getIntValue(values, FORMAT_UINT8, offset++);
+    Console.log("PHUONG $offset baseTimeHours", baseTimeHours);
+    int baseTimeMinutes = getIntValue(values, FORMAT_UINT8, offset++);
+    Console.log("PHUONG $offset baseTimeMinutes", baseTimeMinutes);
+    int baseTimeSeconds = getIntValue(values, FORMAT_UINT8, offset++);
+    Console.log("PHUONG $offset baseTimeSeconds", baseTimeSeconds);
+
+    glucoseMeasurementRecord.calendar = DateTime(
+      baseTimeYear,
+      baseTimeMonth,
+      baseTimeDay,
+      baseTimeHours,
+      baseTimeMinutes,
+      baseTimeSeconds,
+    );
+
+    Console.log("PHUONG $offset calendar", glucoseMeasurementRecord.calendar);
+
+    int timeOffset = 0;
+    Console.log("PHUONG flag & (1 << 0)) > 0", flag & (1 << 0) > 0);
+    if ((flag & (1 << 0)) > 0) {
+      offset += 2; // offset is 12
+      timeOffset = getIntValue(values, FORMAT_UINT16, offset);
+    }
+    Console.log("PHUONG $offset timeOffset", timeOffset);
+    glucoseMeasurementRecord.timeOffset = timeOffset;
+
+    Console.log("PHUONG flag & (1 << 1)) > 0", (flag & (1 << 1)) > 0);
+    late double glucoseConcentrationValue;
+    if ((flag & (1 << 1)) > 0) {
+      // int typeAndSampleLocation =
+      //     getIntValue(values, FORMAT_UINT8, offset);
+      // offset += 1; // offset is 15
+      // Console.log("PHUONG $offset location", typeAndSampleLocation);
+
+      Console.log("PHUONG (flag & (1 << 2)) > 0", (flag & (1 << 2)) > 0);
+      if ((flag & (1 << 2)) > 0) {
+        // glucose concentration unit of measurement is mol/L
+        glucoseMeasurementRecord.glucoseConcentrationMeasurementUnit =
+            GlucoseConcentrationMeasurementUnit.molesPerLitre;
+        glucoseConcentrationValue = getFloatValue(values, offset);
+      } else {
+        // glucose concentration unit of measurement is kg/L
+        glucoseMeasurementRecord.glucoseConcentrationMeasurementUnit =
+            GlucoseConcentrationMeasurementUnit.kilogramsPerLitre;
+        glucoseConcentrationValue = getFloatValue(values, offset);
+      }
+      Console.log('PHUONG glucoseValue $offset', glucoseConcentrationValue);
+      Console.log('PHUONG glucoseUnit',
+          glucoseMeasurementRecord.glucoseConcentrationMeasurementUnit);
+      offset += 2; // offset is 14
+      int typeAndSampleLocation = values[offset];
+      Console.log('PHUONG location $offset', typeAndSampleLocation);
+      glucoseMeasurementRecord.type = typeAndSampleLocation >> 4;
+      glucoseMeasurementRecord.sampleLocationInteger =
+          typeAndSampleLocation & 0x0F;
+      glucoseMeasurementRecord.glucoseConcentrationValue =
+          glucoseConcentrationValue;
+      Console.log('PHUONG type $offset', glucoseMeasurementRecord.type);
+      Console.log('PHUONG LocationInteger $offset',
+          glucoseMeasurementRecord.sampleLocationInteger);
+    }
+    // Console.log("PHUONG (flag & (1 << 2)) > 0", (flag & (1 << 2)) > 0);
+    // if ((flag & (1 << 2)) > 0) {
+    //   // Sensor Status Annunciation field is present
+    //   int sensorStatusAnnunciationValue =
+    //       getIntValue(values, FORMAT_UINT16, offset);
+    //   offset += 2; // offset is 16 or 12 or 9
+
+    //   SensorStatusAnnunciation sensorStatusAnnunciation =
+    //       SensorStatusAnnunciation();
+    //   sensorStatusAnnunciation.deviceBatteryLowAtTimeOfMeasurement =
+    //       sensorStatusAnnunciationValue & (1 << 0) > 0;
+    //   sensorStatusAnnunciation.sensorMalfunctionAtTimeOfMeasurement =
+    //       sensorStatusAnnunciationValue & (1 << 1) > 0;
+    //   sensorStatusAnnunciation.bloodSampleInsufficientAtTimeOfMeasurement =
+    //       sensorStatusAnnunciationValue & (1 << 2) > 0;
+    //   sensorStatusAnnunciation.stripInsertionError =
+    //       sensorStatusAnnunciationValue & (1 << 3) > 0;
+    //   sensorStatusAnnunciation.stripTypeIncorrectForDevice =
+    //       sensorStatusAnnunciationValue & (1 << 4) > 0;
+    //   sensorStatusAnnunciation.sensorResultHigherThanDeviceCanProcess =
+    //       sensorStatusAnnunciationValue & (1 << 5) > 0;
+    //   sensorStatusAnnunciation.sensorResultLowerThanTheDeviceCanProcess =
+    //       sensorStatusAnnunciationValue & (1 << 6) > 0;
+    //   sensorStatusAnnunciation.sensorTemperatureTooHighForValidTestResult =
+    //       sensorStatusAnnunciationValue & (1 << 7) > 0;
+    //   sensorStatusAnnunciation.sensorTemperatureTooLowForValidTestResult =
+    //       sensorStatusAnnunciationValue & (1 << 8) > 0;
+    //   sensorStatusAnnunciation
+    //           .sensorReadInterruptedBecauseStripWasPulledTooSoon =
+    //       sensorStatusAnnunciationValue & (1 << 9) > 0;
+    //   sensorStatusAnnunciation.generalDeviceFaultHasOccurredInSensor =
+    //       sensorStatusAnnunciationValue & (1 << 10) > 0;
+    //   sensorStatusAnnunciation.timeFaultHasOccurredInTheSensor =
+    //       sensorStatusAnnunciationValue & (1 << 11) > 0;
+
+    //   glucoseMeasurementRecord.sensorStatusAnnunciation =
+    //       sensorStatusAnnunciation;
+    // } else {}
+    return glucoseMeasurementRecord;
+    print(
+        'PHUONG convertGlucoseConcentrationValueToMilligramsPerDeciliter: ${glucoseMeasurementRecord.convertGlucoseConcentrationValueToMilligramsPerDeciliter()}');
+    // Broadcast the glucose measurement record
+    // LocalBroadcastManager.getInstance().sendBroadcast(
+    //   Intent(BluetoothGattStateInformationReceiver
+    //       .BLUETOOTH_LE_GATT_ACTION_GLUCOSE_MEASUREMENT_RECORD_AVAILABLE)
+    //     ..putExtra(
+    //       BluetoothGattStateInformationReceiver
+    //           .BLUETOOTH_LE_GATT_GLUCOSE_MEASUREMENT_RECORD_EXTRA,
+    //       glucoseMeasurementRecord,
+    //     ),
+    // );
+    // else if (characteristic.uuid ==
+    //     GlucoseProfileConfiguration
+    //         .GLUCOSE_MEASUREMENT_CONTEXT_CHARACTERISTIC_UUID) {
+    //   // Todo, handle the value of the glucose measurement context characteristic
+    // } else if (characteristic.uuid ==
+    //     GlucoseProfileConfiguration
+    //         .RECORD_ACCESS_CONTROL_POINT_CHARACTERISTIC_UUID) {
+    //   print('RECORDS_SENT_COMPLETE');
+    //   // LocalBroadcastManager.getInstance().sendBroadcast(
+    //   //   Intent(BluetoothGattStateInformationReceiver.RECORDS_SENT_COMPLETE),
+    //   // );
+    // } else {
+    //   // Handle other characteristics if needed
+    // }
+  }
+
+  int _getIntValue(List<int> data, int offset, int length) {
+    int value = 0;
+    for (int i = offset; i < offset + length; i++) {
+      value |= (data[i] & 0xFF) << (8 * (i - offset));
+    }
+    return value;
+  }
+
+  double _getFloatValue(List<int> data, int offset) {
+    int mantissa = _getIntValue(data, offset, 2);
+    int exponent = _getIntValue(data, offset + 2, 1);
+    return (mantissa * (10 ^ exponent)).toDouble();
+  }
 }

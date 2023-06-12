@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:medical/res/R.dart';
-
+import '../blocs/rocheConnection_cubit.dart';
 import '../views/device_detail_view.dart';
 
 class DeviceItemWidget extends StatelessWidget {
-  const DeviceItemWidget({Key? key}) : super(key: key);
+  final RocheConnectionCubit bloc;
+  const DeviceItemWidget({Key? key, required this.bloc}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -13,7 +14,7 @@ class DeviceItemWidget extends StatelessWidget {
       onTap: () => Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (ctx) => DeviceDetailView(),
+          builder: (ctx) => DeviceDetailView(cubit: bloc),
         ),
       ),
       child: Container(
@@ -33,8 +34,8 @@ class DeviceItemWidget extends StatelessWidget {
                         color: Color(0xffF2F2F2),
                       ),
                     ),
-                    child: Image.network(
-                      'https://placehold.co/100x100',
+                    child: Image.asset(
+                      R.drawable.img_error,
                       height: 100,
                       width: 100,
                     ),

@@ -137,6 +137,7 @@ class LanguagePicker extends StatelessWidget {
         Navigator.pop(context);
         if (isSelected == false) {
           Localization.changeLanguage(context, item.languageCode);
+          Message.showToastMessage(context, "Thay đổi ngôn ngữ thành công.");
           Observable.instance
               .notifyObservers([], notifyName: Const.NAVIGATE_TO_PROFILE_TAB);
         }

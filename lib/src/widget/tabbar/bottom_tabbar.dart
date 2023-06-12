@@ -42,7 +42,6 @@ class _BottomTabbar extends State<BottomTabbar> with Observer {
   Future<void> update(Observable observable, String? notifyName,
       Map<dynamic, dynamic>? map) async {
     if (notifyName == Const.NAVIGATE_TO_PROFILE_TAB) {
-      Message.showToastMessage(context, "Thay đổi ngôn ngữ thành công.");
       jumpToIndex(Const.HOME_SCREEN);
     }
   }

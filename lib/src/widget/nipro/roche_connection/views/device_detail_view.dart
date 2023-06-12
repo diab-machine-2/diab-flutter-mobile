@@ -1,23 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/widgets/app_bar_widget.dart';
 import 'package:medical/src/widgets/button_widget.dart';
 import 'package:medical/src/widgets/normal_template.dart';
-import 'package:permission_handler/permission_handler.dart';
+import '../blocs/rocheConnection_cubit.dart';
 import '../widgets/condition_widget.dart';
 import 'scan_device_view.dart';
 
 class DeviceDetailView extends StatefulWidget {
-  const DeviceDetailView({Key? key}) : super(key: key);
+  final RocheConnectionCubit cubit;
+  const DeviceDetailView({Key? key, required this.cubit}) : super(key: key);
   @override
   State<DeviceDetailView> createState() => _DeviceDetailViewState();
 }
 
 class _DeviceDetailViewState extends State<DeviceDetailView> {
- 
-
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -28,9 +25,11 @@ class _DeviceDetailViewState extends State<DeviceDetailView> {
           child: ButtonWidget(
             title: 'Kết nối thiết bị',
             onPressed: () {
-              showModalScanDevices(context);
-              // Navigator.push(context,
-              //     MaterialPageRoute(builder: (ctx) => ScanDeviceView()));
+              // showModalScanDevices(context);
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (ctx) => ScanDeviceView(cubit: widget.cubit)));
             },
           ),
         ),
@@ -62,8 +61,8 @@ class _DeviceDetailViewState extends State<DeviceDetailView> {
                             color: Color(0xffF2F2F2),
                           ),
                         ),
-                        child: Image.network(
-                          'https://placehold.co/100x100',
+                        child: Image.asset(
+                          R.drawable.img_error,
                           height: 100,
                           width: 100,
                         ),
@@ -93,24 +92,9 @@ class _DeviceDetailViewState extends State<DeviceDetailView> {
                 ],
               ),
             ),
-           
           ],
         ),
       ),
-    );
-  }
-
-
-  static void showModalScanDevices(
-    BuildContext context, {
-    Function? onConfirm,
-  }) {
-    showModalBottomSheet(
-      backgroundColor: Colors.transparent,
-      isScrollControlled: true,
-      isDismissible: true,
-      context: context,
-      builder: (BuildContext ctx) => ScanDeviceView(),
     );
   }
 }
