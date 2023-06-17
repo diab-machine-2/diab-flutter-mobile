@@ -1,9 +1,7 @@
-import 'dart:math';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:medical/src/utils/app_log.dart';
+import 'package:medical/src/widget/nipro/roche_connection/data/models/GlucoseMeasurementRecord.dart';
 import 'dart:typed_data';
-
-import 'data/models/GlucoseMeasurementRecord.dart';
 
 int FORMAT_UINT8 = 17;
 int FORMAT_UINT16 = 18;
@@ -173,34 +171,35 @@ class GlucoseFunctions {
   }
 
   GlucoseMeasurementRecord readDataFrom2A18(List<int> values) {
+    // Console.log('readDataFrom2A18', values);
     var glucoseMeasurementRecord = GlucoseMeasurementRecord();
     int offset = 0;
     int flag = getIntValue(values, FORMAT_UINT8, offset);
-    Console.log("PHUONG $offset flag", flag);
+    // Console.log("PHUONG $offset flag", flag);
 
     offset++; // offset is 1
 
     glucoseMeasurementRecord.sequenceNumber =
         getIntValue(values, FORMAT_UINT16, 1);
 
-    Console.log("PHUONG $offset sequenceNumber",
-        glucoseMeasurementRecord.sequenceNumber);
+    // Console.log("PHUONG $offset sequenceNumber",
+    // glucoseMeasurementRecord.sequenceNumber);
 
     offset += 2; // offset is 3
     int baseTimeYear = 2023;
 
-    Console.log("PHUONG $offset baseTimeYear", baseTimeYear);
+    // Console.log("PHUONG $offset baseTimeYear", baseTimeYear);
     offset += 2; // offset is 5
     int baseTimeMonth = getIntValue(values, FORMAT_UINT8, offset++);
-    Console.log("PHUONG $offset baseTimeMonth", baseTimeMonth);
+    // Console.log("PHUONG $offset baseTimeMonth", baseTimeMonth);
     int baseTimeDay = getIntValue(values, FORMAT_UINT8, offset++);
-    Console.log("PHUONG $offset baseTimeDay", baseTimeDay);
+    // Console.log("PHUONG $offset baseTimeDay", baseTimeDay);
     int baseTimeHours = getIntValue(values, FORMAT_UINT8, offset++);
-    Console.log("PHUONG $offset baseTimeHours", baseTimeHours);
+    // Console.log("PHUONG $offset baseTimeHours", baseTimeHours);
     int baseTimeMinutes = getIntValue(values, FORMAT_UINT8, offset++);
-    Console.log("PHUONG $offset baseTimeMinutes", baseTimeMinutes);
+    // Console.log("PHUONG $offset baseTimeMinutes", baseTimeMinutes);
     int baseTimeSeconds = getIntValue(values, FORMAT_UINT8, offset++);
-    Console.log("PHUONG $offset baseTimeSeconds", baseTimeSeconds);
+    // Console.log("PHUONG $offset baseTimeSeconds", baseTimeSeconds);
 
     glucoseMeasurementRecord.calendar = DateTime(
       baseTimeYear,
@@ -211,18 +210,19 @@ class GlucoseFunctions {
       baseTimeSeconds,
     );
 
-    Console.log("PHUONG $offset calendar", glucoseMeasurementRecord.calendar);
+    // Console.log("PHUONG $offset calendar", glucoseMeasurementRecord.calendar);
 
     int timeOffset = 0;
-    Console.log("PHUONG flag & (1 << 0)) > 0", flag & (1 << 0) > 0);
     if ((flag & (1 << 0)) > 0) {
+      timeOffset = (values[11] * 256) + values[10];
       offset += 2; // offset is 12
-      timeOffset = getIntValue(values, FORMAT_UINT16, offset);
     }
     Console.log("PHUONG $offset timeOffset", timeOffset);
     glucoseMeasurementRecord.timeOffset = timeOffset;
 
-    Console.log("PHUONG flag & (1 << 1)) > 0", (flag & (1 << 1)) > 0);
+    glucoseMeasurementRecord.calendar = glucoseMeasurementRecord.calendar!.add(Duration(minutes: timeOffset));
+
+    // Console.log("PHUONG flag & (1 << 1)) > 0", (flag & (1 << 1)) > 0);
     late double glucoseConcentrationValue;
     if ((flag & (1 << 1)) > 0) {
       // int typeAndSampleLocation =
@@ -230,7 +230,7 @@ class GlucoseFunctions {
       // offset += 1; // offset is 15
       // Console.log("PHUONG $offset location", typeAndSampleLocation);
 
-      Console.log("PHUONG (flag & (1 << 2)) > 0", (flag & (1 << 2)) > 0);
+      // Console.log("PHUONG (flag & (1 << 2)) > 0", (flag & (1 << 2)) > 0);
       if ((flag & (1 << 2)) > 0) {
         // glucose concentration unit of measurement is mol/L
         glucoseMeasurementRecord.glucoseConcentrationMeasurementUnit =
@@ -242,20 +242,20 @@ class GlucoseFunctions {
             GlucoseConcentrationMeasurementUnit.kilogramsPerLitre;
         glucoseConcentrationValue = getFloatValue(values, offset);
       }
-      Console.log('PHUONG glucoseValue $offset', glucoseConcentrationValue);
-      Console.log('PHUONG glucoseUnit',
-          glucoseMeasurementRecord.glucoseConcentrationMeasurementUnit);
+      // Console.log('PHUONG glucoseValue $offset', glucoseConcentrationValue);
+      // Console.log('PHUONG glucoseUnit',
+      //     glucoseMeasurementRecord.glucoseConcentrationMeasurementUnit);
       offset += 2; // offset is 14
       int typeAndSampleLocation = values[offset];
-      Console.log('PHUONG location $offset', typeAndSampleLocation);
+      // Console.log('PHUONG location $offset', typeAndSampleLocation);
       glucoseMeasurementRecord.type = typeAndSampleLocation >> 4;
       glucoseMeasurementRecord.sampleLocationInteger =
           typeAndSampleLocation & 0x0F;
       glucoseMeasurementRecord.glucoseConcentrationValue =
           glucoseConcentrationValue;
-      Console.log('PHUONG type $offset', glucoseMeasurementRecord.type);
-      Console.log('PHUONG LocationInteger $offset',
-          glucoseMeasurementRecord.sampleLocationInteger);
+      // Console.log('PHUONG type $offset', glucoseMeasurementRecord.type);
+      // Console.log('PHUONG LocationInteger $offset',
+      //     glucoseMeasurementRecord.sampleLocationInteger);
     }
     // Console.log("PHUONG (flag & (1 << 2)) > 0", (flag & (1 << 2)) > 0);
     // if ((flag & (1 << 2)) > 0) {
@@ -295,9 +295,10 @@ class GlucoseFunctions {
     //   glucoseMeasurementRecord.sensorStatusAnnunciation =
     //       sensorStatusAnnunciation;
     // } else {}
+
     return glucoseMeasurementRecord;
-    print(
-        'PHUONG convertGlucoseConcentrationValueToMilligramsPerDeciliter: ${glucoseMeasurementRecord.convertGlucoseConcentrationValueToMilligramsPerDeciliter()}');
+    // print(
+    //     'PHUONG convertGlucoseConcentrationValueToMilligramsPerDeciliter: ${glucoseMeasurementRecord.convertGlucoseConcentrationValueToMilligramsPerDeciliter()}');
     // Broadcast the glucose measurement record
     // LocalBroadcastManager.getInstance().sendBroadcast(
     //   Intent(BluetoothGattStateInformationReceiver

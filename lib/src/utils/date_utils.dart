@@ -171,7 +171,9 @@ class DateUtil {
       dateConverted = dateFormat.parse(date);
     }
 
+    Console.log('dateConverted', dateConverted);
     if (toLocal) dateConverted = dateConverted.toLocal();
+    Console.log('dateConverted', dateConverted);
 
     return isShowOnlyTime
         ? DateFormat('HH:mm').format(dateConverted).toString()

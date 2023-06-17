@@ -20,9 +20,8 @@ class RocheConnectionInitial extends RocheConnectionState {
 }
 
 class DataUpdated extends RocheConnectionState {
-  final List<GlucoseMeasurementRecord> glucoseMeasurementRecordList;
-
-  DataUpdated(this.glucoseMeasurementRecordList);
+  final List<Map<String, String>> glucosedList;
+  DataUpdated(this.glucosedList);
   @override
   String toString() {
     return 'DateUpdated{}';

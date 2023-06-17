@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/utils/app_media_query.dart';
 import 'package:medical/src/widgets/app_bar_widget.dart';
 import 'package:medical/src/widgets/normal_template.dart';
 import 'blocs/rocheConnection_cubit.dart';
 import 'blocs/rocheConnection_state.dart';
+import 'data/models/device_info_model.dart';
 import 'widgets/device_item.dart';
 
 class RocheConnectionView extends StatefulWidget {
@@ -34,17 +36,24 @@ class _RocheConnectionViewState extends State<RocheConnectionView> {
             title: 'Danh sách thiết bị',
           ),
           child: BlocConsumer<RocheConnectionCubit, RocheConnectionState>(
-              listener: (context, state) async {},
-              builder: (context, state) {
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    DeviceItemWidget(bloc: _cubit),
-                    DeviceItemWidget(bloc: _cubit),
-                    DeviceItemWidget(bloc: _cubit),
-                  ],
-                );
-              }),
+            listener: (context, state) async {},
+            builder: (context, state) {
+              return Column(
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: examples
+                        .map((deviceInfo) => DeviceItemWidget(
+                              deviceInfo,
+                              bloc: _cubit,
+                              isNiproDevice: deviceInfo.tutorials.isEmpty,
+                            ))
+                        .toList(),
+                  ),
+                ],
+              );
+            },
+          ),
         ),
       ),
     );

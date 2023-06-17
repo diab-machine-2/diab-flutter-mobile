@@ -1,4 +1,5 @@
 import 'package:flutter/widgets.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:medical/res/R.dart';
 
 class ButtonWidget extends StatelessWidget {
@@ -7,10 +8,12 @@ class ButtonWidget extends StatelessWidget {
   final Color? textColor;
   final double? textSize;
   final Color? borderColor;
+  final String? icon;
   final String title;
   final VoidCallback? onPressed;
   final double? radius;
   final bool modeTextButton;
+  final bool isArrowRight;
 
   const ButtonWidget({
     this.backgroundColor,
@@ -22,6 +25,8 @@ class ButtonWidget extends StatelessWidget {
     required this.onPressed,
     this.radius,
     this.modeTextButton = false,
+    this.icon,
+    this.isArrowRight = false,
   });
 
   @override
@@ -59,13 +64,46 @@ class ButtonWidget extends StatelessWidget {
                       width: 1.5),
           borderRadius: BorderRadius.circular(radius ?? 200),
         ),
-        child: Text(
-          title,
-          style: TextStyle(
-              color:
-                  onPressed == null ? R.color.gray : textColor ?? R.color.white,
-              fontSize: textSize ?? 16,
-              fontWeight: FontWeight.w700),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            if (icon != null && !isArrowRight)
+              Padding(
+                padding: const EdgeInsets.only(right: 3),
+                child: SvgPicture.asset(
+                  icon!,
+                  width: 19,
+                  height: 22,
+                  color: onPressed == null
+                      ? R.color.gray
+                      : textColor ?? R.color.white,
+                  fit: BoxFit.scaleDown,
+                ),
+              ),
+            Text(
+              title,
+              style: TextStyle(
+                  color: onPressed == null
+                      ? R.color.gray
+                      : textColor ?? R.color.white,
+                  fontSize: textSize ?? 16,
+                  fontWeight: FontWeight.w700),
+            ),
+            if (icon != null && isArrowRight)
+              Padding(
+                padding: const EdgeInsets.only(left: 3),
+                child: SvgPicture.asset(
+                  icon!,
+                  width: 19,
+                  height: 22,
+                  color: onPressed == null
+                      ? R.color.gray
+                      : textColor ?? R.color.white,
+                  fit: BoxFit.scaleDown,
+                ),
+              ),
+          ],
         ),
       ),
     );

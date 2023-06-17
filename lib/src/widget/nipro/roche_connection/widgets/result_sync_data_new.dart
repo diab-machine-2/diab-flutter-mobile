@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
-import 'package:medical/src/utils/date_utils.dart';
-import 'package:medical/src/widget/nipro/roche_connection/data/models/GlucoseMeasurementRecord.dart';
+import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widgets/custom_checkbox_widget.dart';
 
-class ResultSyncData extends StatelessWidget {
+class ResultSyncDataNew extends StatelessWidget {
   final bool isSelected;
   final Function onTap;
-  final GlucoseMeasurementRecord glucoseData;
-  const ResultSyncData(this.glucoseData,
+  final Map<String, String> glucoseData;
+  const ResultSyncDataNew(this.glucoseData,
       {Key? key, required this.isSelected, required this.onTap})
       : super(key: key);
 
@@ -30,8 +29,8 @@ class ResultSyncData extends StatelessWidget {
                     RichText(
                       textAlign: TextAlign.center,
                       text: TextSpan(
-                        text: glucoseData
-                            .convertGlucoseConcentrationValueToMilligramsPerDeciliter(),
+                        text: (double.tryParse(glucoseData['glucose']!)!.round())
+                            .toString(),
                         style: TextStyle(
                           fontSize: 24,
                           color: R.color.textDark,
@@ -50,12 +49,8 @@ class ResultSyncData extends StatelessWidget {
                     ),
                     SizedBox(height: 5),
                     Text(
-                      DateUtil.convertDateTime(
-                            glucoseData.calendar.toString(),
-                            isShowTime: true,
-                            toLocal: false,
-                          ) ??
-                          "",
+                      convertToUTC(int.tryParse(glucoseData['date']!) ?? 0,
+                          'HH:mm - dd-MM-yyyy'),
                       style: TextStyle(
                         color: Color(0xFF777E90),
                       ),

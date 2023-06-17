@@ -130,6 +130,12 @@ PODS:
   - Flutter (1.0.0)
   - flutter_app_version_checker (0.0.1):
     - Flutter
+  - flutter_blue_plus (0.0.1):
+    - Flutter
+    - flutter_blue_plus/Protos (= 0.0.1)
+  - flutter_blue_plus/Protos (0.0.1):
+    - Flutter
+    - Protobuf (~> 3.21)
   - flutter_facebook_login (0.0.1):
     - FBSDKCoreKit (~> 5.5)
     - FBSDKLoginKit (~> 5.5)
@@ -261,6 +267,7 @@ PODS:
   - PromisesObjC (2.2.0)
   - PromisesSwift (2.2.0):
     - PromisesObjC (= 2.2.0)
+  - Protobuf (3.23.2)
   - qr_code_scanner (0.2.0):
     - Flutter
     - MTBBarcodeScanner
@@ -304,6 +311,7 @@ DEPENDENCIES:
   - firebase_messaging (from `.symlinks/plugins/firebase_messaging/ios`)
   - Flutter (from `Flutter`)
   - flutter_app_version_checker (from `.symlinks/plugins/flutter_app_version_checker/ios`)
+  - flutter_blue_plus (from `.symlinks/plugins/flutter_blue_plus/ios`)
   - flutter_facebook_login (from `.symlinks/plugins/flutter_facebook_login/ios`)
   - flutter_inapp_purchase (from `.symlinks/plugins/flutter_inapp_purchase/ios`)
   - flutter_inappwebview (from `.symlinks/plugins/flutter_inappwebview/ios`)
@@ -366,6 +374,7 @@ SPEC REPOS:
     - PINOperation
     - PromisesObjC
     - PromisesSwift
+    - Protobuf
     - Toast
     - TOCropViewController
 
@@ -398,6 +407,8 @@ EXTERNAL SOURCES:
     :path: Flutter
   flutter_app_version_checker:
     :path: ".symlinks/plugins/flutter_app_version_checker/ios"
+  flutter_blue_plus:
+    :path: ".symlinks/plugins/flutter_blue_plus/ios"
   flutter_facebook_login:
     :path: ".symlinks/plugins/flutter_facebook_login/ios"
   flutter_inapp_purchase:
@@ -484,6 +495,7 @@ SPEC CHECKSUMS:
   FirebaseSessions: 44a6782502eb279a214d4adca20891353278760c
   Flutter: 50d75fe2f02b26cc09d224853bb45737f8b3214a
   flutter_app_version_checker: 2beb5e211990c45ebfc17b81aa4d08ebd7edb757
+  flutter_blue_plus: 316ac8d1179789616d2c148e8a03c37720e63933
   flutter_facebook_login: cfb5659f686b1c575ef205c6b6fd20db9679d3c4
   flutter_inapp_purchase: 5c6a1ac3f11b11d0c8c0321c0c41c1f05805e4c8
   flutter_inappwebview: bfd58618f49dc62f2676de690fc6dcda1d6c3721
@@ -518,6 +530,7 @@ SPEC CHECKSUMS:
   PINOperation: daa34d4aa1d8449089be7d405b9d974abc4724c6
   PromisesObjC: 09985d6d70fbe7878040aa746d78236e6946d2ef
   PromisesSwift: cf9eb58666a43bbe007302226e510b16c1e10959
+  Protobuf: 5df4e9d2abd535fb675c68d171f6bc87983d27a6
   qr_code_scanner: bb67d64904c3b9658ada8c402e8b4d406d5d796e
   share_plus: 056a1e8ac890df3e33cb503afffaf1e9b4fbae68
   shared_preferences_ios: 548a61f8053b9b8a49ac19c1ffbc8b92c50d68ad

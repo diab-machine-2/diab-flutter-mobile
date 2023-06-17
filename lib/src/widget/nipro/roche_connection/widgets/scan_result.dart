@@ -4,8 +4,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
-
-import '../blue_utils.dart';
+import 'package:medical/src/widget/nipro/roche_connection/data/models/blue_utils.dart';
 
 class ScanResultWidget extends StatelessWidget {
   const ScanResultWidget({Key? key, required this.result, this.onTap})

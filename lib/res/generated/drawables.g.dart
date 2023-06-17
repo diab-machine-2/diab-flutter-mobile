@@ -455,4 +455,5 @@ class Drawables {
 	String get icon_bluetooth => "lib/res/drawables/icon_bluetooth.png";
 	String get img_error => "lib/res/drawables/img_error.png";
 	String get pin_example => "lib/res/drawables/pin_example.jpg";
+	String get img_loading => "lib/res/drawables/img_loading.png";
 }

@@ -1,6 +1,7 @@
 import 'dart:async';
-import 'package:medical/src/widget/survey_screens/survey_question/survey_question.dart';
-
+import 'package:medical/src/utils/app_log.dart';
+import '../data/models/device_info_model.dart';
+import '../views/scan_device_view.dart';
 import 'rocheConnection_state.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -11,13 +12,24 @@ import 'package:medical/src/repo/glucose/glucose_client.dart';
 import 'package:medical/src/modal/glucose/glucose_timeFrame.dart';
 import 'package:medical/src/widget/nipro/roche_connection/data/models/GlucoseMeasurementRecord.dart';
 
-enum AppStatus { isScanning, isConnected, isConnecting, isSyncing }
-
 class RocheConnectionCubit extends Cubit<RocheConnectionState> {
   RocheConnectionCubit() : super(RocheConnectionInitial());
 
   AppStatus appStatus = AppStatus.isScanning;
   final glucoseClient = GlucoseClient();
+   DeviceInfoModel? deviceInfo;
+
+  setDeviceInfo(DeviceInfoModel iDeviceInfo) {
+    deviceInfo = iDeviceInfo;
+  }
+
+  Future<void> submitSyncDataNew(
+      List<Map<String, String>> selectedGlucose) async {
+    emit(RocheConnectionLoading());
+    Console.log('selectedGlucose', selectedGlucose);
+    await GlucoseClient().postGlucoseInputs(selectedGlucose);
+    emit(SyncDataSuccesed());
+  }
 
   Future<void> submitSyncData(
       List<GlucoseMeasurementRecord> dataSelected) async {
@@ -27,6 +39,7 @@ class RocheConnectionCubit extends Cubit<RocheConnectionState> {
     }
     // Bắt đầu sync
     bool isMilligramPerDeciliter = AppSettings.userInfo!.glucoseUnit == 1;
+    Console.log('PHUONG isMilligramPerDeciliter', isMilligramPerDeciliter);
 
     int countResponse = 0;
     int countRequest = dataSelected.length;
@@ -43,7 +56,7 @@ class RocheConnectionCubit extends Cubit<RocheConnectionState> {
           : roundDouble(element
                   .convertGlucoseConcentrationValueToMilligramsPerDeciliter()) /
               Const.mmollToMgdlFactor);
-
+      Console.log('submitSyncData', glucose);
       // await GlucoseClient().postIndexGlucose(
       //     timeFrames.isNotEmpty ? timeFrames.first.id : null,
       //     DateUtil.getDayInMillis(element.calendar!),
@@ -51,14 +64,9 @@ class RocheConnectionCubit extends Cubit<RocheConnectionState> {
       //     null,
       //     '',
       //     false, []);
-      if (countResponse == countRequest) {
-        emit(SyncDataSuccesed());
-      }
+      // if (countResponse == countRequest) {
+      //   emit(SyncDataSuccesed());
+      // }
     }
-  }
-
-  onSyncDataSuccess() {
-    emit(RocheConnectionLoading());
-    emit(SyncDataSuccesed());
   }
 }

@@ -1,22 +1,39 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/utils/navigator_name.dart';
 import '../blocs/rocheConnection_cubit.dart';
+import '../data/models/device_info_model.dart';
 import '../views/device_detail_view.dart';
 
 class DeviceItemWidget extends StatelessWidget {
+  final bool isNiproDevice;
   final RocheConnectionCubit bloc;
-  const DeviceItemWidget({Key? key, required this.bloc}) : super(key: key);
+  final DeviceInfoModel deviceInfo;
+  const DeviceItemWidget(
+    this.deviceInfo, {
+    Key? key,
+    required this.bloc,
+    this.isNiproDevice = false,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: () => Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (ctx) => DeviceDetailView(cubit: bloc),
-        ),
-      ),
+      onTap: () {
+        if (isNiproDevice) {
+          Navigator.pushNamed(context, NavigatorName.connection_instructions,
+              arguments: {'connectOnly': true});
+        } else {
+          bloc.setDeviceInfo(deviceInfo);
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (ctx) => DeviceDetailView(cubit: bloc),
+            ),
+          );
+        }
+      },
       child: Container(
         padding: EdgeInsets.all(13),
         child: Row(
@@ -35,7 +52,7 @@ class DeviceItemWidget extends StatelessWidget {
                       ),
                     ),
                     child: Image.asset(
-                      R.drawable.img_error,
+                      deviceInfo.image,
                       height: 100,
                       width: 100,
                     ),
@@ -43,7 +60,7 @@ class DeviceItemWidget extends StatelessWidget {
                   SizedBox(width: 15),
                   Expanded(
                     child: Text(
-                      'Accu Chek Instant',
+                      deviceInfo.name,
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w700,

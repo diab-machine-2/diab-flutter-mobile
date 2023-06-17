@@ -1,20 +1,19 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
-import 'package:medical/res/R.dart';
+import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widgets/app_bar_widget.dart';
 import 'package:medical/src/widgets/button_widget.dart';
 import 'package:medical/src/widgets/normal_template.dart';
+import 'package:permission_handler/permission_handler.dart';
 import '../blocs/rocheConnection_cubit.dart';
 import '../widgets/condition_widget.dart';
 import 'scan_device_view.dart';
 
-class DeviceDetailView extends StatefulWidget {
+class DeviceDetailView extends StatelessWidget {
   final RocheConnectionCubit cubit;
   const DeviceDetailView({Key? key, required this.cubit}) : super(key: key);
-  @override
-  State<DeviceDetailView> createState() => _DeviceDetailViewState();
-}
 
-class _DeviceDetailViewState extends State<DeviceDetailView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -24,13 +23,7 @@ class _DeviceDetailViewState extends State<DeviceDetailView> {
           width: double.infinity,
           child: ButtonWidget(
             title: 'Kết nối thiết bị',
-            onPressed: () {
-              // showModalScanDevices(context);
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (ctx) => ScanDeviceView(cubit: widget.cubit)));
-            },
+            onPressed: () async => _connectToDevice(context),
           ),
         ),
         appBar: AppBarWidget(
@@ -62,7 +55,7 @@ class _DeviceDetailViewState extends State<DeviceDetailView> {
                           ),
                         ),
                         child: Image.asset(
-                          R.drawable.img_error,
+                          cubit.deviceInfo!.image,
                           height: 100,
                           width: 100,
                         ),
@@ -70,7 +63,7 @@ class _DeviceDetailViewState extends State<DeviceDetailView> {
                       SizedBox(width: 15),
                       Expanded(
                         child: Text(
-                          'Accu Chek Instant',
+                          cubit.deviceInfo!.name,
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w700,
@@ -85,16 +78,27 @@ class _DeviceDetailViewState extends State<DeviceDetailView> {
             Divider(color: Color(0xFFF4F5F6)),
             Padding(
               padding: EdgeInsets.all(15),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  ConditionWidget(),
-                ],
+              child: ConditionWidget(
+                deviceInfo: cubit.deviceInfo!,
+                onConnectDevice: () async => _connectToDevice(context),
               ),
             ),
           ],
         ),
       ),
     );
+  }
+
+  Future<void> _connectToDevice(BuildContext context) async {
+    final locationGranted = Platform.isIOS
+        ? true
+        : (await Permission.location.isGranted &&
+            await Permission.location.serviceStatus.isEnabled);
+    if (!locationGranted) {
+      Message.showToastMessage(context, 'Bạn chưa bật vị trí');
+    } else {
+      Navigator.push(context,
+          MaterialPageRoute(builder: (ctx) => ScanDeviceView(cubit: cubit)));
+    }
   }
 }
