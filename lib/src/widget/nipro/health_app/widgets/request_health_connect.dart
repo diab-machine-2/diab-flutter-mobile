@@ -37,6 +37,8 @@ class RequestHealthConnect extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     String appTitle = Platform.isIOS ? 'Apple Health' : 'Google Fit';
+    String appLogo =
+        Platform.isIOS ? R.drawable.logo_healthkit : R.drawable.logo_googleFit;
     return BlocProvider<HealthAppBloc>(
       create: (_) => HealthAppBloc()..add(SubmitSyncData(isSyncing)),
       child: BlocBuilder<HealthAppBloc, HealthAppState>(
@@ -44,6 +46,7 @@ class RequestHealthConnect extends StatelessWidget {
           if (isSyncing == true && state.blocStatus == BlocStatus.success)
             return SizedBox();
           if (isSyncing == true && state.blocStatus == BlocStatus.loading) {
+            return SizedBox();
             return Padding(
               padding: const EdgeInsets.all(8.0),
               child: Row(
@@ -88,7 +91,7 @@ class RequestHealthConnect extends StatelessWidget {
                         ),
                         SizedBox(width: 15),
                         Image.asset(
-                          R.drawable.logo_healthkit,
+                          appLogo,
                           width: 72,
                         )
                       ],

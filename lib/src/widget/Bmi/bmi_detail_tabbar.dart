@@ -208,16 +208,15 @@ class _BmiDetailTabbarControllerState extends State<BmiDetailTabbarController>
                 padding: const EdgeInsets.all(15),
                 child: Column(
                   children: [
-                    if (hasHealthConnection == null)
-                      ButtonWidget(
-                        isIconSvg: false,
-                        icon: healthIcon,
-                        backgroundColor: Color(0xFFE4FCF3),
-                        textColor: Color(0xff249B92),
-                        title: healthTitle,
-                        onPressed: () => RequestHealthConnect.showModal(context,
-                            callback: () => Navigator.pop(context)),
-                      ),
+                    ButtonWidget(
+                      isIconSvg: false,
+                      icon: healthIcon,
+                      backgroundColor: Color(0xFFE4FCF3),
+                      textColor: Color(0xff249B92),
+                      title: healthTitle,
+                      onPressed: () => RequestHealthConnect.showModal(context,
+                          callback: () => Navigator.pop(context)),
+                    ),
                     SizedBox(height: 15),
                     ButtonWidget(
                       icon: R.icons.ic_tap,

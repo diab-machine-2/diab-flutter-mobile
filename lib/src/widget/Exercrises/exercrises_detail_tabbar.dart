@@ -179,7 +179,7 @@ class _ExercrisesDetailTabbarControllerState
           context: context,
           isScrollControlled: true,
           builder: (context) => Container(
-            height: 350,
+            height: 280,
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(20),
@@ -205,17 +205,15 @@ class _ExercrisesDetailTabbarControllerState
                   padding: const EdgeInsets.all(15),
                   child: Column(
                     children: [
-                      if (hasHealthConnection == null)
-                        ButtonWidget(
-                          isIconSvg: false,
-                          icon: healthIcon,
-                          backgroundColor: Color(0xFFE4FCF3),
-                          textColor: Color(0xff249B92),
-                          title: healthTitle,
-                          onPressed: () => RequestHealthConnect.showModal(
-                              context,
-                              callback: () => Navigator.pop(context)),
-                        ),
+                      ButtonWidget(
+                        isIconSvg: false,
+                        icon: healthIcon,
+                        backgroundColor: Color(0xFFE4FCF3),
+                        textColor: Color(0xff249B92),
+                        title: healthTitle,
+                        onPressed: () => RequestHealthConnect.showModal(context,
+                            callback: () => Navigator.pop(context)),
+                      ),
                       SizedBox(height: 15),
                       ButtonWidget(
                         icon: R.icons.ic_tap,
