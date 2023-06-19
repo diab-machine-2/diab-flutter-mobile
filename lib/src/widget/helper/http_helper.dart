@@ -115,7 +115,8 @@ class FetchClient {
     final domain = baseIdentify ? identifyBaseURL : baseURL;
     final Dio dio = Dio();
     Uri uri = Uri.https(domain, url, params);
-    Console.log('fetchData', uri);
+    Console.log('url', uri);
+    Console.logJson('params', params);
     return dio.getUri(uri, options: option);
   }
 
@@ -186,11 +187,12 @@ class FetchClient {
     final token = await AppSettings.getToken();
     final user_agent = await userAgent();
     final headers = {'Authorization': 'Bearer $token', 'User-Agent': 'Mobile'};
-    final request = http.MultipartRequest(
-        'POST',
-        Uri.parse(
-            'https://' + (baseIdentify ? identifyBaseURL : baseURL) + path));
+    Uri uri = Uri.parse(
+        'https://' + (baseIdentify ? identifyBaseURL : baseURL) + path);
+    final request = http.MultipartRequest('POST', uri);
     request.fields.addAll(params);
+    Console.log('token', token);
+    Console.log('uri', uri);
 
     for (final file in files ?? []) {
       final value = await http.MultipartFile.fromPath('images', file);

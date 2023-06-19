@@ -54,12 +54,6 @@ class HealthAppBloc extends Bloc<HealthAppEvent, HealthAppState> {
     }
   }
 
-  double roundDouble(var value, {int places = 1}) {
-    double val = double.parse(value.toString());
-    num mod = pow(10.0, 2);
-    return ((val * mod).round().toDouble() / mod);
-  }
-
   // Tâm thu - Tâm trương - Nhịp tim
   syncSystolicAndDiastolic() async {
     DateTime dateTo = DateTime.now();
@@ -68,6 +62,7 @@ class HealthAppBloc extends Bloc<HealthAppEvent, HealthAppState> {
     // Lấy thời gian sync dữ liệu gần nhất
     BloodPressureModel? lastestSummaryModel =
         await BloodPressureClient().fetchBloodPressureLatest();
+
     if (lastestSummaryModel != null) {
       DateTime dateTime =
           DateUtil.parseTimespanToDateTime(lastestSummaryModel.date!);
@@ -78,6 +73,10 @@ class HealthAppBloc extends Bloc<HealthAppEvent, HealthAppState> {
     }
 
     dateFrom = dateFrom.add(Duration(minutes: 1));
+
+    if (dateFrom.difference(dateTo).inDays > 90) {
+      dateFrom = dateTo.add(Duration(days: 90));
+    }
 
     bool result = false;
     requestSyncData['syncSYSTOLICAndDIASTOLIC'] = true;
@@ -130,7 +129,7 @@ class HealthAppBloc extends Bloc<HealthAppEvent, HealthAppState> {
         for (SyncSystolicAndDiastolicModel element in dataSync) {
           List<TimeFrameModel> timeFrames =
               await glucoseClient.fetchFlucoseTimeFrame(
-                  time: element.dateFrom.millisecondsSinceEpoch ~/ 1000);
+                  time: DateUtil.getDayInMillis(element.dateFrom));
 
           await BloodPressureClient().postBloodPressureInput(
               element.systolic.toString(),
@@ -146,7 +145,6 @@ class HealthAppBloc extends Bloc<HealthAppEvent, HealthAppState> {
       result = true;
     }
     responseSyncData['syncSYSTOLICAndDIASTOLIC'] = result;
-    // await _requestSyncData();
   }
 
   syncSTEP() async {
@@ -163,6 +161,10 @@ class HealthAppBloc extends Bloc<HealthAppEvent, HealthAppState> {
       if (dateTime.difference(releaseDate).inDays > 0) {
         dateFrom = dateTime;
       }
+    }
+
+    if (dateFrom.difference(dateTo).inDays > 90) {
+      dateFrom = dateTo.add(Duration(days: 90));
     }
 
     List<HealthDataPoint> steps = await health
@@ -239,16 +241,15 @@ class HealthAppBloc extends Bloc<HealthAppEvent, HealthAppState> {
   }
 
   syncWeight() async {
-    print("PHUONG syncWeight");
     bool result = false;
     DateTime dateTo = DateTime.now();
     DateTime dateFrom = releaseDate;
     requestSyncData['syncWeight'] = true;
 
     // Lấy thời gian sync dữ liệu gần nhất
-    InputWeightDataModel lastestSummaryModel = await client.fetchInput(
-        (dateTo.millisecondsSinceEpoch ~/ 1000).toString(), '1', 1,
-        size: 1);
+    int dateToSync = DateUtil.getDayInMillis(dateTo);
+    InputWeightDataModel lastestSummaryModel =
+        await client.fetchInput('$dateToSync', '4', 1, size: 1);
 
     if (lastestSummaryModel.inputs.isNotEmpty) {
       DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(
@@ -259,9 +260,11 @@ class HealthAppBloc extends Bloc<HealthAppEvent, HealthAppState> {
       }
     }
 
-    print("PHUONG dateFrom $dateFrom");
-
     dateFrom = dateFrom.add(Duration(minutes: 1));
+
+    if (dateFrom.difference(dateTo).inDays > 90) {
+      dateFrom = dateTo.add(Duration(days: 90));
+    }
 
     List<HealthDataPoint> weightList =
         await health.getHealthDataFromTypes(dateFrom, dateTo, [
@@ -286,6 +289,10 @@ class HealthAppBloc extends Bloc<HealthAppEvent, HealthAppState> {
             return difference.inDays == 0;
           });
 
+          if (heightData == null) {
+            heightData = heightList.first;
+          }
+
           List<TimeFrameModel> timeFrames = await GlucoseClient()
               .fetchFlucoseTimeFrame(
                   time: weightData.dateFrom.millisecondsSinceEpoch ~/ 1000);
@@ -295,32 +302,34 @@ class HealthAppBloc extends Bloc<HealthAppEvent, HealthAppState> {
           if (heightData != null) {
             height = roundDouble(heightData.value) * 100;
           } else {
-            height = null;
+            height = userInfo.height;
           }
-
-          await WeightClient().postWeightInput(
-            weightData.dateFrom.millisecondsSinceEpoch ~/ 1000,
-            [],
-            roundDouble(weightData.value).toString(),
-            null,
-            height != null ? height.toString() : userInfo.height.toString(),
-            'Đồng bộ dữ liệu từ Health App',
-            timeFrames.first.id,
-          );
+          if (height != null && weightData.value != null) {
+            await WeightClient().postWeightInput(
+              weightData.dateFrom.millisecondsSinceEpoch ~/ 1000,
+              [],
+              roundDouble(weightData.value).toString(),
+              null,
+              height != null ? height.toString() : userInfo.height.toString(),
+              'Đồng bộ dữ liệu từ Health App',
+              timeFrames.first.id,
+            );
+          }
           count++;
         }
       }
-
-      await UserClient().updateUserInfo(
-        AppSettings.userInfo!.id,
-        userInfo.copyWith(
-          weight: roundDouble(weightList.first.value),
-          height: heightList.isNotEmpty
-              ? roundDouble(heightList.first.value) * 100
-              : userInfo.height,
-        ),
-      );
-      result = true;
+      if (heightList.isNotEmpty || userInfo.height != null) {
+        await UserClient().updateUserInfo(
+          AppSettings.userInfo!.id,
+          userInfo.copyWith(
+            weight: roundDouble(weightList.first.value),
+            height: heightList.isNotEmpty
+                ? roundDouble(heightList.first.value) * 100
+                : userInfo.height,
+          ),
+        );
+        result = true;
+      }
     }
 
     responseSyncData['syncWeight'] = result;
@@ -333,9 +342,9 @@ class HealthAppBloc extends Bloc<HealthAppEvent, HealthAppState> {
     bool result = false;
 
     // Lấy thời gian sync dữ liệu gần nhất
-    InputGlucoseDataModel lastestSummaryModel = await glucoseClient.fetchInput(
-        '${dateTo.millisecondsSinceEpoch ~/ 1000}', '1', 1, null, null,
-        size: '1');
+    int dayToSync = DateUtil.getDayInMillis(dateTo);
+    InputGlucoseDataModel lastestSummaryModel = await glucoseClient
+        .fetchInput('$dayToSync', '4', 1, null, null, size: '1');
     if (lastestSummaryModel.inputs.isNotEmpty) {
       DateTime dateTime = DateUtil.parseTimespanToDateTime(
           lastestSummaryModel.inputs.first.createDate!);
@@ -345,6 +354,10 @@ class HealthAppBloc extends Bloc<HealthAppEvent, HealthAppState> {
     }
 
     dateFrom = dateFrom.add(Duration(minutes: 1));
+
+    if (dateFrom.difference(dateTo).inDays > 90) {
+      dateFrom = dateTo.add(Duration(days: 90));
+    }
 
     List<HealthDataPoint> dataSync = await health.getHealthDataFromTypes(
         dateFrom, dateTo, [HealthDataType.BLOOD_GLUCOSE]);

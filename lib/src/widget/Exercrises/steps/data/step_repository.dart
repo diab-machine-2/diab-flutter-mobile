@@ -43,7 +43,6 @@ class StepRepository extends FetchClient {
       List<Map<String, dynamic>> requestData = [];
       stepListData.forEach((element) {
         requestData.add(element.toJson());
-        Console.logJson("elemen: ", element.toJson());
       });
       final response = await ApiMethods.post(
           path: '/App/Step/step-async', data: requestData);

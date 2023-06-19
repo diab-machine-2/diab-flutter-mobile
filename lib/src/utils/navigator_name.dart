@@ -62,4 +62,5 @@ class NavigatorName {
   static const String connection_instructions = '/connection_instructions';
   static const String connect_device_app = '/connect_device_app';
   static const String lesson_detail = '/lesson_detail';
+  static const String zoom = '/zoom';
 }

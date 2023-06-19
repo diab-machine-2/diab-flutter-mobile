@@ -5,6 +5,7 @@ import 'package:medical/src/modal/bmi/calculate_bmi.dart';
 import 'package:medical/src/modal/bmi/weight_input.dart';
 import 'package:medical/src/modal/bmi/weight_input_data_model.dart';
 import 'package:medical/src/modal/bmi/weight_trend.dart';
+import 'package:medical/src/utils/app_log.dart';
 import 'package:medical/src/widget/helper/http_helper.dart';
 import 'package:medical/src/modal/error/error_model.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -26,6 +27,8 @@ class WeightClient extends FetchClient {
     }
     final response = await super
         .postHttp(path: '/App/Weight/Input', params: params, files: files);
+
+    Console.logJson("postWeightInput",params);
 
     if (response.statusCode == 200) {
       return true;
@@ -188,7 +191,7 @@ class WeightClient extends FetchClient {
 
   Future<InputWeightDataModel> fetchInput(
     String? currentDateTime,
-    String? periodFilterType,
+    String periodFilterType,
     int? page, {
     int? size,
   }) async {

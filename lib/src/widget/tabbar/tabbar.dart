@@ -1,8 +1,10 @@
 import 'dart:async';
+import 'dart:io';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_app_version_checker/flutter_app_version_checker.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_observer/Observable.dart';
 import 'package:flutter_observer/Observer.dart';
@@ -14,6 +16,7 @@ import 'package:medical/src/modal/base/referral_code_temp.dart';
 import 'package:medical/src/modal/error/error_model.dart';
 import 'package:medical/src/modal/user/user_model.dart';
 import 'package:medical/src/repo/user/user_client.dart';
+import 'package:medical/src/utils/app_log.dart';
 import 'package:medical/src/utils/app_storages.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigation_util.dart';
@@ -24,11 +27,13 @@ import 'package:medical/src/widget/helper/notification_manager.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/helper/version.dart';
+// import 'package:medical/src/widget/helper/version.dart';
 import 'package:medical/src/widget/home/home.dart';
 import 'package:medical/src/widget/my_plan_screens/my_plan/my_plan.dart';
 import 'package:medical/src/widget/profile/profile_controller.dart';
 import 'package:medical/src/widget/question_answer/question_answer_page.dart';
 import 'package:medical/src/widget/tabbar/bottom_tabbar.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../my_plan_screens/lesson_tab/lesson_detail/lesson_detail_page.dart';
 import '../my_plan_screens/my_plan/models/plan_type.dart';
@@ -54,6 +59,7 @@ class _TabbarControllerState extends State<TabbarController>
   BottomTabbar? _bottomTabbar;
   late List<Widget> tabs;
   bool isNavigateToStepList = false;
+  final _checker = AppVersionChecker();
 
   @override
   void initState() {
@@ -67,11 +73,16 @@ class _TabbarControllerState extends State<TabbarController>
     Observable.instance.addObserver(this);
     NotificationManager.instance.requestFirebaseToken(context);
     final String? lessonId = DynamicLinkConfig.instance.lessonId;
-    pageController = PageController(
-        initialPage:
-            lessonId != null || widget.isRedirectFromNotification ? 1 : 0);
+    final String? zoomId = DynamicLinkConfig.instance.zoomId;
+    int initialPage = 0;
+    if (lessonId != null ||
+        widget.isRedirectFromNotification ||
+        zoomId != null) {
+      initialPage = 1;
+    }
+    pageController = PageController(initialPage: initialPage);
     _bottomTabbar = BottomTabbar(
-        index: lessonId != null || widget.isRedirectFromNotification ? 1 : 0,
+        index: initialPage,
         callback: (index) {
           if (index == -1) {
             _showMaterialDialog();
@@ -79,12 +90,34 @@ class _TabbarControllerState extends State<TabbarController>
             jumpTo(index);
           }
         });
-    getNewVersion();
+
+    if (Const.ENVIRONMENT_DEFAULT == 'product') {
+      getNewVersion();
+    }
+    
     Future.delayed(Duration(seconds: 1), () async {
       FlutterNativeSplash.remove();
     });
     //   startTimer();
     _checkUserReferralCode();
+    _checkExistZoomId();
+  }
+
+  _checkExistZoomId() async {
+    final String? zoomId = DynamicLinkConfig.instance.zoomId;
+    if (zoomId != null) {
+      PermissionStatus statusMicrophone = await Permission.microphone.status;
+      if (statusMicrophone.isDenied) {
+        await Permission.microphone.request();
+      }
+      PermissionStatus statusCamera = await Permission.camera.request();
+      if (statusCamera.isDenied) {
+        await Permission.camera.request();
+      }
+      Navigator.pushNamed(
+          navigatorKey.currentState!.context, NavigatorName.zoom,
+          arguments: {'id': zoomId});
+    }
   }
 
   _checkExistLessonId() async {
@@ -161,6 +194,10 @@ class _TabbarControllerState extends State<TabbarController>
     if (notifyName == Const.NAVIGATE_TO_LESSON_DETAIL) {
       _checkExistLessonId();
     }
+    if (notifyName == Const.NAVIGATE_TO_LESSON_TAB ||
+        notifyName == Const.NAVIGATE_TO_ACTIVITY_TAB) {
+      jumpTo(1);
+    }
     if (notifyName == Const.LANGUAGE_CHANGED) {
       setState(() {
         tabs = [
@@ -213,6 +250,37 @@ class _TabbarControllerState extends State<TabbarController>
   }
 
   getNewVersion() async {
+    if (Platform.isAndroid) {
+      _checker.checkUpdate().then((value) {
+        if (value.canUpdate) {
+          showDialog(
+            context: context,
+            barrierDismissible: false,
+            builder: (BuildContext context) => CupertinoAlertDialog(
+              title: Text(R.string.cap_nhat.tr()),
+              content: Text(
+                  R.string.mes_new_version_available
+                      .tr(args: ['${value.newVersion}']),
+                  textAlign: TextAlign.center),
+              actions: <Widget>[
+                CupertinoDialogAction(
+                  isDefaultAction: true,
+                  child: Text(R.string.cap_nhat.tr()),
+                  onPressed: () async {
+                    final _url = value.appURL!;
+                    await canLaunch(_url)
+                        ? await launch(_url)
+                        : throw 'Could not launch $_url';
+                  },
+                )
+              ],
+            ),
+          );
+        }
+      });
+      return;
+    }
+
     try {
       final newVersion = NewVersion(context: context);
       final status = await newVersion.getVersionStatus();
@@ -246,12 +314,6 @@ class _TabbarControllerState extends State<TabbarController>
                           .tr(args: ['${status.storeVersion}']),
                       textAlign: TextAlign.center),
                   actions: <Widget>[
-                    // CupertinoDialogAction(
-                    //   child: Text(R.string.cancel.tr()),
-                    //   onPressed: () {
-                    //     Navigator.pop(context);
-                    //   },
-                    // ),
                     CupertinoDialogAction(
                       isDefaultAction: true,
                       child: Text(R.string.cap_nhat.tr()),

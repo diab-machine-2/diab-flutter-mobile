@@ -1,6 +1,7 @@
 library new_version;
 
 import 'package:http/http.dart' as http;
+import 'package:medical/src/utils/app_log.dart';
 import 'package:package_info/package_info.dart';
 import 'package:html/parser.dart' show parse;
 import 'package:flutter/material.dart';
@@ -104,7 +105,8 @@ class NewVersion {
   /// iOS info is fetched by using the iTunes lookup API, which returns a
   /// JSON document.
   _getiOSStoreVersion(String id, VersionStatus versionStatus) async {
-    final url = 'https://itunes.apple.com/lookup?bundleId=$id';
+    // final url = 'https://itunes.apple.com/lookup?bundleId=$id';
+    final url = 'https://itunes.apple.com/lookup?country=VN&id=1569353448';
     final response = await http.get(Uri.parse(url));
     if (response.statusCode != 200) {
       print('Can\'t find an app in the App Store with the id: $id');
@@ -125,11 +127,12 @@ class NewVersion {
       return null;
     }
     final document = parse(response.body);
-    final elements = document.getElementsByClassName('hAyfc');
+    final elements = document.getElementsByClassName('G1zzid');
+    Console.log('G1zzid', elements);
     final versionElement = elements.firstWhere(
-      (elm) => elm.querySelector('.BgcNfc')!.text == 'Current Version',
+      (elm) => elm.querySelector('.q078ud')!.text == 'Version',
     );
-    versionStatus.storeVersion = versionElement.querySelector('.htlgb')!.text;
+    versionStatus.storeVersion = versionElement.querySelector('.reAt0')!.text;
     versionStatus.appStoreLink = url;
     return versionStatus;
   }

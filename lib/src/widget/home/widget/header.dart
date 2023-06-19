@@ -49,7 +49,8 @@ class _HomeHeaderState extends State<HomeHeader> with Observer {
     super.initState();
     Observable.instance.addObserver(this);
     DeepLinkConfig.setUpHandleDeepLink(onHaveLink: (code) {
-      if (code?.isNotEmpty == true) {
+      final String? zoomId = DynamicLinkConfig.instance.zoomId;
+      if (code?.isNotEmpty == true && zoomId == null) {
         ShareProfilePopup.instance
             .onHasSharedCode(context: context, code: code!);
       }
@@ -84,9 +85,10 @@ class _HomeHeaderState extends State<HomeHeader> with Observer {
       loadNotification(),
       loadMotivation(),
     ]);
-    if (widget.sharedCode?.isNotEmpty == true) {
-      ShareProfilePopup.instance.onHasSharedCode(
-          context: context, code: widget.sharedCode.toString());
+    final String? zoomId = DynamicLinkConfig.instance.zoomId;
+    if (widget.sharedCode?.isNotEmpty == true && zoomId == null) {
+        ShareProfilePopup.instance.onHasSharedCode(
+            context: context, code: widget.sharedCode.toString());
     }
     if (AppSettings.isGetUser == false) {
       user = await UserClient().fetchUser();

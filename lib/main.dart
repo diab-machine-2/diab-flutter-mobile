@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:medical/src/app.dart';
 import 'package:medical/src/model/localization/localization.dart';
@@ -28,7 +29,7 @@ class SimpleBlocObserver extends BlocObserver {
   @override
   void onError(BlocBase bloc, Object error, StackTrace stacktrace) {
     super.onError(bloc, error, stacktrace);
-    Console.logJson('onError', error);
+    Console.log('onError', error);
   }
 }
 
@@ -56,6 +57,29 @@ Future<void> main() async {
   //WidgetsFlutterBinding.ensureInitialized();
 
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+
+  if (Platform.isAndroid) {
+    await AndroidInAppWebViewController.setWebContentsDebuggingEnabled(true);
+
+    // var swAvailable = await AndroidWebViewFeature.isFeatureSupported(
+    //     AndroidWebViewFeature.SERVICE_WORKER_BASIC_USAGE);
+    // var swInterceptAvailable = await AndroidWebViewFeature.isFeatureSupported(
+    //     AndroidWebViewFeature.SERVICE_WORKER_SHOULD_INTERCEPT_REQUEST);
+
+    // if (swAvailable && swInterceptAvailable) {
+    //   AndroidServiceWorkerController serviceWorkerController =
+    //       AndroidServiceWorkerController.instance();
+
+    //   await serviceWorkerController
+    //       .setServiceWorkerClient(AndroidServiceWorkerClient(
+    //     shouldInterceptRequest: (request) async {
+    //       print(request);
+    //       return null;
+    //     },
+    //   ));
+    // }
+  }
+
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
   final window = WidgetsFlutterBinding.ensureInitialized().window;
 

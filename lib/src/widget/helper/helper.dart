@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -25,7 +27,8 @@ String convertToTicketDate(int timeStamp, String format) {
 String convertToSectionTicketDate(int timeStamp, String format) {
   final date = DateTime.fromMillisecondsSinceEpoch(timeStamp * 1000);
   // String languageCode = Localizations.localeOf(context).languageCode;
-  String formattedDate = DateFormat('dd/MMMM/yyyy, $format', 'vi_VN').format(date);
+  String formattedDate =
+      DateFormat('dd/MMMM/yyyy, $format', 'vi_VN').format(date);
   final now = DateTime.now();
   final today = DateTime(now.year, now.month, now.day);
   final aDate = DateTime(date.year, date.month, date.day);
@@ -41,7 +44,9 @@ String getStringToday(int timeStamp) {
   final date = DateTime.fromMillisecondsSinceEpoch(timeStamp * 1000);
   if (now.day == date.day && now.month == date.month && now.year == date.year) {
     return R.string.today.tr();
-  } else if (now.day - 1 == date.day && now.month == date.month && now.year == date.year) {
+  } else if (now.day - 1 == date.day &&
+      now.month == date.month &&
+      now.year == date.year) {
     return 'Hôm qua';
   } else {
     return '';
@@ -68,8 +73,8 @@ DateTime toDate(int timeStamp) {
   return DateTime(date.year, date.month, date.day);
 }
 
-int convertToGMT(int? timeStamp){
-  if(timeStamp != null){
+int convertToGMT(int? timeStamp) {
+  if (timeStamp != null) {
     var date = DateTime.fromMillisecondsSinceEpoch(timeStamp * 1000);
     date = date.add(Duration(hours: 7));
     return date.millisecondsSinceEpoch ~/ 1000;
@@ -78,12 +83,12 @@ int convertToGMT(int? timeStamp){
   }
 }
 
-String getWeekDay(int timeStamp){
+String getWeekDay(int timeStamp) {
   final date = DateTime.fromMillisecondsSinceEpoch(timeStamp * 1000);
   var dateTime = DateTime(date.year, date.month, date.day);
-  if(dateTime.weekday + 1 >= 2 && dateTime.weekday + 1 <=7){
+  if (dateTime.weekday + 1 >= 2 && dateTime.weekday + 1 <= 7) {
     return "Thứ ${dateTime.weekday + 1}";
-  } else if(dateTime.weekday + 1 == 8){
+  } else if (dateTime.weekday + 1 == 8) {
     return "Chủ Nhật";
   } else {
     return "";
@@ -139,7 +144,7 @@ Color getColorExercise(ExerciseIndexModel model) {
   }
 }
 
-String roundNumberToInt(double number){
+String roundNumberToInt(double number) {
   final round = number.round();
   return round.toString();
 }
@@ -171,4 +176,10 @@ double roundAsFixed(double number) {
 
 String formatNumber(double? number) {
   return NumberFormat.decimalPattern().format(number);
+}
+
+double roundDouble(var value, {int places = 1}) {
+  double val = double.parse(value.toString());
+  num mod = pow(10.0, 2);
+  return ((val * mod).round().toDouble() / mod);
 }

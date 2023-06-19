@@ -165,9 +165,7 @@ class ExercrisesClient extends FetchClient {
         params['exercises[$i].duration'] = exercises[i].duration.toString();
         params['exercises[$i].burnedCalorie'] = exercises[i].burnedCalorie.toString();
       }
-      Console.logJson("hehe",params );
       final response = await super.postHttp(path: '/App/Exercise/Input', params: params, files: files);
-      Console.logJson("response",response.toString() );
       if (response.statusCode == 200) {
         return true;
       } else {

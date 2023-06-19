@@ -128,7 +128,11 @@ dependencies:
   dotted_border: ^2.0.0+2
   sticky_headers: ^0.3.0+2
   flutter_share: ^2.0.0
+  webview_flutter: ^4.0.7
   health: ^4.4.0
+  flutter_inappwebview: ^5.7.2+3
+  flutter_app_version_checker: ^0.3.2
+  flutter_blue_plus: ^1.5.2
 
 dev_dependencies:
   flutter_test:

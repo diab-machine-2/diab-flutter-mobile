@@ -26,7 +26,7 @@ class CustomCheckboxWidget extends StatelessWidget {
             width: 24,
             height: 24,
             decoration: BoxDecoration(
-              color: isChecked ? R.color.accentColor : R.color.white,
+              color: isChecked ? R.color.greenGradientBottom : R.color.white,
               border: isChecked
                   ? null
                   : Border.all(width: 2, color: R.color.primaryGreyColor),
@@ -36,7 +36,7 @@ class CustomCheckboxWidget extends StatelessWidget {
                 ? Icon(
                     Icons.check,
                     color: R.color.white,
-                    size: 24,
+                    size: 22,
                   )
                 : const SizedBox(),
           ),

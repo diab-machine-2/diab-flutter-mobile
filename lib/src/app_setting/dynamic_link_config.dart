@@ -5,8 +5,10 @@ import 'package:medical/src/app.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:medical/src/modal/learning/learning_post_model.dart';
+import 'package:medical/src/modal/user/user_model.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigator_name.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 import '../model/response/lesson_section_list_response.dart';
 
@@ -21,15 +23,18 @@ class DynamicLinkConfig {
   List<String> dynamicLinkType = [
     "referralCode",
     "newsDetail",
+    "calendar",
   ];
 
   StreamSubscription? _subLink;
   String? _referalCode;
   String? _lessonId;
+  String? _zoomId;
   late String _shareLink;
 
   String? get referalCode => _referalCode;
   String? get lessonId => _lessonId;
+  String? get zoomId => _zoomId;
   String? get shareLink => _shareLink;
 
   Future<void> setUpHandleDeepLink() async {
@@ -138,6 +143,14 @@ class DynamicLinkConfig {
     _lessonId = null;
   }
 
+  void removeZoomId() {
+    _zoomId = null;
+  }
+
+  void setZoomId(String zoomId) {
+    _zoomId = zoomId;
+  }
+
   static Future<String?> createShareNewsLink(
       LearningPostModel newsDetail) async {
     String _fallbackUrl = "https://diab.com.vn/cau-chuyen-thanh-cong";
@@ -187,7 +200,7 @@ class DynamicLinkConfig {
   }
 
   progressDynamicLink(deepLink) {
-    dynamicLinkType.forEach((functionName) {
+    dynamicLinkType.forEach((functionName) async {
       String urlString = deepLink.toString();
       List<String> separatedString = urlString.split('$functionName=');
       switch (functionName) {
@@ -207,6 +220,29 @@ class DynamicLinkConfig {
             Navigator.pushNamed(
                 navigatorKey.currentState!.context, NavigatorName.news_detail,
                 arguments: {'id': newsDetailId});
+          }
+          break;
+        case "calendar":
+          if (urlString.contains(functionName)) {
+            String calendarID = separatedString[1];
+            final UserModel? user = AppSettings.userInfo;
+            if (user != null && _zoomId == null) {
+              _zoomId = calendarID;
+              PermissionStatus statusMicrophone =
+                  await Permission.microphone.status;
+              if (statusMicrophone.isDenied) {
+                await Permission.microphone.request();
+              }
+              PermissionStatus statusCamera = await Permission.camera.request();
+              if (statusCamera.isDenied) {
+                await Permission.camera.request();
+              }
+              Navigator.pushNamed(
+                  navigatorKey.currentState!.context, NavigatorName.zoom,
+                  arguments: {'id': calendarID});
+            } else {
+              _zoomId = calendarID;
+            }
           }
           break;
       }

@@ -14,6 +14,7 @@ import 'package:medical/src/app_setting/dynamic_link_config.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
+import 'package:medical/src/widget/nipro/roche_connection/roche_connection_view.dart';
 import 'package:medical/src/widgets/button_language_picker.dart';
 import 'package:package_info/package_info.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
@@ -295,6 +296,7 @@ class _StepListControllerState extends State<StepListController> with Observer {
                                                   'cta_welcome_login',
                                             },
                                           );
+
                                           Navigator.pushNamed(
                                             context,
                                             NavigatorName.login,

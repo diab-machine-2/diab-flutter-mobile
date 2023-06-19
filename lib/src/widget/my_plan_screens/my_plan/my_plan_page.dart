@@ -40,10 +40,12 @@ class _MyPlanPageState extends State<MyPlanPage> with Observer {
     super.initState();
     Observable.instance.addObserver(this);
     final String? lessonId = DynamicLinkConfig.instance.lessonId;
-    if (lessonId != null) {
-      index = 1;
-    } else if (user.isUserFree) {
-      index = 1;
+    final String? zoomId = DynamicLinkConfig.instance.zoomId;
+    if (zoomId != null) {
+      // DynamicLinkConfig.instance.removeZoomId();
+      index = PlanType.goal.index;
+    } else if (lessonId != null || user.isUserFree) {
+      index = PlanType.lesson.index;
     } else {
       index = widget.index;
     }

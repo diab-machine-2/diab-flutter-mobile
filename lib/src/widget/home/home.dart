@@ -27,6 +27,7 @@ import 'package:medical/src/widget/my_plan_screens/my_plan/models/plan_type.dart
 import 'package:medical/src/widget/nipro/health_app/sync_health_app_view.dart';
 import 'package:medical/src/widget/nipro/health_app/widgets/request_health_connect.dart';
 import 'package:medical/src/widget/shared_profile/pages/share_app_detail/widgets/banner_share_app.dart';
+import 'package:medical/src/widget/zoom/zoom_android_view.dart';
 import 'package:medical/src/widgets/block_bottom_sheet.dart';
 import 'package:medical/src/widgets/button_widget.dart';
 import 'package:medical/src/widgets/network_image_widget.dart';
@@ -127,21 +128,22 @@ class _HomeControllerState extends State<HomeController> with Observer {
   }
 
   initHealthApp() async {
-    Future.delayed(Duration(milliseconds: 1000), () async {
-      bool? hasHealthConnection = await AppStorages.getHealthAppPermission();
-      if (hasHealthConnection == null) {
-        RequestHealthConnect.showModal(context, callback: () {});
-      } else if (hasHealthConnection == true) {
-        setState(() {
-          _hasHealthConnection = hasHealthConnection;
-        });
-      }
-    });
+    final String? lessonId = DynamicLinkConfig.instance.lessonId;
+    if (lessonId == null) {
+      Future.delayed(Duration(milliseconds: 1000), () async {
+        bool? hasHealthConnection = await AppStorages.getHealthAppPermission();
+        if (hasHealthConnection == null) {
+          RequestHealthConnect.showModal(context, callback: () {});
+        } else if (hasHealthConnection == true) {
+          setState(() {
+            _hasHealthConnection = hasHealthConnection;
+          });
+        }
+      });
+    }
   }
 
   Future firebaseSetup() async {
-    await TrackingManager.analytics
-        .logScreenView(screenName: "home", screenClass: "HomeController");
     await TrackingManager.analytics
         .logScreenView(screenName: "home", screenClass: "HomeController");
     AppSettings.currentScreenName = 'home';
@@ -181,6 +183,11 @@ class _HomeControllerState extends State<HomeController> with Observer {
     if (notifyName == 'goal_calo_changed' || notifyName == 'refresh_home') {
       _hasHealthConnection = false;
       _refresh();
+    }
+    if (notifyName == 'syncing_heath_app') {
+      setState(() {
+        _hasHealthConnection = true;
+      });
     }
     if (notifyName == Const.NAVIGATE_TO_PROFILE_TAB) {
       _refresh();
@@ -1226,8 +1233,9 @@ class _HomeControllerState extends State<HomeController> with Observer {
               children: [
                 Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                   Text(name ?? '',
-                      style: const TextStyle(
-                          fontSize: 16, fontWeight: FontWeight.w600)),
+                          style: const TextStyle(
+                              fontSize: 16, fontWeight: FontWeight.w600))
+                      .tr(),
                   const SizedBox(height: 4),
                   Text(R.string.today.tr(),
                       style: TextStyle(
@@ -1333,8 +1341,9 @@ class _HomeControllerState extends State<HomeController> with Observer {
               children: [
                 Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                   Text(name ?? '',
-                      style: const TextStyle(
-                          fontSize: 16, fontWeight: FontWeight.w600)),
+                          style: const TextStyle(
+                              fontSize: 16, fontWeight: FontWeight.w600))
+                      .tr(),
                   const SizedBox(height: 4),
                   Text(
                       getStringToday(model.createDateTime ?? 0).isEmpty
