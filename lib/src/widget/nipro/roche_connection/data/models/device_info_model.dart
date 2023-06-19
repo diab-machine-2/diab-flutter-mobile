@@ -391,3 +391,186 @@ List<DeviceInfoModel> examples = [
       name: 'NIPRO Premier a',
       tutorials: []),
 ];
+DeviceInfoModel guideReconnection = DeviceInfoModel(
+  image: 'lib/res/drawables/accu-chek-guide.png',
+  imagePin: '',
+  name: 'Accu Chek Guide',
+  tutorials: [
+    TutorialModel(
+      index: 0,
+      image: 'lib/res/drawables/accu-chek-guide-8.png',
+      title: RichText(
+        textAlign: TextAlign.center,
+        text: TextSpan(
+          style: TextStyle(
+            fontSize: 18,
+            height: 1.5,
+            color: R.color.textDark,
+          ),
+          children: [
+            TextSpan(
+              text: 'Bật máy bằng cách ấn vào ',
+              style: TextStyle(
+                fontSize: 15,
+              ),
+            ),
+            TextSpan(
+              text: '(OK).\n',
+              style: TextStyle(
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            TextSpan(
+              text: 'Từ Menu chính, ',
+              style: TextStyle(
+                fontSize: 15,
+              ),
+            ),
+            TextSpan(
+              text: 'ấn (Xuống) ',
+              style: TextStyle(
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            TextSpan(
+              text: 'để chọn ',
+              style: TextStyle(
+                fontSize: 15,
+              ),
+            ),
+            TextSpan(
+              text: 'My data ',
+              style: TextStyle(
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            TextSpan(
+              text: '(Cài đặt). ',
+              style: TextStyle(
+                fontSize: 15,
+              ),
+            ),
+            TextSpan(
+              text: 'Ấn (OK).',
+              style: TextStyle(
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ],
+        ),
+      ),
+    ),
+    TutorialModel(
+      index: 1,
+      image: 'lib/res/drawables/accu-chek-guide-9.png',
+      title: RichText(
+        textAlign: TextAlign.center,
+        text: TextSpan(
+          style: TextStyle(fontSize: 18, color: R.color.textDark),
+          children: [
+            TextSpan(
+              text: 'Ấn (Xuống)',
+              style: TextStyle(
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            TextSpan(
+              text: ' để chọn ',
+            ),
+            TextSpan(
+              text: 'Data Transfer. Ấn (OK).',
+              style: TextStyle(
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ],
+        ),
+      ),
+    ),
+    TutorialModel(
+      index: 2,
+      image: 'lib/res/drawables/accu-chek-guide-10.png',
+      title: RichText(
+        textAlign: TextAlign.center,
+        text: TextSpan(
+          style: TextStyle(fontSize: 18, color: R.color.textDark),
+          children: [
+            TextSpan(
+              text: 'Ấn (Xuống) ',
+              style: TextStyle(
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            TextSpan(
+              text: 'để chọn ',
+            ),
+            TextSpan(
+              text: 'Wireless.\nẤn (OK).',
+              style: TextStyle(
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ],
+        ),
+      ),
+    ),
+    TutorialModel(
+      index: 3,
+      image: 'lib/res/drawables/accu-chek-guide-11.png',
+      title: RichText(
+        textAlign: TextAlign.center,
+        text: TextSpan(
+          style: TextStyle(
+            fontSize: 18,
+            color: R.color.textDark,
+            fontWeight: FontWeight.w700,
+          ),
+          children: [
+            TextSpan(
+                text:
+                    'Màn hình hiển thị kết nối, Bạn mở app và bấm “Kết nối thiết bị”'),
+          ],
+        ),
+      ),
+    ),
+    TutorialModel(
+      index: 4,
+      image: 'lib/res/drawables/accu-chek-guide-12.png',
+      title: RichText(
+        textAlign: TextAlign.center,
+        text: TextSpan(
+          style: TextStyle(fontSize: 18, color: R.color.textDark),
+          children: [
+            TextSpan(
+              text: 'Bấm ',
+              style: TextStyle(
+                fontSize: 15,
+              ),
+            ),
+            TextSpan(
+              text: '“Kết nối thiết bị”  ',
+              style: TextStyle(
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ],
+        ),
+      ),
+    ),
+    TutorialModel(
+      index: 5,
+      image: 'lib/res/drawables/accu-chek-guide-6.png',
+      title: RichText(
+        textAlign: TextAlign.center,
+        text: TextSpan(
+          style: TextStyle(fontSize: 18, color: R.color.textDark),
+          children: [
+            TextSpan(
+                text:
+                    'Đã hoàn thành ghép nối. App sẽ\nnhận được chỉ số từ thiết bị.'),
+          ],
+        ),
+      ),
+    ),
+  ],
+);

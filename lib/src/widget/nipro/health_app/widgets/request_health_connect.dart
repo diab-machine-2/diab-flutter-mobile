@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_observer/Observable.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/res/colors.dart';
 import 'package:medical/src/app_setting/health_setting.dart';
@@ -124,8 +125,9 @@ class RequestHealthConnect extends StatelessWidget {
                       title: "Để sau",
                       textColor: R.color.textDark,
                       backgroundColor: R.color.grayBorder,
-                      onPressed: () {
+                      onPressed: () async {
                         Navigator.pop(context);
+                        await AppStorages.setHealthAppPermission(false);
                       },
                     ),
                     SizedBox(height: 15),
@@ -146,6 +148,8 @@ class RequestHealthConnect extends StatelessWidget {
                           context
                               .read<HealthAppBloc>()
                               .add(SubmitSyncData(true));
+                          Observable.instance.notifyObservers([],
+                              notifyName: "syncing_heath_app");
                         }
                       },
                     ),

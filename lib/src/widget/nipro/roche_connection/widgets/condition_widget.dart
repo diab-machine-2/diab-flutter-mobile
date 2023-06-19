@@ -1,13 +1,11 @@
 import 'dart:io';
 import 'package:app_settings/app_settings.dart' as Settings;
-import 'package:app_settings/app_settings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:medical/res/R.dart';
-import 'package:medical/src/utils/app_log.dart';
-import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/nipro/roche_connection/views/guideline_view.dart';
+import 'package:medical/src/widgets/block_bottom_sheet.dart';
 import 'package:permission_handler/permission_handler.dart';
 import '../data/models/device_info_model.dart';
 
@@ -25,9 +23,12 @@ class ConditionWidget extends StatefulWidget {
 }
 
 class _ConditionWidgetState extends State<ConditionWidget> {
+  bool isBlueOn = false;
+
   @override
   void initState() {
     initSDK();
+    _checkDeviceBluetoothIsOn();
     super.initState();
   }
 
@@ -47,12 +48,21 @@ class _ConditionWidgetState extends State<ConditionWidget> {
     await Permission.bluetoothConnect.request();
   }
 
+  Future<void> _checkDeviceBluetoothIsOn() async {
+    bool _isBlueOn = await FlutterBluePlus.instance.isOn;
+    setState(() {
+      isBlueOn = _isBlueOn;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+    final _btInstance = FlutterBluePlus.instance;
     return StreamBuilder<BluetoothState>(
-        stream: FlutterBluePlus.instance.state,
+        stream: _btInstance.state,
+        initialData: BluetoothState.unknown,
         builder: (context, snapshot) {
-          bool isDiviceOn = snapshot.data == BluetoothState.on;
+          bool isDiviceOn = snapshot.data == BluetoothState.on || isBlueOn;
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -231,19 +241,25 @@ class _ConditionWidgetState extends State<ConditionWidget> {
                 ),
               ),
               GestureDetector(
-                onTap: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (BuildContext context) => GuidelineView(
-                      deviceInfo: widget.deviceInfo,
-                      onConnectDevice: () {
-                        if (widget.onConnectDevice != null) {
-                          widget.onConnectDevice!();
-                        }
-                      },
-                    ),
-                  ),
-                ),
+                onTap: () {
+                  if (widget.deviceInfo.name.contains('Guide')) {
+                    _showAccuCheckGuidGuideline(context);
+                  } else {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (BuildContext context) => GuidelineView(
+                          deviceInfo: widget.deviceInfo,
+                          onConnectDevice: () {
+                            if (widget.onConnectDevice != null) {
+                              widget.onConnectDevice!();
+                            }
+                          },
+                        ),
+                      ),
+                    );
+                  }
+                },
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -260,6 +276,89 @@ class _ConditionWidgetState extends State<ConditionWidget> {
             ],
           );
         });
+  }
+
+  _showAccuCheckGuidGuideline(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isDismissible: true,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => BlockBottomSheet(
+        title: 'Chọn lần hướng dẫn',
+        child: Padding(
+          padding: const EdgeInsets.all(15),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _itemNavigationWidget(
+                label: 'Kết nối lần đầu',
+                onTap: () {
+                  Navigator.pop(context);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (BuildContext context) => GuidelineView(
+                        deviceInfo: widget.deviceInfo,
+                        onConnectDevice: () {
+                          if (widget.onConnectDevice != null) {
+                            widget.onConnectDevice!();
+                          }
+                        },
+                      ),
+                    ),
+                  );
+                },
+              ),
+              _itemNavigationWidget(
+                label: 'Đồng bộ dữ liệu',
+                onTap: () {
+                  Navigator.pop(context);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (BuildContext context) => GuidelineView(
+                        deviceInfo: guideReconnection,
+                        onConnectDevice: () {
+                          if (widget.onConnectDevice != null) {
+                            widget.onConnectDevice!();
+                          }
+                        },
+                      ),
+                    ),
+                  );
+                },
+              ),
+              SizedBox(height: 100),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  _itemNavigationWidget({
+    required String label,
+    required GestureTapCallback onTap,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      child: Container(
+        margin: EdgeInsets.only(bottom: 10),
+        padding: EdgeInsets.symmetric(vertical: 15),
+        decoration: BoxDecoration(
+            border: Border(bottom: BorderSide(color: Color(0xFFE6E8EC)))),
+        child: Text(
+          label,
+          style: TextStyle(
+            fontSize: 18,
+            color: R.color.textDark,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+      ),
+    );
   }
 
   Widget _guideLineItem() {

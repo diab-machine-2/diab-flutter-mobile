@@ -72,7 +72,12 @@ class _GuidelineViewState extends State<GuidelineView> {
                                 ),
                               ),
                               SizedBox(height: 25),
-                              info.title,
+                              Container(
+                                constraints: BoxConstraints(
+                                  maxWidth: 300,
+                                ),
+                                child: info.title,
+                              ),
                               SizedBox(height: 15),
                               info.description ?? SizedBox(),
                             ],

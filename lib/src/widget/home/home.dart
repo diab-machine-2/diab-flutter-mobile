@@ -184,6 +184,11 @@ class _HomeControllerState extends State<HomeController> with Observer {
       _hasHealthConnection = false;
       _refresh();
     }
+    if (notifyName == 'syncing_heath_app') {
+      setState(() {
+        _hasHealthConnection = true;
+      });
+    }
     if (notifyName == Const.NAVIGATE_TO_PROFILE_TAB) {
       _refresh();
     }
@@ -1228,8 +1233,9 @@ class _HomeControllerState extends State<HomeController> with Observer {
               children: [
                 Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                   Text(name ?? '',
-                      style: const TextStyle(
-                          fontSize: 16, fontWeight: FontWeight.w600)).tr(),
+                          style: const TextStyle(
+                              fontSize: 16, fontWeight: FontWeight.w600))
+                      .tr(),
                   const SizedBox(height: 4),
                   Text(R.string.today.tr(),
                       style: TextStyle(
@@ -1335,8 +1341,9 @@ class _HomeControllerState extends State<HomeController> with Observer {
               children: [
                 Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                   Text(name ?? '',
-                      style: const TextStyle(
-                          fontSize: 16, fontWeight: FontWeight.w600)).tr(),
+                          style: const TextStyle(
+                              fontSize: 16, fontWeight: FontWeight.w600))
+                      .tr(),
                   const SizedBox(height: 4),
                   Text(
                       getStringToday(model.createDateTime ?? 0).isEmpty

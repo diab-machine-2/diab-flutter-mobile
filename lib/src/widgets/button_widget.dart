@@ -14,6 +14,7 @@ class ButtonWidget extends StatelessWidget {
   final double? radius;
   final bool modeTextButton;
   final bool isArrowRight;
+  final bool isIconSvg;
 
   const ButtonWidget({
     this.backgroundColor,
@@ -27,6 +28,7 @@ class ButtonWidget extends StatelessWidget {
     this.modeTextButton = false,
     this.icon,
     this.isArrowRight = false,
+    this.isIconSvg = true,
   });
 
   @override
@@ -70,16 +72,22 @@ class ButtonWidget extends StatelessWidget {
           children: [
             if (icon != null && !isArrowRight)
               Padding(
-                padding: const EdgeInsets.only(right: 3),
-                child: SvgPicture.asset(
-                  icon!,
-                  width: 19,
-                  height: 22,
-                  color: onPressed == null
-                      ? R.color.gray
-                      : textColor ?? R.color.white,
-                  fit: BoxFit.scaleDown,
-                ),
+                padding: const EdgeInsets.only(right: 5),
+                child: isIconSvg
+                    ? SvgPicture.asset(
+                        icon!,
+                        width: 19,
+                        height: 22,
+                        color: onPressed == null
+                            ? R.color.gray
+                            : textColor ?? R.color.white,
+                        fit: BoxFit.scaleDown,
+                      )
+                    : Image.asset(
+                        icon!,
+                        width: 22,
+                        height: 22,
+                      ),
               ),
             Text(
               title,
@@ -92,16 +100,22 @@ class ButtonWidget extends StatelessWidget {
             ),
             if (icon != null && isArrowRight)
               Padding(
-                padding: const EdgeInsets.only(left: 3),
-                child: SvgPicture.asset(
-                  icon!,
-                  width: 19,
-                  height: 22,
-                  color: onPressed == null
-                      ? R.color.gray
-                      : textColor ?? R.color.white,
-                  fit: BoxFit.scaleDown,
-                ),
+                padding: const EdgeInsets.only(left: 5),
+                child: isIconSvg
+                    ? SvgPicture.asset(
+                        icon!,
+                        width: 19,
+                        height: 22,
+                        color: onPressed == null
+                            ? R.color.gray
+                            : textColor ?? R.color.white,
+                        fit: BoxFit.scaleDown,
+                      )
+                    : Image.asset(
+                        icon!,
+                        width: 22,
+                        height: 22,
+                      ),
               ),
           ],
         ),
