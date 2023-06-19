@@ -54,12 +54,6 @@ class HealthAppBloc extends Bloc<HealthAppEvent, HealthAppState> {
     }
   }
 
-  double roundDouble(var value, {int places = 1}) {
-    double val = double.parse(value.toString());
-    num mod = pow(10.0, 2);
-    return ((val * mod).round().toDouble() / mod);
-  }
-
   // Tâm thu - Tâm trương - Nhịp tim
   syncSystolicAndDiastolic() async {
     DateTime dateTo = DateTime.now();

@@ -24,4 +24,5 @@ enum BlocStatus {
   error,
   loading,
   success,
+  initial,
 }

@@ -450,5 +450,10 @@ class Drawables {
 	String get banner_share_lesson => "lib/res/drawables/banner_share_lesson.png";
 	String get logo_diab => "lib/res/drawables/logo_diab.png";
 	String get logo_healthkit => "lib/res/drawables/logo_healthkit.png";
-	String get logo_googleFit => "lib/res/drawables/logo_healthkit.png";
+	String get logo_googleFit => "lib/res/drawables/logo_googleFit.png";
+	String get rada_effect => "lib/res/drawables/rada_effect.png";
+	String get icon_bluetooth => "lib/res/drawables/icon_bluetooth.png";
+	String get img_error => "lib/res/drawables/img_error.png";
+	String get pin_example => "lib/res/drawables/pin_example.jpg";
+	String get img_loading => "lib/res/drawables/img_loading.png";
 }

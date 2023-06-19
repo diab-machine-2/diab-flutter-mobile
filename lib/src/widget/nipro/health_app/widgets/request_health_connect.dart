@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_observer/Observable.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/res/colors.dart';
 import 'package:medical/src/app_setting/health_setting.dart';
@@ -36,6 +37,8 @@ class RequestHealthConnect extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     String appTitle = Platform.isIOS ? 'Apple Health' : 'Google Fit';
+    String appLogo =
+        Platform.isIOS ? R.drawable.logo_healthkit : R.drawable.logo_googleFit;
     return BlocProvider<HealthAppBloc>(
       create: (_) => HealthAppBloc()..add(SubmitSyncData(isSyncing)),
       child: BlocBuilder<HealthAppBloc, HealthAppState>(
@@ -43,6 +46,7 @@ class RequestHealthConnect extends StatelessWidget {
           if (isSyncing == true && state.blocStatus == BlocStatus.success)
             return SizedBox();
           if (isSyncing == true && state.blocStatus == BlocStatus.loading) {
+            return SizedBox();
             return Padding(
               padding: const EdgeInsets.all(8.0),
               child: Row(
@@ -87,7 +91,7 @@ class RequestHealthConnect extends StatelessWidget {
                         ),
                         SizedBox(width: 15),
                         Image.asset(
-                          R.drawable.logo_healthkit,
+                          appLogo,
                           width: 72,
                         )
                       ],
@@ -124,8 +128,9 @@ class RequestHealthConnect extends StatelessWidget {
                       title: "Để sau",
                       textColor: R.color.textDark,
                       backgroundColor: R.color.grayBorder,
-                      onPressed: () {
+                      onPressed: () async {
                         Navigator.pop(context);
+                        await AppStorages.setHealthAppPermission(false);
                       },
                     ),
                     SizedBox(height: 15),
@@ -146,6 +151,8 @@ class RequestHealthConnect extends StatelessWidget {
                           context
                               .read<HealthAppBloc>()
                               .add(SubmitSyncData(true));
+                          Observable.instance.notifyObservers([],
+                              notifyName: "syncing_heath_app");
                         }
                       },
                     ),

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_observer/Observable.dart';
@@ -6,6 +8,7 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/firebase_tracking/kpi_blood_pressure_tracking.dart';
 import 'package:medical/src/modal/HbA1C/short_gui.dart';
 import 'package:medical/src/repo/HbA1C/HbA1C_client.dart';
+import 'package:medical/src/utils/app_storages.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/BloodPressure/bloodPressure_detail.dart';
 import 'package:medical/src/widget/BloodPressure/overview.dart';
@@ -13,8 +16,10 @@ import 'package:medical/src/widget/HbA1C/widget/description/description.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/components/custom_action_descriptipn.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
+import 'package:medical/src/widget/nipro/health_app/widgets/request_health_connect.dart';
 import 'package:medical/src/widget/tabbar/action_list_panel.dart';
 import 'package:medical/src/widget/tabbar/fillter_bloodSugar_panel.dart';
+import 'package:medical/src/widgets/button_widget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class BloodPressureDetailTabbarController extends StatefulWidget {
@@ -177,15 +182,84 @@ class _BloodPressureDetailTabbarControllerState
     );
   }
 
-  _showMaterialDialog() {
-    Navigator.pushNamed(context, NavigatorName.add_blood_pressure,
-        arguments: {'type': 'input', 'id': null});
-    // showDialog(
-    //   barrierColor: R.color.color0xff003F38.withOpacity(0.8),
-    //   useSafeArea: false,
-    //   context: context,
-    //   builder: (_) => FunkyOverlay(),
-    // );
+  _showMaterialDialog() async {
+    bool? hasHealthConnection = await AppStorages.getHealthAppPermission();
+    if (hasHealthConnection == true) {
+      Navigator.pushNamed(context, NavigatorName.add_blood_pressure,
+          arguments: {'type': 'input', 'id': null});
+    } else {
+      String healthIcon = Platform.isIOS
+          ? R.drawable.logo_healthkit
+          : R.drawable.logo_googleFit;
+      String healthTitle =
+          Platform.isIOS ? 'Kết nối từ Apple Health' : 'Kết nối từ Google Fit';
+      showModalBottomSheet(
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.vertical(top: Radius.circular(15))),
+        backgroundColor: R.color.transparent,
+        context: context,
+        isScrollControlled: true,
+        builder: (context) => Container(
+          height: 280,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(20),
+          ),
+          margin: EdgeInsets.all(10),
+          child: Column(
+            children: [
+              Container(
+                padding: EdgeInsets.all(20),
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                    border:
+                        Border(bottom: BorderSide(color: Color(0xffF2F2F2)))),
+                child: Text(
+                  'Chọn cách nhập',
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: R.color.textDark,
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(15),
+                child: Column(
+                  children: [
+                    ButtonWidget(
+                      isIconSvg: false,
+                      icon: healthIcon,
+                      backgroundColor: Color(0xFFE4FCF3),
+                      textColor: Color(0xff249B92),
+                      title: healthTitle,
+                      onPressed: () => RequestHealthConnect.showModal(context,
+                          callback: () => Navigator.pop(context)),
+                    ),
+                    SizedBox(height: 15),
+                    ButtonWidget(
+                      icon: R.icons.ic_tap,
+                      backgroundColor: Color(0xFFE4FCF3),
+                      textColor: Color(0xff249B92),
+                      title: 'Nhập thủ công',
+                      onPressed: () => Navigator.pushNamed(
+                          context, NavigatorName.add_blood_pressure,
+                          arguments: {'type': 'input', 'id': null}),
+                    ),
+                    SizedBox(height: 15),
+                    ButtonWidget(
+                      backgroundColor: Color(0xFFF4F4F4),
+                      textColor: Color(0xff172823),
+                      title: 'Đóng',
+                      onPressed: () => Navigator.pop(context),
+                    ),
+                  ],
+                ),
+              )
+            ],
+          ),
+        ),
+      );
+    }
   }
 }
 

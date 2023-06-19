@@ -148,4 +148,39 @@ class DateUtil {
             24)
         .round();
   }
+
+  static String? convertDateTime(
+    String? date, {
+    bool isShowTime = false,
+    bool isShowOnlyTime = false,
+    bool toLocal = true,
+    bool isTimeFromServer = true,
+    String separate = '-',
+  }) {
+    if (date == null || date == '') return null;
+    late DateFormat dateFormat;
+    late DateTime dateConverted;
+    if (isTimeFromServer) {
+      dateConverted = DateTime.parse(date);
+    } else {
+      if (date.contains('-')) {
+        dateFormat = DateFormat('dd-MM-yyyy');
+      } else {
+        dateFormat = DateFormat('dd/MM/yyyy');
+      }
+      dateConverted = dateFormat.parse(date);
+    }
+
+    Console.log('dateConverted', dateConverted);
+    if (toLocal) dateConverted = dateConverted.toLocal();
+    Console.log('dateConverted', dateConverted);
+
+    return isShowOnlyTime
+        ? DateFormat('HH:mm').format(dateConverted).toString()
+        : isShowTime
+            ? DateFormat('HH:mm $separate dd/MM/yyyy')
+                .format(dateConverted)
+                .toString()
+            : DateFormat('dd/MM/yyyy').format(dateConverted).toString();
+  }
 }
