@@ -159,7 +159,7 @@ class GlucoseClient extends FetchClient {
   }
 
   Future<bool> postGlucoseInputs(List<Map<String, String>> glucoses) async {
-    try {
+    // try {
       List<Map<String, dynamic>> params = [];
       glucoses.forEach((element) {
         params.add({
@@ -171,15 +171,16 @@ class GlucoseClient extends FetchClient {
       final response = await super.postHttp2(
           path: '/App/Glucose/Inputs',
           params: jsonEncode({'glucoseInputs': params}));
+
       if (response.statusCode == 200) {
         return true;
       } else {
         throw response.reasonPhrase!;
       }
-    } catch (e) {
-      print(e.toString());
-      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
-    }
+    // } catch (e) {
+    //   print(e.toString());
+    //   throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+    // }
   }
   //============ nhập chỉ số Đường huyết =============/
 

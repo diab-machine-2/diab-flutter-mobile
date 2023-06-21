@@ -19,6 +19,8 @@ import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widgets/empty_data_box.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 
+import '../blood_sugar_functions.dart';
+
 class BloodSugarChart extends StatefulWidget {
   BloodSugarChart({Key? key}) : super(key: key);
   @override
@@ -140,15 +142,15 @@ class BloodSugarChartState extends State<BloodSugarChart>
                                 text: "chỉ số đường huyết",
                                 onTap: () async {
                                   await TrackingManager.analytics.logEvent(
-                                    name: 'cta_button_clicked',
-                                    parameters: {
-                                      "screen_name": 'kpi_glycemic',
-                                      'cta_button_name': 'cta_add_glycemic_1',
-                                    }
-                                  );
-                                  Navigator.pushNamed(
-                                      context, NavigatorName.add_blood_sugar,
-                                      arguments: {'type': 'input', 'id': null});
+                                      name: 'cta_button_clicked',
+                                      parameters: {
+                                        "screen_name": 'kpi_glycemic',
+                                        'cta_button_name': 'cta_add_glycemic_1',
+                                      });
+                                  BloodSugarFunctions.showModalAddData(context);
+                                  // Navigator.pushNamed(
+                                  //     context, NavigatorName.add_blood_sugar,
+                                  //     arguments: {'type': 'input', 'id': null});
                                 },
                               )
                             : Container(

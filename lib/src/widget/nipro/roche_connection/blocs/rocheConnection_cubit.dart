@@ -17,7 +17,7 @@ class RocheConnectionCubit extends Cubit<RocheConnectionState> {
 
   AppStatus appStatus = AppStatus.isScanning;
   final glucoseClient = GlucoseClient();
-   DeviceInfoModel? deviceInfo;
+  DeviceInfoModel? deviceInfo;
 
   setDeviceInfo(DeviceInfoModel iDeviceInfo) {
     deviceInfo = iDeviceInfo;
@@ -26,9 +26,13 @@ class RocheConnectionCubit extends Cubit<RocheConnectionState> {
   Future<void> submitSyncDataNew(
       List<Map<String, String>> selectedGlucose) async {
     emit(RocheConnectionLoading());
-    Console.log('selectedGlucose', selectedGlucose);
-    await GlucoseClient().postGlucoseInputs(selectedGlucose);
-    emit(SyncDataSuccesed());
+    bool result = await GlucoseClient().postGlucoseInputs(selectedGlucose);
+    if (result) {
+      emit(SyncDataSuccesed());
+    } else {
+      emit(RocheConnectionFailure(
+          'Không thể đồng bộ dữ liệu, xin vui lòng thử lại sau.'));
+    }
   }
 
   Future<void> submitSyncData(

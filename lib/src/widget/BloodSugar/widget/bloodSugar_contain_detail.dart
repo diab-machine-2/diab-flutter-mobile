@@ -6,6 +6,7 @@ import 'package:medical/src/bloc/glucose/glucose_bloc.dart';
 import 'package:medical/src/modal/glucose/glucose_distribution.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/BloodSugar/bloodSugar_detail_tabbar.dart';
+import 'package:medical/src/widget/BloodSugar/blood_sugar_functions.dart';
 import 'package:medical/src/widget/components/samples/pie_chart/samples/indicator.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
@@ -293,19 +294,22 @@ class BloodSugarDetailState extends State<BloodSugarDetail>
                                       ? EmptyDataBox(
                                           text: "chỉ số đường huyết",
                                           onTap: () async {
-                                            await TrackingManager.analytics.logEvent(
-                                              name: 'cta_button_clicked',
-                                              parameters: {
-                                                "screen_name": 'kpi_glycemic',
-                                                'cta_button_name': 'cta_add_glycemic_0',
-                                              }
-                                            );
-                                            Navigator.pushNamed(context,
-                                                NavigatorName.add_blood_sugar,
-                                                arguments: {
-                                                  'type': 'input',
-                                                  'id': null
+                                            await TrackingManager.analytics
+                                                .logEvent(
+                                                    name: 'cta_button_clicked',
+                                                    parameters: {
+                                                  "screen_name": 'kpi_glycemic',
+                                                  'cta_button_name':
+                                                      'cta_add_glycemic_0',
                                                 });
+                                            BloodSugarFunctions
+                                                .showModalAddData(context);
+                                            // Navigator.pushNamed(context,
+                                            //     NavigatorName.add_blood_sugar,
+                                            //     arguments: {
+                                            //       'type': 'input',
+                                            //       'id': null
+                                            //     });
                                           },
                                         )
                                       : buildChart(model),

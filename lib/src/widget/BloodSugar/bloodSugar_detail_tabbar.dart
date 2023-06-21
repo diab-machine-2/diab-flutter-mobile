@@ -26,6 +26,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../app_setting/app_setting.dart';
 import '../../widgets/button_widget.dart';
 import '../blood_sugar_survey_screens/blood_sugar_start_survey/blood_sugar_start_survey.dart';
+import 'blood_sugar_functions.dart';
 
 class BloodSugarDetailTabbarController extends StatefulWidget {
   final Map<dynamic, dynamic>? data;
@@ -177,96 +178,9 @@ class _BloodSugarDetailTabbarControllerState
         ]),
         floatingActionButton: FloatingActionButton(
           backgroundColor: R.color.transparent,
-          onPressed: () {
-            _showMaterialDialog();
-          },
+          onPressed: () => BloodSugarFunctions.showModalAddData(context),
           child: Image.asset(R.drawable.ic_button_plus, width: 80, height: 80),
         ));
-  }
-
-  _showMaterialDialog() async {
-    String healthIcon =
-        Platform.isIOS ? R.drawable.logo_healthkit : R.drawable.logo_googleFit;
-    String healthTitle =
-        Platform.isIOS ? 'Kết nối từ Apple Health' : 'Kết nối từ Google Fit';
-    bool? hasHealthConnection = await AppStorages.getHealthAppPermission();
-    showModalBottomSheet(
-      shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(top: Radius.circular(15))),
-      backgroundColor: R.color.transparent,
-      context: context,
-      isScrollControlled: true,
-      builder: (context) => Container(
-        height: 280,
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(20),
-        ),
-        margin: EdgeInsets.all(10),
-        child: Column(
-          children: [
-            Container(
-              padding: EdgeInsets.all(20),
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-                  border: Border(bottom: BorderSide(color: Color(0xffF2F2F2)))),
-              child: Text(
-                'Chọn cách nhập',
-                style: TextStyle(
-                  fontSize: 16,
-                  color: R.color.textDark,
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(15),
-              child: Column(
-                children: [
-                  ButtonWidget(
-                    isIconSvg: false,
-                    icon: healthIcon,
-                    backgroundColor: Color(0xFFE4FCF3),
-                    textColor: Color(0xff249B92),
-                    title: healthTitle,
-                    onPressed: () => RequestHealthConnect.showModal(context,
-                        callback: () => Navigator.pop(context)),
-                  ),
-                  SizedBox(height: 15),
-                  ButtonWidget(
-                    icon: R.icons.ic_bluetooth,
-                    backgroundColor: Color(0xFFE4FCF3),
-                    textColor: Color(0xff249B92),
-                    title: 'Kết nối từ thiết bị',
-                    onPressed: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (BuildContext context) =>
-                                RocheConnectionView())),
-                  ),
-                  SizedBox(height: 15),
-                  ButtonWidget(
-                    icon: R.icons.ic_tap,
-                    backgroundColor: Color(0xFFE4FCF3),
-                    textColor: Color(0xff249B92),
-                    title: 'Nhập thủ công',
-                    onPressed: () => Navigator.pushNamed(
-                        context, NavigatorName.add_blood_sugar,
-                        arguments: {'type': 'input'}),
-                  ),
-                  SizedBox(height: 15),
-                  ButtonWidget(
-                    backgroundColor: Color(0xFFF4F4F4),
-                    textColor: Color(0xff172823),
-                    title: 'Đóng',
-                    onPressed: () => Navigator.pop(context),
-                  ),
-                ],
-              ),
-            )
-          ],
-        ),
-      ),
-    );
   }
 }
 

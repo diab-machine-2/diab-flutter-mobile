@@ -365,37 +365,21 @@ class HealthAppBloc extends Bloc<HealthAppEvent, HealthAppState> {
     if (dataSync.isNotEmpty) {
       // Bắt đầu sync
       bool isMilligramPerDeciliter = AppSettings.userInfo!.glucoseUnit == 1;
-      int dataSyncLength = dataSync.length;
-      int count = 0;
-      if (count != dataSyncLength) {
-        for (HealthDataPoint element in dataSync) {
-          List<TimeFrameModel> timeFrames =
-              await glucoseClient.fetchFlucoseTimeFrame(
-                  time: element.dateFrom.millisecondsSinceEpoch ~/ 1000);
-
-          final glucose = roundAsFixed(isMilligramPerDeciliter
-              ? roundDouble(element.value)
-              : roundDouble(element.value) / mmollToMgdlFactor);
-
-          print("PHUONG glucose: $glucose == ${element.dateFrom}");
-
-          try {
-            await GlucoseClient().postIndexGlucose(
-                timeFrames.isNotEmpty ? timeFrames.first.id : null,
-                element.dateFrom.millisecondsSinceEpoch ~/ 1000,
-                glucose.toString(),
-                null,
-                '',
-                false, []);
-          } catch (e) {}
-          count++;
-        }
-      }
+      List<Map<String, String>> glucosedList = [];
+      dataSync.forEach((element) {
+        double glucose = roundAsFixed(isMilligramPerDeciliter
+            ? roundDouble(element.value)
+            : roundDouble(element.value) / mmollToMgdlFactor);
+        glucosedList.add({
+          'glucose': glucose.toString(),
+          'date': DateUtil.getDayInMillis(element.dateFrom).toString(),
+        });
+      });
+      await GlucoseClient().postGlucoseInputs(glucosedList);
       result = true;
     }
 
     responseSyncData['syncBlodGlucose'] = result;
-    // await _requestSyncData();
   }
 
   Stream<HealthAppState> syncDataSuccess(SyncDataSuccess event) async* {
@@ -465,9 +449,9 @@ class HealthAppBloc extends Bloc<HealthAppEvent, HealthAppState> {
     yield state.copyWith(blocStatus: BlocStatus.loading);
     final List<HealthDataType> _types = HealthSetting.instance.types;
     requestSyncData = {
-      'syncSYSTOLICAndDIASTOLIC': false,
-      'syncSTEP': false,
-      'syncWeight': false,
+      // 'syncSYSTOLICAndDIASTOLIC': false,
+      // 'syncSTEP': false,
+      // 'syncWeight': false,
       'syncBlodGlucose': false,
     };
 

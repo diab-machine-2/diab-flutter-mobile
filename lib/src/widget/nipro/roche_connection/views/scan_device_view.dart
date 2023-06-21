@@ -48,6 +48,7 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
   late AnimationController _controller;
   List<ScanResult> resultList = [];
   BluetoothDevice? device;
+  bool isLoading = false;
   bool selectAllData = false;
   AppStatus appStatus = AppStatus.isScanning;
   // StreamController<List<GlucoseMeasurementRecord>> glucoseStreamController =
@@ -118,24 +119,24 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
                   selectedGlucose = [...state.glucosedList];
                 });
               }
-              if (state is SyncDataSuccesed) {
-                Observable.instance.notifyObservers([],
-                    notifyName: Const.NAVIGATE_TO_PROFILE_TAB);
-                Navigator.of(context).popUntil(
-                    (route) => route.settings.name == NavigatorName.tabbar);
-                Navigator.pushNamed(context, NavigatorName.detail_blood_sugar);
-                Message.showToastMessage(
-                    context, "Đồng bộ chỉ số đường huyết thành công!");
-                Future.delayed(Duration(seconds: 2)).then((value) =>
-                    Observable.instance.notifyObservers([],
-                        notifyName: "glucose_change_data", map: {'index': 1}));
-              }
-              if (state is RocheConnectionFailure) {
-                Message.showToastMessage(context, state.error);
-              }
+              // if (state is SyncDataSuccesed) {
+              //   Observable.instance.notifyObservers([],
+              //       notifyName: Const.NAVIGATE_TO_PROFILE_TAB);
+              //   Navigator.of(context).popUntil(
+              //       (route) => route.settings.name == NavigatorName.tabbar);
+              //   Navigator.pushNamed(context, NavigatorName.detail_blood_sugar);
+              //   Message.showToastMessage(
+              //       context, "Đồng bộ chỉ số đường huyết thành công!");
+              //   Future.delayed(Duration(seconds: 2)).then((value) =>
+              //       Observable.instance.notifyObservers([],
+              //           notifyName: "glucose_change_data", map: {'index': 1}));
+              // }
+              // if (state is RocheConnectionFailure) {
+              //   Message.showToastMessage(context, state.error);
+              // }
             },
             builder: (context, state) {
-              if (state is RocheConnectionLoading) {
+              if (isLoading) {
                 BotToast.showLoading();
               } else {
                 BotToast.closeAllLoading();
@@ -177,6 +178,32 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
         ),
       ),
     );
+  }
+
+  Future<void> submitSyncDataNew(
+      List<Map<String, String>> selectedGlucose) async {
+    setState(() {
+      isLoading = true;
+    });
+    bool result = await GlucoseClient().postGlucoseInputs(selectedGlucose);
+    setState(() {
+      isLoading = false;
+    });
+    if (result) {
+      Observable.instance
+          .notifyObservers([], notifyName: Const.NAVIGATE_TO_PROFILE_TAB);
+      Navigator.of(context)
+          .popUntil((route) => route.settings.name == NavigatorName.tabbar);
+      Navigator.pushNamed(context, NavigatorName.detail_blood_sugar);
+      Message.showToastMessage(
+          context, "Đồng bộ chỉ số đường huyết thành công!");
+      Future.delayed(Duration(seconds: 2)).then((value) => Observable.instance
+          .notifyObservers([],
+              notifyName: "glucose_change_data", map: {'index': 1}));
+    } else {
+      Message.showToastMessage(
+          context, 'Không thể đồng bộ dữ liệu, xin vui lòng thử lại sau.');
+    }
   }
 
   Widget _selectData() {
@@ -266,7 +293,7 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
             onPressed: selectedGlucose.isEmpty
                 ? null
                 : () {
-                    widget.cubit.submitSyncDataNew(selectedGlucose);
+                    submitSyncDataNew(selectedGlucose);
                   },
           ),
         )
