@@ -12,6 +12,7 @@ import 'package:medical/src/widgets/button_widget.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import '../../../data/models/voucherList_response.dart';
 import '../blocs/voucherDetail_bloc.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class VoucherDetailView extends StatefulWidget {
   final String voucherId;
@@ -31,7 +32,7 @@ class _VoucherDetailViewState extends State<VoucherDetailView> {
   void initState() {
     super.initState();
   }
-  
+
   @override
   Widget build(BuildContext context) {
     return BlocProvider<VoucherDetailBloc>(
@@ -116,14 +117,14 @@ class _VoucherDetailViewState extends State<VoucherDetailView> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          "Chúc mừng bạn đã nhận được mã ưu đãi.",
+          "Chúc mừng bạn đã nhận được mã giảm giá.",
           style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w700,
           ),
         ),
         SizedBox(height: 20),
-        Image.asset(R.drawable.voucher_reward_detail),
+        Image.asset(R.drawable.banner_promotion15_details),
         SizedBox(height: 20),
         RichText(
           text: TextSpan(
@@ -135,25 +136,18 @@ class _VoucherDetailViewState extends State<VoucherDetailView> {
             ),
             children: [
               TextSpan(
-                text: 'DiaB tặng bạn ',
+                text: 'DiaB tặng bạn',
+              ),
+              TextSpan(
+                text: " mã giảm giá 15% ",
                 style: TextStyle(fontWeight: FontWeight.w600),
               ),
               TextSpan(
-                text: "mã ưu đãi ",
+                text: 'lên đến 2.000.000 cho tất cả hoá đơn khi mua sắm tại ',
               ),
               TextSpan(
-                text: '10k ',
+                text: 'cửa hàng của DiaB ',
                 style: TextStyle(fontWeight: FontWeight.w600),
-              ),
-              TextSpan(
-                text: 'cho tất cả hoá đơn khi mua sắm tại nhà thuốc ',
-              ),
-              TextSpan(
-                text: 'Pharmacity.\n',
-                style: TextStyle(fontWeight: FontWeight.w600),
-              ),
-              TextSpan(
-                text: 'Xem cách sử dụng dưới đây nhé!',
               ),
             ],
           ),
@@ -169,33 +163,12 @@ class _VoucherDetailViewState extends State<VoucherDetailView> {
         ),
         SizedBox(height: 10),
         Text(
-          "Bước 1: Bấm vào nút “Sử dụng mã”",
+          "Bước 1: Lấy mã giảm giá",
           style: TextStyle(
             height: 1.4,
             fontSize: 16,
             color: R.color.color0xff666666,
-          ),
-        ),
-        Container(
-          width: 280,
-          padding: EdgeInsets.all(7),
-          margin: EdgeInsets.symmetric(vertical: 15),
-          decoration: BoxDecoration(
-            color: R.color.white,
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: ButtonWidget(
-            radius: 8,
-            title: R.string.use_voucher.tr(),
-            onPressed: () {},
-          ),
-        ),
-        Text(
-          "Bước 2: Cung cấp mã ưu đãi cho thu ngân.",
-          style: TextStyle(
-            height: 1.4,
-            fontSize: 16,
-            color: R.color.color0xff666666,
+            fontWeight: FontWeight.w600,
           ),
         ),
         Container(
@@ -218,14 +191,14 @@ class _VoucherDetailViewState extends State<VoucherDetailView> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    "Mã ưu đãi: ",
+                    "Mã giảm giá: ",
                     style: TextStyle(
                       fontSize: 16,
                       color: R.color.greenGradientBottom,
                     ),
                   ),
                   Text(
-                    "DIABKMO1",
+                    "DIAB15",
                     style: TextStyle(
                       fontSize: 17,
                       color: R.color.greenGradientBottom,
@@ -244,25 +217,62 @@ class _VoucherDetailViewState extends State<VoucherDetailView> {
           ),
         ),
         Text(
-          "Hệ thống áp dụng:",
-          style: TextStyle(
-            height: 1.4,
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-        SizedBox(height: 10),
-        Text(
-          "Mã ưu đãi được áp dụng cho tất cả các cửa hàng nhà thuốc Pharmacity.",
+          "Bước 2: Truy cập vào gian hàng của DiaB",
           style: TextStyle(
             height: 1.4,
             fontSize: 16,
             color: R.color.color0xff666666,
+            fontWeight: FontWeight.w600,
           ),
         ),
+        Container(
+            width: 280,
+            padding: EdgeInsets.all(7),
+            margin: EdgeInsets.symmetric(vertical: 5),
+            decoration: BoxDecoration(
+              color: R.color.white,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: IconButton(
+              icon: Image.asset(R.drawable.promotion15_shopee),
+              iconSize: 50,
+              onPressed: () {
+                _launchSHOPEE();
+              },
+            )),
+        Container(
+            width: 280,
+            padding: EdgeInsets.all(7),
+            margin: EdgeInsets.symmetric(vertical: 5),
+            decoration: BoxDecoration(
+              color: R.color.white,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: IconButton(
+              icon: Image.asset(R.drawable.promotion15_lazada),
+              iconSize: 50,
+              onPressed: () {
+                _launchLAZADA();
+              },
+            )),
+        Container(
+            width: 280,
+            padding: EdgeInsets.all(7),
+            margin: EdgeInsets.symmetric(vertical: 5),
+            decoration: BoxDecoration(
+              color: R.color.white,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: IconButton(
+              icon: Image.asset(R.drawable.promotion15_website),
+              iconSize: 50,
+              onPressed: () {
+                _launchWEBSITE();
+              },
+            )),
         SizedBox(height: 15),
         Text(
-          "Quy định về thẻ mã ưu đãi:",
+          "Lưu ý:  Khi sử dụng mã giảm giá:",
           style: TextStyle(
             height: 1.4,
             fontSize: 16,
@@ -271,7 +281,33 @@ class _VoucherDetailViewState extends State<VoucherDetailView> {
         ),
         SizedBox(height: 10),
         Text(
-          " - Được sử dụng nhiều mã ưu đãi cho 1 đơn hàng.",
+          " - Liên hệ ngay với DiaB nếu bạn gặp khó khăn khi sử dụng mã giảm giá.",
+          style: TextStyle(
+            height: 1.4,
+            fontSize: 16,
+            color: R.color.color0xff666666,
+          ),
+        ),
+        SizedBox(height: 10),
+        Container(
+          width: 280,
+          padding: EdgeInsets.all(7),
+          margin: EdgeInsets.symmetric(vertical: 15),
+          decoration: BoxDecoration(
+            color: R.color.white,
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: ButtonWidget(
+            radius: 8,
+            title: 'LIÊN HỆ NGAY ',
+            onPressed: () {
+              _launchZALO();
+            },
+          ),
+        ),
+        SizedBox(height: 10),
+        Text(
+          " - 1 Mã giảm giá chỉ sử dụng cho 1 đơn hàng.",
           style: TextStyle(
             height: 1.4,
             fontSize: 16,
@@ -280,7 +316,16 @@ class _VoucherDetailViewState extends State<VoucherDetailView> {
         ),
         SizedBox(height: 10),
         Text(
-          " - Thẻ quà tặng không có giá trị quy đổi thành tiền.",
+          " - Mã giảm giá không áp dụng cho dòng sản phẩm CGM - Theo dõi đường huyết liên tục FreeStyle Libre.",
+          style: TextStyle(
+            height: 1.4,
+            fontSize: 16,
+            color: R.color.color0xff666666,
+          ),
+        ),
+        SizedBox(height: 10),
+        Text(
+          " - Mã giảm giá không có giá trị quy đổi thành tiền mặt.",
           style: TextStyle(
             height: 1.4,
             fontSize: 16,
@@ -292,6 +337,43 @@ class _VoucherDetailViewState extends State<VoucherDetailView> {
         )
       ],
     );
+  }
+
+  void _launchSHOPEE() async {
+    const url = 'https://shopee.vn/diab_official123#product_list';
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Could not launch $url';
+    }
+  }
+
+  void _launchLAZADA() async {
+    const url =
+        'https://pages.lazada.vn/wow/gcp/vn/store_lp/voucher?sellerId=v8r0l559q7w&voucherId=v4zw057yrkr7bb&scene=store&domain=SHOP';
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Could not launch $url';
+    }
+  }
+
+  void _launchWEBSITE() async {
+    const url = 'https://diab.com.vn/danh-sach-san-pham/?p=tat-ca';
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Could not launch $url';
+    }
+  }
+
+  void _launchZALO() async {
+    const url = 'https://zalo.me/4592543430802584018';
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Could not launch $url';
+    }
   }
 
   _useVoucher(VoucherModel voucherDetail) {
