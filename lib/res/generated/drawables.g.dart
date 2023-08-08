@@ -3,6 +3,13 @@
 // ignore_for_file: non_constant_identifier_names
 
 class Drawables {
+  String get promotion15_shopee => "lib/res/drawables/shopee.jpg";
+  String get promotion15_lazada => "lib/res/drawables/lazada.jpg";
+  String get promotion15_website => "lib/res/drawables/website.jpg";
+  String get banner_promotion15_details =>
+      "lib/res/drawables/promotion15_details.jpg";
+  String get banner_voucher15 => "lib/res/drawables/promotion_inside15.jpg";
+  String get banner_promotion15 => "lib/res/drawables/promotion15.jpg";
   String get banner_share_app => "lib/res/drawables/banner_share_app.jpg";
   String get bg_activity_empty => "lib/res/drawables/bg_activity_empty.png";
   String get bg_apple_green => "lib/res/drawables/bg_apple_green.png";
@@ -442,18 +449,21 @@ class Drawables {
   String get ic_connect_apple => "lib/res/drawables/ic_connect_apple.png";
   String get ic_connect_samsung => "lib/res/drawables/ic_connect_samsung.png";
   String get ic_heart_connect => "lib/res/drawables/ic_heart_connect.png";
-	String get voucher_reward => "lib/res/drawables/voucher_reward.jpg";
-	String get voucher_reward_detail => "lib/res/drawables/voucher_reward_detail.png";
-	String get share_app_detail => "lib/res/drawables/share_app_detail.jpg";
-	String get share_app_detail_default => "lib/res/drawables/share_app_detail_default.png";
-	String get ic_voucher => "lib/res/drawables/ic_voucher.png";
-	String get banner_share_lesson => "lib/res/drawables/banner_share_lesson.png";
-	String get logo_diab => "lib/res/drawables/logo_diab.png";
-	String get logo_healthkit => "lib/res/drawables/logo_healthkit.png";
-	String get logo_googleFit => "lib/res/drawables/logo_googleFit.png";
-	String get rada_effect => "lib/res/drawables/rada_effect.png";
-	String get icon_bluetooth => "lib/res/drawables/icon_bluetooth.png";
-	String get img_error => "lib/res/drawables/img_error.png";
-	String get pin_example => "lib/res/drawables/pin_example.jpg";
-	String get img_loading => "lib/res/drawables/img_loading.png";
+  String get voucher_reward => "lib/res/drawables/voucher_reward.jpg";
+  String get voucher_reward_detail =>
+      "lib/res/drawables/voucher_reward_detail.png";
+  String get share_app_detail => "lib/res/drawables/share_app_detail.jpg";
+
+  String get share_app_detail_default =>
+      "lib/res/drawables/share_app_detail_default.png";
+  String get ic_voucher => "lib/res/drawables/ic_voucher.png";
+  String get banner_share_lesson => "lib/res/drawables/banner_share_lesson.png";
+  String get logo_diab => "lib/res/drawables/logo_diab.png";
+  String get logo_healthkit => "lib/res/drawables/logo_healthkit.png";
+  String get logo_googleFit => "lib/res/drawables/logo_googleFit.png";
+  String get rada_effect => "lib/res/drawables/rada_effect.png";
+  String get icon_bluetooth => "lib/res/drawables/icon_bluetooth.png";
+  String get img_error => "lib/res/drawables/img_error.png";
+  String get pin_example => "lib/res/drawables/pin_example.jpg";
+  String get img_loading => "lib/res/drawables/img_loading.png";
 }

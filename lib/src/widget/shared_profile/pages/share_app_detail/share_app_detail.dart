@@ -101,7 +101,7 @@ class _ShareAppDetailState extends State<ShareAppDetail> {
                       left: 0,
                       child: Image.asset(
                         isVoucherAvailable
-                            ? R.drawable.share_app_detail
+                            ? R.drawable.banner_voucher15
                             : R.drawable.share_app_detail_default,
                       ),
                     ),
@@ -224,7 +224,7 @@ class _ShareAppDetailState extends State<ShareAppDetail> {
         ),
         SizedBox(height: 20),
         Text(
-          "Nhận ngay phiếu mua hàng trị giá 10K cho mỗi lượt chia sẻ ứng dụng DiaB thành công. Áp dụng cho tất cả cửa hàng Pharmatcity.",
+          "Nhận ngay phiếu giảm giá 15%, ưu đãi giảm đến 2.000.000 khi mua máy đo đường huyết và các sản phẩm sức khỏe khác. Áp dụng cho các cửa hàng trực tuyến và tại website của DiaB.",
           style: TextStyle(
             height: 1.4,
             fontSize: 16,
@@ -233,7 +233,7 @@ class _ShareAppDetailState extends State<ShareAppDetail> {
         ),
         SizedBox(height: 10),
         Text(
-          "Hãy chia sẽ để giúp bạn bè, người thân biết cách sống khoẻ mạnh cùng với bệnh đái tháo đường của họ.",
+          "Hãy chia sẻ trải nghiệm tuyệt vời với APP DiaB của bạn và cùng nhau hưởng thụ một cuộc sống khỏe mạnh, đầy năng lượng !!!",
           style: TextStyle(
             height: 1.4,
             fontSize: 16,

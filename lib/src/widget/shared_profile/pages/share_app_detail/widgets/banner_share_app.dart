@@ -46,7 +46,7 @@ class _BannerShareAppState extends State<BannerShareApp> {
                   image: DecorationImage(
                     fit: BoxFit.fill,
                     image: AssetImage(
-                      R.drawable.banner_share_app,
+                      R.drawable.banner_promotion15,
                     ),
                   ),
                 ),
@@ -82,6 +82,7 @@ class _BannerShareAppState extends State<BannerShareApp> {
                                 fontWeight: FontWeight.w500,
                               ),
                             ),
+                            SizedBox(height: 13),
                             Container(
                               height: 28,
                               width: 82,
