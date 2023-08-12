@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:dio/adapter.dart';
@@ -114,10 +115,15 @@ class FetchClient {
     final option = await options();
     final domain = baseIdentify ? identifyBaseURL : baseURL;
     final Dio dio = Dio();
+    logRequest(dio);
+
     Uri uri = Uri.https(domain, url, params);
-    Console.log('url', uri);
-    Console.logJson('params', params);
-    return dio.getUri(uri, options: option);
+
+    Response response = await dio.getUri(uri, options: option);
+    Console.logJson('GET', url);
+    Console.logJson('Request', params);
+    Console.log('response', response);
+    return response;
   }
 
   Future<Response> fetchDataNoHeaders(
@@ -128,7 +134,9 @@ class FetchClient {
     final domain = baseIdentify ? identifyBaseURL : baseURL;
     final Dio dio = Dio();
     logRequest(dio);
-    return dio.getUri(Uri.https(domain, url, params), options: option);
+    Response response =
+        await dio.getUri(Uri.https(domain, url, params), options: option);
+    return response;
   }
 
   Future<Response> fetchDataProdNoHeaders(
@@ -138,7 +146,6 @@ class FetchClient {
     final option = await options3();
     final domain = Const.DOMAIN;
     final Dio dio = Dio();
-    logRequest(dio);
     return dio.getUri(Uri.https(domain, url, params), options: option);
   }
 
@@ -152,13 +159,16 @@ class FetchClient {
     final domain = baseIdentify ? identifyBaseURL : baseURL;
     final Dio dio = Dio();
     logRequest(dio);
-    return dio.postUri(
+    Response response = await dio.postUri(
         Uri.https(
           domain,
           url,
         ),
         data: params,
         options: option);
+    Console.logJson('POST', url);
+    Console.log('response', response);
+    return response;
   }
 
   Future<Response> postUri(
@@ -170,13 +180,17 @@ class FetchClient {
     final domain = baseIdentify ? identifyBaseURL : baseURL;
     final Dio dio = Dio();
     logRequest(dio);
-    return dio.postUri(
+    Response response = await dio.postUri(
         Uri.https(
           domain,
           url,
         ),
         data: params,
         options: option);
+    Console.logJson('API', url);
+    Console.logJson('Request', params);
+    Console.log('response', response);
+    return response;
   }
 
   Future<http.StreamedResponse> postHttp(
@@ -215,7 +229,6 @@ class FetchClient {
       'Content-Type': 'application/json',
       'User-Agent': 'Mobile'
     };
-    print(headers);
     final request = http.Request(
         'POST',
         Uri.parse(
@@ -223,7 +236,11 @@ class FetchClient {
     request.body = params;
     request.headers.addAll(headers);
 
-    return request.send();
+    http.StreamedResponse response = await request.send();
+    Console.logJson('POST', path);
+    Console.logJson('Request', params);
+
+    return response;
   }
 
   Future<http.StreamedResponse> putHttp(
@@ -261,13 +278,16 @@ class FetchClient {
     final domain = baseIdentify ? identifyBaseURL : baseURL;
     final Dio dio = Dio();
     logRequest(dio);
-    return dio.putUri(
+    Console.logJson('API', url);
+    Console.logJson('Request', params);
+    Response response = await dio.putUri(
         Uri.https(
           domain,
           url,
         ),
         data: params,
         options: option);
+    return response;
   }
 
   Future<Response> putData2({
@@ -279,13 +299,14 @@ class FetchClient {
     final domain = baseIdentify ? identifyBaseURL : baseURL;
     final Dio dio = Dio();
     logRequest(dio);
-    return dio.putUri(
+    Response response = await dio.putUri(
         Uri.https(
           domain,
           url,
         ),
         data: params,
         options: option);
+    return response;
   }
 
   Future<Response> delete(
@@ -296,23 +317,28 @@ class FetchClient {
     final domain = baseIdentify ? identifyBaseURL : baseURL;
     final Dio dio = Dio();
     logRequest(dio);
-    return dio.deleteUri(
+    Response response = await dio.deleteUri(
         Uri.https(
           domain,
           url,
         ),
         data: params,
         options: option);
+
+    return response;
   }
 
   logRequest(Dio dio) {
-    // dio.interceptors.add(PrettyDioLogger(
-    //     requestHeader: true,
-    //     requestBody: true,
-    //     responseBody: true,
-    //     responseHeader: true,
-    //     compact: true,
-    //     error: true));
+    PrettyDioLogger dioLog = PrettyDioLogger(
+        requestHeader: true,
+        requestBody: true,
+        responseBody: true,
+        responseHeader: true,
+        compact: true,
+        error: true,
+        logPrint: (object) {});
+    dio.interceptors.add(dioLog);
+    dio.interceptors.add(TrackingInterceptor());
   }
 
   checkNetwork() async {
@@ -340,248 +366,48 @@ class FetchClient {
   }
 }
 
-// class FetchClient {
-//   static String get identifyBaseURL {
-//     return 'is.diab.com.vn';
-//     // return 'is.stg.diab.cptech.vn';
-//     // return 'is.dev.diab.cptech.vn';
-//     // return '139.162.21.142:6001';
-//   }
+class TrackingInterceptor extends Interceptor {
+  @override
+  Future<void> onResponse(
+      Response response, ResponseInterceptorHandler handler) async {
+    if (response.statusCode == 401) {
+      final token = await AppSettings.getToken();
+      Map<String, dynamic> errorData = {
+        'bearerToken': token,
+        'url': response.requestOptions.path,
+        'requestOptions': response.requestOptions.data.toString(),
+        'responseData': response.data,
+      };
 
-//   static String get baseURL {
-//     return 'api.diab.com.vn';
-//     // return 'api.stg.diab.cptech.vn';
-//     // return 'api.mobile.dev.diab.cptech.vn';
-//     // return '139.162.21.142:6002';
-//   }
+      Console.logJson('errorData', errorData);
 
-//   Future<Options> options() async {
-//     await checkNetwork();
-//     final token = await AppSettings.getToken();
+      final Options option = await FetchClient().options();
+      final domain = FetchClient.baseURL;
+      final Dio dio = Dio();
+      Response responseApi = await dio.postUri(Uri.https(domain, '/App/Logs'),
+          data: {'content': jsonEncode(errorData)}, options: option);
+      Console.log('responseApi', responseApi);
+    }
+    handler.next(response);
+  }
 
-//     var option = Options(
-//         headers: {
-//           'Authorization': 'Bearer $token',
-//           'Content-Type': 'application/json; charset=UTF-8'
-//         },
-//         followRedirects: false,
-//         validateStatus: (status) {
-//           return true; //status < 500;
-//         });
-//     print(option);
-//     return option;
-//   }
+  @override
+  Future<void> onError(DioError err, ErrorInterceptorHandler handler) async {
+    if (err.response?.statusCode != 401) {
+      final token = await AppSettings.getToken();
+      Map<String, dynamic> errorData = {
+        'bearerToken': token,
+        'url': err.response?.requestOptions.path,
+        'requestOptions': err.response?.requestOptions.data.toString(),
+        'responseData': err.response?.data,
+      };
 
-//   Future<Options> options1() async {
-//     await checkNetwork();
-//     final token = await AppSettings.getToken();
-//     var option = Options(
-//         contentType: "application/x-www-form-urlencoded",
-//         headers: {
-//           'Authorization': token,
-//         },
-//         followRedirects: false,
-//         validateStatus: (status) {
-//           return true; //status < 500;
-//         });
-//     return option;
-//   }
-
-//   Future<Options> options2() async {
-//     await checkNetwork();
-//     final token = await AppSettings.getToken();
-//     print(token);
-//     var option = Options(
-//         headers: {
-//           'Authorization': 'Bearer $token',
-//           'Content-Type':
-//               'multipart/form-data; boundary=<calculated when request is sent>',
-//         },
-//         followRedirects: false,
-//         validateStatus: (status) {
-//           return true; //status < 500;
-//         });
-//     return option;
-//   }
-
-//   Future<Response> fetchData(
-//       {bool baseIdentify = false,
-//       required String url,
-//       Map<String, String?>? params}) async {
-//     final option = await options();
-//     final domain = baseIdentify ? identifyBaseURL : baseURL;
-//     Dio dio = Dio();
-//     logRequest(dio);
-//     return await dio.getUri(Uri.https(domain, url, params), options: option);
-//   }
-
-//   Future<Response> postData({
-//     bool baseIdentify = false,
-//     required String url,
-//     FormData? params,
-//     bool baseOption = false,
-//   }) async {
-//     final option = await options2();
-//     final domain = baseIdentify ? identifyBaseURL : baseURL;
-//     Dio dio = Dio();
-//     logRequest(dio);
-//     return await dio.postUri(
-//         Uri.https(
-//           domain,
-//           url,
-//         ),
-//         data: params,
-//         options: option);
-//   }
-
-//   Future<Response> postUri(
-//       {bool baseIdentify = false,
-//       bool baseOption = false,
-//       required String url,
-//       Map<String, dynamic>? params}) async {
-//     final option = baseOption ? await options() : await options1();
-//     final domain = baseIdentify ? identifyBaseURL : baseURL;
-//     Dio dio = Dio();
-//     logRequest(dio);
-//     return await dio.postUri(
-//         Uri.https(
-//           domain,
-//           url,
-//         ),
-//         data: params,
-//         options: option);
-//   }
-
-//   Future<http.StreamedResponse> postHttp(
-//       {bool baseIdentify = false,
-//       required String path,
-//       required dynamic params, List<String>? files}) async {
-//     final token = await AppSettings.getToken();
-//     var headers = {'Authorization': 'Bearer $token'};
-//     var request = http.MultipartRequest(
-//         'POST',
-//         Uri.parse(
-//             'https://' + (baseIdentify ? identifyBaseURL : baseURL) + path));
-//     request.fields.addAll(params);
-
-//     for (var file in files ?? []) {
-//       final value = await http.MultipartFile.fromPath('images', file);
-//       request.files.add(value);
-//     }
-
-//     request.headers.addAll(headers);
-
-//     return await request.send();
-//   }
-
-//   Future<http.StreamedResponse> postHttp2(
-//       {bool baseIdentify = false, required String path, required dynamic params}) async {
-//     final token = await AppSettings.getToken();
-//     var headers = {
-//       'Authorization': 'Bearer $token',
-//       'Content-Type': 'application/json'
-//     };
-//     var request = http.Request(
-//         'POST',
-//         Uri.parse(
-//             'https://' + (baseIdentify ? identifyBaseURL : baseURL) + path));
-//     request.body = params;
-//     request.headers.addAll(headers);
-
-//     return await request.send();
-//   }
-
-//   Future<http.StreamedResponse> putHttp(
-//       {bool baseIdentify = false,
-//       required String path,
-//       required dynamic params,
-//       required List<String> files,
-//       String? fileName}) async {
-//     final token = await AppSettings.getToken();
-//     var headers = {'Authorization': 'Bearer $token'};
-//     var request = http.MultipartRequest(
-//         'PUT',
-//         Uri.parse(
-//             'https://' + (baseIdentify ? identifyBaseURL : baseURL) + path));
-//     request.fields.addAll(params);
-
-//     for (var file in files) {
-//       final value = await http.MultipartFile.fromPath(
-//           fileName == null ? 'images' : fileName, file);
-//       request.files.add(value);
-//     }
-
-//     request.headers.addAll(headers);
-
-//     return await request.send();
-//   }
-
-//   Future<Response> putData(
-//       {bool baseIdentify = false,
-//       required String url,
-//       Map<String, dynamic>? params}) async {
-//     final option = await options();
-//     final domain = baseIdentify ? identifyBaseURL : baseURL;
-//     Dio dio = Dio();
-//     logRequest(dio);
-//     return await dio.putUri(
-//         Uri.https(
-//           domain,
-//           url,
-//         ),
-//         data: params,
-//         options: option);
-//   }
-
-//   Future<Response> delete(
-//       {bool baseIdentify = false,
-//       required String url,
-//       Map<String, dynamic>? params}) async {
-//     final option = await options();
-//     final domain = baseIdentify ? identifyBaseURL : baseURL;
-//     Dio dio = Dio();
-//     logRequest(dio);
-//     return await dio.deleteUri(
-//         Uri.https(
-//           domain,
-//           url,
-//         ),
-//         data: params,
-//         options: option);
-//   }
-
-//   logRequest(Dio dio) {
-//     dio.interceptors.add(PrettyDioLogger(
-//       requestHeader: true,
-//       requestBody: true,
-//       responseBody: true,
-//       responseHeader: true,
-//       compact: true,
-//       error: true
-//     ));
-//   }
-
-//   checkNetwork() async {
-//     try {
-//       final result = await InternetAddress.lookup('google.com');
-//       if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-//         print('connected');
-//       }
-//     } on SocketException catch (_) {
-//       throw R.string.error_can_not_connect_to_server.tr();
-//     }
-//   }
-
-//   Future<bool> hasNetwork() async {
-//     try {
-//       final result = await InternetAddress.lookup('google.com');
-//       if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-//         return true;
-//       } else {
-//         return false;
-//       }
-//     } on SocketException catch (_) {
-//       return false;
-//     }
-//   }
-// }
+      final Options option = await FetchClient().options();
+      final domain = FetchClient.baseURL;
+      final Dio dio = Dio();
+      await dio.postUri(Uri.https(domain, '/App/Logs'),
+          data: {'content': jsonEncode(errorData)}, options: option);
+    }
+    handler.next(err);
+  }
+}

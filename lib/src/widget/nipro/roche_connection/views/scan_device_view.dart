@@ -1,5 +1,5 @@
 import 'dart:async';
-
+import 'dart:convert';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
@@ -8,7 +8,9 @@ import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:flutter_observer/Observable.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
+import 'package:medical/src/modal/user/schedule_glucose_time.dart';
 import 'package:medical/src/repo/glucose/glucose_client.dart';
+import 'package:medical/src/repo/user/user_client.dart';
 import 'package:medical/src/utils/app_log.dart';
 import 'package:medical/src/utils/app_media_query.dart';
 import 'package:medical/src/utils/const.dart';
@@ -16,11 +18,9 @@ import 'package:medical/src/utils/date_utils.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
-import 'package:medical/src/widget/nipro/roche_connection/widgets/result_sync_data.dart';
 import 'package:medical/src/widgets/button_widget.dart';
 import 'package:medical/src/widgets/custom_checkbox_widget.dart';
 import '../blocs/rocheConnection_cubit.dart';
-import '../blocs/rocheConnection_state.dart';
 import '../data/models/GlucoseMeasurementRecord.dart';
 import '../data/models/glucose_config.dart';
 import '../data/models/glucose_functions.dart';
@@ -32,7 +32,8 @@ enum AppStatus {
   isConnected,
   isConnecting,
   isSyncing,
-  isSyncCompleted
+  isSyncCompleted,
+  isNoDeviceFound
 }
 
 class ScanDeviceView extends StatefulWidget {
@@ -51,17 +52,22 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
   bool isLoading = false;
   bool selectAllData = false;
   AppStatus appStatus = AppStatus.isScanning;
-  // StreamController<List<GlucoseMeasurementRecord>> glucoseStreamController =
-  //     StreamController<List<GlucoseMeasurementRecord>>();
+  StreamController<int> secondsStreamController = StreamController<int>();
+  Stream<int> get secondsStream => secondsStreamController.stream;
+  StreamSubscription? characteristicListener;
 
   List<GlucoseMeasurementRecord> glucoseMeasurementRecordList = [];
   List<GlucoseMeasurementRecord> dataSelected = [];
   List<Map<String, String>> selectedGlucose = [];
   List<Map<String, String>> glucosedList = [];
+  bool deviceFound = false;
+  int previousDataCount = 0;
+  late GlucoseUnitsFlag glucoseUnits;
 
   @override
   void initState() {
     startScan();
+    checkAppStatus();
     super.initState();
     _controller = AnimationController(
       duration: Duration(seconds: 3),
@@ -69,13 +75,19 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
     )..repeat();
   }
 
+  void checkAppStatus() {
+    Timer.periodic(Duration(seconds: 1), (timer) {
+      secondsStreamController.add(DateTime.now().second);
+    });
+  }
+
   @override
   void dispose() {
     if (device != null) {
       device!.disconnect();
     }
+    characteristicListener?.cancel();
     _controller.dispose();
-    // glucoseStreamController.close();
     super.dispose();
   }
 
@@ -83,73 +95,48 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
 
   @override
   Widget build(BuildContext context) {
-    late Widget returnWidget;
-    switch (appStatus) {
-      case AppStatus.isScanning:
-        returnWidget = _scanningWidget();
-        break;
-      case AppStatus.isConnected:
-        returnWidget = _scanDeviceWidget();
-        break;
-      case AppStatus.isSyncing:
-        returnWidget = _scanDeviceWidget();
-        break;
-      case AppStatus.isConnecting:
-        returnWidget = _enterPinCode();
-        break;
-      case AppStatus.isSyncCompleted:
-        returnWidget = _selectData();
-        break;
+    if (isLoading) {
+      BotToast.showLoading();
+    } else {
+      BotToast.closeAllLoading();
     }
+
     return BlocProvider(
       create: (context) => widget.cubit,
       child: Scaffold(
-        body: Padding(
-          padding: EdgeInsets.symmetric(
-            vertical: AppMediaQuery.deviceSafeAreaTop,
-            horizontal: 15,
-          ),
-          child: BlocConsumer<RocheConnectionCubit, RocheConnectionState>(
-            listener: (context, state) async {
-              if (state is DataUpdated) {
-                setState(() {
-                  selectAllData = true;
-                  glucosedList = state.glucosedList;
-                  appStatus = AppStatus.isSyncCompleted;
-                  selectedGlucose = [...state.glucosedList];
-                });
-              }
-              // if (state is SyncDataSuccesed) {
-              //   Observable.instance.notifyObservers([],
-              //       notifyName: Const.NAVIGATE_TO_PROFILE_TAB);
-              //   Navigator.of(context).popUntil(
-              //       (route) => route.settings.name == NavigatorName.tabbar);
-              //   Navigator.pushNamed(context, NavigatorName.detail_blood_sugar);
-              //   Message.showToastMessage(
-              //       context, "Đồng bộ chỉ số đường huyết thành công!");
-              //   Future.delayed(Duration(seconds: 2)).then((value) =>
-              //       Observable.instance.notifyObservers([],
-              //           notifyName: "glucose_change_data", map: {'index': 1}));
-              // }
-              // if (state is RocheConnectionFailure) {
-              //   Message.showToastMessage(context, state.error);
-              // }
-            },
-            builder: (context, state) {
-              if (isLoading) {
-                BotToast.showLoading();
-              } else {
-                BotToast.closeAllLoading();
-              }
-              return returnWidget;
-            },
-          ),
-        ),
+        body: Builder(builder: (context) {
+          return Padding(
+            padding: EdgeInsets.symmetric(
+              vertical: AppMediaQuery.deviceSafeAreaTop,
+              horizontal: 15,
+            ),
+            child: StreamBuilder<int>(
+              stream: secondsStream,
+              initialData: 0,
+              builder: (context, snapshot) {
+                switch (appStatus) {
+                  case AppStatus.isNoDeviceFound:
+                    return _noDeviceFound();
+                  case AppStatus.isScanning:
+                  case AppStatus.isConnected:
+                  case AppStatus.isSyncing:
+                    return _scanDeviceWidget();
+                  case AppStatus.isConnecting:
+                    return _enterPinCode();
+                  case AppStatus.isSyncCompleted:
+                    return _selectData(context);
+                  default:
+                    return Container();
+                }
+              },
+            ),
+          );
+        }),
       ),
     );
   }
 
-  Widget _btnClose() {
+  Widget _btnClose(BuildContext context) {
     return Align(
       alignment: Alignment.topRight,
       child: InkWell(
@@ -206,7 +193,7 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
     }
   }
 
-  Widget _selectData() {
+  Widget _selectData(BuildContext context) {
     glucosedList.sort(((a, b) {
       return int.parse(b['date']!).compareTo(int.parse(a['date']!));
     }));
@@ -216,7 +203,7 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _btnClose(),
+            _btnClose(context),
             Text(
               "Kết nối thành công",
               style: TextStyle(
@@ -262,6 +249,7 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
                             selectedGlucose.length == glucosedList.length;
                       });
                     },
+                    glucoseUnits: glucoseUnits,
                   );
                 }).toList(),
               ),
@@ -419,7 +407,7 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        _btnClose(),
+        _btnClose(context),
         returnWidget,
         SizedBox(height: 40),
       ],
@@ -430,7 +418,7 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        _btnClose(),
+        _btnClose(context),
         Container(
           constraints: BoxConstraints(
               minHeight: AppMediaQuery.deviceHeigthAvailable - 100),
@@ -484,8 +472,11 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
           child: ButtonWidget(
             title: 'Kết nối lại',
             onPressed: () {
+              setState(() {
+                appStatus = AppStatus.isScanning;
+              });
               FlutterBluePlus.instance
-                  .startScan(timeout: const Duration(seconds: 20));
+                  .startScan(timeout: const Duration(seconds: 25));
             },
           ),
         )
@@ -497,7 +488,7 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        _btnClose(),
+        _btnClose(context),
         Column(
           children: [
             Text(
@@ -555,24 +546,6 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
     );
   }
 
-  Widget _scanningWidget() {
-    return StreamBuilder<bool>(
-      stream: FlutterBluePlus.instance.isScanning,
-      initialData: false,
-      builder: (c, snapshot) {
-        if (snapshot.data!) {
-          return _scanDeviceWidget();
-        } else {
-          if (appStatus == AppStatus.isConnecting) {
-            return _enterPinCode();
-          } else {
-            return _noDeviceFound();
-          }
-        }
-      },
-    );
-  }
-
   startScan() async {
     List<BluetoothDevice> connectedDevices =
         await FlutterBluePlus.instance.connectedDevices;
@@ -582,8 +555,13 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
 
     FlutterBluePlus.instance.startScan(timeout: const Duration(seconds: 25));
     FlutterBluePlus.instance.scanResults.listen((scanResultList) {
-      if (appStatus == AppStatus.isScanning) {
+      if (!deviceFound && appStatus == AppStatus.isScanning) {
         connectToAvailableDevice(scanResultList);
+      }
+    });
+    FlutterBluePlus.instance.isScanning.listen((event) {
+      if (event == false && appStatus == AppStatus.isScanning) {
+        appStatus = AppStatus.isNoDeviceFound;
       }
     });
   }
@@ -599,89 +577,17 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
   }
 
   connectToAvailableDevice(List<ScanResult> scanResultList) async {
-    // scanResultList.forEach((result) async {
-    // if (result.device.name.contains('meter+')) {
-    // List<BluetoothDevice> connectedDevices =
-    //     await FlutterBluePlus.instance.connectedDevices;
-    // if (connectedDevices.contains(result.device)) {
-    //   setState(() {
-    //     device = result.device;
-    //     appStatus = AppStatus.isConnecting;
-    //   });
-    //   await FlutterBluePlus.instance.stopScan();
-    //   return;
-    // } else {
-    //     await result.device.connect();
-    //     appStatus = AppStatus.isConnecting;
-    //     await FlutterBluePlus.instance.stopScan();
-    //     return;
-    //     // }
-    //   }
-    // });
-
     scanResultList.forEach((result) async {
       if (result.device.name.contains('meter')) {
-        Console.log('device name', result.device.name);
-        await result.device.connect();
         device = result.device;
-        appStatus = AppStatus.isConnecting;
+        await result.device.connect();
+        deviceFound = true;
         await FlutterBluePlus.instance.stopScan();
+        appStatus = AppStatus.isConnecting;
+        connectDevice(result.device);
         return;
       }
     });
-  }
-
-  Future<void> connectDevice(BluetoothDevice deviceFounded) async {
-    List<BluetoothService> services = await deviceFounded.discoverServices();
-
-    // Tìm Service 0x1808
-    BluetoothService serviceGlucoseMeasurement = services.firstWhere((service) {
-      return service.uuid.toString() ==
-          GlucoseProfileConfiguration.GLUCOSE_SERVICE_UUID;
-    });
-
-    // Tim Characteristic 0x2A18
-    BluetoothCharacteristic charGlucoseMeasurement =
-        serviceGlucoseMeasurement.characteristics.firstWhere((characteristic) =>
-            characteristic.uuid.toString() ==
-            GlucoseProfileConfiguration
-                .GLUCOSE_MEASUREMENT_CHARACTERISTIC_UUID);
-
-    // Bật noti cho 0x2A18
-    await charGlucoseMeasurement.setNotifyValue(true);
-
-    await Future.delayed(Duration(milliseconds: 300));
-
-    appStatus = AppStatus.isConnected;
-
-    for (BluetoothCharacteristic characteristic
-        in serviceGlucoseMeasurement.characteristics) {
-      // Tim Characteristic 0x2A18
-      if (characteristic.uuid.toString() ==
-          GlucoseProfileConfiguration.GLUCOSE_MEASUREMENT_CHARACTERISTIC_UUID) {
-        await characteristic.setNotifyValue(true);
-        setState(() {
-          appStatus = AppStatus.isSyncing;
-          glucoseMeasurementRecordList = [];
-        });
-        characteristic.value.listen((data) async {
-          GlucoseMeasurementRecord glucoseMeasurementRecord =
-              GlucoseFunctions().readDataFrom2A18(data);
-          glucoseMeasurementRecordList.add(glucoseMeasurementRecord);
-        });
-      }
-
-      // Tim Characteristic 0x2A52
-      if (characteristic.uuid.toString() ==
-          GlucoseProfileConfiguration
-              .RECORD_ACCESS_CONTROL_POINT_CHARACTERISTIC_UUID) {
-        await characteristic.setNotifyValue(true);
-        List<int> requestData = [0x01, 0x01];
-        await characteristic.write(requestData);
-        await Future.delayed(Duration(seconds: 2));
-        fetchGlucoseInputNotExist(glucoseMeasurementRecordList);
-      }
-    }
   }
 
   bool isSelected(Map<String, String> glucose) {
@@ -695,34 +601,152 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
     return isSelected;
   }
 
-  Future<void> fetchGlucoseInputNotExist(
-      List<GlucoseMeasurementRecord> dataSelected) async {
+  Future<void> connectDevice(BluetoothDevice deviceFounded) async {
+    print('connectDevice');
+    List<BluetoothService> services = await deviceFounded.discoverServices();
+
+    // Tìm Service 0x1808
+    BluetoothService serviceGlucoseMeasurement = services.firstWhere((service) {
+      return service.uuid.toString() ==
+          GlucoseProfileConfiguration.GLUCOSE_SERVICE_UUID;
+    });
+
+    BluetoothService rocheService = services.firstWhere((service) {
+      return service.uuid.toString() ==
+          GlucoseProfileConfiguration.ROCHE_SERVICE_UUID;
+    });
+
+    for (BluetoothCharacteristic rocheCharacteristic
+        in rocheService.characteristics) {
+      if (rocheCharacteristic.uuid.toString() ==
+          GlucoseProfileConfiguration.MODEL_NUMBER_STRING_UUID) {
+        List<int> modelNumberStringValue = await rocheCharacteristic.read();
+        String result = utf8.decode(modelNumberStringValue);
+        if (GlucoseProfileConfiguration.mgPerDLModels.contains(result)) {
+          glucoseUnits = GlucoseUnitsFlag.mgPerDL;
+        } else {
+          glucoseUnits = GlucoseUnitsFlag.mmolPerL;
+        }
+        updateGlucoseUnit(glucoseUnits);
+      }
+    }
+
+    // Tim Characteristic 0x2A18
+    BluetoothCharacteristic charGlucoseMeasurement =
+        serviceGlucoseMeasurement.characteristics.firstWhere((characteristic) =>
+            characteristic.uuid.toString() ==
+            GlucoseProfileConfiguration
+                .GLUCOSE_MEASUREMENT_CHARACTERISTIC_UUID);
+
+    // Bật noti cho 0x2A18
+    await charGlucoseMeasurement.setNotifyValue(true);
+    appStatus = AppStatus.isConnected;
+
+    for (BluetoothCharacteristic characteristic
+        in serviceGlucoseMeasurement.characteristics) {
+      // Tim Characteristic 0x2A18
+      if (characteristic.uuid.toString() ==
+          GlucoseProfileConfiguration.GLUCOSE_MEASUREMENT_CHARACTERISTIC_UUID) {
+        await characteristic.setNotifyValue(true);
+        appStatus = AppStatus.isSyncing;
+        previousDataCount = 0;
+        glucoseMeasurementRecordList.clear();
+        characteristicListener = characteristic.value.listen((data) async {
+          GlucoseMeasurementRecord glucoseMeasurementRecord =
+              GlucoseFunctions().readDataFrom2A18(data);
+          if (glucoseMeasurementRecord.isBloodGlucose) {
+            glucoseMeasurementRecordList.add(glucoseMeasurementRecord);
+          }
+        });
+      }
+
+      // Tim Characteristic 0x2A52
+      if (characteristic.uuid.toString() ==
+          GlucoseProfileConfiguration
+              .RECORD_ACCESS_CONTROL_POINT_CHARACTERISTIC_UUID) {
+        await characteristic.setNotifyValue(true);
+        List<int> requestData = [0x01, 0x01];
+        await characteristic.write(requestData);
+        await Future.delayed(Duration(seconds: 3));
+        startCheckingData();
+        // fetchGlucoseInputNotExist(glucoseMeasurmentRecordList);
+      }
+    }
+  }
+
+  Future<void> updateGlucoseUnit(GlucoseUnitsFlag glucoseUnitsFlag) async {
+    print('glucoseUnitsFlag: $glucoseUnitsFlag');
+    bool isMilligramPerDeciliter = AppSettings.userInfo!.glucoseUnit == 1;
+    if (glucoseUnitsFlag == GlucoseUnitsFlag.mgPerDL &&
+        !isMilligramPerDeciliter) {
+      ScheduleGlucoseTimeModel timeModel =
+          await UserClient().fetchScheduleGlucoseSetting();
+      await UserClient().updateScheduleGlucoseSetting(ScheduleGlucoseTimeModel(
+          beforeEat: timeModel.beforeEat,
+          afterEat: timeModel.afterEat,
+          beforeSleeping: timeModel.beforeSleeping,
+          glucoseUnit: 1));
+      await UserClient().fetchUser();
+      Observable.instance.notifyObservers([], notifyName: "refresh_home");
+    } else if (glucoseUnitsFlag == GlucoseUnitsFlag.mmolPerL &&
+        isMilligramPerDeciliter) {
+      ScheduleGlucoseTimeModel timeModel =
+          await UserClient().fetchScheduleGlucoseSetting();
+      await UserClient().updateScheduleGlucoseSetting(ScheduleGlucoseTimeModel(
+          beforeEat: timeModel.beforeEat,
+          afterEat: timeModel.afterEat,
+          beforeSleeping: timeModel.beforeSleeping,
+          glucoseUnit: 2));
+      await UserClient().fetchUser();
+      Observable.instance.notifyObservers([], notifyName: "refresh_home");
+    }
+  }
+
+  void startCheckingData() {
+    Timer.periodic(Duration(seconds: 1), (timer) {
+      // Kiểm tra số lượng dữ liệu sau mỗi khoảng thời gian
+      if (glucoseMeasurementRecordList.length > previousDataCount) {
+        // Nếu dữ liệu đã tăng, cập nhật previousDataCount và tiếp tục đợi
+        previousDataCount = glucoseMeasurementRecordList.length;
+      } else {
+        // Nếu dữ liệu không tăng, ngưng lại và gọi hàm fetchGlucoseInputNotExist
+        timer.cancel(); // Ngưng timer
+        fetchGlucoseInputNotExist();
+      }
+    });
+  }
+
+  Future<void> fetchGlucoseInputNotExist() async {
     List<Map<String, String>> glucoseDataList = [];
     List<Map<String, String>> glucoseDataRequest = [];
-    dataSelected.forEach((element) {
-      final glucose = roundAsFixed(roundDouble(
-          element.convertGlucoseConcentrationValueToMilligramsPerDeciliter()));
-      glucoseDataRequest.add({
-        'glucose': glucose.toString(),
-        'date': DateUtil.getDayInMillis(element.calendar!).toString(),
+
+    if (glucoseMeasurementRecordList.isNotEmpty) {
+      glucoseMeasurementRecordList.forEach((element) {
+        print('element: ${element.glucoseUnits}');
+        final glucose = roundAsFixed(roundDouble(element
+            .convertGlucoseConcentrationValueToMilligramsPerDeciliter()));
+        glucoseDataRequest.add({
+          'glucose': glucose.toString(),
+          'date': DateUtil.getDayInMillis(element.calendar!).toString(),
+        });
       });
-    });
 
-    final result =
-        await GlucoseClient().fetchGlucoseInputNotExist(glucoseDataRequest);
+      final result =
+          await GlucoseClient().fetchGlucoseInputNotExist(glucoseDataRequest);
 
-    result.forEach((element) {
-      glucoseDataList.add({
-        'glucose': element['glucose'].toString(),
-        'date': element['createDate'].toString()
+      result.forEach((element) {
+        glucoseDataList.add({
+          'glucose': element['glucose'].toString(),
+          'date': element['createDate'].toString()
+        });
       });
-    });
 
-    setState(() {
       selectAllData = true;
       glucosedList = glucoseDataList;
       appStatus = AppStatus.isSyncCompleted;
       selectedGlucose = [...glucoseDataList];
-    });
+    } else {
+      appStatus = AppStatus.isSyncCompleted;
+    }
   }
 }

@@ -2,40 +2,41 @@ import 'package:medical/src/widget/helper/helper.dart';
 
 import 'sensor_status_annunciation.dart';
 
+enum GlucoseUnitsFlag {
+  mgPerDL,
+  mmolPerL,
+}
+
 class GlucoseMeasurementRecord {
   int sequenceNumber;
   DateTime? calendar;
   num timeOffset;
-  GlucoseConcentrationMeasurementUnit glucoseConcentrationMeasurementUnit;
+  GlucoseUnitsFlag glucoseUnits;
   double glucoseConcentrationValue;
   int type;
   int sampleLocationInteger;
   String testBloodType;
   String sampleLocation;
+  bool isBloodGlucose;
   SensorStatusAnnunciation? sensorStatusAnnunciation;
 
   GlucoseMeasurementRecord({
     this.sequenceNumber = 0,
     this.calendar,
     this.timeOffset = 0,
-    this.glucoseConcentrationMeasurementUnit =
-        GlucoseConcentrationMeasurementUnit.molesPerLitre,
+    this.glucoseUnits = GlucoseUnitsFlag.mmolPerL,
     this.glucoseConcentrationValue = 0.0,
     this.type = 0,
     this.sampleLocationInteger = 0,
     this.testBloodType = 'Capillary Whole blood',
     this.sampleLocation = 'Earlobe',
     this.sensorStatusAnnunciation,
+    this.isBloodGlucose = false,
   });
 
   String convertGlucoseConcentrationValueToMilligramsPerDeciliter() {
     return '${roundDouble(glucoseConcentrationValue * 100000)}';
   }
-}
-
-enum GlucoseConcentrationMeasurementUnit {
-  molesPerLitre,
-  kilogramsPerLitre,
 }
 
 extension GlucoseMeasurementRecordExtensions on GlucoseMeasurementRecord {

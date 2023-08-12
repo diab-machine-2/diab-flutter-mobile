@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:medical/src/utils/app_log.dart';
 import 'package:medical/src/widget/nipro/roche_connection/data/models/GlucoseMeasurementRecord.dart';
@@ -5,6 +7,7 @@ import 'dart:typed_data';
 
 int FORMAT_UINT8 = 17;
 int FORMAT_UINT16 = 18;
+int gregorianCalendar = 1792;
 // UUID của các đặc tính
 const String uuidGlucoseMeasurement = '00002a18-0000-1000-8000-00805f9b34fb';
 const String RECORD_ACCESS_CONTROL_POINT_CHARACTERISTIC_UUID =
@@ -17,19 +20,6 @@ DateTime baseTime = DateTime.now().subtract(const Duration(days: 90));
 int timeOffset = baseTime.difference(DateTime(1970)).inSeconds;
 
 class GlucoseFunctions {
-  // Hàm thực hiện cấu hình CCCD
-  // Future<void> configureCCCD(
-  //     BluetoothCharacteristic values, List<int> value) async {
-  //   await characteristic.setNotifyValue(true);
-  //   await characteristic.write(value);
-  // }
-
-  // // Hàm thực hiện yêu cầu gửi lệnh RACP
-  // Future<void> sendRACPCommand(
-  //     BluetoothCharacteristic values, List<int> value) async {
-  //   await characteristic.write(value);
-  // }
-
 // Hàm đọc dữ liệu lịch sử từ characteristic Glucose Measurement
   Future<List<int>> readHistoryData(
       BluetoothCharacteristic characteristic) async {
@@ -75,25 +65,6 @@ class GlucoseFunctions {
         }
       }
     }
-
-    // Cấu hình CCCD cho Glucose Measurement và RACP
-    // await configureCCCD(glucoseMeasurementCharacteristic!,
-    //     [0x01, 0x00]); // Enable notifications
-    // await configureCCCD(
-    //     racpCharacteristic!, [0x02, 0x00]); // Enable indications
-
-    // // Gửi yêu cầu RACP với thời gian bắt đầu
-    // await sendRACPCommand(
-    //     racpvalues, [0x01, timeOffset & 0xFF, (timeOffset >> 8) & 0xFF]);
-
-    // Đọc dữ liệu lịch sử từ Glucose Measurement
-    // List<int> historyData =
-    //     await readHistoryData(glucoseMeasurementCharacteristic);
-
-    // print('Lịch sử đo đường huyết: $historyData');
-
-    // Ngắt kết nối với thiết bị
-    // device?.disconnect();
   }
 
   Future<void> writeData2A52(BluetoothCharacteristic racpCharacteristic) async {
@@ -171,7 +142,6 @@ class GlucoseFunctions {
   }
 
   GlucoseMeasurementRecord readDataFrom2A18(List<int> values) {
-    // Console.log('readDataFrom2A18', values);
     var glucoseMeasurementRecord = GlucoseMeasurementRecord();
     int offset = 0;
     int flag = getIntValue(values, FORMAT_UINT8, offset);
@@ -186,7 +156,7 @@ class GlucoseFunctions {
     // glucoseMeasurementRecord.sequenceNumber);
 
     offset += 2; // offset is 3
-    int baseTimeYear = 2023;
+    int baseTimeYear = gregorianCalendar + values[offset];
 
     // Console.log("PHUONG $offset baseTimeYear", baseTimeYear);
     offset += 2; // offset is 5
@@ -210,17 +180,15 @@ class GlucoseFunctions {
       baseTimeSeconds,
     );
 
-    // Console.log("PHUONG $offset calendar", glucoseMeasurementRecord.calendar);
-
     int timeOffset = 0;
     if ((flag & (1 << 0)) > 0) {
       timeOffset = (values[11] * 256) + values[10];
       offset += 2; // offset is 12
     }
-    Console.log("PHUONG $offset timeOffset", timeOffset);
     glucoseMeasurementRecord.timeOffset = timeOffset;
 
-    glucoseMeasurementRecord.calendar = glucoseMeasurementRecord.calendar!.add(Duration(minutes: timeOffset));
+    glucoseMeasurementRecord.calendar =
+        glucoseMeasurementRecord.calendar!.add(Duration(minutes: timeOffset));
 
     // Console.log("PHUONG flag & (1 << 1)) > 0", (flag & (1 << 1)) > 0);
     late double glucoseConcentrationValue;
@@ -231,18 +199,9 @@ class GlucoseFunctions {
       // Console.log("PHUONG $offset location", typeAndSampleLocation);
 
       // Console.log("PHUONG (flag & (1 << 2)) > 0", (flag & (1 << 2)) > 0);
-      if ((flag & (1 << 2)) > 0) {
-        // glucose concentration unit of measurement is mol/L
-        glucoseMeasurementRecord.glucoseConcentrationMeasurementUnit =
-            GlucoseConcentrationMeasurementUnit.molesPerLitre;
-        glucoseConcentrationValue = getFloatValue(values, offset);
-      } else {
-        // glucose concentration unit of measurement is kg/L
-        glucoseMeasurementRecord.glucoseConcentrationMeasurementUnit =
-            GlucoseConcentrationMeasurementUnit.kilogramsPerLitre;
-        glucoseConcentrationValue = getFloatValue(values, offset);
-      }
-      // Console.log('PHUONG glucoseValue $offset', glucoseConcentrationValue);
+      glucoseMeasurementRecord.glucoseUnits = calculateGlucoseUnit(values);
+      glucoseConcentrationValue = extractSFloat(values, offset);
+
       // Console.log('PHUONG glucoseUnit',
       //     glucoseMeasurementRecord.glucoseConcentrationMeasurementUnit);
       offset += 2; // offset is 14
@@ -260,9 +219,9 @@ class GlucoseFunctions {
     // Console.log("PHUONG (flag & (1 << 2)) > 0", (flag & (1 << 2)) > 0);
     // if ((flag & (1 << 2)) > 0) {
     //   // Sensor Status Annunciation field is present
-    //   int sensorStatusAnnunciationValue =
-    //       getIntValue(values, FORMAT_UINT16, offset);
-    //   offset += 2; // offset is 16 or 12 or 9
+    int sensorStatusAnnunciationValue =
+        getIntValue(values, FORMAT_UINT16, offset);
+    offset += 2; // offset is 16 or 12 or 9
 
     //   SensorStatusAnnunciation sensorStatusAnnunciation =
     //       SensorStatusAnnunciation();
@@ -280,10 +239,11 @@ class GlucoseFunctions {
     //       sensorStatusAnnunciationValue & (1 << 5) > 0;
     //   sensorStatusAnnunciation.sensorResultLowerThanTheDeviceCanProcess =
     //       sensorStatusAnnunciationValue & (1 << 6) > 0;
-    //   sensorStatusAnnunciation.sensorTemperatureTooHighForValidTestResult =
-    //       sensorStatusAnnunciationValue & (1 << 7) > 0;
-    //   sensorStatusAnnunciation.sensorTemperatureTooLowForValidTestResult =
-    //       sensorStatusAnnunciationValue & (1 << 8) > 0;
+    //   sensorStatusAnnunciation.
+    bool sensorTemperatureTooHighForValidTestResult =
+        sensorStatusAnnunciationValue & (1 << 7) > 0;
+    // bool sensorTemperatureTooLowForValidTestResult =
+    //     sensorStatusAnnunciationValue & (1 << 8) > 0;
     //   sensorStatusAnnunciation
     //           .sensorReadInterruptedBecauseStripWasPulledTooSoon =
     //       sensorStatusAnnunciationValue & (1 << 9) > 0;
@@ -295,10 +255,30 @@ class GlucoseFunctions {
     //   glucoseMeasurementRecord.sensorStatusAnnunciation =
     //       sensorStatusAnnunciation;
     // } else {}
+    // glucoseMeasurementRecord.isControlGlucose = isControlGlucose(values[1]);
 
-    return glucoseMeasurementRecord;
+    glucoseMeasurementRecord.isBloodGlucose = values[14] == 248 &&
+        !glucoseMeasurementRecord.glucoseConcentrationValue.isInfinite;
+    // if (!isControlGlucose(values[1])) {
     // print(
-    //     'PHUONG convertGlucoseConcentrationValueToMilligramsPerDeciliter: ${glucoseMeasurementRecord.convertGlucoseConcentrationValueToMilligramsPerDeciliter()}');
+    //     'sensorTemperatureTooHighForValidTestResult ${glucoseMeasurementRecord.calendar} heigt -> $sensorTemperatureTooHighForValidTestResult, low -> $sensorTemperatureTooLowForValidTestResult: ${glucoseMeasurementRecord.convertGlucoseConcentrationValueToMilligramsPerDeciliter()}}');
+    // print(
+    //     'isControlGlucose $values: ${glucoseMeasurementRecord.convertGlucoseConcentrationValueToMilligramsPerDeciliter()} -> ${isControlGlucose(values[1])}');
+    // }
+    // print('isBloodGlucose sensorTemperatureeodGlucose: ${glucoseMeasurementRecord.isBloodGlucose} --> ${glucoseMeasurementRecord.convertGlucoseConcentrationValueToMilligramsPerDeciliter()}');
+    // if () {
+    //   print(
+    //       'isBloodGlucose => ${values[14]} $values =-> ${glucoseMeasurementRecord.glucoseConcentrationValue}');
+    //   Console.log('values[13]: ${values[13]}',
+    //       glucoseMeasurementRecord.glucoseConcentrationValue);
+    // }
+    // if (glucoseMeasurementRecord.isBloodGlucose) {
+    Console.log(
+        'hihi $values =>  ${glucoseMeasurementRecord.glucoseUnits}',
+        glucoseMeasurementRecord
+            .convertGlucoseConcentrationValueToMilligramsPerDeciliter());
+    // }
+    return glucoseMeasurementRecord;
     // Broadcast the glucose measurement record
     // LocalBroadcastManager.getInstance().sendBroadcast(
     //   Intent(BluetoothGattStateInformationReceiver
@@ -325,17 +305,92 @@ class GlucoseFunctions {
     // }
   }
 
-  int _getIntValue(List<int> data, int offset, int length) {
-    int value = 0;
-    for (int i = offset; i < offset + length; i++) {
-      value |= (data[i] & 0xFF) << (8 * (i - offset));
-    }
-    return value;
+  double floatToSFloat(int value) {
+    int intValue = (value * 16).round();
+    int sFloatValue = intValue & 0xFFFF;
+    return sFloatValue.toDouble();
   }
 
-  double _getFloatValue(List<int> data, int offset) {
-    int mantissa = _getIntValue(data, offset, 2);
-    int exponent = _getIntValue(data, offset + 2, 1);
-    return (mantissa * (10 ^ exponent)).toDouble();
+// Hàm để chuyển đổi dữ liệu từ FORMAT_SFLOAT (float16) sang số thực trong Flutter
+  double extractSFloat(List<int> values, int startingIndex) {
+    // Đảm bảo mảng dữ liệu không bị tràn hoặc vượt quá chỉ số
+    if (startingIndex + 1 >= values.length) {
+      throw Exception("Invalid index or data array size.");
+    }
+
+    // Lấy hai byte đầu tiên để biểu diễn số nguyên 16-bit
+    int full = values[startingIndex + 1] * 256 + values[startingIndex];
+
+    // Tiến hành chuyển đổi tương tự như trong mã Swift
+    if (full == 0x07FF) {
+      return double.nan;
+    } else if (full == 0x0800) {
+      return double.nan;
+    } else if (full == 0x07FE) {
+      return double.infinity;
+    } else if (full == 0x0802) {
+      return -double.infinity;
+    } else if (full == 0x0801) {
+      return double.nan;
+    }
+
+    int expo = (full & 0xF000) >> 12;
+    double expoFloat = floatFromTwosComplementUInt16(expo, 4);
+
+    int mantissa = full & 0x0FFF;
+    double mantissaFloat = floatFromTwosComplementUInt16(mantissa, 12);
+
+    double finalValue = mantissaFloat * pow(10.0, expoFloat);
+
+    return finalValue;
+  }
+
+// Hàm để chuyển đổi số thực từ số nguyên có dấu 16-bit (FORMAT_SFLOAT) sang số thực Dart
+  double floatFromTwosComplementUInt16(int value, int bits) {
+    // Đảo bit ký hiệu nếu có
+    if ((value & (1 << (bits - 1))) != 0) {
+      value = -((1 << bits) - value);
+    }
+
+    return value.toDouble();
+  }
+
+  bool isBitSet(int value, int n) {
+    print('isBitSet: ${value & (1 << n)}');
+    return (value & (1 << n)) != 0;
+  }
+
+  GlucoseUnitsFlag calculateGlucoseUnit(List<int> data) {
+    // Trường "Flags" nằm ở byte đầu tiên
+    int flags = data[0];
+    String bit2 = flags.toRadixString(2);
+    print('binary: ${flags.toRadixString(2)}');
+
+    // Kiểm tra bit thứ 2 của trường "Flags" để xác định đơn vị Glucose Concentration
+    if (isBitSet(flags, 2)) {
+      print('hihi GlucoseUnitsFlag.mmolPerL $data');
+      return GlucoseUnitsFlag.mmolPerL;
+    } else {
+      print('hihi GlucoseUnitsFlag.mgPerDL $data');
+      return GlucoseUnitsFlag.mgPerDL;
+    }
+
+    // int flags = data[0];
+
+    // // Kiểm tra bit thứ 1 của trường "Flags" để xem có xuất hiện các trường "Glucose Concentration" và "Type-Sample Location" trong dữ liệu hay không
+    // if (isBitSet(flags, 0)) {
+    //   // Nếu bit thứ 1 là 1, thì xác định giá trị của trường "Type-Sample Location" (ở đây là byte thứ 8)
+    //   int typeSampleLocation = data[8];
+
+    //   // Kiểm tra bit thứ 0 của trường "Type-Sample Location" để xác định đơn vị Glucose Concentration
+    //   if (isBitSet(typeSampleLocation, 2)) {
+    //     print('hihi GlucoseUnitsFlag.mmolPerL $data');
+    //     return GlucoseUnitsFlag.mmolPerL;
+    //   } else {
+    //     print('hihi GlucoseUnitsFlag.mgPerDL $data');
+    //     return GlucoseUnitsFlag.mgPerDL;
+    //   }
+    // }
+    // return GlucoseUnitsFlag.mmolPerL;
   }
 }

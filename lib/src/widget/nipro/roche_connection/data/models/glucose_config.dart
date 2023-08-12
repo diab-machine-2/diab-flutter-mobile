@@ -1,8 +1,64 @@
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 
 class GlucoseProfileConfiguration {
+  static List<String> mgPerDLModels = [
+    '483',
+    '498',
+    '502',
+    '685',
+    '503',
+    '765',
+    '921',
+    '923',
+    '925',
+    '926',
+    '958',
+    '960',
+    '963',
+    '897',
+    '901',
+    '903',
+    '905',
+    '975',
+    '979',
+    '966',
+    '968',
+    '972'
+  ];
+
+  static List<String> mmolPerLModels = [
+    '484',
+    '497',
+    '499',
+    '500',
+    '479',
+    '501',
+    '922',
+    '929',
+    '930',
+    '932',
+    '959',
+    '961',
+    '964',
+    '965',
+    '898',
+    '902',
+    '904',
+    '973',
+    '977',
+    '978',
+    '980',
+    '967',
+    '969',
+    '970',
+    '971',
+    '976',
+  ];
+
   static int FORMAT_UINT8 = 17;
   static int FORMAT_UINT16 = 18;
+  static String GLUCOSE_SERVICE_UUID = '00001808-0000-1000-8000-00805f9b34fb';
+  static String ROCHE_SERVICE_UUID = '0000180a-0000-1000-8000-00805f9b34fb';
 
   static String DEVICE_BATTERY_CHARACTERISTIC_UUID =
       '0000180F-0000-1000-8000-00805f9b34fb';
@@ -14,9 +70,10 @@ class GlucoseProfileConfiguration {
       '00002a34-0000-1000-8000-00805f9b34fb';
   static String RECORD_ACCESS_CONTROL_POINT_CHARACTERISTIC_UUID =
       '00002a52-0000-1000-8000-00805f9b34fb';
-  static String GLUCOSE_SERVICE_UUID = '00001808-0000-1000-8000-00805f9b34fb';
   static String CLIENT_CHARACTERISTICS_CONFIGURATION_DESCRIPTOR =
       '00002902-0000-1000-8000-00805f9b34fb';
+  static String MODEL_NUMBER_STRING_UUID =
+      '00002a24-0000-1000-8000-00805f9b34fb';
 
   static const OP_CODE_REPORT_STORED_RECORDS = 1;
   static const OP_CODE_DELETE_STORED_RECORDS = 2;

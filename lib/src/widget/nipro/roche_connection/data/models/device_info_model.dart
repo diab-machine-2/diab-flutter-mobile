@@ -290,25 +290,10 @@ List<DeviceInfoModel> examples = [
             style: TextStyle(fontSize: 18, color: R.color.textDark),
             children: [
               TextSpan(
-                text: 'Ấn (Xuống) ',
-                style: TextStyle(
-                  fontWeight: FontWeight.w700,
-                ),
+                text: 'Chọn ',
               ),
               TextSpan(
-                text: 'để chọn ',
-              ),
-              TextSpan(
-                text: 'Yes ',
-                style: TextStyle(
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-              TextSpan(
-                text: '(Đồng ý\nghép nối).',
-              ),
-              TextSpan(
-                text: 'Ấn (OK).',
+                text: '(Pair Device). Ấn (OK).',
                 style: TextStyle(
                   fontWeight: FontWeight.w700,
                 ),
