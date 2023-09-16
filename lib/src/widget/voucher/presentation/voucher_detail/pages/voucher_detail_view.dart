@@ -350,7 +350,7 @@ class _VoucherDetailViewState extends State<VoucherDetailView> {
 
   void _launchLAZADA() async {
     const url =
-        'https://pages.lazada.vn/wow/gcp/vn/store_lp/voucher?sellerId=v8r0l559q7w&voucherId=v4zw057yrkr7bb&scene=store&domain=SHOP';
+        'https://pages.lazada.vn/wow/gcp/vn/store_lp/voucher?sellerId=v8r0l559q7w&voucherId=vrroy74m2nkzoe&scene=store&domain=SHOP';
     if (await canLaunch(url)) {
       await launch(url);
     } else {
@@ -359,7 +359,7 @@ class _VoucherDetailViewState extends State<VoucherDetailView> {
   }
 
   void _launchWEBSITE() async {
-    const url = 'https://diab.com.vn/danh-sach-san-pham/?p=tat-ca';
+    const url = 'https://diab.com.vn/danh-sach-san-pham/?p=combo';
     if (await canLaunch(url)) {
       await launch(url);
     } else {
