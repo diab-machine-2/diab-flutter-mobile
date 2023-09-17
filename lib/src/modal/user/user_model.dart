@@ -46,7 +46,7 @@ class UserModel {
   final int? glucoseUnit;
   final String? googleEmail;
   final double? activityLevelRate;
-
+  final bool? Checked;
   final String? roadMapId;
 
   final bool? hasBreakfastSnack;
@@ -189,6 +189,7 @@ class UserModel {
     required this.shareRefCode,
     required this.statistict,
     required this.sharedProfile,
+    required this.Checked,
   });
 
   UserModel copyWith({
@@ -266,6 +267,7 @@ class UserModel {
     String? shareRefCode,
     StatisticData? statistict,
     bool? sharedProfile,
+    bool? Checked,
   }) =>
       UserModel(
         id: id ?? this.id,
@@ -345,6 +347,7 @@ class UserModel {
         shareRefCode: shareRefCode ?? this.shareRefCode,
         statistict: statistict ?? this.statistict,
         sharedProfile: sharedProfile ?? this.sharedProfile,
+        Checked: Checked ?? this.Checked,
       );
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
@@ -460,6 +463,7 @@ class UserModel {
       statistict: json['statistict'] == null
           ? null
           : StatisticData.fromJson(json['statistict']),
+      Checked: json['checked'],
     );
   }
 
@@ -618,6 +622,8 @@ class UserModel {
       data['levelOfDiabetesRuleList'] =
           this.levelOfDiabetesRuleList!.map((v) => v.toJson()).toList();
     }
+    data['checked'] = this.Checked;
+
     return data;
   }
 }
