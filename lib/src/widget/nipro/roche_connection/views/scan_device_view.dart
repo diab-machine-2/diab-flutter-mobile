@@ -566,16 +566,6 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
     });
   }
 
-  Future checkConnectionStatus() async {
-    List<BluetoothDevice> connectedDevices =
-        await FlutterBluePlus.instance.connectedDevices;
-
-    Console.log('length', connectedDevices.length);
-    connectedDevices.forEach((element) {
-      Console.log('name', element.name);
-    });
-  }
-
   connectToAvailableDevice(List<ScanResult> scanResultList) async {
     scanResultList.forEach((result) async {
       if (result.device.name.contains('meter')) {
@@ -602,7 +592,6 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
   }
 
   Future<void> connectDevice(BluetoothDevice deviceFounded) async {
-    print('connectDevice');
     List<BluetoothService> services = await deviceFounded.discoverServices();
 
     // Tìm Service 0x1808
@@ -675,7 +664,6 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
   }
 
   Future<void> updateGlucoseUnit(GlucoseUnitsFlag glucoseUnitsFlag) async {
-    print('glucoseUnitsFlag: $glucoseUnitsFlag');
     bool isMilligramPerDeciliter = AppSettings.userInfo!.glucoseUnit == 1;
     if (glucoseUnitsFlag == GlucoseUnitsFlag.mgPerDL &&
         !isMilligramPerDeciliter) {
@@ -720,15 +708,20 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
     List<Map<String, String>> glucoseDataList = [];
     List<Map<String, String>> glucoseDataRequest = [];
 
+    Set<DateTime> uniqueValues = Set<DateTime>();
+
     if (glucoseMeasurementRecordList.isNotEmpty) {
       glucoseMeasurementRecordList.forEach((element) {
-        print('element: ${element.glucoseUnits}');
         final glucose = roundAsFixed(roundDouble(element
             .convertGlucoseConcentrationValueToMilligramsPerDeciliter()));
-        glucoseDataRequest.add({
-          'glucose': glucose.toString(),
-          'date': DateUtil.getDayInMillis(element.calendar!).toString(),
-        });
+
+        if (!uniqueValues.contains(element.calendar)) {
+          glucoseDataRequest.add({
+            'glucose': glucose.toString(),
+            'date': DateUtil.getDayInMillis(element.calendar!).toString(),
+          });
+          uniqueValues.add(element.calendar!);
+        }
       });
 
       final result =

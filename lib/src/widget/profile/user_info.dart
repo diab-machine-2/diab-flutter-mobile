@@ -906,7 +906,6 @@ class _ProfileInfoControllerState extends State<ProfileInfoController>
                                 activeColor: R.color.mainColor,
                                 value: user.isLinkedGoogle ?? false,
                                 onChanged: (value) {
-                                  print(value);
                                   linkedGoogle();
                                 },
                               ),
@@ -1963,7 +1962,6 @@ class _ProfileInfoControllerState extends State<ProfileInfoController>
                       state: diabetesStatus,
                       onChanged: (data) {
                         diabetesStatus = data;
-                        print('diabetesStatus = $diabetesStatus');
                       },
                     )),
                 Container(

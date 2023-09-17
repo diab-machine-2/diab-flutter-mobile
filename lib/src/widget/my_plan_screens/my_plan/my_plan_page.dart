@@ -39,10 +39,10 @@ class _MyPlanPageState extends State<MyPlanPage> with Observer {
   void initState() {
     super.initState();
     Observable.instance.addObserver(this);
+    final String? activityId = DynamicLinkConfig.instance.activityId;
     final String? lessonId = DynamicLinkConfig.instance.lessonId;
     final String? zoomId = DynamicLinkConfig.instance.zoomId;
-    if (zoomId != null) {
-      // DynamicLinkConfig.instance.removeZoomId();
+    if (zoomId != null || activityId != null) {
       index = PlanType.goal.index;
     } else if (lessonId != null || user.isUserFree) {
       index = PlanType.lesson.index;
@@ -54,7 +54,6 @@ class _MyPlanPageState extends State<MyPlanPage> with Observer {
     final AppRepository appRepository = AppRepository();
     _cubit = MyPlanCubit(appRepository, index);
     ActivityListTracking.firebaseSetup();
-    // _checkExistLessonId();
   }
 
   @override
@@ -98,7 +97,7 @@ class _MyPlanPageState extends State<MyPlanPage> with Observer {
             if (state is MyPlanLoading) {
               BotToast.showLoading();
             } else {
-              //     BotToast.closeAllLoading();
+              BotToast.closeAllLoading();
             }
             return CommonPage(
               title: R.string.my_plan.tr(),

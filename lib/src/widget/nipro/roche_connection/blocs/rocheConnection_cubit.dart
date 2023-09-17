@@ -43,7 +43,6 @@ class RocheConnectionCubit extends Cubit<RocheConnectionState> {
     }
     // Bắt đầu sync
     bool isMilligramPerDeciliter = AppSettings.userInfo!.glucoseUnit == 1;
-    Console.log('PHUONG isMilligramPerDeciliter', isMilligramPerDeciliter);
 
     int countResponse = 0;
     int countRequest = dataSelected.length;
@@ -60,7 +59,6 @@ class RocheConnectionCubit extends Cubit<RocheConnectionState> {
           : roundDouble(element
                   .convertGlucoseConcentrationValueToMilligramsPerDeciliter()) /
               Const.mmollToMgdlFactor);
-      Console.log('submitSyncData', glucose);
       // await GlucoseClient().postIndexGlucose(
       //     timeFrames.isNotEmpty ? timeFrames.first.id : null,
       //     DateUtil.getDayInMillis(element.calendar!),

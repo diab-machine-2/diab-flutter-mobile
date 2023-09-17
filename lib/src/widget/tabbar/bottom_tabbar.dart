@@ -22,12 +22,12 @@ class BottomTabbar extends StatefulWidget {
 }
 
 class _BottomTabbar extends State<BottomTabbar> with Observer {
-  int index = 0;
+  int currentTab = 0;
   int? ticketCount;
 
   @override
   void initState() {
-    index = widget.index;
+    currentTab = widget.index;
     Observable.instance.addObserver(this);
     super.initState();
   }
@@ -48,7 +48,7 @@ class _BottomTabbar extends State<BottomTabbar> with Observer {
 
   jumpToIndex(int index) {
     setState(() {
-      this.index = index;
+      this.currentTab = index;
     });
   }
 
@@ -71,7 +71,7 @@ class _BottomTabbar extends State<BottomTabbar> with Observer {
                   Expanded(flex: 1, child: Container()),
                   tabWidget(R.string.qa_title.tr(), R.drawable.ic_qa,
                       Const.COURSE_SCREEN),
-                  tabWidget(R.string.individual.tr(), R.drawable.ic_account,
+                  tabWidget(R.string.store.tr(), R.drawable.ic_home_store,
                       Const.ACCOUNT_SCREEN),
                 ]),
           ),
@@ -90,7 +90,7 @@ class _BottomTabbar extends State<BottomTabbar> with Observer {
               children: [
                 Image.asset(image,
                     height: 20,
-                    color: index == screenIndex
+                    color: currentTab == screenIndex
                         ? R.color.accentColor
                         : R.color.gray),
                 const SizedBox(height: 3),
@@ -100,7 +100,7 @@ class _BottomTabbar extends State<BottomTabbar> with Observer {
                     title,
                     textAlign: TextAlign.center,
                     style: TextStyle(
-                      color: index == screenIndex
+                      color: currentTab == screenIndex
                           ? R.color.accentColor
                           : R.color.gray,
                       fontSize: 12,
@@ -116,8 +116,10 @@ class _BottomTabbar extends State<BottomTabbar> with Observer {
             Observable.instance
                 .notifyObservers([], notifyName: Const.HIDE_OVERLAY_KEY);
             setState(() {
-              index = screenIndex;
-              widget.callback(index);
+              widget.callback(screenIndex);
+              if (screenIndex != 3) {
+                currentTab = screenIndex;
+              }
             });
             // if (screenIndex == 1) {
             //   NavigationUtil.navigatePage(context, const MyPlanPage());

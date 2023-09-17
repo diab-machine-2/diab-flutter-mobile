@@ -2,6 +2,7 @@ import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:flutter_observer/Observable.dart';
+import 'package:medical/res/colors.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/app_setting/dynamic_link_config.dart';
 import 'package:medical/src/modal/user/user_model.dart';
@@ -74,21 +75,36 @@ class _ZoomAndroidViewState extends State<ZoomAndroidView> {
     return Scaffold(
       appBar: AppBar(
         title: Text("Zoom"),
+        actions: [
+          GestureDetector(
+            onTap: () => _exitZoomConfirmation(),
+            child: Container(
+              margin: EdgeInsets.all(5),
+              padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12),
+                color: AppColors.attentionText,
+              ),
+              child: Text(
+                'Thoát',
+                style: TextStyle(
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ),
+          ),
+        ],
         leading: GestureDetector(
           onTap: () => ConfirmExitZoom.showDialogConfirm(context, onSubmit: () {
-            Observable.instance.notifyObservers([],
-                notifyName: Const.NAVIGATE_TO_ACTIVITY_TAB);
-            Observable.instance
-                .notifyObservers([], notifyName: "mark_completed_calendar");
-            Navigator.pop(context);
-            Navigator.pop(context);
-            _webViewController.evaluateJavascript(source: """
-                var exitBtn = document.querySelector(".footer__leave-btn-container button");
-                if(exitBtn){
-                  document.querySelector(".footer__leave-btn-container button").click();
-                  document.querySelector(".leave-meeting-options__btn").click()
-                }
-              """);
+            _exitZoomConfirmation();
+            // _webViewController.evaluateJavascript(source: """
+            //     var exitBtn = document.querySelector(".footer__leave-btn-container button");
+            //     if(exitBtn){
+            //       document.querySelector(".footer__leave-btn-container button").click();
+            //       document.querySelector(".leave-meeting-options__btn").click()
+            //     }
+            //   """);
           }),
           child: Icon(Icons.arrow_back),
         ),
@@ -98,72 +114,88 @@ class _ZoomAndroidViewState extends State<ZoomAndroidView> {
           children: <Widget>[
             Expanded(
               child: Container(
-                child: InAppWebView(
-                    onLoadStart: (InAppWebViewController controller, Uri? uri) {
-                      Console.log("PHUONG", 'onLoadStart');
-                    },
-                    onLoadStop: (InAppWebViewController controller, Uri? uri) {
-                      BotToast.closeAllLoading();
-                      // _webViewController.evaluateJavascript(source: """
-                      //   var joined = false;
-                      //   var joinBtn = document.getElementById("join-btn");
-                      //   var timeoutID;
-                      //   function checkJoinBtn() {
-                      //     if (joinBtn === null) {
-                      //       joinBtn = document.getElementById("join-btn");
-                      //       if(joined){
-                      //         clearTimeout(timeoutID);
-                      //       }
-                      //     } else {
-                      //         joinBtn.click();
-                      //         joined = true;
-                      //         joinBtn = document.getElementById("join-btn");
-                      //     }
-                      //     timeoutID = setTimeout(checkJoinBtn, 1000);
-                      //   }
-                      //   checkJoinBtn();
+                child: InteractiveViewer(
+                  panEnabled: false, // Set it to false to prevent panning.
+                  boundaryMargin: EdgeInsets.all(0),
+                  minScale: 1,
+                  maxScale: 4,
+                  child: InAppWebView(
+                      onLoadStart:
+                          (InAppWebViewController controller, Uri? uri) {},
+                      onLoadStop:
+                          (InAppWebViewController controller, Uri? uri) {
+                        BotToast.closeAllLoading();
+                        // _webViewController.evaluateJavascript(source: """
+                        //   var joined = false;
+                        //   var joinBtn = document.getElementById("join-btn");
+                        //   var timeoutID;
+                        //   function checkJoinBtn() {
+                        //     if (joinBtn === null) {
+                        //       joinBtn = document.getElementById("join-btn");
+                        //       if(joined){
+                        //         clearTimeout(timeoutID);
+                        //       }
+                        //     } else {
+                        //         joinBtn.click();
+                        //         joined = true;
+                        //         joinBtn = document.getElementById("join-btn");
+                        //     }
+                        //     timeoutID = setTimeout(checkJoinBtn, 1000);
+                        //   }
+                        //   checkJoinBtn();
 
-                      //   var accepted = false;
-                      //   var acceptBtn = document.querySelector('.join-audio-by-voip button');
-                      //   var timeoutID2;
-                      //   function checkJoinAcceptAudio() {
-                      //     if (acceptBtn === null) {
-                      //       acceptBtn = document.querySelector('.join-audio-by-voip button');
-                      //       if(accepted){
-                      //         clearTimeout(timeoutID2);
-                      //       }
-                      //     } else {
-                      //         acceptBtn.click();
-                      //         accepted = true;
-                      //         acceptBtn = document.querySelector('.join-audio-by-voip button');
-                      //     }
-                      //     timeoutID2 = setTimeout(checkJoinAcceptAudio, 1000);
-                      //   }
-                      //   checkJoinAcceptAudio();
-                      // """);
-                    },
-                    initialUrlRequest: URLRequest(url: Uri.parse(url!)),
-                    initialOptions: InAppWebViewGroupOptions(
-                      crossPlatform: InAppWebViewOptions(
-                        mediaPlaybackRequiresUserGesture: false,
+                        //   var accepted = false;
+                        //   var acceptBtn = document.querySelector('.join-audio-by-voip button');
+                        //   var timeoutID2;
+                        //   function checkJoinAcceptAudio() {
+                        //     if (acceptBtn === null) {
+                        //       acceptBtn = document.querySelector('.join-audio-by-voip button');
+                        //       if(accepted){
+                        //         clearTimeout(timeoutID2);
+                        //       }
+                        //     } else {
+                        //         acceptBtn.click();
+                        //         accepted = true;
+                        //         acceptBtn = document.querySelector('.join-audio-by-voip button');
+                        //     }
+                        //     timeoutID2 = setTimeout(checkJoinAcceptAudio, 1000);
+                        //   }
+                        //   checkJoinAcceptAudio();
+                        // """);
+                      },
+                      initialUrlRequest: URLRequest(url: Uri.parse(url!)),
+                      initialOptions: InAppWebViewGroupOptions(
+                        crossPlatform: InAppWebViewOptions(
+                          mediaPlaybackRequiresUserGesture: false,
+                        ),
                       ),
-                    ),
-                    onWebViewCreated: (InAppWebViewController controller) {
-                      Console.log("PHUONG", 'onWebViewCreated');
-                      _webViewController = controller;
-                    },
-                    androidOnPermissionRequest:
-                        (InAppWebViewController controller, String origin,
-                            List<String> resources) async {
-                      return PermissionRequestResponse(
-                          resources: resources,
-                          action: PermissionRequestResponseAction.GRANT);
-                    }),
+                      onWebViewCreated: (InAppWebViewController controller) {
+                        _webViewController = controller;
+                      },
+                      androidOnPermissionRequest:
+                          (InAppWebViewController controller, String origin,
+                              List<String> resources) async {
+                        return PermissionRequestResponse(
+                            resources: resources,
+                            action: PermissionRequestResponseAction.GRANT);
+                      }),
+                ),
               ),
             ),
           ],
         ),
       ),
     );
+  }
+
+  _exitZoomConfirmation() {
+    ConfirmExitZoom.showDialogConfirm(context, onSubmit: () {
+      Observable.instance
+          .notifyObservers([], notifyName: Const.NAVIGATE_TO_ACTIVITY_TAB);
+      Observable.instance
+          .notifyObservers([], notifyName: "mark_completed_calendar");
+      Navigator.pop(context);
+      Navigator.pop(context);
+    });
   }
 }

@@ -139,7 +139,6 @@ class _DropdownColumnWidgetState extends State<DropdownColumnWidget> {
                       onChanged: widget.selectedValue == null
                           ? null
                           : (value) {
-                              print(value);
                               setState(() {
                                 _selectedPos = list!.indexOf(value);
                               });

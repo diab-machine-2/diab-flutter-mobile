@@ -108,7 +108,6 @@ class _ConnectionInstructionsControllerState
         }
       } else if (event == 'get_data_success' && data.length != 0) {
         BotToast.closeAllLoading();
-        print(data);
         stopScan();
         if (listDataKey.currentState != null) {
           listDataKey.currentState!.glucoseData += data;

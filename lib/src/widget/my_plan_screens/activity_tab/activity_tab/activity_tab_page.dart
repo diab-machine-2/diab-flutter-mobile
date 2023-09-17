@@ -76,6 +76,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
     final AppRepository appRepository = AppRepository();
     _cubit = ActivityTabCubit(appRepository, _myPlanCubit);
     _cubit.initData();
+    _checkExistActivityId();
   }
 
   @override
@@ -90,6 +91,9 @@ class _ActivityTabPageState extends State<ActivityTabPage>
           _cubit.refreshData(isRefresh: true);
         }
       }
+    }
+    if (notifyName == Const.NAVIGATE_TO_ACTIVITY_DETAIL) {
+      _checkExistActivityId();
     }
     if (notifyName == 'refresh_activity_tab') {
       Future.delayed(Duration(milliseconds: 1000), () {
@@ -107,6 +111,16 @@ class _ActivityTabPageState extends State<ActivityTabPage>
         notifyName == 'hba1c_change_data' ||
         notifyName == 'goal_calo_changed') {
       _controller.requestRefresh();
+    }
+  }
+
+  _checkExistActivityId() async {
+    final String? activityId = DynamicLinkConfig.instance.activityId;
+    if (activityId != null) {
+      SmartGoalList smartGoal = SmartGoalList(surveyId: activityId, state: 0);
+      await Future.delayed(Duration(milliseconds: 500));
+      NavigationUtil.navigatePage(
+          context, IntroduceSurveyPage(survey: smartGoal));
     }
   }
 

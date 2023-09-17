@@ -22,8 +22,7 @@ class DeviceItemWidget extends StatelessWidget {
     return InkWell(
       onTap: () {
         if (isNiproDevice) {
-          Navigator.pushNamed(context, NavigatorName.connection_instructions,
-              arguments: {'connectOnly': true});
+          Navigator.pushNamed(context, NavigatorName.connection_instructions);
         } else {
           bloc.setDeviceInfo(deviceInfo);
           Navigator.push(

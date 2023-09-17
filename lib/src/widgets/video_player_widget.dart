@@ -63,7 +63,6 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
     );
     _controller!.setupDataSource(betterPlayerDataSource);
     _controller!.addEventsListener((event) async {
-          // print('event.betterPlayerEventType = ${event.betterPlayerEventType}');
           if (event.betterPlayerEventType == BetterPlayerEventType.play){
             _placeholderStreamController.add(true);
           }

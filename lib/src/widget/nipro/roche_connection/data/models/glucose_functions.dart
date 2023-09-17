@@ -364,14 +364,11 @@ class GlucoseFunctions {
     // Trường "Flags" nằm ở byte đầu tiên
     int flags = data[0];
     String bit2 = flags.toRadixString(2);
-    print('binary: ${flags.toRadixString(2)}');
 
     // Kiểm tra bit thứ 2 của trường "Flags" để xác định đơn vị Glucose Concentration
     if (isBitSet(flags, 2)) {
-      print('hihi GlucoseUnitsFlag.mmolPerL $data');
       return GlucoseUnitsFlag.mmolPerL;
     } else {
-      print('hihi GlucoseUnitsFlag.mgPerDL $data');
       return GlucoseUnitsFlag.mgPerDL;
     }
 

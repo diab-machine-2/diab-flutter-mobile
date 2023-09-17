@@ -1,3 +1,4 @@
+import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/modal/exercrises/exercises_intensity.dart';
 import 'package:medical/src/model/request/complete_exercise_request.dart';
 import 'package:medical/src/model/request/complete_smart_goal_request.dart';
@@ -56,6 +57,7 @@ import 'package:medical/src/model/response/user_info_response.dart';
 import 'package:medical/src/model/response/week_states_response.dart';
 import 'package:medical/src/model/service/api_result.dart';
 import 'package:medical/src/model/service/network_exceptions.dart';
+import 'package:medical/src/utils/app_log.dart';
 
 import '../app_api.dart';
 import '../request/SelectRoadmapRequest.dart';
@@ -464,6 +466,8 @@ class AppRepository {
     try {
       final ExerciseMovementResponse response =
           await appClient.getExerciseMovement(week);
+      final token = await AppSettings.getToken();
+      Console.log('token', token);
       return ApiResult.success(data: response);
     } catch (e) {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));

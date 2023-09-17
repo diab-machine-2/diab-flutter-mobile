@@ -393,8 +393,6 @@ class HealthAppBloc extends Bloc<HealthAppEvent, HealthAppState> {
       bool isNotCompleteRequest = requestSyncData.values
           .firstWhere((element) => element == false, orElse: () => false);
 
-      Console.logJson("Có cần refresh Home không? ",
-          isDataUpdated && !isNotCompleteRequest ? "Có" : "Không");
       if (isDataUpdated && !isNotCompleteRequest) {
         Observable.instance.notifyObservers([], notifyName: "refresh_home");
       }

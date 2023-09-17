@@ -188,6 +188,7 @@ class Drawables {
   String get ic_home => "lib/res/drawables/ic_home.png";
   String get ic_home_energy => "lib/res/drawables/ic_home_energy.png";
   String get ic_home_excercise => "lib/res/drawables/ic_home_excercise.png";
+  String get ic_home_store => "lib/res/drawables/ic_home_store.png";
   String get ic_hotline => "lib/res/drawables/ic_hotline.png";
   String get ic_huyet_ap => "lib/res/drawables/ic_huyet_ap.png";
   String get ic_info => "lib/res/drawables/ic_info.png";

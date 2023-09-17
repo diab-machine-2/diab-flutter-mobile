@@ -201,8 +201,6 @@ class _ScheduleActivityControllerState
 
   _showDialogSave() {
     for (int i = 0; i < model!.length; i++) {
-      print(model![i].time);
-      print(tempModel[i].time);
       if (model![i].time != tempModel[i].time) {
         showDialog(
           context: context,

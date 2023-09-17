@@ -101,7 +101,6 @@ class _CustomProgressBarWidgetState extends State<CustomProgressBarWidget> {
   void showOverlay() {
     checkOverlayStatus();
     late final int progress;
-    print("${_cubit.listAnsweredQuestionId.length} - ${_cubit.listAllQuestionId.length}");
     if (_cubit.progress >= 0.9 && !AppSettings.showed90Message) {
       progress = 90;
       AppSettings.showed90Message = true;

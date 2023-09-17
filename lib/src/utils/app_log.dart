@@ -1,16 +1,22 @@
 import 'dart:convert';
 import 'dart:developer' as developer;
 
+import 'package:medical/src/utils/const.dart';
+
 class Console {
-  static const String TAG = "SS Managers";
+  static const String TAG = "diaB";
 
   static log([String tag = TAG, dynamic msg]) {
-    developer.log('$msg', name: tag);
+    if (Const.ENVIRONMENT_DEFAULT == 'staging') {
+      developer.log('$msg', name: tag);
+    }
   }
 
   static logJson([String tag = TAG, dynamic msg]) {
-    final prettyString = const JsonEncoder.withIndent('  ').convert(msg);
-    developer.log(prettyString, name: tag);
+    if (Const.ENVIRONMENT_DEFAULT == 'staging') {
+      final prettyString = const JsonEncoder.withIndent('  ').convert(msg);
+      developer.log(prettyString, name: tag);
+    }
   }
 
   ///Singleton factory

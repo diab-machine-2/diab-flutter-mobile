@@ -225,8 +225,6 @@ class ImagePickerItem extends StatelessWidget {
         maxHeight: 1000,
         maxWidth: 1000,
       );
-      print("pickedFile: $pickedFile");
-
       if (pickedFile != null) {
         onChanged(File(pickedFile.path));
       }

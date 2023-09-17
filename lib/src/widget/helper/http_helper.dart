@@ -7,6 +7,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:http/http.dart' as http;
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
+import 'package:medical/src/modal/user/user_model.dart';
 import 'package:medical/src/utils/app_log.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
@@ -121,8 +122,10 @@ class FetchClient {
 
     Response response = await dio.getUri(uri, options: option);
     Console.logJson('GET', url);
+    // final token = await AppSettings.getToken();
+    // Console.logJson('token', token);
     Console.logJson('Request', params);
-    Console.log('response', response);
+    Console.log('response', response.statusCode);
     return response;
   }
 
@@ -146,6 +149,7 @@ class FetchClient {
     final option = await options3();
     final domain = Const.DOMAIN;
     final Dio dio = Dio();
+    logRequest(dio);
     return dio.getUri(Uri.https(domain, url, params), options: option);
   }
 
@@ -167,7 +171,7 @@ class FetchClient {
         data: params,
         options: option);
     Console.logJson('POST', url);
-    Console.log('response', response);
+    Console.log('response', response.statusCode);
     return response;
   }
 
@@ -189,7 +193,7 @@ class FetchClient {
         options: option);
     Console.logJson('API', url);
     Console.logJson('Request', params);
-    Console.log('response', response);
+    Console.log('response', response.statusCode);
     return response;
   }
 
@@ -329,16 +333,17 @@ class FetchClient {
   }
 
   logRequest(Dio dio) {
-    PrettyDioLogger dioLog = PrettyDioLogger(
-        requestHeader: true,
-        requestBody: true,
-        responseBody: true,
-        responseHeader: true,
-        compact: true,
-        error: true,
-        logPrint: (object) {});
-    dio.interceptors.add(dioLog);
-    dio.interceptors.add(TrackingInterceptor());
+    // PrettyDioLogger dioLog = PrettyDioLogger(
+    //     requestHeader: true,
+    //     requestBody: true,
+    //     responseBody: true,
+    //     responseHeader: true,
+    //     compact: true,
+    //     error: true,
+    //     logPrint: (object) {});
+    // dio.interceptors.add(dioLog);
+    // dio.interceptors.add(LogInterceptor(request: true, responseBody: false));
+    // dio.interceptors.add(TrackingInterceptor());
   }
 
   checkNetwork() async {
@@ -372,34 +377,37 @@ class TrackingInterceptor extends Interceptor {
       Response response, ResponseInterceptorHandler handler) async {
     if (response.statusCode == 401) {
       final token = await AppSettings.getToken();
+      UserModel? userInfo = AppSettings.userInfo;
       Map<String, dynamic> errorData = {
         'bearerToken': token,
+        'phone': userInfo?.phoneNumber,
         'url': response.requestOptions.path,
         'requestOptions': response.requestOptions.data.toString(),
         'responseData': response.data,
       };
 
-      Console.logJson('errorData', errorData);
-
       final Options option = await FetchClient().options();
       final domain = FetchClient.baseURL;
       final Dio dio = Dio();
-      Response responseApi = await dio.postUri(Uri.https(domain, '/App/Logs'),
+      await dio.postUri(Uri.https(domain, '/App/Logs'),
           data: {'content': jsonEncode(errorData)}, options: option);
-      Console.log('responseApi', responseApi);
     }
     handler.next(response);
   }
 
   @override
   Future<void> onError(DioError err, ErrorInterceptorHandler handler) async {
-    if (err.response?.statusCode != 401) {
+    if (err.response?.statusCode == 401) {
       final token = await AppSettings.getToken();
+      UserModel? userInfo = AppSettings.userInfo;
+
       Map<String, dynamic> errorData = {
+        'phone': userInfo?.phoneNumber,
         'bearerToken': token,
         'url': err.response?.requestOptions.path,
         'requestOptions': err.response?.requestOptions.data.toString(),
         'responseData': err.response?.data,
+        'err': err,
       };
 
       final Options option = await FetchClient().options();

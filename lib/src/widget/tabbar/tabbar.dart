@@ -68,14 +68,17 @@ class _TabbarControllerState extends State<TabbarController>
       HomeController(sharedCode: widget.sharedCode),
       MyPlanPage(index: 0),
       QuestionAnswerPage(),
-      const ProfileController(hideAllBackButton: true),
+      SizedBox(),
+      // const ProfileController(hideAllBackButton: true),
     ];
     Observable.instance.addObserver(this);
     NotificationManager.instance.requestFirebaseToken(context);
+    final String? activityId = DynamicLinkConfig.instance.activityId;
     final String? lessonId = DynamicLinkConfig.instance.lessonId;
     final String? zoomId = DynamicLinkConfig.instance.zoomId;
     int initialPage = 0;
     if (lessonId != null ||
+        activityId != null ||
         widget.isRedirectFromNotification ||
         zoomId != null) {
       initialPage = 1;
@@ -84,7 +87,9 @@ class _TabbarControllerState extends State<TabbarController>
     _bottomTabbar = BottomTabbar(
         index: initialPage,
         callback: (index) {
-          if (index == -1) {
+          if (index == 3) {
+            _redirectToWebStore();
+          } else if (index == -1) {
             _showMaterialDialog();
           } else {
             jumpTo(index);
@@ -94,7 +99,7 @@ class _TabbarControllerState extends State<TabbarController>
     if (Const.ENVIRONMENT_DEFAULT == 'product') {
       getNewVersion();
     }
-    
+
     Future.delayed(Duration(seconds: 1), () async {
       FlutterNativeSplash.remove();
     });
@@ -122,8 +127,19 @@ class _TabbarControllerState extends State<TabbarController>
 
   _checkExistLessonId() async {
     final String? lessonId = DynamicLinkConfig.instance.lessonId;
-    if (lessonId != null) {
+    final String? activityId = DynamicLinkConfig.instance.activityId;
+    if (lessonId != null || activityId != null) {
       jumpTo(1);
+    }
+  }
+
+  Future<void> _redirectToWebStore() async {
+    final Uri url =
+        Uri.parse('https://diab.com.vn/danh-sach-san-pham/?p=tat-ca');
+    if (await canLaunchUrl(url)) {
+      await launchUrl(url, mode: LaunchMode.externalApplication);
+    } else {
+      throw 'Could not launch $url';
     }
   }
 
@@ -191,7 +207,8 @@ class _TabbarControllerState extends State<TabbarController>
     if (notifyName == Const.NAVIGATE_TO_PROFILE_TAB) {
       jumpTo(0);
     }
-    if (notifyName == Const.NAVIGATE_TO_LESSON_DETAIL) {
+    if (notifyName == Const.NAVIGATE_TO_LESSON_DETAIL ||
+        notifyName == Const.NAVIGATE_TO_ACTIVITY_DETAIL) {
       _checkExistLessonId();
     }
     if (notifyName == Const.NAVIGATE_TO_LESSON_TAB ||

@@ -79,8 +79,6 @@ class SurveyQuestionCubit extends Cubit<SurveyQuestionState> {
         }
       }
     }
-    
-    print('countAnsweredQuestion = ${listAnsweredQuestionId.length}, countAllQuestion = ${listAllQuestionId.length}');
   }
 
   Future<void> scrollToNotAnsweredQuiz() async {

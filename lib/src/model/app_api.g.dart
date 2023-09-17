@@ -484,15 +484,15 @@ class _AppApi implements AppApi {
   @override
   Future<ExerciseMovementResponse> getExerciseMovement(week) async {
     const _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{r'week': week};
-    queryParameters.removeWhere((k, v) => v == null);
+    // final queryParameters = <String, dynamic>{r'week': week};
+    // queryParameters.removeWhere((k, v) => v == null);
     final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
     final _result = await _dio.fetch<Map<String, dynamic>>(
         _setStreamType<ExerciseMovementResponse>(
             Options(method: 'GET', headers: _headers, extra: _extra)
                 .compose(_dio.options, 'App/ExerciseMovement/All',
-                    queryParameters: queryParameters, data: _data)
+                     data: _data)
                 .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
     final value = ExerciseMovementResponse.fromJson(_result.data!);
     return value;

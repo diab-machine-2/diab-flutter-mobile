@@ -34,14 +34,14 @@ class AppClient {
         'User-Agent': 'Mobile'
       };
 
-    _dio.interceptors.add(PrettyDioLogger(
-        requestHeader: true,
-        requestBody: true,
-        responseBody: true,
-        responseHeader: true,
-        error: true,
-        compact: true,
-        maxWidth: 1000));
+    // _dio.interceptors.add(PrettyDioLogger(
+    //     requestHeader: true,
+    //     requestBody: true,
+    //     responseBody: true,
+    //     responseHeader: true,
+    //     error: true,
+    //     compact: true,
+    //     maxWidth: 1000));
 
     _dio.interceptors
         .add(InterceptorsWrapper(onRequest: (options, handler) async {

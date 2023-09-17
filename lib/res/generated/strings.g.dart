@@ -849,6 +849,7 @@ class Strings {
   String get plan => 'plan';
   String get course => 'course';
   String get individual => 'individual';
+  String get store => 'store';
   String get list_service => 'list_service';
   String get text_list_service => 'text_list_service';
   String get service_basic => 'service_basic';

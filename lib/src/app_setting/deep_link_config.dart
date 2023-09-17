@@ -19,6 +19,7 @@ class DeepLinkConfig {
       if (link != null &&
           !link.contains("click.diab.com.vn") &&
           !link.contains("referralCode") &&
+          !link.contains("activityId") &&
           !link.contains("lessonId") &&
           !link.contains("calendar")) {
         onHaveLink(getShareCodeFromUrl(link));

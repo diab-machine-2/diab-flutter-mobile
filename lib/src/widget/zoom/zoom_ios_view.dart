@@ -1,6 +1,7 @@
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_observer/Observable.dart';
+import 'package:medical/res/colors.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/app_setting/dynamic_link_config.dart';
 import 'package:medical/src/utils/app_log.dart';
@@ -104,38 +105,68 @@ class _ZoomIosViewState extends State<ZoomIosView> {
     super.dispose();
   }
 
-  void runJS() async {
-    _controller.runJavaScript("""
-      var exitBtn = document.querySelector(".footer__leave-btn-container button");
-      if(exitBtn){
-        document.querySelector(".footer__leave-btn-container button").click();
-        document.querySelector(".leave-meeting-options__btn").click()
-      }
-    """);
-  }
+  // void runJS() async {
+  //   _controller.runJavaScript("""
+  //     var exitBtn = document.querySelector(".footer__leave-btn-container button");
+  //     if(exitBtn){
+  //       document.querySelector(".footer__leave-btn-container button").click();
+  //       document.querySelector(".leave-meeting-options__btn").click()
+  //     }
+  //   """);
+  // }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text("Zoom"),
+        actions: [
+          GestureDetector(
+            onTap: () => _exitZoomConfirmation(),
+            child: Container(
+              margin: EdgeInsets.all(5),
+              padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12),
+                color: AppColors.attentionText,
+              ),
+              child: Text(
+                'Thoát',
+                style: TextStyle(
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ),
+          ),
+        ],
         leading: GestureDetector(
-          onTap: () => ConfirmExitZoom.showDialogConfirm(context, onSubmit: () {
-            Observable.instance.notifyObservers([],
-                notifyName: Const.NAVIGATE_TO_ACTIVITY_TAB);
-            Observable.instance
-                .notifyObservers([], notifyName: "mark_completed_calendar");
-            Navigator.pop(context);
-            Navigator.pop(context);
-            runJS();
-          }),
+          onTap: () => _exitZoomConfirmation(),
           child: Icon(Icons.arrow_back),
         ),
       ),
-      body: WebViewWidget(
-        controller: _controller,
+      body: InteractiveViewer(
+        panEnabled: false, // Set it to false to prevent panning.
+        boundaryMargin: EdgeInsets.all(0),
+        minScale: 1,
+        maxScale: 4,
+        child: WebViewWidget(
+          controller: _controller,
+        ),
       ),
     );
+  }
+
+  _exitZoomConfirmation() {
+    ConfirmExitZoom.showDialogConfirm(context, onSubmit: () {
+      Observable.instance
+          .notifyObservers([], notifyName: Const.NAVIGATE_TO_ACTIVITY_TAB);
+      Observable.instance
+          .notifyObservers([], notifyName: "mark_completed_calendar");
+      Navigator.pop(context);
+      Navigator.pop(context);
+      // runJS();qq
+    });
   }
 }
 

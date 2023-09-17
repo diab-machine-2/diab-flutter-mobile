@@ -143,7 +143,6 @@ class _AudioPlayerWidgetState extends State<AudioPlayerWidget> {
     });
 
     _playerErrorSubscription = _audioPlayer.onPlayerError.listen((msg) {
-      print('audioPlayer error : $msg');
       setState(() {
         _duration = const Duration();
         _position = const Duration();

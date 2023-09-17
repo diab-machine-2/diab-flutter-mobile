@@ -6,6 +6,7 @@ import 'package:flutter_observer/Observer.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/res/colors.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/app_setting/app_sharing.dart';
 import 'package:medical/src/app_setting/dynamic_link_config.dart';
@@ -24,6 +25,7 @@ import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
+import 'package:medical/src/widget/helper/version.dart';
 import 'package:medical/src/widget/my_package/my_package_page.dart';
 import 'package:medical/src/widget/shared_profile/pages/share_app_detail/share_app_detail.dart';
 import 'package:medical/src/widget/shared_profile/shared_profile.dart';
@@ -40,6 +42,7 @@ class ProfileController extends StatefulWidget {
 
 class _ProfileControllerState extends State<ProfileController> with Observer {
   bool isPro = true;
+  String appVersion = '.....';
   SecureModel? secureModel;
   final AppRepository _appRepository = AppRepository();
   var userInfo = AppSettings.userInfo;
@@ -50,6 +53,18 @@ class _ProfileControllerState extends State<ProfileController> with Observer {
     Observable.instance.addObserver(this);
     loadData();
     firebaseSetup();
+    getAppVersion();
+  }
+
+  getAppVersion() async {
+    final newVersion = NewVersion(context: context);
+    final status = await newVersion.getVersionStatus();
+    if (status == null) return;
+    final localVersion = status.localVersion!.split('.');
+    final storeVersion = status.storeVersion!.split('.');
+    setState(() {
+      appVersion = localVersion.join('.');
+    });
   }
 
   Future firebaseSetup() async {
@@ -313,7 +328,17 @@ class _ProfileControllerState extends State<ProfileController> with Observer {
                   buildAction(
                       R.string.password.tr(), R.drawable.ic_password, 5),
                   buildAction(R.string.your_voucher.tr(), R.icons.ic_gift, 8),
-                  SizedBox(height: 15),
+                  Padding(
+                    padding: const EdgeInsets.all(15),
+                    child: Text(
+                      'App version: $appVersion',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w500,
+                        fontSize: 16,
+                        color: AppColors.accentColor
+                      ),
+                    ),
+                  ),
                 ],
               ),
             )));

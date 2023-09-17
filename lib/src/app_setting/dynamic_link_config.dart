@@ -6,6 +6,8 @@ import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:medical/src/modal/learning/learning_post_model.dart';
 import 'package:medical/src/modal/user/user_model.dart';
+import 'package:medical/src/model/response/smart_goal_list_reponse.dart';
+import 'package:medical/src/utils/app_log.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -24,16 +26,19 @@ class DynamicLinkConfig {
     "referralCode",
     "newsDetail",
     "calendar",
+    "activityId",
   ];
 
   StreamSubscription? _subLink;
   String? _referalCode;
   String? _lessonId;
+  String? _activityId;
   String? _zoomId;
   late String _shareLink;
 
   String? get referalCode => _referalCode;
   String? get lessonId => _lessonId;
+  String? get activityId => _activityId;
   String? get zoomId => _zoomId;
   String? get shareLink => _shareLink;
 
@@ -143,6 +148,10 @@ class DynamicLinkConfig {
     _lessonId = null;
   }
 
+  removeActivityId() {
+    _activityId = null;
+  }
+
   void removeZoomId() {
     _zoomId = null;
   }
@@ -212,6 +221,11 @@ class DynamicLinkConfig {
             _lessonId = urlString.split('lessonId=').last;
             Observable.instance.notifyObservers([],
                 notifyName: Const.NAVIGATE_TO_LESSON_DETAIL);
+          }
+          if (urlString.contains('activityId')) {
+            _activityId = urlString.split('activityId=').last;
+            Observable.instance.notifyObservers([],
+                notifyName: Const.NAVIGATE_TO_ACTIVITY_DETAIL);
           }
           break;
         case "newsDetail":

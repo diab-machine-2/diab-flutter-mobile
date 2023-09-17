@@ -186,9 +186,6 @@ class CharacteristicTile extends StatelessWidget {
         String title = BlueUtils.getCharacteristic(
             characteristicUuid, characteristic, value);
 
-        if (value != null && value.isNotEmpty) {
-          print("PHUONG uuid: ${characteristic.uuid}");
-        }
         return ExpansionTile(
           title: ListTile(
             title: Column(
