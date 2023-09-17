@@ -37,6 +37,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../my_plan_screens/lesson_tab/lesson_detail/lesson_detail_page.dart';
 import '../my_plan_screens/my_plan/models/plan_type.dart';
+import 'package:medical/src/widget/voucher/presentation/widgets/voucher_popup.dart';
 
 class TabbarController extends StatefulWidget {
   const TabbarController(
@@ -106,6 +107,20 @@ class _TabbarControllerState extends State<TabbarController>
     //   startTimer();
     _checkUserReferralCode();
     _checkExistZoomId();
+
+    UserModel userInfo = AppSettings.userInfo!;
+
+    if (userInfo.Checked == true) {
+    } else {
+      Future.delayed(Duration(seconds: 3), () async {
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          useSafeArea: true,
+          builder: (context) => PopupStore(),
+        );
+      });
+    }
   }
 
   _checkExistZoomId() async {

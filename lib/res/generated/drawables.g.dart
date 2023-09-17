@@ -3,6 +3,7 @@
 // ignore_for_file: non_constant_identifier_names
 
 class Drawables {
+  String get promotion_popup => "lib/res/drawables/popup.jpg";
   String get promotion15_shopee => "lib/res/drawables/shopee.jpg";
   String get promotion15_lazada => "lib/res/drawables/lazada.jpg";
   String get promotion15_website => "lib/res/drawables/website.jpg";

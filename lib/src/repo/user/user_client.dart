@@ -28,6 +28,7 @@ import 'package:medical/src/modal/error/error_model.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
 
 import '../../model/repository/app_repository.dart';
 import '../../model/response/common_response.dart';
@@ -984,6 +985,30 @@ class UserClient extends FetchClient {
           url: '/App/Patient/PatientGlucoseRemind/InputDay',
           params: model.toJson());
       if (response.statusCode == 200) {
+        return true;
+      } else {
+        final error = Error.fromJson(response);
+        throw error;
+      }
+    } catch (e) {
+      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+    }
+  }
+
+  Future<bool> updateCheckedPopup() async {
+    final apiUrl = '/App/Account/CheckedPopup';
+    final bodyData = {
+      'id': AppSettings.userInfo!.accountId,
+    };
+
+    try {
+      final Response response = await super.putData(
+        url: apiUrl,
+        params: bodyData,
+      );
+
+      if (response.statusCode == 200) {
+        await UserClient().fetchUser();
         return true;
       } else {
         final error = Error.fromJson(response);
