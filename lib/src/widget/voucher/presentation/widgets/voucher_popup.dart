@@ -1,3 +1,4 @@
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/repo/user/user_client.dart';
@@ -17,6 +18,7 @@ class PopupStore extends StatefulWidget {
 
 class _PopupStoreState extends State<PopupStore> {
   final String? accessToken = appPreference.getData(Const.TOKEN);
+  final FirebaseAnalytics _analytics = FirebaseAnalytics.instance;
 
   var user = AppSettings.userInfo!;
   bool _isChecked = false;
@@ -52,6 +54,13 @@ class _PopupStoreState extends State<PopupStore> {
       titlePadding: EdgeInsets.fromLTRB(10, 0, 0, 0),
       content: GestureDetector(
         onTap: () {
+          _analytics.logEvent(
+            name: 'component_clicked',
+            parameters: {
+              "screen_name": 'PopupStore',
+              'cta_button_name': 'cta_btn_body_click',
+            },
+          );
           _launchWEBSITE();
           Navigator.pop(context);
         },
@@ -92,6 +101,13 @@ class _PopupStoreState extends State<PopupStore> {
             SizedBox(width: 15),
             GestureDetector(
               onTap: () {
+                _analytics.logEvent(
+                  name: 'component_clicked',
+                  parameters: {
+                    "screen_name": 'PopupStore',
+                    'cta_button_name': 'cta_btn_watch_now',
+                  },
+                );
                 _launchWEBSITE();
                 Navigator.pop(context);
               },

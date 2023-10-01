@@ -359,7 +359,7 @@ class _VoucherDetailViewState extends State<VoucherDetailView> {
   }
 
   void _launchWEBSITE() async {
-    const url = 'https://diab.com.vn/danh-sach-san-pham/?p=combo';
+    const url = 'https://diab.com.vn/cua-hang-diab?p=tat-ca';
     if (await canLaunch(url)) {
       await launch(url);
     } else {
