@@ -2,14 +2,8 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-    <key>NSHealthShareUsageDescription</key>
-    <string>We will sync your data with the Apple Health app to give you better insights</string>
-    <key>NSHealthUpdateUsageDescription</key>
-    <string>We will sync your data with the Apple Health app to give you better insights</string>
-   <key>FirebaseAutomaticScreenReportingEnabled</key>
-   <false/>
-   <key>FirebaseScreenReportingEnabled</key>
-   <false/>
+	<key>AllowsInlineMediaPlayback</key>
+	<true/>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
 	<key>CFBundleDevelopmentRegion</key>
@@ -54,12 +48,16 @@
 	<string>diaB</string>
 	<key>FirebaseAppDelegateProxyEnabled</key>
 	<false/>
+	<key>FirebaseAutomaticScreenReportingEnabled</key>
+	<false/>
 	<key>FirebaseDynamicLinksCustomDomains</key>
 	<array>
 		<string>https://news.diab.com.vn</string>
 		<string>https://diab.com.vn</string>
 		<string>https://click.diab.com.vn</string>
 	</array>
+	<key>FirebaseScreenReportingEnabled</key>
+	<false/>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
 	<key>LSApplicationQueriesSchemes</key>
@@ -76,8 +74,8 @@
 	<dict>
 		<key>NSAllowsArbitraryLoads</key>
 		<true/>
-      <key>NSAllowsLocalNetworking</key>
-      <true/>
+		<key>NSAllowsLocalNetworking</key>
+		<true/>
 	</dict>
 	<key>NSBluetoothAlwaysUsageDescription</key>
 	<string>Luôn cho phép DiaB sử dụng Bluetooth để kết nối với máy đo đường huyết.</string>
@@ -85,10 +83,16 @@
 	<string>Cho phép DiaB sử dụng Bluetooth để kết nối với máy đo đường huyết.</string>
 	<key>NSCameraUsageDescription</key>
 	<string>This app needs camera access to scan QR codes</string>
+	<key>NSHealthShareUsageDescription</key>
+	<string>We will sync your data with the Apple Health app to give you better insights</string>
+	<key>NSHealthUpdateUsageDescription</key>
+	<string>We will sync your data with the Apple Health app to give you better insights</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>This app requires the access to Microphone to record your voice memo.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Cho phép diaB truy cập thư viện để gửi thông tin các chỉ số</string>
+	<key>Privacy - Audio Video Interactions</key>
+	<true/>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>fetch</string>

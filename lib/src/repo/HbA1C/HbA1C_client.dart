@@ -66,7 +66,6 @@ class HbA1CClient extends FetchClient {
         'trendType': type.toString()
       });
       if (response.statusCode == 200) {
-        print(response);
         return TrendModel.fromJson(response.data['data']);
       } else {
         final error = Error.fromJson(response);
@@ -109,7 +108,6 @@ class HbA1CClient extends FetchClient {
           files: files);
 
       if (response.statusCode == 200) {
-        print(await response.stream.bytesToString());
         return true;
       } else {
         final error = (await response.stream.bytesToString());
@@ -139,9 +137,7 @@ class HbA1CClient extends FetchClient {
       };
       final response = await super
           .putHttp(path: '/App/HbA1C/Input', params: params, files: files);
-      print(response);
       if (response.statusCode == 200) {
-        print(await response.stream.bytesToString());
         return true;
       } else {
         final error = (await response.stream.bytesToString());
@@ -158,9 +154,7 @@ class HbA1CClient extends FetchClient {
     try {
       final Response response =
           await super.delete(url: '/App/HbA1C/Input/$hbA1CId');
-      print(response);
       if (response.statusCode == 200) {
-        print('delete success');
         return true;
       } else {
         final error = Error.fromJson(response);

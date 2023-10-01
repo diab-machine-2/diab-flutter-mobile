@@ -315,6 +315,8 @@ class _ProfileControllerState extends State<ProfileController> with Observer {
                   //const SizedBox(height: 16),
                   buildAction(
                       R.string.profile_information.tr(), R.drawable.ic_user, 0),
+                  buildAction(R.string.personal_schedule_single_line.tr(),
+                      R.icons.ic_device, 9),
                   buildAction(R.string.share_app.tr(), R.drawable.ic_share, 6),
                   buildAction(R.string.shared_profile_list.tr(),
                       R.drawable.ic_share, 1),
@@ -333,10 +335,9 @@ class _ProfileControllerState extends State<ProfileController> with Observer {
                     child: Text(
                       'App version: $appVersion',
                       style: TextStyle(
-                        fontWeight: FontWeight.w500,
-                        fontSize: 16,
-                        color: AppColors.accentColor
-                      ),
+                          fontWeight: FontWeight.w500,
+                          fontSize: 16,
+                          color: AppColors.accentColor),
                     ),
                   ),
                 ],
@@ -436,6 +437,8 @@ class _ProfileControllerState extends State<ProfileController> with Observer {
           Navigator.pushNamed(context, NavigatorName.connect_device_app);
         } else if (index == 8) {
           Navigator.pushNamed(context, NavigatorName.voucher_list);
+        } else if (index == 9) {
+          Navigator.pushNamed(context, NavigatorName.schedule_activity);
         }
       },
       child: Container(

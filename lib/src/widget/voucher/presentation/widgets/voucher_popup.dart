@@ -50,73 +50,69 @@ class _PopupStoreState extends State<PopupStore> {
         ],
       ),
       titlePadding: EdgeInsets.fromLTRB(10, 0, 0, 0),
-      content: Expanded(
-        flex: 1,
-        child: GestureDetector(
-          onTap: () {
-            _launchWEBSITE();
-            Navigator.pop(context);
-          },
-          child: Container(
-            margin: EdgeInsets.zero,
-            child: Image.asset(
-              R.drawable.promotion_popup,
-              fit: BoxFit.fill,
-            ),
+      content: GestureDetector(
+        onTap: () {
+          _launchWEBSITE();
+          Navigator.pop(context);
+        },
+        child: Container(
+          margin: EdgeInsets.zero,
+          child: Image.asset(
+            R.drawable.promotion_popup,
+            fit: BoxFit.fill,
           ),
         ),
       ),
       contentPadding: EdgeInsets.fromLTRB(10, 5, 10, 0),
       actions: [
         Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Row(children: [
-              Checkbox(
-                value: _isChecked,
-                onChanged: (bool? value) {
-                  setState(() {
-                    _isChecked = value!;
-                    if (value == true) {
-                      UserClient().updateCheckedPopup();
-                    } else {}
-                  });
-                },
-              ),
-              Text(
-                'Không hiển thị lại',
-                style: TextStyle(fontSize: 10),
-                textAlign: TextAlign.left,
-              ),
-            ]),
-            SizedBox(width: 90),
             Expanded(
-              flex: 1,
-              child: GestureDetector(
-                onTap: () {
-                  _launchWEBSITE();
-                  Navigator.pop(context);
-                },
-                child: Container(
-                  height: 30,
-                  width: 50,
-                  decoration: BoxDecoration(
-                      color: R.color.red,
-                      borderRadius: BorderRadius.circular(200),
-                      gradient: LinearGradient(
-                          begin: Alignment.topLeft,
-                          end: Alignment.centerRight,
-                          colors: [
-                            R.color.greenGradientTop,
-                            R.color.greenGradientBottom
-                          ])),
-                  child: Center(
-                    child: Text('Xem ngay',
-                        style: TextStyle(
-                            color: R.color.white,
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600)),
+              child: Row(
+                children: [
+                  Checkbox(
+                    value: _isChecked,
+                    onChanged: (bool? value) {
+                      setState(() {
+                        _isChecked = value!;
+                        if (value == true) {
+                          UserClient().updateCheckedPopup();
+                        } else {}
+                      });
+                    },
                   ),
+                  Text(
+                    'Không hiển thị lại',
+                    style: TextStyle(fontSize: 14),
+                    textAlign: TextAlign.left,
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(width: 15),
+            GestureDetector(
+              onTap: () {
+                _launchWEBSITE();
+                Navigator.pop(context);
+              },
+              child: Container(
+                padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                decoration: BoxDecoration(
+                    color: R.color.red,
+                    borderRadius: BorderRadius.circular(200),
+                    gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.centerRight,
+                        colors: [
+                          R.color.greenGradientTop,
+                          R.color.greenGradientBottom
+                        ])),
+                child: Center(
+                  child: Text('Xem ngay',
+                      style: TextStyle(
+                          color: R.color.white,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600)),
                 ),
               ),
             ),

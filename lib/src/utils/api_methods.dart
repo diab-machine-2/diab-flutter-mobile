@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:medical/src/app_setting/app_setting.dart';
+import 'package:medical/src/utils/app_log.dart';
 import 'package:medical/src/utils/const.dart';
 
 class ApiMethods {
@@ -26,6 +27,7 @@ class ApiMethods {
     }
     pathUri = pathUri.replaceFirst("?&", "?");
     final token = await AppSettings.getToken();
+    
 
     _headers.addAll({'Authorization': 'Bearer $token'});
 

@@ -96,16 +96,7 @@ class _ZoomAndroidViewState extends State<ZoomAndroidView> {
           ),
         ],
         leading: GestureDetector(
-          onTap: () => ConfirmExitZoom.showDialogConfirm(context, onSubmit: () {
-            _exitZoomConfirmation();
-            // _webViewController.evaluateJavascript(source: """
-            //     var exitBtn = document.querySelector(".footer__leave-btn-container button");
-            //     if(exitBtn){
-            //       document.querySelector(".footer__leave-btn-container button").click();
-            //       document.querySelector(".leave-meeting-options__btn").click()
-            //     }
-            //   """);
-          }),
+          onTap: () => _exitZoomConfirmation(),
           child: Icon(Icons.arrow_back),
         ),
       ),
@@ -125,48 +116,11 @@ class _ZoomAndroidViewState extends State<ZoomAndroidView> {
                       onLoadStop:
                           (InAppWebViewController controller, Uri? uri) {
                         BotToast.closeAllLoading();
-                        // _webViewController.evaluateJavascript(source: """
-                        //   var joined = false;
-                        //   var joinBtn = document.getElementById("join-btn");
-                        //   var timeoutID;
-                        //   function checkJoinBtn() {
-                        //     if (joinBtn === null) {
-                        //       joinBtn = document.getElementById("join-btn");
-                        //       if(joined){
-                        //         clearTimeout(timeoutID);
-                        //       }
-                        //     } else {
-                        //         joinBtn.click();
-                        //         joined = true;
-                        //         joinBtn = document.getElementById("join-btn");
-                        //     }
-                        //     timeoutID = setTimeout(checkJoinBtn, 1000);
-                        //   }
-                        //   checkJoinBtn();
-
-                        //   var accepted = false;
-                        //   var acceptBtn = document.querySelector('.join-audio-by-voip button');
-                        //   var timeoutID2;
-                        //   function checkJoinAcceptAudio() {
-                        //     if (acceptBtn === null) {
-                        //       acceptBtn = document.querySelector('.join-audio-by-voip button');
-                        //       if(accepted){
-                        //         clearTimeout(timeoutID2);
-                        //       }
-                        //     } else {
-                        //         acceptBtn.click();
-                        //         accepted = true;
-                        //         acceptBtn = document.querySelector('.join-audio-by-voip button');
-                        //     }
-                        //     timeoutID2 = setTimeout(checkJoinAcceptAudio, 1000);
-                        //   }
-                        //   checkJoinAcceptAudio();
-                        // """);
                       },
                       initialUrlRequest: URLRequest(url: Uri.parse(url!)),
                       initialOptions: InAppWebViewGroupOptions(
                         crossPlatform: InAppWebViewOptions(
-                          mediaPlaybackRequiresUserGesture: false,
+                          cacheEnabled: false,
                         ),
                       ),
                       onWebViewCreated: (InAppWebViewController controller) {

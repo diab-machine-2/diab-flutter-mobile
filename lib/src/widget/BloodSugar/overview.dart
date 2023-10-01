@@ -70,3 +70,16 @@ class BloodSugarOverviewControllerState
     ));
   }
 }
+
+class KeyboardVisibilityObserver extends WidgetsBindingObserver {
+  final Function(bool) callback;
+
+  KeyboardVisibilityObserver(this.callback);
+
+  @override
+  void didChangeMetrics() {
+    final isKeyboardVisible =
+        WidgetsBinding.instance.window.viewInsets.bottom > 0;
+    callback(isKeyboardVisible);
+  }
+}

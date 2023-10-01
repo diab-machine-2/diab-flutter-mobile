@@ -23,7 +23,6 @@ class ExcerciseDetailTracking {
     required String? objectId,
     required CustomPlayerEventType eventType,
   }) async {
-    print('eventType: $eventType');
     if (eventType == CustomPlayerEventType.videoPlay) {
       await TrackingManager.analytics.logEvent(
         name: 'component_clicked',

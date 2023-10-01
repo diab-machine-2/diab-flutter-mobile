@@ -139,6 +139,7 @@ class RequestHealthConnect extends StatelessWidget {
                       onPressed: () async {
                         if (Platform.isAndroid) {
                           await Permission.activityRecognition.request();
+                          await Permission.location.request();
                         }
                         bool? _hasPermission = await HealthSetting.instance
                             .requestConnectionPermission();

@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/utils/navigation_util.dart';
@@ -71,7 +72,7 @@ class StatisticalPopup extends StatelessWidget {
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
               ),
-            ),
+            ).tr(),
           Container(
             margin: const EdgeInsets.only(left: 14, bottom: 12, right: 16),
             alignment: Alignment.center,

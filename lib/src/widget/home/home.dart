@@ -11,6 +11,8 @@ import 'package:medical/src/app_setting/dynamic_link_config.dart';
 import 'package:medical/src/bloc/home/home_bloc.dart';
 import 'package:medical/src/modal/home/home_model.dart';
 import 'package:medical/src/modal/home/package_account_home_model.dart';
+import 'package:medical/src/modal/user/user_model.dart';
+import 'package:medical/src/utils/app_log.dart';
 import 'package:medical/src/utils/app_storages.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigation_util.dart';
@@ -27,6 +29,7 @@ import 'package:medical/src/widget/my_plan_screens/my_plan/models/plan_type.dart
 import 'package:medical/src/widget/nipro/health_app/sync_health_app_view.dart';
 import 'package:medical/src/widget/nipro/health_app/widgets/request_health_connect.dart';
 import 'package:medical/src/widget/shared_profile/pages/share_app_detail/widgets/banner_share_app.dart';
+import 'package:medical/src/widget/voucher/presentation/widgets/voucher_popup.dart';
 import 'package:medical/src/widget/zoom/zoom_android_view.dart';
 import 'package:medical/src/widgets/block_bottom_sheet.dart';
 import 'package:medical/src/widgets/button_widget.dart';
@@ -129,7 +132,9 @@ class _HomeControllerState extends State<HomeController> with Observer {
 
   initHealthApp() async {
     final String? lessonId = DynamicLinkConfig.instance.lessonId;
-    if (lessonId == null) {
+    final String? zoomId = DynamicLinkConfig.instance.zoomId;
+    final String? activityId = DynamicLinkConfig.instance.activityId;
+    if (lessonId == null && zoomId == null && activityId == null) {
       Future.delayed(Duration(milliseconds: 1000), () async {
         bool? hasHealthConnection = await AppStorages.getHealthAppPermission();
         if (hasHealthConnection == null) {
@@ -139,6 +144,9 @@ class _HomeControllerState extends State<HomeController> with Observer {
             _hasHealthConnection = hasHealthConnection;
           });
         }
+      });
+      Future.delayed(Duration(milliseconds: 100), () async {
+        _showPopupStore();
       });
     }
   }
@@ -207,6 +215,20 @@ class _HomeControllerState extends State<HomeController> with Observer {
       setState(() {
         model = result;
       });
+    }
+  }
+
+  _showPopupStore() {
+    UserModel userInfo = AppSettings.userInfo!;
+
+    if (userInfo.checked == true) {
+    } else {
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        useSafeArea: true,
+        builder: (context) => PopupStore(),
+      );
     }
   }
 

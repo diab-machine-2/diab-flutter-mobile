@@ -15,7 +15,6 @@ class LoginClient extends FetchClient {
           .postUri(baseIdentify: true, url: '/connect/token', params: params);
       if (response.statusCode == 200) {
         final loginModel = LoginModel.fromJson(response.data);
-        print(loginModel);
         await AppSettings.saveToken(loginModel.access_token);
         await AppSettings.saveRefreshToken(loginModel.refresh_token);
         return loginModel;
@@ -113,7 +112,6 @@ class LoginClient extends FetchClient {
             'deviceType': platform.toString()
           });
       if (response.statusCode == 200) {
-        print('send token success: $token');
         return true;
       } else {
         final error = Error.fromJson(response);
@@ -129,9 +127,7 @@ class LoginClient extends FetchClient {
       final firebaseToken = await FirebaseMessaging.instance.getToken();
       final Response response =
           await super.delete(url: '/App/Device/Input/$firebaseToken');
-      print(response);
       if (response.statusCode == 200) {
-        print('logout success');
         return true;
       } else {
         final error = Error.fromJson(response);
@@ -150,7 +146,6 @@ class LoginClient extends FetchClient {
       // logger.i(response.requestOptions);
       // logger.i(response.headers);
       if (response.statusCode == 200) {
-        print('register success');
         return true;
       } else {
         final error = Error.fromJson(response);

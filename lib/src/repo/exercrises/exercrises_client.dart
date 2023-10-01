@@ -26,7 +26,6 @@ class ExercrisesClient extends FetchClient {
       if (page != null) {
         params['page'] = page.toString();
       }
-      print(params);
       final Response response = await super.fetchData(url: '/App/Exercise/Category', params: params);
       if (response.statusCode == 200) {
         return ExercrisesDataModel(inputs: ExercrisesListCategoryModel.fromJson(response.data['data']));
@@ -170,7 +169,6 @@ class ExercrisesClient extends FetchClient {
         return true;
       } else {
         String error = await response.stream.bytesToString();
-        print('error = $error');
         throw Error.fromString(error);
       }
     } catch (e) {
@@ -229,11 +227,9 @@ class ExercrisesClient extends FetchClient {
         params['exercises[$i].duration'] = exercises[i].duration.toString();
         params['exercises[$i].burnedCalorie'] = exercises[i].burnedCalorie.toString();
       }
-      print(params);
       final response = await super.putHttp(path: '/App/Exercise/Input', params: params, files: files);
 
       if (response.statusCode == 200) {
-        print(await response.stream.bytesToString());
         return true;
       } else {
         throw response.reasonPhrase!;

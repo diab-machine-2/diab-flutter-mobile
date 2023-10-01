@@ -216,6 +216,8 @@ class DynamicLinkConfig {
         case "referralCode":
           if (urlString.contains(functionName)) {
             _referalCode = separatedString[1].substring(0, 6);
+            Observable.instance.notifyObservers([],
+                notifyName: Const.NAVIGATE_TO_REGISTER);
           }
           if (urlString.contains('lessonId')) {
             _lessonId = urlString.split('lessonId=').last;

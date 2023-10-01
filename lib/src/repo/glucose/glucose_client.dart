@@ -10,6 +10,7 @@ import 'package:medical/src/modal/glucose/glucose_data_trend.dart';
 import 'package:medical/src/modal/glucose/glucose_distribution.dart';
 import 'package:medical/src/modal/glucose/glucose_input.dart';
 import 'package:medical/src/modal/glucose/glucose_timeFrame.dart';
+import 'package:medical/src/utils/app_log.dart';
 import 'package:medical/src/widget/helper/http_helper.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'dart:io' show Platform;
@@ -133,41 +134,45 @@ class GlucoseClient extends FetchClient {
 
   Future<List<dynamic>> fetchGlucoseInputNotExist(
       List<Map<String, String>> glucoses) async {
+    // try {
+    List<Map<String, dynamic>> params = [];
+    glucoses.forEach((element) {
+      params.add({
+        'glucose': double.tryParse(element['glucose']!) ?? 0,
+        'createDate': int.tryParse(element['date']!) ?? 0,
+        'unitType': 1
+      });
+    });
+    final response = await super.postHttp2(
+        path: '/App/Glucose/GlucoseInputsNotExist',
+        params: jsonEncode({'glucoseInputs': params}));
+
+    if (response.statusCode == 200) {
+      final data = await response.stream.bytesToString();
+
+      return jsonDecode(data)['data'];
+    } else {
+      throw response.reasonPhrase!;
+    }
+    // } catch (e) {
+    //   print(e.toString());
+    //   throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+    // }
+  }
+
+  Future<bool> postGlucoseInputs(List<Map<String, String>> glucoses,
+      {int? type}) async {
     try {
       List<Map<String, dynamic>> params = [];
       glucoses.forEach((element) {
         params.add({
           'glucose': double.tryParse(element['glucose']!) ?? 0,
           'createDate': int.tryParse(element['date']!) ?? 0,
-          'unitType': 1
+          'unitType': type ?? 1
         });
       });
-      final response = await super.postHttp2(
-          path: '/App/Glucose/GlucoseInputsNotExist',
-          params: jsonEncode({'glucoseInputs': params}));
-      if (response.statusCode == 200) {
-        final data = await response.stream.bytesToString();
 
-        return jsonDecode(data)['data'];
-      } else {
-        throw response.reasonPhrase!;
-      }
-    } catch (e) {
-      print(e.toString());
-      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
-    }
-  }
-
-  Future<bool> postGlucoseInputs(List<Map<String, String>> glucoses) async {
-    // try {
-      List<Map<String, dynamic>> params = [];
-      glucoses.forEach((element) {
-        params.add({
-          'glucose': double.tryParse(element['glucose']!) ?? 0,
-          'createDate': int.tryParse(element['date']!) ?? 0,
-          'unitType': 1
-        });
-      });
+      Console.logJson('params', params);
       final response = await super.postHttp2(
           path: '/App/Glucose/Inputs',
           params: jsonEncode({'glucoseInputs': params}));
@@ -177,10 +182,9 @@ class GlucoseClient extends FetchClient {
       } else {
         throw response.reasonPhrase!;
       }
-    // } catch (e) {
-    //   print(e.toString());
-    //   throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
-    // }
+    } catch (e) {
+      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+    }
   }
   //============ nhập chỉ số Đường huyết =============/
 
@@ -208,7 +212,6 @@ class GlucoseClient extends FetchClient {
           .postHttp(path: '/App/Glucose/Input', params: params, files: files);
 
       if (response.statusCode == 200) {
-        print(await response.stream.bytesToString());
         return true;
       } else {
         throw response.reasonPhrase!;
@@ -224,9 +227,7 @@ class GlucoseClient extends FetchClient {
     try {
       final Response response =
           await super.delete(url: '/App/Glucose/Input/$glucoseId');
-      print(response);
       if (response.statusCode == 200) {
-        print('delete success');
         return true;
       } else {
         final error = Error.fromJson(response);
@@ -323,7 +324,6 @@ class GlucoseClient extends FetchClient {
           .putHttp(path: '/App/Glucose/Input', params: params, files: files);
 
       if (response.statusCode == 200) {
-        print(await response.stream.bytesToString());
         return true;
       } else {
         throw response.reasonPhrase!;

@@ -364,7 +364,8 @@ class HealthAppBloc extends Bloc<HealthAppEvent, HealthAppState> {
 
     if (dataSync.isNotEmpty) {
       // Bắt đầu sync
-      bool isMilligramPerDeciliter = AppSettings.userInfo!.glucoseUnit == 1;
+      bool isMilligramPerDeciliter =
+          dataSync.first.unit == HealthDataUnit.MILLIGRAM_PER_DECILITER;
       List<Map<String, String>> glucosedList = [];
       dataSync.forEach((element) {
         double glucose = roundAsFixed(isMilligramPerDeciliter
@@ -392,7 +393,8 @@ class HealthAppBloc extends Bloc<HealthAppEvent, HealthAppState> {
           .firstWhere((element) => element == true, orElse: () => false);
       bool isNotCompleteRequest = requestSyncData.values
           .firstWhere((element) => element == false, orElse: () => false);
-
+      Console.log(
+          'isNotCompleteRequest: ${isDataUpdated && !isNotCompleteRequest}');
       if (isDataUpdated && !isNotCompleteRequest) {
         Observable.instance.notifyObservers([], notifyName: "refresh_home");
       }
@@ -447,9 +449,9 @@ class HealthAppBloc extends Bloc<HealthAppEvent, HealthAppState> {
     yield state.copyWith(blocStatus: BlocStatus.loading);
     final List<HealthDataType> _types = HealthSetting.instance.types;
     requestSyncData = {
-      // 'syncSYSTOLICAndDIASTOLIC': false,
-      // 'syncSTEP': false,
-      // 'syncWeight': false,
+      'syncSYSTOLICAndDIASTOLIC': false,
+      'syncSTEP': false,
+      'syncWeight': false,
       'syncBlodGlucose': false,
     };
 

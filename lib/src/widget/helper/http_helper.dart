@@ -41,6 +41,7 @@ class FetchClient {
   Future<Options> options() async {
     await checkNetwork();
     final token = await AppSettings.getToken();
+    
     final user_agent = await userAgent();
 
     final Options option = Options(
@@ -117,6 +118,7 @@ class FetchClient {
     final domain = baseIdentify ? identifyBaseURL : baseURL;
     final Dio dio = Dio();
     logRequest(dio);
+
 
     Uri uri = Uri.https(domain, url, params);
 
@@ -254,7 +256,6 @@ class FetchClient {
       required List<String> files,
       String? fileName}) async {
     final token = await AppSettings.getToken();
-    final user_agent = await userAgent();
     final headers = {'Authorization': 'Bearer $token', 'User-Agent': 'Mobile'};
     final request = http.MultipartRequest(
         'PUT',

@@ -20,7 +20,7 @@ class WidgetHtmlText extends StatelessWidget {
       style: {
         "body": Style(
           color: R.color.textDark,
-          fontSize: FontSize(textStyle != null ? textStyle!.fontSize : 16.sp),
+          fontSize: FontSize(textStyle != null ? textStyle!.fontSize! : 16.sp),
           fontWeight:
               textStyle != null ? textStyle!.fontWeight : FontWeight.w400,
         ),

@@ -235,7 +235,6 @@ class FoodClient extends FetchClient {
       if (response.statusCode == 200) {
         return true;
       } else {
-        print(await response.stream.bytesToString());
         throw response.reasonPhrase!;
       }
     } catch (e) {
@@ -271,7 +270,6 @@ class FoodClient extends FetchClient {
           .putHttp(path: '/App/Diet/Input', params: params, files: files);
 
       if (response.statusCode == 200) {
-        print(await response.stream.bytesToString());
         return true;
       } else {
         throw response.reasonPhrase!;

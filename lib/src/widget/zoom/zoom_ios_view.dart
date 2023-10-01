@@ -1,14 +1,11 @@
-import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_observer/Observable.dart';
 import 'package:medical/res/colors.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/app_setting/dynamic_link_config.dart';
-import 'package:medical/src/utils/app_log.dart';
 import 'package:medical/src/utils/const.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:webview_flutter/webview_flutter.dart';
-import 'package:webview_flutter_android/webview_flutter_android.dart';
-import 'package:webview_flutter_wkwebview/webview_flutter_wkwebview.dart';
 import 'widgets/confirm_exit_zoom.dart';
 
 class ZoomIosView extends StatefulWidget {
@@ -30,15 +27,9 @@ class _ZoomIosViewState extends State<ZoomIosView> {
   @override
   initState() {
     super.initState();
-    late final PlatformWebViewControllerCreationParams params;
-    if (WebViewPlatform.instance is WebKitWebViewPlatform) {
-      params = WebKitWebViewControllerCreationParams(
-        allowsInlineMediaPlayback: true,
-        mediaTypesRequiringUserAction: const <PlaybackMediaTypes>{},
-      );
-    } else {
-      params = const PlatformWebViewControllerCreationParams();
-    }
+    checkAndRequestPermission();
+    late final PlatformWebViewControllerCreationParams params =
+        const PlatformWebViewControllerCreationParams();
 
     DynamicLinkConfig.instance.setZoomId(widget.calendarID);
 
@@ -48,56 +39,22 @@ class _ZoomIosViewState extends State<ZoomIosView> {
     controller
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..setBackgroundColor(const Color(0x00000000))
-      ..setNavigationDelegate(
-        NavigationDelegate(
-          onProgress: (int progress) {
-            debugPrint('WebView is loading (progress : $progress%)');
-          },
-          onPageStarted: (String url) {
-            BotToast.showLoading();
-            debugPrint('Page started loading: $url');
-          },
-          onPageFinished: (String url) {
-            debugPrint('Page finished loading: $url');
-            BotToast.closeAllLoading();
-          },
-          onWebResourceError: (WebResourceError error) {
-            debugPrint('''
-              Page resource error:
-              code: ${error.errorCode}
-              description: ${error.description}
-              errorType: ${error.errorType}
-              isForMainFrame: ${error.isForMainFrame}
-          ''');
-          },
-          onNavigationRequest: (NavigationRequest request) {
-            if (request.url.startsWith('https://www.youtube.com/')) {
-              debugPrint('blocking navigation to ${request.url}');
-              return NavigationDecision.prevent;
-            }
-            debugPrint('allowing navigation to ${request.url}');
-            return NavigationDecision.navigate;
-          },
-        ),
-      )
-      ..addJavaScriptChannel(
-        'Toaster',
-        onMessageReceived: (JavaScriptMessage message) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text("heheh")),
-          );
-        },
-      )
       ..loadRequest(Uri.parse(zoomUrl +
           widget.calendarID +
           "&phone=${AppSettings.userInfo!.phoneNumber}&userName=${AppSettings.userInfo?.fullName?.trim() ?? ''}"));
 
-    if (controller.platform is AndroidWebViewController) {
-      AndroidWebViewController.enableDebugging(true);
-      (controller.platform as AndroidWebViewController)
-          .setMediaPlaybackRequiresUserGesture(false);
-    }
     _controller = controller;
+  }
+
+  Future<void> checkAndRequestPermission() async {
+    PermissionStatus statusMicrophone = await Permission.microphone.status;
+    if (statusMicrophone.isDenied) {
+      await Permission.microphone.request();
+    }
+    PermissionStatus statusCamera = await Permission.camera.request();
+    if (statusCamera.isDenied) {
+      await Permission.camera.request();
+    }
   }
 
   @override

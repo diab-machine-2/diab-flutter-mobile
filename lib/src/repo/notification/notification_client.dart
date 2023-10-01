@@ -88,9 +88,7 @@ class NotificationClient extends FetchClient {
   Future<bool> deleteNotification(String? id, int? type) async {
     try {
       final Response response = await super.delete(url: '/App/Communication/Notification/$id/$type');
-      print(response);
       if (response.statusCode == 200) {
-        print('delete success');
         return true;
       } else {
         final error = Error.fromJson(response);

@@ -13,8 +13,8 @@
          FlutterApplication and put your custom class here. -->
 
     <uses-permission android:name="android.permission.ACTIVITY_RECOGNITION"/>
-    <uses-permission android:name="android.permission.health.READ_HEART_RATE"/>
-    <uses-permission android:name="android.permission.health.WRITE_HEART_RATE"/>
+    <!-- <uses-permission android:name="android.permission.health.READ_HEART_RATE"/>
+    <uses-permission android:name="android.permission.health.WRITE_HEART_RATE"/> -->
 
 
     <uses-permission android:name="android.permission.INTERNET"/>

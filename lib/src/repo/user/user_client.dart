@@ -90,7 +90,6 @@ class UserClient extends FetchClient {
       var json = jsonEncode(userModel.toJson());
       prefs.setString('user', json);
     } catch (error) {
-      print('${error.toString()}');
     }
   }
 
@@ -914,7 +913,6 @@ class UserClient extends FetchClient {
           await super.delete(url: '/App/Patient/PatientRemind/Input/$id');
       print(response);
       if (response.statusCode == 200) {
-        print('delete success');
         return true;
       } else {
         final error = Error.fromJson(response);

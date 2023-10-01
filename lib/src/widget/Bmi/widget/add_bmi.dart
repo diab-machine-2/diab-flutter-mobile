@@ -1174,6 +1174,7 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
       shareRefCode: userInfo.shareRefCode,
       statistict: userInfo.statistict,
       sharedProfile: userInfo.sharedProfile,
+      checked: false,
     );
     try {
       BotToast.showLoading();

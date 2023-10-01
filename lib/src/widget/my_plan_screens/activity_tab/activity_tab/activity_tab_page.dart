@@ -76,21 +76,24 @@ class _ActivityTabPageState extends State<ActivityTabPage>
     final AppRepository appRepository = AppRepository();
     _cubit = ActivityTabCubit(appRepository, _myPlanCubit);
     _cubit.initData();
-    _checkExistActivityId();
+  }
+
+  _checkExistZoomId() async {
+    String? calendarId = DynamicLinkConfig.instance.zoomId;
+    if (calendarId != null) {
+      DynamicLinkConfig.instance.removeZoomId();
+      await _cubit.markCompletedCalendar(calendarId);
+      if (_cubit != null && isVisible) {
+        _cubit.refreshData(isRefresh: true);
+      }
+    }
   }
 
   @override
   Future<void> update(Observable observable, String? notifyName,
       Map<dynamic, dynamic>? map) async {
     if (notifyName == 'mark_completed_calendar') {
-      String? calendarId = DynamicLinkConfig.instance.zoomId;
-      if (calendarId != null) {
-        DynamicLinkConfig.instance.removeZoomId();
-        await _cubit.markCompletedCalendar(calendarId);
-        if (_cubit != null && isVisible) {
-          _cubit.refreshData(isRefresh: true);
-        }
-      }
+      _checkExistZoomId();
     }
     if (notifyName == Const.NAVIGATE_TO_ACTIVITY_DETAIL) {
       _checkExistActivityId();
@@ -137,6 +140,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
       create: (context) => _cubit,
       child: BlocConsumer<ActivityTabCubit, ActivityTabState>(
         listener: (context, state) {
+          Console.log('state', state);
           if (state is ActivityTabLoading) {
             BotToast.showLoading();
           } else {
@@ -144,6 +148,8 @@ class _ActivityTabPageState extends State<ActivityTabPage>
             _controller.refreshCompleted();
           }
           if (state is ActivityTabSuccess) {
+            _checkExistZoomId();
+            _checkExistActivityId();
             //     _scrollSmartGoalListController.animateTo(_scrollSmartGoalListController.position.minScrollExtent, duration: Duration(milliseconds: 200), curve: Curves.ease);
           }
           if (state is ActivityTabFailure) {

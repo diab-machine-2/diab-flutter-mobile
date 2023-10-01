@@ -466,8 +466,6 @@ class AppRepository {
     try {
       final ExerciseMovementResponse response =
           await appClient.getExerciseMovement(week);
-      final token = await AppSettings.getToken();
-      Console.log('token', token);
       return ApiResult.success(data: response);
     } catch (e) {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));
@@ -673,6 +671,7 @@ class AppRepository {
     int? day,
   }) async {
     try {
+      appClient = AppClient().appClient;
       final SmartGoalListReponse response =
           await appClient.getListSmartGoal(week: week, day: day);
       return ApiResult.success(data: response);

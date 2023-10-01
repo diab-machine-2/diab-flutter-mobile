@@ -537,9 +537,7 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
           width: double.infinity,
           child: ButtonWidget(
             title: 'Tôi đã hiểu',
-            onPressed: () {
-              connectDevice(device!);
-            },
+            onPressed: () => connectDevice(device!),
           ),
         )
       ],
@@ -569,12 +567,12 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
   connectToAvailableDevice(List<ScanResult> scanResultList) async {
     scanResultList.forEach((result) async {
       if (result.device.name.contains('meter')) {
-        device = result.device;
-        await result.device.connect();
         deviceFound = true;
-        await FlutterBluePlus.instance.stopScan();
-        appStatus = AppStatus.isConnecting;
+        await result.device.connect();
         connectDevice(result.device);
+        device = result.device;
+        appStatus = AppStatus.isConnecting;
+        await FlutterBluePlus.instance.stopScan();
         return;
       }
     });
@@ -600,6 +598,17 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
           GlucoseProfileConfiguration.GLUCOSE_SERVICE_UUID;
     });
 
+    // Tim Characteristic 0x2A18
+    BluetoothCharacteristic charGlucoseMeasurement =
+        serviceGlucoseMeasurement.characteristics.firstWhere((characteristic) =>
+            characteristic.uuid.toString() ==
+            GlucoseProfileConfiguration
+                .GLUCOSE_MEASUREMENT_CHARACTERISTIC_UUID);
+
+    // // Bật noti cho 0x2A18
+    await charGlucoseMeasurement.setNotifyValue(true);
+    appStatus = AppStatus.isConnected;
+
     BluetoothService rocheService = services.firstWhere((service) {
       return service.uuid.toString() ==
           GlucoseProfileConfiguration.ROCHE_SERVICE_UUID;
@@ -619,17 +628,6 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
         updateGlucoseUnit(glucoseUnits);
       }
     }
-
-    // Tim Characteristic 0x2A18
-    BluetoothCharacteristic charGlucoseMeasurement =
-        serviceGlucoseMeasurement.characteristics.firstWhere((characteristic) =>
-            characteristic.uuid.toString() ==
-            GlucoseProfileConfiguration
-                .GLUCOSE_MEASUREMENT_CHARACTERISTIC_UUID);
-
-    // Bật noti cho 0x2A18
-    await charGlucoseMeasurement.setNotifyValue(true);
-    appStatus = AppStatus.isConnected;
 
     for (BluetoothCharacteristic characteristic
         in serviceGlucoseMeasurement.characteristics) {
@@ -658,7 +656,6 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
         await characteristic.write(requestData);
         await Future.delayed(Duration(seconds: 3));
         startCheckingData();
-        // fetchGlucoseInputNotExist(glucoseMeasurmentRecordList);
       }
     }
   }

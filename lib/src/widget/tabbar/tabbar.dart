@@ -107,20 +107,6 @@ class _TabbarControllerState extends State<TabbarController>
     //   startTimer();
     _checkUserReferralCode();
     _checkExistZoomId();
-
-    UserModel userInfo = AppSettings.userInfo!;
-
-    if (userInfo.Checked == true) {
-    } else {
-      Future.delayed(Duration(seconds: 3), () async {
-        showDialog(
-          context: context,
-          barrierDismissible: false,
-          useSafeArea: true,
-          builder: (context) => PopupStore(),
-        );
-      });
-    }
   }
 
   _checkExistZoomId() async {

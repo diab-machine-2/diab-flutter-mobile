@@ -22,7 +22,7 @@ class BloodSugarFunctions {
       context: context,
       isScrollControlled: true,
       builder: (context) => Container(
-        height: hasHealthConnection == true ? 280 : 350,
+        height: hasHealthConnection == true ? 290 : 350,
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(20),

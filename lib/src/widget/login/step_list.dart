@@ -118,6 +118,9 @@ class _StepListControllerState extends State<StepListController> with Observer {
     if (notifyName == Const.NAVIGATE_TO_PROFILE_TAB) {
       setState(() {});
     }
+    if (notifyName == Const.NAVIGATE_TO_REGISTER) {
+      Navigator.pushNamed(context, NavigatorName.register);
+    }
   }
 
   void startTimer() {

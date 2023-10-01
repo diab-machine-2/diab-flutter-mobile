@@ -28,24 +28,26 @@ class HomeClient extends FetchClient {
         throw error;
       }
     } catch (e) {
-      throw e is Error
-          ? e
-          : R.string.error_can_not_connect_to_server.tr();
+      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
-  Future<void> completeSmartGoal(DateTime selectedDate, String? id, int? executeDayTimes, int? type) async {
+  Future<void> completeSmartGoal(DateTime selectedDate, String? id,
+      int? executeDayTimes, int? type) async {
     if (id == null) return;
-    DateTime dateTime0 = DateTime(selectedDate.year, selectedDate.month, selectedDate.day, 0, 0, 0);
+    DateTime dateTime0 = DateTime(
+        selectedDate.year, selectedDate.month, selectedDate.day, 0, 0, 0);
     int startDate = (dateTime0.millisecondsSinceEpoch ~/ 1000).toInt();
-    
-    final CompleteSmartGoalRequest request =
-        CompleteSmartGoalRequest(id: id, executeTimes: executeDayTimes, type: type, appointmentDate: startDate);
-    final ApiResult<CommonResponse> apiResult = await repository.completeSmartGoal(request);
-    apiResult.when(success: (CommonResponse response) {
-      print('completeSmartGoal success');
-    }, failure: (NetworkExceptions error) {
-      print('completeSmartGoal error');
-    });
+
+    final CompleteSmartGoalRequest request = CompleteSmartGoalRequest(
+        id: id,
+        executeTimes: executeDayTimes,
+        type: type,
+        appointmentDate: startDate);
+    final ApiResult<CommonResponse> apiResult =
+        await repository.completeSmartGoal(request);
+    apiResult.when(
+        success: (CommonResponse response) {},
+        failure: (NetworkExceptions error) {});
   }
 }

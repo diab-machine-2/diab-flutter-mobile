@@ -25,9 +25,11 @@ class DeepLinkConfig {
         onHaveLink(getShareCodeFromUrl(link));
       } 
       // else if (link != null &&
-      //     link.contains("referralCode") &&
-      //     link.contains("lessonId") &&
-      //     link.contains("calendar")) {
+      //     !link.contains("click.diab.com.vn") &&
+      //     !link.contains("referralCode") &&
+      //     !link.contains("activityId") &&
+      //     !link.contains("lessonId") &&
+      //     !link.contains("calendar")) {
       //   if (Platform.isAndroid) {
       //     DynamicLinkConfig.instance.progressDynamicLink(link);
       //   }
@@ -38,29 +40,25 @@ class DeepLinkConfig {
   Future<String?> getInitLink() async {
     try {
       final String? initialLink = await getInitialLink();
-      print('LOG onInit link: $initialLink');
       if (initialLink != null &&
           !initialLink.contains("click.diab.com.vn") &&
           !initialLink.contains("referralCode") &&
-          !initialLink.contains("calendar") ) {
+          !initialLink.contains("calendar")) {
         sharedCode = getShareCodeFromUrl(initialLink);
         return sharedCode;
       }
     } on PlatformException {}
     try {
       final Uri? initialUri = await getInitialUri();
-      print('LOG onInit uri.host ${initialUri?.path}');
     } on FormatException {}
     return null;
   }
 
   Future<void> handleDeepLink() async {
     _subLink = linkStream.listen((String? link) {
-      print('LOG onChanged link: $link');
     }, onError: (err) {});
 
     _subUni = uriLinkStream.listen((Uri? uri) {
-      print('LOG onChanged uri.host: ${uri?.host}');
     }, onError: (err) {});
   }
 
@@ -72,7 +70,6 @@ class DeepLinkConfig {
   static String getShareCodeFromUrl(String? url) {
     if (url == null) return '';
     String test = url.substring(url.length - 6, url.length);
-    print("getShareCodeFromUrl: $test");
     return test;
   }
 }

@@ -58,7 +58,12 @@ class _MyPlanPageState extends State<MyPlanPage> with Observer {
 
   @override
   update(Observable observable, String? notifyName, Map? map) {
-    if (notifyName == Const.NAVIGATE_TO_ACTIVITY_TAB) {
+    if (notifyName == 'mark_completed_calendar') {
+      String? calendarId = DynamicLinkConfig.instance.zoomId;
+      if (calendarId != null) {
+        DynamicLinkConfig.instance.removeZoomId();
+      }
+    } else if (notifyName == Const.NAVIGATE_TO_ACTIVITY_TAB) {
       if (_cubit.currentPlanType != PlanType.goal) {
         _cubit.changePlanType(0);
       }
@@ -87,7 +92,7 @@ class _MyPlanPageState extends State<MyPlanPage> with Observer {
         child: BlocConsumer<MyPlanCubit, MyPlanState>(
           listener: (context, state) {
             if (state is MyPlanFailure) {
-              Message.showToastMessage(context, state.error);
+              Message.showToastMessage(context, 'state.error');
             }
             if (state is MyPlanChangeType) {
               _pageController.jumpToPage(state.index);
