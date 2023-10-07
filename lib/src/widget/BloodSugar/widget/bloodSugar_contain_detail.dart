@@ -268,54 +268,33 @@ class BloodSugarDetailState extends State<BloodSugarDetail>
                         ),
                         SizedBox(height: 14),
                         Container(
-                            decoration: BoxDecoration(boxShadow: []),
                             child: Column(
-                              children: [
-                                Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Padding(
-                                        padding:
-                                            const EdgeInsets.only(left: 8.0),
-                                        child: Text(
-                                            R.string.distribution_frequency
-                                                .tr(),
-                                            style: TextStyle(
-                                                color: R.color.black,
-                                                fontSize: 20,
-                                                fontWeight: FontWeight.w600)),
-                                      ),
-                                    ]),
-                                Padding(
-                                  padding: const EdgeInsets.only(
-                                      left: 8, right: 8, top: 16.0, bottom: 16),
-                                  child: model.totalCount == 0
-                                      ? EmptyDataBox(
-                                          text: "chỉ số đường huyết",
-                                          onTap: () async {
-                                            await TrackingManager.analytics
-                                                .logEvent(
-                                                    name: 'cta_button_clicked',
-                                                    parameters: {
-                                                  "screen_name": 'kpi_glycemic',
-                                                  'cta_button_name':
-                                                      'cta_add_glycemic_0',
-                                                });
-                                            BloodSugarFunctions
-                                                .showModalAddData(context);
-                                            // Navigator.pushNamed(context,
-                                            //     NavigatorName.add_blood_sugar,
-                                            //     arguments: {
-                                            //       'type': 'input',
-                                            //       'id': null
-                                            //     });
-                                          },
-                                        )
-                                      : buildChart(model),
-                                )
-                              ],
-                            )),
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(' ' + R.string.distribution_frequency.tr(),
+                                style: TextStyle(
+                                    color: R.color.black,
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.w600)),
+                            SizedBox(height: 15),
+                            model.totalCount == 0
+                                ? EmptyDataBox(
+                                    text: "chỉ số đường huyết",
+                                    onTap: () async {
+                                      await TrackingManager.analytics.logEvent(
+                                          name: 'cta_button_clicked',
+                                          parameters: {
+                                            "screen_name": 'kpi_glycemic',
+                                            'cta_button_name':
+                                                'cta_add_glycemic_0',
+                                          });
+                                      BloodSugarFunctions.showModalAddData(
+                                          context);
+                                    },
+                                  )
+                                : buildChart(model)
+                          ],
+                        )),
                       ]),
                     ),
                   ]),

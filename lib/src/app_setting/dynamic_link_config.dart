@@ -6,12 +6,9 @@ import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:medical/src/modal/learning/learning_post_model.dart';
 import 'package:medical/src/modal/user/user_model.dart';
-import 'package:medical/src/model/response/smart_goal_list_reponse.dart';
-import 'package:medical/src/utils/app_log.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:permission_handler/permission_handler.dart';
-
 import '../model/response/lesson_section_list_response.dart';
 
 class DynamicLinkConfig {
@@ -71,9 +68,11 @@ class DynamicLinkConfig {
     longDynamicLink += "&ibi=com.cactusoftware.diab";
     longDynamicLink += "&isi=1569353448";
     longDynamicLink +=
+        "&st=Tải ngay ứng dụng diaB";
+    longDynamicLink +=
         "&sd=Ứng dụng hoàn toàn miễn phí giúp kiểm soát bệnh đái tháo đường và kết nối với chuyên gia.";
     longDynamicLink +=
-        "&si=https://diab.com.vn/wp-content/uploads/2022/02/hinh-1-banner-trang-chu.png";
+        "&si=https://api.diab.com.vn/App/Image/a95ed12f-3880-4588-378f-08dbc2ecc277";
 
     final DynamicLinkParameters parameters = DynamicLinkParameters(
       uriPrefix: domain,
@@ -126,6 +125,7 @@ class DynamicLinkConfig {
     longDynamicLink +=
         "?link=https://diab.com.vn/referralCode=${user.shareRefCode}?lessonId=${lesson.lessonId}";
     longDynamicLink += "&ofl=https://diab.com.vn/giai-phap";
+    longDynamicLink += "&st=${lesson.name}";
     longDynamicLink += "&apn=com.vbhc.diab";
     longDynamicLink += "&ibi=com.cactusoftware.diab";
     longDynamicLink += "&isi=1569353448";
