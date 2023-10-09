@@ -12,6 +12,7 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/app.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/app_setting/dynamic_link_config.dart';
+import 'package:medical/src/app_setting/firebase_remote_config.dart';
 import 'package:medical/src/modal/base/referral_code_temp.dart';
 import 'package:medical/src/modal/error/error_model.dart';
 import 'package:medical/src/modal/user/user_model.dart';
@@ -33,7 +34,9 @@ import 'package:medical/src/widget/my_plan_screens/my_plan/my_plan.dart';
 import 'package:medical/src/widget/profile/profile_controller.dart';
 import 'package:medical/src/widget/question_answer/question_answer_page.dart';
 import 'package:medical/src/widget/tabbar/bottom_tabbar.dart';
+import 'package:package_info/package_info.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:store_redirect/store_redirect.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../my_plan_screens/lesson_tab/lesson_detail/lesson_detail_page.dart';
 import '../my_plan_screens/my_plan/models/plan_type.dart';
@@ -64,7 +67,11 @@ class _TabbarControllerState extends State<TabbarController>
 
   @override
   void initState() {
+    initData();
     super.initState();
+  }
+
+  initData() async {
     tabs = [
       HomeController(sharedCode: widget.sharedCode),
       MyPlanPage(index: 0),
@@ -97,14 +104,15 @@ class _TabbarControllerState extends State<TabbarController>
           }
         });
 
-    if (Const.ENVIRONMENT_DEFAULT == 'product') {
-      getNewVersion();
-    }
+    await FirebaseRemoteSetting.instance.init();
+
+    // if (Const.ENVIRONMENT_DEFAULT == 'product') {
+    await getNewVersion();
+    // }
 
     Future.delayed(Duration(seconds: 1), () async {
       FlutterNativeSplash.remove();
     });
-    //   startTimer();
     _checkUserReferralCode();
     _checkExistZoomId();
   }
@@ -150,12 +158,6 @@ class _TabbarControllerState extends State<TabbarController>
     if (referralCodeData != null) {
       AppStorages.removeReferralCode();
     }
-  }
-
-  Future startTimer() async {
-    Future.delayed(Duration(seconds: 30), () {
-      Observable.instance.notifyObservers([], notifyName: "unauthorized");
-    });
   }
 
   @override
@@ -267,7 +269,53 @@ class _TabbarControllerState extends State<TabbarController>
     );
   }
 
+  int stringToInt(String versionStr) {
+    List<String> versionParts = versionStr.split('.');
+    int versionInt = 0;
+
+    for (String part in versionParts) {
+      versionInt = versionInt * 100 + int.parse(part);
+    }
+
+    return versionInt;
+  }
+
   getNewVersion() async {
+    PackageInfo packageInfo = await PackageInfo.fromPlatform();
+    final _currentVersion = packageInfo.version;
+    late String storeVersion;
+    if (Platform.isAndroid) {
+      storeVersion = FirebaseRemoteSetting.instance.playStoreVersion;
+    } else if (Platform.isIOS) {
+      storeVersion = FirebaseRemoteSetting.instance.appStoreVersion;
+    }
+    bool hasNewVersion =
+        stringToInt(storeVersion) > stringToInt(_currentVersion);
+    if (hasNewVersion) {
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) => CupertinoAlertDialog(
+          title: Text(R.string.cap_nhat.tr()),
+          content: Text(
+              R.string.mes_new_version_available.tr(args: ['$storeVersion']),
+              textAlign: TextAlign.center),
+          actions: <Widget>[
+            CupertinoDialogAction(
+              isDefaultAction: true,
+              child: Text(R.string.cap_nhat.tr()),
+              onPressed: ()  => StoreRedirect.redirect(
+                  androidAppId: "com.vbhc.diab",
+                  iOSAppId: "1569353448",
+                ),
+            )
+          ],
+        ),
+      );
+    }
+  }
+
+  getNewVersion1() async {
     if (Platform.isAndroid) {
       _checker.checkUpdate().then((value) {
         if (value.canUpdate) {
