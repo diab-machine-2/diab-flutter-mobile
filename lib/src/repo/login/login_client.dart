@@ -345,7 +345,7 @@ class LoginClient extends FetchClient {
   Future<bool> appLogs(Map<String, dynamic> errorData) async {
     try {
       final Response<dynamic> response = await super.postUri(
-        baseIdentify: true,
+        baseIdentify: false,
         baseOption: true,
         url: '/App/Logs',
         params: errorData,

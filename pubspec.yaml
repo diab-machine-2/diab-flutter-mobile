@@ -103,7 +103,10 @@ dependencies:
   cached_network_image: ^3.1.0
   flutter_inapp_purchase: 5.1.2
   #video player
-  better_player: ^0.0.83
+  # better_player: 0.0.83
+  better_player: 
+    git:
+      url: https://github.com/tintran-dev/betterplayer
   video_thumbnail: ^0.5.2
   path_provider: ^2.0.10
   #audio player
