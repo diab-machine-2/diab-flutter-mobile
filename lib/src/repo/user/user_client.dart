@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_observer/Observable.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
+import 'package:medical/src/modal/base/images.dart';
 import 'package:medical/src/modal/user/category_item_user_model.dart';
 import 'package:medical/src/modal/user/category_user_model.dart';
 import 'package:medical/src/modal/user/goal_info.dart';
@@ -89,8 +90,7 @@ class UserClient extends FetchClient {
     try {
       var json = jsonEncode(userModel.toJson());
       prefs.setString('user', json);
-    } catch (error) {
-    }
+    } catch (error) {}
   }
 
   Future<UserModel?> getUserPreferences() async {
@@ -1008,6 +1008,23 @@ class UserClient extends FetchClient {
       if (response.statusCode == 200) {
         await UserClient().fetchUser();
         return true;
+      } else {
+        final error = Error.fromJson(response);
+        throw error;
+      }
+    } catch (e) {
+      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+    }
+  }
+
+  fetchPopupImage() async {
+    try {
+      final Response response =
+          await super.fetchData(url: '/App/Image/Type', params: {
+        'Type': '21',
+      });
+      if (response.statusCode == 200) {
+        return response.data['data']['id'];
       } else {
         final error = Error.fromJson(response);
         throw error;
