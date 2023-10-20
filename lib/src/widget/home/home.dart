@@ -45,6 +45,7 @@ import 'welcome_package_screen/welcome_package_screen.dart';
 class HomeController extends StatefulWidget {
   const HomeController({this.sharedCode});
   final String? sharedCode;
+
   @override
   _HomeControllerState createState() => _HomeControllerState();
 }
@@ -114,8 +115,9 @@ class _HomeControllerState extends State<HomeController> with Observer {
   bool _hasHealthConnection = false;
 
   var user = AppSettings.userInfo;
-
+  var popupStore = PopupStore;
   HomeModel? model;
+  String _urlPopup = '';
 
   @override
   void initState() {
@@ -145,7 +147,8 @@ class _HomeControllerState extends State<HomeController> with Observer {
           });
         }
       });
-      Future.delayed(Duration(milliseconds: 100), () async {
+      await ChooseUrl();
+      Future.delayed(Duration(seconds: 3), () async {
         _showPopupStore();
       });
     }
@@ -227,8 +230,28 @@ class _HomeControllerState extends State<HomeController> with Observer {
         context: context,
         barrierDismissible: false,
         useSafeArea: true,
-        builder: (context) => PopupStore(),
+        builder: (context) => PopupStore(_urlPopup),
       );
+    }
+  }
+
+  ChooseUrl() async {
+    const String POPUP_IMAGE_URL_BACKUP =
+        'https://api.staging.diab.com.vn/App/Image/9ae088a5-8f56-4b02-7210-08dbce82cedd';
+
+    try {
+      var id = await UserClient().fetchPopupImage();
+      if (Const.ENVIRONMENT_DEFAULT == 'product') {
+        _urlPopup = Uri.https(Const.DOMAIN, 'App/Image/$id').toString();
+      } else {
+        _urlPopup = Uri.https(Const.DOMAIN_STAGING, 'App/Image/$id').toString();
+      }
+      print(_urlPopup);
+      return _urlPopup;
+    } catch (e) {
+      print('An error occurred: $e');
+      _urlPopup = POPUP_IMAGE_URL_BACKUP;
+      return _urlPopup;
     }
   }
 

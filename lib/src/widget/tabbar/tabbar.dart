@@ -5,6 +5,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app_version_checker/flutter_app_version_checker.dart';
+import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_observer/Observable.dart';
 import 'package:flutter_observer/Observer.dart';
@@ -38,6 +39,9 @@ import 'package:url_launcher/url_launcher.dart';
 import '../my_plan_screens/lesson_tab/lesson_detail/lesson_detail_page.dart';
 import '../my_plan_screens/my_plan/models/plan_type.dart';
 import 'package:medical/src/widget/voucher/presentation/widgets/voucher_popup.dart';
+import 'package:webview_flutter/webview_flutter.dart';
+import 'package:medical/src/widget/voucher/presentation/widgets/webview_store.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 
 class TabbarController extends StatefulWidget {
   const TabbarController(
@@ -77,6 +81,8 @@ class _TabbarControllerState extends State<TabbarController>
     final String? activityId = DynamicLinkConfig.instance.activityId;
     final String? lessonId = DynamicLinkConfig.instance.lessonId;
     final String? zoomId = DynamicLinkConfig.instance.zoomId;
+    final FirebaseAnalytics _analytics = FirebaseAnalytics.instance;
+
     int initialPage = 0;
     if (lessonId != null ||
         activityId != null ||
@@ -89,7 +95,26 @@ class _TabbarControllerState extends State<TabbarController>
         index: initialPage,
         callback: (index) {
           if (index == 3) {
-            _redirectToWebStore();
+            //  _redirectToWebStore();
+            BotToast.showLoading();
+            Future.delayed(Duration(seconds: 1), () async {
+              _analytics.logEvent(
+                name: 'component_clicked',
+                parameters: {
+                  "screen_name": 'StoreInApp',
+                  'cta_button_name': 'cta_btn_store',
+                },
+              );
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => WebviewStore(
+                        urlStore:
+                            'https://diab.com.vn/danh-sach-san-pham/?p=chuong-trinh-thay-doi-loi-song'),
+                  ));
+            });
+
+            //    FlutterNativeSplash.remove();
           } else if (index == -1) {
             _showMaterialDialog();
           } else {
@@ -134,15 +159,15 @@ class _TabbarControllerState extends State<TabbarController>
     }
   }
 
-  Future<void> _redirectToWebStore() async {
-    final Uri url =
-        Uri.parse('https://diab.com.vn/danh-sach-san-pham/?p=tat-ca');
-    if (await canLaunchUrl(url)) {
-      await launchUrl(url, mode: LaunchMode.externalApplication);
-    } else {
-      throw 'Could not launch $url';
-    }
-  }
+  // Future<void> _redirectToWebStore() async {
+  //   final Uri url =
+  //       Uri.parse('https://diab.com.vn/danh-sach-san-pham/?p=tat-ca');
+  //   if (await canLaunchUrl(url)) {
+  //     await launchUrl(url, mode: LaunchMode.externalApplication);
+  //   } else {
+  //     throw 'Could not launch $url';
+  //   }
+  // }
 
   _checkUserReferralCode() async {
     DynamicLinkConfig.instance.createShareReferralLink();
