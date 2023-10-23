@@ -11,6 +11,7 @@ import 'package:medical/src/model/preference/app_preference.dart';
 import 'package:medical/src/model/response/smart_goal_list_reponse.dart';
 import 'package:medical/src/model/response/statistic_data.dart';
 import 'package:medical/src/repo/login/login_client.dart';
+import 'package:medical/src/utils/app_log.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/helper/http_helper.dart';
@@ -50,12 +51,14 @@ class AppSettings {
   }
 
   static Future<bool> saveToken(String? token) async {
+    Console.log("saveToken", token);
     appPreference.setData(Const.TOKEN, token);
     return true;
   }
 
   static Future<String> getToken() async {
     final token = appPreference.getData(Const.TOKEN) ?? '';
+    Console.log("getToken", token);
     return token;
   }
 

@@ -5,6 +5,7 @@ import 'package:flutter_html/flutter_html.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/notification/notification_model.dart';
 import 'package:medical/src/repo/notification/notification_client.dart';
+import 'package:medical/src/utils/app_log.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widgets/network_image_widget.dart';
@@ -38,6 +39,7 @@ class _NotificationDetailControllerState extends State<NotificationDetailControl
 
   @override
   Widget build(BuildContext context) {
+    Console.log('notification', notification);
     return Scaffold(
         body: notification == null
             ? const Center(child: CircularProgressIndicator())

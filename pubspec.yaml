@@ -137,6 +137,8 @@ dependencies:
   flutter_app_version_checker: ^0.3.2
   flutter_blue_plus: 1.5.2
   fwfh_text_style: ^2.22.8+3
+  firebase_remote_config: ^4.2.7
+  store_redirect: ^2.0.1
 
 dev_dependencies:
   flutter_test:
