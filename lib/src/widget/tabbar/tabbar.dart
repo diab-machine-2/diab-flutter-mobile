@@ -106,9 +106,9 @@ class _TabbarControllerState extends State<TabbarController>
 
     await FirebaseRemoteSetting.instance.init();
 
-    // if (Const.ENVIRONMENT_DEFAULT == 'product') {
-    await getNewVersion();
-    // }
+    if (Const.ENVIRONMENT_DEFAULT == 'product') {
+      await getNewVersion();
+    }
 
     Future.delayed(Duration(seconds: 1), () async {
       FlutterNativeSplash.remove();
@@ -246,16 +246,17 @@ class _TabbarControllerState extends State<TabbarController>
           children: tabs),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            Observable.instance
-                .notifyObservers([], notifyName: Const.HIDE_OVERLAY_KEY);
-            _showMaterialDialog();
-          },
-          child: Image.asset(
-            R.drawable.ic_button_plus_home,
-            width: 82,
-            height: 82,
-          )),
+        onPressed: () {
+          Observable.instance
+              .notifyObservers([], notifyName: Const.HIDE_OVERLAY_KEY);
+          _showMaterialDialog();
+        },
+        child: Image.asset(
+          R.drawable.ic_button_plus_home,
+          width: 82,
+          height: 82,
+        ),
+      ),
       bottomNavigationBar: _bottomTabbar,
     );
   }
@@ -304,10 +305,10 @@ class _TabbarControllerState extends State<TabbarController>
             CupertinoDialogAction(
               isDefaultAction: true,
               child: Text(R.string.cap_nhat.tr()),
-              onPressed: ()  => StoreRedirect.redirect(
-                  androidAppId: "com.vbhc.diab",
-                  iOSAppId: "1569353448",
-                ),
+              onPressed: () => StoreRedirect.redirect(
+                androidAppId: "com.vbhc.diab",
+                iOSAppId: "1569353448",
+              ),
             )
           ],
         ),

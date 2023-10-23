@@ -32,7 +32,6 @@ class BmiTrendChart extends StatefulWidget {
 
 class BmiTrendChartState extends State<BmiTrendChart>
     with AutomaticKeepAliveClientMixin<BmiTrendChart> {
-
   @override
   bool get wantKeepAlive => true;
 
@@ -89,213 +88,230 @@ class BmiTrendChartState extends State<BmiTrendChart>
               : VisibilityDetector(
                   key: Key('bmi_trend_chart'),
                   onVisibilityChanged: (visibilityInfo) {
-                    var visiblePercentage = visibilityInfo.visibleFraction * 100;
-                    if(visiblePercentage == 0){
+                    var visiblePercentage =
+                        visibilityInfo.visibleFraction * 100;
+                    if (visiblePercentage == 0) {
                       previousDate = 0;
                     }
                   },
                   child: Container(
-                  color: R.color.transparent,
-                  padding: EdgeInsets.all(16),
-                  child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(R.string.xu_huong_can_nang.tr(),
-                                style: TextStyle(
-                                    fontSize: 20, fontWeight: FontWeight.w700)),
-                            GestureDetector(
-                              onTap: () {
-                                showDialog(
-                                  barrierColor:
-                                      R.color.color0xff003F38.withOpacity(0.5),
-                                  context: context,
-                                  builder: (_) => CustomWeightPicker(
-                                      callback: (number) {
-                                        if (number != null)
-                                        submitTarget(number);
-                                      },
-                                      title: R.string.muc_tieu_can_nang.tr(),
-                                      max: 180,
-                                      numberDefault:
-                                          (model!.goal == null || model.goal == 0
-                                                  ? 50
-                                                  : model.goal ?? 0),
-                                      unit: R.string.kg.tr()),
-                                );
-                              },
-                              child: Container(
-                                color: R.color.transparent,
-                                child: Row(
-                                  children: [
-                                    Image.asset(
-                                      R.drawable.ic_circle_plus_exe,
-                                      width: 24,
-                                      height: 24,
-                                    ),
-                                    SizedBox(width: 4),
-                                    Text(R.string.muc_tieu_moi.tr(),
-                                        style: TextStyle(
-                                            color: R.color.mainColor,
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.w700)),
-                                  ],
+                    color: R.color.transparent,
+                    padding: EdgeInsets.all(16),
+                    child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(R.string.xu_huong_can_nang.tr(),
+                                  style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.w700)),
+                              GestureDetector(
+                                onTap: () {
+                                  showDialog(
+                                    barrierColor: R.color.color0xff003F38
+                                        .withOpacity(0.5),
+                                    context: context,
+                                    builder: (_) => CustomWeightPicker(
+                                        callback: (number) {
+                                          if (number != null)
+                                            submitTarget(number);
+                                        },
+                                        title: R.string.muc_tieu_can_nang.tr(),
+                                        max: 180,
+                                        numberDefault: (model!.goal == null ||
+                                                model.goal == 0
+                                            ? 50
+                                            : model.goal ?? 0),
+                                        unit: R.string.kg.tr()),
+                                  );
+                                },
+                                child: Container(
+                                  color: R.color.transparent,
+                                  child: Row(
+                                    children: [
+                                      Image.asset(
+                                        R.drawable.ic_circle_plus_exe,
+                                        width: 24,
+                                        height: 24,
+                                      ),
+                                      SizedBox(width: 4),
+                                      Text(R.string.muc_tieu_moi.tr(),
+                                          style: TextStyle(
+                                              color: R.color.mainColor,
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.w700)),
+                                    ],
+                                  ),
                                 ),
                               ),
-                            ),
-                          ],
-                        ),
-                        SizedBox(height: 20),
-                        Container(
-                            width: width,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(16),
-                              color: R.color.white,
-                              boxShadow: [
-                                BoxShadow(
-                                  color: R.color.grey.withOpacity(0.5),
-                                  spreadRadius: 1,
-                                  blurRadius: 7,
-                                  offset: Offset(
-                                      0, 2), // changes position of shadow
-                                ),
-                              ],
-                            ),
-                            child: Column(
-                              children: [
-                                Padding(
-                                  padding: EdgeInsets.only(
-                                      top: 18, bottom: 18, left: 20, right: 20),
-                                  child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text(R.string.hien_tai.tr(),
-                                                style: TextStyle(
-                                                    color: R.color.textDark,
-                                                    fontWeight: FontWeight.w400,
-                                                    fontSize: 14.0)),
-                                            SizedBox(height: 4),
-                                            Row(
-                                              children: [
-                                                // model. ?
-                                                model == null ||
-                                                        model.current == 0
-                                                    ? Text('--',
-                                                        style: TextStyle(
-                                                            color: R.color.textDark,
-                                                            fontSize: 24,
-                                                            fontWeight:
-                                                                FontWeight
-                                                                    .w700))
-                                                    : Text(
-                                                        Utils.showValue(model.current!),
-                                                        style: TextStyle(
-                                                            color: R.color.textDark,
-                                                            fontSize: 24,
-                                                            fontWeight:
-                                                                FontWeight
-                                                                    .w700)),
-                                                Padding(
-                                                  padding:
-                                                      const EdgeInsets.only(
-                                                          top: 6.0,
-                                                          left: 2,
-                                                          right: 2),
-                                                  child: Text(
-                                                    R.string.kg.tr(),
-                                                    style: TextStyle(
-                                                        color: R.color.textDark,
-                                                        fontWeight:
-                                                            FontWeight.w400,
-                                                        fontSize: 14.0),
+                            ],
+                          ),
+                          SizedBox(height: 20),
+                          Container(
+                              width: width,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(16),
+                                color: R.color.white,
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: R.color.grey.withOpacity(0.5),
+                                    spreadRadius: 1,
+                                    blurRadius: 7,
+                                    offset: Offset(
+                                        0, 2), // changes position of shadow
+                                  ),
+                                ],
+                              ),
+                              child: Column(
+                                children: [
+                                  Padding(
+                                    padding: EdgeInsets.only(
+                                        top: 18,
+                                        bottom: 18,
+                                        left: 20,
+                                        right: 20),
+                                    child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text(R.string.hien_tai.tr(),
+                                                  style: TextStyle(
+                                                      color: R.color.textDark,
+                                                      fontWeight:
+                                                          FontWeight.w400,
+                                                      fontSize: 14.0)),
+                                              SizedBox(height: 4),
+                                              Row(
+                                                children: [
+                                                  model.current == 0
+                                                      ? Text('--',
+                                                          style: TextStyle(
+                                                              color: R.color
+                                                                  .textDark,
+                                                              fontSize: 24,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w700))
+                                                      : Text(
+                                                          Utils.showValue(
+                                                              model.current!),
+                                                          style: TextStyle(
+                                                              color: R.color
+                                                                  .textDark,
+                                                              fontSize: 24,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w700)),
+                                                  Padding(
+                                                    padding:
+                                                        const EdgeInsets.only(
+                                                            top: 6.0,
+                                                            left: 2,
+                                                            right: 2),
+                                                    child: Text(
+                                                      R.string.kg.tr(),
+                                                      style: TextStyle(
+                                                          color:
+                                                              R.color.textDark,
+                                                          fontWeight:
+                                                              FontWeight.w400,
+                                                          fontSize: 14.0),
+                                                    ),
                                                   ),
-                                                ),
-                                              ],
-                                            ),
-                                          ],
-                                        ),
-                                        SizedBox(
-                                          width: 16,
-                                        ),
-                                        Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text(R.string.muc_tieu.tr(),
-                                                style: TextStyle(
-                                                    color: R.color.textDark,
-                                                    fontWeight: FontWeight.w400,
-                                                    fontSize: 14.0)),
-                                            SizedBox(height: 4),
-                                            Row(
-                                              children: [
-                                                model.goal == null
-                                                    ? Text('--',
-                                                        style: TextStyle(
-                                                            color: R.color.textDark,
-                                                            fontSize: 24,
-                                                            fontWeight:
-                                                                FontWeight
-                                                                    .w700))
-                                                    : Text(
-                                                        Utils.showValue(model.goal!),
-                                                        style: TextStyle(
-                                                            color:  R.color.green,
-                                                            fontSize: 24,
-                                                            fontWeight:
-                                                                FontWeight
-                                                                    .w700)),
-                                                Padding(
-                                                  padding:
-                                                      const EdgeInsets.only(
-                                                          top: 6.0, left: 2),
-                                                  child: Text(
-                                                    R.string.kg.tr(),
-                                                    style: TextStyle(
-                                                        color: R.color.textDark,
-                                                        fontWeight:
-                                                            FontWeight.w400,
-                                                        fontSize: 14.0),
+                                                ],
+                                              ),
+                                            ],
+                                          ),
+                                          SizedBox(
+                                            width: 16,
+                                          ),
+                                          Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text(R.string.muc_tieu.tr(),
+                                                  style: TextStyle(
+                                                      color: R.color.textDark,
+                                                      fontWeight:
+                                                          FontWeight.w400,
+                                                      fontSize: 14.0)),
+                                              SizedBox(height: 4),
+                                              Row(
+                                                children: [
+                                                  model.goal == null
+                                                      ? Text('--',
+                                                          style: TextStyle(
+                                                              color: R.color
+                                                                  .textDark,
+                                                              fontSize: 24,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w700))
+                                                      : Text(
+                                                          Utils.showValue(
+                                                              model.goal!),
+                                                          style: TextStyle(
+                                                              color:
+                                                                  R.color.green,
+                                                              fontSize: 24,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w700)),
+                                                  Padding(
+                                                    padding:
+                                                        const EdgeInsets.only(
+                                                            top: 6.0, left: 2),
+                                                    child: Text(
+                                                      R.string.kg.tr(),
+                                                      style: TextStyle(
+                                                          color:
+                                                              R.color.textDark,
+                                                          fontWeight:
+                                                              FontWeight.w400,
+                                                          fontSize: 14.0),
+                                                    ),
                                                   ),
-                                                ),
-                                              ],
-                                            ),
-                                          ],
+                                                ],
+                                              ),
+                                            ],
+                                          ),
+                                        ]),
+                                  ),
+                                  model.trendItems == null
+                                      ? EmptyDataBox(
+                                          text: "chỉ số cân nặng",
+                                          onTap: () {
+                                            Navigator.pushNamed(
+                                                context, NavigatorName.add_bmi,
+                                                arguments: {
+                                                  'type': 'input',
+                                                });
+                                          },
+                                        )
+                                      : Container(
+                                          decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(16),
+                                            color: R.color.white,
+                                          ),
+                                          child: Padding(
+                                              padding: const EdgeInsets.only(
+                                                  left: 16, right: 16),
+                                              child: buildChart(model)),
                                         ),
-                                      ]),
-                                ),
-                                model.trendItems == null
-                                    ? EmptyDataBox(text: "chỉ số cân nặng", onTap:  () {
-                                          Navigator.pushNamed(
-                                              context, NavigatorName.add_bmi,
-                                              arguments: {
-                                                'type': 'input',
-                                              });
-                                        },)
-                                    : Container(
-                                        decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(16),
-                                          color: R.color.white,
-                                        ),
-                                        child: Padding(
-                                            padding: const EdgeInsets.only(
-                                                left: 16, right: 16),
-                                            child: buildChart(model)),
-                                      ),
-                              ],
-                            )),
-                        SizedBox(height: 16),
-                        // buildDescription(model)
-                      ]),
-                ),);
+                                ],
+                              )),
+                          SizedBox(height: 16),
+                          // buildDescription(model)
+                        ]),
+                  ),
+                );
         }));
   }
 
@@ -455,7 +471,9 @@ class BmiTrendChartState extends State<BmiTrendChart>
                               ],
                             ),
                           ),
-                    model.goal == null || model.goal! < minY || model.goal! > maxY
+                    model.goal == null ||
+                            model.goal! < minY ||
+                            model.goal! > maxY
                         ? SizedBox()
                         : Container(
                             height: 300,
@@ -479,165 +497,168 @@ class BmiTrendChartState extends State<BmiTrendChart>
                             ),
                           ),
                     Container(
-                        width: ((length < 5 ? 5 : length) * (width + 20))
-                            .toDouble(),
-                        height: 300,
-                        padding: EdgeInsets.only(top: 8, bottom: 8),
-                        child: LineChart(
-                            LineChartData(
-                              lineTouchData: LineTouchData(
-                                   getTouchLineStart: (barData, index) => -double.infinity, // default: from bottom
-                                  getTouchLineEnd: (barData, index) => double.infinity, //to top
-                                  getTouchedSpotIndicator:
-                                      (LineChartBarData barData,
-                                          List<int> spotIndexes) {
-                                    return spotIndexes.map((index) {
-                                      return TouchedSpotIndicatorData(
-                                        FlLine(
-                                            color:
-                                                toColor(trends[index].colorCode),
-                                            strokeWidth: 0.5),
-                                        FlDotData(
-                                          show: true,
-                                          getDotPainter:
-                                              (spot, percent, barData, index) =>
-                                                  FlDotCirclePainter(
-                                            radius: 6.5,
-                                            color: toColor(
-                                                trends[touchIndex].colorCode),
-                                            strokeWidth: 18,
-                                            strokeColor: toColor(
-                                                    trends[touchIndex].colorCode)
-                                                .withOpacity(0.3),
-                                          ),
-                                        ),
-                                      );
-                                    }).toList();
-                                  },
-                                  touchTooltipData: LineTouchTooltipData(
-                                    showOnTopOfTheChartBoxArea: true,
-                                    fitInsideVertically: true,
-                                    tooltipBgColor: touchIndex == -1
-                                        ? R.color.transparent
-                                        : toColor(trends[touchIndex].colorCode)
-                                            .withOpacity(0.2),
-                                    tooltipRoundedRadius: 8,
-                                    getTooltipItems:
-                                        (List<LineBarSpot> lineBarsSpot) {
-                                      return lineBarsSpot.map((lineBarSpot) {
-                                        return LineTooltipItem(
-                                          lineBarSpot.y.round() == lineBarSpot.y
-                                              ? lineBarSpot.y.round().toString() +
-                                                  ' ${R.string.kg.tr()}'
-                                              : lineBarSpot.y.toString() + ' ${R.string.kg.tr()}',
-                                          TextStyle(
-                                              color: toColor(
-                                                  trends[touchIndex].colorCode),
-                                              fontWeight: FontWeight.bold),
-                                        );
-                                      }).toList();
-                                    },
-                                  ),
-                                  touchCallback: (FlTouchEvent event,
-                                      LineTouchResponse? lineTouch) {
-                                    previousDate = 0;
-                                    if (lineTouch?.lineBarSpots?.length == 1 &&
-                                        event is! FlLongPressEnd &&
-                                        event is! FlPanEndEvent) {
-                                      final value = lineTouch?.lineBarSpots?[0].x;
-                                      if (value != null) {
-                                      //  setState(() {
-                                          touchIndex = value.toInt();
-                                     //   });
-                                      }
-                                    } else {
-                                      touchIndex = -1;
-                                    }
-                                  }),
-                              gridData: FlGridData(show: false),
-                              titlesData: FlTitlesData(
-                                bottomTitles: SideTitles(
-                                  showTitles: true,
-                                  margin: 16,
-                                  reservedSize: -16,
-                                  getTextStyles: (context, value) {
-                                    return TextStyle(
-                                        color: 
-                                        touchIndex == value.toInt() ? 
-                                        R.color.black
-                                            : R.color.color0xffC0C2C5
-                                        ,
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.normal);
-                                  },
-                                  getTitles: (double value) {
-                                    if (value.toInt() > dates.length - 1) {
-                                      return '';
-                                    }
-                                    final date = dates[value.toInt()];
-                                    
-                                    print('duc2111 value = ${value.toInt()} previousDate = $previousDate, date = $date');
-                                    
-                                    if(previousDate == date) return '';
-                                    previousDate = date;
-                                    
-                                    if (date == null) {
-                                      return '';
-                                    } else {
-                                      final dateTime = DateTime.fromMillisecondsSinceEpoch(date * 1000);
-                                      if(dateTime.hour > 0 && dateTime.hour < 7){
-                                        return convertToGMT0(date, 'dd/MM');
-                                      } else {
-                                        return convertToUTC(date, 'dd/MM');
-                                      }
-                                    }
-                                    //  if (value.toInt() > dates.length - 1) {
-                                    //   return '';
-                                    // }
-                                    // final date = dates[value.toInt()];
-                                    // int? dateBefore;
-                                    // if(value.toInt() > 0){
-                                    //   dateBefore = dates[value.toInt() - 1];
-                                    // }
-                                    // if(dateBefore == null){
-                                    //    if (date == null) {
-                                    //       return '';
-                                    //     } else {
-                                    //       return convertToUTC(date, 'dd/MM');
-                                    //     }
-                                    // } else {
-                                    //   if(date == dateBefore){
-                                    //     return '';
-                                    //   } else {
-                                    //     if (date == null) {
-                                    //       return '';
-                                    //     } else {
-                                    //       return convertToUTC(date, 'dd/MM');
-                                    //     }
-                                    //   }
-                                    // }
-                                  },
-                                ),
-                                leftTitles: SideTitles(
-                                    showTitles: true,
-                                    getTitles: (double value) {
-                                      return '';
-                                    }),
-                                rightTitles: SideTitles(showTitles: false),
-                                topTitles: SideTitles(showTitles: false),
+                      width:
+                          ((length < 5 ? 5 : length) * (width + 20)).toDouble(),
+                      height: 300,
+                      padding: EdgeInsets.only(top: 8, bottom: 8),
+                      child: LineChart(
+                        LineChartData(
+                          lineTouchData: LineTouchData(
+                              getTouchLineStart: (barData, index) =>
+                                  -double.infinity, // default: from bottom
+                              getTouchLineEnd: (barData, index) =>
+                                  double.infinity, //to top
+                              getTouchedSpotIndicator:
+                                  (LineChartBarData barData,
+                                      List<int> spotIndexes) {
+                                return spotIndexes.map((index) {
+                                  return TouchedSpotIndicatorData(
+                                    FlLine(
+                                        color: toColor(trends[index].colorCode),
+                                        strokeWidth: 0.5),
+                                    FlDotData(
+                                      show: true,
+                                      getDotPainter:
+                                          (spot, percent, barData, index) =>
+                                              FlDotCirclePainter(
+                                        radius: 6.5,
+                                        color: toColor(
+                                            trends[touchIndex].colorCode),
+                                        strokeWidth: 18,
+                                        strokeColor: toColor(
+                                                trends[touchIndex].colorCode)
+                                            .withOpacity(0.3),
+                                      ),
+                                    ),
+                                  );
+                                }).toList();
+                              },
+                              touchTooltipData: LineTouchTooltipData(
+                                showOnTopOfTheChartBoxArea: true,
+                                fitInsideVertically: true,
+                                tooltipBgColor: touchIndex == -1
+                                    ? R.color.transparent
+                                    : toColor(trends[touchIndex].colorCode)
+                                        .withOpacity(0.2),
+                                tooltipRoundedRadius: 8,
+                                getTooltipItems:
+                                    (List<LineBarSpot> lineBarsSpot) {
+                                  return lineBarsSpot.map((lineBarSpot) {
+                                    return LineTooltipItem(
+                                      lineBarSpot.y.round() == lineBarSpot.y
+                                          ? lineBarSpot.y.round().toString() +
+                                              ' ${R.string.kg.tr()}'
+                                          : lineBarSpot.y.toString() +
+                                              ' ${R.string.kg.tr()}',
+                                      TextStyle(
+                                          color: toColor(
+                                              trends[touchIndex].colorCode),
+                                          fontWeight: FontWeight.bold),
+                                    );
+                                  }).toList();
+                                },
                               ),
-                              borderData: FlBorderData(
-                                show: false,
-                              ),
-                              minX: 0,
-                              maxX: length.toDouble(),
-                              maxY: maxY,
-                              minY: minY,
-                              lineBarsData: linesBarData(model),
+                              touchCallback: (FlTouchEvent event,
+                                  LineTouchResponse? lineTouch) {
+                                previousDate = 0;
+                                if (lineTouch?.lineBarSpots?.length == 1 &&
+                                    event is! FlLongPressEnd &&
+                                    event is! FlPanEndEvent) {
+                                  final value = lineTouch?.lineBarSpots?[0].x;
+                                  if (value != null) {
+                                    //  setState(() {
+                                    touchIndex = value.toInt();
+                                    //   });
+                                  }
+                                } else {
+                                  touchIndex = -1;
+                                }
+                              }),
+                          gridData: FlGridData(show: false),
+                          titlesData: FlTitlesData(
+                            bottomTitles: SideTitles(
+                              showTitles: true,
+                              margin: 16,
+                              reservedSize: -16,
+                              getTextStyles: (context, value) {
+                                return TextStyle(
+                                    color: touchIndex == value.toInt()
+                                        ? R.color.black
+                                        : R.color.color0xffC0C2C5,
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.normal);
+                              },
+                              getTitles: (double value) {
+                                if (value.toInt() > dates.length - 1) {
+                                  return '';
+                                }
+                                final date = dates[value.toInt()];
+
+                                print(
+                                    'duc2111 value = ${value.toInt()} previousDate = $previousDate, date = $date');
+
+                                if (previousDate == date) return '';
+                                previousDate = date;
+
+                                if (date == null) {
+                                  return '';
+                                } else {
+                                  final dateTime =
+                                      DateTime.fromMillisecondsSinceEpoch(
+                                          date * 1000);
+                                  if (dateTime.hour > 0 && dateTime.hour < 7) {
+                                    return convertToGMT0(date, 'dd/MM');
+                                  } else {
+                                    return convertToUTC(date, 'dd/MM');
+                                  }
+                                }
+                                //  if (value.toInt() > dates.length - 1) {
+                                //   return '';
+                                // }
+                                // final date = dates[value.toInt()];
+                                // int? dateBefore;
+                                // if(value.toInt() > 0){
+                                //   dateBefore = dates[value.toInt() - 1];
+                                // }
+                                // if(dateBefore == null){
+                                //    if (date == null) {
+                                //       return '';
+                                //     } else {
+                                //       return convertToUTC(date, 'dd/MM');
+                                //     }
+                                // } else {
+                                //   if(date == dateBefore){
+                                //     return '';
+                                //   } else {
+                                //     if (date == null) {
+                                //       return '';
+                                //     } else {
+                                //       return convertToUTC(date, 'dd/MM');
+                                //     }
+                                //   }
+                                // }
+                              },
                             ),
-                            swapAnimationDuration: Duration(milliseconds: 250),
+                            leftTitles: SideTitles(
+                                showTitles: true,
+                                getTitles: (double value) {
+                                  return '';
+                                }),
+                            rightTitles: SideTitles(showTitles: false),
+                            topTitles: SideTitles(showTitles: false),
                           ),
+                          borderData: FlBorderData(
+                            show: false,
+                          ),
+                          minX: 0,
+                          maxX: length.toDouble(),
+                          maxY: maxY,
+                          minY: minY,
+                          lineBarsData: linesBarData(model),
                         ),
+                        swapAnimationDuration: Duration(milliseconds: 250),
+                      ),
+                    ),
                     SizedBox(height: 340)
                   ])),
             )
