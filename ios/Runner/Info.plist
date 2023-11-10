@@ -76,6 +76,8 @@
 		<true/>
 		<key>NSAllowsLocalNetworking</key>
 		<true/>
+      <key>NSAllowsArbitraryLoadsInWebContent</key>
+      <true/>
 	</dict>
 	<key>NSBluetoothAlwaysUsageDescription</key>
 	<string>Luôn cho phép DiaB sử dụng Bluetooth để kết nối với máy đo đường huyết.</string>
@@ -96,6 +98,7 @@
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>fetch</string>
+		<string>processing</string>
 		<string>remote-notification</string>
 	</array>
 	<key>UILaunchStoryboardName</key>
@@ -120,6 +123,8 @@
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
 	<key>io.flutter.embedded_views_preview</key>
+	<false/>
+	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 </dict>
 </plist>

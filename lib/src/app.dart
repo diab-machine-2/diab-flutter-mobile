@@ -355,7 +355,11 @@ class _AppState extends State<App> {
                       return _buildRoute(
                           settings,
                           BloodSugarTableCompareController(
-                              model: data?['model'], title: data?['title']),
+                            model: data?['model'],
+                            title: data?['title'],
+                            comparerType: data?['comparerType'],
+                            periodFilterType: data?['periodFilterType'],
+                          ),
                           isPresent: true);
                     case NavigatorName.detail_blood_pressure:
                       return _buildRoute(

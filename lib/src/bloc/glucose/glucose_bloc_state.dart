@@ -21,7 +21,13 @@ class GlucoseLoaded extends GlucoseState {
 
 class GlucoseComparerLoaded extends GlucoseState {
   final List<ComparerModel> listcomparer;
-  GlucoseComparerLoaded({required this.listcomparer});
+  final bool? hasMore;
+  final int? page;
+  GlucoseComparerLoaded({
+    required this.listcomparer,
+    this.hasMore,
+    this.page,
+  });
 }
 
 class GlucoseDistributionLoaded extends GlucoseState {
@@ -32,7 +38,12 @@ class GlucoseDistributionLoaded extends GlucoseState {
 class GlucoseAlllLoaded extends GlucoseState {
   final List<InputGlucoseModel> inputGlucoseModel;
   final bool? hasMore;
-  GlucoseAlllLoaded({required this.inputGlucoseModel, required this.hasMore});
+  final int page;
+  GlucoseAlllLoaded({
+    required this.inputGlucoseModel,
+    required this.hasMore,
+    required this.page,
+  });
 }
 
 class GlucoseTrendLoaded extends GlucoseState {

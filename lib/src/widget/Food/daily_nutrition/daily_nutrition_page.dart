@@ -11,6 +11,7 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/modal/food/food_model.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
+import 'package:medical/src/utils/app_media_query.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/widget/BloodSugar/add_bloodSugar.dart';
@@ -40,11 +41,16 @@ class DailyNutritionPage extends StatefulWidget {
   _DailyNutritionPageState createState() => _DailyNutritionPageState();
 }
 
-class _DailyNutritionPageState extends State<DailyNutritionPage> {
+class _DailyNutritionPageState extends State<DailyNutritionPage>
+    with SingleTickerProviderStateMixin {
   late final DailyNutritionCubit _cubit;
 
   final TextEditingController _controllerNote = TextEditingController();
   final TextEditingController _controllerKcal = TextEditingController(text: '');
+
+  late AnimationController _animtionController;
+  late Animation _animation;
+  FocusNode _focusNode = FocusNode();
 
   @override
   void initState() {
@@ -53,6 +59,25 @@ class _DailyNutritionPageState extends State<DailyNutritionPage> {
     _cubit.getInitialData(type: widget.type, id: widget.id);
     super.initState();
     firebaseSetup();
+    animationFocus();
+  }
+
+  animationFocus() {
+    _animtionController =
+        AnimationController(vsync: this, duration: Duration(milliseconds: 300));
+    _animation = Tween(begin: 10.0, end: AppMediaQuery.deviceHeight / 3)
+        .animate(_animtionController)
+      ..addListener(() {
+        setState(() {});
+      });
+
+    _focusNode.addListener(() {
+      if (_focusNode.hasFocus) {
+        _animtionController.forward();
+      } else {
+        _animtionController.reverse();
+      }
+    });
   }
 
   Future firebaseSetup() async {
@@ -125,8 +150,6 @@ class _DailyNutritionPageState extends State<DailyNutritionPage> {
                     children: [
                       Expanded(
                         child: ListView(
-                          keyboardDismissBehavior:
-                              ScrollViewKeyboardDismissBehavior.onDrag,
                           padding: const EdgeInsets.symmetric(horizontal: 16),
                           children: [
                             const SizedBox(height: 16),
@@ -616,27 +639,36 @@ class _DailyNutritionPageState extends State<DailyNutritionPage> {
                                     )
                                   ]),
                                   const SizedBox(height: 24),
-                                  TextField(
-                                      controller: _controllerNote,
-                                      onChanged: (text) {
-                                        _cubit.notes = text;
-                                      },
-                                      style: TextStyle(
-                                          color: R.color.black,
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w400),
-                                      decoration: InputDecoration(
-                                          hintText: R
-                                              .string.nhap_ghi_chu_cua_ban
-                                              .tr(),
-                                          contentPadding:
-                                              const EdgeInsets.only(bottom: 8),
-                                          border: InputBorder.none,
-                                          hintStyle: TextStyle(
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.w400,
-                                              color:
-                                                  R.color.primaryGreyColor))),
+                                  InkWell(
+                                    splashColor: Colors.transparent,
+                                    onTap: () {
+                                      FocusScope.of(context)
+                                          .requestFocus(FocusNode());
+                                    },
+                                    child: TextField(
+                                        focusNode: _focusNode,
+                                        controller: _controllerNote,
+                                        onChanged: (text) {
+                                          _cubit.notes = text;
+                                        },
+                                        style: TextStyle(
+                                            color: R.color.black,
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w400),
+                                        decoration: InputDecoration(
+                                            hintText: R
+                                                .string.nhap_ghi_chu_cua_ban
+                                                .tr(),
+                                            contentPadding:
+                                                const EdgeInsets.only(
+                                                    bottom: 8),
+                                            border: InputBorder.none,
+                                            hintStyle: TextStyle(
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.w400,
+                                                color:
+                                                    R.color.primaryGreyColor))),
+                                  ),
                                   Container(
                                       height: 1,
                                       color: R.color.color0xffE5E5E5),
@@ -691,7 +723,8 @@ class _DailyNutritionPageState extends State<DailyNutritionPage> {
                                               ),
                                       );
                                     },
-                                  )
+                                  ),
+                                  SizedBox(height: _animation.value),
                                 ],
                               ),
                             ),
@@ -1234,5 +1267,12 @@ class _DailyNutritionPageState extends State<DailyNutritionPage> {
         );
       },
     );
+  }
+
+  void dispose() {
+    _animtionController.dispose();
+    _focusNode.dispose();
+    _controllerNote.dispose();
+    super.dispose();
   }
 }

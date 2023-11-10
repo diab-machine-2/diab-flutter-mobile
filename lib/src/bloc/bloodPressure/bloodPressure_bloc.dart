@@ -73,14 +73,16 @@ class BloodPressureBloc extends Bloc<BloodPressureEvent, BloodPressureState> {
         }
       }
       yield BloodPressureDataLoaded(
-          bloodPressureModel: model.inputs, hasMore: model.hasMore);
+        bloodPressureModel: model.inputs,
+        hasMore: model.hasMore ?? false,
+        page: (page ?? 1) + 1,
+      );
     } catch (e, _) {
       if (e is Error) {
         yield BloodPressureError(message: e.message);
       } else {
         yield BloodPressureError(
-            message:
-                R.string.error_can_not_connect_to_server.tr());
+            message: R.string.error_can_not_connect_to_server.tr());
       }
     }
   }
@@ -101,8 +103,7 @@ class BloodPressureBloc extends Bloc<BloodPressureEvent, BloodPressureState> {
         yield BloodPressureError(message: e.message);
       } else {
         yield BloodPressureError(
-            message:
-                R.string.error_can_not_connect_to_server.tr());
+            message: R.string.error_can_not_connect_to_server.tr());
       }
     }
   }
@@ -122,8 +123,7 @@ class BloodPressureBloc extends Bloc<BloodPressureEvent, BloodPressureState> {
         yield BloodPressureError(message: e.message);
       } else {
         yield BloodPressureError(
-            message:
-                R.string.error_can_not_connect_to_server.tr());
+            message: R.string.error_can_not_connect_to_server.tr());
       }
     }
   }
@@ -143,8 +143,7 @@ class BloodPressureBloc extends Bloc<BloodPressureEvent, BloodPressureState> {
         yield BloodPressureError(message: e.message);
       } else {
         yield BloodPressureError(
-            message:
-                R.string.error_can_not_connect_to_server.tr());
+            message: R.string.error_can_not_connect_to_server.tr());
       }
     }
   }
@@ -164,8 +163,7 @@ class BloodPressureBloc extends Bloc<BloodPressureEvent, BloodPressureState> {
         yield BloodPressureError(message: e.message);
       } else {
         yield BloodPressureError(
-            message:
-                R.string.error_can_not_connect_to_server.tr());
+            message: R.string.error_can_not_connect_to_server.tr());
       }
     }
   }

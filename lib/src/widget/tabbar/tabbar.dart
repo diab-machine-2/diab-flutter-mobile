@@ -167,15 +167,15 @@ class _TabbarControllerState extends State<TabbarController>
     }
   }
 
-  // Future<void> _redirectToWebStore() async {
-  //   final Uri url =
-  //       Uri.parse('https://diab.com.vn/danh-sach-san-pham/?p=tat-ca');
-  //   if (await canLaunchUrl(url)) {
-  //     await launchUrl(url, mode: LaunchMode.externalApplication);
-  //   } else {
-  //     throw 'Could not launch $url';
-  //   }
-  // }
+  Future<void> _redirectToWebStore() async {
+    final Uri url =
+        Uri.parse('https://diab.com.vn/danh-sach-san-pham/?p=tat-ca');
+    if (await canLaunchUrl(url)) {
+      await launchUrl(url, mode: LaunchMode.externalApplication);
+    } else {
+      throw 'Could not launch $url';
+    }
+  }
 
   _checkUserReferralCode() async {
     DynamicLinkConfig.instance.createShareReferralLink();

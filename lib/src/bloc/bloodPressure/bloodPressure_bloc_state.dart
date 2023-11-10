@@ -20,10 +20,14 @@ class BloodPressureLoaded extends BloodPressureState {
 }
 
 class BloodPressureDataLoaded extends BloodPressureState {
+  final int page;
   final List<BloodPressureModel> bloodPressureModel;
-  final bool? hasMore;
-  BloodPressureDataLoaded(
-      {required this.bloodPressureModel, required this.hasMore});
+  final bool hasMore;
+  BloodPressureDataLoaded({
+    required this.page,
+    required this.bloodPressureModel,
+    required this.hasMore,
+  });
 }
 
 class BloodPressureDataHeartRateLoaded extends BloodPressureState {

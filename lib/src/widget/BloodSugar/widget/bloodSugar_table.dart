@@ -7,7 +7,8 @@ import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:medical/src/widget/helper/tracking_manager.dart';
+import 'package:medical/src/widgets/button_widget.dart';
+import 'package:medical/src/widgets/spacing_row.dart';
 
 class BloodSugarTableController extends StatefulWidget {
   final String? title;
@@ -29,11 +30,11 @@ BuildContext? currentContext;
 int periodFilterType = 1;
 
 class _BloodSugarTableControllerState extends State<BloodSugarTableController> {
-
   @override
   void initState() {
     super.initState();
   }
+
   @override
   Widget build(BuildContext context) {
     final width = (MediaQuery.of(context).size.width - 45) / 3;
@@ -43,15 +44,10 @@ class _BloodSugarTableControllerState extends State<BloodSugarTableController> {
             builder: (BuildContext context, GlucoseState state) {
           currentContext = context;
           List<InputGlucoseModel>? model;
-          if (state is GlucoseInitial) {
-            BlocProvider.of<GlucoseBloc>(context).add(FetchInputGlucose(
-              currentDateTime:
-                  (DateTime.now().millisecondsSinceEpoch ~/ 1000).toString(),
-              periodFilterType: widget.periodFilterType.toString(),
-              timeFrameType: widget.timeFrameType.toString(),
-              glucoseDistributionType:
-                  widget.glucoseDistributionType.toString(),
-            ));
+          bool hasMore = true;
+          int page = 1;
+          if (state is GlucoseInitial && page == 1) {
+            _getData(context, page: page);
           }
           if (state is GlucoseError) {
             Message.showToastMessage(context, state.message);
@@ -61,6 +57,8 @@ class _BloodSugarTableControllerState extends State<BloodSugarTableController> {
           }
           if (state is GlucoseAlllLoaded) {
             model = state.inputGlucoseModel;
+            hasMore = state.hasMore ?? false;
+            page = state.page;
           }
           return GestureDetector(
             onTap: () {
@@ -129,31 +127,36 @@ class _BloodSugarTableControllerState extends State<BloodSugarTableController> {
                       model == null
                           ? Center(child: CircularProgressIndicator())
                           : Expanded(
-                              child: ListView.separated(
-                                  physics: NeverScrollableScrollPhysics(),
-                                  shrinkWrap: true,
-                                  padding: EdgeInsets.only(bottom: 8),
-                                  itemCount: model.length,
-                                  separatorBuilder:
-                                      (BuildContext context, int index) {
-                                    return Container(
-                                        height: 1, color: R.color.color0xffE5E5E5);
-                                  },
-                                  itemBuilder:
-                                      (BuildContext context, int index) {
-                                    final time = model![index].createDate!;
-                                    final timeFrame = model[index].timeFrame!;
-                                    final glucose =
-                                        model[index].glucose!.toInt();
+                              child: SingleChildScrollView(
+                                child: SpacingColumn(
+                                  separator: Divider(
+                                    height: 1,
+                                    color: R.color.color0xffE5E5E5,
+                                  ),
+                                  children: model.map((item) {
+                                    final time = item.createDate!;
+                                    final timeFrame = item.timeFrame!;
+                                    final glucose = item.glucose!.toInt();
 
-                                    return _buildItem(
-                                        context,
-                                        index,
-                                        time,
-                                        timeFrame,
-                                        glucose,
-                                        model[index].backgroundColor);
-                                  }),
+                                    return _buildItem(context, time, timeFrame,
+                                        glucose, item.backgroundColor);
+                                  }).toList()
+                                    ..add(
+                                      hasMore
+                                          ? Container(
+                                              padding: EdgeInsets.all(15),
+                                              color: Colors.white,
+                                              child: ButtonWidget(
+                                                title: 'Xem thêm',
+                                                onPressed: () => _getData(
+                                                    context,
+                                                    page: page),
+                                              ),
+                                            )
+                                          : SizedBox(),
+                                    ),
+                                ),
+                              ),
                             ),
                     ],
                   )),
@@ -162,7 +165,21 @@ class _BloodSugarTableControllerState extends State<BloodSugarTableController> {
         }));
   }
 
-  Widget _buildItem(BuildContext context, int index, int time, String timeFrame,
+  _getData(
+    BuildContext context, {
+    required int page,
+  }) {
+    BlocProvider.of<GlucoseBloc>(context).add(FetchInputGlucose(
+      page: page,
+      currentDateTime:
+          (DateTime.now().millisecondsSinceEpoch ~/ 1000).toString(),
+      periodFilterType: widget.periodFilterType.toString(),
+      timeFrameType: widget.timeFrameType.toString(),
+      glucoseDistributionType: widget.glucoseDistributionType.toString(),
+    ));
+  }
+
+  Widget _buildItem(BuildContext context, int time, String timeFrame,
       int glucose, String? color) {
     final width = (MediaQuery.of(context).size.width - 45) / 3;
     return Container(

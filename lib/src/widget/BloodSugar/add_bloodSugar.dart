@@ -15,6 +15,7 @@ import 'package:medical/src/repo/HbA1C/HbA1C_client.dart';
 import 'package:medical/src/repo/glucose/glucose_client.dart';
 import 'package:medical/src/repo/home/home_client.dart';
 import 'package:medical/src/repo/user/user_client.dart';
+import 'package:medical/src/utils/app_media_query.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/BloodSugar/widget/action_list_trend.dart';
 import 'package:medical/src/widget/HbA1C/widget/description/description.dart';
@@ -50,7 +51,8 @@ class AddBloodSugarController extends StatefulWidget {
       _AddBloodSugarControllerState();
 }
 
-class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
+class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController>
+    with SingleTickerProviderStateMixin {
   TextEditingController _controller = TextEditingController();
   TextEditingController _controllerReason = TextEditingController();
   TextEditingController _controllerNote = TextEditingController();
@@ -72,7 +74,12 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
   double mmollToMgdlFactor = 18.018;
   bool fromNipro = false;
 
+  late AnimationController _animtionController;
+  late Animation _animation;
+  FocusNode _focusNode = FocusNode();
+
   void initState() {
+    animationFocus();
     super.initState();
     if (widget.type == 'update') {
       loadDetail();
@@ -81,6 +88,24 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
     }
     loadDescription();
     firebaseSetup();
+  }
+
+  animationFocus() {
+    _animtionController =
+        AnimationController(vsync: this, duration: Duration(milliseconds: 300));
+    _animation = Tween(begin: 10.0, end: AppMediaQuery.deviceHeight / 3)
+        .animate(_animtionController)
+      ..addListener(() {
+        setState(() {});
+      });
+
+    _focusNode.addListener(() {
+      if (_focusNode.hasFocus) {
+        _animtionController.forward();
+      } else {
+        _animtionController.reverse();
+      }
+    });
   }
 
   Future firebaseSetup() async {
@@ -100,6 +125,8 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
 
   void dispose() {
     _controller.dispose();
+    _animtionController.dispose();
+    _focusNode.dispose();
     _controllerNote.dispose();
     super.dispose();
   }
@@ -650,24 +677,32 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
                                               fontWeight: FontWeight.w600))
                                     ]),
                                     SizedBox(height: 24),
-                                    TextField(
-                                        controller: _controllerNote,
-                                        style: TextStyle(
-                                            color: R.color.black,
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.w400),
-                                        decoration: InputDecoration(
-                                            hintText: R
-                                                .string.nhap_ghi_chu_cua_ban
-                                                .tr(),
-                                            contentPadding:
-                                                EdgeInsets.only(bottom: 8),
-                                            border: InputBorder.none,
-                                            hintStyle: TextStyle(
-                                                fontSize: 16,
-                                                fontWeight: FontWeight.w400,
-                                                color:
-                                                    R.color.primaryGreyColor))),
+                                    InkWell(
+                                      splashColor: Colors.transparent,
+                                      onTap: () {
+                                        FocusScope.of(context)
+                                            .requestFocus(FocusNode());
+                                      },
+                                      child: TextField(
+                                          focusNode: _focusNode,
+                                          controller: _controllerNote,
+                                          style: TextStyle(
+                                              color: R.color.black,
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w400),
+                                          decoration: InputDecoration(
+                                              hintText: R
+                                                  .string.nhap_ghi_chu_cua_ban
+                                                  .tr(),
+                                              contentPadding:
+                                                  EdgeInsets.only(bottom: 8),
+                                              border: InputBorder.none,
+                                              hintStyle: TextStyle(
+                                                  fontSize: 16,
+                                                  fontWeight: FontWeight.w400,
+                                                  color: R.color
+                                                      .primaryGreyColor))),
+                                    ),
                                     Container(
                                         height: 1,
                                         color: R.color.color0xffE5E5E5),
@@ -747,7 +782,8 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
                                                                 })
                                                           ]),
                                                     ));
-                                        })
+                                        }),
+                                    SizedBox(height: _animation.value),
                                   ]),
                             ),
                           ),

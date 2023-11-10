@@ -7,6 +7,9 @@ import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:medical/src/widgets/button_widget.dart';
+import 'package:medical/src/widgets/loadmore_template.dart';
+import 'package:medical/src/widgets/spacing_row.dart';
 
 class BloodPressureTableController extends StatefulWidget {
   final String? title;
@@ -37,14 +40,17 @@ class _BloodPressureTableControllerState
             builder: (BuildContext context, BloodPressureState state) {
           currentContext = context;
           List<BloodPressureModel>? model;
+          bool hasMore = false;
+          int page = 1;
           if (state is BloodPressureInitial) {
-            BlocProvider.of<BloodPressureBloc>(context).add(
-                FetchInputBloodPressure(
-                    currentDateTime:
-                        (DateTime.now().millisecondsSinceEpoch ~/ 1000)
-                            .toString(),
-                    periodFilterType: widget.periodFilterType.toString(),
-                    bloodPressureType: widget.bloodPressureType.toString()));
+            _getData(context, page: page);
+            // BlocProvider.of<BloodPressureBloc>(context).add(
+            //     FetchInputBloodPressure(
+            //         currentDateTime:
+            //             (DateTime.now().millisecondsSinceEpoch ~/ 1000)
+            //                 .toString(),
+            //         periodFilterType: widget.periodFilterType.toString(),
+            //         bloodPressureType: widget.bloodPressureType.toString()));
           }
           if (state is BloodPressureError) {
             Message.showToastMessage(context, state.message);
@@ -54,6 +60,8 @@ class _BloodPressureTableControllerState
           }
           if (state is BloodPressureDataLoaded) {
             model = state.bloodPressureModel;
+            hasMore = state.hasMore;
+            page = state.page;
           }
           return GestureDetector(
             onTap: () {
@@ -127,36 +135,43 @@ class _BloodPressureTableControllerState
                       model == null
                           ? Center(child: CircularProgressIndicator())
                           : Expanded(
-                              child: ListView.separated(
-                                  physics: NeverScrollableScrollPhysics(),
-                                  shrinkWrap: true,
-                                  padding: EdgeInsets.only(bottom: 8),
-                                  itemCount: model.length,
-                                  separatorBuilder:
-                                      (BuildContext context, int index) {
-                                    return Container(
-                                        height: 1, color: R.color.color0xffE5E5E5);
-                                  },
-                                  itemBuilder:
-                                      (BuildContext context, int index) {
-                                    final time = model![index].date!;
-                                    final timeFrame = model[index].timeFrame!;
-                                    final systolic =
-                                        model[index].systolic!.toInt();
-                                    final diastolic =
-                                        model[index].diastolic!.toInt();
-                                    final pulseRate =
-                                        model[index].pulseRate!.toInt();
+                              child: SingleChildScrollView(
+                                child: SpacingColumn(
+                                  separator: Divider(
+                                    height: 1,
+                                    color: R.color.color0xffE5E5E5,
+                                  ),
+                                  children: model.map((item) {
+                                    final time = item.date!;
+                                    final timeFrame = item.timeFrame!;
+                                    final systolic = item.systolic!.toInt();
+                                    final diastolic = item.diastolic!.toInt();
+                                    final pulseRate = item.pulseRate!.toInt();
                                     return _buildItem(
                                         context,
-                                        index,
                                         time,
                                         timeFrame,
                                         systolic,
                                         diastolic,
                                         pulseRate,
-                                        model[index].color);
-                                  }),
+                                        item.color);
+                                  }).toList()
+                                    ..add(
+                                      hasMore
+                                          ? Container(
+                                              padding: EdgeInsets.all(15),
+                                              color: Colors.white,
+                                              child: ButtonWidget(
+                                                title: 'Xem thêm',
+                                                onPressed: () => _getData(
+                                                    context,
+                                                    page: page),
+                                              ),
+                                            )
+                                          : SizedBox(),
+                                    ),
+                                ),
+                              ),
                             ),
                     ],
                   )),
@@ -165,7 +180,21 @@ class _BloodPressureTableControllerState
         }));
   }
 
-  Widget _buildItem(BuildContext context, int index, int time, String timeFrame,
+  _getData(
+    BuildContext context, {
+    required int page,
+  }) {
+    BlocProvider.of<BloodPressureBloc>(context).add(
+      FetchInputBloodPressure(
+          page: page,
+          currentDateTime:
+              (DateTime.now().millisecondsSinceEpoch ~/ 1000).toString(),
+          periodFilterType: widget.periodFilterType.toString(),
+          bloodPressureType: widget.bloodPressureType.toString()),
+    );
+  }
+
+  Widget _buildItem(BuildContext context, int time, String timeFrame,
       int systolic, int diastolic, int pulseRate, String? color) {
     final width = (MediaQuery.of(context).size.width - 32) / 3;
     return Container(

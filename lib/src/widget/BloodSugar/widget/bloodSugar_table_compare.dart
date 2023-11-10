@@ -6,14 +6,20 @@ import 'package:medical/src/modal/glucose/glucose_comparer.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:medical/src/widget/helper/tracking_manager.dart';
+import 'package:medical/src/widget/helper/show_message.dart';
+import 'package:medical/src/widgets/button_widget.dart';
+import 'package:medical/src/widgets/spacing_row.dart';
 
 class BloodSugarTableCompareController extends StatefulWidget {
   final List<ComparerModel>? model;
+  final int comparerType;
+  final int periodFilterType;
   final String? title;
   BloodSugarTableCompareController({
     required this.model,
     required this.title,
+    required this.comparerType,
+    required this.periodFilterType,
   });
   @override
   _BloodSugarTableCompareControllerState createState() =>
@@ -22,12 +28,9 @@ class BloodSugarTableCompareController extends StatefulWidget {
 
 BuildContext? currentContext;
 
-int periodFilterType = 1;
-
 class _BloodSugarTableCompareControllerState
     extends State<BloodSugarTableCompareController> {
-
-      @override
+  @override
   void initState() {
     super.initState();
   }
@@ -41,8 +44,18 @@ class _BloodSugarTableCompareControllerState
             builder: (BuildContext context, GlucoseState state) {
           currentContext = context;
           List<ComparerModel>? model;
+          bool hasMore = true;
+          int page = 1;
           if (state is GlucoseInitial) {
-            model = widget.model;
+            _getData(context, page: 1);
+          }
+          if (state is GlucoseError) {
+            Message.showToastMessage(context, state.message);
+          }
+          if (state is GlucoseComparerLoaded) {
+            model = state.listcomparer.reversed.toList();
+            hasMore = state.hasMore ?? false;
+            page = state.page ?? 1;
           }
 
           return GestureDetector(
@@ -111,44 +124,50 @@ class _BloodSugarTableCompareControllerState
                           ),
                         ),
                       ),
-                      widget.model == null
+                      model == null
                           ? Center(child: CircularProgressIndicator())
                           : Expanded(
-                              child: ListView.separated(
-                                  physics: NeverScrollableScrollPhysics(),
-                                  shrinkWrap: true,
-                                  padding: EdgeInsets.only(bottom: 8),
-                                  itemCount: widget.model!.length,
-                                  separatorBuilder:
-                                      (BuildContext context, int index) {
-                                    return Container(
-                                        height: 1, color: R.color.color0xffE5E5E5);
-                                  },
-                                  itemBuilder:
-                                      (BuildContext context, int index) {
-                                    final time = widget.model![index].date!;
-                                    final preGlucose = widget
-                                        .model![index].preGlucose!
-                                        .toInt()
-                                        .toString();
-                                    final postGlucose = widget
-                                        .model![index].postGlucose!
-                                        .toInt()
-                                        .toString();
+                              child: SingleChildScrollView(
+                                child: SpacingColumn(
+                                  separator: Divider(
+                                    height: 1,
+                                    color: R.color.color0xffE5E5E5,
+                                  ),
+                                  children: model.map((item) {
+                                    final time = item.date!;
+                                    final preGlucose =
+                                        item.preGlucose!.toInt().toString();
+                                    final postGlucose =
+                                        item.postGlucose!.toInt().toString();
                                     final preGlucoseColor =
-                                        widget.model![index].preGlucoseColor;
+                                        item.preGlucoseColor;
                                     final postGlucoseColor =
-                                        widget.model![index].postGlucoseColor;
+                                        item.postGlucoseColor;
 
                                     return _buildItem(
                                         context,
-                                        index,
                                         time,
                                         preGlucose,
                                         postGlucose,
                                         preGlucoseColor,
                                         postGlucoseColor);
-                                  }),
+                                  }).toList()
+                                    ..add(
+                                      hasMore
+                                          ? Container(
+                                              padding: EdgeInsets.all(15),
+                                              color: Colors.white,
+                                              child: ButtonWidget(
+                                                title: 'Xem thêm',
+                                                onPressed: () => _getData(
+                                                    context,
+                                                    page: page),
+                                              ),
+                                            )
+                                          : SizedBox(),
+                                    ),
+                                ),
+                              ),
                             ),
                     ],
                   )),
@@ -157,14 +176,20 @@ class _BloodSugarTableCompareControllerState
         }));
   }
 
-  Widget _buildItem(
-      BuildContext context,
-      int index,
-      int time,
-      String preGlucose,
-      String postGlucose,
-      String? preGlucoseColor,
-      String? postGlucoseColor) {
+  _getData(
+    BuildContext context, {
+    required int page,
+  }) {
+    BlocProvider.of<GlucoseBloc>(context).add(FetchComparerGlucose(
+        currentDateTime:
+            (DateTime.now().millisecondsSinceEpoch ~/ 1000).toString(),
+        periodFilterType: widget.periodFilterType.toString(),
+        page: 1,
+        comparerType: widget.comparerType.toString()));
+  }
+
+  Widget _buildItem(BuildContext context, int time, String preGlucose,
+      String postGlucose, String? preGlucoseColor, String? postGlucoseColor) {
     final width = (MediaQuery.of(context).size.width - 32) / 3;
     return Container(
       child: Column(

@@ -275,15 +275,16 @@ class GlucoseClient extends FetchClient {
   //============ lấy so sánh =============/
 
   Future<List<ComparerModel>> fetchFlucoseComparer(String? currentDateTime,
-      String? periodFilterType, String? page, String? comparerType) async {
+      String? periodFilterType, int? page, String? comparerType) async {
     try {
       final Response response =
           await super.fetchData(url: '/App/Glucose/Comparer', params: {
         'currentDateTime': currentDateTime,
         'periodFilterType': periodFilterType,
-        'page': page,
-        'comparerType': comparerType
+        'page': page.toString(),
+        'comparerType': comparerType,
       });
+      
       if (response.statusCode == 200) {
         return ComparerModel.toList(response.data['data']);
       } else {

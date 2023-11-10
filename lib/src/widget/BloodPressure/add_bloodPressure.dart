@@ -17,6 +17,7 @@ import 'package:medical/src/modal/glucose/glucose_timeFrame.dart';
 import 'package:medical/src/repo/HbA1C/HbA1C_client.dart';
 import 'package:medical/src/repo/blood_pressure/bloodPressure_client.dart';
 import 'package:medical/src/repo/glucose/glucose_client.dart';
+import 'package:medical/src/utils/app_media_query.dart';
 import 'package:medical/src/widget/BloodSugar/widget/action_list_trend.dart';
 import 'package:medical/src/widget/HbA1C/widget/description/description.dart';
 import 'package:medical/src/widget/base/base_state.dart';
@@ -44,7 +45,8 @@ class AddBloodPressureController extends StatefulWidget {
 }
 
 class _AddBloodPressureControllerState
-    extends BaseState<AddBloodPressureController> {
+    extends BaseState<AddBloodPressureController>
+    with SingleTickerProviderStateMixin {
   TextEditingController _controllerSystolic = TextEditingController();
   TextEditingController _controllerDiastolic = TextEditingController();
   TextEditingController _controllerNote = TextEditingController();
@@ -64,9 +66,32 @@ class _AddBloodPressureControllerState
 
   ShortGuiModel? des;
 
+  late AnimationController _controller;
+  late Animation _animation;
+  FocusNode _focusNode = FocusNode();
+
+  animationFocus() {
+    _controller =
+        AnimationController(vsync: this, duration: Duration(milliseconds: 300));
+    _animation = Tween(begin: 10.0, end: AppMediaQuery.deviceHeight / 3)
+        .animate(_controller)
+      ..addListener(() {
+        setState(() {});
+      });
+
+    _focusNode.addListener(() {
+      if (_focusNode.hasFocus) {
+        _controller.forward();
+      } else {
+        _controller.reverse();
+      }
+    });
+  }
+
   @override
   void initState() {
     super.initState();
+    animationFocus();
     if (widget.type == 'update') {
       loadDataDetail();
     } else {
@@ -80,7 +105,7 @@ class _AddBloodPressureControllerState
     await TrackingManager.analytics.logScreenView(
         screenName: "kpi_blood_pressure_add",
         screenClass: "AddBloodPressureController");
-        
+
     AppSettings.currentScreenName = 'kpi_blood_pressure_add';
     await TrackingManager.analytics.logEvent(
       name: 'kpi_glycemic_add',
@@ -94,6 +119,8 @@ class _AddBloodPressureControllerState
 
   @override
   void dispose() {
+    _controller.dispose();
+    _focusNode.dispose();
     super.dispose();
   }
 
@@ -187,549 +214,573 @@ class _AddBloodPressureControllerState
                   ],
                 ),
                 Expanded(
-                  child: ListView(
-                      keyboardDismissBehavior:
-                          ScrollViewKeyboardDismissBehavior.onDrag,
-                      padding: EdgeInsets.all(0),
-                      children: [
-                        Padding(
+                  child: SingleChildScrollView(
+                    child: Column(
+                        // keyboardDismissBehavior:
+                        //     ScrollViewKeyboardDismissBehavior.onDrag,
+                        // padding: EdgeInsets.all(0),
+                        children: [
+                          Padding(
+                              padding: const EdgeInsets.only(
+                                  left: 16, right: 16, bottom: 16),
+                              child: isClicked
+                                  ? Description(
+                                      input: true,
+                                      data: des,
+                                      titleDetail: R
+                                          .string.blood_pressure_for_diabetes
+                                          .tr())
+                                  : SizedBox()),
+                          Padding(
                             padding: const EdgeInsets.only(
-                                left: 16, right: 16, bottom: 16),
-                            child: isClicked
-                                ? Description(
-                                    input: true,
-                                    data: des,
-                                    titleDetail: R
-                                        .string.blood_pressure_for_diabetes
-                                        .tr())
-                                : SizedBox()),
-                        Padding(
-                          padding: const EdgeInsets.only(
-                              bottom: 16, left: 16, right: 16),
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: R.color.white,
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                            padding: EdgeInsets.all(20),
-                            child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Row(children: [
-                                    Image.asset(R.drawable.ic_heart_rate,
-                                        width: 24, height: 24),
-                                    SizedBox(width: 8),
-                                    Text(R.string.systolic_diastolic.tr(),
-                                        style: TextStyle(
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.w600)),
-                                    // SizedBox(height: 16),
-                                  ]),
-                                  SizedBox(height: 8),
-                                  Center(
-                                    child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          Column(
-                                            children: [
-                                              Container(
-                                                width: 80,
-                                                child: TextField(
-                                                    autofocus:
-                                                        widget.type != 'update',
-                                                    onChanged: (value) {
-                                                      checkValidateInput();
-                                                      if (value.length == 3) {
-                                                        diastolicFocus
-                                                            .requestFocus();
-                                                      }
-                                                    },
-                                                    controller:
-                                                        _controllerSystolic,
-                                                    inputFormatters: [
-                                                      LengthLimitingTextInputFormatter(
-                                                          3),
-                                                    ],
-                                                    textAlign: TextAlign.center,
-                                                    keyboardType:
-                                                        TextInputType.number,
-                                                    style: TextStyle(
-                                                        color: R.color.black,
-                                                        fontSize: 34,
-                                                        fontWeight:
-                                                            FontWeight.w500),
-                                                    decoration: InputDecoration(
-                                                        hintText: '-',
-                                                        counterText: '',
-                                                        contentPadding:
-                                                            EdgeInsets.only(
-                                                                bottom: 8),
-                                                        border:
-                                                            InputBorder.none,
-                                                        hintStyle: TextStyle(
-                                                            color: R.color
-                                                                .captionColorGray,
-                                                            fontSize: 34,
-                                                            fontWeight:
-                                                                FontWeight
-                                                                    .w500))),
-                                              ),
-                                              Container(
-                                                  height: 1,
-                                                  width: 54,
-                                                  color:
-                                                      R.color.color0xffE5E5E5)
-                                            ],
-                                          ),
-                                          Padding(
-                                            padding: const EdgeInsets.only(
-                                                bottom: 8.0),
-                                            child: Text('/',
-                                                style: TextStyle(
-                                                  fontSize: 30,
-                                                )),
-                                          ),
-                                          Column(
-                                            children: [
-                                              Container(
-                                                width: 80,
-                                                child: TextField(
-                                                    focusNode: diastolicFocus,
-                                                    onChanged: (value) {
-                                                      checkValidateInput();
-                                                      if (value.length == 3) {
-                                                        heartFocus
-                                                            .requestFocus();
-                                                      }
-                                                    },
-                                                    controller:
-                                                        _controllerDiastolic,
-                                                    inputFormatters: [
-                                                      LengthLimitingTextInputFormatter(
-                                                          3),
-                                                    ],
-                                                    textAlign: TextAlign.center,
-                                                    keyboardType:
-                                                        TextInputType.number,
-                                                    style: TextStyle(
-                                                        color: R.color.black,
-                                                        fontSize: 34,
-                                                        fontWeight:
-                                                            FontWeight.w500),
-                                                    decoration: InputDecoration(
-                                                        hintText: '-',
-                                                        contentPadding:
-                                                            EdgeInsets.only(
-                                                                bottom: 8),
-                                                        border:
-                                                            InputBorder.none,
-                                                        hintStyle: TextStyle(
-                                                            color: R.color
-                                                                .captionColorGray,
-                                                            fontSize: 34,
-                                                            fontWeight:
-                                                                FontWeight
-                                                                    .w500))),
-                                              ),
-                                              Container(
-                                                  height: 1,
-                                                  width: 54,
-                                                  color:
-                                                      R.color.color0xffE5E5E5)
-                                            ],
-                                          ),
-                                          Text(R.string.mm_hg.tr(),
-                                              style: TextStyle(
-                                                  fontSize: 16,
-                                                  fontWeight: FontWeight.w400))
-                                        ]),
-                                  ),
-                                  textValidate!.isNotEmpty
-                                      ? Column(
-                                          children: [
-                                            SizedBox(
-                                              height: 10,
-                                            ),
-                                            Text(textValidate!,
-                                                textAlign: TextAlign.center,
-                                                style: TextStyle(
-                                                    fontSize: 14,
-                                                    color: R.color.red,
-                                                    fontWeight:
-                                                        FontWeight.w400)),
-                                          ],
-                                        )
-                                      : SizedBox(),
-                                ]),
-                          ),
-                        ),
-                        textValidate!.isEmpty && _controllerReason.text.isEmpty
-                            ? SizedBox()
-                            : Padding(
-                                padding: const EdgeInsets.only(
-                                    bottom: 16, left: 16, right: 16),
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    color: R.color.white,
-                                    borderRadius: BorderRadius.circular(16),
-                                  ),
-                                  padding: EdgeInsets.all(16),
-                                  child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Row(children: [
-                                          Image.asset(R.drawable.ic_note_text,
-                                              width: 24, height: 24),
-                                          SizedBox(width: 8),
-                                          Text(R.string.ly_do.tr(),
-                                              style: TextStyle(
-                                                  fontSize: 16,
-                                                  fontWeight: FontWeight.w600))
-                                        ]),
-                                        SizedBox(height: 16),
-                                        TextField(
-                                            controller: _controllerReason,
-                                            style: TextStyle(
-                                                color: R.color.black,
-                                                fontSize: 16,
-                                                fontWeight: FontWeight.w400),
-                                            decoration: InputDecoration(
-                                                hintText:
-                                                    R.string.nhap_ly_do.tr(),
-                                                contentPadding:
-                                                    EdgeInsets.only(bottom: 8),
-                                                border: InputBorder.none,
-                                                hintStyle: TextStyle(
-                                                    fontSize: 16,
-                                                    fontWeight: FontWeight.w400,
-                                                    color: R.color
-                                                        .primaryGreyColor))),
-                                        Container(
-                                            height: 1,
-                                            color: R.color.color0xffE5E5E5),
-                                        SizedBox(height: 8),
-                                      ]),
-                                ),
+                                bottom: 16, left: 16, right: 16),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: R.color.white,
+                                borderRadius: BorderRadius.circular(16),
                               ),
-                        Padding(
-                          padding: const EdgeInsets.only(
-                              bottom: 16, left: 16, right: 16),
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: R.color.white,
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                            padding: EdgeInsets.all(16),
-                            child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Row(children: [
-                                    Image.asset(R.drawable.ic_heart,
-                                        width: 24, height: 24),
-                                    SizedBox(width: 8),
-                                    Text(R.string.heart_rate.tr(),
-                                        style: TextStyle(
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.w600))
-                                  ]),
-                                  SizedBox(height: 24),
-                                  Center(
-                                    child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          Column(
-                                            children: [
-                                              Container(
-                                                width: 80,
-                                                child: TextField(
-                                                    focusNode: heartFocus,
-                                                    controller:
-                                                        _controllerHeart,
-                                                    textAlign: TextAlign.center,
-                                                    maxLength: 3,
-                                                    keyboardType:
-                                                        TextInputType.number,
-                                                    style: TextStyle(
-                                                        color: R.color.black,
-                                                        fontSize: 34,
-                                                        fontWeight:
-                                                            FontWeight.w500),
-                                                    decoration: InputDecoration(
-                                                        hintText: '-',
-                                                        counterText: '',
-                                                        contentPadding:
-                                                            EdgeInsets.only(
-                                                                bottom: 8),
-                                                        border:
-                                                            InputBorder.none,
-                                                        hintStyle: TextStyle(
-                                                            color: R.color
-                                                                .captionColorGray,
-                                                            fontSize: 34,
-                                                            fontWeight:
-                                                                FontWeight
-                                                                    .w500))),
-                                              ),
-                                              Container(
-                                                  height: 1,
-                                                  width: 54,
-                                                  color:
-                                                      R.color.color0xffE5E5E5)
-                                            ],
-                                          ),
-                                          Text(R.string.time_per_minute.tr(),
-                                              style: TextStyle(
-                                                  fontSize: 16,
-                                                  fontWeight: FontWeight.w400))
-                                        ]),
-                                  ),
-                                  SizedBox(height: 8),
-                                ]),
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(
-                              bottom: 16, left: 16, right: 16),
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: R.color.white,
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                            padding: EdgeInsets.all(16),
-                            child: Column(children: [
-                              GestureDetector(
-                                onTap: () {
-                                  showDialog(
-                                    barrierColor: R.color.color0xff003F38
-                                        .withOpacity(0.5),
-                                    context: context,
-                                    builder: (_) => DateMultiPicker(
-                                      initDate: selectedDate,
-                                      callback: (date) {
-                                        setState(() {
-                                          selectedDate = date ?? DateTime.now();
-                                        });
-                                        loadTimeFrame();
-                                      },
-                                      // selectedHour: (hour) {
-                                      //   setState(() {
-                                      //     selectedHour = hour;
-                                      //   });
-                                      // },
-                                      // selectedMinute: (minute) {
-                                      //   setState(() {
-                                      //     selectedMinute = minute;
-                                      //   });
-                                      // },
-                                    ),
-                                  );
-                                },
-                                child: Container(
-                                  color: R.color.transparent,
-                                  child: Column(children: [
-                                    Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Image.asset(R.drawable.ic_calendar,
-                                              width: 24, height: 24),
-                                          SizedBox(width: 8),
-                                          Row(
-                                            children: [
-                                              Text(
-                                                  convertToUTC(
-                                                      selectedDate
-                                                              .millisecondsSinceEpoch ~/
-                                                          1000,
-                                                      'HH:mm - dd/MM/yyyy'),
+                              padding: EdgeInsets.all(20),
+                              child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(children: [
+                                      Image.asset(R.drawable.ic_heart_rate,
+                                          width: 24, height: 24),
+                                      SizedBox(width: 8),
+                                      Text(R.string.systolic_diastolic.tr(),
+                                          style: TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w600)),
+                                      // SizedBox(height: 16),
+                                    ]),
+                                    SizedBox(height: 8),
+                                    Center(
+                                      child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            Column(
+                                              children: [
+                                                Container(
+                                                  width: 80,
+                                                  child: TextField(
+                                                      autofocus: widget.type !=
+                                                          'update',
+                                                      onChanged: (value) {
+                                                        checkValidateInput();
+                                                        if (value.length == 3) {
+                                                          diastolicFocus
+                                                              .requestFocus();
+                                                        }
+                                                      },
+                                                      controller:
+                                                          _controllerSystolic,
+                                                      inputFormatters: [
+                                                        LengthLimitingTextInputFormatter(
+                                                            3),
+                                                      ],
+                                                      textAlign:
+                                                          TextAlign.center,
+                                                      keyboardType:
+                                                          TextInputType.number,
+                                                      style: TextStyle(
+                                                          color: R.color.black,
+                                                          fontSize: 34,
+                                                          fontWeight:
+                                                              FontWeight.w500),
+                                                      decoration: InputDecoration(
+                                                          hintText: '-',
+                                                          counterText: '',
+                                                          contentPadding:
+                                                              EdgeInsets.only(
+                                                                  bottom: 8),
+                                                          border:
+                                                              InputBorder.none,
+                                                          hintStyle: TextStyle(
+                                                              color: R.color
+                                                                  .captionColorGray,
+                                                              fontSize: 34,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w500))),
+                                                ),
+                                                Container(
+                                                    height: 1,
+                                                    width: 54,
+                                                    color:
+                                                        R.color.color0xffE5E5E5)
+                                              ],
+                                            ),
+                                            Padding(
+                                              padding: const EdgeInsets.only(
+                                                  bottom: 8.0),
+                                              child: Text('/',
                                                   style: TextStyle(
-                                                      color: R.color.textDark,
-                                                      fontSize: 16,
+                                                    fontSize: 30,
+                                                  )),
+                                            ),
+                                            Column(
+                                              children: [
+                                                Container(
+                                                  width: 80,
+                                                  child: TextField(
+                                                      focusNode: diastolicFocus,
+                                                      onChanged: (value) {
+                                                        checkValidateInput();
+                                                        if (value.length == 3) {
+                                                          heartFocus
+                                                              .requestFocus();
+                                                        }
+                                                      },
+                                                      controller:
+                                                          _controllerDiastolic,
+                                                      inputFormatters: [
+                                                        LengthLimitingTextInputFormatter(
+                                                            3),
+                                                      ],
+                                                      textAlign:
+                                                          TextAlign.center,
+                                                      keyboardType:
+                                                          TextInputType.number,
+                                                      style: TextStyle(
+                                                          color: R.color.black,
+                                                          fontSize: 34,
+                                                          fontWeight:
+                                                              FontWeight.w500),
+                                                      decoration: InputDecoration(
+                                                          hintText: '-',
+                                                          contentPadding:
+                                                              EdgeInsets.only(
+                                                                  bottom: 8),
+                                                          border:
+                                                              InputBorder.none,
+                                                          hintStyle: TextStyle(
+                                                              color: R.color
+                                                                  .captionColorGray,
+                                                              fontSize: 34,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w500))),
+                                                ),
+                                                Container(
+                                                    height: 1,
+                                                    width: 54,
+                                                    color:
+                                                        R.color.color0xffE5E5E5)
+                                              ],
+                                            ),
+                                            Text(R.string.mm_hg.tr(),
+                                                style: TextStyle(
+                                                    fontSize: 16,
+                                                    fontWeight:
+                                                        FontWeight.w400))
+                                          ]),
+                                    ),
+                                    textValidate!.isNotEmpty
+                                        ? Column(
+                                            children: [
+                                              SizedBox(
+                                                height: 10,
+                                              ),
+                                              Text(textValidate!,
+                                                  textAlign: TextAlign.center,
+                                                  style: TextStyle(
+                                                      fontSize: 14,
+                                                      color: R.color.red,
                                                       fontWeight:
                                                           FontWeight.w400)),
                                             ],
                                           )
-                                        ]),
-                                    SizedBox(height: 16),
-                                    Container(
-                                        height: 1,
-                                        color: R.color.color0xffE5E5E5),
-                                    SizedBox(height: 8),
+                                        : SizedBox(),
                                   ]),
-                                ),
-                              )
-                            ]),
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(
-                              bottom: 16, left: 16, right: 16),
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: R.color.white,
-                              borderRadius: BorderRadius.circular(16),
                             ),
-                            padding: EdgeInsets.all(16),
-                            child: Column(children: [
-                              GestureDetector(
-                                onTap: () {
-                                  showActionFilter(context);
-                                },
-                                child: Container(
-                                  color: R.color.transparent,
-                                  child: Column(children: [
-                                    Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
+                          ),
+                          textValidate!.isEmpty &&
+                                  _controllerReason.text.isEmpty
+                              ? SizedBox()
+                              : Padding(
+                                  padding: const EdgeInsets.only(
+                                      bottom: 16, left: 16, right: 16),
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      color: R.color.white,
+                                      borderRadius: BorderRadius.circular(16),
+                                    ),
+                                    padding: EdgeInsets.all(16),
+                                    child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
                                         children: [
-                                          Image.asset(R.drawable.ic_clock,
-                                              width: 24, height: 24),
-                                          SizedBox(width: 8),
-                                          Text(
-                                              selectedTimeFrame == null
-                                                  ? R.string.chon_khung_gio.tr()
-                                                  : selectedTimeFrame!.name!,
+                                          Row(children: [
+                                            Image.asset(R.drawable.ic_note_text,
+                                                width: 24, height: 24),
+                                            SizedBox(width: 8),
+                                            Text(R.string.ly_do.tr(),
+                                                style: TextStyle(
+                                                    fontSize: 16,
+                                                    fontWeight:
+                                                        FontWeight.w600))
+                                          ]),
+                                          SizedBox(height: 16),
+                                          TextField(
+                                              controller: _controllerReason,
                                               style: TextStyle(
+                                                  color: R.color.black,
                                                   fontSize: 16,
-                                                  fontWeight: FontWeight.w400))
+                                                  fontWeight: FontWeight.w400),
+                                              decoration: InputDecoration(
+                                                  hintText:
+                                                      R.string.nhap_ly_do.tr(),
+                                                  contentPadding:
+                                                      EdgeInsets.only(
+                                                          bottom: 8),
+                                                  border: InputBorder.none,
+                                                  hintStyle: TextStyle(
+                                                      fontSize: 16,
+                                                      fontWeight:
+                                                          FontWeight.w400,
+                                                      color: R.color
+                                                          .primaryGreyColor))),
+                                          Container(
+                                              height: 1,
+                                              color: R.color.color0xffE5E5E5),
+                                          SizedBox(height: 8),
                                         ]),
-                                    SizedBox(height: 16),
+                                  ),
+                                ),
+                          Padding(
+                            padding: const EdgeInsets.only(
+                                bottom: 16, left: 16, right: 16),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: R.color.white,
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                              padding: EdgeInsets.all(16),
+                              child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(children: [
+                                      Image.asset(R.drawable.ic_heart,
+                                          width: 24, height: 24),
+                                      SizedBox(width: 8),
+                                      Text(R.string.heart_rate.tr(),
+                                          style: TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w600))
+                                    ]),
+                                    SizedBox(height: 24),
+                                    Center(
+                                      child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            Column(
+                                              children: [
+                                                Container(
+                                                  width: 80,
+                                                  child: TextField(
+                                                      focusNode: heartFocus,
+                                                      controller:
+                                                          _controllerHeart,
+                                                      textAlign:
+                                                          TextAlign.center,
+                                                      maxLength: 3,
+                                                      keyboardType:
+                                                          TextInputType.number,
+                                                      style: TextStyle(
+                                                          color: R.color.black,
+                                                          fontSize: 34,
+                                                          fontWeight:
+                                                              FontWeight.w500),
+                                                      decoration: InputDecoration(
+                                                          hintText: '-',
+                                                          counterText: '',
+                                                          contentPadding:
+                                                              EdgeInsets.only(
+                                                                  bottom: 8),
+                                                          border:
+                                                              InputBorder.none,
+                                                          hintStyle: TextStyle(
+                                                              color: R.color
+                                                                  .captionColorGray,
+                                                              fontSize: 34,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w500))),
+                                                ),
+                                                Container(
+                                                    height: 1,
+                                                    width: 54,
+                                                    color:
+                                                        R.color.color0xffE5E5E5)
+                                              ],
+                                            ),
+                                            Text(R.string.time_per_minute.tr(),
+                                                style: TextStyle(
+                                                    fontSize: 16,
+                                                    fontWeight:
+                                                        FontWeight.w400))
+                                          ]),
+                                    ),
+                                    SizedBox(height: 8),
+                                  ]),
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(
+                                bottom: 16, left: 16, right: 16),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: R.color.white,
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                              padding: EdgeInsets.all(16),
+                              child: Column(children: [
+                                GestureDetector(
+                                  onTap: () {
+                                    showDialog(
+                                      barrierColor: R.color.color0xff003F38
+                                          .withOpacity(0.5),
+                                      context: context,
+                                      builder: (_) => DateMultiPicker(
+                                        initDate: selectedDate,
+                                        callback: (date) {
+                                          setState(() {
+                                            selectedDate =
+                                                date ?? DateTime.now();
+                                          });
+                                          loadTimeFrame();
+                                        },
+                                        // selectedHour: (hour) {
+                                        //   setState(() {
+                                        //     selectedHour = hour;
+                                        //   });
+                                        // },
+                                        // selectedMinute: (minute) {
+                                        //   setState(() {
+                                        //     selectedMinute = minute;
+                                        //   });
+                                        // },
+                                      ),
+                                    );
+                                  },
+                                  child: Container(
+                                    color: R.color.transparent,
+                                    child: Column(children: [
+                                      Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Image.asset(R.drawable.ic_calendar,
+                                                width: 24, height: 24),
+                                            SizedBox(width: 8),
+                                            Row(
+                                              children: [
+                                                Text(
+                                                    convertToUTC(
+                                                        selectedDate
+                                                                .millisecondsSinceEpoch ~/
+                                                            1000,
+                                                        'HH:mm - dd/MM/yyyy'),
+                                                    style: TextStyle(
+                                                        color: R.color.textDark,
+                                                        fontSize: 16,
+                                                        fontWeight:
+                                                            FontWeight.w400)),
+                                              ],
+                                            )
+                                          ]),
+                                      SizedBox(height: 16),
+                                      Container(
+                                          height: 1,
+                                          color: R.color.color0xffE5E5E5),
+                                      SizedBox(height: 8),
+                                    ]),
+                                  ),
+                                )
+                              ]),
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(
+                                bottom: 16, left: 16, right: 16),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: R.color.white,
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                              padding: EdgeInsets.all(16),
+                              child: Column(children: [
+                                GestureDetector(
+                                  onTap: () {
+                                    showActionFilter(context);
+                                  },
+                                  child: Container(
+                                    color: R.color.transparent,
+                                    child: Column(children: [
+                                      Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Image.asset(R.drawable.ic_clock,
+                                                width: 24, height: 24),
+                                            SizedBox(width: 8),
+                                            Text(
+                                                selectedTimeFrame == null
+                                                    ? R.string.chon_khung_gio
+                                                        .tr()
+                                                    : selectedTimeFrame!.name!,
+                                                style: TextStyle(
+                                                    fontSize: 16,
+                                                    fontWeight:
+                                                        FontWeight.w400))
+                                          ]),
+                                      SizedBox(height: 16),
+                                      Container(
+                                          height: 1,
+                                          color: R.color.color0xffE5E5E5),
+                                      SizedBox(height: 8),
+                                    ]),
+                                  ),
+                                )
+                              ]),
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(
+                                bottom: 16, left: 16, right: 16),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: R.color.white,
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                              padding: EdgeInsets.all(16),
+                              child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(children: [
+                                      Image.asset(R.drawable.ic_note_text,
+                                          width: 24, height: 24),
+                                      SizedBox(width: 8),
+                                      Text(R.string.ghi_chu.tr(),
+                                          style: TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w600))
+                                    ]),
+                                    SizedBox(height: 24),
+                                    InkWell(
+                                      splashColor: Colors.transparent,
+                                      onTap: () {
+                                        FocusScope.of(context)
+                                            .requestFocus(FocusNode());
+                                      },
+                                      child: TextFormField(
+                                          focusNode: _focusNode,
+                                          controller: _controllerNote,
+                                          style: TextStyle(
+                                              color: R.color.black,
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w400),
+                                          decoration: InputDecoration(
+                                              hintText: R
+                                                  .string.nhap_ghi_chu_cua_ban
+                                                  .tr(),
+                                              contentPadding:
+                                                  EdgeInsets.only(bottom: 8),
+                                              border: InputBorder.none,
+                                              hintStyle: TextStyle(
+                                                  fontSize: 16,
+                                                  fontWeight: FontWeight.w400,
+                                                  color: R.color
+                                                      .primaryGreyColor))),
+                                    ),
                                     Container(
                                         height: 1,
                                         color: R.color.color0xffE5E5E5),
                                     SizedBox(height: 8),
-                                  ]),
-                                ),
-                              )
-                            ]),
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(
-                              bottom: 16, left: 16, right: 16),
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: R.color.white,
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                            padding: EdgeInsets.all(16),
-                            child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Row(children: [
-                                    Image.asset(R.drawable.ic_note_text,
-                                        width: 24, height: 24),
-                                    SizedBox(width: 8),
-                                    Text(R.string.ghi_chu.tr(),
-                                        style: TextStyle(
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.w600))
-                                  ]),
-                                  SizedBox(height: 24),
-                                  TextField(
-                                      controller: _controllerNote,
-                                      style: TextStyle(
-                                          color: R.color.black,
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w400),
-                                      decoration: InputDecoration(
-                                          hintText: R
-                                              .string.nhap_ghi_chu_cua_ban
-                                              .tr(),
-                                          contentPadding:
-                                              EdgeInsets.only(bottom: 8),
-                                          border: InputBorder.none,
-                                          hintStyle: TextStyle(
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.w400,
-                                              color:
-                                                  R.color.primaryGreyColor))),
-                                  Container(
-                                      height: 1,
-                                      color: R.color.color0xffE5E5E5),
-                                  SizedBox(height: 8),
-                                  GridView.builder(
-                                      physics: NeverScrollableScrollPhysics(),
-                                      shrinkWrap: true,
-                                      itemCount: files.length + 1,
-                                      gridDelegate:
-                                          SliverGridDelegateWithFixedCrossAxisCount(
-                                              crossAxisCount: 3,
-                                              childAspectRatio: 1,
-                                              crossAxisSpacing: 16,
-                                              mainAxisSpacing: 16),
-                                      itemBuilder:
-                                          (BuildContext context, int index) {
-                                        return GestureDetector(
-                                            onTap: () {
-                                              if (index == files.length) {
-                                                showActionSheet(context);
-                                              }
-                                            },
-                                            child: index == files.length
-                                                ? ButtonAddPhoto()
-                                                : GestureDetector(
-                                                    onTap: () {
-                                                      Navigator.pushNamed(
-                                                          context,
-                                                          '/photo_view',
-                                                          arguments: {
-                                                            'files': files,
-                                                            'index': index
-                                                          });
-                                                    },
-                                                    child: Stack(
-                                                        alignment:
-                                                            AlignmentDirectional
-                                                                .topEnd,
-                                                        children: [
-                                                          Positioned.fill(
-                                                            child: files[index]
-                                                                    is PickedFile
-                                                                ? Image.file(
-                                                                    File(files[
-                                                                            index]
-                                                                        .path),
-                                                                    fit: BoxFit
-                                                                        .cover,
-                                                                  )
-                                                                : NetWorkImageWidget(
-                                                                    imageUrl:
-                                                                        files[index]
-                                                                            .url,
-                                                                    fit: BoxFit
-                                                                        .cover),
-                                                          ),
-                                                          IconButton(
-                                                              icon: Image.asset(R
-                                                                  .drawable
-                                                                  .ic_trash),
-                                                              onPressed: () {
-                                                                setState(() {
-                                                                  if (files[
+                                    GridView.builder(
+                                        physics: NeverScrollableScrollPhysics(),
+                                        shrinkWrap: true,
+                                        itemCount: files.length + 1,
+                                        gridDelegate:
+                                            SliverGridDelegateWithFixedCrossAxisCount(
+                                                crossAxisCount: 3,
+                                                childAspectRatio: 1,
+                                                crossAxisSpacing: 16,
+                                                mainAxisSpacing: 16),
+                                        itemBuilder:
+                                            (BuildContext context, int index) {
+                                          return GestureDetector(
+                                              onTap: () {
+                                                if (index == files.length) {
+                                                  showActionSheet(context);
+                                                }
+                                              },
+                                              child: index == files.length
+                                                  ? ButtonAddPhoto()
+                                                  : GestureDetector(
+                                                      onTap: () {
+                                                        Navigator.pushNamed(
+                                                            context,
+                                                            '/photo_view',
+                                                            arguments: {
+                                                              'files': files,
+                                                              'index': index
+                                                            });
+                                                      },
+                                                      child: Stack(
+                                                          alignment:
+                                                              AlignmentDirectional
+                                                                  .topEnd,
+                                                          children: [
+                                                            Positioned.fill(
+                                                              child: files[
                                                                           index]
-                                                                      is PickedFile) {
-                                                                    files.removeAt(
-                                                                        index);
-                                                                  } else {
-                                                                    removeIDs.add(
-                                                                        files[index]
-                                                                            .id);
-                                                                    files.removeAt(
-                                                                        index);
-                                                                  }
-                                                                });
-                                                              })
-                                                        ]),
-                                                  ));
-                                      })
-                                ]),
+                                                                      is PickedFile
+                                                                  ? Image.file(
+                                                                      File(files[
+                                                                              index]
+                                                                          .path),
+                                                                      fit: BoxFit
+                                                                          .cover,
+                                                                    )
+                                                                  : NetWorkImageWidget(
+                                                                      imageUrl:
+                                                                          files[index]
+                                                                              .url,
+                                                                      fit: BoxFit
+                                                                          .cover),
+                                                            ),
+                                                            IconButton(
+                                                                icon: Image.asset(R
+                                                                    .drawable
+                                                                    .ic_trash),
+                                                                onPressed: () {
+                                                                  setState(() {
+                                                                    if (files[
+                                                                            index]
+                                                                        is PickedFile) {
+                                                                      files.removeAt(
+                                                                          index);
+                                                                    } else {
+                                                                      removeIDs.add(
+                                                                          files[index]
+                                                                              .id);
+                                                                      files.removeAt(
+                                                                          index);
+                                                                    }
+                                                                  });
+                                                                })
+                                                          ]),
+                                                    ));
+                                        }),
+                                    SizedBox(height: _animation.value),
+                                  ]),
+                            ),
                           ),
-                        ),
-                      ]),
+                        ]),
+                  ),
                 ),
                 widget.type == 'input'
                     ? GestureDetector(

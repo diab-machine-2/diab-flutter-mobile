@@ -55,7 +55,7 @@ class BloodSugarCompareChartState extends State<BloodSugarCompareChart>
                 currentDateTime:
                     (DateTime.now().millisecondsSinceEpoch ~/ 1000).toString(),
                 periodFilterType: periodFilterType.toString(),
-                page: '1',
+                page: 1,
                 comparerType: comparerType.toString()));
           }
           if (state is GlucoseError) {
@@ -320,12 +320,14 @@ class BloodSugarCompareChartState extends State<BloodSugarCompareChart>
           ]),
           SizedBox(height: 16),
           GestureDetector(
-            onTap: () {
-              print(name);
-              Navigator.pushNamed(
+            onTap: () => Navigator.pushNamed(
                   context, NavigatorName.blood_sugar_compare_table,
-                  arguments: {'model': model, 'title': name});
-            },
+                  arguments: {
+                    'model': model,
+                    'title': name,
+                    'comparerType': comparerType,
+                    'periodFilterType': periodFilterType,
+                  }),
             child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
               Text(R.string.xem_chi_tiet.tr(),
                   style: TextStyle(color: R.color.mainColor)),
@@ -394,7 +396,7 @@ class BloodSugarCompareChartState extends State<BloodSugarCompareChart>
         currentDateTime:
             (DateTime.now().millisecondsSinceEpoch ~/ 1000).toString(),
         periodFilterType: periodFilterType.toString(),
-        page: '1',
+        page: 1,
         comparerType: comparerType.toString()));
   }
 }

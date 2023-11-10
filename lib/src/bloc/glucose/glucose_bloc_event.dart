@@ -34,7 +34,7 @@ class FetchInputGlucose extends GlucoseEvent {
 class FetchComparerGlucose extends GlucoseEvent {
   final String? currentDateTime;
   final String? periodFilterType;
-  final String? page;
+  final int? page;
   final String? comparerType;
 
   FetchComparerGlucose(
