@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
+import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/BloodSugar/widget/bloodSugar_chart.dart';
 import 'package:medical/src/widget/BloodSugar/widget/bloodSugar_compare_chart.dart';
 import 'package:medical/src/widget/HbA1C/widget/course_suggest.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'widget/bloodSugar_contain_detail.dart';
+import 'widget/blood_glucose_item.dart';
 
 class BloodSugarOverviewController extends StatefulWidget {
   BloodSugarOverviewController({Key? key}) : super(key: key);
@@ -20,6 +22,7 @@ class BloodSugarOverviewControllerState
   ScrollController _scrollController = ScrollController();
   GlobalKey<BloodSugarDetailState> sugarDetailKey = GlobalKey();
   GlobalKey<BloodSugarChartState> sugarChartKey = GlobalKey();
+  GlobalKey<BloodGlucoseItemState> latestDataKey = GlobalKey();
   GlobalKey<BloodSugarCompareChartState> sugarCompareKey = GlobalKey();
 
   @override
@@ -43,6 +46,9 @@ class BloodSugarOverviewControllerState
     if (sugarChartKey.currentState != null) {
       sugarChartKey.currentState!.reloadData(periodFilterType);
     }
+    if (latestDataKey.currentState != null) {
+      latestDataKey.currentState!.reloadData(periodFilterType);
+    }
     if (sugarCompareKey.currentState != null) {
       sugarCompareKey.currentState!.reloadData(periodFilterType);
     }
@@ -51,6 +57,7 @@ class BloodSugarOverviewControllerState
   @override
   bool get wantKeepAlive => true;
   Widget build(BuildContext context) {
+    bool isGestationalDiabetes = Utils.isGestationalDiabetes();
     super.build(context);
     return Scaffold(
         body: Container(
@@ -61,6 +68,7 @@ class BloodSugarOverviewControllerState
           controller: _scrollController,
           physics: ClampingScrollPhysics(),
           children: [
+            if (isGestationalDiabetes) BloodGlucoseItem(key: latestDataKey),
             BloodSugarDetail(key: sugarDetailKey),
             BloodSugarChart(key: sugarChartKey),
             BloodSugarCompareChart(key: sugarCompareKey),

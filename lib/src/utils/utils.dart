@@ -361,7 +361,7 @@ class Utils {
   static String getValueOfMonth(int month) {
     late String returnValue = '';
     String appLanguage = AppPreference().appLanguage;
-    if(appLanguage == 'vi') return "Tháng $month";
+    if (appLanguage == 'vi') return "Tháng $month";
     switch (month) {
       case 1:
         returnValue = "January";
@@ -464,6 +464,18 @@ class Utils {
     String returnValue =
         value.substring(0, 1).toUpperCase() + value.substring(1).toLowerCase();
     return returnValue;
+  }
+
+  // Kiểm tra trạng thái đang tiểu đường thai kỳ
+  static bool isGestationalDiabetes() {
+    bool result = false;
+    var user = AppSettings.userInfo!;
+    if (user.levelOfDiabetesRuleList != null) {
+      int indexWhere = user.levelOfDiabetesRuleList!.indexWhere(
+          (element) => element.selected == true && element.value == '3');
+      return !indexWhere.isNegative;
+    }
+    return result;
   }
 }
 

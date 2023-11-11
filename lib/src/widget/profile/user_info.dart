@@ -596,8 +596,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController>
                         if (isHasRoadMap)
                           _buildCardLayout(
                             title: R.string.match_coach.tr(),
-                            description:
-                                R.string.briefly_yourself,
+                            description: R.string.briefly_yourself,
                             children: [
                               _buildItemProfile(
                                 image: R.drawable.ic_person,
@@ -661,7 +660,8 @@ class _ProfileInfoControllerState extends State<ProfileInfoController>
                                     .where((e) => e.selected ?? false)
                                     .map((e) => e.text ?? '')
                                     .toList(),
-                                selectedDialogTitle: R.string.choose_sports.tr(),
+                                selectedDialogTitle:
+                                    R.string.choose_sports.tr(),
                                 isShowSelectedDialog: true,
                                 isRequiredSelection: false,
                                 isMultipleChoice: true,
@@ -749,8 +749,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController>
                               _buildItemProfile(
                                 icon: R.drawable.ic_user_schedule,
                                 title: 'Buổi sáng; Bao gồm thứ 7',
-                                subTitle:
-                                    R.string.available_time_slot.tr(),
+                                subTitle: R.string.available_time_slot.tr(),
                                 subIcon: Image.asset(R.drawable.ic_right,
                                     width: 18, height: 18),
                                 elementList: user.workingHourRuleList!

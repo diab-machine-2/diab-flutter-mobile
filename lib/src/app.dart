@@ -75,6 +75,7 @@ import 'package:medical/src/widget/voucher/presentation/voucher_list/pages/vouch
 import 'package:medical/src/widget/zoom/zoom_android_view.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'utils/navigator_name.dart';
+import 'widget/BloodSugar/add_bloodSugar_new.dart';
 import 'widget/Food/add_food.dart';
 import 'widget/helper/photo_view.dart';
 import 'widget/news_detail/presentation/news_detail_view.dart';
@@ -280,6 +281,15 @@ class _AppState extends State<App> {
                       return _buildRoute(
                           settings,
                           AddBloodSugarController(
+                            type: data?['type'],
+                            id: data?['id'],
+                            goalId: data?['goalId'],
+                          ));
+                    case NavigatorName.add_blood_sugar_new:
+                      final data = settings.arguments as Map<String, dynamic>?;
+                      return _buildRoute(
+                          settings,
+                          AddBloodSugarControllerNew(
                             type: data?['type'],
                             id: data?['id'],
                             goalId: data?['goalId'],

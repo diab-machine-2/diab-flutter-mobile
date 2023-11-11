@@ -22,6 +22,7 @@ import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widgets/btn_add_photo.dart';
+import 'package:medical/src/widgets/spacing_row.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:image_picker/image_picker.dart';
@@ -31,19 +32,20 @@ import '../../widgets/CalendarPicker/custom_date_picker.dart';
 import '../../widgets/network_image_widget.dart';
 import '../my_plan_screens/activity_tab/activity_tab/models/schedule_type.dart';
 
-class AddBloodSugarController extends StatefulWidget {
+class AddBloodSugarControllerNew extends StatefulWidget {
   final String? type;
   final String? id;
   final String? goalId;
 
-  AddBloodSugarController({this.type, this.id, this.goalId});
+  AddBloodSugarControllerNew({this.type, this.id, this.goalId});
 
   @override
-  _AddBloodSugarControllerState createState() =>
-      _AddBloodSugarControllerState();
+  _AddBloodSugarControllerNewState createState() =>
+      _AddBloodSugarControllerNewState();
 }
 
-class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController>
+class _AddBloodSugarControllerNewState
+    extends BaseState<AddBloodSugarControllerNew>
     with SingleTickerProviderStateMixin {
   TextEditingController _controller = TextEditingController();
   TextEditingController _controllerReason = TextEditingController();
@@ -69,6 +71,7 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController>
   late AnimationController _animtionController;
   late Animation _animation;
   FocusNode _focusNode = FocusNode();
+  FocusNode _focusNodeKPI = FocusNode();
 
   void initState() {
     animationFocus();
@@ -183,603 +186,32 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController>
                     fit: BoxFit.cover)),
             child: Column(
               children: [
-                CustomAppBar(
-                  backgroundColor: R.color.transparent,
-                  title: Text(
-                      widget.type == 'update'
-                          ? R.string.update_blood_sugar.tr()
-                          : R.string.enter_blood_sugar.tr(),
-                      style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w600,
-                          color: R.color.textDark)),
-                  leadingIcon: IconButton(
-                      splashColor: R.color.transparent,
-                      highlightColor: R.color.transparent,
-                      icon: Icon(Icons.arrow_back, color: R.color.textDark),
-                      onPressed: () {
-                        _showDialogSave();
-                      }),
-                  actions: [
-                    GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          isClicked = !isClicked;
-                        });
-                      },
-                      child: Padding(
-                        padding: const EdgeInsets.only(left: 16, right: 16),
-                        child: isClicked
-                            ? Image.asset(R.drawable.ic_help_circle_active,
-                                width: 24, height: 24)
-                            : Image.asset(R.drawable.ic_help_circle,
-                                width: 24, height: 24),
-                      ),
-                    ),
-                  ],
-                ),
+                _appBarSection(),
                 Expanded(
                   child: SingleChildScrollView(
-                    child: Column(
-                        // keyboardDismissBehavior:
-                        //     ScrollViewKeyboardDismissBehavior.onDrag,
-                        // padding: EdgeInsets.all(0),
-                        children: [
-                          Padding(
-                              padding: const EdgeInsets.only(
-                                  bottom: 16, left: 16, right: 16),
-                              child: isClicked
-                                  ? Description(
-                                      input: true,
-                                      data: des,
-                                      titleDetail: R
-                                          .string.blood_sugar_for_diabetes
-                                          .tr())
-                                  : SizedBox()),
-                          Padding(
-                            padding: const EdgeInsets.only(
-                                bottom: 16, left: 16, right: 16),
-                            child: Container(
-                              decoration: BoxDecoration(
-                                color: R.color.white,
-                                borderRadius: BorderRadius.circular(16),
-                              ),
-                              padding: EdgeInsets.all(20),
-                              child: Column(children: [
-                                Center(
-                                  child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        Container(
-                                          width: 80,
-                                          child: TextField(
-                                              controller: _controller,
-                                              maxLength: 3,
-                                              textAlign: TextAlign.center,
-                                              keyboardType: TextInputType
-                                                  .numberWithOptions(
-                                                      decimal: true),
-                                              style: TextStyle(
-                                                  color: R.color.black,
-                                                  fontSize: 34,
-                                                  fontWeight: FontWeight.w500),
-                                              decoration: InputDecoration(
-                                                  counterText: '',
-                                                  hintText: '0.0',
-                                                  contentPadding:
-                                                      EdgeInsets.only(
-                                                          bottom: 8),
-                                                  border: InputBorder.none,
-                                                  hintStyle: TextStyle(
-                                                      color: R.color
-                                                          .captionColorGray,
-                                                      fontSize: 34,
-                                                      fontWeight:
-                                                          FontWeight.w500)),
-                                              onChanged: (value) {
-                                                fromNipro = false;
-                                                final newValue =
-                                                    value.split(',').join('.');
-                                                number = newValue.isEmpty
-                                                    ? 0
-                                                    : double.parse(newValue);
-
-                                                setState(() {
-                                                  showReason = (AppSettings
-                                                                  .userInfo!
-                                                                  .glucoseUnit ==
-                                                              1
-                                                          ? (number! < 55 ||
-                                                              number! > 250)
-                                                          : (number! <
-                                                                  55 /
-                                                                      mmollToMgdlFactor ||
-                                                              number! >
-                                                                  250 /
-                                                                      mmollToMgdlFactor)) &&
-                                                      number! > 0;
-                                                });
-                                              }),
-                                        ),
-                                        Text(
-                                            AppSettings.userInfo!.glucoseUnit ==
-                                                    1
-                                                ? R.string.mg_dl.tr()
-                                                : R.string.mmol_l.tr(),
-                                            style: TextStyle(fontSize: 16))
-                                      ]),
-                                ),
-                                Center(
-                                    child: Container(
-                                        height: 1,
-                                        width: 74,
-                                        color: R.color.color0xffE5E5E5)),
-                                GestureDetector(
-                                  onTap: () async {
-                                    await changeUnit();
-                                    final glucose = roundAsFixed(
-                                        AppSettings.userInfo!.glucoseUnit == 1
-                                            ? number! * mmollToMgdlFactor
-                                            : number! / mmollToMgdlFactor);
-                                    _controller.text = glucose.toString();
-                                    number = glucose;
-                                    setState(() {});
-                                  },
-                                  child: Container(
-                                    margin: EdgeInsets.only(top: 20),
-                                    padding: EdgeInsets.all(12),
-                                    decoration: BoxDecoration(
-                                        color: Color(0xffE5F6F0),
-                                        borderRadius: BorderRadius.circular(8)),
-                                    child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          Image.asset(R.drawable.ic_change_unit,
-                                              height: 16),
-                                          SizedBox(width: 6),
-                                          Text(
-                                              'Chuyển đơn vị: ' +
-                                                  (AppSettings.userInfo!
-                                                              .glucoseUnit ==
-                                                          2
-                                                      ? R.string.mg_dl.tr()
-                                                      : R.string.mmol_l.tr()),
-                                              style: TextStyle(
-                                                  fontSize: 16,
-                                                  color: Color(0xff4BB2AB),
-                                                  fontWeight: FontWeight.w500))
-                                        ]),
-                                  ),
-                                ),
-                                // _controller.text.isEmpty
-                                //     ? SizedBox()
-                                //     : Padding(
-                                //         padding: EdgeInsets.only(top: 16),
-                                //         child: Row(
-                                //             mainAxisAlignment:
-                                //                 MainAxisAlignment.spaceBetween,
-                                //             children: [
-                                //               Row(children: [
-                                //                 Image.asset(R.drawable.ic_repeat,
-                                //                     width: 22, height: 22),
-                                //                 SizedBox(width: 8),
-                                //                 Text(
-                                //                     R.string.corresponding_to
-                                //                         .tr(),
-                                //                     style:
-                                //                         TextStyle(fontSize: 16))
-                                //               ]),
-                                //               Text(
-                                //                   roundNumber(roundAsFixed(AppSettings
-                                //                                       .userInfo!
-                                //                                       .glucoseUnit ==
-                                //                                   1
-                                //                               ? number! /
-                                //                                   mmollToMgdlFactor
-                                //                               : number! *
-                                //                                   mmollToMgdlFactor))
-                                //                           .toString() +
-                                //                       (AppSettings.userInfo!
-                                //                                   .glucoseUnit ==
-                                //                               2
-                                //                           ? ' ${R.string.mg_dl.tr()}'
-                                //                           : ' ${R.string.mmol_l.tr()}'),
-                                //                   style: TextStyle(fontSize: 16)),
-                                //             ]),
-                                //       ),
-                                SizedBox(height: 8),
-                                !showReason
-                                    ? SizedBox()
-                                    : Text(R.string.mes_unsafe_blood_sugar.tr(),
-                                        style: TextStyle(color: R.color.red),
-                                        textAlign: TextAlign.center)
-                              ]),
-                            ),
-                          ),
-                          //TODO: Kết nối máy đo đường huyết
-                          GestureDetector(
-                            onTap: () async {
-                              // Navigator.push(
-                              //     context,
-                              //     MaterialPageRoute(
-                              //         builder: (BuildContext context) =>
-                              //             RocheConnectionView()));
-                              final data = await Navigator.pushNamed(context,
-                                  NavigatorName.connection_instructions);
-                              if (data != null && data is Map) {
-                                fromNipro = true;
-
-                                if (AppSettings.userInfo!.glucoseUnit != 1) {
-                                  await changeUnit();
-                                }
-
-                                final glucose =
-                                    double.tryParse(data['glucose']) ?? 0;
-                                number = glucose;
-                                _controller.text = number.toString();
-
-                                showReason =
-                                    (AppSettings.userInfo!.glucoseUnit == 1
-                                            ? (number! < 55 || number! > 250)
-                                            : (number! <
-                                                    55 / mmollToMgdlFactor ||
-                                                number! >
-                                                    250 / mmollToMgdlFactor)) &&
-                                        number! > 0;
-                                selectedDate =
-                                    DateTime.fromMillisecondsSinceEpoch(
-                                        (int.tryParse(data['date']) ?? 0) *
-                                            1000);
-                                loadTimeFrame();
-                                setState(() {});
-                              }
-                            },
-                            child: Container(
-                                margin: EdgeInsets.only(
-                                    bottom: 16, left: 16, right: 16),
-                                padding: EdgeInsets.all(16),
-                                decoration: BoxDecoration(
-                                  color: R.color.white,
-                                  borderRadius: BorderRadius.circular(16),
-                                ),
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Row(
-                                      children: [
-                                        Image.asset(R.drawable.ic_device,
-                                            width: 24, height: 24),
-                                        SizedBox(width: 8),
-                                        Text('Kết nối thiết bị và app',
-                                            style: TextStyle(
-                                                fontSize: 16,
-                                                fontWeight: FontWeight.w700)),
-                                      ],
-                                    ),
-                                    Icon(Icons.navigate_next,
-                                        color: R.color.grayCaption)
-                                  ],
-                                )),
-                          ),
-                          !showReason
-                              ? SizedBox()
-                              : Padding(
-                                  padding: const EdgeInsets.only(
-                                      bottom: 16, left: 16, right: 16),
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                      color: R.color.white,
-                                      borderRadius: BorderRadius.circular(16),
-                                    ),
-                                    padding: EdgeInsets.all(16),
-                                    child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Row(children: [
-                                            Image.asset(R.drawable.ic_note_text,
-                                                width: 24, height: 24),
-                                            SizedBox(width: 8),
-                                            Text(R.string.ly_do.tr(),
-                                                style: TextStyle(
-                                                    fontSize: 16,
-                                                    fontWeight:
-                                                        FontWeight.w600))
-                                          ]),
-                                          SizedBox(height: 16),
-                                          TextField(
-                                              controller: _controllerReason,
-                                              style: TextStyle(
-                                                  color: R.color.black,
-                                                  fontSize: 16,
-                                                  fontWeight: FontWeight.w400),
-                                              decoration: InputDecoration(
-                                                  hintText:
-                                                      R.string.nhap_ly_do.tr(),
-                                                  contentPadding:
-                                                      EdgeInsets.only(
-                                                          bottom: 8),
-                                                  border: InputBorder.none,
-                                                  hintStyle: TextStyle(
-                                                      fontSize: 16,
-                                                      fontWeight:
-                                                          FontWeight.w400,
-                                                      color: R.color
-                                                          .primaryGreyColor))),
-                                          Container(
-                                              height: 1,
-                                              color: R.color.color0xffE5E5E5),
-                                          SizedBox(height: 8),
-                                        ]),
-                                  ),
-                                ),
-                          Padding(
-                            padding: const EdgeInsets.only(
-                                bottom: 16, left: 16, right: 16),
-                            child: Container(
-                              decoration: BoxDecoration(
-                                color: R.color.white,
-                                borderRadius: BorderRadius.circular(16),
-                              ),
-                              padding: EdgeInsets.all(16),
-                              child: Column(children: [
-                                GestureDetector(
-                                  onTap: () async {
-                                    await TrackingManager.analytics.logEvent(
-                                        name: 'component_clicked',
-                                        parameters: {
-                                          "screen_name": 'kpi_glycemic_add',
-                                          'component_name':
-                                              'date_picker_glycemic',
-                                        });
-
-                                    showDialog(
-                                      barrierColor: R.color.color0xff003F38
-                                          .withOpacity(0.5),
-                                      context: context,
-                                      builder: (_) => DateMultiPicker(
-                                        initDate: selectedDate,
-                                        callback: (date) {
-                                          setState(() {
-                                            selectedDate =
-                                                date ?? DateTime.now();
-                                          });
-                                          loadTimeFrame();
-                                        },
-                                        // selectedHour: (hour) {
-                                        //   setState(() {
-                                        //     selectedHour = hour;
-                                        //   });
-                                        // },
-                                        // selectedMinute: (minute) {
-                                        //   setState(() {
-                                        //     selectedMinute = minute;
-                                        //   });
-                                        // },
-                                      ),
-                                    );
-                                  },
-                                  child: Container(
-                                    color: R.color.transparent,
-                                    child: Column(children: [
-                                      Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            Image.asset(R.drawable.ic_calendar,
-                                                width: 24, height: 24),
-                                            SizedBox(width: 8),
-                                            Text(
-                                                convertToUTC(
-                                                    selectedDate
-                                                            .millisecondsSinceEpoch ~/
-                                                        1000,
-                                                    'HH:mm - dd/MM/yyyy'),
-                                                style: TextStyle(
-                                                    fontSize: 16,
-                                                    fontWeight:
-                                                        FontWeight.w400))
-                                          ]),
-                                      SizedBox(height: 16),
-                                      Container(
-                                          height: 1,
-                                          color: R.color.color0xffE5E5E5),
-                                      SizedBox(height: 8),
-                                    ]),
-                                  ),
-                                )
-                              ]),
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(
-                                bottom: 16, left: 16, right: 16),
-                            child: Container(
-                              decoration: BoxDecoration(
-                                color: R.color.white,
-                                borderRadius: BorderRadius.circular(16),
-                              ),
-                              padding: EdgeInsets.all(16),
-                              child: Column(children: [
-                                GestureDetector(
-                                  onTap: () async {
-                                    await TrackingManager.analytics.logEvent(
-                                      name: 'component_clicked',
-                                      parameters: {
-                                        "screen_name": 'kpi_glycemic_add',
-                                        'component_name':
-                                            'time_section_glycemic',
-                                      },
-                                    );
-                                    showActionFilter(context);
-                                  },
-                                  child: Container(
-                                    color: R.color.transparent,
-                                    child: Column(children: [
-                                      Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            Image.asset(R.drawable.ic_clock,
-                                                width: 24, height: 24),
-                                            SizedBox(width: 8),
-                                            Text(
-                                                selectedTimeFrame == null
-                                                    ? R.string.chon_khung_gio
-                                                        .tr()
-                                                    : selectedTimeFrame!.name!,
-                                                style: TextStyle(
-                                                    fontSize: 16,
-                                                    fontWeight:
-                                                        FontWeight.w400))
-                                          ]),
-                                      SizedBox(height: 16),
-                                      Container(
-                                          height: 1,
-                                          color: R.color.color0xffE5E5E5),
-                                      SizedBox(height: 8),
-                                    ]),
-                                  ),
-                                )
-                              ]),
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(
-                                bottom: 16, left: 16, right: 16),
-                            child: Container(
-                              decoration: BoxDecoration(
-                                color: R.color.white,
-                                borderRadius: BorderRadius.circular(16),
-                              ),
-                              padding: EdgeInsets.all(16),
-                              child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Row(children: [
-                                      Image.asset(R.drawable.ic_note_text,
-                                          width: 24, height: 24),
-                                      SizedBox(width: 8),
-                                      Text(R.string.ghi_chu.tr(),
-                                          style: TextStyle(
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.w600))
-                                    ]),
-                                    SizedBox(height: 24),
-                                    InkWell(
-                                      splashColor: Colors.transparent,
-                                      onTap: () {
-                                        FocusScope.of(context)
-                                            .requestFocus(FocusNode());
-                                      },
-                                      child: TextField(
-                                          focusNode: _focusNode,
-                                          controller: _controllerNote,
-                                          style: TextStyle(
-                                              color: R.color.black,
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.w400),
-                                          decoration: InputDecoration(
-                                              hintText: R
-                                                  .string.nhap_ghi_chu_cua_ban
-                                                  .tr(),
-                                              contentPadding:
-                                                  EdgeInsets.only(bottom: 8),
-                                              border: InputBorder.none,
-                                              hintStyle: TextStyle(
-                                                  fontSize: 16,
-                                                  fontWeight: FontWeight.w400,
-                                                  color: R.color
-                                                      .primaryGreyColor))),
-                                    ),
-                                    Container(
-                                        height: 1,
-                                        color: R.color.color0xffE5E5E5),
-                                    SizedBox(height: 8),
-                                    GridView.builder(
-                                        physics: NeverScrollableScrollPhysics(),
-                                        shrinkWrap: true,
-                                        itemCount: files.length + 1,
-                                        gridDelegate:
-                                            SliverGridDelegateWithFixedCrossAxisCount(
-                                                crossAxisCount: 3,
-                                                childAspectRatio: 1,
-                                                crossAxisSpacing: 16,
-                                                mainAxisSpacing: 16),
-                                        itemBuilder:
-                                            (BuildContext context, int index) {
-                                          return GestureDetector(
-                                              onTap: () {
-                                                if (index == files.length) {
-                                                  showActionSheet(context);
-                                                }
-                                              },
-                                              child: index == files.length
-                                                  ? ButtonAddPhoto()
-                                                  : GestureDetector(
-                                                      onTap: () {
-                                                        Navigator.pushNamed(
-                                                            context,
-                                                            '/photo_view',
-                                                            arguments: {
-                                                              'files': files,
-                                                              'index': index
-                                                            });
-                                                      },
-                                                      child: Stack(
-                                                          alignment:
-                                                              AlignmentDirectional
-                                                                  .topEnd,
-                                                          children: [
-                                                            Positioned.fill(
-                                                              child: files[
-                                                                          index]
-                                                                      is PickedFile
-                                                                  ? Image.file(
-                                                                      File(files[
-                                                                              index]
-                                                                          .path),
-                                                                      fit: BoxFit
-                                                                          .cover,
-                                                                    )
-                                                                  : NetWorkImageWidget(
-                                                                      imageUrl:
-                                                                          files[index]
-                                                                              .url,
-                                                                      fit: BoxFit
-                                                                          .cover),
-                                                            ),
-                                                            IconButton(
-                                                                icon: Image.asset(R
-                                                                    .drawable
-                                                                    .ic_trash),
-                                                                onPressed: () {
-                                                                  setState(() {
-                                                                    if (files[
-                                                                            index]
-                                                                        is PickedFile) {
-                                                                      files.removeAt(
-                                                                          index);
-                                                                    } else {
-                                                                      removeIDs.add(
-                                                                          files[index]
-                                                                              .id);
-                                                                      files.removeAt(
-                                                                          index);
-                                                                    }
-                                                                  });
-                                                                })
-                                                          ]),
-                                                    ));
-                                        }),
-                                    SizedBox(height: _animation.value),
-                                  ]),
-                            ),
-                          ),
-                        ]),
+                    child: Column(children: [
+                      _inforSection(),
+                      Container(
+                        margin: const EdgeInsets.only(
+                            bottom: 16, left: 16, right: 16),
+                        decoration: BoxDecoration(
+                          color: R.color.white,
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        padding: EdgeInsets.all(20),
+                        child: SpacingColumn(
+                          spacing: 25,
+                          children: [
+                            _inputSection(),
+                            _bloodSugarRange(),
+                            _dateTimeSection(),
+                            _dateTimeFrame(),
+                          ],
+                        ),
+                      ),
+                      _selectImageSection(),
+                      _connectMachine(),
+                    ]),
                   ),
                 ),
                 widget.type == 'input'
@@ -791,25 +223,32 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController>
                           top: false,
                           //bottom: false,
                           child: Container(
-                              margin: EdgeInsets.only(top: 16, bottom: 16),
-                              height: 48,
-                              width: 195,
-                              decoration: BoxDecoration(
-                                  color: R.color.mainColor,
-                                  borderRadius: BorderRadius.circular(200),
-                                  gradient: LinearGradient(
-                                      begin: Alignment.topLeft,
-                                      end: Alignment.centerRight,
-                                      colors: [
-                                        R.color.greenGradientTop,
-                                        R.color.greenGradientBottom
-                                      ])),
-                              child: Center(
-                                  child: Text(R.string.save.tr(),
-                                      style: TextStyle(
-                                          color: R.color.white,
-                                          fontWeight: FontWeight.w600,
-                                          fontSize: 16)))),
+                            margin: EdgeInsets.only(top: 16, bottom: 16),
+                            height: 48,
+                            width: 195,
+                            decoration: BoxDecoration(
+                              color: R.color.mainColor,
+                              borderRadius: BorderRadius.circular(200),
+                              gradient: LinearGradient(
+                                begin: Alignment.topLeft,
+                                end: Alignment.centerRight,
+                                colors: [
+                                  R.color.greenGradientTop,
+                                  R.color.greenGradientBottom
+                                ],
+                              ),
+                            ),
+                            child: Center(
+                              child: Text(
+                                R.string.save.tr(),
+                                style: TextStyle(
+                                  color: R.color.white,
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 16,
+                                ),
+                              ),
+                            ),
+                          ),
                         ),
                       )
                     : SafeArea(
@@ -1417,6 +856,514 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController>
       builder: (BuildContext context) {
         return alert;
       },
+    );
+  }
+
+  Widget _appBarSection() {
+    return CustomAppBar(
+      backgroundColor: R.color.transparent,
+      title: Text(
+          widget.type == 'update'
+              ? R.string.update_blood_sugar.tr()
+              : R.string.enter_blood_sugar.tr(),
+          style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w600,
+              color: R.color.textDark)),
+      leadingIcon: IconButton(
+          splashColor: R.color.transparent,
+          highlightColor: R.color.transparent,
+          icon: Icon(Icons.arrow_back, color: R.color.textDark),
+          onPressed: () {
+            _showDialogSave();
+          }),
+      actions: [
+        GestureDetector(
+          onTap: () {
+            setState(() {
+              isClicked = !isClicked;
+            });
+          },
+          child: Padding(
+            padding: const EdgeInsets.only(left: 16, right: 16),
+            child: isClicked
+                ? Image.asset(R.drawable.ic_help_circle_active,
+                    width: 24, height: 24)
+                : Image.asset(R.drawable.ic_help_circle, width: 24, height: 24),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _inforSection() {
+    return Padding(
+        padding: const EdgeInsets.only(bottom: 16, left: 16, right: 16),
+        child: isClicked
+            ? Description(
+                input: true,
+                data: des,
+                titleDetail: R.string.blood_sugar_for_diabetes.tr())
+            : SizedBox());
+  }
+
+  Widget _inputSection() {
+    return SpacingColumn(
+      spacing: 20,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        SpacingRow(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            SizedBox(width: 90),
+            Container(
+              width: 100,
+              decoration: BoxDecoration(
+                  border: Border(
+                      bottom: BorderSide(color: R.color.color0xffE5E5E5))),
+              child: TextField(
+                focusNode: _focusNodeKPI,
+                controller: _controller,
+                maxLength: 3,
+                autofocus: true,
+                textAlign: TextAlign.center,
+                keyboardType: TextInputType.numberWithOptions(decimal: true),
+                style: TextStyle(
+                    color: R.color.black,
+                    fontSize: 48,
+                    fontFamily: 'Viga',
+                    fontWeight: FontWeight.w500),
+                decoration: InputDecoration(
+                  counterText: '',
+                  hintText: '0.0',
+                  contentPadding: EdgeInsets.only(bottom: 8),
+                  border: InputBorder.none,
+                  hintStyle: TextStyle(
+                      fontFamily: 'Viga',
+                      color: Color(0xffDDDDDD),
+                      fontSize: 48,
+                      fontWeight: FontWeight.w700),
+                ),
+                onChanged: (value) {
+                  fromNipro = false;
+                  final newValue = value.split(',').join('.');
+                  number = newValue.isEmpty ? 0 : double.parse(newValue);
+
+                  setState(() {
+                    showReason = (AppSettings.userInfo!.glucoseUnit == 1
+                            ? (number! < 55 || number! > 250)
+                            : (number! < 55 / mmollToMgdlFactor ||
+                                number! > 250 / mmollToMgdlFactor)) &&
+                        number! > 0;
+                  });
+                },
+              ),
+            ),
+            InkWell(
+              onTap: () async {
+                await changeUnit();
+                final glucose = roundAsFixed(
+                    AppSettings.userInfo!.glucoseUnit == 1
+                        ? number! * mmollToMgdlFactor
+                        : number! / mmollToMgdlFactor);
+                _controller.text = glucose.toString();
+                number = glucose;
+                setState(() {});
+              },
+              child: Container(
+                padding: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+                color: Colors.white,
+                child: SpacingRow(
+                  spacing: 10,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text(
+                      AppSettings.userInfo!.glucoseUnit == 1
+                          ? R.string.mg_dl.tr()
+                          : R.string.mmol_l.tr(),
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: R.color.captionColorGray,
+                      ),
+                    ),
+                    Image.asset(R.drawable.ic_change_unit, height: 16)
+                  ],
+                ),
+              ),
+            )
+          ],
+        ),
+        !showReason
+            ? SizedBox()
+            : Text(R.string.mes_unsafe_blood_sugar.tr(),
+                style: TextStyle(color: R.color.red),
+                textAlign: TextAlign.center)
+      ],
+    );
+  }
+
+  Widget _dateTimeSection() {
+    return Column(
+      children: [
+        GestureDetector(
+          onTap: () async {
+            await TrackingManager.analytics
+                .logEvent(name: 'component_clicked', parameters: {
+              "screen_name": 'kpi_glycemic_add',
+              'component_name': 'date_picker_glycemic',
+            });
+
+            showDialog(
+              barrierColor: R.color.color0xff003F38.withOpacity(0.5),
+              context: context,
+              builder: (_) => DateMultiPicker(
+                initDate: selectedDate,
+                callback: (date) {
+                  setState(() {
+                    selectedDate = date ?? DateTime.now();
+                  });
+                  loadTimeFrame();
+                },
+              ),
+            );
+          },
+          child: Container(
+            color: R.color.transparent,
+            child: Column(children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    convertToUTC(selectedDate.millisecondsSinceEpoch ~/ 1000,
+                        'HH:mm - dd/MM/yyyy'),
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w400),
+                  ),
+                  SizedBox(width: 8),
+                  Text(
+                    'Chỉnh sửa',
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: R.color.accentColor,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  )
+                ],
+              ),
+              SizedBox(height: 16),
+              Container(height: 1, color: R.color.color0xffE5E5E5),
+              SizedBox(height: 8),
+            ]),
+          ),
+        )
+      ],
+    );
+  }
+
+  Widget _dateTimeFrame() {
+    return Column(
+      children: [
+        GestureDetector(
+          onTap: () async {
+            await TrackingManager.analytics.logEvent(
+              name: 'component_clicked',
+              parameters: {
+                "screen_name": 'kpi_glycemic_add',
+                'component_name': 'time_section_glycemic',
+              },
+            );
+            showActionFilter(context);
+          },
+          child: Container(
+            color: R.color.transparent,
+            child: Column(
+              children: [
+                SpacingRow(
+                  spacing: 15,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                        selectedTimeFrame == null
+                            ? R.string.chon_khung_gio.tr()
+                            : selectedTimeFrame!.name!,
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.w400)),
+                    Text(
+                      'Chỉnh sửa',
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: R.color.accentColor,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    )
+                  ],
+                ),
+              ],
+            ),
+          ),
+        )
+      ],
+    );
+  }
+
+  Widget _connectMachine() {
+    return GestureDetector(
+      onTap: () async {
+        final data = await Navigator.pushNamed(
+            context, NavigatorName.connection_instructions);
+        if (data != null && data is Map) {
+          fromNipro = true;
+
+          if (AppSettings.userInfo!.glucoseUnit != 1) {
+            await changeUnit();
+          }
+
+          final glucose = double.tryParse(data['glucose']) ?? 0;
+          number = glucose;
+          _controller.text = number.toString();
+
+          showReason = (AppSettings.userInfo!.glucoseUnit == 1
+                  ? (number! < 55 || number! > 250)
+                  : (number! < 55 / mmollToMgdlFactor ||
+                      number! > 250 / mmollToMgdlFactor)) &&
+              number! > 0;
+          selectedDate = DateTime.fromMillisecondsSinceEpoch(
+              (int.tryParse(data['date']) ?? 0) * 1000);
+          loadTimeFrame();
+          setState(() {});
+        }
+      },
+      child: Container(
+          margin: EdgeInsets.only(bottom: 16, left: 16, right: 16),
+          padding: EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: R.color.white,
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Row(
+            children: [
+              Container(
+                width: 58,
+                height: 58,
+                padding: EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: Color(0xFFDDF4F2),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                alignment: Alignment.center,
+                child: Image.asset(
+                  R.drawable.ic_sugar_blood,
+                  width: 24,
+                  height: 24,
+                ),
+              ),
+              SizedBox(width: 15),
+              SpacingColumn(
+                spacing: 10,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Kết nối thiết bị và app',
+                    style: TextStyle(
+                      fontSize: 18,
+                    ),
+                  ),
+                  SpacingRow(
+                    spacing: 10,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text(
+                        'Kết nối',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w700,
+                          color: R.color.accentColor,
+                        ),
+                      ),
+                      Icon(
+                        Icons.arrow_forward_ios_outlined,
+                        color: R.color.accentColor,
+                        size: 16,
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ],
+          )),
+    );
+  }
+
+  Widget _selectImageSection() {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16, left: 16, right: 16),
+      child: Container(
+        decoration: BoxDecoration(
+          color: R.color.white,
+          borderRadius: BorderRadius.circular(16),
+        ),
+        padding: EdgeInsets.all(16),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          InkWell(
+            splashColor: Colors.transparent,
+            onTap: () {
+              FocusScope.of(context).requestFocus(FocusNode());
+            },
+            child: TextField(
+              focusNode: _focusNode,
+              controller: _controllerNote,
+              style: TextStyle(
+                  color: R.color.black,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w400),
+              decoration: InputDecoration(
+                hintText: R.string.nhap_ghi_chu_cua_ban.tr(),
+                contentPadding: EdgeInsets.only(bottom: 8),
+                border: InputBorder.none,
+                hintStyle: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w400,
+                  color: R.color.primaryGreyColor,
+                ),
+              ),
+            ),
+          ),
+          Container(height: 1, color: R.color.color0xffE5E5E5),
+          GridView.builder(
+              physics: NeverScrollableScrollPhysics(),
+              shrinkWrap: true,
+              itemCount: files.length + 1,
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 3,
+                  childAspectRatio: 1,
+                  crossAxisSpacing: 16,
+                  mainAxisSpacing: 16),
+              itemBuilder: (BuildContext context, int index) {
+                return GestureDetector(
+                    onTap: () {
+                      if (index == files.length) {
+                        showActionSheet(context);
+                      }
+                    },
+                    child: index == files.length
+                        ? ButtonAddPhoto()
+                        : GestureDetector(
+                            onTap: () {
+                              Navigator.pushNamed(context, '/photo_view',
+                                  arguments: {'files': files, 'index': index});
+                            },
+                            child: Stack(
+                                alignment: AlignmentDirectional.topEnd,
+                                children: [
+                                  Positioned.fill(
+                                    child: files[index] is PickedFile
+                                        ? Image.file(
+                                            File(files[index].path),
+                                            fit: BoxFit.cover,
+                                          )
+                                        : NetWorkImageWidget(
+                                            imageUrl: files[index].url,
+                                            fit: BoxFit.cover),
+                                  ),
+                                  IconButton(
+                                      icon: Image.asset(R.drawable.ic_trash),
+                                      onPressed: () {
+                                        setState(() {
+                                          if (files[index] is PickedFile) {
+                                            files.removeAt(index);
+                                          } else {
+                                            removeIDs.add(files[index].id);
+                                            files.removeAt(index);
+                                          }
+                                        });
+                                      })
+                                ]),
+                          ));
+              }),
+          SizedBox(height: _animation.value),
+        ]),
+      ),
+    );
+  }
+
+  Widget _bloodSugarRange() {
+    double _height = 80;
+    Widget itemRange = Expanded(
+      child: Container(
+        height: 80,
+      ),
+    );
+    List<Color> colorList = [
+      Color(0xFFF48222),
+      Color(0xFFF9B816),
+      Color(0xFF02635A),
+      Color(0xFFFE0201),
+      Color(0xFFB3020C),
+    ];
+    List<int> rangeValue = [00, 60, 70, 120, 180];
+    int index = -1;
+    return Stack(
+      clipBehavior: Clip.none,
+      children: [
+        ClipRRect(
+          borderRadius: BorderRadius.circular(5),
+          child: Row(
+            children: colorList.map(
+              (e) {
+                index++;
+                return Expanded(
+                  child: Container(
+                    height: 8,
+                    color: colorList[index],
+                  ),
+                );
+              },
+            ).toList(),
+          ),
+        ),
+        Positioned(
+          left: -40,
+          right: 0,
+          bottom: -40,
+          child: Row(
+              children: rangeValue
+                  .map(
+                    (e) => Expanded(
+                      child: Container(
+                        padding: EdgeInsets.only(
+                            left: e.toString().length == 2 ? 23 : 0),
+                        width: 30,
+                        child: Text('${e == 0 ? '' : e}'),
+                      ),
+                    ),
+                  )
+                  .toList()),
+        ),
+        Positioned(
+          left: 0,
+          right: 0,
+          bottom: -15,
+          child: Row(
+              children: rangeValue
+                  .map(
+                    (e) => Expanded(
+                      child: Container(
+                        padding: EdgeInsets.only(
+                            left: e.toString().length == 2 ? 23 : 0),
+                        width: 30,
+                        child: Text(
+                          '|',
+                          style: TextStyle(
+                            color: Color(0xFFD7D7D7),
+                            fontSize: 10,
+                          ),
+                        ),
+                      ),
+                    ),
+                  )
+                  .toList()),
+        ),
+      ],
     );
   }
 }

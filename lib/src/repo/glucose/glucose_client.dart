@@ -11,6 +11,7 @@ import 'package:medical/src/modal/glucose/glucose_distribution.dart';
 import 'package:medical/src/modal/glucose/glucose_input.dart';
 import 'package:medical/src/modal/glucose/glucose_timeFrame.dart';
 import 'package:medical/src/utils/app_log.dart';
+import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/helper/http_helper.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'dart:io' show Platform;
@@ -42,11 +43,13 @@ class GlucoseClient extends FetchClient {
     //   params['periodFilterType'] = '$periodFilterType';
     // }
     try {
+      bool isGestationalDiabetes = Utils.isGestationalDiabetes();
       final Response response =
           await super.fetchData(url: '/App/Glucose/Distribution', params: {
+        'page': page,
         'currentDateTime': currentDateTime,
         'periodFilterType': periodFilterType,
-        'page': page
+        'thresholdType': isGestationalDiabetes ? '1' : '0',
       });
       if (response.statusCode == 200) {
         return DistributionModel.fromJson(response.data['data']);
@@ -68,10 +71,12 @@ class GlucoseClient extends FetchClient {
       String? glucoseDistributionType,
       {String size = '20'}) async {
     try {
+      bool isGestationalDiabetes = Utils.isGestationalDiabetes();
       Map<String, String> params = {
+        'size': size,
         'currentDateTime': '$currentDateTime',
         'periodFilterType': '$periodFilterType',
-        'size': size
+        'thresholdType': isGestationalDiabetes ? '1' : '0',
       };
       if (timeFrameType != null && timeFrameType != 'null') {
         params['timeFrameType'] = timeFrameType.toString();
@@ -241,26 +246,19 @@ class GlucoseClient extends FetchClient {
   //============ lấy xu hướng =============/
   Future<TrendDataModel> fetchGlucoseTrend(String? timeFrameId,
       String? currentDateTime, String? periodFilterType, String? page) async {
-    // Map<String, String> params = {'page': '$page', 'size': '10'};
-    // if (currentDateTime != null && periodFilterType != null) {
-    //   params['currentDateTime'] = '$currentDateTime';
-    //   params['periodFilterType'] = '$periodFilterType';
-    // }
     try {
-      final Response response = await super.fetchData(
-          url: '/App/Glucose/Trend',
-          params: timeFrameId == null
-              ? {
-                  'currentDateTime': currentDateTime,
-                  'periodFilterType': periodFilterType,
-                  'page': page
-                }
-              : {
-                  'timeFrameType': timeFrameId,
-                  'currentDateTime': currentDateTime,
-                  'periodFilterType': periodFilterType,
-                  'page': page
-                });
+      bool isGestationalDiabetes = Utils.isGestationalDiabetes();
+      Map<String, String?> requestData = {
+        'page': page,
+        "currentDateTime": currentDateTime,
+        'periodFilterType': periodFilterType,
+        'thresholdType': isGestationalDiabetes ? '1' : '0',
+      };
+      if (timeFrameId != null) {
+        requestData["timeFrameType"] = timeFrameId;
+      }
+      final Response response =
+          await super.fetchData(url: '/App/Glucose/Trend', params: requestData);
       if (response.statusCode == 200) {
         return TrendDataModel.fromJson(response.data['data']);
       } else {
@@ -284,7 +282,7 @@ class GlucoseClient extends FetchClient {
         'page': page.toString(),
         'comparerType': comparerType,
       });
-      
+
       if (response.statusCode == 200) {
         return ComparerModel.toList(response.data['data']);
       } else {

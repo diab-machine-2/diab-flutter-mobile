@@ -22,13 +22,15 @@ class FetchInputGlucose extends GlucoseEvent {
   final int? page;
   final String? timeFrameType;
   final String? glucoseDistributionType;
+  final String? size;
 
   FetchInputGlucose(
       {this.currentDateTime,
       this.periodFilterType,
       this.page,
       this.timeFrameType,
-      this.glucoseDistributionType});
+      this.glucoseDistributionType,
+      this.size});
 }
 
 class FetchComparerGlucose extends GlucoseEvent {
