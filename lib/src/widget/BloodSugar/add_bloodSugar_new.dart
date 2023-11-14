@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
@@ -8,6 +9,7 @@ import 'package:medical/src/modal/HbA1C/short_gui.dart';
 import 'package:medical/src/modal/glucose/glucose_input.dart';
 import 'package:medical/src/modal/glucose/glucose_timeFrame.dart';
 import 'package:medical/src/modal/user/schedule_glucose_time.dart';
+import 'package:medical/src/modal/user/user_model.dart';
 import 'package:medical/src/repo/HbA1C/HbA1C_client.dart';
 import 'package:medical/src/repo/glucose/glucose_client.dart';
 import 'package:medical/src/repo/home/home_client.dart';
@@ -21,16 +23,22 @@ import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
+import 'package:medical/src/widget/my_plan_screens/lesson_tab/lesson_detail/widgets/bottom_sheet_widget.dart';
+import 'package:medical/src/widget/nipro/roche_connection/roche_connection_view.dart';
+import 'package:medical/src/widgets/block_bottom_sheet.dart';
 import 'package:medical/src/widgets/btn_add_photo.dart';
+import 'package:medical/src/widgets/custom_checkbox_widget.dart';
 import 'package:medical/src/widgets/spacing_row.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:medical/src/modal/error/error_model.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../widgets/CalendarPicker/custom_date_picker.dart';
 import '../../widgets/network_image_widget.dart';
 import '../my_plan_screens/activity_tab/activity_tab/models/schedule_type.dart';
+import 'widget/level_off_diabetes_rule_picker.dart';
 
 class AddBloodSugarControllerNew extends StatefulWidget {
   final String? type;
@@ -56,6 +64,8 @@ class _AddBloodSugarControllerNewState
   bool isClicked = false;
   TimeFrameModel? selectedTimeFrame;
   bool isFocus = false;
+  bool isChangeStatus = false;
+  List<int> rangeValue = [0, 60, 70, 95, 180];
 
   bool showReason = false;
   double? number = 0;
@@ -214,41 +224,88 @@ class _AddBloodSugarControllerNewState
                     ]),
                   ),
                 ),
+                SizedBox(height: _animation.value),
                 widget.type == 'input'
-                    ? GestureDetector(
-                        onTap: () async {
-                          _submitData();
-                        },
-                        child: SafeArea(
-                          top: false,
-                          //bottom: false,
-                          child: Container(
-                            margin: EdgeInsets.only(top: 16, bottom: 16),
-                            height: 48,
-                            width: 195,
-                            decoration: BoxDecoration(
-                              color: R.color.mainColor,
-                              borderRadius: BorderRadius.circular(200),
-                              gradient: LinearGradient(
-                                begin: Alignment.topLeft,
-                                end: Alignment.centerRight,
-                                colors: [
-                                  R.color.greenGradientTop,
-                                  R.color.greenGradientBottom
-                                ],
-                              ),
+                    ? Container(
+                        width: double.infinity,
+                        padding: EdgeInsets.only(
+                          top: 16,
+                          left: 16,
+                          right: 16,
+                          bottom: AppMediaQuery.deviceSafeAreaBottom,
+                        ),
+                        color: Colors.white,
+                        child: SpacingColumn(
+                          spacing: 20,
+                          children: [
+                            SpacingRow(
+                              spacing: 15,
+                              children: [
+                                CustomCheckboxWidget(
+                                  isChecked: isChangeStatus,
+                                  onTap: () {
+                                    setState(() {
+                                      isChangeStatus = !isChangeStatus;
+                                    });
+                                  },
+                                ),
+                                Text(
+                                  'Tôi không còn trong thai kỳ.',
+                                  style: TextStyle(fontSize: 16),
+                                )
+                              ],
                             ),
-                            child: Center(
-                              child: Text(
-                                R.string.save.tr(),
-                                style: TextStyle(
-                                  color: R.color.white,
-                                  fontWeight: FontWeight.w600,
-                                  fontSize: 16,
+                            GestureDetector(
+                              onTap: () async {
+                                int indexRange =
+                                    findIndexInRanges(number, rangeValue);
+                                if (isChangeStatus) {
+                                  LevelOffDiabetesRulePicker.showModal(context,
+                                      onSuccess: () {
+                                    if (indexRange == 4) {
+                                      _showDialogWarning(
+                                          onConfirm: () => _submitData());
+                                    } else {
+                                      _submitData();
+                                    }
+                                  });
+                                } else {
+                                  if (indexRange == 4) {
+                                    _showDialogWarning(
+                                        onConfirm: () => _submitData());
+                                  } else {
+                                    _submitData();
+                                  }
+                                }
+                              },
+                              child: Container(
+                                height: 48,
+                                width: 195,
+                                decoration: BoxDecoration(
+                                  color: R.color.mainColor,
+                                  borderRadius: BorderRadius.circular(200),
+                                  gradient: LinearGradient(
+                                    begin: Alignment.topLeft,
+                                    end: Alignment.centerRight,
+                                    colors: [
+                                      R.color.greenGradientTop,
+                                      R.color.greenGradientBottom
+                                    ],
+                                  ),
+                                ),
+                                child: Center(
+                                  child: Text(
+                                    R.string.save.tr(),
+                                    style: TextStyle(
+                                      color: R.color.white,
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: 16,
+                                    ),
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
+                          ],
                         ),
                       )
                     : SafeArea(
@@ -451,7 +508,6 @@ class _AddBloodSugarControllerNewState
             'object_title': 'Chỉ số đường huyết'
           },
         );
-        // if(widget.goalId != null && widget.goalId?.isNotEmpty == true){
         await HomeClient().completeSmartGoal(selectedDate, widget.goalId ?? '',
             1, ScheduleType.blood_sugar.typeIndex);
         // }
@@ -721,6 +777,111 @@ class _AddBloodSugarControllerNewState
     );
   }
 
+  _showDialogWarning({required Function onConfirm}) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return Container(
+          child: AlertDialog(
+              contentPadding: EdgeInsets.all(0),
+              content: Stack(children: [
+                Container(
+                  padding: EdgeInsets.all(16),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Image.asset(R.drawable.ic_warning, width: 64, height: 64),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 16.0),
+                        child: Text('Đường Huyết ở mức rất cao',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                                color: R.color.textDark,
+                                fontSize: 20,
+                                fontWeight: FontWeight.w600)),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 16.0),
+                        child: Text(
+                            'Nếu có các triệu chứng thở nhanh, đau bụng, nôn ói,... gặp bác sĩ sớm để được tư vấn và điều chỉnh toa thuốc.',
+                            textAlign: TextAlign.center,
+                            style: R.style.normalTextStyle),
+                      ),
+                      SizedBox(height: 16),
+                      Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Expanded(
+                              child: GestureDetector(
+                                  onTap: () {
+                                    _focusNodeKPI.requestFocus();
+                                    _controller.selection = TextSelection(
+                                        baseOffset: 0,
+                                        extentOffset: _controller.text.length);
+                                    Navigator.pop(context);
+                                  },
+                                  child: Container(
+                                      height: 43,
+                                      decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(200),
+                                          color: R.color.grayBorder),
+                                      child: Center(
+                                        child: Text('Nhập lại',
+                                            style: TextStyle(
+                                                color: R.color.textDark,
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.w600)),
+                                      ))),
+                            ),
+                            SizedBox(width: 14),
+                            Expanded(
+                              child: GestureDetector(
+                                  onTap: () {
+                                    Navigator.pop(context);
+                                    onConfirm();
+                                  },
+                                  child: Container(
+                                    height: 43,
+                                    decoration: BoxDecoration(
+                                        color: R.color.red,
+                                        borderRadius:
+                                            BorderRadius.circular(200),
+                                        gradient: LinearGradient(
+                                            begin: Alignment.topLeft,
+                                            end: Alignment.centerRight,
+                                            colors: [
+                                              R.color.greenGradientTop,
+                                              R.color.greenGradientBottom
+                                            ])),
+                                    child: Center(
+                                      child: Text('Tôi đã hiểu',
+                                          style: TextStyle(
+                                              color: R.color.white,
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w600)),
+                                    ),
+                                  )),
+                            ),
+                          ])
+                    ],
+                  ),
+                ),
+                Positioned(
+                  top: 0,
+                  right: 0,
+                  child: IconButton(
+                      icon: Icon(Icons.close, color: R.color.color0xffBEC0C8),
+                      onPressed: () {
+                        Navigator.pop(context);
+                      }),
+                )
+              ])),
+        );
+      },
+    );
+  }
+
   showActionFilter(BuildContext context) {
     showModalBottomSheet(
         shape: RoundedRectangleBorder(
@@ -731,7 +892,15 @@ class _AddBloodSugarControllerNewState
         builder: (context) => ActionListTrend(
             selected: selectedTimeFrame,
             callback: (value) {
-              print(value);
+              if (value != null) {
+                if (value.name!.contains('Trước ăn')) {
+                  rangeValue = [0, 60, 70, 95, 130];
+                } else if (value.name!.contains('Sau ăn')) {
+                  rangeValue = [0, 60, 70, 120, 180];
+                } else {
+                  rangeValue = [0, 60, 70, 95, 180];
+                }
+              }
               setState(() {
                 selectedTimeFrame = value;
               });
@@ -916,9 +1085,9 @@ class _AddBloodSugarControllerNewState
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
-            SizedBox(width: 90),
+            SizedBox(width: 80),
             Container(
-              width: 100,
+              width: 150,
               decoration: BoxDecoration(
                   border: Border(
                       bottom: BorderSide(color: R.color.color0xffE5E5E5))),
@@ -949,7 +1118,6 @@ class _AddBloodSugarControllerNewState
                   fromNipro = false;
                   final newValue = value.split(',').join('.');
                   number = newValue.isEmpty ? 0 : double.parse(newValue);
-
                   setState(() {
                     showReason = (AppSettings.userInfo!.glucoseUnit == 1
                             ? (number! < 55 || number! > 250)
@@ -994,11 +1162,6 @@ class _AddBloodSugarControllerNewState
             )
           ],
         ),
-        !showReason
-            ? SizedBox()
-            : Text(R.string.mes_unsafe_blood_sugar.tr(),
-                style: TextStyle(color: R.color.red),
-                textAlign: TextAlign.center)
       ],
     );
   }
@@ -1109,29 +1272,10 @@ class _AddBloodSugarControllerNewState
   Widget _connectMachine() {
     return GestureDetector(
       onTap: () async {
-        final data = await Navigator.pushNamed(
-            context, NavigatorName.connection_instructions);
-        if (data != null && data is Map) {
-          fromNipro = true;
-
-          if (AppSettings.userInfo!.glucoseUnit != 1) {
-            await changeUnit();
-          }
-
-          final glucose = double.tryParse(data['glucose']) ?? 0;
-          number = glucose;
-          _controller.text = number.toString();
-
-          showReason = (AppSettings.userInfo!.glucoseUnit == 1
-                  ? (number! < 55 || number! > 250)
-                  : (number! < 55 / mmollToMgdlFactor ||
-                      number! > 250 / mmollToMgdlFactor)) &&
-              number! > 0;
-          selectedDate = DateTime.fromMillisecondsSinceEpoch(
-              (int.tryParse(data['date']) ?? 0) * 1000);
-          loadTimeFrame();
-          setState(() {});
-        }
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (BuildContext context) => RocheConnectionView()));
       },
       child: Container(
           margin: EdgeInsets.only(bottom: 16, left: 16, right: 16),
@@ -1280,19 +1424,31 @@ class _AddBloodSugarControllerNewState
                                 ]),
                           ));
               }),
-          SizedBox(height: _animation.value),
         ]),
       ),
     );
   }
 
+  int findIndexInRanges(double? number, List<int> ranges) {
+    if (number == null) return -1;
+    bool glucoseUnit = AppSettings.userInfo!.glucoseUnit == 1;
+
+    for (int i = 0; i < ranges.length - 1; i++) {
+      if (number >=
+              (glucoseUnit
+                  ? ranges[i]
+                  : roundAsFixed(ranges[i] / mmollToMgdlFactor)) &&
+          number <
+              (glucoseUnit
+                  ? ranges[i + 1]
+                  : roundAsFixed(ranges[i + 1] / mmollToMgdlFactor))) {
+        return i;
+      }
+    }
+    return ranges.length - 1;
+  }
+
   Widget _bloodSugarRange() {
-    double _height = 80;
-    Widget itemRange = Expanded(
-      child: Container(
-        height: 80,
-      ),
-    );
     List<Color> colorList = [
       Color(0xFFF48222),
       Color(0xFFF9B816),
@@ -1300,68 +1456,118 @@ class _AddBloodSugarControllerNewState
       Color(0xFFFE0201),
       Color(0xFFB3020C),
     ];
-    List<int> rangeValue = [00, 60, 70, 120, 180];
+
+    bool glucoseUnit = AppSettings.userInfo!.glucoseUnit == 1;
+
     int index = -1;
-    return Stack(
-      clipBehavior: Clip.none,
+
+    int indexRange = findIndexInRanges(number, rangeValue);
+    double widthRange = ((AppMediaQuery.deviceWidth - 73) / rangeValue.length);
+    double width =
+        indexRange.isNegative ? 0 : indexRange * widthRange + (widthRange / 2);
+
+    return SpacingColumn(
+      spacing: 40,
       children: [
-        ClipRRect(
-          borderRadius: BorderRadius.circular(5),
-          child: Row(
-            children: colorList.map(
-              (e) {
-                index++;
-                return Expanded(
-                  child: Container(
-                    height: 8,
-                    color: colorList[index],
+        if (indexRange == 2)
+          RichText(
+            text: TextSpan(
+              text: 'Đường huyết đang ở mức ',
+              style: TextStyle(
+                  color: R.color.textDark,
+                  fontWeight: FontWeight.w400,
+                  fontSize: 16),
+              children: <TextSpan>[
+                TextSpan(
+                  text: '“Tốt”',
+                  style: TextStyle(
+                    color: R.color.textDark,
+                    fontWeight: FontWeight.w700,
                   ),
-                );
-              },
-            ).toList(),
+                ),
+              ],
+            ),
           ),
-        ),
-        Positioned(
-          left: -40,
-          right: 0,
-          bottom: -40,
-          child: Row(
-              children: rangeValue
-                  .map(
-                    (e) => Expanded(
-                      child: Container(
-                        padding: EdgeInsets.only(
-                            left: e.toString().length == 2 ? 23 : 0),
-                        width: 30,
-                        child: Text('${e == 0 ? '' : e}'),
-                      ),
-                    ),
-                  )
-                  .toList()),
-        ),
-        Positioned(
-          left: 0,
-          right: 0,
-          bottom: -15,
-          child: Row(
-              children: rangeValue
-                  .map(
-                    (e) => Expanded(
-                      child: Container(
-                        padding: EdgeInsets.only(
-                            left: e.toString().length == 2 ? 23 : 0),
-                        width: 30,
-                        child: Text(
-                          '|',
-                          style: TextStyle(
-                            color: Color(0xFFD7D7D7),
-                            fontSize: 10,
+        Stack(
+          clipBehavior: Clip.none,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(bottom: 40),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(5),
+                child: Row(
+                  children: colorList.map(
+                    (e) {
+                      index++;
+                      return Expanded(
+                        child: Container(
+                          height: 8,
+                          color: colorList[index],
+                        ),
+                      );
+                    },
+                  ).toList(),
+                ),
+              ),
+            ),
+            Positioned(
+              left: 0,
+              bottom: 40,
+              child: AnimatedContainer(
+                width: width + 18,
+                alignment: Alignment.centerRight,
+                duration: Duration(milliseconds: 400),
+                child: Icon(Icons.arrow_drop_down_rounded, size: 40),
+              ),
+            ),
+            Positioned(
+              left: 0,
+              right: 0,
+              bottom: 20,
+              child: Row(
+                  children: rangeValue
+                      .map(
+                        (e) => Expanded(
+                          child: Stack(
+                            clipBehavior: Clip.none,
+                            children: [
+                              SizedBox(),
+                              Positioned(
+                                left: e.toString().length == 3 ? -10 : -7,
+                                child: Text(
+                                    '${e == 0 ? '' : glucoseUnit ? e : roundAsFixed(e / mmollToMgdlFactor)}'),
+                              )
+                            ],
                           ),
                         ),
-                      ),
-                    ),
-                  )
-                  .toList()),
+                      )
+                      .toList()),
+            ),
+            Positioned(
+              left: -2,
+              right: 0,
+              bottom: 25,
+              child: Row(
+                  children: rangeValue
+                      .map(
+                        (e) => Expanded(
+                          child: Container(
+                            width: 30,
+                            child: Text(
+                              '|',
+                              style: TextStyle(
+                                color: e == 0
+                                    ? Colors.transparent
+                                    : Color(0xFFD7D7D7),
+                                fontSize: 10,
+                              ),
+                            ),
+                          ),
+                        ),
+                      )
+                      .toList()),
+            ),
+          ],
         ),
       ],
     );

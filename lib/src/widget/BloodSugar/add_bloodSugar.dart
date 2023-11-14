@@ -21,6 +21,7 @@ import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
+import 'package:medical/src/widget/nipro/roche_connection/roche_connection_view.dart';
 import 'package:medical/src/widgets/btn_add_photo.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/cupertino.dart';
@@ -401,40 +402,40 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController>
                           //TODO: Kết nối máy đo đường huyết
                           GestureDetector(
                             onTap: () async {
-                              // Navigator.push(
-                              //     context,
-                              //     MaterialPageRoute(
-                              //         builder: (BuildContext context) =>
-                              //             RocheConnectionView()));
-                              final data = await Navigator.pushNamed(context,
-                                  NavigatorName.connection_instructions);
-                              if (data != null && data is Map) {
-                                fromNipro = true;
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (BuildContext context) =>
+                                          RocheConnectionView()));
+                              // final data = await Navigator.pushNamed(context,
+                              //     NavigatorName.connection_instructions);
+                              // if (data != null && data is Map) {
+                              //   fromNipro = true;
 
-                                if (AppSettings.userInfo!.glucoseUnit != 1) {
-                                  await changeUnit();
-                                }
+                              //   if (AppSettings.userInfo!.glucoseUnit != 1) {
+                              //     await changeUnit();
+                              //   }
 
-                                final glucose =
-                                    double.tryParse(data['glucose']) ?? 0;
-                                number = glucose;
-                                _controller.text = number.toString();
+                              //   final glucose =
+                              //       double.tryParse(data['glucose']) ?? 0;
+                              //   number = glucose;
+                              //   _controller.text = number.toString();
 
-                                showReason =
-                                    (AppSettings.userInfo!.glucoseUnit == 1
-                                            ? (number! < 55 || number! > 250)
-                                            : (number! <
-                                                    55 / mmollToMgdlFactor ||
-                                                number! >
-                                                    250 / mmollToMgdlFactor)) &&
-                                        number! > 0;
-                                selectedDate =
-                                    DateTime.fromMillisecondsSinceEpoch(
-                                        (int.tryParse(data['date']) ?? 0) *
-                                            1000);
-                                loadTimeFrame();
-                                setState(() {});
-                              }
+                              //   showReason =
+                              //       (AppSettings.userInfo!.glucoseUnit == 1
+                              //               ? (number! < 55 || number! > 250)
+                              //               : (number! <
+                              //                       55 / mmollToMgdlFactor ||
+                              //                   number! >
+                              //                       250 / mmollToMgdlFactor)) &&
+                              //           number! > 0;
+                              //   selectedDate =
+                              //       DateTime.fromMillisecondsSinceEpoch(
+                              //           (int.tryParse(data['date']) ?? 0) *
+                              //               1000);
+                              //   loadTimeFrame();
+                              //   setState(() {});
+                              // }
                             },
                             child: Container(
                                 margin: EdgeInsets.only(
