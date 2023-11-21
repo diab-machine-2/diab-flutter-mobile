@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:io';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
@@ -9,13 +8,12 @@ import 'package:medical/src/modal/HbA1C/short_gui.dart';
 import 'package:medical/src/modal/glucose/glucose_input.dart';
 import 'package:medical/src/modal/glucose/glucose_timeFrame.dart';
 import 'package:medical/src/modal/user/schedule_glucose_time.dart';
-import 'package:medical/src/modal/user/user_model.dart';
 import 'package:medical/src/repo/HbA1C/HbA1C_client.dart';
 import 'package:medical/src/repo/glucose/glucose_client.dart';
 import 'package:medical/src/repo/home/home_client.dart';
 import 'package:medical/src/repo/user/user_client.dart';
 import 'package:medical/src/utils/app_media_query.dart';
-import 'package:medical/src/utils/navigator_name.dart';
+import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/BloodSugar/widget/action_list_trend.dart';
 import 'package:medical/src/widget/HbA1C/widget/description/description.dart';
 import 'package:medical/src/widget/base/base_state.dart';
@@ -23,9 +21,7 @@ import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
-import 'package:medical/src/widget/my_plan_screens/lesson_tab/lesson_detail/widgets/bottom_sheet_widget.dart';
 import 'package:medical/src/widget/nipro/roche_connection/roche_connection_view.dart';
-import 'package:medical/src/widgets/block_bottom_sheet.dart';
 import 'package:medical/src/widgets/btn_add_photo.dart';
 import 'package:medical/src/widgets/custom_checkbox_widget.dart';
 import 'package:medical/src/widgets/spacing_row.dart';
@@ -56,7 +52,6 @@ class _AddBloodSugarControllerNewState
     extends BaseState<AddBloodSugarControllerNew>
     with SingleTickerProviderStateMixin {
   TextEditingController _controller = TextEditingController();
-  TextEditingController _controllerReason = TextEditingController();
   TextEditingController _controllerNote = TextEditingController();
   int maxMedia = 5;
   List<dynamic> files = [];
@@ -67,7 +62,6 @@ class _AddBloodSugarControllerNewState
   bool isChangeStatus = false;
   List<int> rangeValue = [0, 60, 70, 95, 180];
 
-  bool showReason = false;
   double? number = 0;
 
   InputGlucoseModel? model;
@@ -136,6 +130,32 @@ class _AddBloodSugarControllerNewState
     super.dispose();
   }
 
+  List<int> changeRange(TimeFrameModel? timeFrame) {
+    if (timeFrame != null) {
+      List<int> _rangeValue = [];
+      bool isGestationalDiabetes = Utils.isGestationalDiabetes();
+      if (isGestationalDiabetes) {
+        if (timeFrame.name!.contains('Trước ăn')) {
+          _rangeValue = [0, 60, 70, 95, 130];
+        } else if (timeFrame.name!.contains('Sau ăn')) {
+          _rangeValue = [0, 60, 70, 120, 180];
+        } else {
+          _rangeValue = [0, 60, 70, 95, 180];
+        }
+      } else {
+        if (timeFrame.name!.contains('Trước ăn')) {
+          _rangeValue = [0, 55, 70, 120, 250];
+        } else if (timeFrame.name!.contains('Sau ăn')) {
+          _rangeValue = [0, 55, 70, 180, 250];
+        } else {
+          _rangeValue = [0, 55, 70, 180, 250];
+        }
+        return _rangeValue;
+      }
+    }
+    return rangeValue;
+  }
+
   loadDetail() async {
     try {
       BotToast.showLoading();
@@ -147,8 +167,6 @@ class _AddBloodSugarControllerNewState
       number = model!.glucose!.round() == model!.glucose
           ? model!.glucose!.round().toDouble()
           : model!.glucose;
-      _controllerReason.text = model?.reason ?? '';
-      showReason = _controllerReason.text.isNotEmpty;
       _controllerNote.text = model?.note ?? '';
       files.addAll(model!.images);
       selectedDate =
@@ -156,6 +174,7 @@ class _AddBloodSugarControllerNewState
       selectedTimeFrame = TimeFrameModel(
           id: model!.timeFrameId, code: '', name: model!.timeFrame);
       fromNipro = model!.byDevice;
+
       setState(() {});
     } catch (e) {
       print(e);
@@ -167,6 +186,7 @@ class _AddBloodSugarControllerNewState
     final timeFrames = await GlucoseClient().fetchFlucoseTimeFrame(
         time: selectedDate.millisecondsSinceEpoch ~/ 1000);
     selectedTimeFrame = timeFrames.length == 0 ? null : timeFrames.first;
+    rangeValue = changeRange(selectedTimeFrame);
     BotToast.closeAllLoading();
     setState(() {});
   }
@@ -397,16 +417,11 @@ class _AddBloodSugarControllerNewState
 
   editData() async {
     FocusScope.of(context).unfocus();
-    final reason = _controllerReason.text;
     final note = _controllerNote.text;
     final numberInput = _controller.text;
 
     if (numberInput.isEmpty) {
       Message.showToastMessage(context, R.string.mes_blood_sugar_empty.tr());
-      return;
-    }
-    if (reason.isEmpty && showReason) {
-      Message.showToastMessage(context, R.string.mes_reason_empty.tr());
       return;
     }
     if (selectedDate == null) {
@@ -435,7 +450,7 @@ class _AddBloodSugarControllerNewState
           selectedTimeFrame!.id,
           (selectedDate.millisecondsSinceEpoch ~/ 1000).toInt(),
           numberInput,
-          showReason ? reason : null,
+          null,
           note,
           fromNipro,
           removeIDs,
@@ -465,15 +480,10 @@ class _AddBloodSugarControllerNewState
       },
     );
     FocusScope.of(context).unfocus();
-    final reason = _controllerReason.text;
     final note = _controllerNote.text;
 
     if (number == 0) {
       Message.showToastMessage(context, R.string.mes_blood_sugar_empty.tr());
-      return;
-    }
-    if (reason.isEmpty && showReason) {
-      Message.showToastMessage(context, R.string.mes_reason_empty.tr());
       return;
     }
     if (selectedDate == null) {
@@ -495,7 +505,7 @@ class _AddBloodSugarControllerNewState
           selectedTimeFrame!.id,
           (selectedDate.millisecondsSinceEpoch ~/ 1000).toInt(),
           number.toString(),
-          showReason ? reason : null,
+          null,
           note,
           fromNipro,
           paths);
@@ -540,8 +550,6 @@ class _AddBloodSugarControllerNewState
       Observable.instance
           .notifyObservers([], notifyName: "setup_schedule_change");
       Observable.instance.notifyObservers([], notifyName: "refresh_home");
-      // DartNotificationCenter.post(channel: 'setup_schedule_change');
-      // DartNotificationCenter.post(channel: 'refresh_home');
       BotToast.closeAllLoading();
     } catch (e, _) {
       BotToast.closeAllLoading();
@@ -651,28 +659,22 @@ class _AddBloodSugarControllerNewState
   }
 
   _showDialogSave() {
-    final reason = _controllerReason.text;
     final note = _controllerNote.text;
     final numberInput = _controller.text;
 
     if (model != null) {
       final noteText = model!.note ?? '';
-      final reasonText = model!.reason ?? '';
       final date =
           DateTime.fromMillisecondsSinceEpoch(model!.createDate! * 1000);
       if (note == noteText &&
           numberInput == model!.glucose!.round().toString() &&
-          reason == reasonText &&
           files.length == model!.images.length &&
           removeIDs.length == 0 &&
           date.millisecondsSinceEpoch == selectedDate.millisecondsSinceEpoch) {
         Navigator.pop(context);
         return;
       }
-    } else if (note.isEmpty &&
-        numberInput.isEmpty &&
-        reason.isEmpty &&
-        files.length == 0) {
+    } else if (note.isEmpty && numberInput.isEmpty && files.length == 0) {
       Navigator.pop(context);
       return;
     }
@@ -884,27 +886,21 @@ class _AddBloodSugarControllerNewState
 
   showActionFilter(BuildContext context) {
     showModalBottomSheet(
-        shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.vertical(top: Radius.circular(15))),
-        backgroundColor: R.color.white,
-        context: context,
-        isScrollControlled: true,
-        builder: (context) => ActionListTrend(
-            selected: selectedTimeFrame,
-            callback: (value) {
-              if (value != null) {
-                if (value.name!.contains('Trước ăn')) {
-                  rangeValue = [0, 60, 70, 95, 130];
-                } else if (value.name!.contains('Sau ăn')) {
-                  rangeValue = [0, 60, 70, 120, 180];
-                } else {
-                  rangeValue = [0, 60, 70, 95, 180];
-                }
-              }
-              setState(() {
-                selectedTimeFrame = value;
-              });
-            }));
+      shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(15))),
+      backgroundColor: R.color.white,
+      context: context,
+      isScrollControlled: true,
+      builder: (context) => ActionListTrend(
+        selected: selectedTimeFrame,
+        callback: (value) {
+          rangeValue = changeRange(value);
+          setState(() {
+            selectedTimeFrame = value;
+          });
+        },
+      ),
+    );
   }
 
   showActionSheet(BuildContext context) {
@@ -1085,7 +1081,7 @@ class _AddBloodSugarControllerNewState
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
-            SizedBox(width: 80),
+            Flexible(child: SizedBox(width: 80)),
             Container(
               width: 150,
               decoration: BoxDecoration(
@@ -1118,13 +1114,7 @@ class _AddBloodSugarControllerNewState
                   fromNipro = false;
                   final newValue = value.split(',').join('.');
                   number = newValue.isEmpty ? 0 : double.parse(newValue);
-                  setState(() {
-                    showReason = (AppSettings.userInfo!.glucoseUnit == 1
-                            ? (number! < 55 || number! > 250)
-                            : (number! < 55 / mmollToMgdlFactor ||
-                                number! > 250 / mmollToMgdlFactor)) &&
-                        number! > 0;
-                  });
+                  setState(() {});
                 },
               ),
             ),
@@ -1438,7 +1428,7 @@ class _AddBloodSugarControllerNewState
               (glucoseUnit
                   ? ranges[i]
                   : roundAsFixed(ranges[i] / mmollToMgdlFactor)) &&
-          number <
+          number <=
               (glucoseUnit
                   ? ranges[i + 1]
                   : roundAsFixed(ranges[i + 1] / mmollToMgdlFactor))) {
@@ -1458,13 +1448,35 @@ class _AddBloodSugarControllerNewState
     ];
 
     bool glucoseUnit = AppSettings.userInfo!.glucoseUnit == 1;
-
     int index = -1;
-
     int indexRange = findIndexInRanges(number, rangeValue);
-    double widthRange = ((AppMediaQuery.deviceWidth - 73) / rangeValue.length);
-    double width =
-        indexRange.isNegative ? 0 : indexRange * widthRange + (widthRange / 2);
+    num widthRange = (AppMediaQuery.deviceWidth - 30) / (rangeValue.length);
+    num width = widthRange * (indexRange);
+
+    // num widthPerRange =
+    //     (AppMediaQuery.deviceWidth - 141) / (rangeValue.length - 1);
+    // if (number != null && number != 0) {
+    //   num min = rangeValue[indexRange];
+    //   num max = indexRange + 1 >= rangeValue.length
+    //       ? rangeValue[indexRange] + min
+    //       : rangeValue[indexRange + 1];
+    //   num widthPlus = (number! - min.toDouble()) * widthRange / (max - min);
+
+    //   print('hihi ${max - min} => $widthRange');
+    //   print('hihi ${number! - min.toDouble()} => $widthRange');
+    //   print('hihi width: $width');
+    //   width += widthPlus;
+    //   width = width > (widthRange * rangeValue.length)
+    //       ? widthRange * rangeValue.length
+    //       : width;
+
+    //   //   print('hihi number: $number');
+    //   print('hihi widthRange: $widthRange');
+    //   print('hihi min: $min');
+    //   print('hihi max: $max');
+    //   print('hihi widthPlus: $widthPlus');
+    //   print('hihi indexRange: $indexRange');
+    // }
 
     return SpacingColumn(
       spacing: 40,
@@ -1511,10 +1523,10 @@ class _AddBloodSugarControllerNewState
               ),
             ),
             Positioned(
-              left: 0,
+              left: -18,
               bottom: 40,
               child: AnimatedContainer(
-                width: width + 18,
+                width: width.toDouble(),
                 alignment: Alignment.centerRight,
                 duration: Duration(milliseconds: 400),
                 child: Icon(Icons.arrow_drop_down_rounded, size: 40),

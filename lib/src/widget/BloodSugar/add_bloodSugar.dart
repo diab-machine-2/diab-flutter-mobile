@@ -253,7 +253,10 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController>
                                           MainAxisAlignment.center,
                                       children: [
                                         Container(
-                                          width: 80,
+                                          width: 160,
+                                          decoration: BoxDecoration(border: Border(bottom: BorderSide(
+                                            color: R.color.color0xffE5E5E5
+                                          ))),
                                           child: TextField(
                                               controller: _controller,
                                               maxLength: 3,
@@ -311,11 +314,6 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController>
                                             style: TextStyle(fontSize: 16))
                                       ]),
                                 ),
-                                Center(
-                                    child: Container(
-                                        height: 1,
-                                        width: 74,
-                                        color: R.color.color0xffE5E5E5)),
                                 GestureDetector(
                                   onTap: () async {
                                     await changeUnit();

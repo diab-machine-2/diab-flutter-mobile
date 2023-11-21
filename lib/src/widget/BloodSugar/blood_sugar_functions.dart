@@ -77,17 +77,15 @@ class BloodSugarFunctions {
                     textColor: Color(0xff249B92),
                     title: 'Nhập thủ công',
                     onPressed: () {
-                      bool isGestationalDiabetes =
-                          Utils.isGestationalDiabetes();
-                      if (isGestationalDiabetes) {
-                        Navigator.pushNamed(
-                            context, NavigatorName.add_blood_sugar_new,
-                            arguments: {'type': 'input'});
-                      } else {
-                        Navigator.pushNamed(
-                            context, NavigatorName.add_blood_sugar,
-                            arguments: {'type': 'input'});
-                      }
+                      // if (isGestationalDiabetes) {
+                      Navigator.pushNamed(
+                          context, NavigatorName.add_blood_sugar_new,
+                          arguments: {'type': 'input'});
+                      // } else {
+                      //   Navigator.pushNamed(
+                      //       context, NavigatorName.add_blood_sugar,
+                      //       arguments: {'type': 'input'});
+                      // }
                     },
                   ),
                   SizedBox(height: 15),
