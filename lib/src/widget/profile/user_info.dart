@@ -1993,33 +1993,28 @@ class _ProfileInfoControllerState extends State<ProfileInfoController>
                           flex: 1,
                           child: GestureDetector(
                             onTap: () {
+                              String diabetesNameTmp = '';
                               for (int i = 0;
                                   i < user.levelOfDiabetesRuleList!.length;
                                   i++) {
                                 if (Utils.parseStringToInt(user
                                         .levelOfDiabetesRuleList![i].value!) ==
                                     diabetesStatus) {
-                                  diabetesName =
+                                  diabetesNameTmp =
                                       user.levelOfDiabetesRuleList![i].text!;
                                   break;
                                 }
                               }
-                              setState(() {});
-                              updateCategoryUser(
-                                user.levelOfDiabetesRuleList!,
-                                diabetesStatus != null ? [diabetesStatus!] : [],
-                                CategoryType.LEVEL_OF_DIABETES_TYPE,
-                                false,
-                                isUpdateDiabetes: true,
-                              );
-
-                              // final UserModel userInfo = AppSettings.userInfo!;
-                              // updateUserInfo(
-                              //   userInfo.copyWith(
-                              //     diabetesStatus: diabetesStatus,
-                              //   ),
-                              // );
-                              Navigator.pop(context);
+                              if (diabetesNameTmp == 'Đái tháo đường thai kỳ') {
+                                DiabetesInformation.showModal(
+                                  context,
+                                  onSuccess: () {
+                                    _handleDiabetesUpdate();
+                                  },
+                                );
+                              } else {
+                                _handleDiabetesUpdate();
+                              }
                             },
                             child: Container(
                               height: 48,
@@ -2047,6 +2042,19 @@ class _ProfileInfoControllerState extends State<ProfileInfoController>
                 ),
               ],
             )));
+  }
+
+  void _handleDiabetesUpdate() {
+    setState(() {});
+    updateCategoryUser(
+      user.levelOfDiabetesRuleList!,
+      diabetesStatus != null ? [diabetesStatus!] : [],
+      CategoryType.LEVEL_OF_DIABETES_TYPE,
+      false,
+      isUpdateDiabetes: true,
+    );
+
+    Navigator.pop(context);
   }
 
   _showDialogUpdateDiabetesStatusDate() {
@@ -2157,7 +2165,6 @@ class _ProfileInfoControllerState extends State<ProfileInfoController>
 
   showDialogWeight() {
     showDialog(
-      //    barrierColor: R.color.color0xff003F38.withOpacity(0.5),
       barrierDismissible: true,
       context: context,
       builder: (_) => CustomWeightPicker(

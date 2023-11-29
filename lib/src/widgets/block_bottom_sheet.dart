@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/utils/app_media_query.dart';
 import 'package:medical/src/widgets/spacing_row.dart';
 import 'package:sticky_headers/sticky_headers.dart';
 

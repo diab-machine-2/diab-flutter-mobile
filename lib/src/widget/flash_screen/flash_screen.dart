@@ -13,6 +13,7 @@ import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
+import 'package:package_info/package_info.dart';
 
 import '../../modal/user/secure.dart';
 import '../../model/repository/app_repository.dart';
@@ -36,7 +37,14 @@ class _FlashScreenControllerState extends State<FlashScreenController> {
     isNavigateToStepList = false;
     getSecuredModel();
     getData(context);
+    getVersion();
     DynamicLinkConfig.instance.setUpHandleDeepLink();
+  }
+
+  getVersion() async {
+    PackageInfo packageInfo = await PackageInfo.fromPlatform();
+    AppSettings.version = packageInfo.version;
+    AppSettings.buildNumber = packageInfo.buildNumber;
   }
 
   getSecuredModel() async {

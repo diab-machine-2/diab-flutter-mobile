@@ -36,7 +36,7 @@ class BloodSugarChartState extends State<BloodSugarChart>
   int touchIndex = -1;
   String trendType = R.string.all.tr();
   int trendTypeIndex = 1;
-  int periodFilterType = 1;
+  int periodFilterType = 3;
   int? previousDate = 0;
 
   @override

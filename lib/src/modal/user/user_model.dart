@@ -1,5 +1,6 @@
 import 'package:medical/src/modal/base/images.dart';
 import 'package:medical/src/modal/user/update_profile_request.dart';
+import 'package:medical/src/utils/app_log.dart';
 import 'package:meta/meta.dart';
 
 import '../../model/response/statistic_data.dart';
@@ -9,6 +10,7 @@ import 'category_item_user_model.dart';
 @immutable
 class UserModel {
   final String? id;
+  final int? curentWeekPregnancy;
   final String? accountId;
   final String? creatorId;
   final String? userName;
@@ -118,6 +120,7 @@ class UserModel {
   const UserModel({
     required this.id,
     required this.accountId,
+    required this.curentWeekPregnancy,
     required this.creatorId,
     required this.userName,
     required this.fullName,
@@ -193,6 +196,7 @@ class UserModel {
   });
 
   UserModel copyWith({
+    int? curentWeekPregnancy,
     String? id,
     String? accountId,
     String? creatorId,
@@ -271,6 +275,7 @@ class UserModel {
   }) =>
       UserModel(
         id: id ?? this.id,
+        curentWeekPregnancy: curentWeekPregnancy ?? this.curentWeekPregnancy,
         accountId: accountId ?? this.accountId,
         creatorId: creatorId ?? this.creatorId,
         userName: username ?? this.userName,
@@ -353,6 +358,7 @@ class UserModel {
   factory UserModel.fromJson(Map<String, dynamic> json) {
     return UserModel(
       id: json['id'],
+      curentWeekPregnancy: json['curentWeekPregnancy'],
       accountId: json['accountId'],
       creatorId: json['creatorId'],
       userName: json['userName'],
@@ -474,7 +480,7 @@ class UserModel {
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['isShare'] = this.isShare;
-    data['shareRefCode'] = this.shareRefCode;
+    data['curentWeekPregnancy'] = this.curentWeekPregnancy;
     data['nameOfAgency'] = this.nameOfAgency;
     data['nameOfDoctor'] = this.nameOfDoctor;
     if (this.packageAccount != null) {

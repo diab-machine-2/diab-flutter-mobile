@@ -226,6 +226,58 @@ class GlucoseClient extends FetchClient {
     }
   }
 
+  //============ cập nhật Thông tin Thai kỳ =============/
+  Future<bool> updatePregnancyInfo({
+    required int week,
+    required num weight,
+  }) async {
+    try {
+      Map<String, dynamic> params = {
+        'week': week,
+        'weight': weight,
+      };
+      final response = await super.postHttp2(
+        path: '/App/Glucose/InputGlucosePregnancyConfigures',
+        params: jsonEncode(params),
+      );
+
+      if (response.statusCode == 200) {
+        return true;
+      } else {
+        throw response.reasonPhrase!;
+      }
+    } catch (e) {
+      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+    }
+  }
+
+  //============ Lấy ngưỡng đường huyết =============/
+  Future<bool> getGlucoseRange({
+    required int thresholdType,
+    required int timeFrameTypes,
+  }) async {
+    try {
+      Map<String, String> params = {
+        'thresholdType': thresholdType.toString(),
+        'timeFrameTypes': timeFrameTypes.toString(),
+      };
+      final response = await super.fetchData(
+        url: '/App/Glucose/GetGlucose',
+        params: params,
+      );
+
+      Console.logJson('response', response);
+
+      if (response.statusCode == 200) {
+        return true;
+      } else {
+        throw false;
+      }
+    } catch (e) {
+      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+    }
+  }
+
   //============ xóa chỉ số Đường huyết =============/
 
   Future<bool> deleteIndexGlucose(String? glucoseId) async {

@@ -25,7 +25,7 @@ class BloodGlucoseItemState extends State<BloodGlucoseItem>
   @override
   bool get wantKeepAlive => true;
   late BuildContext currentContext;
-  int periodFilterType = 1;
+  int periodFilterType = 3;
   int trendTypeIndex = 1;
 
   @override

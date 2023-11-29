@@ -1,9 +1,9 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_observer/Observable.dart';
 import 'package:flutter_observer/Observer.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/res/colors.dart';
@@ -19,18 +19,13 @@ import 'package:medical/src/model/service/api_result.dart';
 import 'package:medical/src/model/service/network_exceptions.dart';
 import 'package:medical/src/repo/login/login_client.dart';
 import 'package:medical/src/repo/user/user_client.dart';
-import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
-import 'package:medical/src/widget/helper/version.dart';
-import 'package:medical/src/widget/my_package/my_package_page.dart';
-import 'package:medical/src/widget/shared_profile/pages/share_app_detail/share_app_detail.dart';
 import 'package:medical/src/widget/shared_profile/shared_profile.dart';
 import 'package:medical/src/widgets/button_language_picker.dart';
-import 'package:share_plus/share_plus.dart';
 import '../food_menu_screens/food_menu/food_menu_page.dart';
 
 class ProfileController extends StatefulWidget {
@@ -42,7 +37,6 @@ class ProfileController extends StatefulWidget {
 
 class _ProfileControllerState extends State<ProfileController> with Observer {
   bool isPro = true;
-  String appVersion = '.....';
   SecureModel? secureModel;
   final AppRepository _appRepository = AppRepository();
   var userInfo = AppSettings.userInfo;
@@ -53,18 +47,6 @@ class _ProfileControllerState extends State<ProfileController> with Observer {
     Observable.instance.addObserver(this);
     loadData();
     firebaseSetup();
-    getAppVersion();
-  }
-
-  getAppVersion() async {
-    final newVersion = NewVersion(context: context);
-    final status = await newVersion.getVersionStatus();
-    if (status == null) return;
-    final localVersion = status.localVersion!.split('.');
-    final storeVersion = status.storeVersion!.split('.');
-    setState(() {
-      appVersion = localVersion.join('.');
-    });
   }
 
   Future firebaseSetup() async {
@@ -183,38 +165,37 @@ class _ProfileControllerState extends State<ProfileController> with Observer {
                                     fontSize: 14,
                                     fontWeight: FontWeight.w400)),
                             const SizedBox(height: 8),
-                            Row(
-                              children: [
-                                Container(
-                                  height: 32,
-                                  decoration: BoxDecoration(
-                                      color: R.color.white,
-                                      borderRadius: BorderRadius.circular(16)),
-                                  padding: const EdgeInsets.only(
-                                      left: 16, right: 16),
-                                  child: Row(
-                                    children: [
-                                      Image.asset(
-                                          isPro
-                                              ? R.drawable.ic_pro
-                                              : R.drawable.ic_crown_green,
-                                          width: 20,
-                                          height: 20),
-                                      const SizedBox(width: 8),
-                                      Text(
-                                          (userInfo?.packageName != null &&
-                                                  userInfo!
-                                                      .packageName!.isNotEmpty)
-                                              ? userInfo!.packageName!
-                                              : R.string.thanh_vien_co_ban.tr(),
-                                          style: TextStyle(
-                                              color: R.color.textDark,
-                                              fontSize: 14,
-                                              fontWeight: FontWeight.w700))
-                                    ],
-                                  ),
-                                ),
-                              ],
+                            Container(
+                              height: 32,
+                              decoration: BoxDecoration(
+                                  color: R.color.white,
+                                  borderRadius: BorderRadius.circular(16)),
+                              padding: const EdgeInsets.only(
+                                  left: 16, right: 16),
+                              child: Row(
+                                children: [
+                                  Image.asset(
+                                      isPro
+                                          ? R.drawable.ic_pro
+                                          : R.drawable.ic_crown_green,
+                                      width: 20,
+                                      height: 20),
+                                  const SizedBox(width: 8),
+                                  Expanded(
+                                    child: AutoSizeText(
+                                        (userInfo?.packageName != null &&
+                                                userInfo!
+                                                    .packageName!.isNotEmpty)
+                                            ? userInfo!.packageName!
+                                            : R.string.thanh_vien_co_ban.tr(),
+                                        maxLines: 1,
+                                        style: TextStyle(
+                                            color: R.color.textDark,
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w700)),
+                                  )
+                                ],
+                              ),
                             )
                           ]),
                     ),
@@ -333,7 +314,7 @@ class _ProfileControllerState extends State<ProfileController> with Observer {
                   Padding(
                     padding: const EdgeInsets.all(15),
                     child: Text(
-                      'App version: $appVersion',
+                      'App version: ${AppSettings.version} (${AppSettings.buildNumber})',
                       style: TextStyle(
                           fontWeight: FontWeight.w500,
                           fontSize: 16,

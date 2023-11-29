@@ -36,7 +36,7 @@ class BloodSugarDetailControllerState extends State<BloodSugarDetailController>
   int page = 1;
   bool? hasMore = false;
   bool isLoading = false;
-  int periodFilterType = 1;
+  int periodFilterType = 3;
 
   String? glucoseID;
 

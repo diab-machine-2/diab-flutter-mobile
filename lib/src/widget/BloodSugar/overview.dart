@@ -6,6 +6,7 @@ import 'package:medical/src/widget/BloodSugar/widget/bloodSugar_chart.dart';
 import 'package:medical/src/widget/BloodSugar/widget/bloodSugar_compare_chart.dart';
 import 'package:medical/src/widget/HbA1C/widget/course_suggest.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
+import 'package:medical/src/widgets/spacing_row.dart';
 import 'widget/bloodSugar_contain_detail.dart';
 import 'widget/blood_glucose_item.dart';
 
@@ -64,17 +65,51 @@ class BloodSugarOverviewControllerState
       decoration: BoxDecoration(
           image: DecorationImage(
               image: AssetImage(R.drawable.bg_hba1c_high), fit: BoxFit.cover)),
-      child: ListView(
-          controller: _scrollController,
-          physics: ClampingScrollPhysics(),
-          children: [
-            if (isGestationalDiabetes) BloodGlucoseItem(key: latestDataKey),
-            BloodSugarDetail(key: sugarDetailKey),
-            BloodSugarChart(key: sugarChartKey),
-            BloodSugarCompareChart(key: sugarCompareKey),
-            CourseSuggest(position: 2),
-            SizedBox(height: 36)
-          ]),
+      child: Column(
+        children: [
+          Expanded(
+            child: ListView(
+              controller: _scrollController,
+              physics: ClampingScrollPhysics(),
+              children: [
+                BloodGlucoseItem(key: latestDataKey),
+                BloodSugarDetail(key: sugarDetailKey),
+                BloodSugarChart(key: sugarChartKey),
+                BloodSugarCompareChart(key: sugarCompareKey),
+                CourseSuggest(position: 2),
+                SizedBox(height: 36),
+              ],
+            ),
+          ),
+          if (isGestationalDiabetes)
+            Container(
+              padding: EdgeInsets.all(15),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                boxShadow: [
+                  BoxShadow(
+                    offset: Offset(4, 0),
+                    blurRadius: 2,
+                    color: Colors.black.withOpacity(0.03)
+                  )
+                ]
+              ),
+              child: SpacingRow(
+                spacing: 15,
+                children: [
+                  Image.asset(
+                    R.drawable.ic_pregnancy,
+                    width: 20,
+                  ),
+                  Expanded(
+                    child: Text(
+                        'Chào ${AppSettings.userInfo!.fullName!.split(' ').last}, mừng bạn đang ở tuần ${AppSettings.userInfo!.curentWeekPregnancy ?? 0} của thai kỳ'),
+                  ),
+                ],
+              ),
+            ),
+        ],
+      ),
     ));
   }
 }

@@ -29,6 +29,8 @@ class AppSettings {
   static SecureModel? secureModel;
   static bool isDisplayedWelcome = false;
   static String currentScreenName = '';
+  static String? version;
+  static String? buildNumber;
 
   static bool showed50Message = false;
   static bool showed90Message = false;

@@ -469,4 +469,5 @@ class Drawables {
   String get pin_example => "lib/res/drawables/pin_example.jpg";
   String get img_loading => "lib/res/drawables/img_loading.png";
   String get ic_sugar_blood => "lib/res/drawables/ic_sugar_blood.png";
+  String get ic_pregnancy => "lib/res/drawables/ic_pregnancy.jpg";
 }

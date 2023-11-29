@@ -25,7 +25,7 @@ class BloodSugarDistribuitonTableController extends StatefulWidget {
 
 BuildContext? currentContext;
 
-int periodFilterType = 1;
+int periodFilterType = 3;
 
 class _BloodSugarDistribuitonTableControllerState
     extends State<BloodSugarDistribuitonTableController> {
