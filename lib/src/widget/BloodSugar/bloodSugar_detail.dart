@@ -237,7 +237,7 @@ class BloodSugarDetailControllerState extends State<BloodSugarDetailController>
     return GestureDetector(
         onTap: () {
           KpiGlycemicTracking.clickKpiItem();
-          Navigator.pushNamed(context, NavigatorName.add_blood_sugar,
+          Navigator.pushNamed(context, NavigatorName.add_blood_sugar_new,
               arguments: {'type': 'update', 'id': element.id});
         },
         child: Padding(

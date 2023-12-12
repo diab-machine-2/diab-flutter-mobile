@@ -333,7 +333,7 @@ class NotificationControllerState extends State<NotificationController>
               arguments: {'type': 'update', 'id': model.id});
           break;
         case NotificationActionType.add_blood_sugar:
-          Navigator.pushNamed(context, NavigatorName.add_blood_sugar,
+          Navigator.pushNamed(context, NavigatorName.add_blood_sugar_new,
               arguments: {'type': 'input', 'id': model.id});
           break;
         case NotificationActionType.none:

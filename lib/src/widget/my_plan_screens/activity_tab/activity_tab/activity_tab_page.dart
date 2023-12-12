@@ -657,7 +657,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
     Observable.instance.notifyObservers([], notifyName: Const.HIDE_OVERLAY_KEY);
     switch (type) {
       case ScheduleType.blood_sugar:
-        await Navigator.pushNamed(context, NavigatorName.add_blood_sugar,
+        await Navigator.pushNamed(context, NavigatorName.add_blood_sugar_new,
             arguments: {'type': 'input', 'goalId': smartGoal?.id});
         _cubit.refreshData(isRefresh: true);
         break;

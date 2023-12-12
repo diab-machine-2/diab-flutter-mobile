@@ -9,6 +9,7 @@ import 'package:medical/src/modal/glucose/glucose_comparer.dart';
 import 'package:medical/src/modal/glucose/glucose_data_trend.dart';
 import 'package:medical/src/modal/glucose/glucose_distribution.dart';
 import 'package:medical/src/modal/glucose/glucose_input.dart';
+import 'package:medical/src/modal/glucose/glucose_range_data.dart';
 import 'package:medical/src/modal/glucose/glucose_timeFrame.dart';
 import 'package:medical/src/utils/app_log.dart';
 import 'package:medical/src/utils/utils.dart';
@@ -202,13 +203,15 @@ class GlucoseClient extends FetchClient {
       bool byDevice,
       List<String> files) async {
     try {
+      bool isGestationalDiabetes = Utils.isGestationalDiabetes();
       Map<String, String> params = {
         'timeFrameId': timeFrameId ?? '',
         'createDate': date.toString(),
         'unitType': AppSettings.userInfo!.glucoseUnit.toString(),
         'glucoseInput': glucoseInput,
         'note': note,
-        'byDevice': byDevice.toString()
+        'byDevice': byDevice.toString(),
+        'thresholdType': isGestationalDiabetes ? '1' : '0',
       };
       if (reason != null) {
         params['reason'] = reason;
@@ -252,30 +255,29 @@ class GlucoseClient extends FetchClient {
   }
 
   //============ Lấy ngưỡng đường huyết =============/
-  Future<bool> getGlucoseRange({
+  Future<GlucoseRangeData?> getGlucoseRange({
     required int thresholdType,
-    required int timeFrameTypes,
+    required String timeFrameCode,
   }) async {
-    try {
-      Map<String, String> params = {
-        'thresholdType': thresholdType.toString(),
-        'timeFrameTypes': timeFrameTypes.toString(),
-      };
-      final response = await super.fetchData(
-        url: '/App/Glucose/GetGlucose',
-        params: params,
-      );
+    // try {
+    Map<String, String> params = {
+      'thresholdType': thresholdType.toString(),
+      'TimeFrameCode': timeFrameCode,
+    };
+    final response = await super.fetchData(
+      url: '/App/Glucose/GetGlucose',
+      params: params,
+    );
 
-      Console.logJson('response', response);
-
-      if (response.statusCode == 200) {
-        return true;
-      } else {
-        throw false;
-      }
-    } catch (e) {
-      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+    Console.logJson('hehe', response.data['data']);
+    if (response.statusCode == 200) {
+      return GlucoseRangeData.fromJson(response.data['data']);
+    } else {
+      return null;
     }
+    // } catch (e) {
+    //   throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+    // }
   }
 
   //============ xóa chỉ số Đường huyết =============/

@@ -57,7 +57,6 @@ class _BloodSugarDetailTabbarControllerState
 
   int periodFilterType = 3;
   String? glucoseID;
-  bool isPregnancy = false;
 
   ShortGuiModel? des;
 
@@ -72,7 +71,6 @@ class _BloodSugarDetailTabbarControllerState
         length: 2);
     Observable.instance.addObserver(this);
     checkShowDes();
-    isPregnancy = Utils.isGestationalDiabetes();
     loadDescription();
     KpiGlycemicTracking.firebaseSetup();
   }
@@ -86,12 +84,6 @@ class _BloodSugarDetailTabbarControllerState
       if (map != null && map['index'] != null) {
         _tabController!.animateTo(map['index']);
       }
-    }
-  }
-
-  updatePregnancyInfo() async {
-    final result = await GlucoseClient().getGlucoseRange(thresholdType: isPregnancy ? 1 :0, timeFrameTypes: 1);
-    if (result == true) {
     }
   }
 

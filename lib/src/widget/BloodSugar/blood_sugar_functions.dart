@@ -76,17 +76,9 @@ class BloodSugarFunctions {
                     backgroundColor: Color(0xFFE4FCF3),
                     textColor: Color(0xff249B92),
                     title: 'Nhập thủ công',
-                    onPressed: () {
-                      // if (isGestationalDiabetes) {
-                      Navigator.pushNamed(
+                    onPressed: () => Navigator.pushNamed(
                           context, NavigatorName.add_blood_sugar_new,
-                          arguments: {'type': 'input'});
-                      // } else {
-                      //   Navigator.pushNamed(
-                      //       context, NavigatorName.add_blood_sugar,
-                      //       arguments: {'type': 'input'});
-                      // }
-                    },
+                          arguments: {'type': 'input'}),
                   ),
                   SizedBox(height: 15),
                   ButtonWidget(

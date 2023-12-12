@@ -170,7 +170,7 @@ class FunkyOverlayState extends State<FunkyOverlay>
                           onTap: () async {
                             await onClose();
                             Navigator.pushNamed(
-                                context, NavigatorName.add_blood_sugar,
+                                context, NavigatorName.add_blood_sugar_new,
                                 arguments: {'type': 'input'});
                           }),
                     ],

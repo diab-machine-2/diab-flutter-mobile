@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_observer/Observable.dart';
+import 'package:flutter_observer/Observer.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/utils/utils.dart';
@@ -19,7 +21,7 @@ class BloodSugarOverviewController extends StatefulWidget {
 
 class BloodSugarOverviewControllerState
     extends State<BloodSugarOverviewController>
-    with AutomaticKeepAliveClientMixin<BloodSugarOverviewController> {
+    with AutomaticKeepAliveClientMixin<BloodSugarOverviewController>, Observer {
   ScrollController _scrollController = ScrollController();
   GlobalKey<BloodSugarDetailState> sugarDetailKey = GlobalKey();
   GlobalKey<BloodSugarChartState> sugarChartKey = GlobalKey();
@@ -29,6 +31,7 @@ class BloodSugarOverviewControllerState
   @override
   void initState() {
     super.initState();
+    Observable.instance.addObserver(this);
     firebaseSetup();
   }
 
@@ -53,6 +56,20 @@ class BloodSugarOverviewControllerState
     if (sugarCompareKey.currentState != null) {
       sugarCompareKey.currentState!.reloadData(periodFilterType);
     }
+  }
+
+  @override
+  void update(
+      Observable observable, String? notifyName, Map<dynamic, dynamic>? map) {
+    if (notifyName == 'glucose_change_data') {
+      setState(() {});
+    }
+  }
+
+  @override
+  void dispose() {
+    Observable.instance.removeObserver(this);
+    super.dispose();
   }
 
   @override
@@ -84,16 +101,12 @@ class BloodSugarOverviewControllerState
           if (isGestationalDiabetes)
             Container(
               padding: EdgeInsets.all(15),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                boxShadow: [
-                  BoxShadow(
+              decoration: BoxDecoration(color: Colors.white, boxShadow: [
+                BoxShadow(
                     offset: Offset(4, 0),
                     blurRadius: 2,
-                    color: Colors.black.withOpacity(0.03)
-                  )
-                ]
-              ),
+                    color: Colors.black.withOpacity(0.03))
+              ]),
               child: SpacingRow(
                 spacing: 15,
                 children: [

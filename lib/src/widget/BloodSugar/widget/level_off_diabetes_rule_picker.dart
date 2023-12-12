@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
@@ -42,7 +43,7 @@ class LevelOffDiabetesRulePicker extends StatefulWidget {
 
 class _LevelOffDiabetesRulePickerState
     extends State<LevelOffDiabetesRulePicker> {
-  CategoryItemUserModel? diabeteSelected;
+  late CategoryItemUserModel diabeteSelected;
   List<CategoryItemUserModel> levelOfDiabetesRuleList = [];
 
   @override
@@ -60,8 +61,7 @@ class _LevelOffDiabetesRulePickerState
         .indexWhere((element) => element.selected == true);
     setState(() {
       levelOfDiabetesRuleList = user.levelOfDiabetesRuleList!;
-      diabeteSelected =
-          indexWhere.isNegative ? null : levelOfDiabetesRuleList[indexWhere];
+      diabeteSelected = levelOfDiabetesRuleList[indexWhere];
     });
   }
 
@@ -81,34 +81,36 @@ class _LevelOffDiabetesRulePickerState
                 separator: Divider(),
                 children: levelOfDiabetesRuleList.map(
                   (item) {
-                    bool isSelected = diabeteSelected != null &&
-                        diabeteSelected!.value == item.value;
+                    bool isSelected = diabeteSelected.value == item.value;
                     return GestureDetector(
                       onTap: () {
                         setState(() {
                           diabeteSelected = item;
                         });
                       },
-                      child: SpacingRow(
-                        spacing: 15,
-                        children: [
-                          CustomCheckboxWidget(
-                            isChecked: isSelected,
-                            onTap: () {
-                              setState(() {
-                                diabeteSelected = item;
-                              });
-                            },
-                          ),
-                          Text(
-                            '${item.text}',
-                            style: TextStyle(
-                              fontSize: 18,
-                              color: isSelected ? R.color.main_1 : null,
-                              fontWeight: isSelected ? FontWeight.w700 : null,
+                      child: Container(
+                        color: Colors.white,
+                        child: SpacingRow(
+                          spacing: 15,
+                          children: [
+                            CustomCheckboxWidget(
+                              isChecked: isSelected,
+                              onTap: () {
+                                setState(() {
+                                  diabeteSelected = item;
+                                });
+                              },
                             ),
-                          )
-                        ],
+                            Text(
+                              '${item.text}',
+                              style: TextStyle(
+                                fontSize: 18,
+                                color: isSelected ? R.color.main_1 : null,
+                                fontWeight: isSelected ? FontWeight.w700 : null,
+                              ),
+                            )
+                          ],
+                        ),
                       ),
                     );
                   },
@@ -130,7 +132,13 @@ class _LevelOffDiabetesRulePickerState
                   child: ButtonWidget(
                     height: 43,
                     title: R.string.cap_nhat.tr(),
-                    onPressed: () => _updateData(),
+                    onPressed: () {
+                      if (diabeteSelected.text == 'Đái tháo đường thai kỳ') {
+                        Navigator.pop(context);
+                      } else {
+                        _updateData();
+                      }
+                    },
                     textSize: 14,
                   ),
                 ),
@@ -143,17 +151,19 @@ class _LevelOffDiabetesRulePickerState
   }
 
   Future<void> _updateData() async {
+    BotToast.showLoading();
     final UserModel userInfo = AppSettings.userInfo!;
     await UserClient().updateCategoryUser(
       AppSettings.userInfo!.id,
       userInfo,
-      [diabeteSelected!],
+      [diabeteSelected],
       CategoryType.LEVEL_OF_DIABETES_TYPE,
       false,
       isUpdateDiabetes: true,
     );
     await UserClient().fetchUser();
-    Navigator.pop(context);
     widget.onSuccess();
+    BotToast.closeAllLoading();
+    Navigator.pop(context);
   }
 }
