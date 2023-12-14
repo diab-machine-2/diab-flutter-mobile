@@ -66,6 +66,7 @@ class AppSettings {
 
   static Future<bool> clearToken() async {
     appPreference.removeData(Const.TOKEN);
+    appPreference.removeData('healthAppPermission');
     return true;
   }
 

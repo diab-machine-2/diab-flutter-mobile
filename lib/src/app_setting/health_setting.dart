@@ -24,15 +24,15 @@ class HealthSetting {
   HealthSetting._privateConstructor();
   static final HealthSetting instance = HealthSetting._privateConstructor();
 
-  final rights = [
-    HealthDataAccess.WRITE,
-    HealthDataAccess.WRITE,
-    HealthDataAccess.WRITE,
-    HealthDataAccess.WRITE,
-    HealthDataAccess.WRITE,
-    HealthDataAccess.WRITE,
-    HealthDataAccess.WRITE,
-  ];
+  // final rights = [
+  //   HealthDataAccess.WRITE,
+  //   HealthDataAccess.WRITE,
+  //   HealthDataAccess.WRITE,
+  //   HealthDataAccess.WRITE,
+  //   HealthDataAccess.WRITE,
+  //   HealthDataAccess.WRITE,
+  //   HealthDataAccess.WRITE,
+  // ];
   Future<bool?> requestConnectionPermission() async {
     bool? result =
         await health.requestAuthorization(types, permissions: permissions);

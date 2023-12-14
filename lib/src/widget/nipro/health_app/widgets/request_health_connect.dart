@@ -47,29 +47,6 @@ class RequestHealthConnect extends StatelessWidget {
             return SizedBox();
           if (isSyncing == true && state.blocStatus == BlocStatus.loading) {
             return SizedBox();
-            return Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  SizedBox(
-                      width: 15,
-                      height: 15,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        color: AppColors.yellow,
-                      )),
-                  SizedBox(width: 15),
-                  Text(
-                    "Đang đồng bộ Health App",
-                    style: TextStyle(
-                      color: AppColors.yellow,
-                    ),
-                  ),
-                ],
-              ),
-            );
           }
           return Padding(
             padding: const EdgeInsets.only(

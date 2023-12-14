@@ -596,7 +596,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController>
                         if (isHasRoadMap)
                           _buildCardLayout(
                             title: R.string.match_coach.tr(),
-                            description: R.string.briefly_yourself,
+                            description: R.string.briefly_yourself.tr(),
                             children: [
                               _buildItemProfile(
                                 image: R.drawable.ic_person,

@@ -60,9 +60,10 @@ class BlockBottomSheet extends StatelessWidget {
                             Text(title,
                                 style: TextStyle(
                                     fontSize: 20, fontWeight: FontWeight.w700)),
-                            Text(description!,
-                                style: TextStyle(
-                                    fontSize: 16, color: Color(0xFF75797E))),
+                            if (description != null)
+                              Text(description ?? "",
+                                  style: TextStyle(
+                                      fontSize: 16, color: Color(0xFF75797E))),
                           ],
                         ),
                       ),

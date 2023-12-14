@@ -11,6 +11,7 @@ import 'package:medical/src/app_setting/dynamic_link_config.dart';
 import 'package:medical/src/model/localization/localization.dart';
 import 'package:medical/src/model/preference/app_preference.dart';
 import 'package:medical/src/theme/app_theme.dart';
+import 'package:medical/src/utils/app_log.dart';
 import 'package:medical/src/widget/BloodPressure/add_bloodPressure.dart';
 import 'package:medical/src/widget/BloodPressure/bloodPressure_detail_tabbar.dart';
 import 'package:medical/src/widget/BloodPressure/widget/bloodPressure_table.dart';
@@ -100,7 +101,6 @@ class _AppState extends State<App> {
   @override
   void dispose() {
     // DeepLinkConfig.instance.dispose();
-    // /Users/phunguyen/development/flutter/.pub-cache/hosted/pub.dartlang.org/pull_to_refresh-2.0.0/lib/src/smart_refresher.dart
     super.dispose();
   }
 
@@ -143,6 +143,7 @@ class _AppState extends State<App> {
                 home: FlashScreenController(),
                 debugShowCheckedModeBanner: false,
                 onGenerateRoute: (settings) {
+                  Console.log('settings.name', settings.name);
                   switch (settings.name) {
                     case NavigatorName.tabbar:
                       String sharedCode = '';
