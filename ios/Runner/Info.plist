@@ -74,10 +74,10 @@
 	<dict>
 		<key>NSAllowsArbitraryLoads</key>
 		<true/>
+		<key>NSAllowsArbitraryLoadsInWebContent</key>
+		<true/>
 		<key>NSAllowsLocalNetworking</key>
 		<true/>
-      <key>NSAllowsArbitraryLoadsInWebContent</key>
-      <true/>
 	</dict>
 	<key>NSBluetoothAlwaysUsageDescription</key>
 	<string>Luôn cho phép DiaB sử dụng Bluetooth để kết nối với máy đo đường huyết.</string>
@@ -95,10 +95,11 @@
 	<string>Cho phép diaB truy cập thư viện để gửi thông tin các chỉ số</string>
 	<key>Privacy - Audio Video Interactions</key>
 	<true/>
+	<key>UIApplicationSupportsIndirectInputEvents</key>
+	<true/>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>fetch</string>
-		<string>processing</string>
 		<string>remote-notification</string>
 	</array>
 	<key>UILaunchStoryboardName</key>
@@ -124,7 +125,5 @@
 	<false/>
 	<key>io.flutter.embedded_views_preview</key>
 	<false/>
-	<key>UIApplicationSupportsIndirectInputEvents</key>
-	<true/>
 </dict>
 </plist>
