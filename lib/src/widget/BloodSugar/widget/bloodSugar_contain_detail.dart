@@ -27,7 +27,7 @@ class BloodSugarDetailState extends State<BloodSugarDetail>
 
   late BuildContext currentContext;
 
-  int periodFilterType = 1;
+  int periodFilterType = 3;
   @override
   void initState() {
     periodFilterType =

@@ -30,7 +30,7 @@ class CustomCheckboxWidget extends StatelessWidget {
               border: isChecked
                   ? null
                   : Border.all(width: 2, color: R.color.primaryGreyColor),
-              borderRadius: BorderRadius.circular(4),
+              borderRadius: BorderRadius.circular(6),
             ),
             child: isChecked
                 ? Icon(

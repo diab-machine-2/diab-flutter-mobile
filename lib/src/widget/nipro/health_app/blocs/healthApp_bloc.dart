@@ -166,6 +166,12 @@ class HealthAppBloc extends Bloc<HealthAppEvent, HealthAppState> {
     if (dateFrom.difference(dateTo).inDays > 90) {
       dateFrom = dateTo.add(Duration(days: 90));
     }
+    dateTo = DateTime(
+        dateTo.year,
+        dateTo.month,
+        dateTo.day,
+        23, // Giờ
+        59);
 
     List<HealthDataPoint> steps = await health
         .getHealthDataFromTypes(dateFrom, dateTo, [HealthDataType.STEPS]);
@@ -289,7 +295,7 @@ class HealthAppBloc extends Bloc<HealthAppEvent, HealthAppState> {
             return difference.inDays == 0;
           });
 
-          if (heightData == null) {
+          if (heightData == null && heightList.isNotEmpty) {
             heightData = heightList.first;
           }
 

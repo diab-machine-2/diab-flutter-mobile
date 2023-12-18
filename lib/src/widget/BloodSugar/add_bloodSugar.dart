@@ -1,9 +1,6 @@
 import 'dart:io';
-import 'dart:ui';
-
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_observer/Observable.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
@@ -19,13 +16,11 @@ import 'package:medical/src/utils/app_media_query.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/BloodSugar/widget/action_list_trend.dart';
 import 'package:medical/src/widget/HbA1C/widget/description/description.dart';
-
 import 'package:medical/src/widget/base/base_state.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
-import 'package:medical/src/widget/nipro/list_devices.dart';
 import 'package:medical/src/widget/nipro/roche_connection/roche_connection_view.dart';
 import 'package:medical/src/widgets/btn_add_photo.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -33,8 +28,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:medical/src/modal/error/error_model.dart';
 import 'package:easy_localization/easy_localization.dart';
-
-import '../../model/repository/app_repository.dart';
 import '../../widgets/CalendarPicker/custom_date_picker.dart';
 import '../../widgets/network_image_widget.dart';
 import '../my_plan_screens/activity_tab/activity_tab/models/schedule_type.dart';
@@ -260,7 +253,10 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController>
                                           MainAxisAlignment.center,
                                       children: [
                                         Container(
-                                          width: 80,
+                                          width: 160,
+                                          decoration: BoxDecoration(border: Border(bottom: BorderSide(
+                                            color: R.color.color0xffE5E5E5
+                                          ))),
                                           child: TextField(
                                               controller: _controller,
                                               maxLength: 3,
@@ -318,11 +314,6 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController>
                                             style: TextStyle(fontSize: 16))
                                       ]),
                                 ),
-                                Center(
-                                    child: Container(
-                                        height: 1,
-                                        width: 74,
-                                        color: R.color.color0xffE5E5E5)),
                                 GestureDetector(
                                   onTap: () async {
                                     await changeUnit();
@@ -409,40 +400,40 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController>
                           //TODO: Kết nối máy đo đường huyết
                           GestureDetector(
                             onTap: () async {
-                              // Navigator.push(
-                              //     context,
-                              //     MaterialPageRoute(
-                              //         builder: (BuildContext context) =>
-                              //             RocheConnectionView()));
-                              final data = await Navigator.pushNamed(context,
-                                  NavigatorName.connection_instructions);
-                              if (data != null && data is Map) {
-                                fromNipro = true;
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (BuildContext context) =>
+                                          RocheConnectionView()));
+                              // final data = await Navigator.pushNamed(context,
+                              //     NavigatorName.connection_instructions);
+                              // if (data != null && data is Map) {
+                              //   fromNipro = true;
 
-                                if (AppSettings.userInfo!.glucoseUnit != 1) {
-                                  await changeUnit();
-                                }
+                              //   if (AppSettings.userInfo!.glucoseUnit != 1) {
+                              //     await changeUnit();
+                              //   }
 
-                                final glucose =
-                                    double.tryParse(data['glucose']) ?? 0;
-                                number = glucose;
-                                _controller.text = number.toString();
+                              //   final glucose =
+                              //       double.tryParse(data['glucose']) ?? 0;
+                              //   number = glucose;
+                              //   _controller.text = number.toString();
 
-                                showReason =
-                                    (AppSettings.userInfo!.glucoseUnit == 1
-                                            ? (number! < 55 || number! > 250)
-                                            : (number! <
-                                                    55 / mmollToMgdlFactor ||
-                                                number! >
-                                                    250 / mmollToMgdlFactor)) &&
-                                        number! > 0;
-                                selectedDate =
-                                    DateTime.fromMillisecondsSinceEpoch(
-                                        (int.tryParse(data['date']) ?? 0) *
-                                            1000);
-                                loadTimeFrame();
-                                setState(() {});
-                              }
+                              //   showReason =
+                              //       (AppSettings.userInfo!.glucoseUnit == 1
+                              //               ? (number! < 55 || number! > 250)
+                              //               : (number! <
+                              //                       55 / mmollToMgdlFactor ||
+                              //                   number! >
+                              //                       250 / mmollToMgdlFactor)) &&
+                              //           number! > 0;
+                              //   selectedDate =
+                              //       DateTime.fromMillisecondsSinceEpoch(
+                              //           (int.tryParse(data['date']) ?? 0) *
+                              //               1000);
+                              //   loadTimeFrame();
+                              //   setState(() {});
+                              // }
                             },
                             child: Container(
                                 margin: EdgeInsets.only(

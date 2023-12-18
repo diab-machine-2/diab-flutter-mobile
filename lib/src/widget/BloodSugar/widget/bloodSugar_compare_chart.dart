@@ -30,7 +30,7 @@ class BloodSugarCompareChartState extends State<BloodSugarCompareChart>
   @override
   bool get wantKeepAlive => true;
   late BuildContext currentContext;
-  int periodFilterType = 1;
+  int periodFilterType = 3;
   String name = R.string.before_and_after_eating.tr();
   int comparerType = 1;
   @override

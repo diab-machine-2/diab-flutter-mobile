@@ -36,7 +36,7 @@ class BloodSugarDetailControllerState extends State<BloodSugarDetailController>
   int page = 1;
   bool? hasMore = false;
   bool isLoading = false;
-  int periodFilterType = 1;
+  int periodFilterType = 3;
 
   String? glucoseID;
 
@@ -237,7 +237,7 @@ class BloodSugarDetailControllerState extends State<BloodSugarDetailController>
     return GestureDetector(
         onTap: () {
           KpiGlycemicTracking.clickKpiItem();
-          Navigator.pushNamed(context, NavigatorName.add_blood_sugar,
+          Navigator.pushNamed(context, NavigatorName.add_blood_sugar_new,
               arguments: {'type': 'update', 'id': element.id});
         },
         child: Padding(

@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/utils/app_media_query.dart';
+import 'package:medical/src/widgets/spacing_row.dart';
 import 'package:sticky_headers/sticky_headers.dart';
 
 class BlockBottomSheet extends StatelessWidget {
   final String title;
+  final String? description;
   final Widget child;
   final Widget? header;
   final Widget? footer;
@@ -12,11 +15,13 @@ class BlockBottomSheet extends StatelessWidget {
   const BlockBottomSheet({
     Key? key,
     required this.title,
+    this.description,
     required this.child,
     this.onClose,
     this.header,
     this.footer,
     this.disableCloseButton = false,
+    Function? onSuccess,
   }) : super(key: key);
 
   @override
@@ -48,15 +53,24 @@ class BlockBottomSheet extends StatelessWidget {
                           right: 45,
                         ),
                         width: double.infinity,
-                        child: Text(title,
-                            style: TextStyle(
-                                fontSize: 18, fontWeight: FontWeight.w700)),
+                        child: SpacingColumn(
+                          spacing: 10,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(title,
+                                style: TextStyle(
+                                    fontSize: 20, fontWeight: FontWeight.w700)),
+                            if (description != null)
+                              Text(description ?? "",
+                                  style: TextStyle(
+                                      fontSize: 16, color: Color(0xFF75797E))),
+                          ],
+                        ),
                       ),
                       if (!disableCloseButton)
                         Positioned(
-                          right: 15,
-                          bottom: 0,
-                          top: 10,
+                          right: 5,
+                          top: 5,
                           child: GestureDetector(
                             onTap: () {
                               Navigator.pop(context);
@@ -65,12 +79,11 @@ class BlockBottomSheet extends StatelessWidget {
                               }
                             },
                             child: Container(
-                              alignment: Alignment.center,
-                              child: Icon(
-                                Icons.close,
-                                color: R.color.gray,
-                              ),
-                            ),
+                                alignment: Alignment.center,
+                                child: Image.asset(
+                                  R.drawable.ic_clear,
+                                  width: 45,
+                                )),
                           ),
                         ),
                     ],

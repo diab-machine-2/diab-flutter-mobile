@@ -8,7 +8,6 @@ import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:medical/src/widgets/button_widget.dart';
-import 'package:medical/src/widgets/loadmore_template.dart';
 import 'package:medical/src/widgets/spacing_row.dart';
 
 class BloodPressureTableController extends StatefulWidget {

@@ -329,7 +329,7 @@ class NotificationUnreadControllerState
               arguments: {'type': 'update', 'id': notificationModel.id});
           break;
         case NotificationActionType.add_blood_sugar:
-          Navigator.pushNamed(context, NavigatorName.add_blood_sugar,
+          Navigator.pushNamed(context, NavigatorName.add_blood_sugar_new,
               arguments: {'type': 'input', 'id': notificationModel.id});
           break;
         case NotificationActionType.none:

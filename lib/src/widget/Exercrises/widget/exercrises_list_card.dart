@@ -87,9 +87,14 @@ class ExercrisesListCard extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: 16),
       child: GestureDetector(
         onTap: () {
-          KpiMotionTracking.clickKpiItem();
-          Navigator.pushNamed(context, NavigatorName.add_exercrises,
-              arguments: {'type': 'update', 'id': itemInput.id});
+          bool isNotSyncFromHealth =
+              itemInput.exercise.first.name != "Đi bộ (health app)";
+          print('isNotSyncFromHealth: $isNotSyncFromHealth');
+          if (isNotSyncFromHealth) {
+            KpiMotionTracking.clickKpiItem();
+            Navigator.pushNamed(context, NavigatorName.add_exercrises,
+                arguments: {'type': 'update', 'id': itemInput.id});
+          }
         },
         child: Container(
           decoration: BoxDecoration(

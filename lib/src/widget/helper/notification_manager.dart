@@ -180,7 +180,7 @@ class NotificationManager {
           break;
         case NotificationActionType.add_blood_sugar:
           Navigator.pushNamed(
-              navigatorKey.currentState!.context, NavigatorName.add_blood_sugar,
+              navigatorKey.currentState!.context, NavigatorName.add_blood_sugar_new,
               arguments: {'type': 'input', 'id': model.data?.communicationId});
           break;
         case NotificationActionType.none:

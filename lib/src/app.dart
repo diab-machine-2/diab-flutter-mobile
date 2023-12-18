@@ -11,6 +11,7 @@ import 'package:medical/src/app_setting/dynamic_link_config.dart';
 import 'package:medical/src/model/localization/localization.dart';
 import 'package:medical/src/model/preference/app_preference.dart';
 import 'package:medical/src/theme/app_theme.dart';
+import 'package:medical/src/utils/app_log.dart';
 import 'package:medical/src/widget/BloodPressure/add_bloodPressure.dart';
 import 'package:medical/src/widget/BloodPressure/bloodPressure_detail_tabbar.dart';
 import 'package:medical/src/widget/BloodPressure/widget/bloodPressure_table.dart';
@@ -75,6 +76,7 @@ import 'package:medical/src/widget/voucher/presentation/voucher_list/pages/vouch
 import 'package:medical/src/widget/zoom/zoom_android_view.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'utils/navigator_name.dart';
+import 'widget/BloodSugar/add_bloodSugar_new.dart';
 import 'widget/Food/add_food.dart';
 import 'widget/helper/photo_view.dart';
 import 'widget/news_detail/presentation/news_detail_view.dart';
@@ -99,7 +101,6 @@ class _AppState extends State<App> {
   @override
   void dispose() {
     // DeepLinkConfig.instance.dispose();
-    // /Users/phunguyen/development/flutter/.pub-cache/hosted/pub.dartlang.org/pull_to_refresh-2.0.0/lib/src/smart_refresher.dart
     super.dispose();
   }
 
@@ -142,6 +143,7 @@ class _AppState extends State<App> {
                 home: FlashScreenController(),
                 debugShowCheckedModeBanner: false,
                 onGenerateRoute: (settings) {
+                  Console.log('settings.name', settings.name);
                   switch (settings.name) {
                     case NavigatorName.tabbar:
                       String sharedCode = '';
@@ -280,6 +282,15 @@ class _AppState extends State<App> {
                       return _buildRoute(
                           settings,
                           AddBloodSugarController(
+                            type: data?['type'],
+                            id: data?['id'],
+                            goalId: data?['goalId'],
+                          ));
+                    case NavigatorName.add_blood_sugar_new:
+                      final data = settings.arguments as Map<String, dynamic>?;
+                      return _buildRoute(
+                          settings,
+                          AddBloodSugarControllerNew(
                             type: data?['type'],
                             id: data?['id'],
                             goalId: data?['goalId'],

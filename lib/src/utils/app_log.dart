@@ -7,16 +7,16 @@ class Console {
   static const String TAG = "diaB";
 
   static log([String tag = TAG, dynamic msg]) {
-    // if (Const.ENVIRONMENT_DEFAULT == 'staging') {
+    if (Const.ENVIRONMENT_DEFAULT == 'staging') {
       developer.log('$msg', name: tag);
-    // }
+    }
   }
 
   static logJson([String tag = TAG, dynamic msg]) {
-    // if (Const.ENVIRONMENT_DEFAULT == 'staging') {
+    if (Const.ENVIRONMENT_DEFAULT == 'staging') {
       final prettyString = const JsonEncoder.withIndent('  ').convert(msg);
       developer.log(prettyString, name: tag);
-    // }
+    }
   }
 
   ///Singleton factory

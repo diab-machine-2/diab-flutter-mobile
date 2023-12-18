@@ -596,8 +596,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController>
                         if (isHasRoadMap)
                           _buildCardLayout(
                             title: R.string.match_coach.tr(),
-                            description:
-                                R.string.briefly_yourself,
+                            description: R.string.briefly_yourself.tr(),
                             children: [
                               _buildItemProfile(
                                 image: R.drawable.ic_person,
@@ -661,7 +660,8 @@ class _ProfileInfoControllerState extends State<ProfileInfoController>
                                     .where((e) => e.selected ?? false)
                                     .map((e) => e.text ?? '')
                                     .toList(),
-                                selectedDialogTitle: R.string.choose_sports.tr(),
+                                selectedDialogTitle:
+                                    R.string.choose_sports.tr(),
                                 isShowSelectedDialog: true,
                                 isRequiredSelection: false,
                                 isMultipleChoice: true,
@@ -749,8 +749,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController>
                               _buildItemProfile(
                                 icon: R.drawable.ic_user_schedule,
                                 title: 'Buổi sáng; Bao gồm thứ 7',
-                                subTitle:
-                                    R.string.available_time_slot.tr(),
+                                subTitle: R.string.available_time_slot.tr(),
                                 subIcon: Image.asset(R.drawable.ic_right,
                                     width: 18, height: 18),
                                 elementList: user.workingHourRuleList!
@@ -1994,33 +1993,28 @@ class _ProfileInfoControllerState extends State<ProfileInfoController>
                           flex: 1,
                           child: GestureDetector(
                             onTap: () {
+                              String diabetesNameTmp = '';
                               for (int i = 0;
                                   i < user.levelOfDiabetesRuleList!.length;
                                   i++) {
                                 if (Utils.parseStringToInt(user
                                         .levelOfDiabetesRuleList![i].value!) ==
                                     diabetesStatus) {
-                                  diabetesName =
+                                  diabetesNameTmp =
                                       user.levelOfDiabetesRuleList![i].text!;
                                   break;
                                 }
                               }
-                              setState(() {});
-                              updateCategoryUser(
-                                user.levelOfDiabetesRuleList!,
-                                diabetesStatus != null ? [diabetesStatus!] : [],
-                                CategoryType.LEVEL_OF_DIABETES_TYPE,
-                                false,
-                                isUpdateDiabetes: true,
-                              );
-
-                              // final UserModel userInfo = AppSettings.userInfo!;
-                              // updateUserInfo(
-                              //   userInfo.copyWith(
-                              //     diabetesStatus: diabetesStatus,
-                              //   ),
-                              // );
-                              Navigator.pop(context);
+                              if (diabetesNameTmp == 'Đái tháo đường thai kỳ') {
+                                DiabetesInformation.showModal(
+                                  context,
+                                  onSuccess: () {
+                                    _handleDiabetesUpdate();
+                                  },
+                                );
+                              } else {
+                                _handleDiabetesUpdate();
+                              }
                             },
                             child: Container(
                               height: 48,
@@ -2048,6 +2042,19 @@ class _ProfileInfoControllerState extends State<ProfileInfoController>
                 ),
               ],
             )));
+  }
+
+  void _handleDiabetesUpdate() {
+    setState(() {});
+    updateCategoryUser(
+      user.levelOfDiabetesRuleList!,
+      diabetesStatus != null ? [diabetesStatus!] : [],
+      CategoryType.LEVEL_OF_DIABETES_TYPE,
+      false,
+      isUpdateDiabetes: true,
+    );
+
+    Navigator.pop(context);
   }
 
   _showDialogUpdateDiabetesStatusDate() {
@@ -2158,7 +2165,6 @@ class _ProfileInfoControllerState extends State<ProfileInfoController>
 
   showDialogWeight() {
     showDialog(
-      //    barrierColor: R.color.color0xff003F38.withOpacity(0.5),
       barrierDismissible: true,
       context: context,
       builder: (_) => CustomWeightPicker(

@@ -27,7 +27,7 @@ class BloodSugarTableController extends StatefulWidget {
 
 BuildContext? currentContext;
 
-int periodFilterType = 1;
+int periodFilterType = 3;
 
 class _BloodSugarTableControllerState extends State<BloodSugarTableController> {
   @override
@@ -136,7 +136,7 @@ class _BloodSugarTableControllerState extends State<BloodSugarTableController> {
                                   children: model.map((item) {
                                     final time = item.createDate!;
                                     final timeFrame = item.timeFrame!;
-                                    final glucose = item.glucose!.toInt();
+                                    final glucose = item.glucose!.toDouble();
 
                                     return _buildItem(context, time, timeFrame,
                                         glucose, item.backgroundColor);
@@ -180,7 +180,7 @@ class _BloodSugarTableControllerState extends State<BloodSugarTableController> {
   }
 
   Widget _buildItem(BuildContext context, int time, String timeFrame,
-      int glucose, String? color) {
+      double glucose, String? color) {
     final width = (MediaQuery.of(context).size.width - 45) / 3;
     return Container(
       child: Column(

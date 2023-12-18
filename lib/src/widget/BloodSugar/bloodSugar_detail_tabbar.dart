@@ -8,9 +8,11 @@ import 'package:medical/src/app_setting/dynamic_link_config.dart';
 import 'package:medical/src/app_setting/firebase_tracking/kpi_glycemic_tracking.dart';
 import 'package:medical/src/modal/HbA1C/short_gui.dart';
 import 'package:medical/src/repo/HbA1C/HbA1C_client.dart';
+import 'package:medical/src/repo/glucose/glucose_client.dart';
 import 'package:medical/src/utils/app_storages.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/navigator_name.dart';
+import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/BloodSugar/bloodSugar_detail.dart';
 import 'package:medical/src/widget/BloodSugar/overview.dart';
 import 'package:medical/src/widget/HbA1C/widget/description/description.dart';
@@ -53,7 +55,7 @@ class _BloodSugarDetailTabbarControllerState
   GlobalKey<BloodSugarOverviewControllerState> overViewKey = GlobalKey();
   GlobalKey<BloodSugarDetailControllerState> detailKey = GlobalKey();
 
-  int periodFilterType = 1;
+  int periodFilterType = 3;
   String? glucoseID;
 
   ShortGuiModel? des;
@@ -118,6 +120,7 @@ class _BloodSugarDetailTabbarControllerState
 
   @override
   Widget build(BuildContext context) {
+    bool isGestationalDiabetes = Utils.isGestationalDiabetes();
     return Scaffold(
         resizeToAvoidBottomInset: false,
         appBar: CustomAppBar(
@@ -176,10 +179,19 @@ class _BloodSugarDetailTabbarControllerState
             ]),
           ),
         ]),
-        floatingActionButton: FloatingActionButton(
-          backgroundColor: R.color.transparent,
-          onPressed: () => BloodSugarFunctions.showModalAddData(context),
-          child: Image.asset(R.drawable.ic_button_plus, width: 80, height: 80),
+        floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+        floatingActionButton: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            FloatingActionButton(
+              backgroundColor: R.color.transparent,
+              onPressed: () => BloodSugarFunctions.showModalAddData(context),
+              child:
+                  Image.asset(R.drawable.ic_button_plus, width: 80, height: 80),
+            ),
+            if (isGestationalDiabetes && _tabController?.index == 0)
+              SizedBox(height: 55, width: 10),
+          ],
         ));
   }
 }
@@ -281,8 +293,8 @@ class ActionFilter extends StatefulWidget {
 }
 
 class _ActionFilterState extends State<ActionFilter> {
-  String name = R.string.filter_day.tr(args: ['7']);
-  int selectedIndex = 0;
+  String name = R.string.filter_day.tr(args: ['30']);
+  int selectedIndex = 2;
 
   @override
   Widget build(BuildContext context) {

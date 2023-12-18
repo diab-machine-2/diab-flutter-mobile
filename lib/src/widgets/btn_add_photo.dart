@@ -11,39 +11,44 @@ class ButtonAddPhoto extends StatelessWidget {
   Widget build(BuildContext context) {
     return DottedBorder(
       borderType: BorderType.RRect,
-      dashPattern: [4, 5],
-      strokeWidth: 1,
+      dashPattern: [3, 4],
+      strokeWidth: 2,
       padding: EdgeInsets.all(3),
-      radius: Radius.circular(5),
+      radius: Radius.circular(12),
       color: R.color.mainColor,
-      child: Container(
-        height: 80,
-        width: 80,
-        decoration: BoxDecoration(
-          color: R.color.white,
-          borderRadius: BorderRadius.circular(5),
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.add_a_photo_outlined,
-              size: 20,
-              color: R.color.mainColor,
+      child: Center(
+        child: Container(
+          height: 80,
+          width: 80,
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            color: R.color.white,
+            borderRadius: BorderRadius.circular(5),
+          ),
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.add_a_photo_outlined,
+                  size: 24,
+                  color: R.color.mainColor,
+                ),
+                SizedBox(height: 5),
+                AutoSizeText(
+                  R.string.add_photo.tr(),
+                  maxLines: 1,
+                  minFontSize: 10,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: R.color.mainColor,
+                    fontWeight: FontWeight.w700,
+                  ),
+                )
+              ],
             ),
-            SizedBox(height: 10),
-            AutoSizeText(
-              R.string.add_photo.tr(),
-              maxLines: 1,
-              minFontSize: 10,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 13,
-                color: R.color.mainColor,
-                fontWeight: FontWeight.w700,
-              ),
-            )
-          ],
+          ),
         ),
       ),
     );

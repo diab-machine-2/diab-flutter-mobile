@@ -27,8 +27,13 @@ class GlucoseBloc extends Bloc<GlucoseEvent, GlucoseState> {
           event.currentDateTime, event.periodFilterType, event.page);
     }
     if (event is FetchInputGlucose) {
-      yield* fetchInputGlucose(event.currentDateTime, event.periodFilterType,
-          event.page, event.timeFrameType, event.glucoseDistributionType);
+      yield* fetchInputGlucose(
+          event.currentDateTime,
+          event.periodFilterType,
+          event.page,
+          event.timeFrameType,
+          event.glucoseDistributionType,
+          event.size);
     }
     if (event is FetchTrendGlucose) {
       yield* fetchTrendGlucose(event.trendType, event.currentDateTime,
@@ -92,16 +97,19 @@ class GlucoseBloc extends Bloc<GlucoseEvent, GlucoseState> {
   }
 
   Stream<GlucoseState> fetchInputGlucose(
-      String? currentDateTime,
-      String? periodFilterType,
-      int? page,
-      String? timeFrameType,
-      String? glucoseDistributionType) async* {
+    String? currentDateTime,
+    String? periodFilterType,
+    int? page,
+    String? timeFrameType,
+    String? glucoseDistributionType,
+    String? size,
+  ) async* {
     // try {
     final client = GlucoseClient();
     final GlucoseState currenState = state;
     var model = await client.fetchInput(currentDateTime, periodFilterType, page,
-        timeFrameType, glucoseDistributionType);
+        timeFrameType, glucoseDistributionType,
+        size: size ?? '20');
 
     if (currenState is GlucoseAlllLoaded) {
       if (currenState.inputGlucoseModel != null && page != 1) {

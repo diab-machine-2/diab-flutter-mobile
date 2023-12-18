@@ -102,7 +102,6 @@ class _TabbarControllerState extends State<TabbarController>
         index: initialPage,
         callback: (index) {
           if (index == 3) {
-            //  _redirectToWebStore();
             BotToast.showLoading();
             Future.delayed(Duration(seconds: 1), () async {
               _analytics.logEvent(
@@ -117,11 +116,9 @@ class _TabbarControllerState extends State<TabbarController>
                   MaterialPageRoute(
                     builder: (context) => WebviewStore(
                         urlStore:
-                            'https://diab.com.vn/danh-sach-san-pham/?p=chuong-trinh-thay-doi-loi-song'),
+                            FirebaseRemoteSetting.instance.storeNavigationUrl),
                   ));
             });
-
-            //    FlutterNativeSplash.remove();
           } else if (index == -1) {
             _showMaterialDialog();
           } else {
@@ -164,16 +161,6 @@ class _TabbarControllerState extends State<TabbarController>
     final String? activityId = DynamicLinkConfig.instance.activityId;
     if (lessonId != null || activityId != null) {
       jumpTo(1);
-    }
-  }
-
-  Future<void> _redirectToWebStore() async {
-    final Uri url =
-        Uri.parse('https://diab.com.vn/danh-sach-san-pham/?p=tat-ca');
-    if (await canLaunchUrl(url)) {
-      await launchUrl(url, mode: LaunchMode.externalApplication);
-    } else {
-      throw 'Could not launch $url';
     }
   }
 

@@ -148,9 +148,9 @@ class _HomeControllerState extends State<HomeController> with Observer {
         }
       });
       await ChooseUrl();
-      Future.delayed(Duration(seconds: 3), () async {
-        _showPopupStore();
-      });
+      // Future.delayed(Duration(seconds: 3), () async {
+      //   _showPopupStore();
+      // });
     }
   }
 

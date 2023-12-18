@@ -11,9 +11,11 @@ class FirebaseRemoteSetting {
 
   late String _appStoreVersion;
   late String _playStoreVersion;
+  late String _storeNavigationUrl;
 
   String get appStoreVersion => _appStoreVersion;
   String get playStoreVersion => _playStoreVersion;
+  String get storeNavigationUrl => _storeNavigationUrl;
 
   Future<void> init() async {
     await remoteConfig.setConfigSettings(RemoteConfigSettings(
@@ -23,6 +25,6 @@ class FirebaseRemoteSetting {
     await remoteConfig.fetchAndActivate();
     _appStoreVersion = remoteConfig.getString('APP_STORE_VERSION');
     _playStoreVersion = remoteConfig.getString('PLAY_STORE_VERSION');
-
+    _storeNavigationUrl = remoteConfig.getString('STORE_NAVIGATION_URL');
   }
 }

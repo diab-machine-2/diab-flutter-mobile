@@ -103,8 +103,7 @@ class _SearchExercrisesControllerState
               body: Container(
                 decoration: BoxDecoration(
                     image: DecorationImage(
-                        image:
-                            AssetImage(R.drawable.bg_splash),
+                        image: AssetImage(R.drawable.bg_splash),
                         fit: BoxFit.cover)),
                 child: Column(
                   children: [
@@ -162,7 +161,8 @@ class _SearchExercrisesControllerState
                             decoration: BoxDecoration(
                                 color: R.color.white,
                                 borderRadius: BorderRadius.circular(30),
-                                border: Border.all(color: R.color.grayComponentBorder)),
+                                border: Border.all(
+                                    color: R.color.grayComponentBorder)),
                             child: Row(
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
@@ -177,12 +177,16 @@ class _SearchExercrisesControllerState
                                               counterText: '',
                                               contentPadding:
                                                   EdgeInsets.only(top: -20),
-                                              hintText: R.string.tim_kiem_hoat_dong.tr(),
+                                              hintText: R
+                                                  .string.tim_kiem_hoat_dong
+                                                  .tr(),
                                               fillColor: R.color.textDark),
                                         )),
                                   ),
                                   Image.asset(R.drawable.ic_search,
-                                      width: 24, height: 24, color: R.color.mainColor),
+                                      width: 24,
+                                      height: 24,
+                                      color: R.color.mainColor),
                                 ])),
                         model == null
                             ? Center(child: CircularProgressIndicator())
@@ -219,10 +223,12 @@ class _SearchExercrisesControllerState
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
                                 children: [
-                                  Text('$selectedItem ${R.string.hoat_dong_lower_case.tr()}'),
+                                  Text(
+                                      '$selectedItem ${R.string.hoat_dong_lower_case.tr()}'),
                                   Row(
                                     children: [
-                                      Text(formatNumber(sumCalories!.toDouble()),
+                                      Text(
+                                          formatNumber(sumCalories!.toDouble()),
                                           style: TextStyle(
                                               color: R.color.textDark,
                                               fontSize: 20,
@@ -298,9 +304,12 @@ class _SearchExercrisesControllerState
                                                             color: R.color.red,
                                                             width: 2)),
                                                     child: Center(
-                                                      child: Text(R.string.xoa_du_lieu.tr(),
+                                                      child: Text(
+                                                          R.string.xoa_du_lieu
+                                                              .tr(),
                                                           style: TextStyle(
-                                                              color: R.color.red,
+                                                              color:
+                                                                  R.color.red,
                                                               fontSize: 16,
                                                               fontWeight:
                                                                   FontWeight
@@ -328,13 +337,17 @@ class _SearchExercrisesControllerState
                                                           end: Alignment
                                                               .centerRight,
                                                           colors: [
-                                                            R.color.greenGradientTop,
-                                                            R.color.greenGradientBottom
+                                                            R.color
+                                                                .greenGradientTop,
+                                                            R.color
+                                                                .greenGradientBottom
                                                           ])),
                                                   child: Center(
-                                                    child: Text(R.string.save.tr(),
+                                                    child: Text(
+                                                        R.string.save.tr(),
                                                         style: TextStyle(
-                                                            color: R.color.white,
+                                                            color:
+                                                                R.color.white,
                                                             fontSize: 16,
                                                             fontWeight:
                                                                 FontWeight
@@ -393,117 +406,135 @@ class _SearchExercrisesControllerState
                     padding: EdgeInsets.all(0),
                     itemCount: model.length,
                     separatorBuilder: (context, index) {
-                      return Container(height: 1, color: R.color.color0xffD6D8E0);
+                      return Container(
+                          height: 1, color: R.color.color0xffD6D8E0);
                     },
                     itemBuilder: (BuildContext context, int index) {
-                      final filterResult = selectedCategories!.where((element) =>
-                          model[index].categoryId == element!.categoryId);
+                      final filterResult = selectedCategories!.where(
+                          (element) =>
+                              model[index].categoryId == element!.categoryId);
                       final selectedModel =
                           filterResult.length > 0 ? filterResult.first : null;
+                      bool isNotSyncFromHealth =
+                          model[index].category != "Đi bộ (health app)";
                       return GestureDetector(
                         onTap: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (ctx) =>
-                                    InputDetailExercrisesController(
-                                  model: selectedModel ?? model[index],
-                                  datacallback: (modelCallback) {
-                                    BlocProvider.of<ExercrisesBloc>(context)
-                                        .add(AddCategory(
-                                            selectedModel: modelCallback));
-                                  },
-                                ),
-                              ));
+                          if (isNotSyncFromHealth) {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (ctx) =>
+                                      InputDetailExercrisesController(
+                                    model: selectedModel ?? model[index],
+                                    datacallback: (modelCallback) {
+                                      BlocProvider.of<ExercrisesBloc>(context)
+                                          .add(AddCategory(
+                                              selectedModel: modelCallback));
+                                    },
+                                  ),
+                                ));
+                          }
                         },
-                        child: Container(
-                            padding: EdgeInsets.only(
-                                left: 16, right: 16, top: 8, bottom: 8),
-                            decoration: BoxDecoration(
-                                color: selectedModel == null
-                                    ? R.color.transparent
-                                    : R.color.color0xFFC3E8D3.withOpacity(0.5),
-                                border: Border.all(
-                                    color: selectedModel == null
-                                        ? R.color.transparent
-                                        : R.color.color0xff72CB9C)),
-                            child: Row(
-                              children: [
-                                Stack(
-                                    alignment: AlignmentDirectional.center,
+                        child: Opacity(
+                          opacity: isNotSyncFromHealth ? 1 : 0.5,
+                          child: Container(
+                              padding: EdgeInsets.only(
+                                  left: 16, right: 16, top: 8, bottom: 8),
+                              decoration: BoxDecoration(
+                                  color: selectedModel == null
+                                      ? R.color.transparent
+                                      : R.color.color0xFFC3E8D3
+                                          .withOpacity(0.5),
+                                  border: Border.all(
+                                      color: selectedModel == null
+                                          ? R.color.transparent
+                                          : R.color.color0xff72CB9C)),
+                              child: Row(
+                                children: [
+                                  Stack(
+                                      alignment: AlignmentDirectional.center,
+                                      children: [
+                                        Image.asset(
+                                            R.drawable.bg_activity_empty,
+                                            width: 50,
+                                            height: 50),
+                                        NetWorkImageWidget(
+                                            imageUrl:
+                                                model[index].cover!.url ?? '',
+                                            width: 35,
+                                            height: 35)
+                                      ]),
+                                  SizedBox(width: 16),
+                                  Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
-                                      Image.asset(
-                                          R.drawable.bg_activity_empty,
-                                          width: 50,
-                                          height: 50),
-                                      NetWorkImageWidget(imageUrl: 
-                                          model[index].cover!.url ?? '',
-                                          width: 35,
-                                          height: 35)
-                                    ]),
-                                SizedBox(width: 16),
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(model[index].category!,
-                                        style: TextStyle(
-                                            color: R.color.textDark,
-                                            fontSize: 15,
-                                            fontWeight: FontWeight.w600)),
-                                    SizedBox(
-                                      height: 4,
-                                    ),
-                                    selectedModel == null
-                                        ? SizedBox()
-                                        : Row(
-                                            children: [
-                                              Text(
-                                                  selectedModel == null
-                                                      ? ''
-                                                      : selectedModel.duration!
-                                                                  .round() ==
-                                                              selectedModel
-                                                                  .duration
-                                                          ? selectedModel
-                                                              .duration!
-                                                              .round()
-                                                              .toString()
-                                                          : selectedModel
-                                                              .duration
-                                                              .toString(),
-                                                  style: R.style.normalTextStyle),
-                                              SizedBox(
-                                                width: 4,
-                                              ),
-                                              selectedModel == null
-                                                  ? SizedBox()
-                                                  : Text('${R.string.minute.tr()},',
-                                                      style: R.style.normalTextStyle),
-                                              SizedBox(
-                                                width: 4,
-                                              ),
-                                              Text(
-                                                  selectedModel == null
-                                                      ? ''
-                                                      : formatNumber(
-                                                          selectedModel
-                                                              .burnedCalorie),
-                                                  style: R.style.normalTextStyle),
-                                              SizedBox(
-                                                width: 2,
-                                              ),
-                                              Text(
-                                                  selectedModel == null
-                                                      ? ''
-                                                      : selectedModel.unit
-                                                          .toString(),
-                                                  style: R.style.normalTextStyle),
-                                            ],
-                                          )
-                                  ],
-                                ),
-                              ],
-                            )),
+                                      Text(model[index].category!,
+                                          style: TextStyle(
+                                              color: R.color.textDark,
+                                              fontSize: 15,
+                                              fontWeight: FontWeight.w600)),
+                                      SizedBox(
+                                        height: 4,
+                                      ),
+                                      selectedModel == null
+                                          ? SizedBox()
+                                          : Row(
+                                              children: [
+                                                Text(
+                                                    selectedModel == null
+                                                        ? ''
+                                                        : selectedModel
+                                                                    .duration!
+                                                                    .round() ==
+                                                                selectedModel
+                                                                    .duration
+                                                            ? selectedModel
+                                                                .duration!
+                                                                .round()
+                                                                .toString()
+                                                            : selectedModel
+                                                                .duration
+                                                                .toString(),
+                                                    style: R
+                                                        .style.normalTextStyle),
+                                                SizedBox(
+                                                  width: 4,
+                                                ),
+                                                selectedModel == null
+                                                    ? SizedBox()
+                                                    : Text(
+                                                        '${R.string.minute.tr()},',
+                                                        style: R.style
+                                                            .normalTextStyle),
+                                                SizedBox(
+                                                  width: 4,
+                                                ),
+                                                Text(
+                                                    selectedModel == null
+                                                        ? ''
+                                                        : formatNumber(
+                                                            selectedModel
+                                                                .burnedCalorie),
+                                                    style: R
+                                                        .style.normalTextStyle),
+                                                SizedBox(
+                                                  width: 2,
+                                                ),
+                                                Text(
+                                                    selectedModel == null
+                                                        ? ''
+                                                        : selectedModel.unit
+                                                            .toString(),
+                                                    style: R
+                                                        .style.normalTextStyle),
+                                              ],
+                                            )
+                                    ],
+                                  ),
+                                ],
+                              )),
+                        ),
                       );
                     })
           ]);

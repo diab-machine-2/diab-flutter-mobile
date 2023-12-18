@@ -9,8 +9,10 @@ import 'package:medical/src/modal/glucose/glucose_comparer.dart';
 import 'package:medical/src/modal/glucose/glucose_data_trend.dart';
 import 'package:medical/src/modal/glucose/glucose_distribution.dart';
 import 'package:medical/src/modal/glucose/glucose_input.dart';
+import 'package:medical/src/modal/glucose/glucose_range_data.dart';
 import 'package:medical/src/modal/glucose/glucose_timeFrame.dart';
 import 'package:medical/src/utils/app_log.dart';
+import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/helper/http_helper.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'dart:io' show Platform;
@@ -42,11 +44,13 @@ class GlucoseClient extends FetchClient {
     //   params['periodFilterType'] = '$periodFilterType';
     // }
     try {
+      bool isGestationalDiabetes = Utils.isGestationalDiabetes();
       final Response response =
           await super.fetchData(url: '/App/Glucose/Distribution', params: {
+        'page': page,
         'currentDateTime': currentDateTime,
         'periodFilterType': periodFilterType,
-        'page': page
+        'thresholdType': isGestationalDiabetes ? '1' : '0',
       });
       if (response.statusCode == 200) {
         return DistributionModel.fromJson(response.data['data']);
@@ -68,10 +72,12 @@ class GlucoseClient extends FetchClient {
       String? glucoseDistributionType,
       {String size = '20'}) async {
     try {
+      bool isGestationalDiabetes = Utils.isGestationalDiabetes();
       Map<String, String> params = {
+        'size': size,
         'currentDateTime': '$currentDateTime',
         'periodFilterType': '$periodFilterType',
-        'size': size
+        'thresholdType': isGestationalDiabetes ? '1' : '0',
       };
       if (timeFrameType != null && timeFrameType != 'null') {
         params['timeFrameType'] = timeFrameType.toString();
@@ -197,13 +203,15 @@ class GlucoseClient extends FetchClient {
       bool byDevice,
       List<String> files) async {
     try {
+      bool isGestationalDiabetes = Utils.isGestationalDiabetes();
       Map<String, String> params = {
         'timeFrameId': timeFrameId ?? '',
         'createDate': date.toString(),
         'unitType': AppSettings.userInfo!.glucoseUnit.toString(),
         'glucoseInput': glucoseInput,
         'note': note,
-        'byDevice': byDevice.toString()
+        'byDevice': byDevice.toString(),
+        'thresholdType': isGestationalDiabetes ? '1' : '0',
       };
       if (reason != null) {
         params['reason'] = reason;
@@ -219,6 +227,57 @@ class GlucoseClient extends FetchClient {
     } catch (e) {
       throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
     }
+  }
+
+  //============ cập nhật Thông tin Thai kỳ =============/
+  Future<bool> updatePregnancyInfo({
+    required int week,
+    required num weight,
+  }) async {
+    try {
+      Map<String, dynamic> params = {
+        'week': week,
+        'weight': weight,
+      };
+      final response = await super.postHttp2(
+        path: '/App/Glucose/InputGlucosePregnancyConfigures',
+        params: jsonEncode(params),
+      );
+
+      if (response.statusCode == 200) {
+        return true;
+      } else {
+        throw response.reasonPhrase!;
+      }
+    } catch (e) {
+      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+    }
+  }
+
+  //============ Lấy ngưỡng đường huyết =============/
+  Future<GlucoseRangeData?> getGlucoseRange({
+    required int thresholdType,
+    required String timeFrameCode,
+  }) async {
+    // try {
+    Map<String, String> params = {
+      'thresholdType': thresholdType.toString(),
+      'TimeFrameCode': timeFrameCode,
+    };
+    final response = await super.fetchData(
+      url: '/App/Glucose/GetGlucose',
+      params: params,
+    );
+
+    Console.logJson('hehe', response.data['data']);
+    if (response.statusCode == 200) {
+      return GlucoseRangeData.fromJson(response.data['data']);
+    } else {
+      return null;
+    }
+    // } catch (e) {
+    //   throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+    // }
   }
 
   //============ xóa chỉ số Đường huyết =============/
@@ -241,26 +300,19 @@ class GlucoseClient extends FetchClient {
   //============ lấy xu hướng =============/
   Future<TrendDataModel> fetchGlucoseTrend(String? timeFrameId,
       String? currentDateTime, String? periodFilterType, String? page) async {
-    // Map<String, String> params = {'page': '$page', 'size': '10'};
-    // if (currentDateTime != null && periodFilterType != null) {
-    //   params['currentDateTime'] = '$currentDateTime';
-    //   params['periodFilterType'] = '$periodFilterType';
-    // }
     try {
-      final Response response = await super.fetchData(
-          url: '/App/Glucose/Trend',
-          params: timeFrameId == null
-              ? {
-                  'currentDateTime': currentDateTime,
-                  'periodFilterType': periodFilterType,
-                  'page': page
-                }
-              : {
-                  'timeFrameType': timeFrameId,
-                  'currentDateTime': currentDateTime,
-                  'periodFilterType': periodFilterType,
-                  'page': page
-                });
+      bool isGestationalDiabetes = Utils.isGestationalDiabetes();
+      Map<String, String?> requestData = {
+        'page': page,
+        "currentDateTime": currentDateTime,
+        'periodFilterType': periodFilterType,
+        'thresholdType': isGestationalDiabetes ? '1' : '0',
+      };
+      if (timeFrameId != null) {
+        requestData["timeFrameType"] = timeFrameId;
+      }
+      final Response response =
+          await super.fetchData(url: '/App/Glucose/Trend', params: requestData);
       if (response.statusCode == 200) {
         return TrendDataModel.fromJson(response.data['data']);
       } else {
@@ -284,7 +336,7 @@ class GlucoseClient extends FetchClient {
         'page': page.toString(),
         'comparerType': comparerType,
       });
-      
+
       if (response.statusCode == 200) {
         return ComparerModel.toList(response.data['data']);
       } else {

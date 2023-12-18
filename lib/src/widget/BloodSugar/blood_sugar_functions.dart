@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/utils/app_storages.dart';
 import 'package:medical/src/utils/navigator_name.dart';
+import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/nipro/health_app/widgets/request_health_connect.dart';
 import 'package:medical/src/widget/nipro/roche_connection/roche_connection_view.dart';
 import 'package:medical/src/widgets/button_widget.dart';
@@ -76,8 +77,8 @@ class BloodSugarFunctions {
                     textColor: Color(0xff249B92),
                     title: 'Nhập thủ công',
                     onPressed: () => Navigator.pushNamed(
-                        context, NavigatorName.add_blood_sugar,
-                        arguments: {'type': 'input'}),
+                          context, NavigatorName.add_blood_sugar_new,
+                          arguments: {'type': 'input'}),
                   ),
                   SizedBox(height: 15),
                   ButtonWidget(
