@@ -1,4 +1,3 @@
-import 'package:medical/src/app_setting/app_setting.dart';
 
 /// id : "00000000-0000-0000-0000-000000000000"
 /// statusCode : 200
