@@ -47,7 +47,7 @@ class DeepLinkConfig {
       }
     } on PlatformException {}
     try {
-      final Uri? initialUri = await getInitialUri();
+      final Uri? _ = await getInitialUri();
     } on FormatException {}
     return null;
   }

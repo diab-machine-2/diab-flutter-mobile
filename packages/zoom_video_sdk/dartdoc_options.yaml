@@ -1,0 +1,2 @@
+dartdoc:
+  nodoc: ['lib/flutter_zoom_videosdk.dart', 'lib/flutter_zoom_videosdk_method_channel.dart', 'lib/flutter_zoom_videosdk_platform_interface.dart']

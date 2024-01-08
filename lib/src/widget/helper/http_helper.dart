@@ -39,7 +39,7 @@ class FetchClient {
     await checkNetwork();
     final token = await AppSettings.getToken();
     
-    final userAgent = await userAgent();
+    // final userAgent = await userAgent();
 
     final Options option = Options(
         headers: {
@@ -58,7 +58,7 @@ class FetchClient {
   Future<Options> options1() async {
     await checkNetwork();
     final token = await AppSettings.getToken();
-    final userAgent = await userAgent();
+    // final userAgent = await userAgent();
     final Options option = Options(
         contentType: "application/x-www-form-urlencoded",
         headers: {
@@ -75,7 +75,7 @@ class FetchClient {
   Future<Options> options2() async {
     await checkNetwork();
     final token = await AppSettings.getToken();
-    final userAgent = await userAgent();
+    // final userAgent = await userAgent();
     print(token);
     final Options option = Options(
         headers: {
@@ -202,7 +202,7 @@ class FetchClient {
       required dynamic params,
       List<String>? files}) async {
     final token = await AppSettings.getToken();
-    final userAgent = await userAgent();
+    // final userAgent = await userAgent();
     final headers = {'Authorization': 'Bearer $token', 'User-Agent': 'Mobile'};
     Uri uri = Uri.parse(
         'https://' + (baseIdentify ? identifyBaseURL : baseURL) + path);
@@ -226,7 +226,7 @@ class FetchClient {
       required String path,
       required dynamic params}) async {
     final token = await AppSettings.getToken();
-    final userAgent = await userAgent();
+    // final userAgent = await userAgent();
     final headers = {
       'Authorization': 'Bearer $token',
       'Content-Type': 'application/json',

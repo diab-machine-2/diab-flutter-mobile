@@ -3,10 +3,8 @@ library flutter_datetime_picker;
 import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_datetime_picker/src/date_model.dart';
-import 'package:flutter_datetime_picker/src/datetime_picker_theme.dart';
-import 'package:flutter_datetime_picker/src/i18n_model.dart';
+import 'package:flutter/material.dart' hide DatePickerTheme;
+import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:medical/res/R.dart';
 import 'package:easy_localization/easy_localization.dart';
 
@@ -405,7 +403,6 @@ class _DatePickerState extends State<_DatePickerComponent> {
   // Title View
   Widget _renderTitleActionsView(DatePickerTheme theme) {
     String? done = _localeDone();
-    String? cancel = _localeCancel();
 
     return Container(
       height: theme.titleHeight,
@@ -461,10 +458,6 @@ class _DatePickerState extends State<_DatePickerComponent> {
   String? _localeDone() {
     return i18nObjInLocale(widget.locale)['done'] as String?;
   }
-
-  String? _localeCancel() {
-    return i18nObjInLocale(widget.locale)['cancel'] as String?;
-  }
 }
 
 class _BottomPickerLayout extends SingleChildLayoutDelegate {
@@ -472,7 +465,6 @@ class _BottomPickerLayout extends SingleChildLayoutDelegate {
       {this.showTitleActions, this.bottomPadding = 0});
 
   final double progress;
-  final int? itemCount;
   final bool? showTitleActions;
   final DatePickerTheme theme;
   final double bottomPadding;
