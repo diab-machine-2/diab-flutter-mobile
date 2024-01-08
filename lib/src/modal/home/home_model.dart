@@ -4,7 +4,6 @@ import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/modal/base/images.dart';
 import 'package:medical/src/modal/home/package_account_home_model.dart';
 
-import '../../model/response/statistic_data.dart';
 
 class HomeModel {
   final GloucoseIndexModel glucoseIndex;

@@ -1,15 +1,11 @@
 import 'package:bot_toast/bot_toast.dart';
-import 'package:easy_localization/src/public_ext.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_observer/Observable.dart';
-import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/response/common_response.dart';
 import 'package:medical/src/model/response/lesson_module_response.dart';
 import 'package:medical/src/model/response/question_answer_response.dart';
-import 'package:medical/src/model/response/smart_goal_list_reponse.dart';
 import 'package:medical/src/model/service/api_result.dart';
 import 'package:medical/src/model/service/network_exceptions.dart';
 import 'package:medical/src/widget/question_answer/all_question_answer/model/question_model.dart';

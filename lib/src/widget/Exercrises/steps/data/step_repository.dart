@@ -1,9 +1,7 @@
 import 'dart:convert';
 
-import 'package:dio/dio.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/utils/api_methods.dart';
-import 'package:medical/src/utils/app_log.dart';
 import 'package:medical/src/widget/helper/http_helper.dart';
 import 'package:medical/src/modal/error/error_model.dart';
 import 'package:easy_localization/easy_localization.dart';

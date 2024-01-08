@@ -69,7 +69,7 @@ class NewVersion {
     this.updateText: 'Update',
     this.dialogText,
     this.dialogTitle: 'Update Available',
-  }) : assert(context != null);
+  });
 
   /// This checks the version status, then displays a platform-specific alert
   /// with buttons to dismiss the update alert, or go to the app store.

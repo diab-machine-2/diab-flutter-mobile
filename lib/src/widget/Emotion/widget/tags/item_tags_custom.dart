@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_tags/src/tags.dart';
 import 'package:medical/res/R.dart';
 
@@ -52,9 +51,7 @@ class ItemTagsCustom extends StatefulWidget {
       this.onPressed,
       this.onLongPressed,
       Key? key})
-      : assert(index != null),
-        assert(title != null),
-        super(key: key);
+      : super(key: key);
 
   /// Id of [ItemTags] - required
   final int index;

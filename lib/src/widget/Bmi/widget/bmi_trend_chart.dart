@@ -1,11 +1,9 @@
 import 'dart:math';
-import 'dart:ui';
 
 import 'package:bot_toast/bot_toast.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_html/flutter_html.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/bloc/weight/weight_bloc.dart';
 import 'package:medical/src/modal/bmi/weight_trend.dart';
@@ -115,8 +113,7 @@ class BmiTrendChartState extends State<BmiTrendChart>
                                     context: context,
                                     builder: (_) => CustomWeightPicker(
                                         callback: (number) {
-                                          if (number != null)
-                                            submitTarget(number);
+                                          submitTarget(number);
                                         },
                                         title: R.string.muc_tieu_can_nang.tr(),
                                         max: 180,

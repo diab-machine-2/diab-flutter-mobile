@@ -243,7 +243,7 @@ class FunkyOverlayState extends State<FunkyOverlay>
         Navigator.pop(context);
         phone = phone.replaceAll('+84', '0');
         launchUrl(Uri.parse("https://zalo.me/" + phone));
-      } on PlatformException catch (e) {
+      } on PlatformException {
         Message.showToastMessage(context, R.string.error_redirect_zalo.tr());
       }
     } else {
@@ -258,7 +258,7 @@ class FunkyOverlayState extends State<FunkyOverlay>
         Navigator.pop(context);
         linkZalo = linkZalo.replaceAll('+84', '0');
         launch(linkZalo);
-      } on PlatformException catch (e) {
+      } on PlatformException {
         Message.showToastMessage(context, R.string.error_redirect_zalo.tr());
       }
     } else {
@@ -365,11 +365,11 @@ class FunkyOverlayState extends State<FunkyOverlay>
     if (Platform.isIOS) {
       try {
         launch('https://apps.apple.com/vn/app/zalo/id579523206');
-      } on PlatformException catch (e) {}
+      } on PlatformException {}
     } else {
       try {
         launch("https://play.google.com/store/apps/details?id=com.zing.zalo");
-      } on PlatformException catch (e) {}
+      } on PlatformException {}
     }
   }
 }

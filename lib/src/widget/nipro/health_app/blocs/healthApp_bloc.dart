@@ -1,15 +1,12 @@
 import 'dart:async';
 import 'package:collection/collection.dart';
-import 'dart:math';
 import 'package:bloc/bloc.dart';
 import 'package:flutter_observer/Observable.dart';
 import 'package:health/health.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/app_setting/health_setting.dart';
-import 'package:medical/src/modal/blood_pressure/bloodPressure_Input_data_model.dart';
 import 'package:medical/src/modal/blood_pressure/blood_pressure.dart';
 import 'package:medical/src/modal/bmi/weight_input_data_model.dart';
-import 'package:medical/src/modal/bmi/weight_trend.dart';
 import 'package:medical/src/modal/glucose/Glucose_Input_data_model.dart';
 import 'package:medical/src/modal/glucose/glucose_timeFrame.dart';
 import 'package:medical/src/modal/user/user_model.dart';
@@ -18,13 +15,11 @@ import 'package:medical/src/repo/glucose/glucose_client.dart';
 import 'package:medical/src/repo/user/user_client.dart';
 import 'package:medical/src/repo/weight/weight_client.dart';
 import 'package:medical/src/utils/app_log.dart';
-import 'package:medical/src/utils/app_storages.dart';
 import 'package:medical/src/utils/date_utils.dart';
 import 'package:medical/src/widget/Exercrises/steps/data/models/getStepList_model.dart';
 import 'package:medical/src/widget/Exercrises/steps/data/models/requestSyncStep_model.dart';
 import 'package:medical/src/widget/Exercrises/steps/data/step_repository.dart';
 import 'package:medical/src/widget/helper/helper.dart';
-import 'package:medical/src/widget/my_plan_screens/activity_tab/activity_tab/models/schedule_type.dart';
 import 'package:meta/meta.dart';
 
 import '../models/syncSystolicAndDiastolic_model.dart';
@@ -310,7 +305,7 @@ class HealthAppBloc extends Bloc<HealthAppEvent, HealthAppState> {
           } else {
             height = userInfo.height;
           }
-          if (height != null && weightData.value != null) {
+          if (height != null) {
             await WeightClient().postWeightInput(
               weightData.dateFrom.millisecondsSinceEpoch ~/ 1000,
               [],

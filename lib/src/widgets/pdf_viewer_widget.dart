@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_cached_pdfview/flutter_cached_pdfview.dart';
 import 'package:medical/res/R.dart';
-import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widgets/common_page.dart';
 
 class PDFViewerWidget extends StatefulWidget {

@@ -12,7 +12,6 @@ import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/BloodPressure/bloodPressure_detail_tabbar.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
-import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
 class BloodPressureDetailController extends StatefulWidget {

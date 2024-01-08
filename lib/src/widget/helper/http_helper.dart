@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:dio/adapter.dart';
 import 'package:dio/dio.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:http/http.dart' as http;
@@ -10,8 +9,6 @@ import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/modal/user/user_model.dart';
 import 'package:medical/src/utils/app_log.dart';
 import 'package:medical/src/utils/const.dart';
-import 'package:pretty_dio_logger/pretty_dio_logger.dart';
-import 'package:ua_client_hints/ua_client_hints.dart';
 
 class FetchClient {
   static String get identifyBaseURL {
@@ -42,7 +39,7 @@ class FetchClient {
     await checkNetwork();
     final token = await AppSettings.getToken();
     
-    final user_agent = await userAgent();
+    final userAgent = await userAgent();
 
     final Options option = Options(
         headers: {
@@ -61,7 +58,7 @@ class FetchClient {
   Future<Options> options1() async {
     await checkNetwork();
     final token = await AppSettings.getToken();
-    final user_agent = await userAgent();
+    final userAgent = await userAgent();
     final Options option = Options(
         contentType: "application/x-www-form-urlencoded",
         headers: {
@@ -78,7 +75,7 @@ class FetchClient {
   Future<Options> options2() async {
     await checkNetwork();
     final token = await AppSettings.getToken();
-    final user_agent = await userAgent();
+    final userAgent = await userAgent();
     print(token);
     final Options option = Options(
         headers: {
@@ -205,7 +202,7 @@ class FetchClient {
       required dynamic params,
       List<String>? files}) async {
     final token = await AppSettings.getToken();
-    final user_agent = await userAgent();
+    final userAgent = await userAgent();
     final headers = {'Authorization': 'Bearer $token', 'User-Agent': 'Mobile'};
     Uri uri = Uri.parse(
         'https://' + (baseIdentify ? identifyBaseURL : baseURL) + path);
@@ -229,7 +226,7 @@ class FetchClient {
       required String path,
       required dynamic params}) async {
     final token = await AppSettings.getToken();
-    final user_agent = await userAgent();
+    final userAgent = await userAgent();
     final headers = {
       'Authorization': 'Bearer $token',
       'Content-Type': 'application/json',

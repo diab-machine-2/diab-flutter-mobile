@@ -1,5 +1,4 @@
 import 'dart:math';
-import 'dart:ui';
 
 import 'package:bot_toast/bot_toast.dart';
 import 'package:fl_chart/fl_chart.dart';
@@ -180,8 +179,7 @@ class BmiHipTrendChartState extends State<BmiHipTrendChart>
                                               Row(
                                                 children: [
                                                   // model. ?
-                                                  model == null ||
-                                                          model.current == 0
+                                                  model.current == 0
                                                       ? Text('--',
                                                           style: TextStyle(
                                                               color: R.color

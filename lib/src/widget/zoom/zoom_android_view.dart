@@ -7,7 +7,6 @@ import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/app_setting/dynamic_link_config.dart';
 import 'package:medical/src/modal/user/user_model.dart';
 import 'package:medical/src/repo/user/user_client.dart';
-import 'package:medical/src/utils/app_log.dart';
 import 'package:medical/src/utils/const.dart';
 import 'widgets/confirm_exit_zoom.dart';
 

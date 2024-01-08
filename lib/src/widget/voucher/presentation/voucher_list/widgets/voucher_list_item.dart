@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/utils/navigator_name.dart';
-import 'package:medical/src/widgets/network_image_widget.dart';
 import '../../../data/models/voucherList_response.dart';
 import '../blocs/voucherList_bloc.dart';
 

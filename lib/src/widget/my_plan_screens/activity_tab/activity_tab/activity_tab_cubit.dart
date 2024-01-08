@@ -2,14 +2,10 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:bot_toast/bot_toast.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_observer/Observable.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/request/complete_smart_goal_request.dart';
-import 'package:medical/src/model/request/complete_update_profile_request.dart';
-import 'package:medical/src/model/request/mark_completed_calendar_request.dart';
 import 'package:medical/src/model/response/common_response.dart';
 import 'package:medical/src/model/response/delete_smart_goal_reponse.dart';
 import 'package:medical/src/model/response/smart_goal_list_reponse.dart';
@@ -18,9 +14,6 @@ import 'package:medical/src/model/response/week_states_response.dart';
 import 'package:medical/src/model/service/api_result.dart';
 import 'package:medical/src/model/service/network_exceptions.dart';
 import 'package:medical/src/utils/date_utils.dart';
-import 'package:medical/src/utils/utils.dart';
-import 'package:medical/src/widget/helper/helper.dart';
-import 'package:medical/src/widget/my_plan_screens/activity_tab/activity_tab/models/schedule_type.dart';
 import 'package:medical/src/widgets/day_in_week_widget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 

@@ -11,7 +11,6 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/bloc/notification/notification_bloc.dart';
 import 'package:medical/src/modal/error/error_model.dart';
-import 'package:medical/src/modal/notification/notification_model.dart';
 import 'package:medical/src/modal/notification/notification_type.dart';
 import 'package:medical/src/repo/notification/notification_client.dart';
 import 'package:medical/src/utils/navigator_name.dart';

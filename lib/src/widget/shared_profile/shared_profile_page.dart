@@ -9,9 +9,7 @@ import 'package:medical/src/model/response/patient_info_response.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
-import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widgets/button_widget.dart';
-import 'package:medical/src/widgets/common_page.dart';
 import 'package:medical/src/widgets/network_image_widget.dart';
 
 import 'shared_profile.dart';

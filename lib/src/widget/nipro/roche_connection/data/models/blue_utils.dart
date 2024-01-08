@@ -1,4 +1,3 @@
-import 'dart:math';
 
 import 'package:medical/src/utils/app_log.dart';
 

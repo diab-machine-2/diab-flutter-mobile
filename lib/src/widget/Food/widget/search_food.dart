@@ -46,11 +46,9 @@ class _SearchFoodState extends State<SearchFood> with Observer {
   void update(
       Observable observable, String? notifyName, Map<dynamic, dynamic>? map) {
     final FoodModel foodModel = map?['food'];
-    if (foodModel != null) {
-      if (notifyName == 'add_food_to_cart') {
-        this.selectedFoods.add(foodModel);
-        setState(() {});
-      }
+    if (notifyName == 'add_food_to_cart') {
+      this.selectedFoods.add(foodModel);
+      setState(() {});
     }
   }
 

@@ -56,7 +56,7 @@ class _DropdownColumnWidgetState extends State<DropdownColumnWidget> {
       if (_selectedPos! < 0) {
         _selectedPos = 0;
       }
-      if (Utils.isEmpty(list) && widget.selectedValue != null) {
+      if (Utils.isEmpty(list)) {
         final String? selectedValue =
             _selectedPos == 0 ? null : list![_selectedPos!];
         widget.selectedValue(selectedValue);

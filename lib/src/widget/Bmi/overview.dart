@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
-import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/app_setting/firebase_tracking/kpi_body_weight_tracking.dart';
 import 'package:medical/src/widget/Bmi/widget/bmi_hiptrend_chart.dart';
 import 'package:medical/src/widget/Bmi/widget/bmi_scale_chart.dart';
 import 'package:medical/src/widget/Bmi/widget/bmi_trend_chart.dart';
 import 'package:medical/src/widget/HbA1C/widget/course_suggest.dart';
-import 'package:medical/src/widget/helper/tracking_manager.dart';
 
 class BmiOverviewController extends StatefulWidget {
   BmiOverviewController({Key? key}) : super(key: key);

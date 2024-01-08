@@ -1,8 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_observer/Observable.dart';
 import 'package:medical/res/R.dart';
-import 'package:medical/src/modal/notification/notification_data_model.dart';
-import 'package:medical/src/modal/notification/notification_model.dart';
 import 'package:medical/src/widget/helper/http_helper.dart';
 import 'package:medical/src/modal/error/error_model.dart';
 import 'package:easy_localization/easy_localization.dart';

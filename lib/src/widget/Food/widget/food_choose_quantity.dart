@@ -1,4 +1,3 @@
-import 'dart:ui';
 
 import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -444,6 +443,7 @@ class _FoodChooseQuantityState extends State<FoodChooseQuantity> {
     if (widget.kcalLeft != null) {
       return widget.kcalLeft! / (widget.model?.calorie ?? 1);
     }
+    return null;
   }
 
   Widget buildItem(String title, double? number, String unit) {

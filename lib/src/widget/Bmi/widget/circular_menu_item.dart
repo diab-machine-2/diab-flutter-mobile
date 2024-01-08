@@ -48,8 +48,7 @@ class CircularMenuItem extends StatelessWidget {
     this.badgeLabel,
     this.badgeTextColor,
     this.badgeColor,
-  })  : assert(onTap != null),
-        assert(padding >= 0.0),
+  })  : assert(padding >= 0.0),
         assert(margin >= 0.0);
 
   Widget _buildCircularMenuItem(BuildContext context) {
@@ -165,7 +164,7 @@ class _Badge extends StatelessWidget {
                     style: textStyle ??
                         TextStyle(
                           fontSize: 10,
-                          color: textColor ?? Theme.of(context).accentColor,
+                          color: textColor ?? Theme.of(context).colorScheme.secondary,
                         ),
                   ),
                 ),

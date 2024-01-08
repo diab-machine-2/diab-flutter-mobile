@@ -1,7 +1,5 @@
-import 'dart:math';
 
 import 'package:easy_localization/easy_localization.dart';
-import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
@@ -10,10 +8,8 @@ import 'package:medical/src/modal/food/food_statistic_trend_model.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/widget/Food/daily_nutrition/daily_nutrition.dart';
 import 'package:medical/src/widget/Food/food_detail_tabbar.dart';
-import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widgets/empty_data_box.dart';
-import 'package:visibility_detector/visibility_detector.dart';
 
 import 'food_trend_chart_tab_bar.dart';
 import 'food_trend_chart_tab_view.dart';

@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
-import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/app_setting/firebase_tracking/kpi_blood_pressure_tracking.dart';
 import 'package:medical/src/widget/BloodPressure/widget/bloodPressure_chart.dart';
 import 'package:medical/src/widget/BloodPressure/widget/bloodPressure_distribution_chart.dart';
 import 'package:medical/src/widget/BloodPressure/widget/heart_chart.dart';
 import 'package:medical/src/widget/HbA1C/widget/course_suggest.dart';
-import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'widget/bloodPressure_contain_detail.dart';
 
 class BloodPressureOverviewController extends StatefulWidget {

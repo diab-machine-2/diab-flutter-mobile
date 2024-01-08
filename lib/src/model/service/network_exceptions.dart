@@ -109,7 +109,7 @@ abstract class NetworkExceptions with _$NetworkExceptions {
           networkExceptions = NetworkExceptions.unexpectedError();
         }
         return networkExceptions;
-      } on FormatException catch (e) {
+      } on FormatException {
         // Helper.printError(e.toString());
         return NetworkExceptions.formatException();
       } catch (_) {

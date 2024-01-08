@@ -11,7 +11,6 @@ import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/modal/user/schedule_glucose_time.dart';
 import 'package:medical/src/repo/glucose/glucose_client.dart';
 import 'package:medical/src/repo/user/user_client.dart';
-import 'package:medical/src/utils/app_log.dart';
 import 'package:medical/src/utils/app_media_query.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/date_utils.dart';

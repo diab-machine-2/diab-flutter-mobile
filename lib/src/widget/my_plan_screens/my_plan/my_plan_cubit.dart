@@ -1,10 +1,7 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/response/user_info_response.dart';
-import 'package:medical/src/model/service/api_result.dart';
-import 'package:medical/src/model/service/network_exceptions.dart';
 import 'package:medical/src/utils/date_utils.dart';
 import '../../../modal/user/user_model.dart';
 import 'models/plan_type.dart';

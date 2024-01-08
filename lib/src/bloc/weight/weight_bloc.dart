@@ -115,7 +115,7 @@ class WeightBloc extends Bloc<WeightEvent, WeightState> {
           await client.fetchInput(currentDateTime, periodFilterType, page);
 
       if (currenState is WeightAllLoaded) {
-        if (currenState.inputWeightModel != null && page != 1) {
+        if (page != 1) {
           model.inputs.insertAll(0, currenState.inputWeightModel);
         }
       }

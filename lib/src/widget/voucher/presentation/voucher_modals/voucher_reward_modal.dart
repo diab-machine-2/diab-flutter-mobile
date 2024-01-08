@@ -2,7 +2,6 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/utils/navigator_name.dart';
-import 'package:medical/src/widget/profile/delete_account/presentation/widgets/submit_button.dart';
 import 'package:medical/src/widgets/button_widget.dart';
 
 class VoucherModalReward extends StatelessWidget {

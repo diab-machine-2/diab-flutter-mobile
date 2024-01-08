@@ -19,11 +19,9 @@ import 'package:medical/src/utils/date_utils.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/utils/utils.dart';
-import 'package:medical/src/widget/BloodSugar/widget/action_list_trend.dart';
 import 'package:medical/src/widget/Food/daily_nutrition/daily_nutrition.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
-import 'package:medical/src/widget/my_booking/my_booking.dart';
 import 'package:medical/src/widget/my_plan_screens/activity_tab/expert_comment/expert_comment_page.dart';
 import 'package:medical/src/widget/survey_screens/introduce_survey/introduce_survey.dart';
 import 'package:medical/src/widgets/button_widget.dart';
@@ -32,10 +30,8 @@ import 'package:medical/src/widgets/network_image_widget.dart';
 import 'package:medical/src/widgets/pdf_viewer_widget.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 import '../../../../model/response/report_model.dart';
-import '../../../booking_coach/booking_coach.dart';
 import '../../../helper/helper.dart';
 
 import '../../exercise_tab/exercise_detail/exercise_detail_page.dart';
@@ -44,7 +40,6 @@ import '../../my_plan/models/completion_status.dart';
 import '../../my_plan/my_plan.dart';
 import '../../my_plan/widgets/app_bar_bottom.dart';
 import '../create_goal/create_goal.dart';
-import '../my_progress/models/report_data.dart';
 import '../my_progress/my_progress.dart';
 import '../my_progress/widgets/report_list_widget.dart';
 import 'activity_tab.dart';
@@ -83,7 +78,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
     if (calendarId != null) {
       DynamicLinkConfig.instance.removeZoomId();
       await _cubit.markCompletedCalendar(calendarId);
-      if (_cubit != null && isVisible) {
+      if (isVisible) {
         _cubit.refreshData(isRefresh: true);
       }
     }
@@ -100,7 +95,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
     }
     if (notifyName == 'refresh_activity_tab') {
       Future.delayed(Duration(milliseconds: 1000), () {
-        if (_cubit != null && isVisible) {
+        if (isVisible) {
           _cubit.refreshData(isRefresh: true);
         }
       });
@@ -763,7 +758,6 @@ class _ActivityTabPageState extends State<ActivityTabPage>
     String? buttonTitle,
     VoidCallback? onTap,
     bool isDisableCompleteButton = false,
-    bool isShowCompleteButton = true,
   }) {
     showDialog(
       barrierColor: R.color.color0xff003F38.withOpacity(0.5),

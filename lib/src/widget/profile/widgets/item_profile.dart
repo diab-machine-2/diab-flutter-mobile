@@ -1,8 +1,5 @@
 import 'package:easy_localization/easy_localization.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_observer/Observable.dart';
-import 'package:flutter_observer/Observer.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/widgets/select_bottom_sheet_widget.dart';
 import 'package:medical/src/widgets/user_icon_widget.dart';

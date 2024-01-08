@@ -19,7 +19,7 @@ class AppClient {
 
   factory AppClient() => _instance;
 
-  Future<void> _setupClient() async {
+  void _setupClient() {
     final Dio _dio = Dio();
     // final user_agent = await userAgent();
     _dio

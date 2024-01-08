@@ -5,7 +5,6 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app_version_checker/flutter_app_version_checker.dart';
-import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_observer/Observable.dart';
 import 'package:flutter_observer/Observer.dart';
@@ -18,7 +17,6 @@ import 'package:medical/src/modal/base/referral_code_temp.dart';
 import 'package:medical/src/modal/error/error_model.dart';
 import 'package:medical/src/modal/user/user_model.dart';
 import 'package:medical/src/repo/user/user_client.dart';
-import 'package:medical/src/utils/app_log.dart';
 import 'package:medical/src/utils/app_storages.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigation_util.dart';
@@ -39,10 +37,6 @@ import 'package:package_info/package_info.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:store_redirect/store_redirect.dart';
 import 'package:url_launcher/url_launcher.dart';
-import '../my_plan_screens/lesson_tab/lesson_detail/lesson_detail_page.dart';
-import '../my_plan_screens/my_plan/models/plan_type.dart';
-import 'package:medical/src/widget/voucher/presentation/widgets/voucher_popup.dart';
-import 'package:webview_flutter/webview_flutter.dart';
 import 'package:medical/src/widget/voucher/presentation/widgets/webview_store.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 
@@ -71,11 +65,11 @@ class _TabbarControllerState extends State<TabbarController>
 
   @override
   void initState() {
-    initData();
+    initData(); 
     super.initState();
   }
 
-  initData() async {
+  void initData() async {
     tabs = [
       HomeController(sharedCode: widget.sharedCode),
       MyPlanPage(index: 0),

@@ -1,15 +1,9 @@
-import 'dart:io';
 
 import 'package:better_player/better_player.dart';
-import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
-import 'package:medical/src/model/response/lesson_section_list_response.dart';
-import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/widget/my_plan_screens/lesson_tab/lesson_detail/models/video_manager.dart';
 import 'package:medical/src/widget/my_plan_screens/my_plan/models/completion_status.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:video_thumbnail/video_thumbnail.dart';
 
 class VideoWidget extends StatefulWidget {
   VideoWidget({

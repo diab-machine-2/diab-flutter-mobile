@@ -1,4 +1,3 @@
-import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -8,11 +7,9 @@ import 'package:medical/src/modal/exercrises/exercrises_Category.dart';
 import 'package:medical/src/widget/Exercrises/input_detail_exercrise.dart';
 import 'package:medical/src/widget/base/base_state.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:medical/src/widget/helper/tracking_manager.dart';
 
 import '../../widgets/network_image_widget.dart';
 

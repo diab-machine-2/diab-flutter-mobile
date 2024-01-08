@@ -13,7 +13,6 @@ import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/app_setting/dynamic_link_config.dart';
 import 'package:medical/src/modal/base/referral_code_temp.dart';
 import 'package:medical/src/modal/error/error_model.dart';
-import 'package:medical/src/model/preference/app_preference.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/response/user_info_referral_code_response.dart';
 import 'package:medical/src/model/service/api_result.dart';
@@ -505,7 +504,7 @@ class _RegisterControllerState extends State<RegisterController> {
       return;
     }
 
-    if (referralCode != null && referralCode.isNotEmpty) {
+    if (referralCode.isNotEmpty) {
       if (!referralCodeKey.currentState!.isCorrect) {
         return;
       }

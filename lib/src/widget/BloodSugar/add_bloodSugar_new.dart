@@ -1495,7 +1495,7 @@ class _AddBloodSugarControllerNewState
       print('hihi maximumValue: $maximumValue');
       num pxPerValue = widthRange / maximumValue;
       print('hihi pxPerValue: $pxPerValue');
-      num widthPlus = pxPerValue * (_number! - min);
+      num widthPlus = pxPerValue * (_number- min);
       print('hihi widthPlus: $widthPlus');
       width += widthPlus;
 

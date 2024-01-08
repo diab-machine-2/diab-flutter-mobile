@@ -231,17 +231,14 @@ class _DatePickerRoute<T> extends PopupRoute<T> {
       ),
     );
     ThemeData inheritTheme = Theme.of(context);
-    if (inheritTheme != null) {
-      bottomSheet = new Theme(data: inheritTheme, child: bottomSheet);
-    }
+    bottomSheet = new Theme(data: inheritTheme, child: bottomSheet);
     return bottomSheet;
   }
 }
 
 class _DatePickerComponent extends StatefulWidget {
   _DatePickerComponent(
-      {Key? key,
-      required this.route,
+      {required this.route,
       this.onChanged,
       this.locale,
       this.pickerModel});
@@ -341,7 +338,6 @@ class _DatePickerState extends State<_DatePickerComponent> {
           child: NotificationListener(
               onNotification: (ScrollNotification notification) {
                 if (notification.depth == 0 &&
-                    selectedChangedWhenScrollEnd != null &&
                     notification is ScrollEndNotification &&
                     notification.metrics is FixedExtentMetrics) {
                   final FixedExtentMetrics metrics = notification.metrics as FixedExtentMetrics;
@@ -473,7 +469,7 @@ class _DatePickerState extends State<_DatePickerComponent> {
 
 class _BottomPickerLayout extends SingleChildLayoutDelegate {
   _BottomPickerLayout(this.progress, this.theme,
-      {this.itemCount, this.showTitleActions, this.bottomPadding = 0});
+      {this.showTitleActions, this.bottomPadding = 0});
 
   final double progress;
   final int? itemCount;

@@ -1,4 +1,3 @@
-import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/modal/exercrises/exercises_intensity.dart';
 import 'package:medical/src/model/request/complete_exercise_request.dart';
 import 'package:medical/src/model/request/complete_smart_goal_request.dart';
@@ -6,7 +5,6 @@ import 'package:medical/src/model/request/create_menu_request.dart';
 import 'package:medical/src/model/request/create_smart_goal_request.dart';
 import 'package:medical/src/model/request/exercise_feedback_request.dart';
 import 'package:medical/src/model/request/food_change_request.dart';
-import 'package:medical/src/model/request/has_shared_profile_request.dart';
 import 'package:medical/src/model/request/ios_receipt_request.dart';
 import 'package:medical/src/model/request/lesson_filter_request.dart';
 import 'package:medical/src/model/request/make_comment_request.dart';
@@ -57,14 +55,10 @@ import 'package:medical/src/model/response/user_info_response.dart';
 import 'package:medical/src/model/response/week_states_response.dart';
 import 'package:medical/src/model/service/api_result.dart';
 import 'package:medical/src/model/service/network_exceptions.dart';
-import 'package:medical/src/utils/app_log.dart';
 
 import '../app_api.dart';
 import '../request/SelectRoadmapRequest.dart';
-import '../request/complete_update_profile_request.dart';
 import '../request/complete_video_request.dart';
-import '../request/mark_completed_calendar_request.dart';
-import '../request/read_welcome_request.dart';
 import '../response/app_version_response.dart';
 import '../response/calendar_training_response.dart';
 import '../response/content_welcome_response.dart';
@@ -74,9 +68,7 @@ import '../service/app_client.dart';
 late AppApi appClient;
 
 class AppRepository {
-  /**
-   * Package flow
-   */
+  /// Package flow
 
   Future<ApiResult<ListPackageResponse>> getListPackage() async {
     try {
@@ -146,9 +138,7 @@ class AppRepository {
     }
   }
 
-  /**
-   * Blood sugar
-   */
+  /// Blood sugar
 
   Future<ApiResult<BloodSugarTemplateResponse>> getTemplateDetail(
       String code) async {
@@ -196,9 +186,7 @@ class AppRepository {
     }
   }
 
-  /**
-   * Sample menu
-   */
+  /// Sample menu
 
   Future<ApiResult<List<ExerciseIntensityModel>>> getListActivity() async {
     try {
@@ -223,9 +211,7 @@ class AppRepository {
     }
   }
 
-  /**
-   * Food Menu
-   */
+  /// Food Menu
 
   Future<ApiResult<MenuResponse>> getUserFoodMenu() async {
     try {
@@ -296,9 +282,7 @@ class AppRepository {
     }
   }
 
-  /**
-   * Quiz
-   */
+  /// Quiz
 
   Future<ApiResult<LessonSectionListResponse?>> getListQuiz(
       String lessonId) async {
@@ -326,9 +310,7 @@ class AppRepository {
     }
   }
 
-  /**
-   * Survey
-   */
+  /// Survey
 
   Future<ApiResult<SurveyData>> getDetailSurvey(String surveyId) async {
     try {
@@ -359,9 +341,7 @@ class AppRepository {
     }
   }
 
-  /**
-   * Account
-   */
+  /// Account
 
   Future<ApiResult<UserInfoResponse>> getCurrentUserInfo() async {
     try {
@@ -376,9 +356,7 @@ class AppRepository {
     }
   }
 
-  /**
-   * My Plan
-   */
+  /// My Plan
   Future<ApiResult<MyLessonResponse>> getLessonsList(
       LessonFilterRequest request) async {
     appClient = AppClient().appClient;

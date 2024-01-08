@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:medical/res/R.dart';
 
 class CardWidget extends StatelessWidget {

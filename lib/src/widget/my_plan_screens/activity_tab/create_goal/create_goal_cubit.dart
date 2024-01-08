@@ -85,7 +85,7 @@ class CreateGoalCubit extends Cubit<CreateGoalState> {
     dataModel.cachedSubType = null;
     dataModel.type = selectedType;
     dataModel.subType = subType;
-    if (selectedType != null && selectedType != ScheduleType.custom) {
+    if (selectedType != ScheduleType.custom) {
       dataModel.goalRecordType = GoalRecordType.frequency;
     }
     currentStatus = CreateGoalStatus.setup;
