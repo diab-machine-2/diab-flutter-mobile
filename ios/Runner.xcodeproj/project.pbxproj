@@ -8,13 +8,13 @@
 
 /* Begin PBXBuildFile section */
 		1498D2341E8E89220040F4C2 /* GeneratedPluginRegistrant.m in Sources */ = {isa = PBXBuildFile; fileRef = 1498D2331E8E89220040F4C2 /* GeneratedPluginRegistrant.m */; };
+		1BCA23DAEBB0C1898A7A8675 /* Pods_Runner.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B466A99A5D7A6746DF100D9F /* Pods_Runner.framework */; };
 		3B3967161E833CAA004F5970 /* AppFrameworkInfo.plist in Resources */ = {isa = PBXBuildFile; fileRef = 3B3967151E833CAA004F5970 /* AppFrameworkInfo.plist */; };
 		5A88EF00294CC7160038A34F /* ibtFramework.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 600D316828DB0B2D000C7EE7 /* ibtFramework.xcframework */; };
 		5A88EF01294CC7160038A34F /* ibtFramework.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 600D316828DB0B2D000C7EE7 /* ibtFramework.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		5A88EF02294CC71B0038A34F /* Pods_Runner.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A7BD40BA52C66C23F981D1F /* Pods_Runner.framework */; };
 		5A88EF04294CC71C0038A34F /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6C731C1F270ABB8800B4BC5B /* StoreKit.framework */; };
 		5AA46BF828F7FEE9009E7CC5 /* GoogleService-Info.vn.com.diab.plist in Resources */ = {isa = PBXBuildFile; fileRef = 5AA46BF728F7FEE8009E7CC5 /* GoogleService-Info.vn.com.diab.plist */; };
-		5AE2ED6C294C759100013BFA /* (null) in Embed Frameworks */ = {isa = PBXBuildFile; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		5AE2ED6C294C759100013BFA /* BuildFile in Embed Frameworks */ = {isa = PBXBuildFile; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		600D316F28DB0B33000C7EE7 /* UIVIewController+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 600D316528DB0B2A000C7EE7 /* UIVIewController+Extension.swift */; };
 		600D317028DB0B33000C7EE7 /* UIColor+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 600D316628DB0B2B000C7EE7 /* UIColor+Extension.swift */; };
 		600D317128DB0B33000C7EE7 /* iBTManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 600D316728DB0B2C000C7EE7 /* iBTManager.swift */; };
@@ -38,7 +38,7 @@
 			dstSubfolderSpec = 10;
 			files = (
 				5A88EF01294CC7160038A34F /* ibtFramework.xcframework in Embed Frameworks */,
-				5AE2ED6C294C759100013BFA /* (null) in Embed Frameworks */,
+				5AE2ED6C294C759100013BFA /* BuildFile in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -48,7 +48,6 @@
 /* Begin PBXFileReference section */
 		1498D2321E8E86230040F4C2 /* GeneratedPluginRegistrant.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GeneratedPluginRegistrant.h; sourceTree = "<group>"; };
 		1498D2331E8E89220040F4C2 /* GeneratedPluginRegistrant.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GeneratedPluginRegistrant.m; sourceTree = "<group>"; };
-		3A7BD40BA52C66C23F981D1F /* Pods_Runner.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Runner.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		3B3967151E833CAA004F5970 /* AppFrameworkInfo.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = AppFrameworkInfo.plist; path = Flutter/AppFrameworkInfo.plist; sourceTree = "<group>"; };
 		4D4C88BAA7DDE2B7AEFCFD79 /* Pods-Runner.stag.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.stag.debug.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.stag.debug.xcconfig"; sourceTree = "<group>"; };
 		5A88EF06294CC7380038A34F /* XcodeKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XcodeKit.framework; path = Library/Frameworks/XcodeKit.framework; sourceTree = DEVELOPER_DIR; };
@@ -79,6 +78,7 @@
 		97C146FD1CF9000F007C117D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		97C147001CF9000F007C117D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		97C147021CF9000F007C117D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		B466A99A5D7A6746DF100D9F /* Pods_Runner.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Runner.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		DFF6CEFE46EF252BFC3FCAE5 /* Pods-Runner.stag.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.stag.release.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.stag.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -89,7 +89,7 @@
 			files = (
 				5A88EF04294CC71C0038A34F /* StoreKit.framework in Frameworks */,
 				5A88EF00294CC7160038A34F /* ibtFramework.xcframework in Frameworks */,
-				5A88EF02294CC71B0038A34F /* Pods_Runner.framework in Frameworks */,
+				1BCA23DAEBB0C1898A7A8675 /* Pods_Runner.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -101,7 +101,7 @@
 			children = (
 				5A88EF06294CC7380038A34F /* XcodeKit.framework */,
 				6C731C1F270ABB8800B4BC5B /* StoreKit.framework */,
-				3A7BD40BA52C66C23F981D1F /* Pods_Runner.framework */,
+				B466A99A5D7A6746DF100D9F /* Pods_Runner.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -403,7 +403,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				SUPPORTED_PLATFORMS = iphoneos;
@@ -492,7 +492,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -578,7 +578,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -627,7 +627,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				SUPPORTED_PLATFORMS = iphoneos;
