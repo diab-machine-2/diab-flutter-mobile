@@ -117,6 +117,13 @@
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_channel_id"
             android:value="high_importance_channel" />
+
+
+       <service
+            android:name=".NotificationService"
+            android:enabled="true"
+            android:exported="false"
+            android:foregroundServiceType="mediaProjection" />
         
         <activity android:name="com.facebook.FacebookActivity"
             android:configChanges=
