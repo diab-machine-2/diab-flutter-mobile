@@ -46,6 +46,8 @@ import 'package:medical/src/widget/login/rules.dart';
 import 'package:medical/src/widget/login/step_list.dart';
 import 'package:medical/src/widget/login/update_info.dart';
 import 'package:medical/src/widget/login/verify_phone.dart';
+import 'package:medical/src/widget/meeting/meeting_page.dart';
+import 'package:medical/src/widget/meeting/meeting_prepare_page.dart';
 import 'package:medical/src/widget/nipro/connect_device_app.dart';
 import 'package:medical/src/widget/nipro/connection_instructions.dart';
 import 'package:medical/src/widget/my_plan_screens/lesson_tab/lesson_detail/lesson_detail.dart';
@@ -595,6 +597,10 @@ class _AppState extends State<App> {
                         return _buildRoute(
                             settings, ZoomIosView(calendarID: data?['id']));
                       }
+                    case NavigatorName.meeting_prepare:
+                      return _buildRoute(settings, MeetingPreparePage());
+                    case NavigatorName.meeting:
+                      return _buildRoute(settings, MeetingPage());
 
                     default:
                       return null;

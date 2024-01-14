@@ -35,14 +35,14 @@ class AppSettings {
 
   static bool isReloadCurrentUserInfo = false;
 
-  static Future<bool> saveEnvironment(String? token) async {
-    appPreference.setData(Const.ENVIRONMENT, token);
+  static Future<bool> saveEnvironment(String? env) async {
+    appPreference.setData(Const.ENVIRONMENT, env);
     return true;
   }
 
   static Future<String> getEnvironment() async {
-    final token = appPreference.getData(Const.ENVIRONMENT) ?? '';
-    return token;
+    final env = appPreference.getData(Const.ENVIRONMENT) ?? '';
+    return env;
   }
 
   static Future<bool> clearEnvironment() async {

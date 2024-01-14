@@ -201,6 +201,20 @@ class _HomeHeaderState extends State<HomeHeader> with Observer {
                     Row(
                       children: [
                         InkWell(
+                          onTap: () {
+                            Navigator.pushNamed(
+                                context, NavigatorName.meeting_prepare);
+                          },
+                          child: Container(
+                            padding: EdgeInsets.only(
+                                bottom: 4, top: 4, right: 4, left: 16),
+                            color: R.color.transparent,
+                            child: Image.asset(R.drawable.ic_crown_green,
+                                color: R.color.white, width: 24, height: 24),
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        InkWell(
                           onTap: () async {
                             if (user?.isUserHasRoadmap == true) {
                               showChatMenu();
