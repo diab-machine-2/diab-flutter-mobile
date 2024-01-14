@@ -80,6 +80,7 @@ class VideoView extends fzv.ZoomView {
         return Container(
           width: size.width,
           height: size.height,
+          color: Colors.black,
           alignment: Alignment.center,
           child: fzv.View(
             creationParams: creationParams,

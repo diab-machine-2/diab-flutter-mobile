@@ -213,7 +213,6 @@ class _HomeHeaderState extends State<HomeHeader> with Observer {
                                 color: R.color.white, width: 24, height: 24),
                           ),
                         ),
-                        const SizedBox(width: 10),
                         InkWell(
                           onTap: () async {
                             if (user?.isUserHasRoadmap == true) {

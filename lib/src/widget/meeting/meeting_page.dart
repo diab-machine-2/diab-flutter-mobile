@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'package:events_emitter/events_emitter.dart';
@@ -134,7 +135,6 @@ class MeetingPage extends HookWidget {
             _determineFullscreenAndPreviewUser(thisUser.value, remoteUsers.value, fullScreenUser);
           }
         }
-
       });
 
       final userAudioStatusChangedListener =
@@ -276,17 +276,31 @@ class MeetingPage extends HookWidget {
 
     // * Connecting
     if (thisUser.value == null) {
-      return Scaffold(
-        body: Container(
+      return Material(
+        child: Container(
           color: Colors.black,
-          child: const Center(
-            child: Text(
-              "Connecting...",
-              style: TextStyle(
-                fontSize: 18,
-                color: Colors.white,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              const CircularProgressIndicator(color: Colors.white),
+              const SizedBox(height: 30.0),
+              Text(
+                'Đang kết nối...',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 22.0,
+                ),
               ),
-            ),
+              const SizedBox(height: 20.0),
+              Text(
+                'Vui lòng chờ trong giây lát',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 16.0,
+                ),
+              ),
+            ],
           ),
         ),
       );
@@ -296,26 +310,26 @@ class MeetingPage extends HookWidget {
     // * Only me in session => Fullscreen view
     if (remoteUsers.value.isEmpty) {
       fullScreenView = VideoView(
-        // TODO: Fulfill avatar
         avatarUrl: null,
         user: thisUser.value!,
         fullScreen: true,
-        resolution: VideoResolution.Resolution720,
+        resolution: VideoResolution.Resolution1080,
+        videoAspect: VideoAspect.Original,
       );
-      previewView = SizedBox();
+      previewView = const SizedBox();
     } else {
       // * More than 1 user in session
-      // display preview if this user turnon video
-      if (thisUser.value!.videoStatus != null) {
-        previewView = VideoView(
-          avatarUrl: null,
-          user: thisUser.value!,
-          fullScreen: false,
-          resolution: VideoResolution.Resolution360,
-        );
-      } else {
-        previewView = SizedBox();
-      }
+      previewView = VideoView(
+        avatarUrl: null,
+        user: thisUser.value!,
+        fullScreen: false,
+        resolution: VideoResolution.Resolution720,
+        videoAspect: VideoAspect.Original,
+      );
+      // if (thisUser.value!.videoStatus != null) {
+      // } else {
+      //   previewView = SizedBox();
+      // }
       // host view
       fullScreenView = VideoView(
         avatarUrl: null,
@@ -325,75 +339,96 @@ class MeetingPage extends HookWidget {
       );
     }
 
-    final viewInsets = MediaQuery.of(context).viewInsets;
-
-    return Scaffold(
-      body: Stack(
+    final double leaveButtonWidth = 100.0;
+    final double leaveButtonHeight = 32.0;
+    Widget controlAndPreviewWidget = SafeArea(
+      child: Column(
         children: [
-          // VideoView
-          fullScreenView,
-          // Preview - right top
-          Positioned(
-            top: viewInsets.top + 120.0,
-            right: 16.0,
-            child: previewView,
-          ),
-          Positioned.fill(
-            child: Column(
+          // Headers
+          Container(
+            height: 56.0,
+            color: Colors.black.withOpacity(0.5),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                // header
+                // Dummy for center
                 Container(
-                  color: Colors.black.withOpacity(0.5),
-                  padding: EdgeInsets.fromLTRB(20, 30.0 + viewInsets.top, 20.0, 16.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      // Session name
-                      const SizedBox(width: 20.0),
-                      Text(
-                        sessionName.value,
-                        style: const TextStyle(
-                          fontSize: 18,
-                          color: Colors.white,
-                        ),
+                    width: leaveButtonWidth,
+                    height: leaveButtonHeight,
+                    child: IconButton(
+                      onPressed: _onLeaveSession,
+                      icon: const Icon(
+                        Icons.arrow_back_ios,
+                        color: Colors.white,
                       ),
-                      Expanded(flex: 1, child: const SizedBox()),
-                      // Leave session
-                      ElevatedButton(
-                        onPressed: _onLeaveSession,
-                        child: const Text(
-                          'Leave',
-                          style: TextStyle(
-                            fontSize: 18,
-                            color: Colors.white,
-                          ),
-                        ),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.red,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8.0),
-                          ),
-                        ),
+                    )),
+                // Session name
+                Expanded(
+                  child: Center(
+                    child: Text(
+                      sessionName.value,
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 18.0,
+                        fontWeight: FontWeight.w600,
                       ),
-                      const SizedBox(width: 20.0),
-                    ],
+                    ),
                   ),
                 ),
-                Expanded(
-                  child: const SizedBox(),
+                // More
+                Container(
+                  width: leaveButtonWidth,
+                  height: leaveButtonHeight,
+                  child: ElevatedButton(
+                    onPressed: _onLeaveSession,
+                    child: const Text(
+                      'Rời khỏi',
+                      style: TextStyle(
+                        fontSize: 18,
+                        color: Colors.white,
+                      ),
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.red,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
+                    ),
+                  ),
                 ),
-                _buildControls(
-                  isMuted.value,
-                  isVideoOn.value,
-                  _onPressAudio,
-                  _onPressVideo,
-                ),
-                SizedBox(height: viewInsets.bottom),
+                const SizedBox(width: 12.0)
               ],
             ),
           ),
+          // Preview
+          Expanded(
+            child: Align(
+              alignment: Alignment.topRight,
+              child: previewView,
+            ),
+          ),
+          // Controls
+          _buildControls(
+            isMuted.value,
+            isVideoOn.value,
+            _onPressAudio,
+            _onPressVideo,
+          ),
         ],
+      ),
+    );
+
+    return Scaffold(
+      body: WillPopScope(
+        onWillPop: () async => false,
+        child: Stack(
+          children: [
+            // VideoView
+            Positioned.fill(child: fullScreenView),
+            // Preview - right top
+            Positioned.fill(child: controlAndPreviewWidget),
+          ],
+        ),
       ),
     );
   }
@@ -405,59 +440,71 @@ class MeetingPage extends HookWidget {
     void Function() onPressAudio,
     void Function() onPressVideo,
   ) {
-    double iconSize = 32.0;
     return Container(
-      color: Colors.black.withOpacity(0.5),
-      padding: EdgeInsets.fromLTRB(20.0, 20.0, 20.0, 30.0),
+      color: Colors.black.withOpacity(0.8),
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           // Audio
-          IconButton(
-            onPressed: onPressAudio,
-            icon: Icon(
-              isMuted ? Icons.mic_off : Icons.mic,
-              color: Colors.white,
-            ),
-            iconSize: iconSize,
-          ),
+          _buttonIconWithTextBelow(isMuted ? Icons.mic_off : Icons.mic,
+              isMuted ? 'Bật tiếng' : 'Tắt tiếng', onPressAudio,
+              iconSize: 28.0),
           const SizedBox(width: 8.0),
-          // Video
-          IconButton(
-            onPressed: onPressVideo,
-            icon: Icon(
-              isVideoOn ? Icons.videocam : Icons.videocam_off,
-              color: Colors.white,
-            ),
-            iconSize: iconSize,
+          _buttonIconWithTextBelow(
+            isVideoOn ? Icons.videocam : Icons.videocam_off,
+            isVideoOn ? 'Bật video' : 'Tắt video',
+            onPressVideo,
           ),
           // separator
           Container(
             width: 20.0,
             padding: const EdgeInsets.symmetric(horizontal: 9.0),
-            child: DecoratedBox(
+            child: Container(
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: Colors.white.withAlpha(100),
                 borderRadius: BorderRadius.circular(1.0),
               ),
               child: SizedBox(
-                height: 24.0,
+                height: 42.0,
                 width: 2.0,
               ),
             ),
           ),
           // Chat
-          IconButton(
-            onPressed: () {},
-            icon: Icon(
-              Icons.chat,
-              color: Colors.white,
-            ),
-            iconSize: iconSize,
+          _buttonIconWithTextBelow(
+            CupertinoIcons.chat_bubble_text_fill,
+            'Chat',
+            () {},
+            iconSize: 28.0,
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buttonIconWithTextBelow(IconData icon, String text, void Function() onPressed,
+      {double iconSize = 32.0}) {
+    var color = Colors.white.withAlpha(200);
+    return Column(
+      children: [
+        IconButton(
+          onPressed: onPressed,
+          icon: Icon(
+            icon,
+            color: color,
+            size: iconSize,
+          ),
+        ),
+        Text(
+          text,
+          style: TextStyle(
+            color: color,
+            fontSize: 11.0,
+          ),
+        ),
+      ],
     );
   }
 

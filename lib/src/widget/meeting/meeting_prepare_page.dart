@@ -3,7 +3,6 @@ import 'dart:io' show Platform;
 
 import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
 import 'package:flutter/material.dart';
-import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/meeting/meeting_page.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -21,7 +20,7 @@ class MeetingPreparePage extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text("Welcome to Diab Meeting"),
+            Text("Welcome to DiaB Meeting", style: TextStyle(fontSize: 20)),
             // SizedBox(height: 20),
             Container(
               padding: const EdgeInsets.all(20),
