@@ -6,18 +6,20 @@ import 'package:flutter_zoom_videosdk/native/zoom_videosdk.dart';
 // To show video or avatar of user
 class VideoView extends fzv.ZoomView {
   final String? avatarUrl;
+  final bool stretch;
   const VideoView({
     super.key,
     required this.avatarUrl,
+    this.stretch = false,
     required super.user,
+    required super.fullScreen,
+    required super.resolution,
     bool sharing = false,
     bool preview = false,
     bool focused = false,
     bool hasMultiCamera = false,
     String multiCameraIndex = "0",
     String videoAspect = VideoAspect.Original,
-    required super.fullScreen,
-    required super.resolution,
   }) : super(
           sharing: sharing,
           preview: preview,
@@ -77,7 +79,7 @@ class VideoView extends fzv.ZoomView {
       if (sharing || isVideoOn.value) {
         final Map<String, dynamic> creationParams = _buildCreationParams();
         var size = MediaQuery.of(context).size;
-        return Container(
+        Widget child = Container(
           width: size.width,
           height: size.height,
           color: Colors.black,
@@ -86,6 +88,17 @@ class VideoView extends fzv.ZoomView {
             creationParams: creationParams,
           ),
         );
+        if (stretch) {
+          child = FittedBox(
+            fit: BoxFit.cover,
+            child: SizedBox(
+              width: size.width,
+              height: size.height,
+              child: child,
+            ),
+          );
+        }
+        return child;
       }
       // Just show avatar
       return Container(

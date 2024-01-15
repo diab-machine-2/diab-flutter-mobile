@@ -17,7 +17,6 @@ class MeetingPage extends HookWidget {
   Widget build(BuildContext context) {
     var zoom = ZoomVideoSdk();
     var eventListener = ZoomVideoSdkEventListener();
-    var videoInfo = useState<String>('');
 
     var sessionName = useState('');
 
@@ -263,6 +262,7 @@ class MeetingPage extends HookWidget {
     }
 
     void _onLeaveSession() async {
+      // TODO: Add confirm dialog
       await zoom.leaveSession(false);
       if (isMounted()) {
         Navigator.pop(context);
@@ -311,6 +311,7 @@ class MeetingPage extends HookWidget {
     if (remoteUsers.value.isEmpty) {
       fullScreenView = VideoView(
         avatarUrl: null,
+        stretch: true,
         user: thisUser.value!,
         fullScreen: true,
         resolution: VideoResolution.Resolution1080,
@@ -319,6 +320,7 @@ class MeetingPage extends HookWidget {
       previewView = const SizedBox();
     } else {
       // * More than 1 user in session
+      // this user view
       previewView = VideoView(
         avatarUrl: null,
         user: thisUser.value!,
@@ -326,10 +328,6 @@ class MeetingPage extends HookWidget {
         resolution: VideoResolution.Resolution720,
         videoAspect: VideoAspect.Original,
       );
-      // if (thisUser.value!.videoStatus != null) {
-      // } else {
-      //   previewView = SizedBox();
-      // }
       // host view
       fullScreenView = VideoView(
         avatarUrl: null,
@@ -474,6 +472,13 @@ class MeetingPage extends HookWidget {
           ),
           // Chat
           _buttonIconWithTextBelow(
+            CupertinoIcons.person_crop_circle_badge_checkmark,
+            'Người tham gia',
+            () {},
+            iconSize: 28.0,
+          ),
+          const SizedBox(width: 8.0),
+          _buttonIconWithTextBelow(
             CupertinoIcons.chat_bubble_text_fill,
             'Chat',
             () {},
@@ -513,6 +518,7 @@ class MeetingPage extends HookWidget {
     List<ZoomVideoSdkUser> remoteUsers,
     ValueNotifier<ZoomVideoSdkUser?> fullScreenUser,
   ) {
+    // TODO: Enhance logic determine full-screen user
     if (remoteUsers.isEmpty) {
       fullScreenUser.value = thisUser;
     } else {
