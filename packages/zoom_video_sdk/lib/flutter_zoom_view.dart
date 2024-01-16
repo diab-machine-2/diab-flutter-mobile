@@ -3,11 +3,10 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_zoom_videosdk/native/zoom_videosdk_user.dart';
 
 /// getting native View from Zoom Android or iOS native SDK
-class View extends HookWidget {
+class View extends StatelessWidget {
   final Map<String, dynamic> creationParams;
   const View({super.key, required this.creationParams});
 
@@ -58,7 +57,7 @@ class View extends HookWidget {
 
 
 /// Define parameters that needed by Zoom native view
-abstract class ZoomView extends HookWidget {
+abstract class ZoomView extends StatelessWidget {
   final ZoomVideoSdkUser? user;
   final bool sharing;
   final bool preview;
