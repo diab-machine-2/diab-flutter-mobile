@@ -157,9 +157,14 @@ class MeetingPage extends HookWidget {
       final userShareStatusChangeListener =
           emitter.on(EventType.onUserShareStatusChanged, (data) async {
         data = data as Map;
-        ZoomVideoSdkUser sharingUser = ZoomVideoSdkUser.fromJson(jsonDecode(data['user'].toString()));
+        ZoomVideoSdkUser sharingUser =
+            ZoomVideoSdkUser.fromJson(jsonDecode(data['user'].toString()));
         ZoomVideoSdkUser? shareUser = (data['status'] == ShareStatus.Start) ? sharingUser : null;
-        _determineFullscreenAndPreviewUser(thisUser.value, remoteUsers.value, fullScreenUser, shareUser: shareUser);
+        if (shareUser != null) {
+          shareUser.isSharing = true;
+        }
+        _determineFullscreenAndPreviewUser(thisUser.value, remoteUsers.value, fullScreenUser,
+            shareUser: shareUser);
       });
 
       final userJoinListener = emitter.on(EventType.onUserJoin, (data) async {
@@ -512,11 +517,9 @@ class MeetingPage extends HookWidget {
   void _determineFullscreenAndPreviewUser(
     ZoomVideoSdkUser? thisUser,
     List<ZoomVideoSdkUser> remoteUsers,
-    ValueNotifier<ZoomVideoSdkUser?> fullScreenUser,
-    {
-      ZoomVideoSdkUser? shareUser,
-    }
-  ) {
+    ValueNotifier<ZoomVideoSdkUser?> fullScreenUser, {
+    ZoomVideoSdkUser? shareUser,
+  }) {
     // TODO: Enhance logic determine full-screen user
     if (remoteUsers.isEmpty) {
       fullScreenUser.value = thisUser;
