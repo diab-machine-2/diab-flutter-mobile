@@ -9,7 +9,7 @@ PODS:
     - AppAuth/Core
   - audio_session (0.0.1):
     - Flutter
-  - audioplayers (0.0.1):
+  - audioplayers_darwin (0.0.1):
     - Flutter
   - better_player (0.0.1):
     - Cache (~> 6.0.0)
@@ -320,12 +320,12 @@ PODS:
     - Flutter
   - webview_flutter_wkwebview (0.0.1):
     - Flutter
-  - ZoomVideoSDK/ZoomVideoSDK (1.7.10)
+  - ZoomVideoSDK/ZoomVideoSDK (1.9.0)
 
 DEPENDENCIES:
   - app_settings (from `.symlinks/plugins/app_settings/ios`)
   - audio_session (from `.symlinks/plugins/audio_session/ios`)
-  - audioplayers (from `.symlinks/plugins/audioplayers/ios`)
+  - audioplayers_darwin (from `.symlinks/plugins/audioplayers_darwin/ios`)
   - better_player (from `.symlinks/plugins/better_player/ios`)
   - device_info (from `.symlinks/plugins/device_info/ios`)
   - device_info_plus (from `.symlinks/plugins/device_info_plus/ios`)
@@ -369,7 +369,7 @@ DEPENDENCIES:
   - video_thumbnail (from `.symlinks/plugins/video_thumbnail/ios`)
   - wakelock (from `.symlinks/plugins/wakelock/ios`)
   - webview_flutter_wkwebview (from `.symlinks/plugins/webview_flutter_wkwebview/ios`)
-  - ZoomVideoSDK/ZoomVideoSDK (= 1.7.10)
+  - ZoomVideoSDK/ZoomVideoSDK (= 1.9.0)
 
 SPEC REPOS:
   trunk:
@@ -416,8 +416,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/app_settings/ios"
   audio_session:
     :path: ".symlinks/plugins/audio_session/ios"
-  audioplayers:
-    :path: ".symlinks/plugins/audioplayers/ios"
+  audioplayers_darwin:
+    :path: ".symlinks/plugins/audioplayers_darwin/ios"
   better_player:
     :path: ".symlinks/plugins/better_player/ios"
   device_info:
@@ -509,7 +509,7 @@ SPEC CHECKSUMS:
   app_settings: d103828c9f5d515c4df9ee754dabd443f7cedcf3
   AppAuth: 3bb1d1cd9340bd09f5ed189fb00b1cc28e1e8570
   audio_session: 4f3e461722055d21515cf3261b64c973c062f345
-  audioplayers: 455322b54050b30ea4b1af7cd9e9d105f74efa8c
+  audioplayers_darwin: 877d9a4d06331c5c374595e46e16453ac7eafa40
   better_player: 2406bfe8175203c7a46fa15f9d778d73b12e1646
   Cache: 4ca7e00363fca5455f26534e5607634c820ffc2d
   device_info: d7d233b645a32c40dfdc212de5cf646ca482f175
@@ -545,7 +545,7 @@ SPEC CHECKSUMS:
   flutter_pdfview: 25f53dd6097661e6395b17de506e6060585946bd
   flutter_share: 4be0208963c60b537e6255ed2ce1faae61cd9ac2
   flutter_statusbar_manager: 18588ba7dce7a28a538363d2a9989f9ede4a6710
-  flutter_zoom_videosdk: ed52235d59b1254ceef0838ca8016c40eb0133dd
+  flutter_zoom_videosdk: 6cfe5ed4a015adaf8c2bc57e50261914f1ddd38b
   fluttertoast: 31b00dabfa7fb7bacd9e7dbee580d7a2ff4bf265
   FMDB: 2ce00b547f966261cd18927a3ddb07cb6f3db82a
   GCDWebServer: 2c156a56c8226e2d5c0c3f208a3621ccffbe3ce4
@@ -588,8 +588,8 @@ SPEC CHECKSUMS:
   video_thumbnail: c4e2a3c539e247d4de13cd545344fd2d26ffafd1
   wakelock: d0fc7c864128eac40eba1617cb5264d9c940b46f
   webview_flutter_wkwebview: 2e2d318f21a5e036e2c3f26171342e95908bd60a
-  ZoomVideoSDK: 87384ef9dee391fcc1347327b6ff748fefc77714
+  ZoomVideoSDK: 9c328610dab14e3bb75f1995f00e6a967c0fef20
 
-PODFILE CHECKSUM: 48cd1008e7850137d5359161111eba9bd69b8dfa
+PODFILE CHECKSUM: cb61286470d897aec62534fa174315619b7d5171
 
 COCOAPODS: 1.14.3
