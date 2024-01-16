@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:flutter/services.dart';
+import 'package:flutter_zoom_videosdk/native/zoom_videosdk_camera_device.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 ///@nodoc
 abstract class ZoomVideoSdkVideoHelperPlatform extends PlatformInterface {
@@ -28,7 +31,7 @@ abstract class ZoomVideoSdkVideoHelperPlatform extends PlatformInterface {
     throw UnimplementedError('rotateMyVideo() has not been implemented.');
   }
 
-  Future<String> getCameraList() async {
+  Future<List<ZoomVideoSdkCameraDevice>> getCameraList() async {
     throw UnimplementedError('getCameraList() has not been implemented.');
   }
 
@@ -36,8 +39,8 @@ abstract class ZoomVideoSdkVideoHelperPlatform extends PlatformInterface {
     throw UnimplementedError('getNumberOfCameras() has not been implemented.');
   }
 
-  Future<bool> isMirrorMyVideoEnabled() async {
-    throw UnimplementedError('isMirrorMyVideoEnabled() has not been implemented.');
+  Future<bool> isMyVideoMirrored() async {
+    throw UnimplementedError('isMyVideoMirrored() has not been implemented.');
   }
 
   Future<String> mirrorMyVideo(bool enable) async {
@@ -106,10 +109,17 @@ class ZoomVideoSdkVideoHelper extends ZoomVideoSdkVideoHelperPlatform {
   /// Get the list of camera devices available to share the video.
   /// <br />Return List of [ZoomVideoSDKCameraDevice] in string
   @override
-  Future<String> getCameraList() async {
-    return await methodChannel
+  Future<List<ZoomVideoSdkCameraDevice>> getCameraList() async {
+    var cameraListString = await methodChannel
         .invokeMethod<String>('getCameraList')
         .then<String>((String? value) => value ?? "");
+
+    var cameraListJson = jsonDecode(cameraListString!) as List;
+    List<ZoomVideoSdkCameraDevice> cameraList = cameraListJson
+    .map((cameraJson) => ZoomVideoSdkCameraDevice.fromJson(cameraJson))
+        .toList();
+
+    return cameraList;
   }
 
   /// Get the number of cameras available to share the video.
@@ -124,9 +134,9 @@ class ZoomVideoSdkVideoHelper extends ZoomVideoSdkVideoHelperPlatform {
   /// Call this method to query mirror my video enable.
   /// <br />Return true if the mirror effect enabled, false otherwise.
   @override
-  Future<bool> isMirrorMyVideoEnabled() async {
+  Future<bool> isMyVideoMirrored() async {
     return await methodChannel
-        .invokeMethod<bool>('isMirrorMyVideoEnabled')
+        .invokeMethod<bool>('isMyVideoMirrored')
         .then<bool>((bool? value) => value ?? false);
   }
 

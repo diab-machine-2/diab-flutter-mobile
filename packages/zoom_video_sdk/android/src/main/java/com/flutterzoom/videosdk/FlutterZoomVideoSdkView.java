@@ -1,6 +1,7 @@
 package com.flutterzoom.videosdk;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.View;
 
 import androidx.annotation.NonNull;
@@ -10,9 +11,11 @@ import com.flutterzoom.videosdk.convert.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import io.flutter.plugin.platform.PlatformView;
 import us.zoom.sdk.ZoomVideoSDK;
+import us.zoom.sdk.ZoomVideoSDKAnnotationHelper;
 import us.zoom.sdk.ZoomVideoSDKUser;
 import us.zoom.sdk.ZoomVideoSDKVideoAspect;
 import us.zoom.sdk.ZoomVideoSDKVideoCanvas;
@@ -22,6 +25,7 @@ import us.zoom.sdk.ZoomVideoSDKVideoView;
 
 public class FlutterZoomVideoSdkView implements PlatformView {
 
+    public static FlutterZoomVideoSdkView instance;
     private ZoomVideoSDKVideoView videoView;
     private ZoomVideoSDKVideoCanvas currentCanvas;
     private String userId = "";
@@ -30,8 +34,18 @@ public class FlutterZoomVideoSdkView implements PlatformView {
     private boolean preview = false;
     private boolean hasMultiCamera = false;
     private String multiCameraIndex = "";
-    private Context context;
-    private ZoomVideoSDKVideoResolution resolution;
+    private ZoomVideoSDKVideoResolution resolution = ZoomVideoSDKVideoResolution.ZoomVideoSDKResolution_Auto;
+    private ZoomVideoSDKAnnotationHelper annotationHelper;
+    private View annotationView;
+
+    public static FlutterZoomVideoSdkView getInstance() {
+        return instance;
+    }
+
+    public static FlutterZoomVideoSdkView createInstance(@NonNull Context context, int id, @NonNull Map<String, Object> creationParams) {
+        instance = new FlutterZoomVideoSdkView(context, id, creationParams);
+        return instance;
+    }
 
 
     FlutterZoomVideoSdkView(@NonNull Context context, int id, @NonNull Map<String, Object> creationParams) {
@@ -66,6 +80,14 @@ public class FlutterZoomVideoSdkView implements PlatformView {
         setViewingCanvas();
     }
 
+    public ZoomVideoSDKAnnotationHelper getAnnotationHelper() {
+        return annotationHelper;
+    }
+
+    public void setAnnotationHelper(ZoomVideoSDKAnnotationHelper helper) {
+        this.annotationHelper = helper;
+    }
+
     public void setUserId(String newUserId) {
         if (newUserId.equals(userId)) {
             return;
@@ -78,6 +100,28 @@ public class FlutterZoomVideoSdkView implements PlatformView {
             return;
         }
         this.sharing = newSharing;
+        if (ZoomVideoSDK.getInstance().getShareHelper().isAnnotationFeatureSupport()) {
+            if (sharing && annotationHelper == null) {
+                ZoomVideoSDKUser mySelf = ZoomVideoSDK.getInstance().getSession().getMySelf();
+                if (userId == mySelf.getUserID()) {
+                    annotationHelper = ZoomVideoSDK.getInstance().getShareHelper().createAnnotationHelper(null);
+                } else {
+                    annotationHelper = ZoomVideoSDK.getInstance().getShareHelper().createAnnotationHelper(videoView);
+                }
+                annotationView = annotationHelper.getAnnotationView();
+                if (annotationView != null && annotationView.getParent() == null) {
+                    videoView.addView(annotationView);
+                }
+            } else {
+                if (annotationView != null) {
+                    if (annotationView.getParent() != null) videoView.removeView(annotationView);
+                    annotationView = null;
+                }
+                if (annotationHelper != null) {
+                    ZoomVideoSDK.getInstance().getShareHelper().destroyAnnotationHelper(annotationHelper);
+                }
+            }
+        }
     }
 
     public void setHasMultiCamera(boolean newHasMultiCamera) {
@@ -134,6 +178,7 @@ public class FlutterZoomVideoSdkView implements PlatformView {
     private void setViewingCanvas()
     {
         ZoomVideoSDKUser user = FlutterZoomVideoSdkUser.getUser(userId);
+        ZoomVideoSDKUser mySelf = ZoomVideoSDK.getInstance().getSession().getMySelf();
         if (user == null) return;
         if (currentCanvas != null) {
             currentCanvas.unSubscribe(videoView);
@@ -141,7 +186,9 @@ public class FlutterZoomVideoSdkView implements PlatformView {
         }
 
         if (sharing) {
-            currentCanvas = user.getShareCanvas();
+            if (!Objects.equals(userId, mySelf.getUserID())) {
+                currentCanvas = user.getShareCanvas();
+            }
         } else if (hasMultiCamera) {
             List<ZoomVideoSDKVideoCanvas> multiCameraList = user.getMultiCameraCanvasList();
             int index = Integer.parseInt(multiCameraIndex);
@@ -149,7 +196,10 @@ public class FlutterZoomVideoSdkView implements PlatformView {
         } else {
             currentCanvas = user.getVideoCanvas();
         }
-        currentCanvas.subscribe(videoView, videoAspect, resolution);
+
+        if (!(Objects.equals(userId, mySelf.getUserID()) && sharing)) {
+            currentCanvas.subscribe(videoView, videoAspect, resolution);
+        }
     }
 
     @Nullable

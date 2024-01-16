@@ -48,6 +48,20 @@ abstract class ZoomVideoSdkShareHelperPlatform extends PlatformInterface {
     throw UnimplementedError(
         'isShareDeviceAudioEnabled() has not been implemented.');
   }
+
+  Future<bool> isAnnotationFeatureSupport() async {
+    throw UnimplementedError(
+        'isAnnotationFeatureSupport() has not been implemented.');
+  }
+
+  Future<String?> disableViewerAnnotation(bool disable) async {
+    throw UnimplementedError('disableViewerAnnotation() has not been implemented.');
+  }
+
+  Future<bool> isViewerAnnotationDisabled() async {
+    throw UnimplementedError(
+        'isViewerAnnotationDisabled() has not been implemented.');
+  }
 }
 
 /// Zoom Video SDK Share Control
@@ -131,4 +145,28 @@ class ZoomVideoSdkShareHelper extends ZoomVideoSdkShareHelperPlatform {
         .invokeMethod<bool>('isShareDeviceAudioEnabled')
         .then<bool>((bool? value) => value ?? false);
   }
+
+  @override
+  Future<bool> isAnnotationFeatureSupport() async {
+    return await methodChannel
+        .invokeMethod<bool>('isAnnotationFeatureSupport')
+        .then<bool>((bool? value) => value ?? false);
+  }
+
+  @override
+  Future<String?> disableViewerAnnotation(bool disable) async {
+    var params = <String, dynamic>{};
+    params.putIfAbsent('disable', () => disable);
+    return await methodChannel
+        .invokeMethod<String>('disableViewerAnnotation', params)
+        .then<String>((String? value) => value ?? "");
+  }
+
+  @override
+  Future<bool> isViewerAnnotationDisabled() async {
+    return await methodChannel
+        .invokeMethod<bool>('isViewerAnnotationDisabled')
+        .then<bool>((bool? value) => value ?? false);
+  }
+
 }

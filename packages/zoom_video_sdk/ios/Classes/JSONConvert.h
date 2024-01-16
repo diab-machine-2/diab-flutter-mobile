@@ -79,5 +79,13 @@
 + (ZoomVideoSDKChatPrivilegeType)ZoomVideoSDKChatPrivilegeType:(id)json;
 + (NSDictionary *)ZoomVideoSDKChatPrivilegeTypeValuesReversed;
 
++ (ZoomVideoSDKAnnotationToolType)ZoomVideoSDKAnnotationToolType:(id)json;
++ (NSDictionary *)ZoomVideoSDKAnnotationToolTypeValuesReversed;
+
++ (ZoomVideoSDKAnnotationClearType)ZoomVideoSDKAnnotationClearType:(id)json;
++ (NSDictionary *)ZoomVideoSDKAnnotationClearTypeValuesReversed;
+
++ (ZoomVideoSDKSubscribeFailReason)ZoomVideoSDKSubscribeFailReason:(id)json;
++ (NSDictionary *)ZoomVideoSDKSubscribeFailReasonValuesReversed;
 
 @end

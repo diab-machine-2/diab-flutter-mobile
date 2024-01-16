@@ -1,5 +1,6 @@
 import 'package:flutter/services.dart';
 import 'package:flutter_zoom_videosdk/native/zoom_videosdk_CRC_helper.dart';
+import 'package:flutter_zoom_videosdk/native/zoom_videosdk_annotation_helper.dart';
 import 'package:flutter_zoom_videosdk/native/zoom_videosdk_audio_helper.dart';
 import 'package:flutter_zoom_videosdk/native/zoom_videosdk_audio_setting_helper.dart';
 import 'package:flutter_zoom_videosdk/native/zoom_videosdk_chat_helper.dart';
@@ -188,6 +189,38 @@ class ChatPrivilegeType {
   static const PubliclyAndPrivately = 'ZoomVideoSDKChatPrivilege_Publicly_And_Privately';
   static const NoOne = 'ZoomVideoSDKChatPrivilege_No_One';
   static const Publicly = 'ZoomVideoSDKChatPrivilege_Publicly';
+}
+
+class AnnotationClearType {
+  static const All = 'ZoomVideoSDKAnnotationClearType_All';
+  static const Others = 'ZoomVideoSDKAnnotationClearType_Others';
+  static const My = 'ZoomVideoSDKAnnotationClearType_My';
+}
+
+class AnnotationToolType {
+  static const None = 'ZoomVideoSDKAnnotationToolType_None';
+  static const Pen = 'ZoomVideoSDKAnnotationToolType_Pen';
+  static const HighLighter = 'ZoomVideoSDKAnnotationToolType_HighLighter';
+  static const AutoLine = 'ZoomVideoSDKAnnotationToolType_AutoLine';
+  static const AutoRectangle = 'ZoomVideoSDKAnnotationToolType_AutoRectangle';
+  static const AutoEllipse = 'ZoomVideoSDKAnnotationToolType_AutoEllipse';
+  static const AutoArrow = 'ZoomVideoSDKAnnotationToolType_AutoArrow';
+  static const AutoRectangleFill = 'ZoomVideoSDKAnnotationToolType_AutoRectangleFill';
+  static const AutoEllipseFill = 'ZoomVideoSDKAnnotationToolType_AutoEllipseFill';
+  static const SpotLight = 'ZoomVideoSDKAnnotationToolType_SpotLight';
+  static const Arrow = 'ZoomVideoSDKAnnotationToolType_Arrow';
+  static const Eraser = 'ZoomVideoSDKAnnotationToolType_Eraser';
+  static const Picker = 'ZoomVideoSDKAnnotationToolType_Picker';
+  static const AutoRectangleSemiFill = 'ZoomVideoSDKAnnotationToolType_AutoRectangleSemiFill';
+  static const AutoEllipseSemiFill = 'ZoomVideoSDKAnnotationToolType_AutoEllipseSemiFill';
+  static const AutoDoubleArrow = 'ZoomVideoSDKAnnotationToolType_AutoDoubleArrow';
+  static const AutoDiamond = 'ZoomVideoSDKAnnotationToolType_AutoDiamond';
+  static const AutoStampArrow = 'ZoomVideoSDKAnnotationToolType_AutoStampArrow';
+  static const AutoStampCheck = 'ZoomVideoSDKAnnotationToolType_AutoStampCheck';
+  static const AutoStampX = 'ZoomVideoSDKAnnotationToolType_AutoStampX';
+  static const AutoStampStar = 'ZoomVideoSDKAnnotationToolType_AutoStampStar';
+  static const AutoStampHeart = 'ZoomVideoSDKAnnotationToolType_AutoStampHeart';
+  static const AutoStampQm = 'ZoomVideoSDKAnnotationToolType_AutoStampQm';
 }
 
 /// An enumeration of error.
@@ -426,6 +459,7 @@ class ZoomVideoSdk extends ZoomVideoSdkPlatform {
   var remoteCameraControlHelper = ZoomVideoSdkRemoteCameraControlHelper();
   var virtualBackgroundHelper = ZoomVideoSdkVirtualBackgroundHelper();
   var CRCHelper = ZoomVideoSdkCRCHelper();
+  var annotationHelper = ZoomVideoSdkAnnotationHelper();
 
   final methodChannel = const MethodChannel('flutter_zoom_videosdk');
 

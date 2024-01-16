@@ -106,6 +106,7 @@ public class FlutterZoomVideoSdkPlugin implements FlutterPlugin, MethodCallHandl
   FlutterZoomVideoSdkRemoteCameraControlHelper remoteCameraControlHelper;
   FlutterZoomVideoSdkVirtualBackgroundHelper virtualBackgroundHelper;
   FlutterZoomVideoSdkCRCHelper CRCHelper;
+  FlutterZoomVideoSdkAnnotationHelper annotationHelper;
 
 
   @Override
@@ -184,8 +185,14 @@ public class FlutterZoomVideoSdkPlugin implements FlutterPlugin, MethodCallHandl
       case "isMicOriginalInputEnable":
         audioSettingHelper.isMicOriginalInputEnable(result);
         break;
+      case "enableAutoAdjustMicVolume":
+        audioSettingHelper.enableAutoAdjustMicVolume(call, result);
+        break;
       case "enableMicOriginalInput":
         audioSettingHelper.enableMicOriginalInput(call, result);
+        break;
+      case "isAutoAdjustMicVolumeEnabled":
+        audioSettingHelper.isAutoAdjustMicVolumeEnabled(result);
         break;
       case "isMuted":
         audioStatus.isMuted(call, result);
@@ -373,6 +380,15 @@ public class FlutterZoomVideoSdkPlugin implements FlutterPlugin, MethodCallHandl
       case "isSharingOut":
         shareHelper.isSharingOut(result);
         break;
+      case "isAnnotationFeatureSupport":
+        shareHelper.isAnnotationFeatureSupport(result);
+        break;
+      case "disableViewerAnnotation":
+        shareHelper.disableViewerAnnotation(call, result);
+        break;
+      case "isViewerAnnotationDisabled":
+        shareHelper.isViewerAnnotationDisabled(result);
+        break;
       case "getUserShareBpf":
         shareStatisticInfo.getUserShareBpf(call, result);
         break;
@@ -443,9 +459,6 @@ public class FlutterZoomVideoSdkPlugin implements FlutterPlugin, MethodCallHandl
         user.canSetUserVolume(call, result);
         Log.d(DEBUG_TAG, "canSetUserVolume");
         break;
-      case "setVideoQualityPreference":
-        videoHelper.setVideoQualityPreference(call, result);
-        break;
       case "getCameraList":
         videoHelper.getCameraList(result);
         break;
@@ -467,8 +480,8 @@ public class FlutterZoomVideoSdkPlugin implements FlutterPlugin, MethodCallHandl
       case "mirrorMyVideo":
         videoHelper.mirrorMyVideo(call, result);
         break;
-      case "isMirrorMyVideoEnabled":
-        videoHelper.isMirrorMyVideoEnabled(result);
+      case "isMyVideoMirrored":
+        videoHelper.isMyVideoMirrored(result);
         break;
       case "enableOriginalAspectRatio":
         videoHelper.enableOriginalAspectRatio(call, result);
@@ -544,6 +557,42 @@ public class FlutterZoomVideoSdkPlugin implements FlutterPlugin, MethodCallHandl
       case "cancelCallCRCDevice":
         CRCHelper.cancelCallCRCDevice(result);
         break;
+      case "isSenderDisableAnnotation":
+        annotationHelper.isSenderDisableAnnotation(result);
+        break;
+      case "startAnnotation":
+        annotationHelper.startAnnotation(result);
+        break;
+      case "stopAnnotation":
+        annotationHelper.stopAnnotation(result);
+        break;
+      case "setToolColor":
+        annotationHelper.setToolColor(call, result);
+        break;
+      case "getToolColor":
+        annotationHelper.getToolColor(result);
+        break;
+      case "setToolType":
+        annotationHelper.setToolType(call, result);
+        break;
+      case "getToolType":
+        annotationHelper.getToolType(result);
+        break;
+      case "setToolWidth":
+        annotationHelper.setToolWidth(call, result);
+        break;
+      case "getToolWidth":
+        annotationHelper.getToolWidth(result);
+        break;
+      case "undo":
+        annotationHelper.undo(result);
+        break;
+      case "redo":
+        annotationHelper.redo(result);
+        break;
+      case "clear":
+        annotationHelper.clear(call, result);
+        break;
       default:
         result.notImplemented();
     }
@@ -581,6 +630,7 @@ public class FlutterZoomVideoSdkPlugin implements FlutterPlugin, MethodCallHandl
     remoteCameraControlHelper = new FlutterZoomVideoSdkRemoteCameraControlHelper(activity);
     virtualBackgroundHelper = new FlutterZoomVideoSdkVirtualBackgroundHelper(activity);
     CRCHelper = new FlutterZoomVideoSdkCRCHelper(activity);
+    annotationHelper = FlutterZoomVideoSdkAnnotationHelper.createInstance(activity);
 
   }
 
@@ -621,13 +671,14 @@ public class FlutterZoomVideoSdkPlugin implements FlutterPlugin, MethodCallHandl
     params.videoRawDataMemoryMode = FlutterZoomVideoSdkRawDataMemoryMode.valueOf((String) config.get("videoRawDataMemoryMode"));
     params.audioRawDataMemoryMode = FlutterZoomVideoSdkRawDataMemoryMode.valueOf((String) config.get("audioRawDataMemoryMode"));
     params.shareRawDataMemoryMode = FlutterZoomVideoSdkRawDataMemoryMode.valueOf((String) config.get("shareRawDataMemoryMode"));
+    ZoomVideoSDKExtendParams extendParams = new ZoomVideoSDKExtendParams();
+    extendParams.wrapperType = 1;
 
     if (config.containsKey("speakerFilePath")) {
       String speakerFilePath = (String) config.get("speakerFilePath");
-      ZoomVideoSDKExtendParams extendParams = new ZoomVideoSDKExtendParams();
       extendParams.speakerTestFilePath = speakerFilePath;
-      params.extendParam = extendParams;
     }
+    params.extendParam = extendParams;
 
     ZoomVideoSDK sdk = ZoomVideoSDK.getInstance();
     int initResult = sdk.initialize(context, params);
@@ -1253,33 +1304,65 @@ public class FlutterZoomVideoSdkPlugin implements FlutterPlugin, MethodCallHandl
     Log.d(DEBUG_TAG, "onCallCRCDeviceStatusChanged, status: " + statusStr);
     Map<String, Object> params = new HashMap<>();
     params.put("name", "onCallCRCDeviceStatusChanged");
-    params.put("status", statusStr);
+    Map<String, Object> message = new HashMap<>();
+    message.put("status", statusStr);
+    params.put("message", message);
     eventSink.success(params);
   }
 
   @Override
   public void onAnnotationPrivilegeChange(boolean enable, ZoomVideoSDKUser shareOwner) {
+    Map<String, Object> params = new HashMap<>();
+    params.put("name", "onAnnotationPrivilegeChange");
+    Map<String, Object> message = new HashMap<>();
+    message.put("enable", enable);
+    message.put("shareOwner", FlutterZoomVideoSdkUser.jsonUser(shareOwner));
+    params.put("message", message);
+    eventSink.success(params);
 
   }
 
   @Override
   public void onAnnotationHelperCleanUp(ZoomVideoSDKAnnotationHelper helper) {
-
+    FlutterZoomVideoSdkAnnotationHelper.getInstance().setAnnotationHelper(null);
+    Map<String, Object> params = new HashMap<>();
+    params.put("name", "onAnnotationHelperCleanUp");
+    params.put("message","onAnnotationHelperCleanUp");
+    eventSink.success(params);
   }
 
   @Override
   public void onShareCanvasSubscribeFail(ZoomVideoSDKVideoSubscribeFailReason fail_reason, ZoomVideoSDKUser pUser, ZoomVideoSDKVideoView view) {
-
+    String reasonStr = FlutterZoomVideoSdkVideoSubscribeFailReason.valueOf(fail_reason);
+    Map<String, Object> params = new HashMap<>();
+    params.put("name", "onShareCanvasSubscribeFail");
+    Map<String, Object> message = new HashMap<>();
+    message.put("failReason", reasonStr);
+    message.put("user", FlutterZoomVideoSdkUser.jsonUser(pUser));
+    params.put("message", message);
+    eventSink.success(params);
   }
 
   @Override
   public void onVideoCanvasSubscribeFail(ZoomVideoSDKVideoSubscribeFailReason fail_reason, ZoomVideoSDKUser pUser, ZoomVideoSDKVideoView view) {
-
+    String reasonStr = FlutterZoomVideoSdkVideoSubscribeFailReason.valueOf(fail_reason);
+    Map<String, Object> params = new HashMap<>();
+    params.put("name", "onVideoCanvasSubscribeFail");
+    Map<String, Object> message = new HashMap<>();
+    message.put("failReason", reasonStr);
+    message.put("user", FlutterZoomVideoSdkUser.jsonUser(pUser));
+    params.put("message", message);
+    eventSink.success(params);
   }
 
   @Override
   public void onOriginalLanguageMsgReceived(ZoomVideoSDKLiveTranscriptionHelper.ILiveTranscriptionMessageInfo messageInfo) {
-
+    Map<String, Object> params = new HashMap<>();
+    params.put("name", "onOriginalLanguageMsgReceived");
+    Map<String, Object> message = new HashMap<>();
+    message.put("messageInfo", FlutterZoomVideoSdkILiveTranscriptionMessageInfo.jsonMessageInfo(messageInfo));
+    params.put("message", message);
+    eventSink.success(params);
   }
 
   @Override

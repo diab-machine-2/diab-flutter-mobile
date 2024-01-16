@@ -7,4 +7,8 @@
 
 -(void) enableMicOriginalInput: (FlutterMethodCall *)call withResult:(FlutterResult) result;
 
+-(void) isAutoAdjustMicVolumeEnabled: (FlutterResult) result;
+
+-(void) enableAutoAdjustMicVolume: (FlutterMethodCall *)call withResult:(FlutterResult) result;
+
 @end

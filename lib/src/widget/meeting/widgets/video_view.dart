@@ -22,6 +22,7 @@ class VideoView extends fzv.ZoomView {
     String videoAspect = VideoAspect.Original,
   }) : super(
           sharing: sharing,
+          isPiPView: false,
           preview: preview,
           focused: focused,
           hasMultiCamera: hasMultiCamera,

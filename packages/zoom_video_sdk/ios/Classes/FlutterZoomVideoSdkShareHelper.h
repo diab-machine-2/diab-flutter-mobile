@@ -23,4 +23,10 @@
 
 -(void) enableShareDeviceAudio:(FlutterMethodCall *)call withResult:(FlutterResult) result;
 
+-(void) isAnnotationFeatureSupport: (FlutterResult) result;
+
+-(void) disableViewerAnnotation:(FlutterMethodCall *)call withResult:(FlutterResult) result;
+
+-(void) isViewerAnnotationDisabled: (FlutterResult) result;
+
 @end

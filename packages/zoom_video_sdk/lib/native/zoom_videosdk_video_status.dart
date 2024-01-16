@@ -1,6 +1,7 @@
+import 'dart:io' show Platform;
+
 import 'package:flutter/services.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
-import 'dart:io' show Platform;
 ///@nodoc
 abstract class ZoomVideoSdkVideoStatusPlatform extends PlatformInterface {
   ZoomVideoSdkVideoStatusPlatform() : super(token: _token);

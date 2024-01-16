@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:flutter/services.dart';
-import 'package:flutter_zoom_videosdk/native/zoom_videosdk.dart';
 import 'package:flutter_zoom_videosdk/native/zoom_videosdk_live_transcription_language.dart';
 import 'package:flutter_zoom_videosdk/native/zoom_videosdk_live_transcription_message_info.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';

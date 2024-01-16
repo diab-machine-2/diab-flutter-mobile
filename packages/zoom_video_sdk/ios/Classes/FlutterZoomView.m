@@ -1,7 +1,10 @@
 #import <ZoomVideoSDK/ZoomVideoSDK.h>
 #import "FlutterZoomView.h"
 #import "FlutterZoomVideoSdkUser.h"
+#import "FlutterZoomVideoSdkAnnotationHelper.h"
 #import "JSONConvert.h"
+#import "SDKPiPHelper.h"
+#import "SDKCallKitManager.h"
 
 @implementation FlutterZoomView {
     ZoomView *_view;
@@ -25,11 +28,17 @@
     if (dictionary[@"sharing"]) {
         [_view setSharing: [dictionary[@"sharing"] boolValue]];
     }
+    if (dictionary[@"isPiPView"]) {
+      [_view setIsPiPView: [dictionary[@"isPiPView"] boolValue]];
+    }
     if (dictionary[@"preview"]) {
         [_view setPreview: [dictionary[@"preview"] boolValue]];
     }
     if (dictionary[@"hasMultiCamera"]) {
         [_view setHasMultiCamera: [dictionary[@"hasMultiCamera"] boolValue]];
+    }
+    if (dictionary[@"resolution"]) {
+        [_view setVideoResolution:dictionary[@"resolution"]];
     }
 
   }
@@ -48,10 +57,12 @@
     BOOL sharing;
     BOOL preview;
     BOOL hasMultiCamera;
+    BOOL isPiPView;
     NSString* multiCameraIndex;
     ZoomVideoSDKVideoAspect videoAspect;
     ZoomVideoSDKVideoCanvas* currentCanvas;
-    ZoomVideoSDKVideoResolution* videoResolution;
+    ZoomVideoSDKVideoResolution videoResolution;
+    ZoomVideoSDKAnnotationHelper* helper;
 }
 
 - (void)layoutSubviews{
@@ -72,6 +83,23 @@
         return;
     }
     sharing = newSharing;
+    [self setNeedsLayout];
+}
+
+- (void)setIsPiPView:(BOOL)newIsPiPView {
+    if (isPiPView == newIsPiPView) {
+        return;
+    }
+    if (newIsPiPView) {
+        [[SDKPiPHelper shared] presetPiPWithSrcView:self];
+        [[SDKCallKitManager sharedManager] startCallWithHandle:@"<Your Email>" complete:^{
+            NSLog(@" ----CallKitManager startCall Complete ------");
+            [[SDKPiPHelper shared] presetPiPWithSrcView:self];
+        }];
+    } else {
+        [[SDKPiPHelper shared] cleanUpPictureInPicture];
+    }
+    isPiPView = newIsPiPView;
     [self setNeedsLayout];
 }
 
@@ -133,26 +161,46 @@
 
 - (void)setViewingCanvas {
     if (currentCanvas != nil) {
-        [currentCanvas unSubscribeWithView: self];
+        [currentCanvas unSubscribeWithView:self];
         currentCanvas = nil;
     }
 
+    if (videoResolution == nil) {
+        videoResolution = ZoomVideoSDKVideoResolution_Auto;
+    }
+
     // Get the user
-    ZoomVideoSDKUser* user = [FlutterZoomVideoSdkUser getUser:userId];
+    ZoomVideoSDKUser *user = [FlutterZoomVideoSdkUser getUser:userId];
 
     // Get the canvas
     if (sharing) {
         currentCanvas = [user getShareCanvas];
-    } else if (hasMultiCamera) {
-        NSArray <ZoomVideoSDKVideoCanvas *> *multiCameraList = [user getMultiCameraCanvasList];
-        NSInteger index = [multiCameraIndex integerValue];
-        currentCanvas = multiCameraList[index];
+        videoAspect = ZoomVideoSDKVideoAspect_Original;
+        [[SDKPiPHelper shared] updatePiPVideoUser:user videoType:ZoomVideoSDKVideoType_ShareData];
     } else {
-        currentCanvas = [user getVideoCanvas];
+        videoAspect = ZoomVideoSDKVideoAspect_LetterBox;
+        [[SDKPiPHelper shared] updatePiPVideoUser:user videoType:ZoomVideoSDKVideoType_VideoData];
+
+        if (hasMultiCamera) {
+            NSArray < ZoomVideoSDKVideoCanvas * >
+            *multiCameraList = [user getMultiCameraCanvasList];
+            NSInteger index = [multiCameraIndex integerValue];
+            currentCanvas = multiCameraList[index];
+        } else {
+            currentCanvas = [user getVideoCanvas];
+        }
     }
 
     // Subscribe User's videoCanvas to render their video stream.
-    [currentCanvas subscribeWithView:self andAspectMode:ZoomVideoSDKVideoAspect_LetterBox];
+    if (isPiPView) {
+        [currentCanvas subscribeWithPiPView:self aspectMode:videoAspect andResolution:videoResolution];
+    } else {
+        [currentCanvas subscribeWithView:self aspectMode:videoAspect andResolution:videoResolution];
+    }
+    bool annotationEnable = [[[ZoomVideoSDK shareInstance] getShareHelper] isAnnotationFeatureSupport];
+    if (sharing && annotationEnable && (helper == nil)) {
+        helper = [[[ZoomVideoSDK shareInstance] getShareHelper] createAnnotationHelper:self];
+        [[FlutterZoomVideoSdkAnnotationHelper alloc] setAnnotationHelper:helper];
+    }
 }
-
 @end

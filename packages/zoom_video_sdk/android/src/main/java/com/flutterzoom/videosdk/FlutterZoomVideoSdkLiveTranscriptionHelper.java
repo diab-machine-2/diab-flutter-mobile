@@ -27,8 +27,7 @@ public class FlutterZoomVideoSdkLiveTranscriptionHelper {
     private ZoomVideoSDKLiveTranscriptionHelper getLiveTranscriptionHelper() {
         ZoomVideoSDKLiveTranscriptionHelper liveTranscriptionHelper = null;
         try {
-            ZoomVideoSDKUser mySelf = ZoomVideoSDK.getInstance().getSession().getMySelf();
-            liveTranscriptionHelper = mySelf.getLiveTranscriptionHelper();
+            liveTranscriptionHelper = ZoomVideoSDK.getInstance().getLiveTranscriptionHelper();
             if (liveTranscriptionHelper == null) {
                 throw new Exception("No Live Transcription Helper Found");
             }

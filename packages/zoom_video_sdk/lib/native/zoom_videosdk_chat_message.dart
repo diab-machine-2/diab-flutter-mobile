@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:core';
+
 import 'package:flutter_zoom_videosdk/native/zoom_videosdk_user.dart';
 
 /// Zoom Video SDK chat message bean.

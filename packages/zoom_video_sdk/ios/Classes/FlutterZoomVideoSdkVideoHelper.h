@@ -15,7 +15,7 @@
 
 -(void) mirrorMyVideo: (FlutterMethodCall *)call withResult:(FlutterResult) result;
 
--(void) isMirrorMyVideoEnabled: (FlutterResult) result;
+-(void) isMyVideoMirrored: (FlutterResult) result;
 
 -(void) enableOriginalAspectRatio: (FlutterMethodCall *)call withResult:(FlutterResult) result;
 

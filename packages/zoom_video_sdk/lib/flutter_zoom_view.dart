@@ -1,8 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/gestures.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_zoom_videosdk/native/zoom_videosdk_user.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:flutter_zoom_videosdk/native/zoom_videosdk_user.dart';
 
 /// getting native View from Zoom Android or iOS native SDK
 class View extends HookWidget {
@@ -11,21 +13,35 @@ class View extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    var isSharing = useState(false);
     // This is used in the platform side to register the view.
     String viewType = '<platform-view-type>';
 
-    if (isSharing.value != (creationParams["sharing"] as bool)) {
-      isSharing.value = !isSharing.value;
-    }
-
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
-        return AndroidView(
+        return PlatformViewLink(
           viewType: viewType,
-          layoutDirection: TextDirection.ltr,
-          creationParams: creationParams,
-          creationParamsCodec: const StandardMessageCodec(),
+          surfaceFactory:
+              (context, controller) {
+            return AndroidViewSurface(
+              controller: controller as AndroidViewController,
+              gestureRecognizers: const <Factory<OneSequenceGestureRecognizer>>{},
+              hitTestBehavior: PlatformViewHitTestBehavior.opaque,
+            );
+          },
+          onCreatePlatformView: (params) {
+            return PlatformViewsService.initSurfaceAndroidView(
+              id: params.id,
+              viewType: viewType,
+              layoutDirection: TextDirection.ltr,
+              creationParams: creationParams,
+              creationParamsCodec: const StandardMessageCodec(),
+              onFocus: () {
+                params.onFocusChanged(true);
+              },
+            )
+              ..addOnPlatformViewCreatedListener(params.onPlatformViewCreated)
+              ..create();
+          },
         );
       case TargetPlatform.iOS:
         return UiKitView(
@@ -48,6 +64,7 @@ abstract class ZoomView extends HookWidget {
   final bool preview;
   final bool focused;
   final bool hasMultiCamera;
+  final bool isPiPView;
   final String multiCameraIndex;
   final String videoAspect;
   final bool fullScreen;
@@ -60,6 +77,7 @@ abstract class ZoomView extends HookWidget {
     required this.preview,
     required this.focused,
     required this.hasMultiCamera,
+    required this.isPiPView,
     required this.multiCameraIndex,
     required this.videoAspect,
     required this.fullScreen,

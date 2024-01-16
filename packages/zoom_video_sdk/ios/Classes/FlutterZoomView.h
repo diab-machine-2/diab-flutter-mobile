@@ -15,9 +15,11 @@
 
 - (void)setUserId:(NSString*)userId;
 - (void)setSharing:(BOOL)sharing;
+- (void)setIsPiPView:(BOOL)isPiPView;
 - (void)setVideoAspect:(NSString*)videoAspect;
 - (void)setPreview: (BOOL)preview;
 - (void)setHasMultiCamera:(BOOL)newHasMultiCamera;
+- (void)setVideoResolution:(NSString*)newVideoResolution;
 - (void)setViewingCanvas;
 
 @end

@@ -32,4 +32,19 @@
 
 }
 
+-(void) isAutoAdjustMicVolumeEnabled: (FlutterResult) result {
+    if ([[self getAudioSettingHelper] isAutoAdjustMicVolumeEnabled]) {
+        result(@YES);
+    } else {
+        result(@NO);
+    }
+}
+
+-(void) enableAutoAdjustMicVolume: (FlutterMethodCall *)call withResult:(FlutterResult) result {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        result([[JSONConvert ZoomVideoSDKErrorValuesReversed] objectForKey: @([[self getAudioSettingHelper] enableAutoAdjustMicVolume:[call.arguments[@"enable"] boolValue]])]);
+    });
+
+}
+
 @end

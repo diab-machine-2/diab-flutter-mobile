@@ -1,6 +1,7 @@
 package com.flutterzoom.videosdk;
 
 import android.content.Context;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -21,6 +22,6 @@ public class FlutterZoomVideoSdkViewFactory extends PlatformViewFactory {
     @Override
     public PlatformView create(Context context, int viewId, @Nullable Object args) {
         final Map<String, Object> creationParams = (Map<String, Object>) args;
-        return new FlutterZoomVideoSdkView(context, viewId, creationParams);
+        return FlutterZoomVideoSdkView.createInstance(context, viewId, creationParams);
     }
 }

@@ -1,5 +1,4 @@
 import 'package:flutter/services.dart';
-import 'package:flutter_zoom_videosdk/native/zoom_videosdk.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 ///@nodoc
 abstract class ZoomVideoSdkChatHelperPlatform extends PlatformInterface {

@@ -50,4 +50,19 @@ public class FlutterZoomVideoSdkAudioSettingHelper {
         });
     }
 
+    public void enableAutoAdjustMicVolume(@NonNull MethodCall call, @NonNull MethodChannel.Result result) {
+        Map<String, Object> args = call.arguments();
+        boolean enable = (Boolean) args.get("enable");
+        activity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                result.success(FlutterZoomVideoSdkErrors.valueOf(getAudioSettingHelper().enableAutoAdjustMicVolume(enable)));
+            }
+        });
+    }
+
+    public void isAutoAdjustMicVolumeEnabled(@NonNull MethodChannel.Result result) {
+        result.success(getAudioSettingHelper().isAutoAdjustMicVolumeEnabled());
+    }
+
 }

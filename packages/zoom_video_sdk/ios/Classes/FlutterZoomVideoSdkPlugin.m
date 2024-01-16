@@ -26,6 +26,7 @@
 #import "FlutterZoomVideoSdkVirtualBackgroundHelper.h"
 #import "FlutterZoomViewViewFactory.h"
 #import "FlutterZoomVideoSdkCRCHelper.h"
+#import "FlutterZoomVideoSdkAnnotationHelper.h"
 
 @implementation FlutterZoomVideoSdkPlugin
 
@@ -55,6 +56,7 @@ FlutterZoomVideoSdkVideoStatus* flutterZoomVideoSdkVideoStatus;
 FlutterZoomVideoSdkShareHelper* flutterZoomVideoSdkShareHelper;
 FlutterZoomVideoSdkVirtualBackgroundHelper* flutterZoomVideoSdkVirtualBackgroundHelper;
 FlutterZoomVideoSdkCRCHelper* flutterZoomVideoSdkCRCHelper;
+FlutterZoomVideoSdkAnnotationHelper* flutterZoomVideoSdkAnnotationHelper;
 
 - (dispatch_queue_t)methodQueue {
     return dispatch_get_main_queue();
@@ -97,6 +99,7 @@ FlutterZoomVideoSdkCRCHelper* flutterZoomVideoSdkCRCHelper;
   flutterZoomVideoSdkShareHelper = [[FlutterZoomVideoSdkShareHelper alloc] init];
   flutterZoomVideoSdkVirtualBackgroundHelper = [[FlutterZoomVideoSdkVirtualBackgroundHelper alloc] init];
   flutterZoomVideoSdkCRCHelper = [[FlutterZoomVideoSdkCRCHelper alloc] init];
+  flutterZoomVideoSdkAnnotationHelper = [[FlutterZoomVideoSdkAnnotationHelper alloc] init];
 
   if ([@"initSdk" isEqualToString:call.method]) {
     return [self initSDK:call withResult:result];
@@ -174,6 +177,10 @@ FlutterZoomVideoSdkCRCHelper* flutterZoomVideoSdkCRCHelper;
     return [flutterZoomVideoSdkAudioSettingHelper isMicOriginalInputEnable:result];
    } else if ([@"enableMicOriginalInput" isEqualToString:call.method]) {
     return [flutterZoomVideoSdkAudioSettingHelper enableMicOriginalInput:call withResult:result];
+   } else if ([@"isAutoAdjustMicVolumeEnabled" isEqualToString:call.method]) {
+    return [flutterZoomVideoSdkAudioSettingHelper isAutoAdjustMicVolumeEnabled:result];
+   } else if ([@"enableAutoAdjustMicVolume" isEqualToString:call.method]) {
+    return [flutterZoomVideoSdkAudioSettingHelper enableAutoAdjustMicVolume:call withResult:result];
    } else if ([@"isMuted" isEqualToString:call.method]) {
     return [flutterZoomVideoSdkAudioStatus isMuted:call withResult:result];
    } else if ([@"isTalking" isEqualToString:call.method]) {
@@ -290,8 +297,6 @@ FlutterZoomVideoSdkCRCHelper* flutterZoomVideoSdkCRCHelper;
     return [flutterZoomVideoSdkUserHelper revokeManager:call withResult:result];
    } else if ([@"removeUser" isEqualToString:call.method]) {
     return [flutterZoomVideoSdkUserHelper removeUser:call withResult:result];
-   } else if ([@"setVideoQualityPreference" isEqualToString:call.method]) {
-    return [flutterZoomVideoSdkVideoHelper setVideoQualityPreference:call withResult:result];
    } else if ([@"rotateMyVideo" isEqualToString:call.method]) {
     return [flutterZoomVideoSdkVideoHelper rotateMyVideo:call withResult:result];
    } else if ([@"startVideo" isEqualToString:call.method]) {
@@ -302,8 +307,8 @@ FlutterZoomVideoSdkCRCHelper* flutterZoomVideoSdkCRCHelper;
     return [flutterZoomVideoSdkVideoHelper switchCamera];
    } else if ([@"mirrorMyVideo" isEqualToString:call.method]) {
     return [flutterZoomVideoSdkVideoHelper mirrorMyVideo:call withResult:result];
-   } else if ([@"isMirrorMyVideoEnabled" isEqualToString:call.method]) {
-    return [flutterZoomVideoSdkVideoHelper isMirrorMyVideoEnabled: result];
+   } else if ([@"isMyVideoMirrored" isEqualToString:call.method]) {
+    return [flutterZoomVideoSdkVideoHelper isMyVideoMirrored: result];
    } else if ([@"enableOriginalAspectRatio" isEqualToString:call.method]) {
     return [flutterZoomVideoSdkVideoHelper enableOriginalAspectRatio:call withResult:result];
    } else if ([@"isOriginalAspectRatioEnabled" isEqualToString:call.method]) {
@@ -338,6 +343,12 @@ FlutterZoomVideoSdkCRCHelper* flutterZoomVideoSdkCRCHelper;
     return [flutterZoomVideoSdkShareHelper isShareDeviceAudioEnabled:result];
    } else if ([@"enableShareDeviceAudio" isEqualToString:call.method]) {
     return [flutterZoomVideoSdkShareHelper enableShareDeviceAudio:call withResult:result];
+   } else if ([@"isAnnotationFeatureSupport" isEqualToString:call.method]) {
+    return [flutterZoomVideoSdkShareHelper isAnnotationFeatureSupport:result];
+   } else if ([@"disableViewerAnnotation" isEqualToString:call.method]) {
+    return [flutterZoomVideoSdkShareHelper disableViewerAnnotation:call withResult:result];
+   } else if ([@"isViewerAnnotationDisabled" isEqualToString:call.method]) {
+    return [flutterZoomVideoSdkShareHelper isViewerAnnotationDisabled:result];
    } else if ([@"isSupportVirtualBackground" isEqualToString:call.method]) {
     return [flutterZoomVideoSdkVirtualBackgroundHelper isSupportVirtualBackground:result];
    } else if ([@"addVirtualBackgroundItem" isEqualToString:call.method]) {
@@ -350,15 +361,39 @@ FlutterZoomVideoSdkCRCHelper* flutterZoomVideoSdkCRCHelper;
     return [flutterZoomVideoSdkVirtualBackgroundHelper getVirtualBackgroundItemList:result];
    } else if ([@"openBrowser" isEqualToString:call.method]) {
      return [self openBrowser:call withResult:result];
-    } else if ([@"isCRCEnabled" isEqualToString:call.method]) {
+   } else if ([@"isCRCEnabled" isEqualToString:call.method]) {
      return [flutterZoomVideoSdkCRCHelper isCRCEnabled:result];
-    } else if ([@"callCRCDevice" isEqualToString:call.method]) {
+   } else if ([@"callCRCDevice" isEqualToString:call.method]) {
      return [flutterZoomVideoSdkCRCHelper callCRCDevice:call withResult:result];
-    } else if ([@"cancelCallCRCDevice" isEqualToString:call.method]) {
+   } else if ([@"cancelCallCRCDevice" isEqualToString:call.method]) {
       return [flutterZoomVideoSdkCRCHelper cancelCallCRCDevice:result];
-    } else {
+   } else if ([@"isSenderDisableAnnotation" isEqualToString:call.method]) {
+      return [flutterZoomVideoSdkAnnotationHelper isSenderDisableAnnotation:result];
+   } else if ([@"startAnnotation" isEqualToString:call.method]) {
+      return [flutterZoomVideoSdkAnnotationHelper startAnnotation:result];
+   } else if ([@"stopAnnotation" isEqualToString:call.method]) {
+      return [flutterZoomVideoSdkAnnotationHelper stopAnnotation:result];
+   } else if ([@"setToolColor" isEqualToString:call.method]) {
+      return [flutterZoomVideoSdkAnnotationHelper setToolColor:call withResult:result];
+   } else if ([@"getToolColor" isEqualToString:call.method]) {
+      return [flutterZoomVideoSdkAnnotationHelper getToolColor:result];
+   } else if ([@"setToolType" isEqualToString:call.method]) {
+      return [flutterZoomVideoSdkAnnotationHelper setToolType:call withResult:result];
+   } else if ([@"getToolType" isEqualToString:call.method]) {
+      return [flutterZoomVideoSdkAnnotationHelper getToolType:result];
+   } else if ([@"setToolWidth" isEqualToString:call.method]) {
+      return [flutterZoomVideoSdkAnnotationHelper setToolWidth:call withResult:result];
+   } else if ([@"getToolWidth" isEqualToString:call.method]) {
+      return [flutterZoomVideoSdkAnnotationHelper getToolWidth:result];
+   } else if ([@"undo" isEqualToString:call.method]) {
+      return [flutterZoomVideoSdkAnnotationHelper undo:result];
+   } else if ([@"redo" isEqualToString:call.method]) {
+      return [flutterZoomVideoSdkAnnotationHelper redo:result];
+   } else if ([@"clear" isEqualToString:call.method]) {
+      return [flutterZoomVideoSdkAnnotationHelper clear:call withResult:result];
+   } else {
       result(FlutterMethodNotImplemented);
-  }
+   }
 }
 
 -(void) initSDK:(FlutterMethodCall *)call withResult:(FlutterResult) result {
@@ -376,11 +411,13 @@ FlutterZoomVideoSdkCRCHelper* flutterZoomVideoSdkCRCHelper;
   if ([call.arguments[@"shareRawdataMemoryMode"] isKindOfClass:[NSString class]])
     initParams.shareRawdataMemoryMode = [JSONConvert ZoomVideoSDKRawDataMemoryMode: call.arguments[@"shareRawdataMemoryMode"]];
   NSString *speakerFilePath = call.arguments[@"speakerFilePath"];
+  ZoomVideoSDKExtendParams *extendParams = [[ZoomVideoSDKExtendParams alloc] init];
+  extendParams.wrapperType = 1;
   if ([speakerFilePath isKindOfClass:[NSString class]] && speakerFilePath.length != 0) {
-      ZoomVideoSDKExtendParams *extendParams = [[ZoomVideoSDKExtendParams alloc] init];
       extendParams.speakerTestFilePath = speakerFilePath;
-      initParams.extendParam = extendParams;
   }
+  initParams.extendParam = extendParams;
+
   dispatch_async(dispatch_get_main_queue(), ^{
       ZoomVideoSDKError ret = [[ZoomVideoSDK shareInstance] initialize:initParams];
 
@@ -899,6 +936,58 @@ FlutterZoomVideoSdkCRCHelper* flutterZoomVideoSdkCRCHelper;
             @"name": @"onChatPrivilegeChanged",
             @"message": @{
                 @"privilege": [[JSONConvert ZoomVideoSDKChatPrivilegeTypeValuesReversed] objectForKey: @(currentPrivilege)],
+            }
+        });
+    }
+}
+
+- (void)onAnnotationHelperCleanUp:(ZoomVideoSDKAnnotationHelper *)helper
+{
+    [[FlutterZoomVideoSdkAnnotationHelper alloc] setAnnotationHelper:nil];
+    [[[ZoomVideoSDK shareInstance] getShareHelper] destroyAnnotationHelper:helper];
+    if (self.eventSink) {
+        self.eventSink(@{
+            @"name": @"onAnnotationHelperCleanUp",
+            @"message": @"onAnnotationHelperCleanUp",
+        });
+    }
+}
+
+- (void)onAnnotationPrivilegeChange:(BOOL)enable shareOwner:(ZoomVideoSDKUser *)user
+{
+    if (self.eventSink) {
+        self.eventSink(@{
+            @"name": @"onAnnotationPrivilegeChange",
+            @"message": @{
+                @"privilege": @(enable),
+                @"user": [FlutterZoomVideoSdkUser mapUser: user],
+            }
+        });
+    }
+}
+
+- (void)onVideoCanvasSubscribeFail:(ZoomVideoSDKSubscribeFailReason)failReason user:(ZoomVideoSDKUser *_Nullable)user view:(UIView *_Nullable)view
+{
+    if (self.eventSink) {
+        self.eventSink(@{
+            @"name": @"onAnnotationPrivilegeChange",
+            @"message": @{
+                @"failReason": [[JSONConvert ZoomVideoSDKSubscribeFailReasonValuesReversed] objectForKey: @(failReason)],
+                @"user": [FlutterZoomVideoSdkUser mapUser: user],
+            }
+        });
+    }
+}
+
+
+- (void)onShareCanvasSubscribeFail:(ZoomVideoSDKSubscribeFailReason)failReason user:(ZoomVideoSDKUser *_Nullable)user view:(UIView *_Nullable)view
+{
+    if (self.eventSink) {
+        self.eventSink(@{
+            @"name": @"onAnnotationPrivilegeChange",
+            @"message": @{
+                @"failReason": [[JSONConvert ZoomVideoSDKSubscribeFailReasonValuesReversed] objectForKey: @(failReason)],
+                @"user": [FlutterZoomVideoSdkUser mapUser: user],
             }
         });
     }

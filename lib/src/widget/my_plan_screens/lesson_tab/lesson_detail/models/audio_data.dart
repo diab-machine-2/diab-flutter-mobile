@@ -7,11 +7,11 @@ import 'package:medical/src/utils/date_utils.dart';
 class AudioController {
   AudioController({
     required this.url,
-    this.currentState = PlayerState.STOPPED,
+    this.currentState = PlayerState.stopped,
     this.currentTime = Duration.zero,
     this.totalTime = Duration.zero,
   }) {
-    audioPlayer = AudioPlayer(mode: PlayerMode.MEDIA_PLAYER);
+    audioPlayer = AudioPlayer()..setPlayerMode(PlayerMode.mediaPlayer);
     audioPlayer.onPlayerStateChanged.listen((event) {
       this.currentState = event;
       onChanged.sink.add(audioData);
@@ -20,11 +20,11 @@ class AudioController {
       this.totalTime = event;
       onChanged.sink.add(audioData);
     });
-    audioPlayer.onAudioPositionChanged.listen((event) {
+    audioPlayer.onPositionChanged.listen((event) {
       this.currentTime = event;
       onChanged.sink.add(audioData);
     });
-    audioPlayer.onPlayerError.listen((event) {});
+    // audioPlayer.onError.listen((event) {});
   }
   String url;
   PlayerState currentState;
@@ -34,7 +34,7 @@ class AudioController {
   final StreamController<AudioData> onChanged = StreamController<AudioData>.broadcast();
 
   AudioData get audioData => AudioData(
-        isPlaying: currentState == PlayerState.PLAYING,
+        isPlaying: currentState == PlayerState.playing,
         currentTime: currentTime,
         totalTime: totalTime,
       );
@@ -47,7 +47,7 @@ class AudioController {
     await Future.delayed(const Duration(seconds: 1));
     pause();
     audioPlayer.seek(Duration.zero);
-    int secondsDuration = await audioPlayer.getDuration();
+    int secondsDuration = (await audioPlayer.getDuration() ?? Duration.zero).inSeconds;
     if (secondsDuration == 0) {
       var duration = await JustAudio.AudioPlayer().setUrl(newUrl);
       if (duration != null) {
@@ -59,7 +59,7 @@ class AudioController {
   }
 
   void togglePlay() {
-    if (currentState == PlayerState.PLAYING) {
+    if (currentState == PlayerState.playing) {
       pause();
     } else {
       play();
@@ -67,7 +67,8 @@ class AudioController {
   }
 
   void play({double volume = 1}) {
-    audioPlayer.play(url, position: currentTime, volume: volume);
+    Source source = UrlSource(url);
+    audioPlayer.play(source, position: currentTime, volume: volume);
   }
 
   void pause() => audioPlayer.pause();

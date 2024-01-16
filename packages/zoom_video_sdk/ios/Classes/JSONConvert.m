@@ -165,7 +165,7 @@ RCT_ENUM_CONVERTER_WITH_REVERSED(
        @"ZoomVideoSDKError_JoinSession_Token_UserIdentity_TooLong": @(Errors_JoinSession_Token_UserIdentity_TooLong),
        @"ZoomVideoSDKError_Session_Base": @(Errors_Session_Base),
        @"ZoomVideoSDKError_Session_Module_Not_Found": @(Errors_Session_Module_Not_Found),
-       @"ZoomVideoSDKError_Session_Service_Invaild": @(Errors_Session_Service_Invaild),
+       @"ZoomVideoSDKError_Session_Service_Invaild": @(Errors_Session_Service_Invalid),
        @"ZoomVideoSDKError_Session_Join_Failed": @(Errors_Session_Join_Failed),
        @"ZoomVideoSDKError_Session_No_Rights": @(Errors_Session_No_Rights),
        @"ZoomVideoSDKError_Session_Already_In_Progress": @(Errors_Session_Already_In_Progress),
@@ -443,6 +443,64 @@ RCT_ENUM_CONVERTER_WITH_REVERSED(
      }),
      ZoomVideoSDKChatPrivilege_Unknown,
      integerValue
+)
+
+RCT_ENUM_CONVERTER_WITH_REVERSED(
+
+    ZoomVideoSDKAnnotationToolType,
+    (@{
+            @"ZoomVideoSDKAnnotationToolType_None" : @(ZoomVideoSDKAnnotationToolType_None),
+            @"ZoomVideoSDKAnnotationToolType_Pen" : @(ZoomVideoSDKAnnotationToolType_Pen),
+            @"ZoomVideoSDKAnnotationToolType_HighLighter" : @(ZoomVideoSDKAnnotationToolType_HighLighter),
+            @"ZoomVideoSDKAnnotationToolType_AutoLine" : @(ZoomVideoSDKAnnotationToolType_AutoLine),
+            @"ZoomVideoSDKAnnotationToolType_AutoRectangle" : @(ZoomVideoSDKAnnotationToolType_AutoRectangle),
+            @"ZoomVideoSDKAnnotationToolType_AutoEllipse" : @(ZoomVideoSDKAnnotationToolType_AutoEllipse),
+            @"ZoomVideoSDKAnnotationToolType_AutoArrow" : @(ZoomVideoSDKAnnotationToolType_AutoArrow),
+            @"ZoomVideoSDKAnnotationToolType_AutoRectangleFill" : @(ZoomVideoSDKAnnotationToolType_AutoRectangleFill),
+            @"ZoomVideoSDKAnnotationToolType_AutoEllipseFill": @(ZoomVideoSDKAnnotationToolType_AutoEllipseFill),
+            @"ZoomVideoSDKAnnotationToolType_SpotLight": @(ZoomVideoSDKAnnotationToolType_SpotLight),
+            @"ZoomVideoSDKAnnotationToolType_Arrow": @(ZoomVideoSDKAnnotationToolType_Arrow),
+            @"ZoomVideoSDKAnnotationToolType_Eraser": @(ZoomVideoSDKAnnotationToolType_ERASER),
+            @"ZoomVideoSDKAnnotationToolType_Picker": @(ZoomVideoSDKAnnotationToolType_Picker),
+            @"ZoomVideoSDKAnnotationToolType_AutoRectangleSemiFill": @(ZoomVideoSDKAnnotationToolType_AutoRectangleSemiFill),
+            @"ZoomVideoSDKAnnotationToolType_AutoEllipseSemiFill": @(ZoomVideoSDKAnnotationToolType_AutoEllipseSemiFill),
+            @"ZoomVideoSDKAnnotationToolType_AutoDoubleArrow": @(ZoomVideoSDKAnnotationToolType_AutoDoubleArrow),
+            @"ZoomVideoSDKAnnotationToolType_AutoDiamond": @(ZoomVideoSDKAnnotationToolType_AutoDiamond),
+            @"ZoomVideoSDKAnnotationToolType_AutoStampArrow": @(ZoomVideoSDKAnnotationToolType_AutoStampArrow),
+            @"ZoomVideoSDKAnnotationToolType_AutoStampCheck": @(ZoomVideoSDKAnnotationToolType_AutoStampCheck),
+            @"ZoomVideoSDKAnnotationToolType_AutoStampX": @(ZoomVideoSDKAnnotationToolType_AutoStampX),
+            @"ZoomVideoSDKAnnotationToolType_AutoStampStar": @(ZoomVideoSDKAnnotationToolType_AutoStampStar),
+            @"ZoomVideoSDKAnnotationToolType_AutoStampHeart": @(ZoomVideoSDKAnnotationToolType_AutoStampHeart),
+            @"ZoomVideoSDKAnnotationToolType_AutoStampQm" : @(ZoomVideoSDKAnnotationToolType_AutoStampQm),
+    }),
+    ZoomVideoSDKAnnotationToolType_None,
+    integerValue
+)
+
+RCT_ENUM_CONVERTER_WITH_REVERSED(
+
+    ZoomVideoSDKAnnotationClearType,
+    (@{
+            @"ZoomVideoSDKAnnotationClearType_All" : @(ZoomVideoSDKAnnotationClearType_All),
+            @"ZoomVideoSDKAnnotationClearType_Others" : @(ZoomVideoSDKAnnotationClearType_Others),
+            @"ZoomVideoSDKAnnotationClearType_My" : @(ZoomVideoSDKAnnotationClearType_My),
+    }),
+    ZoomVideoSDKAnnotationClearType_Others,
+    integerValue
+)
+
+RCT_ENUM_CONVERTER_WITH_REVERSED(
+
+    ZoomVideoSDKSubscribeFailReason,
+    (@{
+            @"ZoomVideoSDKSubscribeFailReason_HasSubscribe1080POr720P" : @(ZoomVideoSDKSubscribeFailReason_HasSubscribe1080POr720P),
+            @"ZoomVideoSDKSubscribeFailReason_HasSubscribeShare" : @(ZoomVideoSDKSubscribeFailReason_HasSubscribeShare),
+            @"ZoomVideoSDKSubscribeFailReason_HasSubscribeOneShare" : @(ZoomVideoSDKSubscribeFailReason_HasSubscribeOneShare),
+            @"ZoomVideoSDKSubscribeFailReason_HasSubscribeExceededLimit" : @(ZoomVideoSDKSubscribeFailReason_HasSubscribeExceededLimit),
+            @"ZoomVideoSDKSubscribeFailReason_None" : @(ZoomVideoSDKSubscribeFailReason_None),
+    }),
+    ZoomVideoSDKSubscribeFailReason_None,
+    integerValue
 )
 
 @end

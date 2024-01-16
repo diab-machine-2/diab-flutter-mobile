@@ -1,5 +1,5 @@
-import 'package:flutter/services.dart';
 import 'package:events_emitter/events_emitter.dart';
+import 'package:flutter/services.dart';
 
 /// Enum of ZoomVideoSdk Event
 class EventType {
@@ -40,6 +40,10 @@ class EventType {
   static const onCallCRCDeviceStatusChanged = 'onCallCRCDeviceStatusChanged';
   static const onOriginalLanguageMsgReceived = 'onOriginalLanguageMsgReceived';
   static const onChatPrivilegeChanged = 'onChatPrivilegeChanged';
+  static const onAnnotationHelperCleanUp = 'onAnnotationHelperCleanUp';
+  static const onAnnotationPrivilegeChange = 'onAnnotationPrivilegeChange';
+  static const onShareCanvasSubscribeFail = 'onShareCanvasSubscribeFail';
+  static const onVideoCanvasSubscribeFail = 'onVideoCanvasSubscribeFail';
 }
 
 class ZoomVideoSdkEventListener {

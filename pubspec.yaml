@@ -96,7 +96,7 @@ dependencies:
   video_thumbnail: ^0.5.2
   path_provider: ^2.0.10
   #audio player
-  audioplayers: ^0.20.1
+  audioplayers: ^4.1.0
   just_audio: ^0.9.28
   flutter_rating_bar: ^4.0.0
   scroll_to_index: ^3.0.1

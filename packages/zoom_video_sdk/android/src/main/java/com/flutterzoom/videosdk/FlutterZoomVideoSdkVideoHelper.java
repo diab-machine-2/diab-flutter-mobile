@@ -39,39 +39,13 @@ public class FlutterZoomVideoSdkVideoHelper {
         return videoHelper;
     }
 
-    public void setVideoQualityPreference(@NonNull MethodCall call, @NonNull MethodChannel.Result result) {
-        Map<String, Object> settings = call.arguments();
-        if (settings == null) {
-            result.error("ZoomVideoSdkVideoHelper::setVideoQualityPreference", "Missing settings", null);
-        }
-        ZoomVideoSDKVideoPreferenceSetting videoPreference = new ZoomVideoSDKVideoPreferenceSetting();
-        ZoomVideoSDKVideoPreferenceMode videoPreferenceMode = FlutterZoomVideoSdkVideoPreferenceMode.valueOf((String) settings.get("mode"));
-
-        videoPreference.mode = videoPreferenceMode;
-
-        if (videoPreferenceMode == ZoomVideoSDKVideoPreferenceMode.ZoomVideoSDKVideoPreferenceMode_Custom) {
-            videoPreference.maximumFrameRate = (Integer) settings.get("maximumFrameRate");
-            videoPreference.minimumFrameRate = (Integer) settings.get("minimumFrameRate");
-        }
-
+    public void getCameraList(@NonNull MethodChannel.Result result) {
         activity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                result.success(FlutterZoomVideoSdkErrors.valueOf(getVideoHelper().setVideoQualityPreference(videoPreference)));
+                result.success(FlutterZoomVideoSdkCameraDevice.jsonCameraArray(getVideoHelper().getCameraList()));
             }
         });
-    }
-
-    public void getCameraList(@NonNull MethodChannel.Result result) {
-        ArrayList<Map<String, String>> cameraList = new ArrayList<>();
-        for (ZoomVideoSDKCameraDevice device : getVideoHelper().getCameraList()) {
-            Map<String, String> camera = new HashMap<>();
-            camera.put("deviceId", device.getDeviceId());
-            camera.put("deviceName", device.getDeviceName());
-            cameraList.add(camera);
-        }
-
-        result.success(cameraList);
     }
 
     public void getNumberOfCameras(@NonNull MethodChannel.Result result) {
@@ -141,8 +115,8 @@ public class FlutterZoomVideoSdkVideoHelper {
         });
     }
 
-    public void isMirrorMyVideoEnabled(@NonNull MethodChannel.Result result) {
-        result.success(getVideoHelper().isMirrorMyVideoEnabled());
+    public void isMyVideoMirrored(@NonNull MethodChannel.Result result) {
+        result.success(getVideoHelper().isMyVideoMirrored());
     }
 
     public void isOriginalAspectRatioEnabled(@NonNull MethodChannel.Result result) {

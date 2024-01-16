@@ -116,4 +116,29 @@
     }
 }
 
+-(void) isAnnotationFeatureSupport: (FlutterResult) result
+{
+    if ([[self getShareHelper] isAnnotationFeatureSupport]) {
+        result(@YES);
+    } else {
+        result(@NO);
+    }
+}
+
+-(void) disableViewerAnnotation:(FlutterMethodCall *)call withResult:(FlutterResult) result
+{
+    dispatch_async(dispatch_get_main_queue(), ^{
+        result([[JSONConvert ZoomVideoSDKErrorValuesReversed] objectForKey: @([[self getShareHelper] disableViewerAnnotation:[call.arguments[@"disable"] boolValue]])]);
+    });
+}
+
+-(void) isViewerAnnotationDisabled: (FlutterResult) result
+{
+    if ([[self getShareHelper] isViewerAnnotationDisabled]) {
+        result(@YES);
+    } else {
+        result(@NO);
+    }
+}
+
 @end

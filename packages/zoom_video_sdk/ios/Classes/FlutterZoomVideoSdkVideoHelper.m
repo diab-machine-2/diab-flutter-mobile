@@ -45,36 +45,14 @@
  });
 }
 
--(void) setVideoQualityPreference: (FlutterMethodCall *)call withResult:(FlutterResult) result {
- NSString* settingString = call.arguments[@"settings"];
- NSDictionary* settings = [JSONConvert NSStringToNSDictionary: settingString];
-
- ZoomVideoSDKVideoPreferenceSetting *videoPreference = [ZoomVideoSDKVideoPreferenceSetting new];
-
- videoPreference.mode = [JSONConvert ZoomVideoSDKVideoPreferenceMode: [settings objectForKey:@"mode"]];
-
- switch (videoPreference.mode) {
-     case ZoomVideoSDKVideoPreferenceMode_Custom:
-         videoPreference.maximumFrameRate = [[settings valueForKey:@"maximumFrameRate"] intValue];
-         videoPreference.minimumFrameRate = [[settings valueForKey:@"minimumFrameRate"] intValue];
-         break;
-     default:
-         break;
- }
-
- dispatch_async(dispatch_get_main_queue(), ^{
-     result([[JSONConvert ZoomVideoSDKErrorValuesReversed] objectForKey: @([[self getVideoHelper] setVideoQualityPreference:videoPreference])]);
- });
-}
-
 -(void) mirrorMyVideo: (FlutterMethodCall *)call withResult:(FlutterResult) result {
     dispatch_async(dispatch_get_main_queue(), ^{
         result([[JSONConvert ZoomVideoSDKErrorValuesReversed] objectForKey: @([[self getVideoHelper] mirrorMyVideo: [call.arguments[@"enable"] boolValue]])]);
     });
 }
 
--(void) isMirrorMyVideoEnabled: (FlutterResult) result {
-    if ([[self getVideoHelper] isMirrorMyVideoEnabled]) {
+-(void) isMyVideoMirrored: (FlutterResult) result {
+    if ([[self getVideoHelper] isMyVideoMirrored]) {
         result(@YES);
     } else {
         result(@NO);

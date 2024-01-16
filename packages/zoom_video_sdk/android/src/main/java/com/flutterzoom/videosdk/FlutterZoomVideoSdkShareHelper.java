@@ -118,4 +118,42 @@ public class FlutterZoomVideoSdkShareHelper {
         });
     }
 
+    public void isAnnotationFeatureSupport(@NonNull MethodChannel.Result result) {
+        activity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                result.success(getShareHelper().isAnnotationFeatureSupport());
+            }
+        });
+    }
+
+    public void disableViewerAnnotation(@NonNull MethodCall call, @NonNull MethodChannel.Result result) {
+        Map<String, Object> args = call.arguments();
+        boolean disable = (Boolean) args.get("disable");
+        activity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                result.success(getShareHelper().disableViewerAnnotation(disable));
+            }
+        });
+    }
+
+    public void isViewerAnnotationDisabled(@NonNull MethodChannel.Result result) {
+        activity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                result.success(getShareHelper().isViewerAnnotationDisabled());
+            }
+        });
+    }
+
+    public void destroyAnnotationHelper(@NonNull MethodChannel.Result result) {
+        activity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                result.success(getShareHelper().destroyAnnotationHelper(FlutterZoomVideoSdkView.getInstance().getAnnotationHelper()));
+            }
+        });
+    }
+
 }
