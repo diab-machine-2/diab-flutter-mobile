@@ -157,14 +157,9 @@ class MeetingPage extends HookWidget {
       final userShareStatusChangeListener =
           emitter.on(EventType.onUserShareStatusChanged, (data) async {
         data = data as Map;
-        ZoomVideoSdkUser shareUser = ZoomVideoSdkUser.fromJson(jsonDecode(data['user'].toString()));
-        for (var user in remoteUsers.value) {
-          if (user.userId == shareUser.userId) {
-            int index = remoteUsers.value.indexOf(user);
-            remoteUsers.value[index] = shareUser;
-          }
-        }
-        _determineFullscreenAndPreviewUser(thisUser.value, remoteUsers.value, fullScreenUser);
+        ZoomVideoSdkUser sharingUser = ZoomVideoSdkUser.fromJson(jsonDecode(data['user'].toString()));
+        ZoomVideoSdkUser? shareUser = (data['status'] == ShareStatus.Start) ? sharingUser : null;
+        _determineFullscreenAndPreviewUser(thisUser.value, remoteUsers.value, fullScreenUser, shareUser: shareUser);
       });
 
       final userJoinListener = emitter.on(EventType.onUserJoin, (data) async {
@@ -333,6 +328,7 @@ class MeetingPage extends HookWidget {
         avatarUrl: null,
         user: fullScreenUser.value!,
         fullScreen: true,
+        sharing: fullScreenUser.value!.isSharing,
         resolution: VideoResolution.Resolution720,
       );
     }
@@ -349,7 +345,7 @@ class MeetingPage extends HookWidget {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                // Dummy for center
+                // Back button
                 Container(
                     width: leaveButtonWidth,
                     height: leaveButtonHeight,
@@ -382,7 +378,7 @@ class MeetingPage extends HookWidget {
                     child: const Text(
                       'Rời khỏi',
                       style: TextStyle(
-                        fontSize: 18,
+                        fontSize: 16,
                         color: Colors.white,
                       ),
                     ),
@@ -517,11 +513,18 @@ class MeetingPage extends HookWidget {
     ZoomVideoSdkUser? thisUser,
     List<ZoomVideoSdkUser> remoteUsers,
     ValueNotifier<ZoomVideoSdkUser?> fullScreenUser,
+    {
+      ZoomVideoSdkUser? shareUser,
+    }
   ) {
     // TODO: Enhance logic determine full-screen user
     if (remoteUsers.isEmpty) {
       fullScreenUser.value = thisUser;
     } else {
+      if (shareUser != null) {
+        fullScreenUser.value = shareUser;
+        return;
+      }
       // Priority: Host > Manager > Any share-screen > Attendee
       List<ZoomVideoSdkUser> hosts = remoteUsers.where((user) => user.isHost == true).toList();
       if (hosts.isNotEmpty) {
