@@ -9,7 +9,8 @@ import 'meeting_cubit.dart';
 import 'meeting_state.dart';
 
 class MeetingPage extends StatefulWidget {
-  const MeetingPage({super.key});
+  final MeetingArguments args;
+  const MeetingPage(this.args, {super.key});
 
   @override
   State<MeetingPage> createState() => _MeetingPageState();
@@ -21,14 +22,7 @@ class _MeetingPageState extends State<MeetingPage> {
   @override
   void initState() {
     super.initState();
-    // final args = ModalRoute.of(context)!.settings.arguments as MeetingArguments;
-    final args = MeetingArguments(
-        token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcHBfa2V5IjoiaHNmS1l5am5Ua21RMWZ4YUJfbVpiUSIsInZlcnNpb24iOjEsInVzZXJfaWRlbnRpdHkiOiIzelZ0WkkyMzFRIiwiaWF0IjoxNzA1NDI0ODkzLCJleHAiOjE3MDU1OTc2OTQsInRwYyI6InNlcy0xIiwicm9sZV90eXBlIjowLCJjbG91ZF9yZWNvcmRpbmdfb3B0aW9uIjowfQ.BnmkOwC02CZ-UFhwZrSPXht1oc79-wEzqI45nKsysys",
-        sessionName: "ses-1",
-        displayName: "Hello",
-        sessionPassword: "1",
-        sessionIdleTimeoutMins: "40",);
-    _cubit = MeetingCubit(args);
+    _cubit = MeetingCubit(widget.args);
   }
 
   @override
@@ -39,14 +33,15 @@ class _MeetingPageState extends State<MeetingPage> {
         child: BlocListener<MeetingCubit, MeetingState>(
           listener: (context, state) {
             // Handle leave session
-            if (state is MeetingLeaving) {
+            if (state is MeetingLeaving || state is MeetingJoinError) {
               Navigator.pop(context);
             }
           },
-          listenWhen: (previous, current) => current is MeetingLeaving,
+          listenWhen: (previous, current) =>
+              current is MeetingLeaving || current is MeetingJoinError,
           child: BlocBuilder<MeetingCubit, MeetingState>(
             builder: (context, state) {
-              print('Building state: $state');
+              print('zoom: Building state: $state');
               if (state is MeetingJoining) {
                 return _buildJoining();
               } else if (state is MeetingJoined) {

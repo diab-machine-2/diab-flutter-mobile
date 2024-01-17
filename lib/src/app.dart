@@ -600,7 +600,8 @@ class _AppState extends State<App> {
                     case NavigatorName.meeting_prepare:
                       return _buildRoute(settings, MeetingPreparePage());
                     case NavigatorName.meeting:
-                      return _buildRoute(settings, MeetingPage());
+                      final args = settings.arguments as MeetingArguments;
+                      return _buildRoute(settings, MeetingPage(args));
 
                     default:
                       return null;

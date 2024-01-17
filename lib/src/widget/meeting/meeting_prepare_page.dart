@@ -87,7 +87,7 @@ class MeetingPreparePage extends StatelessWidget {
           'user_identity': _makeId(10),
           'iat': (iat.millisecondsSinceEpoch / 1000).round(),
           'exp': (exp.millisecondsSinceEpoch / 1000).round(),
-          'tpc': 'ses-1',
+          'tpc': 'vip-room',
           'role_type': 0,
           'cloud_recording_option': 0,
         },
