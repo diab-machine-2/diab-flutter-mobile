@@ -38,6 +38,7 @@ class VideoView extends fzv.ZoomView {
     creationParams.putIfAbsent("preview", () => preview);
     creationParams.putIfAbsent("focused", () => focused);
     creationParams.putIfAbsent("hasMultiCamera", () => hasMultiCamera);
+    creationParams.putIfAbsent("isPiPView", () => isPiPView);
     if (videoAspect.isEmpty) {
       creationParams.putIfAbsent("videoAspect", () => VideoAspect.PanAndScan);
     } else {
@@ -65,7 +66,7 @@ class VideoView extends fzv.ZoomView {
         color: Colors.black,
         alignment: Alignment.center,
         child: fzv.View(
-          key: Key('sharing: $sharing'),
+          key: Key('fullScreen: true, sharing: $sharing'),
           creationParams: creationParams,
         ),
       );
@@ -97,6 +98,7 @@ class VideoView extends fzv.ZoomView {
           final Map<String, dynamic> creationParams = _buildCreationParams();
           child = Container(
             child: fzv.View(
+              key: Key('fullScreen: false'),
               creationParams: creationParams,
             ),
           );

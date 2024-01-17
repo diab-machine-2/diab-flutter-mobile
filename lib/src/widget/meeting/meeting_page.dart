@@ -91,27 +91,36 @@ class _MeetingPageState extends State<MeetingPage> {
 
   Widget _buildJoinedState(MeetingJoined state) {
     Widget previewView = const SizedBox();
+    Widget fullScreenView = const SizedBox();
 
-    if (state.previewUser != null) {
+    if (state.remoteUsers.isNotEmpty && state.thisUser != null) {
       previewView = VideoView(
         avatarUrl: null,
-        user: state.previewUser,
+        user: state.thisUser,
         fullScreen: false,
         resolution: VideoResolution.Resolution720,
         videoAspect: VideoAspect.Original,
       );
     }
-
-    Widget fullScreenView = const SizedBox();
-    if (state.fullscreenUser == null) {
-      // this user is sharing
-      // TODO: Handle sharing
+    if (state.thisUser != null &&
+        state.thisUser!.userId == state.fullscreenUser.userId &&
+        state.fullscreenUser.isSharing) {
+      fullScreenView = Center(
+        child: Text(
+          'Đang chia sẻ màn hình',
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 18.0,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      );
     } else {
       fullScreenView = VideoView(
         avatarUrl: null,
         user: state.fullscreenUser,
         fullScreen: true,
-        sharing: state.fullscreenUser!.isSharing,
+        sharing: state.fullscreenUser.isSharing,
         resolution: VideoResolution.Resolution720,
       );
     }

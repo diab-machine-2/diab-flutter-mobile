@@ -74,7 +74,7 @@ class MeetingCubit extends Cubit<MeetingState> {
         }
       }
     }
-    var newState = (state as MeetingJoined).copyWith(previewUser: mySelf);
+    var newState = (state as MeetingJoined).copyWith(thisUser: mySelf);
     emit(newState);
   }
 
@@ -91,7 +91,7 @@ class MeetingCubit extends Cubit<MeetingState> {
         }
       }
     }
-    var newState = (state as MeetingJoined).copyWith(previewUser: mySelf);
+    var newState = (state as MeetingJoined).copyWith(thisUser: mySelf);
     emit(newState);
   }
 
@@ -168,13 +168,19 @@ class MeetingCubit extends Cubit<MeetingState> {
             userListJson.map((userJson) => ZoomVideoSdkUser.fromJson(userJson)).toList();
         // Change if mySelf is in the list
         if (userList.any((e) => e.userId == mySelf.userId)) {
-          if (_mySelf != null) {
-            _mySelf = mySelf;
-            if (state is MeetingJoined) {
-              MeetingJoined newState = (state as MeetingJoined).copyWith(previewUser: mySelf);
-              emit(newState);
-            }
+          _mySelf = mySelf;
+          if (state is MeetingJoined) {
+            MeetingJoined newState = (state as MeetingJoined).copyWith(thisUser: mySelf);
+            emit(newState);
           }
+        } else {
+          _remoteUsers = (await _zoom.session.getRemoteUsers()) ?? [];
+          print('zoom: remoteUsers: $_remoteUsers');
+          MeetingJoined newState = await _composeJoinedState(
+            thisUser: mySelf,
+            remoteUsers: _remoteUsers,
+          );
+          emit(newState);
         }
         return;
       }
@@ -194,12 +200,10 @@ class MeetingCubit extends Cubit<MeetingState> {
             userListJson.map((userJson) => ZoomVideoSdkUser.fromJson(userJson)).toList();
         // Change if mySelf is in the list
         if (userList.any((e) => e.userId == mySelf.userId)) {
-          if (_mySelf != null) {
-            _mySelf = mySelf;
-            if (state is MeetingJoined) {
-              MeetingJoined newState = (state as MeetingJoined).copyWith(previewUser: mySelf);
-              emit(newState);
-            }
+          _mySelf = mySelf;
+          if (state is MeetingJoined) {
+            MeetingJoined newState = (state as MeetingJoined).copyWith(thisUser: mySelf);
+            emit(newState);
           }
         }
         return;
@@ -213,6 +217,8 @@ class MeetingCubit extends Cubit<MeetingState> {
         emitter.on(EventType.onUserShareStatusChanged, (data) async {
       data = data as Map;
       print('zoom: onUserShareStatusChanged: $data');
+      _remoteUsers = (await _zoom.session.getRemoteUsers()) ?? [];
+      print('zoom: remoteUsers: $_remoteUsers');
       ZoomVideoSdkUser? mySelf = await _zoom.session.getMySelf();
       ZoomVideoSdkUser? shareUser = data['user'] == null
           ? null
@@ -295,7 +301,7 @@ class MeetingCubit extends Cubit<MeetingState> {
     // Just this user in the session
     if (remoteUsers.isEmpty) {
       return MeetingJoined(
-        previewUser: null,
+        thisUser: thisUser,
         fullscreenUser: thisUser,
         remoteUsers: remoteUsers,
       );
@@ -315,14 +321,14 @@ class MeetingCubit extends Cubit<MeetingState> {
         // This user is sharing screen
         if (sharingUser.userId == thisUser.userId) {
           return MeetingJoined(
-            previewUser: null,
-            fullscreenUser: null,
+            thisUser: thisUser,
+            fullscreenUser: thisUser,
             remoteUsers: remoteUsers,
           );
         } else {
           // Someone else is sharing screen
           return MeetingJoined(
-            previewUser: thisUser,
+            thisUser: thisUser,
             fullscreenUser: sharingUser,
             remoteUsers: remoteUsers,
           );
@@ -350,7 +356,7 @@ class MeetingCubit extends Cubit<MeetingState> {
           hostUser = remoteUsers.first;
         }
         return MeetingJoined(
-          previewUser: thisUser,
+          thisUser: thisUser,
           fullscreenUser: hostUser,
           remoteUsers: remoteUsers,
         );

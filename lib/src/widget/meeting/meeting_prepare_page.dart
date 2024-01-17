@@ -31,7 +31,7 @@ class MeetingPreparePage extends StatelessWidget {
                   if (!ok) {
                     return;
                   }
-                  String sessionName = "ses-1";
+                  String sessionName = "tpc-001";
                   String displayName = "Test Meeting";
                   String token = _generateToken();
                   String sessionIdleTimeoutMins = "40";
@@ -87,7 +87,7 @@ class MeetingPreparePage extends StatelessWidget {
           'user_identity': _makeId(10),
           'iat': (iat.millisecondsSinceEpoch / 1000).round(),
           'exp': (exp.millisecondsSinceEpoch / 1000).round(),
-          'tpc': 'vip-room',
+          'tpc': 'tpc-001',
           'role_type': 0,
           'cloud_recording_option': 0,
         },

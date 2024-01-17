@@ -33,8 +33,9 @@ target 'Runner' do
 
   flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
   pod 'ZoomVideoSDK/ZoomVideoSDK', '1.9.0'
-  # pod 'ZoomVideoSDK/zoomcml', '1.9.0'
-  # pod 'ZoomVideoSDK/CptShare', '1.9.0'
+  pod 'ZoomVideoSDK/zoomcml', '1.9.0'
+  pod 'ZoomVideoSDK/CptShare', '1.9.0'
+  pod 'ZoomVideoSDK/zm_annoter_dynamic', '1.9.0'
 end
 
 pre_install do |installer|

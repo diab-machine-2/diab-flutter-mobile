@@ -320,6 +320,9 @@ PODS:
     - Flutter
   - webview_flutter_wkwebview (0.0.1):
     - Flutter
+  - ZoomVideoSDK/CptShare (1.9.0)
+  - ZoomVideoSDK/zm_annoter_dynamic (1.9.0)
+  - ZoomVideoSDK/zoomcml (1.9.0)
   - ZoomVideoSDK/ZoomVideoSDK (1.9.0)
 
 DEPENDENCIES:
@@ -369,6 +372,9 @@ DEPENDENCIES:
   - video_thumbnail (from `.symlinks/plugins/video_thumbnail/ios`)
   - wakelock (from `.symlinks/plugins/wakelock/ios`)
   - webview_flutter_wkwebview (from `.symlinks/plugins/webview_flutter_wkwebview/ios`)
+  - ZoomVideoSDK/CptShare (= 1.9.0)
+  - ZoomVideoSDK/zm_annoter_dynamic (= 1.9.0)
+  - ZoomVideoSDK/zoomcml (= 1.9.0)
   - ZoomVideoSDK/ZoomVideoSDK (= 1.9.0)
 
 SPEC REPOS:
@@ -590,6 +596,6 @@ SPEC CHECKSUMS:
   webview_flutter_wkwebview: 2e2d318f21a5e036e2c3f26171342e95908bd60a
   ZoomVideoSDK: 9c328610dab14e3bb75f1995f00e6a967c0fef20
 
-PODFILE CHECKSUM: cb61286470d897aec62534fa174315619b7d5171
+PODFILE CHECKSUM: 5620b640c4380edac84098b545945d538126de84
 
 COCOAPODS: 1.14.3
