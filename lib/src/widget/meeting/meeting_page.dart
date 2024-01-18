@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_zoom_videosdk/native/zoom_videosdk.dart';
+import 'package:medical/src/widget/meeting/widgets/chat_view.dart';
 import 'package:medical/src/widget/meeting/widgets/video_view.dart';
 
 import 'meeting_cubit.dart';
@@ -259,7 +260,7 @@ class _MeetingPageState extends State<MeetingPage> {
           _buttonIconWithTextBelow(
             CupertinoIcons.chat_bubble_text_fill,
             'Chat',
-            () {},
+            () => _showChatBottomSheet(context),
             iconSize: 28.0,
           ),
         ],
@@ -288,6 +289,26 @@ class _MeetingPageState extends State<MeetingPage> {
           ),
         ),
       ],
+    );
+  }
+
+  void _showChatBottomSheet(BuildContext context) {
+    var bloc = _cubit;
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (context) => DraggableScrollableSheet(
+        initialChildSize: 0.5,
+        maxChildSize: 0.9,
+        minChildSize: 0.5,
+        builder: (context, scrollController) => ChatView(
+          messagesValueNotifier: bloc.chatMessages,
+          onSendMessage: bloc.sendChatToAll,
+          scrollController: scrollController,
+          textEditingController: bloc.chatController,
+        ),
+      ),
     );
   }
 }

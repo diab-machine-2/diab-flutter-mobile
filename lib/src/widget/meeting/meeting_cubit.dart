@@ -1,8 +1,10 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_zoom_videosdk/native/zoom_videosdk.dart';
+import 'package:flutter_zoom_videosdk/native/zoom_videosdk_chat_message.dart';
 import 'package:flutter_zoom_videosdk/native/zoom_videosdk_event_listener.dart';
 import 'package:flutter_zoom_videosdk/native/zoom_videosdk_user.dart';
 import 'package:medical/src/widget/meeting/meeting_page.dart';
@@ -12,24 +14,38 @@ import 'meeting_state.dart';
 
 class MeetingCubit extends Cubit<MeetingState> {
   final MeetingArguments args;
+
+  // Shared state with app session
+  static String? _latestSessionId = null;
+  static List<ZoomVideoSdkChatMessage> _latestChatMessages = [];
+
+  // Zoom
   final ZoomVideoSdk _zoom = ZoomVideoSdk();
   final _eventListener = ZoomVideoSdkEventListener();
   final List<EventListener<Object?>> meetingEvents = [];
-
   Future<String?> get sessionName => _zoom.session.getSessionName();
+
+  // Chat
+  final ValueNotifier<bool> _haveNewChatNotifier = ValueNotifier(false);
+  final ValueNotifier<List<ZoomVideoSdkChatMessage>> _chatMessagesNotifier = ValueNotifier([]);
+  ValueNotifier<bool> get haveNewChat => _haveNewChatNotifier;
+  ValueNotifier<List<ZoomVideoSdkChatMessage>> get chatMessages => _chatMessagesNotifier;
+  final TextEditingController chatController = TextEditingController();
+  bool get _chatSheetPresented => _chatMessagesNotifier.hasListeners;
 
   // Cached
   ZoomVideoSdkUser? _mySelf;
   ZoomVideoSdkUser? get user => _mySelf;
   List<ZoomVideoSdkUser> _remoteUsers = [];
 
+  // Sharing
   bool _isSharing = false;
   String _sharingUserId = '';
 
-  final int timeoutInSeconds = 15;
+  // Time out
+  final int timeoutInSeconds = 30;
   bool _isJoined = false;
   Timer? _timeoutTimer;
-  // late
 
   MeetingCubit(this.args) : super(MeetingJoining()) {
     // Join session
@@ -52,6 +68,7 @@ class MeetingCubit extends Cubit<MeetingState> {
     meetingEvents.forEach((listener) {
       listener.cancel();
     });
+    chatController.dispose();
     _mySelf = null;
     _remoteUsers = [];
 
@@ -93,6 +110,19 @@ class MeetingCubit extends Cubit<MeetingState> {
     }
     var newState = (state as MeetingJoined).copyWith(thisUser: mySelf);
     emit(newState);
+  }
+
+  Future<void> sendChatToAll(String message) async {
+    bool isChatEnable = !(await _zoom.chatHelper.isChatDisabled());
+    if (!isChatEnable) {
+      return;
+    }
+    String chatPrivilege = await _zoom.chatHelper.getChatPrivilege();
+    print('chatPrivilege: $chatPrivilege');
+    if (chatPrivilege == 'none') {
+      return;
+    }
+    await _zoom.chatHelper.sendChatToAll(message);
   }
 
   void leaveSession() async {
@@ -138,6 +168,15 @@ class MeetingCubit extends Cubit<MeetingState> {
       _timeoutTimer?.cancel();
       _timeoutTimer = null;
       print('zoom: onSessionJoin: $sessionUser');
+      _zoom.session.getSessionID().then((value) {
+        if (_latestSessionId != null && _latestSessionId == value) {
+          _chatMessagesNotifier.value = _latestChatMessages;
+        } else {
+          _latestChatMessages = [];
+          _chatMessagesNotifier.value = [];
+        }
+        _latestSessionId = value;
+      });
       ZoomVideoSdkUser mySelf = ZoomVideoSdkUser.fromJson(jsonDecode(sessionUser.toString()));
       _mySelf = mySelf;
       List<ZoomVideoSdkUser>? otherUsers = await _zoom.session.getRemoteUsers();
@@ -243,6 +282,19 @@ class MeetingCubit extends Cubit<MeetingState> {
       }
     });
     meetingEvents.add(userShareStatusChangeListener);
+
+    // * Chat message received
+    final chatMessageReceivedListener = emitter.on(EventType.onChatNewMessageNotify, (data) async {
+      print('zoom: onChatNewMessageNotify: $data');
+      ZoomVideoSdkChatMessage message =
+          ZoomVideoSdkChatMessage.fromJson(jsonDecode(data.toString()));
+      if (_mySelf != null && !_chatSheetPresented && message.senderUser.userId != _mySelf!.userId) {
+        _haveNewChatNotifier.value = true;
+      }
+      _chatMessagesNotifier.value = [..._chatMessagesNotifier.value, message];
+      _latestChatMessages = _chatMessagesNotifier.value;
+    });
+    meetingEvents.add(chatMessageReceivedListener);
 
     // * Other user joined the session
     final userJoinListener = emitter.on(EventType.onUserJoin, (data) async {
