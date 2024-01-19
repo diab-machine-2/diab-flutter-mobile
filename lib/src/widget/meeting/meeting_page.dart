@@ -26,7 +26,7 @@ class _MeetingPageState extends State<MeetingPage>
   final TextEditingController chatController = TextEditingController();
   final FocusNode chatFocusNode = FocusNode();
   late final AnimationController _controller = AnimationController(
-    duration: Duration(milliseconds: 500),
+    duration: Duration(milliseconds: 200),
     vsync: this,
   );
   late final Animation<double> _animation = CurvedAnimation(
@@ -55,7 +55,7 @@ class _MeetingPageState extends State<MeetingPage>
   void didChangeMetrics() async {
     final bottomInset = WidgetsBinding.instance.window.viewInsets.bottom;
     final keyboardVisible = bottomInset > 0.0;
-    if (keyboardVisible == this._keyboardVisible) {
+    if (keyboardVisible == this._keyboardVisible.value) {
       return;
     }
     this._keyboardVisible.value = keyboardVisible;
@@ -260,7 +260,6 @@ class _MeetingPageState extends State<MeetingPage>
     return Stack(
       children: [
         Positioned.fill(child: fullScreenView),
-        // Preview - right top
         Positioned(
           top: 0.0,
           right: 0.0,
@@ -272,18 +271,15 @@ class _MeetingPageState extends State<MeetingPage>
           left: 0.0,
           right: 0.0,
           child: SingleChildScrollView(
+            physics: NeverScrollableScrollPhysics(),
             child: Column(
               children: [
                 Container(child: _buildControls(size.height)),
-                ValueListenableBuilder(
+                ValueListenableBuilder<bool>(
                   valueListenable: _keyboardVisible,
-                  builder: (context, value, child) {
-                    double keyboardHeight = MediaQuery.of(context).viewInsets.bottom +
-                        MediaQuery.of(context).viewPadding.bottom;
-                    if (value) {
-                      return SizedBox(height: 240.0);
-                    }
-                    return const SizedBox();
+                  builder: (_, value, child) {
+                    double finalHeight = value ? 300.0 : 0.0;
+                    return SizedBox(height: finalHeight);
                   },
                 ),
               ],
@@ -301,53 +297,62 @@ class _MeetingPageState extends State<MeetingPage>
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: Column(
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              // Audio
-              FutureBuilder(
-                  future: _cubit.user?.audioStatus?.isMuted(),
-                  builder: (context, snapshot) {
-                    bool isMuted = snapshot.data ?? true;
-                    return _buttonIconWithTextBelow(isMuted ? Icons.mic_off : Icons.mic,
-                        isMuted ? 'Bật tiếng' : 'Tắt tiếng', _cubit.toggleAudio,
-                        iconSize: 28.0);
-                  }),
-              const SizedBox(width: 8.0),
-              FutureBuilder(
-                  future: _cubit.user?.videoStatus?.isOn(),
-                  builder: (context, snapshot) {
-                    bool isVideoOn = snapshot.data ?? false;
-                    return _buttonIconWithTextBelow(
-                      isVideoOn ? Icons.videocam : Icons.videocam_off,
-                      isVideoOn ? 'Bật video' : 'Tắt video',
-                      _cubit.toggleVideo,
-                    );
-                  }),
-              // separator
-              Container(
-                width: 20.0,
-                padding: const EdgeInsets.symmetric(horizontal: 9.0),
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white.withAlpha(100),
-                    borderRadius: BorderRadius.circular(1.0),
+          ValueListenableBuilder(
+            valueListenable: _keyboardVisible,
+            builder: (context, value, child) {
+              if (value) {
+                return const SizedBox();
+              }
+              return Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  // Audio
+                  FutureBuilder(
+                    future: _cubit.user?.audioStatus?.isMuted(),
+                    builder: (context, snapshot) {
+                      bool isMuted = snapshot.data ?? true;
+                      return _buttonIconWithTextBelow(isMuted ? Icons.mic_off : Icons.mic,
+                          isMuted ? 'Bật tiếng' : 'Tắt tiếng', _cubit.toggleAudio,
+                          iconSize: 28.0);
+                    },
                   ),
-                  child: SizedBox(
-                    height: 42.0,
-                    width: 2.0,
+                  const SizedBox(width: 8.0),
+                  FutureBuilder(
+                      future: _cubit.user?.videoStatus?.isOn(),
+                      builder: (context, snapshot) {
+                        bool isVideoOn = snapshot.data ?? false;
+                        return _buttonIconWithTextBelow(
+                          isVideoOn ? Icons.videocam : Icons.videocam_off,
+                          isVideoOn ? 'Bật video' : 'Tắt video',
+                          _cubit.toggleVideo,
+                        );
+                      }),
+                  // separator
+                  Container(
+                    width: 20.0,
+                    padding: const EdgeInsets.symmetric(horizontal: 9.0),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white.withAlpha(100),
+                        borderRadius: BorderRadius.circular(1.0),
+                      ),
+                      child: SizedBox(
+                        height: 42.0,
+                        width: 2.0,
+                      ),
+                    ),
                   ),
-                ),
-              ),
-              // Chat
-              _buttonIconWithTextBelow(
-                CupertinoIcons.chat_bubble_text_fill,
-                'Chat',
-                _showChat,
-                iconSize: 28.0,
-              ),
-            ],
+                  // Chat
+                  _buttonIconWithTextBelow(
+                    CupertinoIcons.chat_bubble_text_fill,
+                    'Chat',
+                    _showChat,
+                    iconSize: 28.0,
+                  ),
+                ],
+              );
+            },
           ),
           SizeTransition(
             sizeFactor: _animation,
@@ -355,7 +360,7 @@ class _MeetingPageState extends State<MeetingPage>
             axisAlignment: 1.0,
             child: Container(
               margin: EdgeInsets.only(top: 8.0),
-              height: min(maxHeight * 0.7, 350.0),
+              height: min(maxHeight * 0.7, 500.0),
               child: ChatView(
                 messagesValueNotifier: _cubit.chatMessages,
                 onSendMessage: _cubit.sendChatToAll,

@@ -23,7 +23,8 @@ class MeetingCubit extends Cubit<MeetingState> {
   final ZoomVideoSdk _zoom = ZoomVideoSdk();
   final _eventListener = ZoomVideoSdkEventListener();
   final List<EventListener<Object?>> meetingEvents = [];
-  Future<String?> get sessionName => _zoom.session.getSessionName();
+  // Future<String?> get sessionName => _zoom.session.getSessionName();
+  Future<String?> get sessionName => Future.value('Cuộc họp');
 
   // Chat
   final ValueNotifier<bool> _haveNewChatNotifier = ValueNotifier(false);

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_zoom_videosdk/native/zoom_videosdk_chat_message.dart';
+import 'package:medical/res/R.dart';
 
 class ChatView extends StatelessWidget {
   final Function(String) onSendMessage;
@@ -56,6 +57,7 @@ class ChatView extends StatelessWidget {
               valueListenable: messagesValueNotifier,
               builder: (context, messages, child) {
                 return ListView.builder(
+                  padding: EdgeInsets.zero,
                   itemCount: messages.length,
                   itemBuilder: (context, index) {
                     final message = messages[index];
@@ -79,23 +81,34 @@ class ChatView extends StatelessWidget {
                 Expanded(
                   child: TextField(
                     decoration: InputDecoration(
-                      border: OutlineInputBorder(),
-                      hintText: 'Type your message here',
-                    ),
+                        border: OutlineInputBorder(),
+                        hintText: 'Type your message here',
+                        contentPadding: EdgeInsets.symmetric(horizontal: 12.0, vertical: 4.0)),
                     focusNode: focusNode,
                     controller: textEditingController,
                     keyboardType: TextInputType.multiline,
+                    maxLines: 3,
+                    minLines: 1,
                   ),
                 ),
-                const SizedBox(width: 8.0),
+                // const SizedBox(width: 4.0),
                 ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    shape: CircleBorder(),
+                    padding: EdgeInsets.all(12.0),
+                    backgroundColor: R.color.primaryColor,
+                  ),
                   onPressed: () async {
                     if (textEditingController.text.isNotEmpty) {
                       await onSendMessage(textEditingController.text);
                       textEditingController.clear();
                     }
                   },
-                  child: Text('Send'),
+                  child: Image.asset(
+                    R.drawable.ic_send,
+                    width: 20,
+                    height: 20,
+                  ),
                 ),
               ],
             ),
