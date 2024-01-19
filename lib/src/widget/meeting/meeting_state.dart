@@ -43,8 +43,7 @@ class MeetingJoined extends MeetingState {
   List<Object> get props => [
     if (thisUser != null)
       thisUser!,
-    if (fullscreenUser != null)
-      fullscreenUser!,
+    fullscreenUser,
     remoteUsers
   ];
 }

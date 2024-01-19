@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:flutter/widgets.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_zoom_videosdk/native/zoom_videosdk.dart';
 import 'package:flutter_zoom_videosdk/native/zoom_videosdk_chat_message.dart';
@@ -30,8 +30,7 @@ class MeetingCubit extends Cubit<MeetingState> {
   final ValueNotifier<List<ZoomVideoSdkChatMessage>> _chatMessagesNotifier = ValueNotifier([]);
   ValueNotifier<bool> get haveNewChat => _haveNewChatNotifier;
   ValueNotifier<List<ZoomVideoSdkChatMessage>> get chatMessages => _chatMessagesNotifier;
-  final TextEditingController chatController = TextEditingController();
-  bool get _chatSheetPresented => _chatMessagesNotifier.hasListeners;
+  bool _chatSheetPresented = false;
 
   // Cached
   ZoomVideoSdkUser? _mySelf;
@@ -68,7 +67,6 @@ class MeetingCubit extends Cubit<MeetingState> {
     meetingEvents.forEach((listener) {
       listener.cancel();
     });
-    chatController.dispose();
     _mySelf = null;
     _remoteUsers = [];
 
@@ -110,6 +108,16 @@ class MeetingCubit extends Cubit<MeetingState> {
     }
     var newState = (state as MeetingJoined).copyWith(thisUser: mySelf);
     emit(newState);
+  }
+
+  void startChat() {
+    _chatSheetPresented = true;
+    _haveNewChatNotifier.value = false;
+  }
+
+  void endChat() {
+    _chatSheetPresented = false;
+    _haveNewChatNotifier.value = false;
   }
 
   Future<void> sendChatToAll(String message) async {

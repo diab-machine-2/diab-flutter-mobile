@@ -3,14 +3,16 @@ import 'package:flutter_zoom_videosdk/native/zoom_videosdk_chat_message.dart';
 
 class ChatView extends StatelessWidget {
   final Function(String) onSendMessage;
-  final ScrollController scrollController;
+  final Function() onClose;
+  final FocusNode focusNode;
   final TextEditingController textEditingController;
   final ValueNotifier<List<ZoomVideoSdkChatMessage>> messagesValueNotifier;
   const ChatView({
     super.key,
     required this.messagesValueNotifier,
     required this.onSendMessage,
-    required this.scrollController,
+    required this.onClose,
+    required this.focusNode,
     required this.textEditingController,
   });
 
@@ -29,14 +31,24 @@ class ChatView extends StatelessWidget {
           Container(
             alignment: Alignment.center,
             width: double.infinity,
-            padding: EdgeInsets.symmetric(vertical: 8.0),
-            child: Container(
-              width: 80.0,
-              height: 6.0,
-              decoration: BoxDecoration(
-                color: Colors.grey[400],
-                borderRadius: BorderRadius.circular(3.0),
-              ),
+            padding: EdgeInsets.symmetric(vertical: 4.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                IconButton(
+                  onPressed: onClose,
+                  icon: Icon(Icons.close),
+                ),
+                Container(
+                  width: 80.0,
+                  height: 6.0,
+                  decoration: BoxDecoration(
+                    color: Colors.grey[400],
+                    borderRadius: BorderRadius.circular(3.0),
+                  ),
+                ),
+                const SizedBox(width: 48.0),
+              ],
             ),
           ),
           Expanded(
@@ -44,9 +56,7 @@ class ChatView extends StatelessWidget {
               valueListenable: messagesValueNotifier,
               builder: (context, messages, child) {
                 return ListView.builder(
-                  controller: scrollController,
                   itemCount: messages.length,
-                  keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
                   itemBuilder: (context, index) {
                     final message = messages[index];
                     return ListTile(
@@ -72,6 +82,7 @@ class ChatView extends StatelessWidget {
                       border: OutlineInputBorder(),
                       hintText: 'Type your message here',
                     ),
+                    focusNode: focusNode,
                     controller: textEditingController,
                     keyboardType: TextInputType.multiline,
                   ),

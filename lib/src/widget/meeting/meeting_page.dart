@@ -1,8 +1,11 @@
+import 'dart:math';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_zoom_videosdk/native/zoom_videosdk.dart';
+import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/meeting/widgets/chat_view.dart';
 import 'package:medical/src/widget/meeting/widgets/video_view.dart';
 
@@ -17,41 +20,95 @@ class MeetingPage extends StatefulWidget {
   State<MeetingPage> createState() => _MeetingPageState();
 }
 
-class _MeetingPageState extends State<MeetingPage> {
+class _MeetingPageState extends State<MeetingPage>
+    with TickerProviderStateMixin, WidgetsBindingObserver {
   late MeetingCubit _cubit;
+  final TextEditingController chatController = TextEditingController();
+  final FocusNode chatFocusNode = FocusNode();
+  late final AnimationController _controller = AnimationController(
+    duration: Duration(milliseconds: 500),
+    vsync: this,
+  );
+  late final Animation<double> _animation = CurvedAnimation(
+    parent: _controller,
+    curve: Curves.easeOut,
+    reverseCurve: Curves.easeIn,
+  );
+  ValueNotifier<bool> _keyboardVisible = ValueNotifier(false);
 
   @override
   void initState() {
     super.initState();
     _cubit = MeetingCubit(widget.args);
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    chatController.dispose();
+    _controller.dispose();
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeMetrics() async {
+    final bottomInset = WidgetsBinding.instance.window.viewInsets.bottom;
+    final keyboardVisible = bottomInset > 0.0;
+    if (keyboardVisible == this._keyboardVisible) {
+      return;
+    }
+    this._keyboardVisible.value = keyboardVisible;
+    await Future.delayed(Duration(milliseconds: 100));
+    if (keyboardVisible && _controller.isCompleted && !_controller.isAnimating) {
+      _controller.forward();
+    } else if (!keyboardVisible && _controller.isDismissed && !_controller.isAnimating) {
+      _controller.reverse();
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: BlocProvider(
-        create: (context) => _cubit,
-        child: BlocListener<MeetingCubit, MeetingState>(
-          listener: (context, state) {
-            // Handle leave session
-            if (state is MeetingLeaving || state is MeetingJoinError) {
-              Navigator.pop(context);
-            }
-          },
-          listenWhen: (previous, current) =>
-              current is MeetingLeaving || current is MeetingJoinError,
-          child: BlocBuilder<MeetingCubit, MeetingState>(
-            builder: (context, state) {
-              print('zoom: Building state: $state');
-              if (state is MeetingJoining) {
-                return _buildJoining();
-              } else if (state is MeetingJoined) {
-                return _buildJoinedState(state);
+    return WillPopScope(
+      onWillPop: () async {
+        _confirmAndQuitSession(context);
+        return false;
+      },
+      child: Scaffold(
+        body: BlocProvider(
+          create: (context) => _cubit,
+          child: BlocListener<MeetingCubit, MeetingState>(
+            listener: (context, state) {
+              // Handle leave session
+              if (state is MeetingLeaving) {
+                _popupSessionEnded(context);
+                return;
               } else if (state is MeetingJoinError) {
-                // TODO: Handle error
+                _popupUnknowError(context);
+                return;
               }
-              return SizedBox();
             },
+            listenWhen: (previous, current) =>
+                current is MeetingLeaving || current is MeetingJoinError,
+            child: BlocBuilder<MeetingCubit, MeetingState>(
+              builder: (context, state) {
+                print('zoom: Building state: $state');
+                if (state is MeetingJoining) {
+                  return _buildJoining();
+                } else if (state is MeetingJoined) {
+                  return _buildJoinedState(state);
+                } else if (state is MeetingJoinError) {
+                  // TODO: Handle error
+                }
+                return Container(
+                  alignment: Alignment.center,
+                  color: Colors.black,
+                  child: CircleAvatar(
+                    child: Text('Error', style: TextStyle(color: Colors.white)),
+                  ),
+                );
+              },
+            ),
           ),
         ),
       ),
@@ -143,7 +200,7 @@ class _MeetingPageState extends State<MeetingPage> {
                     width: leaveButtonWidth,
                     height: leaveButtonHeight,
                     child: IconButton(
-                      onPressed: _cubit.leaveSession,
+                      onPressed: () => _confirmAndQuitSession(context),
                       icon: const Icon(
                         Icons.arrow_back_ios,
                         color: Colors.white,
@@ -171,7 +228,7 @@ class _MeetingPageState extends State<MeetingPage> {
                   width: leaveButtonWidth,
                   height: leaveButtonHeight,
                   child: ElevatedButton(
-                    onPressed: _cubit.leaveSession,
+                    onPressed: () => _confirmAndQuitSession(context),
                     child: const Text(
                       'Rời khỏi',
                       style: TextStyle(
@@ -192,76 +249,121 @@ class _MeetingPageState extends State<MeetingPage> {
             ),
           ),
           // Preview
-          Expanded(
-            child: Align(
-              alignment: Alignment.topRight,
-              child: previewView,
-            ),
+          Align(
+            alignment: Alignment.topRight,
+            child: previewView,
           ),
-          // Controls
-          _buildControls(),
         ],
       ),
     );
+    final size = MediaQuery.of(context).size;
     return Stack(
       children: [
         Positioned.fill(child: fullScreenView),
         // Preview - right top
-        Positioned.fill(child: controlAndPreviewWidget),
+        Positioned(
+          top: 0.0,
+          right: 0.0,
+          left: 0.0,
+          child: controlAndPreviewWidget,
+        ),
+        Positioned(
+          bottom: 0.0,
+          left: 0.0,
+          right: 0.0,
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                Container(child: _buildControls(size.height)),
+                ValueListenableBuilder(
+                  valueListenable: _keyboardVisible,
+                  builder: (context, value, child) {
+                    double keyboardHeight = MediaQuery.of(context).viewInsets.bottom +
+                        MediaQuery.of(context).viewPadding.bottom;
+                    if (value) {
+                      return SizedBox(height: 240.0);
+                    }
+                    return const SizedBox();
+                  },
+                ),
+              ],
+            ),
+          ),
+        ),
       ],
     );
   }
 
   // build controls
-  Widget _buildControls() {
+  Widget _buildControls(double maxHeight) {
     return Container(
       color: Colors.black.withOpacity(0.8),
-      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.center,
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Column(
         children: [
-          // Audio
-          FutureBuilder(
-              future: _cubit.user?.audioStatus?.isMuted(),
-              builder: (context, snapshot) {
-                bool isMuted = snapshot.data ?? true;
-                return _buttonIconWithTextBelow(isMuted ? Icons.mic_off : Icons.mic,
-                    isMuted ? 'Bật tiếng' : 'Tắt tiếng', _cubit.toggleAudio,
-                    iconSize: 28.0);
-              }),
-          const SizedBox(width: 8.0),
-          FutureBuilder(
-              future: _cubit.user?.videoStatus?.isOn(),
-              builder: (context, snapshot) {
-                bool isVideoOn = snapshot.data ?? false;
-                return _buttonIconWithTextBelow(
-                  isVideoOn ? Icons.videocam : Icons.videocam_off,
-                  isVideoOn ? 'Bật video' : 'Tắt video',
-                  _cubit.toggleVideo,
-                );
-              }),
-          // separator
-          Container(
-            width: 20.0,
-            padding: const EdgeInsets.symmetric(horizontal: 9.0),
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.white.withAlpha(100),
-                borderRadius: BorderRadius.circular(1.0),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              // Audio
+              FutureBuilder(
+                  future: _cubit.user?.audioStatus?.isMuted(),
+                  builder: (context, snapshot) {
+                    bool isMuted = snapshot.data ?? true;
+                    return _buttonIconWithTextBelow(isMuted ? Icons.mic_off : Icons.mic,
+                        isMuted ? 'Bật tiếng' : 'Tắt tiếng', _cubit.toggleAudio,
+                        iconSize: 28.0);
+                  }),
+              const SizedBox(width: 8.0),
+              FutureBuilder(
+                  future: _cubit.user?.videoStatus?.isOn(),
+                  builder: (context, snapshot) {
+                    bool isVideoOn = snapshot.data ?? false;
+                    return _buttonIconWithTextBelow(
+                      isVideoOn ? Icons.videocam : Icons.videocam_off,
+                      isVideoOn ? 'Bật video' : 'Tắt video',
+                      _cubit.toggleVideo,
+                    );
+                  }),
+              // separator
+              Container(
+                width: 20.0,
+                padding: const EdgeInsets.symmetric(horizontal: 9.0),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white.withAlpha(100),
+                    borderRadius: BorderRadius.circular(1.0),
+                  ),
+                  child: SizedBox(
+                    height: 42.0,
+                    width: 2.0,
+                  ),
+                ),
               ),
-              child: SizedBox(
-                height: 42.0,
-                width: 2.0,
+              // Chat
+              _buttonIconWithTextBelow(
+                CupertinoIcons.chat_bubble_text_fill,
+                'Chat',
+                _showChat,
+                iconSize: 28.0,
+              ),
+            ],
+          ),
+          SizeTransition(
+            sizeFactor: _animation,
+            axis: Axis.vertical,
+            axisAlignment: 1.0,
+            child: Container(
+              margin: EdgeInsets.only(top: 8.0),
+              height: min(maxHeight * 0.7, 350.0),
+              child: ChatView(
+                messagesValueNotifier: _cubit.chatMessages,
+                onSendMessage: _cubit.sendChatToAll,
+                textEditingController: chatController,
+                onClose: _hideChat,
+                focusNode: chatFocusNode,
               ),
             ),
-          ),
-          // Chat
-          _buttonIconWithTextBelow(
-            CupertinoIcons.chat_bubble_text_fill,
-            'Chat',
-            () => _showChatBottomSheet(context),
-            iconSize: 28.0,
           ),
         ],
       ),
@@ -292,22 +394,76 @@ class _MeetingPageState extends State<MeetingPage> {
     );
   }
 
-  void _showChatBottomSheet(BuildContext context) {
-    var bloc = _cubit;
-    showModalBottomSheet(
+  bool _rootPredicate(Route<dynamic> route) {
+    return route.isFirst || route.settings.name == NavigatorName.tabbar;
+  }
+
+  void _confirmAndQuitSession(BuildContext context) {
+    showDialog(
       context: context,
-      backgroundColor: Colors.transparent,
-      isScrollControlled: true,
-      builder: (context) => DraggableScrollableSheet(
-        initialChildSize: 0.5,
-        maxChildSize: 0.9,
-        minChildSize: 0.5,
-        builder: (context, scrollController) => ChatView(
-          messagesValueNotifier: bloc.chatMessages,
-          onSendMessage: bloc.sendChatToAll,
-          scrollController: scrollController,
-          textEditingController: bloc.chatController,
-        ),
+      builder: (context) => AlertDialog(
+        title: Text('Bạn có chắc chắn muốn rời khỏi cuộc họp?'),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            child: Text('Hủy'),
+          ),
+          TextButton(
+            onPressed: () async {
+              _cubit.leaveSession();
+              Navigator.popUntil(context, _rootPredicate);
+            },
+            child: Text('Đồng ý'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showChat() {
+    _cubit.startChat();
+    chatFocusNode.requestFocus();
+    _controller.forward();
+  }
+
+  void _hideChat() {
+    _cubit.endChat();
+    _controller.reverse();
+    FocusScope.of(context).requestFocus(FocusNode());
+  }
+
+  void _popupSessionEnded(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Cuộc họp đã kết thúc'),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.popUntil(context, _rootPredicate);
+            },
+            child: Text('Đóng'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _popupUnknowError(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Đã có lỗi xảy ra'),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.popUntil(context, _rootPredicate);
+            },
+            child: Text('Đóng'),
+          ),
+        ],
       ),
     );
   }
