@@ -299,7 +299,7 @@ class _MeetingPageState extends State<MeetingPage>
         children: [
           ValueListenableBuilder(
             valueListenable: _keyboardVisible,
-            builder: (context, value, child) {
+            builder: (_, value, child) {
               if (value) {
                 return const SizedBox();
               }
@@ -344,11 +344,34 @@ class _MeetingPageState extends State<MeetingPage>
                     ),
                   ),
                   // Chat
-                  _buttonIconWithTextBelow(
+                  ValueListenableBuilder(
+                    valueListenable: _cubit.haveNewChat,
+                    child: _buttonIconWithTextBelow(
                     CupertinoIcons.chat_bubble_text_fill,
-                    'Chat',
+                      'Trò chuyện',
                     _showChat,
                     iconSize: 28.0,
+                    ),
+                    builder: (__, value, child) {
+                      return Stack(
+                        children: [
+                          child!,
+                          if (value)
+                            Positioned(
+                              top: 8.0,
+                              right: 8.0,
+                              child: Container(
+                                width: 12.0,
+                                height: 12.0,
+                                decoration: BoxDecoration(
+                                  color: Colors.red,
+                                  shape: BoxShape.circle,
+                                ),
+                              ),
+                            ),
+                        ],
+                      );
+                    },
                   ),
                 ],
               );
