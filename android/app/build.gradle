@@ -60,7 +60,6 @@ android {
     }
 
     defaultConfig {
-        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId "com.vbhc.diab"
         minSdkVersion 24
         targetSdkVersion 33
@@ -113,7 +112,7 @@ dependencies {
     implementation 'io.reactivex.rxjava2:rxandroid:2.0.1'
     implementation 'io.reactivex.rxjava2:rxjava:2.1.7'
     implementation 'com.android.billingclient:billing:5.2.1'
-    implementation "us.zoom.videosdk:zoomvideosdk-core:1.9.0"
-    implementation "us.zoom.videosdk:zoomvideosdk-videoeffects:1.9.0"
-    implementation "us.zoom.videosdk:zoomvideosdk-annotation:1.9.0"
+    implementation "us.zoom.videosdk:zoomvideosdk-core:1.9.10"
+    implementation "us.zoom.videosdk:zoomvideosdk-videoeffects:1.9.10"
+    implementation "us.zoom.videosdk:zoomvideosdk-annotation:1.9.10"
 }

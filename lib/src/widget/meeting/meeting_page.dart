@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_zoom_videosdk/native/zoom_videosdk.dart';
@@ -41,6 +42,12 @@ class _MeetingPageState extends State<MeetingPage>
     super.initState();
     _cubit = MeetingCubit(widget.args);
     WidgetsBinding.instance.addObserver(this);
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+      DeviceOrientation.landscapeLeft,
+      DeviceOrientation.landscapeRight,
+    ]);
   }
 
   @override
@@ -48,6 +55,10 @@ class _MeetingPageState extends State<MeetingPage>
     chatController.dispose();
     _controller.dispose();
     WidgetsBinding.instance.removeObserver(this);
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
     super.dispose();
   }
 
@@ -74,8 +85,8 @@ class _MeetingPageState extends State<MeetingPage>
         _confirmAndQuitSession(context);
         return false;
       },
-      child: Scaffold(
-        body: BlocProvider(
+      child: Material(
+        child: BlocProvider(
           create: (context) => _cubit,
           child: BlocListener<MeetingCubit, MeetingState>(
             listener: (context, state) {
@@ -116,48 +127,56 @@ class _MeetingPageState extends State<MeetingPage>
   }
 
   Widget _buildJoining() {
-    return Material(
-      child: Container(
-        color: Colors.black,
-        width: double.infinity,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            const CircularProgressIndicator(color: Colors.white),
-            const SizedBox(height: 30.0),
-            Text(
-              'Đang kết nối...',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 22.0,
-              ),
+    return Container(
+      color: Colors.black,
+      width: double.infinity,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          const CircularProgressIndicator(color: Colors.white),
+          const SizedBox(height: 30.0),
+          Text(
+            'Đang kết nối...',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 22.0,
             ),
-            const SizedBox(height: 20.0),
-            Text(
-              'Vui lòng chờ trong giây lát',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 16.0,
-              ),
+          ),
+          const SizedBox(height: 20.0),
+          Text(
+            'Vui lòng chờ trong giây lát',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 16.0,
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
 
   Widget _buildJoinedState(MeetingJoined state) {
+    bool isLandScape = MediaQuery.of(context).orientation == Orientation.landscape;
     Widget previewView = const SizedBox();
     Widget fullScreenView = const SizedBox();
 
-    if (state.remoteUsers.isNotEmpty && state.thisUser != null) {
+    if (!isLandScape && state.remoteUsers.isNotEmpty && state.thisUser != null) {
       previewView = VideoView(
         avatarUrl: null,
         user: state.thisUser,
         fullScreen: false,
         resolution: VideoResolution.Resolution720,
         videoAspect: VideoAspect.Original,
+      );
+    }
+    if (isLandScape && state.fullscreenUser.isSharing) {
+      return VideoView(
+        avatarUrl: null,
+        user: state.fullscreenUser,
+        fullScreen: true,
+        sharing: state.fullscreenUser.isSharing,
+        resolution: VideoResolution.Resolution720,
       );
     }
     if (state.thisUser != null &&
@@ -347,10 +366,10 @@ class _MeetingPageState extends State<MeetingPage>
                   ValueListenableBuilder(
                     valueListenable: _cubit.haveNewChat,
                     child: _buttonIconWithTextBelow(
-                    CupertinoIcons.chat_bubble_text_fill,
+                      CupertinoIcons.chat_bubble_text_fill,
                       'Trò chuyện',
-                    _showChat,
-                    iconSize: 28.0,
+                      _showChat,
+                      iconSize: 28.0,
                     ),
                     builder: (__, value, child) {
                       return Stack(

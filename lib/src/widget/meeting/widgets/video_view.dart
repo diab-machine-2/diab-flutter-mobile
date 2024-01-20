@@ -71,7 +71,11 @@ class VideoView extends fzv.ZoomView {
         ),
       );
       if (sharing) {
-        return child;
+        return InteractiveViewer(
+          child: child,
+          minScale: 1.0,
+          maxScale: 2.5,
+        );
       }
       return FutureBuilder(
         future: user!.videoStatus?.isOn(),
