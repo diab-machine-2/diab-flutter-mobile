@@ -3,6 +3,7 @@ import 'dart:io' show Platform;
 
 import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
 import 'package:flutter/material.dart';
+import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/meeting/meeting_page.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -31,9 +32,10 @@ class MeetingPreparePage extends StatelessWidget {
                   if (!ok) {
                     return;
                   }
+                  var user = AppSettings.userInfo;
                   String sessionName = "tpc-001";
-                  String displayName = "Test Meeting";
-                  String token = _generateToken();
+                  String displayName = user?.fullName ?? "Test Meeting";
+                  String token = await _generateToken(context);
                   String sessionIdleTimeoutMins = "40";
                   String sessionPassword = "1";
 
@@ -67,7 +69,7 @@ class MeetingPreparePage extends StatelessWidget {
     return result;
   }
 
-  String _generateToken() {
+  Future<String> _generateToken(BuildContext context) async {
     // var user = AppSettings.userInfo;
     String userId = _makeId(10);
     // if (user != null) {
@@ -77,6 +79,30 @@ class MeetingPreparePage extends StatelessWidget {
       'ZOOM_SDK_KEY': 'hsfKYyjnTkmQ1fxaB_mZbQ',
       'ZOOM_SDK_SECRET': 'z242HVf7X6je0NzOA97WFfP3GgqtUTKseyYm',
     };
+
+    final textController = TextEditingController(text: 'tpc-001');
+    Widget dialog = AlertDialog(
+      title: Text('Enter Topic'),
+      content: TextField(
+        controller: textController,
+        decoration: InputDecoration(hintText: "Topic"),
+      ),
+      actions: [
+        TextButton(
+          child: Text('OK'),
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+        ),
+      ],
+    );
+    await showDialog(
+      context: context,
+      builder: (context) => dialog,
+    );
+    String topic = textController.text;
+    textController.dispose();
+
     try {
       var iat = DateTime.now();
       var exp = DateTime.now().add(Duration(days: 2));
@@ -84,10 +110,10 @@ class MeetingPreparePage extends StatelessWidget {
         {
           'app_key': configs["ZOOM_SDK_KEY"],
           'version': 1,
-          'user_identity': _makeId(10),
+          'user_identity': userId,
           'iat': (iat.millisecondsSinceEpoch / 1000).round(),
           'exp': (exp.millisecondsSinceEpoch / 1000).round(),
-          'tpc': 'tpc-001',
+          'tpc': topic,
           'role_type': 0,
           'cloud_recording_option': 0,
         },
