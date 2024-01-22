@@ -295,13 +295,6 @@ class _MeetingPageState extends State<MeetingPage>
             child: Column(
               children: [
                 Container(child: _buildControls(size.height)),
-                ValueListenableBuilder<bool>(
-                  valueListenable: _keyboardVisible,
-                  builder: (_, value, child) {
-                    double finalHeight = value ? 300.0 : 0.0;
-                    return SizedBox(height: finalHeight);
-                  },
-                ),
               ],
             ),
           ),
@@ -403,7 +396,7 @@ class _MeetingPageState extends State<MeetingPage>
             axisAlignment: 1.0,
             child: Container(
               margin: EdgeInsets.only(top: 8.0),
-              height: min(maxHeight * 0.7, 500.0),
+              height: min(maxHeight * 0.5, 400.0),
               child: ChatView(
                 messagesValueNotifier: _cubit.chatMessages,
                 onSendMessage: _cubit.sendChatToAll,
