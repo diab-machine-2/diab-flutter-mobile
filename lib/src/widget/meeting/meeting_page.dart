@@ -85,8 +85,8 @@ class _MeetingPageState extends State<MeetingPage>
         _confirmAndQuitSession(context);
         return false;
       },
-      child: Material(
-        child: BlocProvider(
+      child: Scaffold(
+        body: BlocProvider(
           create: (context) => _cubit,
           child: BlocListener<MeetingCubit, MeetingState>(
             listener: (context, state) {
@@ -275,7 +275,8 @@ class _MeetingPageState extends State<MeetingPage>
         ],
       ),
     );
-    final size = MediaQuery.of(context).size;
+    var media = MediaQuery.of(context);
+    final size = media.size;
     return Stack(
       children: [
         Positioned.fill(child: fullScreenView),
@@ -286,7 +287,7 @@ class _MeetingPageState extends State<MeetingPage>
           child: controlAndPreviewWidget,
         ),
         Positioned(
-          bottom: 0.0,
+          bottom: media.padding.bottom,
           left: 0.0,
           right: 0.0,
           child: SingleChildScrollView(
