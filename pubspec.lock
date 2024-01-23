@@ -1834,7 +1834,7 @@ packages:
     source: hosted
     version: "0.3.3"
   wakelock:
-    dependency: "direct dev"
+    dependency: "direct main"
     description:
       name: wakelock
       url: "https://pub.dartlang.org"

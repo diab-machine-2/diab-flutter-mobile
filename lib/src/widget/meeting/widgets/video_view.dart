@@ -102,7 +102,7 @@ class VideoView extends fzv.ZoomView {
           final Map<String, dynamic> creationParams = _buildCreationParams();
           child = Container(
             child: fzv.View(
-              key: Key('fullScreen: false'),
+              key: Key('fullScreen: false, sharing: false'),
               creationParams: creationParams,
             ),
           );

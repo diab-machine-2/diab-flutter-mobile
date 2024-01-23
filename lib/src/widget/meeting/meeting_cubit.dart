@@ -111,6 +111,37 @@ class MeetingCubit extends Cubit<MeetingState> {
     emit(newState);
   }
 
+  bool _lastVideoStatus = false;
+  void turnoffVideoPreviewIfNeeded() async {
+    ZoomVideoSdkUser? mySelf = await _zoom.session.getMySelf();
+    if (mySelf != null) {
+      final videoStatus = mySelf.videoStatus;
+      if (videoStatus != null) {
+        var videoOn = await videoStatus.isOn();
+        if (videoOn) {
+          await _zoom.videoHelper.stopVideo();
+          _lastVideoStatus = true;
+        }
+      }
+    }
+  }
+
+  void turnonVideoPreviewIfNeeded() async {
+    if (!_lastVideoStatus) {
+      return;
+    }
+    _lastVideoStatus = false;
+    ZoomVideoSdkUser? mySelf = await _zoom.session.getMySelf();
+    if (mySelf != null) {
+      final videoStatus = mySelf.videoStatus;
+      if (videoStatus != null) {
+        await _zoom.videoHelper.startVideo();
+        var newState = (state as MeetingJoined).copyWith(thisUser: mySelf);
+        emit(newState);
+      }
+    }
+  }
+
   void startChat() {
     _chatSheetPresented = true;
     _haveNewChatNotifier.value = false;
@@ -265,16 +296,14 @@ class MeetingCubit extends Cubit<MeetingState> {
         emitter.on(EventType.onUserShareStatusChanged, (data) async {
       data = data as Map;
       print('zoom: onUserShareStatusChanged: $data');
-      _remoteUsers = (await _zoom.session.getRemoteUsers()) ?? [];
-      print('zoom: remoteUsers: $_remoteUsers');
-      ZoomVideoSdkUser? mySelf = await _zoom.session.getMySelf();
-      ZoomVideoSdkUser? shareUser = data['user'] == null
-          ? null
-          : ZoomVideoSdkUser.fromJson(jsonDecode(data['user'].toString()));
-
       if (data['status'] == ShareStatus.Start) {
+        ZoomVideoSdkUser? shareUser = data['user'] == null
+            ? null
+            : ZoomVideoSdkUser.fromJson(jsonDecode(data['user'].toString()));
         _isSharing = true;
         _sharingUserId = shareUser?.userId ?? '';
+        _remoteUsers = (await _zoom.session.getRemoteUsers()) ?? [];
+        ZoomVideoSdkUser? mySelf = await _zoom.session.getMySelf();
         MeetingJoined newState = await _composeJoinedState(
           thisUser: _mySelf ?? mySelf!,
           remoteUsers: _remoteUsers,
@@ -300,7 +329,7 @@ class MeetingCubit extends Cubit<MeetingState> {
       if (_mySelf != null && !_chatSheetPresented && message.senderUser.userId != _mySelf!.userId) {
         _haveNewChatNotifier.value = true;
       }
-      _chatMessagesNotifier.value = [..._chatMessagesNotifier.value, message];
+      _chatMessagesNotifier.value = [message, ..._chatMessagesNotifier.value];
       _latestChatMessages = _chatMessagesNotifier.value;
     });
     meetingEvents.add(chatMessageReceivedListener);

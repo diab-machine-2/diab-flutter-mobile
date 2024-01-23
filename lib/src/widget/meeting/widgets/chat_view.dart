@@ -57,6 +57,7 @@ class ChatView extends StatelessWidget {
               valueListenable: messagesValueNotifier,
               builder: (context, messages, child) {
                 return ListView.builder(
+                  reverse: true,
                   padding: EdgeInsets.zero,
                   itemCount: messages.length,
                   itemBuilder: (context, index) {

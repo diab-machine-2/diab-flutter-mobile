@@ -129,6 +129,7 @@ dependencies:
   flutter_zoom_videosdk:
     path: packages/zoom_video_sdk
   dart_jsonwebtoken: ^2.4.2
+  wakelock: ^0.6.2
 
 dev_dependencies:
   flutter_test:
@@ -137,7 +138,6 @@ dev_dependencies:
   retrofit_generator: ^4.0.3
   build_runner: ^2.1.4
   json_serializable: ^6.3.1
-  wakelock: ^0.6.2
   
 
 dependency_overrides:

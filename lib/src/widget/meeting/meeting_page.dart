@@ -9,6 +9,7 @@ import 'package:flutter_zoom_videosdk/native/zoom_videosdk.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/meeting/widgets/chat_view.dart';
 import 'package:medical/src/widget/meeting/widgets/video_view.dart';
+import 'package:wakelock/wakelock.dart';
 
 import 'meeting_cubit.dart';
 import 'meeting_state.dart';
@@ -42,6 +43,7 @@ class _MeetingPageState extends State<MeetingPage>
     super.initState();
     _cubit = MeetingCubit(widget.args);
     WidgetsBinding.instance.addObserver(this);
+    Wakelock.enable();
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
@@ -55,11 +57,27 @@ class _MeetingPageState extends State<MeetingPage>
     chatController.dispose();
     _controller.dispose();
     WidgetsBinding.instance.removeObserver(this);
+    Wakelock.disable();
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
     ]);
     super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+    switch (state) {
+      case AppLifecycleState.inactive:
+      case AppLifecycleState.paused:
+      case AppLifecycleState.detached:
+        _cubit.turnoffVideoPreviewIfNeeded();
+        break;
+      case AppLifecycleState.resumed:
+        _cubit.turnonVideoPreviewIfNeeded();
+        break;
+    }
   }
 
   @override
@@ -87,7 +105,7 @@ class _MeetingPageState extends State<MeetingPage>
       },
       child: Scaffold(
         body: BlocProvider(
-          create: (context) => _cubit,
+          create: (_) => _cubit,
           child: BlocListener<MeetingCubit, MeetingState>(
             listener: (context, state) {
               // Handle leave session
