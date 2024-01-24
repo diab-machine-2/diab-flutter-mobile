@@ -32,10 +32,34 @@ class MeetingPreparePage extends StatelessWidget {
                   if (!ok) {
                     return;
                   }
+
+                  final textController = TextEditingController(text: 'room-001');
+                  Widget dialog = AlertDialog(
+                    title: Text('Enter Topic'),
+                    content: TextField(
+                      controller: textController,
+                      decoration: InputDecoration(hintText: "Topic"),
+                    ),
+                    actions: [
+                      TextButton(
+                        child: Text('OK'),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                      ),
+                    ],
+                  );
+                  await showDialog(
+                    context: context,
+                    builder: (context) => dialog,
+                  );
+                  String topic = textController.text;
+                  textController.dispose();
+
                   var user = AppSettings.userInfo;
-                  String sessionName = "tpc-001";
+                  String sessionName = topic;
                   String displayName = user?.fullName ?? "Test Meeting";
-                  String token = await _generateToken(context);
+                  String token = _generateToken(topic);
                   String sessionIdleTimeoutMins = "40";
                   String sessionPassword = "1";
 
@@ -69,7 +93,7 @@ class MeetingPreparePage extends StatelessWidget {
     return result;
   }
 
-  Future<String> _generateToken(BuildContext context) async {
+  String _generateToken(String topic) {
     // var user = AppSettings.userInfo;
     String userId = _makeId(10);
     // if (user != null) {
@@ -79,29 +103,6 @@ class MeetingPreparePage extends StatelessWidget {
       'ZOOM_SDK_KEY': 'mGEaJOJsQcW8OGAXZzawsg',
       'ZOOM_SDK_SECRET': 'cKwuffl2tTQXLLheIar6YQP7axs8HA3rbVpZ',
     };
-
-    final textController = TextEditingController(text: 'tpc-001');
-    Widget dialog = AlertDialog(
-      title: Text('Enter Topic'),
-      content: TextField(
-        controller: textController,
-        decoration: InputDecoration(hintText: "Topic"),
-      ),
-      actions: [
-        TextButton(
-          child: Text('OK'),
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-        ),
-      ],
-    );
-    await showDialog(
-      context: context,
-      builder: (context) => dialog,
-    );
-    String topic = textController.text;
-    textController.dispose();
 
     try {
       var iat = DateTime.now();
