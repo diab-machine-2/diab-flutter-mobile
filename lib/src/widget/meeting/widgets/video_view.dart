@@ -75,6 +75,7 @@ class VideoView extends fzv.ZoomView {
           child: child,
           minScale: 1.0,
           maxScale: 2.5,
+          constrained: false,
         );
       }
       return FutureBuilder(
