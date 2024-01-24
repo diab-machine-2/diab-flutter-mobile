@@ -3,7 +3,7 @@ description: DiaB mobile application
 
 publish_to: "none"
 
-version: 1.4.3+106
+version: 1.4.7+3
 
 environment:
   sdk: ">=2.18.0 <4.0.0"

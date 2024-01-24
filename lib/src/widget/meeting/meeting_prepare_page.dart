@@ -76,8 +76,8 @@ class MeetingPreparePage extends StatelessWidget {
     //   userId = user.id.toString();
     // }
     const Map configs = {
-      'ZOOM_SDK_KEY': 'hsfKYyjnTkmQ1fxaB_mZbQ',
-      'ZOOM_SDK_SECRET': 'z242HVf7X6je0NzOA97WFfP3GgqtUTKseyYm',
+      'ZOOM_SDK_KEY': 'mGEaJOJsQcW8OGAXZzawsg',
+      'ZOOM_SDK_SECRET': 'cKwuffl2tTQXLLheIar6YQP7axs8HA3rbVpZ',
     };
 
     final textController = TextEditingController(text: 'tpc-001');
