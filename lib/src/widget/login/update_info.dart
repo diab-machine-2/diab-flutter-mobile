@@ -22,8 +22,8 @@ import 'package:medical/src/widget/profile/widgets/gender_picker.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 import '../../repo/user/user_client.dart';
-import '../../widgets/CalendarPicker/custom_date_picker2.dart';
-import '../../widgets/CalendarPicker/custom_year_picker.dart';
+// import '../../widgets/CalendarPicker/custom_date_picker2.dart';
+// import '../../widgets/CalendarPicker/custom_year_picker.dart';
 
 class UpdateInfoController extends StatefulWidget {
   final String? type;
@@ -772,34 +772,36 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
   }
 
   showDatePicker(BuildContext context) {
-    CustomCalendarDatePicker2.showDatePicker(context,
-        maxTime: DateTime.now(),
-        minTime: DateTime.parse('1900-01-01 00:00:00.000Z'),
-        showTitleActions: true,
-        onChanged: (date) {}, onConfirm: (date) async {
-      FirebaseTracking.onSelectBirthDay(date);
-      setState(() {
-        selectedDate = date;
-      });
-    },
-        currentTime: selectedDate == null
-            ? DateTime.parse('1970-01-01 00:00:00.000Z')
-            : selectedDate,
-        locale: LocaleType.vi);
+    // TODO: check
+    // CustomCalendarDatePicker2.showDatePicker(context,
+    //     maxTime: DateTime.now(),
+    //     minTime: DateTime.parse('1900-01-01 00:00:00.000Z'),
+    //     showTitleActions: true,
+    //     onChanged: (date) {}, onConfirm: (date) async {
+    //   FirebaseTracking.onSelectBirthDay(date);
+    //   setState(() {
+    //     selectedDate = date;
+    //   });
+    // },
+    //     currentTime: selectedDate == null
+    //         ? DateTime.parse('1970-01-01 00:00:00.000Z')
+    //         : selectedDate,
+    //     locale: LocaleType.vi);
   }
 
   showYearPicker(BuildContext context) {
-    CustomCalendarYearPicker.showDatePicker(context,
-        maxTime: DateTime.now(),
-        showTitleActions: true,
-        onChanged: (year) {}, onConfirm: (year) async {
-      FirebaseTracking.onSelectSickYear(year);
-      setState(() {
-        selectedYear = year;
-      });
-    },
-        currentTime: selectedYear == null ? DateTime.now() : selectedYear,
-        locale: LocaleType.vi);
+    // TODO: check
+    // CustomCalendarYearPicker.showDatePicker(context,
+    //     maxTime: DateTime.now(),
+    //     showTitleActions: true,
+    //     onChanged: (year) {}, onConfirm: (year) async {
+    //   FirebaseTracking.onSelectSickYear(year);
+    //   setState(() {
+    //     selectedYear = year;
+    //   });
+    // },
+    //     currentTime: selectedYear == null ? DateTime.now() : selectedYear,
+    //     locale: LocaleType.vi);
   }
 
   _submitData() async {

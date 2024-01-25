@@ -82,7 +82,6 @@ Future<void> main() async {
   }
 
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
-  final window = WidgetsFlutterBinding.ensureInitialized().window;
 
   ByteData data =
       await PlatformAssetBundle().load('assets/ca/lets-encrypt-r3.pem');
@@ -98,7 +97,8 @@ Future<void> main() async {
   // ]);
   //await initializeDateFormatting('vi_VN');
   await TrackingManager.initializeFlutterFire();
-  await _ensureScreenSize(window);
+  // final window = widgetsBinding.window;
+  // await _ensureScreenSize(window);
   await EasyLocalization.ensureInitialized();
   await Firebase.initializeApp();
 
