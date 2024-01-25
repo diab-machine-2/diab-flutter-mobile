@@ -36,13 +36,15 @@ class CourseQuizPage extends StatefulWidget {
       required this.lessonId,
       this.lessonSectionItem,
       this.onDone,
-      required this.lessonDetail})
+      required this.lessonDetail,
+      this.onComplete})
       : super(key: key);
 
   final String lessonId;
   final LessonSectionItem? lessonSectionItem;
   final LessonSectionListResponseData lessonDetail;
   final Function(bool isPassed)? onDone;
+  final Function()? onComplete;
 
   @override
   _CourseQuizPageState createState() => _CourseQuizPageState();
@@ -318,6 +320,8 @@ class _CourseQuizPageState extends State<CourseQuizPage> {
                 }
                 //   if (_cubit.isPassed) {
                 _cubit.setCompleteQuiz();
+                // To update progress
+                widget.onComplete!();
                 //   }
                 _buildDialogCompleted(seeResultCallback: () async {
                   await TrackingManager.analytics.logEvent(
