@@ -963,7 +963,7 @@ class UserClient extends FetchClient {
             "beforeEat": model.beforeEat,
             "afterEat": model.afterEat,
             "beforeSleeping": model.beforeSleeping,
-            "glucoseUnit": model.glucoseUnit
+            "glucoseUnit": model.glucoseUnit,
           });
       if (response.statusCode == 200) {
         return true;

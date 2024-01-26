@@ -19,19 +19,20 @@ import 'dart:io' show Platform;
 
 class GlucoseClient extends FetchClient {
   Future<List<TimeFrameModel>> fetchFlucoseTimeFrame({int? time}) async {
-    try {
-      final Response response = await super.fetchData(
-          url: '/App/TimeFrame',
-          params: time == null ? {} : {'time': time.toString()});
-      if (response.statusCode == 200) {
-        return TimeFrameModel.toList(response.data['data']);
-      } else {
-        final error = Error.fromJson(response);
-        throw error;
-      }
-    } catch (e) {
-      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+    // try {
+    final Response response = await super.fetchData(
+        url: '/App/TimeFrame',
+        params: time == null ? {} : {'time': time.toString()});
+
+    if (response.statusCode == 200) {
+      return TimeFrameModel.toList(response.data['data']);
+    } else {
+      final error = Error.fromJson(response);
+      throw error;
     }
+    // } catch (e) {
+    //   throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+    // }
   }
 
 //============ lấy tần suất phân bổ =============/
@@ -140,7 +141,7 @@ class GlucoseClient extends FetchClient {
 
   Future<List<dynamic>> fetchGlucoseInputNotExist(
       List<Map<String, String>> glucoses) async {
-    // try {
+    try {
     List<Map<String, dynamic>> params = [];
     glucoses.forEach((element) {
       params.add({
@@ -160,25 +161,30 @@ class GlucoseClient extends FetchClient {
     } else {
       throw response.reasonPhrase!;
     }
-    // } catch (e) {
-    //   print(e.toString());
-    //   throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
-    // }
+    } catch (e) {
+      print(e.toString());
+      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+    }
   }
 
-  Future<bool> postGlucoseInputs(List<Map<String, String>> glucoses,
-      {int? type}) async {
+  Future<bool> postGlucoseInputs(
+    List<Map<String, String>> glucoses, {
+    int? type,
+    String? modelName,
+    String? modelNumber,
+  }) async {
     try {
       List<Map<String, dynamic>> params = [];
       glucoses.forEach((element) {
         params.add({
           'glucose': double.tryParse(element['glucose']!) ?? 0,
           'createDate': int.tryParse(element['date']!) ?? 0,
-          'unitType': type ?? 1
+          'unitType': type ?? 1,
+          'modelName': modelName,
+          'modelNumber': modelNumber,
         });
       });
 
-      Console.logJson('params', params);
       final response = await super.postHttp2(
           path: '/App/Glucose/Inputs',
           params: jsonEncode({'glucoseInputs': params}));

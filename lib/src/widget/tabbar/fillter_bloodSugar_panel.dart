@@ -26,7 +26,7 @@ class _FillterBloodPanelState extends State<FillterBloodPanel> {
     R.string.filter_day.tr(args: ['90']),
   ];
 
-  int? selectedIndex = 0;
+  int? selectedIndex = 2;
   String time = '';
 
   @override

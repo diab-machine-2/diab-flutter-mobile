@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
@@ -21,6 +20,7 @@ import 'package:medical/src/widget/BloodSugar/bloodSugar_table_distribution.dart
 import 'package:medical/src/widget/BloodSugar/widget/bloodSugar_table.dart';
 import 'package:medical/src/widget/BloodSugar/widget/bloodSugar_table_compare.dart';
 import 'package:medical/src/widget/Bmi/bmi_detail_tabbar.dart';
+import 'package:medical/src/widget/Bmi/views/add_bmi_view/add_bmi_view.dart';
 import 'package:medical/src/widget/Bmi/widget/add_bmi.dart';
 import 'package:medical/src/widget/Emotion/emotion_detail_tabbar.dart';
 import 'package:medical/src/widget/Emotion/widget/add_emo.dart';
@@ -386,7 +386,8 @@ class _AppState extends State<App> {
                       final data = settings.arguments as Map<String, dynamic>?;
                       return _buildRoute(
                           settings,
-                          AddBmiController(
+                          AddBmiView(
+                          // AddBmiController(
                             type: data?['type'],
                             id: data?['id'],
                             goalId: data?['goalId'],

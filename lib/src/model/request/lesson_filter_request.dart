@@ -21,8 +21,6 @@ class LessonFilterRequest {
   List<String?>? lessonIdList;
   bool? isNotCompleted;
   int? week;
-  int? page;
-  int? size;
 
   LessonFilterRequest({
     this.type,
@@ -30,8 +28,6 @@ class LessonFilterRequest {
     this.lessonIdList,
     this.isNotCompleted,
     this.week,
-    this.page,
-    this.size,
   });
   LessonFilterRequest.fromJson(Map<String, dynamic> json) {
     type = json['type']?.toInt();
@@ -52,9 +48,7 @@ class LessonFilterRequest {
       lessonIdList = arr0;
     }
     isNotCompleted = json['isNotCompleted'];
-    week = json['week']?.toInt();    
-    page = json['page']?.toInt();
-    size = json['size']?.toInt();
+    week = json['week']?.toInt();
   }
   Map<String, dynamic> toJson() {
     final data = <String, dynamic>{};
@@ -76,9 +70,7 @@ class LessonFilterRequest {
       data['lessonIdList'] = arr0;
     }
     data['isNotCompleted'] = isNotCompleted;
-    data['week'] = week;    
-    data['page'] = page;  
-    data['size'] = size;
+    data['week'] = week;
     return data;
   }
 }

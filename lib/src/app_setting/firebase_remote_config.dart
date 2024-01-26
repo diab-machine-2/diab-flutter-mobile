@@ -12,19 +12,31 @@ class FirebaseRemoteSetting {
   late String _appStoreVersion;
   late String _playStoreVersion;
   late String _storeNavigationUrl;
+  late bool _activePopupHealthConnect; //ACTIVE_POPUP_HEALTH_CONNECT
 
   String get appStoreVersion => _appStoreVersion;
   String get playStoreVersion => _playStoreVersion;
   String get storeNavigationUrl => _storeNavigationUrl;
+  bool get activePopupHealthConnect => _activePopupHealthConnect;
 
   Future<void> init() async {
-    await remoteConfig.setConfigSettings(RemoteConfigSettings(
-      fetchTimeout: const Duration(seconds: 10),
-      minimumFetchInterval: const Duration(seconds: 10),
-    ));
-    await remoteConfig.fetchAndActivate();
+    // await remoteConfig.setConfigSettings(RemoteConfigSettings(
+    //   fetchTimeout: const Duration(seconds: 10),
+    //   minimumFetchInterval: const Duration(seconds: 10),
+    // ));
+    // await remoteConfig.fetchAndActivate();
+    final List<Future<void>> setupFutures = [
+      remoteConfig.setConfigSettings(RemoteConfigSettings(
+        fetchTimeout: const Duration(seconds: 10),
+        minimumFetchInterval: const Duration(seconds: 10),
+      )),
+      remoteConfig.fetchAndActivate(),
+    ];
+    await Future.wait(setupFutures);
     _appStoreVersion = remoteConfig.getString('APP_STORE_VERSION');
     _playStoreVersion = remoteConfig.getString('PLAY_STORE_VERSION');
     _storeNavigationUrl = remoteConfig.getString('STORE_NAVIGATION_URL');
+    _activePopupHealthConnect =
+        remoteConfig.getBool('ACTIVE_POPUP_HEALTH_CONNECT');
   }
 }

@@ -27,6 +27,7 @@ class UserModel {
   final String? email;
   final double? height;
   final double? weight;
+  final double? weightPregnancy;
   final int? dateOfBirth;
   final int? diabetesStatus;
   final String? diabetesName;
@@ -150,6 +151,7 @@ class UserModel {
     required this.address,
     required this.goalWaist,
     required this.goalWeight,
+    required this.weightPregnancy,
     required this.energyGoal,
     required this.isLinkedFacebook,
     required this.isLinkedGoogle,
@@ -294,6 +296,7 @@ class UserModel {
         district: district ?? this.district,
         height: height ?? this.height,
         weight: weight ?? this.weight,
+        weightPregnancy: weightPregnancy ?? this.weightPregnancy,
         ward: ward ?? this.ward,
         dateOfBirth: dateOfBirth ?? this.dateOfBirth,
         diabetesStatus: diabetesStatus ?? this.diabetesStatus,
@@ -391,6 +394,7 @@ class UserModel {
               : ProvinceModel.fromJson(json['district'])),
       height: json['height'],
       weight: json['weight'],
+      weightPregnancy: json['weightPregnancy'],
       ward: json['ward'] == null
           ? null
           : (json['ward'] is String
@@ -602,6 +606,7 @@ class UserModel {
     }
     data['height'] = this.height;
     data['weight'] = this.weight;
+    data['weightPregnancy'] = this.weightPregnancy;
     data['goalWaist'] = this.goalWaist;
     data['goalWeight'] = this.goalWeight;
     data['energyGoal'] = this.energyGoal;

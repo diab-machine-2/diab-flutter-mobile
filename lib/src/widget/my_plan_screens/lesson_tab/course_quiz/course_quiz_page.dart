@@ -181,8 +181,9 @@ class _CourseQuizPageState extends State<CourseQuizPage> {
                 ),
                 SizedBox(width: 10.w),
                 ShareLessonButton(
-                  featureImage: _cubit.featureImage,
+                  featureImage: _cubit.lessonDetail.image?.url,
                   lesson: _cubit.lessonSectionItem!,
+                  lessonDescription: _cubit.lessonDetail.description,
                 ),
               ],
             ),
@@ -529,7 +530,6 @@ class _CourseQuizPageState extends State<CourseQuizPage> {
       onShare: () => _onShareLesson(
         context,
         lesson: _cubit.lessonSectionItem!,
-        featureImage: _cubit.featureImage,
       ),
       onCancel: () {
         NavigationUtil.pop(context);
@@ -545,10 +545,11 @@ class _CourseQuizPageState extends State<CourseQuizPage> {
   _onShareLesson(
     BuildContext context, {
     required LessonSectionItem lesson,
-    required String? featureImage,
   }) async {
-    String shareLink = await DynamicLinkConfig.instance
-        .createShareLessonLink(lesson: lesson, featureImage: featureImage);
+    String shareLink = await DynamicLinkConfig.instance.createShareLessonLink(
+        lesson: lesson,
+        featureImage: _cubit.lessonDetail.image?.url,
+        lessonDescription: _cubit.lessonDetail.description);
     AppShare.instance.lessonDetail(context, shareLink, lesson.name ?? "");
   }
 }
