@@ -180,6 +180,7 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                                 ),
                                 if (_cubit.currentSectionDetail != null)
                                   ShareLessonButton(
+                                    lessonDescription: _cubit.lessonDescription,
                                     featureImage: _cubit.featureImage,
                                     lesson: _cubit.currentSectionDetail!,
                                   ),
@@ -426,7 +427,9 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
 
   _onShareLesson(BuildContext context, LessonSectionItem lesson) async {
     String shareLink = await DynamicLinkConfig.instance.createShareLessonLink(
-        lesson: lesson, featureImage: _cubit.featureImage);
+        lesson: lesson,
+        featureImage: _cubit.featureImage,
+        lessonDescription: _cubit.lessonDescription);
     AppShare.instance.lessonDetail(context, shareLink, lesson.name ?? "");
   }
 

@@ -13,6 +13,7 @@ import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:medical/src/widgets/spacing_row.dart';
 
 import '../../../utils/utils.dart';
 
@@ -33,7 +34,7 @@ class BmiDetailControllerState extends State<BmiDetailController>
   int page = 1;
   bool? hasMore = false;
   bool isLoading = false;
-  int periodFilterType = 1;
+  int periodFilterType = 3;
 
   @override
   void initState() {
@@ -78,9 +79,9 @@ class BmiDetailControllerState extends State<BmiDetailController>
   Widget build(BuildContext context) {
     super.build(context);
     return BlocProvider<WeightBloc>(
-        create: (context) => WeightBloc(),
-        child: BlocBuilder<WeightBloc, WeightState>(
-            builder: (BuildContext context, WeightState state) {
+      create: (context) => WeightBloc(),
+      child: BlocBuilder<WeightBloc, WeightState>(
+        builder: (BuildContext context, WeightState state) {
           currentContext = context;
           List<InputWeightModel>? model;
           if (state is WeightInitial) {
@@ -106,329 +107,260 @@ class BmiDetailControllerState extends State<BmiDetailController>
           }
 
           return RefreshIndicator(
-              onRefresh: _refresh,
-              child: Scaffold(
-                backgroundColor: R.color.backgroundColor,
-                body: model == null
-                    ? Center(child: CircularProgressIndicator())
-                    : Container(
-                        decoration: BoxDecoration(
-                            image: DecorationImage(
-                          image: AssetImage(R.drawable.bg_detail),
-                          fit: BoxFit.cover,
-                        )),
-                        child: LoadMore(
-                            onLoadMore: _loadMorePage,
-                            isFinish: !hasMore!,
-                            whenEmptyLoad: false,
-                            delegate: CustomLoadMoreDelegate(),
-                            textBuilder: DefaultLoadMoreTextBuilder.english,
-                            child: ListView.builder(
-                              controller: _scrollController,
-                              physics: AlwaysScrollableScrollPhysics(),
-                              itemCount: model.length,
-                              itemBuilder: (BuildContext context, int index) {
-                                final element = model![index];
-                                final previousElement =
-                                    index == 0 ? null : model[index - 1];
+            onRefresh: _refresh,
+            child: Scaffold(
+              backgroundColor: R.color.backgroundColor,
+              body: model == null
+                  ? Center(child: CircularProgressIndicator())
+                  : Container(
+                      decoration: BoxDecoration(
+                          image: DecorationImage(
+                        image: AssetImage(R.drawable.bg_detail),
+                        fit: BoxFit.cover,
+                      )),
+                      child: LoadMore(
+                        onLoadMore: _loadMorePage,
+                        isFinish: !hasMore!,
+                        whenEmptyLoad: false,
+                        delegate: CustomLoadMoreDelegate(),
+                        textBuilder: DefaultLoadMoreTextBuilder.english,
+                        child: ListView.builder(
+                          controller: _scrollController,
+                          physics: AlwaysScrollableScrollPhysics(),
+                          itemCount: model.length,
+                          itemBuilder: (BuildContext context, int index) {
+                            InputWeightModel kpiItem = model![index];
+                            final previousElement =
+                                index == 0 ? null : model[index - 1];
 
-                                final showDate = previousElement == null
-                                    ? true
-                                    : (convertCustomDate(element.date!) !=
-                                        convertCustomDate(
-                                            previousElement.date!));
-                                return GestureDetector(
-                                    onTap: () {
-                                      KpiBodyWeightTracking.clickKpiItem();
-                                      Navigator.pushNamed(
-                                          context, NavigatorName.add_bmi,
-                                          arguments: {
-                                            'type': 'update',
-                                            'id': element.id,
-                                          });
-                                    },
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        showDate
-                                            ? Padding(
-                                                padding: EdgeInsets.only(
-                                                    left: 16,
-                                                    right: 16,
-                                                    top: 16),
-                                                child: Text(
-                                                  convertCustomDate(
-                                                      model[index].date!),
-                                                  textAlign: TextAlign.left,
-                                                  style: TextStyle(
-                                                      fontSize: 18,
-                                                      fontWeight:
-                                                          FontWeight.w600),
-                                                ),
-                                              )
-                                            : SizedBox(),
-                                        Padding(
-                                          padding: const EdgeInsets.all(16.0),
-                                          child: Container(
-                                              decoration: BoxDecoration(
-                                                  borderRadius:
-                                                      BorderRadius.circular(16),
-                                                  color: R.color.white),
-                                              child: Padding(
-                                                padding:
-                                                    const EdgeInsets.all(16.0),
-                                                child: Column(children: [
-                                                  Column(
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .start,
-                                                    children: [
-                                                      Row(
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .spaceBetween,
-                                                        children: [
-                                                          Row(
-                                                            mainAxisAlignment:
-                                                                MainAxisAlignment
-                                                                    .start,
-                                                            children: [
-                                                              Padding(
-                                                                padding:
-                                                                    const EdgeInsets
-                                                                            .only(
-                                                                        top:
-                                                                            6.0),
-                                                                child: Text(
-                                                                    '${R.string.bmi.tr()}: ',
-                                                                    style: TextStyle(
-                                                                        color: R
-                                                                            .color
-                                                                            .textDark,
-                                                                        fontSize:
-                                                                            16,
-                                                                        fontWeight:
-                                                                            FontWeight.w400)),
-                                                              ),
-                                                              Text(
-                                                                  roundNumber(model[
-                                                                          index]
-                                                                      .bmi!),
-                                                                  style: TextStyle(
-                                                                      fontFamily:
-                                                                          'Viga',
-                                                                      color: toColor(
-                                                                          model[index]
-                                                                              .bmiColorCode),
-                                                                      fontSize:
-                                                                          24,
-                                                                      fontWeight:
-                                                                          FontWeight
-                                                                              .w400)),
-                                                            ],
-                                                          ),
-                                                          Container(
-                                                            padding:
-                                                                EdgeInsets.only(
-                                                                    left: 16,
-                                                                    right: 16,
-                                                                    top: 8,
-                                                                    bottom: 8),
-                                                            decoration: BoxDecoration(
-                                                                color: toColor(
-                                                                    model[index]
-                                                                        .bmiBackgroundColorCode),
-                                                                borderRadius: BorderRadius.only(
-                                                                    topLeft: Radius
-                                                                        .circular(
-                                                                            13),
-                                                                    topRight: Radius
-                                                                        .circular(
-                                                                            13),
-                                                                    bottomLeft:
-                                                                        Radius.circular(
-                                                                            13))),
-                                                            child: Text(
-                                                                '${element.bmiText}',
-                                                                style: TextStyle(
-                                                                    color: toColor(
-                                                                        model[index]
-                                                                            .bmiTextColorCode),
-                                                                    fontSize:
-                                                                        15,
-                                                                    fontWeight:
-                                                                        FontWeight
-                                                                            .w700)),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                      SizedBox(height: 8),
-                                                      Row(
-                                                        children: [
-                                                          Text('${R.string.can_nang.tr()}:',
-                                                              style: TextStyle(
-                                                                  color: R.color
-                                                                      .black,
-                                                                  fontSize: 16,
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .w400)),
-                                                          SizedBox(width: 4),
-                                                          Text(
-                                                              Utils.showValue(
-                                                                  model[index]
-                                                                      .weight ?? 0),
-                                                              style: TextStyle(
-                                                                  fontFamily:
-                                                                      'Viga',
-                                                                  color: R.color
-                                                                      .black,
-                                                                  fontSize: 20,
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .w400)),
-                                                          SizedBox(width: 4),
-                                                          Text(R.string.kg.tr(),
-                                                              style: TextStyle(
-                                                                  color: R.color
-                                                                      .black,
-                                                                  fontSize: 16,
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .w400)),
-                                                          SizedBox(width: 8),
-                                                          Padding(
-                                                            padding:
-                                                                const EdgeInsets
-                                                                        .only(
-                                                                    bottom:
-                                                                        10.0),
-                                                            child: Text('.',
-                                                                style: TextStyle(
-                                                                    color: R
-                                                                        .color
-                                                                        .black,
-                                                                    fontSize:
-                                                                        30,
-                                                                    fontWeight:
-                                                                        FontWeight
-                                                                            .w700)),
-                                                          ),
-                                                          SizedBox(width: 8),
-                                                          Text('${R.string.waist.tr()}:',
-                                                              style: TextStyle(
-                                                                  color: R.color
-                                                                      .black,
-                                                                  fontSize: 16,
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .w400)),
-                                                          SizedBox(width: 4),
-                                                          Text(
-                                                              '${model[index].waist!.toInt()}',
-                                                              style: TextStyle(
-                                                                  fontFamily:
-                                                                      'Viga',
-                                                                  color: toColor(
-                                                                      model[index]
-                                                                          .waistColorCode),
-                                                                  fontSize: 20,
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .w400)),
-                                                          SizedBox(width: 4),
-                                                          Text(R.string.cm.tr(),
-                                                              style: TextStyle(
-                                                                  color: R.color
-                                                                      .black,
-                                                                  fontSize: 16,
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .w400)),
-                                                        ],
-                                                      ),
-                                                    ],
-                                                  ),
-                                                  SizedBox(height: 8),
-                                                  Row(
-                                                    children: [
-                                                      Text(
-                                                        convertToUTC(
-                                                                element.date!,
-                                                                'HH:mm') +
-                                                            ',',
-                                                        style: TextStyle(
-                                                            color:
-                                                                R.color.black,
-                                                            fontSize: 16,
-                                                            fontWeight:
-                                                                FontWeight
-                                                                    .w400),
-                                                      ),
-                                                      SizedBox(width: 4),
-                                                      Text(
-                                                          element.timeFrameText!,
-                                                          style: TextStyle(
-                                                              color:
-                                                                  R.color.black,
-                                                              fontSize: 16,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w400)),
-                                                    ],
-                                                  ),
-                                                  element.note != '' &&
-                                                          element.note != null
-                                                      ? Column(
-                                                          crossAxisAlignment:
-                                                              CrossAxisAlignment
-                                                                  .start,
-                                                          children: [
-                                                            SizedBox(
-                                                                height: 16),
-                                                            Container(
-                                                                height: 1,
-                                                                color: R.color
-                                                                    .color0xffEEEFF3),
-                                                            SizedBox(
-                                                                height: 16),
-                                                            Row(
-                                                              children: [
-                                                                Text(
-                                                                    '${R.string.ghi_chu.tr()}: ',
-                                                                    style: TextStyle(
-                                                                        color: R
-                                                                            .color
-                                                                            .black,
-                                                                        fontSize:
-                                                                            16,
-                                                                        fontWeight:
-                                                                            FontWeight.w700)),
-                                                                Text(
-                                                                    element
-                                                                        .note!,
-                                                                    style: TextStyle(
-                                                                        color: R
-                                                                            .color
-                                                                            .black,
-                                                                        fontSize:
-                                                                            16,
-                                                                        fontWeight:
-                                                                            FontWeight.w400)),
-                                                              ],
-                                                            ),
-                                                          ],
-                                                        )
-                                                      : SizedBox()
-                                                ]),
-                                              )),
-                                        ),
-                                      ],
-                                    ));
-                              },
-                            ))),
-              ));
-        }));
+                            final showDate = previousElement == null
+                                ? true
+                                : (convertCustomDate(kpiItem.date!) !=
+                                    convertCustomDate(previousElement.date!));
+
+                            return GestureDetector(
+                                onTap: () {
+                                  KpiBodyWeightTracking.clickKpiItem();
+                                  Navigator.pushNamed(
+                                      context, NavigatorName.add_bmi,
+                                      arguments: {
+                                        'type': 'update',
+                                        'id': kpiItem.id,
+                                      });
+                                },
+                                child: SpacingColumn(
+                                  spacing: 15,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    showDate
+                                        ? Padding(
+                                            padding: EdgeInsets.only(
+                                                left: 16, right: 16, top: 16),
+                                            child: Text(
+                                              convertCustomDate(kpiItem.date!),
+                                              textAlign: TextAlign.left,
+                                              style: TextStyle(
+                                                  fontSize: 18,
+                                                  fontWeight: FontWeight.w600),
+                                            ),
+                                          )
+                                        : SizedBox(),
+                                    Container(
+                                        margin: const EdgeInsets.symmetric(horizontal: 15),
+                                        padding: const EdgeInsets.all(16.0),
+                                        decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(16),
+                                            color: R.color.white),
+                                        child: SpacingColumn(
+                                          spacing: 8,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            if (!kpiItem.isPregnancy)
+                                              Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
+                                                children: [
+                                                  _kpiBmi(kpiItem),
+                                                  _rangeName(kpiItem),
+                                                ],
+                                              ),
+                                            SpacingRow(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.center,
+                                              mainAxisAlignment:
+                                                  kpiItem.isPregnancy
+                                                      ? MainAxisAlignment
+                                                          .spaceBetween
+                                                      : MainAxisAlignment.start,
+                                              spacing: 6,
+                                              children: [
+                                                _weightItem(kpiItem),
+                                                // Vòng eo
+                                                kpiItem.isPregnancy
+                                                    ? _rangeName(kpiItem)
+                                                    : _waistItem(kpiItem)
+                                              ],
+                                            ),
+                                            _dateTimeItem(kpiItem),
+                                            _noteItem(kpiItem),
+                                          ],
+                                        )),
+                                  ],
+                                ));
+                          },
+                        ),
+                      ),
+                    ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _noteItem(InputWeightModel kpiItem) {
+    return kpiItem.note != '' && kpiItem.note != null
+        ? Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SizedBox(height: 16),
+              Container(height: 1, color: R.color.color0xffEEEFF3),
+              SizedBox(height: 16),
+              Row(
+                children: [
+                  Text('${R.string.ghi_chu.tr()}: ',
+                      style: TextStyle(
+                          color: R.color.black,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700)),
+                  Text(kpiItem.note!,
+                      style: TextStyle(
+                          color: R.color.black,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w400)),
+                ],
+              ),
+            ],
+          )
+        : SizedBox();
+  }
+
+  Widget _dateTimeItem(InputWeightModel kpiItem) {
+    return Row(
+      children: [
+        Text(
+          convertToUTC(kpiItem.date!, 'HH:mm') + ',',
+          style: TextStyle(
+              color: R.color.black, fontSize: 16, fontWeight: FontWeight.w400),
+        ),
+        SizedBox(width: 4),
+        Text(kpiItem.timeFrameText!,
+            style: TextStyle(
+                color: R.color.black,
+                fontSize: 16,
+                fontWeight: FontWeight.w400)),
+      ],
+    );
+  }
+
+  Widget _waistItem(InputWeightModel kpiItem) {
+    return SpacingRow(
+      spacing: 7,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(bottom: 10.0),
+          child: Text('.',
+              style: TextStyle(
+                  color: R.color.black,
+                  fontSize: 30,
+                  fontWeight: FontWeight.w700)),
+        ),
+        Text('${R.string.waist.tr()}:',
+            style: TextStyle(
+                color: R.color.black,
+                fontSize: 16,
+                fontWeight: FontWeight.w400)),
+        Text('${kpiItem.waist!.toInt()}',
+            style: TextStyle(
+                fontFamily: 'Viga',
+                color: toColor(kpiItem.waistColorCode),
+                fontSize: 20,
+                fontWeight: FontWeight.w400)),
+        Text(R.string.cm.tr(),
+            style: TextStyle(
+                color: R.color.black,
+                fontSize: 16,
+                fontWeight: FontWeight.w400)),
+      ],
+    );
+  }
+
+  Widget _weightItem(InputWeightModel kpiItem) {
+    return SpacingRow(
+      spacing: 5,
+      children: [
+        Text('${R.string.can_nang.tr()}:',
+            style: TextStyle(
+                color: R.color.black,
+                fontSize: 16,
+                fontWeight: FontWeight.w400)),
+        Text(Utils.showValue(kpiItem.weight ?? 0),
+            style: TextStyle(
+                fontFamily: 'Viga',
+                color: R.color.black,
+                fontSize: 20,
+                fontWeight: FontWeight.w400)),
+        Text(R.string.kg.tr(),
+            style: TextStyle(
+                color: R.color.black,
+                fontSize: 16,
+                fontWeight: FontWeight.w400)),
+      ],
+    );
+  }
+
+  Widget _rangeName(InputWeightModel kpiItem) {
+    return Container(
+      padding: EdgeInsets.only(left: 16, right: 16, top: 8, bottom: 8),
+      decoration: BoxDecoration(
+          color: toColor(kpiItem.bmiBackgroundColorCode),
+          borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(13),
+              topRight: Radius.circular(13),
+              bottomLeft: Radius.circular(13))),
+      child: Text('${kpiItem.bmiText}',
+          style: TextStyle(
+              color: toColor(kpiItem.bmiTextColorCode),
+              fontSize: 15,
+              fontWeight: FontWeight.w700)),
+    );
+  }
+
+  Widget _kpiBmi(InputWeightModel kpiItem) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Text(
+          '${R.string.bmi.tr()}: ',
+          style: TextStyle(
+            color: R.color.textDark,
+            fontSize: 16,
+          ),
+        ),
+        Text(
+          roundNumber(kpiItem.bmi!),
+          style: TextStyle(
+            fontFamily: 'Viga',
+            color: toColor(kpiItem.bmiColorCode),
+            fontSize: 24,
+          ),
+        ),
+      ],
+    );
   }
 }

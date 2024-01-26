@@ -48,8 +48,6 @@ class _LessonTabPageState extends State<LessonTabPage>
   final ScrollController _lessonScrollController = ScrollController();
   final ScrollController _weekScrollController = ScrollController();
 
-  int currentPage = 1; 
-
   @override
   void initState() {
     super.initState();
@@ -58,12 +56,6 @@ class _LessonTabPageState extends State<LessonTabPage>
     final AppRepository appRepository = AppRepository();
     _cubit = LessonTabCubit(appRepository, _myPlanCubit);
     _cubit.getInitData();
-    
-    _lessonScrollController.addListener(() {if (_lessonScrollController.position.pixels ==
-          _lessonScrollController.position.maxScrollExtent) {
-            currentPage = currentPage + 1;
-            _cubit.getInitData(currentPage: currentPage);
-      }});
   }
 
   @override
@@ -189,9 +181,7 @@ class _LessonTabPageState extends State<LessonTabPage>
                           );
                           if (result is FilterData) {
                             _cubit.filterData = result;
-                            currentPage = 1;
-                            _cubit.RefreshDataOfList();
-                            _cubit.getInitData(currentPage: currentPage);
+                            _cubit.getInitData();
                           } else {
                             _cubit.refresh();
                           }
@@ -245,7 +235,6 @@ class _LessonTabPageState extends State<LessonTabPage>
                           controller: _controller,
                           scrollController: _lessonScrollController,
                           onRefresh: () {
-                            currentPage =1;
                             _cubit.onRefresh(isRefresh: true);
                           },
                           child: _cubit.lessonsList!.isEmpty

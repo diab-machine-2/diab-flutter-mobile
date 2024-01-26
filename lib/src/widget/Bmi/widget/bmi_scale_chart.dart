@@ -22,7 +22,7 @@ class BmiScaleChartState extends State<BmiScaleChart>
   @override
   bool get wantKeepAlive => true;
   late BuildContext currentContext;
-  int periodFilterType = 1;
+  int periodFilterType = 3;
   int trendTypeIndex = 1;
   int touchIndex = -1;
   String trendType = R.string.all.tr();
@@ -116,8 +116,8 @@ class BmiScaleChartState extends State<BmiScaleChart>
                                     padding: EdgeInsets.only(
                                         left: 16, right: 16, top: 8, bottom: 8),
                                     decoration: BoxDecoration(
-                                        color: toColor(model
-                                            .currentLedend!.backgroundColorCode),
+                                        color: toColor(model.currentLedend!
+                                            .backgroundColorCode),
                                         borderRadius: BorderRadius.only(
                                             topLeft: Radius.circular(13),
                                             topRight: Radius.circular(13),
@@ -168,7 +168,8 @@ class BmiScaleChartState extends State<BmiScaleChart>
                                       SizedBox(height: 16),
                                       Padding(
                                         padding: EdgeInsets.all(16),
-                                        child: Text('${R.string.chu_thich.tr()}:'),
+                                        child:
+                                            Text('${R.string.chu_thich.tr()}:'),
                                       ),
                                       model.legends.length == 0
                                           ? SizedBox()
@@ -263,7 +264,8 @@ class BmiScaleChartState extends State<BmiScaleChart>
                             needleStartWidth: 0,
                             needleEndWidth: 0,
                             knobStyle: KnobStyle(
-                                knobRadius: 0.07, color: R.color.color0xffEFEFEF),
+                                knobRadius: 0.07,
+                                color: R.color.color0xffEFEFEF),
                           ),
                           NeedlePointer(
                             needleStartWidth: 0.1,
@@ -277,8 +279,8 @@ class BmiScaleChartState extends State<BmiScaleChart>
                           NeedlePointer(
                             needleStartWidth: 0,
                             needleEndWidth: 0,
-                            knobStyle:
-                                KnobStyle(knobRadius: 0.0275, color: R.color.mainColor),
+                            knobStyle: KnobStyle(
+                                knobRadius: 0.0275, color: R.color.mainColor),
                           ),
                           NeedlePointer(
                             needleStartWidth: 0,
@@ -327,10 +329,10 @@ class BmiScaleChartState extends State<BmiScaleChart>
                     RadialAxis(
                       minorTicksPerInterval: 8,
                       tickOffset: 0,
-                      minorTickStyle:
-                          MinorTickStyle(color: R.color.grayComponentBorder, length: 2),
-                      majorTickStyle:
-                          MajorTickStyle(color: R.color.grayComponentBorder, length: 2),
+                      minorTickStyle: MinorTickStyle(
+                          color: R.color.grayComponentBorder, length: 2),
+                      majorTickStyle: MajorTickStyle(
+                          color: R.color.grayComponentBorder, length: 2),
                       showAxisLine: false,
                       showLabels: false,
                       showTicks: true,

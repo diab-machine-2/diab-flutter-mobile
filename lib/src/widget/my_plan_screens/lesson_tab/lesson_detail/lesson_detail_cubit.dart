@@ -36,6 +36,7 @@ class LessonDetailCubit extends Cubit<LessonDetailState> {
   AudioManager? audioManager;
   SectionStatusData? sectionStatus;
   String? featureImage;
+  String? lessonDescription;
   int percentComplete = 0;
 
   bool isQuizLesson = false;
@@ -224,6 +225,7 @@ class LessonDetailCubit extends Cubit<LessonDetailState> {
       lessonDetail = response.data;
       sectionList = response.data?.lessonSections ?? [];
       featureImage = response.data?.image?.url;
+      lessonDescription = response.data?.description;
       if (response.data?.lessonReviews?.isNotEmpty == true) {
         review = response.data?.lessonReviews?.first;
       }

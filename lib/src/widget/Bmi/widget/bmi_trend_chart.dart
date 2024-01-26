@@ -7,11 +7,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/bloc/weight/weight_bloc.dart';
 import 'package:medical/src/modal/bmi/weight_trend.dart';
+import 'package:medical/src/modal/user/user_model.dart';
 import 'package:medical/src/repo/user/user_client.dart';
 import 'package:medical/src/repo/weight/weight_client.dart';
+import 'package:medical/src/utils/app_log.dart';
+import 'package:medical/src/utils/app_media_query.dart';
 import 'package:medical/src/utils/navigator_name.dart';
+import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/Bmi/bmi_detail_tabbar.dart';
 import 'package:medical/src/widget/Bmi/widget/add_bmi.dart';
 import 'package:medical/src/widget/helper/helper.dart';
@@ -19,9 +24,8 @@ import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:medical/src/modal/error/error_model.dart';
 import 'package:medical/src/widgets/empty_data_box.dart';
+import 'package:medical/src/widgets/spacing_row.dart';
 import 'package:visibility_detector/visibility_detector.dart';
-
-import '../../../utils/utils.dart';
 
 class BmiTrendChart extends StatefulWidget {
   BmiTrendChart({Key? key}) : super(key: key);
@@ -36,7 +40,7 @@ class BmiTrendChartState extends State<BmiTrendChart>
   bool get wantKeepAlive => true;
 
   late BuildContext currentContext;
-  int periodFilterType = 1;
+  int periodFilterType = 3;
   int trendTypeIndex = 1;
   int touchIndex = -1;
   String trendType = R.string.all.tr();
@@ -51,20 +55,22 @@ class BmiTrendChartState extends State<BmiTrendChart>
   reloadData(int periodFilter) async {
     periodFilterType = periodFilter;
     BlocProvider.of<WeightBloc>(currentContext).add(FetchTrendWeight(
-        currentDateTime:
-            (DateTime.now().millisecondsSinceEpoch ~/ 1000).toString(),
-        periodFilterType: periodFilterType.toString(),
-        page: periodFilterType.toString()));
+      currentDateTime:
+          (DateTime.now().millisecondsSinceEpoch ~/ 1000).toString(),
+      periodFilterType: periodFilterType.toString(),
+      page: '1',
+    ));
   }
 
   @override
   Widget build(BuildContext context) {
     super.build(context);
     final width = MediaQuery.of(context).size.width;
+
     return BlocProvider<WeightBloc>(
-        create: (context) => WeightBloc(),
-        child: BlocBuilder<WeightBloc, WeightState>(
-            builder: (BuildContext context, WeightState state) {
+      create: (context) => WeightBloc(),
+      child: BlocBuilder<WeightBloc, WeightState>(
+        builder: (BuildContext context, WeightState state) {
           currentContext = context;
           TrendWeightModel? model;
 
@@ -80,6 +86,69 @@ class BmiTrendChartState extends State<BmiTrendChart>
           }
           if (state is WeightTrendLoaded) {
             model = state.trend;
+          }
+          Widget description = SizedBox();
+          bool isGestationalDiabetes = Utils.isGestationalDiabetes();
+          if (isGestationalDiabetes) {
+            double weightPregnancy = AppSettings.userInfo?.weightPregnancy ?? 0;
+            description = RichText(
+              text: TextSpan(
+                text: '${weightPregnancy.abs()}',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: R.color.teal,
+                ),
+                children: <TextSpan>[
+                  TextSpan(
+                    text: ' kg ',
+                    style: TextStyle(
+                        color: R.color.teal,
+                        fontWeight: FontWeight.w400,
+                        fontSize: 14),
+                  ),
+                  TextSpan(
+                    text:
+                        'đã ${weightPregnancy.isNegative ? "giảm" : "tăng"} trong thai kỳ',
+                    style: TextStyle(
+                        color: R.color.primaryGreyColor,
+                        fontWeight: FontWeight.w400,
+                        fontSize: 16),
+                  )
+                ],
+              ),
+            );
+          } else if (model != null &&
+              model.current != null &&
+              model.trendItems != null &&
+              model.trendItems!.length >= 2) {
+            double tmp = model.current! - model.trendItems![1].value!;
+            description = RichText(
+              text: TextSpan(
+                text: 'Bạn đã ${tmp.isNegative ? "giảm" : "tăng"}',
+                style: TextStyle(
+                    color: R.color.primaryGreyColor,
+                    fontWeight: FontWeight.w400,
+                    fontSize: 16),
+                children: <TextSpan>[
+                  TextSpan(
+                    text: ' ${tmp.abs()} kg ',
+                    style: TextStyle(
+                        color: R.color.accentColor,
+                        fontWeight: FontWeight.w700,
+                        fontSize: 16),
+                  ),
+                  TextSpan(
+                    text:
+                        'so với lần trước!\nSắp đạt mục tiêu rồi, cố lên bạn nhé!',
+                    style: TextStyle(
+                        color: R.color.primaryGreyColor,
+                        fontWeight: FontWeight.w400,
+                        fontSize: 16),
+                  )
+                ],
+              ),
+            );
           }
           return model == null
               ? Container(
@@ -172,11 +241,11 @@ class BmiTrendChartState extends State<BmiTrendChart>
                                         bottom: 18,
                                         left: 20,
                                         right: 20),
-                                    child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Column(
+                                    child: SpacingRow(
+                                      spacing: 15,
+                                      children: [
+                                        Expanded(
+                                          child: Column(
                                             crossAxisAlignment:
                                                 CrossAxisAlignment.start,
                                             children: [
@@ -187,7 +256,8 @@ class BmiTrendChartState extends State<BmiTrendChart>
                                                           FontWeight.w400,
                                                       fontSize: 14.0)),
                                               SizedBox(height: 4),
-                                              Row(
+                                              SpacingRow(
+                                                spacing: 15,
                                                 children: [
                                                   model.current == 0
                                                       ? Text('--',
@@ -228,10 +298,9 @@ class BmiTrendChartState extends State<BmiTrendChart>
                                               ),
                                             ],
                                           ),
-                                          SizedBox(
-                                            width: 16,
-                                          ),
-                                          Column(
+                                        ),
+                                        Expanded(
+                                          child: Column(
                                             crossAxisAlignment:
                                                 CrossAxisAlignment.start,
                                             children: [
@@ -248,7 +317,7 @@ class BmiTrendChartState extends State<BmiTrendChart>
                                                       ? Text('--',
                                                           style: TextStyle(
                                                               color: R.color
-                                                                  .textDark,
+                                                                  .mainColor,
                                                               fontSize: 24,
                                                               fontWeight:
                                                                   FontWeight
@@ -281,7 +350,9 @@ class BmiTrendChartState extends State<BmiTrendChart>
                                               ),
                                             ],
                                           ),
-                                        ]),
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                   model.trendItems == null
                                       ? EmptyDataBox(
@@ -295,24 +366,34 @@ class BmiTrendChartState extends State<BmiTrendChart>
                                           },
                                         )
                                       : Container(
+                                          padding: const EdgeInsets.only(
+                                              left: 16, right: 16, bottom: 15),
                                           decoration: BoxDecoration(
                                             borderRadius:
                                                 BorderRadius.circular(16),
                                             color: R.color.white,
                                           ),
-                                          child: Padding(
-                                              padding: const EdgeInsets.only(
-                                                  left: 16, right: 16),
-                                              child: buildChart(model)),
+                                          child: SpacingColumn(
+                                            separator: Divider(),
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              buildChart(model),
+                                              description,
+                                            ],
+                                          ),
                                         ),
                                 ],
                               )),
                           SizedBox(height: 16),
+
                           // buildDescription(model)
                         ]),
                   ),
                 );
-        }));
+        },
+      ),
+    );
   }
 
   buildChart(TrendWeightModel model) {
@@ -322,8 +403,9 @@ class BmiTrendChartState extends State<BmiTrendChart>
     List<TrendItemWeightModel> trends = model.trendItems!;
     model.trendItems!.forEach((element) {
       dates.add(element.date);
-      // List.generate(element.subTrends.length - 1, (index) => dates.add(null));
     });
+
+    dates.sort((a, b) => a!.compareTo(b!));
 
     double minY = trends.map<double>((e) => e.value ?? 0).reduce(min);
     minY = (minY * (trends.length == 1 ? 0.5 : 0.8)).roundToDouble();
@@ -334,6 +416,60 @@ class BmiTrendChartState extends State<BmiTrendChart>
         List.generate(5, (index) => (jumpValue * index + minY).round())
             .reversed
             .toList();
+    bool isGestationalDiabetes = Utils.isGestationalDiabetes();
+
+    Widget safeRanges = SizedBox();
+    int index = 0;
+    if (isGestationalDiabetes) {
+      safeRanges = Padding(
+        padding: const EdgeInsets.only(left: 8),
+        child: Row(
+            children: model.weightSafes!.map(
+          (data) {
+            return Container(
+              height: 300,
+              color: Colors.transparent,
+              child: Column(
+                children: [
+                  !(model.safeWeightFrom! < minY || model.safeWeightTo! > maxY)
+                      ? SizedBox()
+                      : SizedBox(
+                          height: 300 -
+                              (296 *
+                                  (data.safeWeightTo - minY) /
+                                  (maxY - minY))),
+                  Container(
+                      width: ((data.length) * (width + 20)).toDouble() - 36,
+                      height: ((data.safeWeightTo - data.safeWeightFrom) *
+                          (296 / (maxY - minY))),
+                      color: R.color.green.withOpacity(0.1)),
+                ],
+              ),
+            );
+          },
+        ).toList()),
+      );
+    } else if (!isGestationalDiabetes &&
+        !(model.safeWeightFrom! < minY || model.safeWeightTo! > maxY)) {
+      safeRanges = Container(
+        height: 300,
+        constraints: BoxConstraints(minHeight: 0),
+        padding: EdgeInsets.only(left: 8),
+        child: Column(
+          children: [
+            SizedBox(
+                height:
+                    300 - (296 * (model.safeWeightTo! - minY) / (maxY - minY))),
+            Container(
+                width:
+                    ((length < 5 ? 5 : length) * (width + 20)).toDouble() - 36,
+                height: ((model.safeWeightTo! - model.safeWeightFrom!) *
+                    (296 / (maxY - minY))),
+                color: R.color.green.withOpacity(0.1)),
+          ],
+        ),
+      );
+    }
 
     return Padding(
       padding: EdgeInsets.only(top: 0, bottom: 0, right: 0, left: 0),
@@ -451,6 +587,7 @@ class BmiTrendChartState extends State<BmiTrendChart>
                         ? SizedBox()
                         : Container(
                             height: 300,
+                            constraints: BoxConstraints(minHeight: 0),
                             padding: EdgeInsets.only(left: 8),
                             child: Column(
                               children: [
@@ -471,6 +608,7 @@ class BmiTrendChartState extends State<BmiTrendChart>
                               ],
                             ),
                           ),
+                    safeRanges,
                     model.goal == null ||
                             model.goal! < minY ||
                             model.goal! > maxY
@@ -593,10 +731,6 @@ class BmiTrendChartState extends State<BmiTrendChart>
                                   return '';
                                 }
                                 final date = dates[value.toInt()];
-
-                                print(
-                                    'duc2111 value = ${value.toInt()} previousDate = $previousDate, date = $date');
-
                                 if (previousDate == date) return '';
                                 previousDate = date;
 
@@ -612,31 +746,6 @@ class BmiTrendChartState extends State<BmiTrendChart>
                                     return convertToUTC(date, 'dd/MM');
                                   }
                                 }
-                                //  if (value.toInt() > dates.length - 1) {
-                                //   return '';
-                                // }
-                                // final date = dates[value.toInt()];
-                                // int? dateBefore;
-                                // if(value.toInt() > 0){
-                                //   dateBefore = dates[value.toInt() - 1];
-                                // }
-                                // if(dateBefore == null){
-                                //    if (date == null) {
-                                //       return '';
-                                //     } else {
-                                //       return convertToUTC(date, 'dd/MM');
-                                //     }
-                                // } else {
-                                //   if(date == dateBefore){
-                                //     return '';
-                                //   } else {
-                                //     if (date == null) {
-                                //       return '';
-                                //     } else {
-                                //       return convertToUTC(date, 'dd/MM');
-                                //     }
-                                //   }
-                                // }
                               },
                             ),
                             leftTitles: SideTitles(
@@ -663,30 +772,30 @@ class BmiTrendChartState extends State<BmiTrendChart>
                   ])),
             )
           ]),
-          Padding(
-            padding: const EdgeInsets.only(left: 16.0, bottom: 16, top: 16),
-            child: Row(
-              children: [
-                model.iconUrl!.isEmpty
-                    ? SizedBox()
-                    : Image.asset(
-                        R.drawable.ic_happy_weight,
-                        width: 24,
-                        height: 24,
-                      ),
-                SizedBox(
-                  width: 8,
-                ),
-                Expanded(
-                  child: Text(model.message!,
-                      style: TextStyle(
-                          color: R.color.textDark,
-                          fontWeight: FontWeight.w400,
-                          fontSize: 14.0)),
-                ),
-              ],
-            ),
-          )
+          // Padding(
+          //   padding: const EdgeInsets.only(left: 16.0, top: 16),
+          //   child: Row(
+          //     children: [
+          //       model.iconUrl!.isEmpty
+          //           ? SizedBox()
+          //           : Image.asset(
+          //               R.drawable.ic_happy_weight,
+          //               width: 24,
+          //               height: 24,
+          //             ),
+          //       SizedBox(
+          //         width: 8,
+          //       ),
+          //       Expanded(
+          //         child: Text(model.message!,
+          //             style: TextStyle(
+          //                 color: R.color.textDark,
+          //                 fontWeight: FontWeight.w400,
+          //                 fontSize: 14.0)),
+          //       ),
+          //     ],
+          //   ),
+          // )
         ],
       ),
     );
@@ -694,14 +803,14 @@ class BmiTrendChartState extends State<BmiTrendChart>
 
   List<LineChartBarData> linesBarData(TrendWeightModel model) {
     List<TrendItemWeightModel> trends = model.trendItems!;
+    trends.sort((a, b) => a.date!.compareTo(b.date!));
 
     return trends.length == 0
         ? []
         : [
             LineChartBarData(
-              spots: List.generate(trends.length, (index) {
-                return FlSpot((index).toDouble(), trends[index].value!);
-              }),
+              spots: List.generate(trends.length,
+                  (index) => FlSpot((index).toDouble(), trends[index].value!)),
               isCurved: false,
               colors: [R.color.black],
               barWidth: 0.75,

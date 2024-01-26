@@ -1,5 +1,6 @@
 import 'package:medical/src/modal/base/images.dart';
 import 'package:meta/meta.dart';
+
 @immutable
 class InputWeightModel {
   final String? id;
@@ -19,6 +20,7 @@ class InputWeightModel {
   final String? bmiBackgroundColorCode;
   final String? waistColorCode;
   final List<ImagesModel> images;
+  final bool isPregnancy;
 
   const InputWeightModel({
     required this.id,
@@ -38,6 +40,7 @@ class InputWeightModel {
     required this.bmiBackgroundColorCode,
     required this.waistColorCode,
     required this.images,
+    this.isPregnancy = false,
   });
   @override
   factory InputWeightModel.fromJson(Map<String, dynamic> json) {
@@ -58,6 +61,7 @@ class InputWeightModel {
         bmiTextColorCode: json['bmiTextColorCode'],
         bmiBackgroundColorCode: json['bmiBackgroundColorCode'],
         waistColorCode: json['waistColorCode'],
+        isPregnancy: json['isPregnancy'] ?? false,
         images: ImagesModel.toList(json['images']));
   }
 

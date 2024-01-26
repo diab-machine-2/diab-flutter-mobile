@@ -1,4 +1,5 @@
 import 'package:meta/meta.dart';
+
 @immutable
 class ScheduleGlucoseTimeModel {
   final int? beforeEat;
@@ -6,18 +7,20 @@ class ScheduleGlucoseTimeModel {
   final int? beforeSleeping;
   final int? glucoseUnit;
 
-  const ScheduleGlucoseTimeModel(
-      {required this.beforeEat,
-      required this.afterEat,
-      required this.beforeSleeping,
-      required this.glucoseUnit});
+  const ScheduleGlucoseTimeModel({
+    required this.beforeEat,
+    required this.afterEat,
+    required this.beforeSleeping,
+    required this.glucoseUnit,
+  });
 
   factory ScheduleGlucoseTimeModel.fromJson(Map<String, dynamic> json) {
     return ScheduleGlucoseTimeModel(
-        beforeEat: json['beforeEat'],
-        afterEat: json['afterEat'],
-        beforeSleeping: json['beforeSleeping'],
-        glucoseUnit: json['glucoseUnit']);
+      beforeEat: json['beforeEat'],
+      afterEat: json['afterEat'],
+      beforeSleeping: json['beforeSleeping'],
+      glucoseUnit: json['glucoseUnit'],
+    );
   }
 
   static List<ScheduleGlucoseTimeModel> toList(List<dynamic> items) {

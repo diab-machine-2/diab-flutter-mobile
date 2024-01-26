@@ -1201,6 +1201,7 @@ class _AddBmiControllerState extends BaseState<AddBmiController>
       sharedProfile: userInfo.sharedProfile,
       checked: false,
       curentWeekPregnancy: userInfo.curentWeekPregnancy,
+      weightPregnancy: userInfo.weightPregnancy,
     );
     try {
       BotToast.showLoading();

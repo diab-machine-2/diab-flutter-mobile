@@ -34,7 +34,6 @@ class CourseQuizCubit extends Cubit<CourseQuizState> {
   List<QuizAnswerRequest> quizAnswerId = [];
 
   String quizName = '';
-  String? featureImage;
 
   bool isShowResult = false;
 
@@ -165,7 +164,6 @@ class CourseQuizCubit extends Cubit<CourseQuizState> {
         listQuiz = response?.data?.quizLessons ?? [];
       }
       quizName = response?.data?.name ?? '';
-      featureImage = response?.data?.image?.url;
       if (listQuiz.isNotEmpty != true) {
         emit(const CourseQuizDone());
       }

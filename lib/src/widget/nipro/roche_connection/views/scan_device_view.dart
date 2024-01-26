@@ -63,6 +63,8 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
   bool deviceFound = false;
   int previousDataCount = 0;
   late GlucoseUnitsFlag glucoseUnits;
+  String? modelName;
+  String? modelNumber;
 
   @override
   void initState() {
@@ -172,7 +174,8 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
     setState(() {
       isLoading = true;
     });
-    bool result = await GlucoseClient().postGlucoseInputs(selectedGlucose);
+    bool result = await GlucoseClient().postGlucoseInputs(selectedGlucose,
+        modelName: modelName, modelNumber: modelNumber);
     setState(() {
       isLoading = false;
     });
@@ -619,13 +622,21 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
       if (rocheCharacteristic.uuid.toString() ==
           GlucoseProfileConfiguration.MODEL_NUMBER_STRING_UUID) {
         List<int> modelNumberStringValue = await rocheCharacteristic.read();
-        String result = utf8.decode(modelNumberStringValue);
-        if (GlucoseProfileConfiguration.mgPerDLModels.contains(result)) {
+        String modelNo = utf8.decode(modelNumberStringValue);
+        if (GlucoseProfileConfiguration.mgPerDLModels.contains(modelNo)) {
           glucoseUnits = GlucoseUnitsFlag.mgPerDL;
         } else {
           glucoseUnits = GlucoseUnitsFlag.mmolPerL;
         }
-        updateGlucoseUnit(glucoseUnits);
+        String modelName = '';
+        GlucoseProfileConfiguration.rocheModels.forEach((name, values) {
+          if (values.contains(modelNo)) {
+            modelName = name;
+            return;
+          }
+        });
+        updateGlucoseUnit(glucoseUnits,
+            modelNameParam: modelName, modelNoParam: modelNo);
       }
     }
 
@@ -660,17 +671,19 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
     }
   }
 
-  Future<void> updateGlucoseUnit(GlucoseUnitsFlag glucoseUnitsFlag) async {
+  Future<void> updateGlucoseUnit(GlucoseUnitsFlag glucoseUnitsFlag,
+      {String? modelNameParam, String? modelNoParam}) async {
     bool isMilligramPerDeciliter = AppSettings.userInfo!.glucoseUnit == 1;
     if (glucoseUnitsFlag == GlucoseUnitsFlag.mgPerDL &&
         !isMilligramPerDeciliter) {
       ScheduleGlucoseTimeModel timeModel =
           await UserClient().fetchScheduleGlucoseSetting();
       await UserClient().updateScheduleGlucoseSetting(ScheduleGlucoseTimeModel(
-          beforeEat: timeModel.beforeEat,
-          afterEat: timeModel.afterEat,
-          beforeSleeping: timeModel.beforeSleeping,
-          glucoseUnit: 1));
+        beforeEat: timeModel.beforeEat,
+        afterEat: timeModel.afterEat,
+        beforeSleeping: timeModel.beforeSleeping,
+        glucoseUnit: 1,
+      ));
       await UserClient().fetchUser();
       Observable.instance.notifyObservers([], notifyName: "refresh_home");
     } else if (glucoseUnitsFlag == GlucoseUnitsFlag.mmolPerL &&
@@ -678,13 +691,16 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
       ScheduleGlucoseTimeModel timeModel =
           await UserClient().fetchScheduleGlucoseSetting();
       await UserClient().updateScheduleGlucoseSetting(ScheduleGlucoseTimeModel(
-          beforeEat: timeModel.beforeEat,
-          afterEat: timeModel.afterEat,
-          beforeSleeping: timeModel.beforeSleeping,
-          glucoseUnit: 2));
+        beforeEat: timeModel.beforeEat,
+        afterEat: timeModel.afterEat,
+        beforeSleeping: timeModel.beforeSleeping,
+        glucoseUnit: 2,
+      ));
       await UserClient().fetchUser();
       Observable.instance.notifyObservers([], notifyName: "refresh_home");
     }
+    modelName = modelNameParam;
+    modelNumber = modelNoParam;
   }
 
   void startCheckingData() {

@@ -126,8 +126,6 @@ class _TabbarControllerState extends State<TabbarController>
           }
         });
 
-    await FirebaseRemoteSetting.instance.init();
-
     if (Const.ENVIRONMENT_DEFAULT == 'product') {
       await getNewVersion();
     }

@@ -52,15 +52,13 @@ class FilterData {
 
   int? get week => currentWeek == null ? null : currentWeek!;
 
-  LessonFilterRequest getRequest({required int type, int page = 1, size = 3}) {
+  LessonFilterRequest getRequest({required int type}) {
     return LessonFilterRequest(
       type: type,
       tagIdList: tagFilterStringList,
       lessonIdList: nameFilterStringList,
       isNotCompleted: isCompleted,
       week: filterWithWeek ? week : currentWeek,
-      page: page,
-      size: size,
     );
   }
 }
