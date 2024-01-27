@@ -66,7 +66,7 @@ class VideoView extends fzv.ZoomView {
         color: Colors.black,
         alignment: Alignment.center,
         child: fzv.View(
-          key: Key('fullScreen: true, sharing: $sharing'),
+          key: Key('userId: ${user!.userId}, fullScreen: true, sharing: $sharing'),
           creationParams: creationParams,
         ),
       );
