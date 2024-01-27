@@ -1,6 +1,7 @@
 import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_datetime_picker_plus/flutter_datetime_picker_plus.dart';
 import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:medical/res/R.dart';
@@ -22,8 +23,8 @@ import 'package:medical/src/widget/profile/widgets/gender_picker.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 import '../../repo/user/user_client.dart';
-// import '../../widgets/CalendarPicker/custom_date_picker2.dart';
-// import '../../widgets/CalendarPicker/custom_year_picker.dart';
+import '../../widgets/CalendarPicker/custom_date_picker2.dart';
+import '../../widgets/CalendarPicker/custom_year_picker.dart';
 
 class UpdateInfoController extends StatefulWidget {
   final String? type;
@@ -113,7 +114,7 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
   check() async {
     ReferralCodeTemp? referralCodeData = await AppStorages.getReferralCode();
     if (referralCodeData != null) {
-      final referalCode = referralCodeData.referralCode;
+      final _ = referralCodeData.referralCode;
     }
   }
 
@@ -294,7 +295,7 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
                                             nameFocusNode.unfocus();
                                             FirebaseTracking.onClickBirthDay(
                                                 selectedDate);
-                                            showDatePicker(context);
+                                            _showDatePicker(context);
                                           },
                                           child: Container(
                                             height: 52,
@@ -491,7 +492,7 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
                                             nameFocusNode.unfocus();
                                             FirebaseTracking.onClickSickYear(
                                                 selectedYear);
-                                            showYearPicker(context);
+                                            _showYearPicker(context);
                                           },
                                           child: Container(
                                             height: 52,
@@ -771,37 +772,35 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
     );
   }
 
-  showDatePicker(BuildContext context) {
-    // TODO: check
-    // CustomCalendarDatePicker2.showDatePicker(context,
-    //     maxTime: DateTime.now(),
-    //     minTime: DateTime.parse('1900-01-01 00:00:00.000Z'),
-    //     showTitleActions: true,
-    //     onChanged: (date) {}, onConfirm: (date) async {
-    //   FirebaseTracking.onSelectBirthDay(date);
-    //   setState(() {
-    //     selectedDate = date;
-    //   });
-    // },
-    //     currentTime: selectedDate == null
-    //         ? DateTime.parse('1970-01-01 00:00:00.000Z')
-    //         : selectedDate,
-    //     locale: LocaleType.vi);
+  void _showDatePicker(BuildContext context) {
+    CustomCalendarDatePicker2.showDatePicker(context,
+        maxTime: DateTime.now(),
+        minTime: DateTime.parse('1900-01-01 00:00:00.000Z'),
+        showTitleActions: true,
+        onChanged: (date) {}, onConfirm: (date) async {
+      FirebaseTracking.onSelectBirthDay(date);
+      setState(() {
+        selectedDate = date;
+      });
+    },
+        currentTime: selectedDate == null
+            ? DateTime.parse('1970-01-01 00:00:00.000Z')
+            : selectedDate,
+        locale: LocaleType.vi);
   }
 
-  showYearPicker(BuildContext context) {
-    // TODO: check
-    // CustomCalendarYearPicker.showDatePicker(context,
-    //     maxTime: DateTime.now(),
-    //     showTitleActions: true,
-    //     onChanged: (year) {}, onConfirm: (year) async {
-    //   FirebaseTracking.onSelectSickYear(year);
-    //   setState(() {
-    //     selectedYear = year;
-    //   });
-    // },
-    //     currentTime: selectedYear == null ? DateTime.now() : selectedYear,
-    //     locale: LocaleType.vi);
+  void _showYearPicker(BuildContext context) {
+    CustomCalendarYearPicker.showDatePicker(context,
+        maxTime: DateTime.now(),
+        showTitleActions: true,
+        onChanged: (year) {}, onConfirm: (year) async {
+      FirebaseTracking.onSelectSickYear(year);
+      setState(() {
+        selectedYear = year;
+      });
+    },
+        currentTime: selectedYear == null ? DateTime.now() : selectedYear,
+        locale: LocaleType.vi);
   }
 
   _submitData() async {
