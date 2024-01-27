@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:dartz/dartz.dart';
+import 'package:equatable/equatable.dart';
 import 'package:medical/src/modal/error/failures.dart';
 import 'package:medical/src/modal/learning/learning_post_model.dart';
 import 'package:medical/src/widget/news_detail/data/newDetail_repository.dart';

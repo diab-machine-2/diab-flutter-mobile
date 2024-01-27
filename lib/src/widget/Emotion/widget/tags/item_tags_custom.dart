@@ -428,16 +428,13 @@ class _ItemTagsCustomState extends State<ItemTagsCustom> {
       case MainAxisAlignment.spaceBetween:
       case MainAxisAlignment.start:
         return TextAlign.start;
-        break;
       case MainAxisAlignment.end:
         return TextAlign.end;
-        break;
       case MainAxisAlignment.spaceAround:
       case MainAxisAlignment.spaceEvenly:
       case MainAxisAlignment.center:
         return TextAlign.center;
     }
-    return null;
   }
 
   ///TextStyle

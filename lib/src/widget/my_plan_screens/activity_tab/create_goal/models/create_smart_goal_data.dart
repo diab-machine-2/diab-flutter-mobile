@@ -78,7 +78,6 @@ class CreateSmartGoalData {
         }
         fillDataFromSmartGoal(smartGoalData);
         return;
-        break;
       case ScheduleType.weight:
         if (smartGoalData == null) {
           goalTimeOrFrequency = '1';
@@ -90,7 +89,6 @@ class CreateSmartGoalData {
         }
         fillDataFromSmartGoal(smartGoalData);
         return;
-        break;
       case ScheduleType.emotion:
         if (smartGoalData == null) {
           goalTimeOrFrequency = '3';
@@ -102,7 +100,6 @@ class CreateSmartGoalData {
         }
         fillDataFromSmartGoal(smartGoalData);
         return;
-        break;
       case ScheduleType.exercise:
         if (smartGoalData == null) {
           dailyTargetDuration = '30';

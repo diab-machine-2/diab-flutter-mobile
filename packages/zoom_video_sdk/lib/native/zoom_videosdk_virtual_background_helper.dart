@@ -57,7 +57,7 @@ class ZoomVideoSdkVirtualBackgroundHelper extends ZoomVideoSdkVirtualBackgroundH
         .invokeMethod<String>('addVirtualBackgroundItem', params)
         .then<String>((String? value) => value ?? "");
 
-    Map<String, dynamic> itemMap = jsonDecode(itemString!);
+    Map<String, dynamic> itemMap = jsonDecode(itemString);
     var vbItem =
     ZoomVideoSdkVirtualBackgroundItem.fromJson(itemMap);
     return vbItem;

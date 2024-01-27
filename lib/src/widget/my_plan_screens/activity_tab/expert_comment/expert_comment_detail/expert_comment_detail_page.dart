@@ -12,7 +12,7 @@ import '../../../../../widgets/network_image_widget.dart';
 import 'expert_comment_detail.dart';
 
 class ExpertCommentDetailPage extends StatefulWidget {
-  ExpertCommentModel? item;
+  final ExpertCommentModel? item;
 
   ExpertCommentDetailPage({Key? key, this.item}) : super(key: key);
 

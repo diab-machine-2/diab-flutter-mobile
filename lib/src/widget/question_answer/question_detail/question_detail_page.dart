@@ -15,8 +15,6 @@ import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/question_answer/all_question_answer/model/question_model.dart';
-import 'package:medical/src/widgets/block_bottom_sheet.dart';
-import 'package:medical/src/widgets/button_widget.dart';
 import 'package:medical/src/widgets/html_text_widget.dart';
 import 'package:medical/src/widgets/network_image_widget.dart';
 import '../question_answer_utils.dart';
@@ -566,60 +564,60 @@ class _QuestionDetailPageState extends State<QuestionDetailPage>
           );
   }
 
-  _enterAnswer(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      isDismissible: true,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (context) => BlockBottomSheet(
-        title: 'Nôi dung bình luận',
-        child: Padding(
-          padding: const EdgeInsets.all(15),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              SizedBox(height: 15),
-              TextField(
-                minLines: 16,
-                maxLines: 16,
-                style: TextStyle(
-                  fontSize: 18.0,
-                  color: R.color.black,
-                ),
-                decoration: InputDecoration(
-                    counterText: '',
-                    isDense: true,
-                    contentPadding:
-                        EdgeInsets.symmetric(horizontal: 16, vertical: 18),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderSide:
-                          BorderSide(color: R.color.grayBorder, width: 1),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    filled: true,
-                    hintStyle: TextStyle(color: R.color.gray, fontSize: 18),
-                    hintText: R.string.add_comment.tr(),
-                    fillColor: R.color.white),
-                controller: _controller,
-              ),
-              SizedBox(height: 25),
-              ButtonWidget(
-                title: "Gửi",
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-              )
-            ],
-          ),
-        ),
-      ),
-    );
-  }
+  // void _enterAnswer(BuildContext context) {
+  //   showModalBottomSheet(
+  //     context: context,
+  //     isDismissible: true,
+  //     isScrollControlled: true,
+  //     backgroundColor: Colors.transparent,
+  //     builder: (context) => BlockBottomSheet(
+  //       title: 'Nôi dung bình luận',
+  //       child: Padding(
+  //         padding: const EdgeInsets.all(15),
+  //         child: Column(
+  //           crossAxisAlignment: CrossAxisAlignment.start,
+  //           mainAxisSize: MainAxisSize.min,
+  //           children: [
+  //             SizedBox(height: 15),
+  //             TextField(
+  //               minLines: 16,
+  //               maxLines: 16,
+  //               style: TextStyle(
+  //                 fontSize: 18.0,
+  //                 color: R.color.black,
+  //               ),
+  //               decoration: InputDecoration(
+  //                   counterText: '',
+  //                   isDense: true,
+  //                   contentPadding:
+  //                       EdgeInsets.symmetric(horizontal: 16, vertical: 18),
+  //                   border: OutlineInputBorder(
+  //                     borderRadius: BorderRadius.circular(10),
+  //                   ),
+  //                   enabledBorder: OutlineInputBorder(
+  //                     borderSide:
+  //                         BorderSide(color: R.color.grayBorder, width: 1),
+  //                     borderRadius: BorderRadius.circular(10),
+  //                   ),
+  //                   filled: true,
+  //                   hintStyle: TextStyle(color: R.color.gray, fontSize: 18),
+  //                   hintText: R.string.add_comment.tr(),
+  //                   fillColor: R.color.white),
+  //               controller: _controller,
+  //             ),
+  //             SizedBox(height: 25),
+  //             ButtonWidget(
+  //               title: "Gửi",
+  //               onPressed: () {
+  //                 Navigator.pop(context);
+  //               },
+  //             )
+  //           ],
+  //         ),
+  //       ),
+  //     ),
+  //   );
+  // }
 
   _buildCommentTextBox(BuildContext context) {
     if (_cubit.questionModel.status == 0) return Container();

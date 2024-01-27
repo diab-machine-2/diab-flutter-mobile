@@ -17,7 +17,7 @@ import '../../../model/response/smart_goal_list_reponse.dart';
 import 'introduce_survey.dart';
 
 class IntroduceSurveyPage extends StatefulWidget {
-  SmartGoalList? survey;
+  final SmartGoalList? survey;
 
   IntroduceSurveyPage({Key? key, this.survey}) : super(key: key);
 

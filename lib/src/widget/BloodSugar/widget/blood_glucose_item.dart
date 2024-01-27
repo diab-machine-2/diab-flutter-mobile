@@ -34,6 +34,7 @@ class BloodGlucoseItemState extends State<BloodGlucoseItem>
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return BlocProvider<GlucoseBloc>(
       create: (context) => GlucoseBloc(),
       child: BlocBuilder<GlucoseBloc, GlucoseState>(

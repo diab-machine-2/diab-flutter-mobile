@@ -82,7 +82,7 @@ class _MeetingPageState extends State<MeetingPage>
 
   @override
   void didChangeMetrics() async {
-    final bottomInset = WidgetsBinding.instance.window.viewInsets.bottom;
+    final bottomInset = MediaQuery.of(context).viewInsets.bottom;
     final keyboardVisible = bottomInset > 0.0;
     if (keyboardVisible == this._keyboardVisible.value) {
       return;

@@ -52,10 +52,10 @@ class AddBmiController extends StatefulWidget {
 
 class _AddBmiControllerState extends BaseState<AddBmiController>
     with SingleTickerProviderStateMixin {
-  TextEditingController _controllerWeight = TextEditingController();
-  TextEditingController _controllerHeight = TextEditingController();
+  // TextEditingController _controllerWeight = TextEditingController();
+  // TextEditingController _controllerHeight = TextEditingController();
   TextEditingController _controllerNote = TextEditingController();
-  TextEditingController _controllerHip = TextEditingController();
+  // TextEditingController _controllerHip = TextEditingController();
   int maxMedia = 5;
   List<dynamic> files = [];
   DateTime selectedDate = DateTime.now();
@@ -130,6 +130,7 @@ class _AddBmiControllerState extends BaseState<AddBmiController>
 
   @override
   void dispose() {
+    _controllerNote.dispose();
     _animtionController.dispose();
     _focusNode.dispose();
     super.dispose();
@@ -979,9 +980,9 @@ class _AddBmiControllerState extends BaseState<AddBmiController>
   }
 
   editData() async {
-    final weight = _controllerWeight.text;
-    final height = _controllerHeight.text;
-    final hip = _controllerHip.text;
+    // final weight = _controllerWeight.text;
+    // final height = _controllerHeight.text;
+    // final hip = _controllerHip.text;
     final note = _controllerNote.text;
 
     // if (weight.isEmpty) {

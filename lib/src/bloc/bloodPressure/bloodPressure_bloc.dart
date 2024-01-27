@@ -46,7 +46,7 @@ class BloodPressureBloc extends Bloc<BloodPressureEvent, BloodPressureState> {
 
   Stream<BloodPressureState> fetchFlucoseTimeFrame() async* {
     try {
-      final client = BloodPressureClient();
+      // final client = BloodPressureClient();
       yield BloodPressureLoading();
       // yield BloodPressureLoaded(await client.fetchFlucoseTimeFrame());
     } catch (e, _) {

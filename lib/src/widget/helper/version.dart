@@ -65,10 +65,10 @@ class NewVersion {
     this.iOSId,
     required this.context,
     this.dismissAction,
-    this.dismissText: 'Maybe Later',
-    this.updateText: 'Update',
+    this.dismissText = 'Maybe Later',
+    this.updateText = 'Update',
     this.dialogText,
-    this.dialogTitle: 'Update Available',
+    this.dialogTitle = 'Update Available',
   });
 
   /// This checks the version status, then displays a platform-specific alert

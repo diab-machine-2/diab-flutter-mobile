@@ -51,7 +51,7 @@ class FetchClient {
         validateStatus: (status) {
           return true; //status < 500;
         });
-    print(option);
+    // print(option);
     return option;
   }
 
@@ -76,7 +76,7 @@ class FetchClient {
     await checkNetwork();
     final token = await AppSettings.getToken();
     // final userAgent = await userAgent();
-    print(token);
+    // print(token);
     final Options option = Options(
         headers: {
           'Authorization': 'Bearer $token',
@@ -103,7 +103,7 @@ class FetchClient {
         validateStatus: (status) {
           return true; //status < 500;
         });
-    print(option);
+    // print(option);
     return option;
   }
 

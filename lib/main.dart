@@ -42,12 +42,12 @@ class SimpleBlocObserver extends BlocObserver {
 //   }
 // }
 
-Future<void> _ensureScreenSize(window) async {
-  return window.viewConfiguration.geometry.isEmpty
-      ? Future.delayed(
-          const Duration(milliseconds: 10), () => _ensureScreenSize(window))
-      : Future.value();
-}
+// Future<void> _ensureScreenSize(SingletonFlutterWindow window) async {
+//   return window.viewConfiguration.geometry.isEmpty
+//       ? Future.delayed(
+//           const Duration(milliseconds: 10), () => _ensureScreenSize(window))
+//       : Future.value();
+// }
 
 Future<void> main() async {
   // SystemChrome.setSystemUIOverlayStyle(

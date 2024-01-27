@@ -55,22 +55,16 @@ abstract class NetworkExceptions with _$NetworkExceptions {
       case 401:
       case 403:
         return NetworkExceptions.unauthorizedRequest(message);
-        break;
       case 404:
         return NetworkExceptions.notFound(R.string.error_not_found_api.tr());
-        break;
       case 409:
         return NetworkExceptions.conflict();
-        break;
       case 408:
         return NetworkExceptions.requestTimeout();
-        break;
       case 500:
         return NetworkExceptions.internalServerError();
-        break;
       case 503:
         return NetworkExceptions.serviceUnavailable();
-        break;
       default:
         var responseCode = statusCode;
         return NetworkExceptions.defaultError(R.string.error_invalid_status_code.tr(args: [responseCode.toString()]),);

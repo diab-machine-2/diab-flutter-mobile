@@ -272,7 +272,6 @@ class _CustomCalendarDatePickerState extends State<CustomCalendarDatePicker> {
           ),
         );
     }
-    return null;
   }
 
   @override

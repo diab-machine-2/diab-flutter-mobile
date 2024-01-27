@@ -1,6 +1,6 @@
 part of 'newsDetail_bloc.dart';
 
-class NewsDetailState {
+class NewsDetailState extends Equatable {
   final String blocMessage;
   final BlocStatus blocStatus;
   final List<LearningPostModel>? newsList;

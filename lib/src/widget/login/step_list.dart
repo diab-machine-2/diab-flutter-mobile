@@ -381,7 +381,6 @@ class _StepListControllerState extends State<StepListController> with Observer {
 
   Widget builtItem(
       BuildContext context, String name, String image, String text) {
-    final width = MediaQuery.of(context).size.width;
     return Column(
       ///mainAxisSize: MainAxisSize.min,
       children: [

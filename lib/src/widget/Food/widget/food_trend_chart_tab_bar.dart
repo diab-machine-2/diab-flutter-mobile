@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import '../../../../res/R.dart';
 
 class FoodTrendChartTabBar extends StatefulWidget {
-  Function() onEnergyTap;
-  Function() onCarbTap;
+  final Function() onEnergyTap;
+  final Function() onCarbTap;
 
   FoodTrendChartTabBar({required this.onEnergyTap, required this.onCarbTap});
   @override

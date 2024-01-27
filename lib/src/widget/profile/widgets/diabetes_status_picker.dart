@@ -125,8 +125,8 @@ class DiabetesInformation extends StatefulWidget {
 }
 
 class _DiabetesInformationState extends State<DiabetesInformation> {
-  int tuanThaiKy = 1;
-  num canNangThaiKy = 0;
+  int? tuanThaiKy = 1;
+  num? canNangThaiKy = 0;
   bool isExpanded = false;
 
   @override
@@ -374,14 +374,14 @@ class _DiabetesInformationState extends State<DiabetesInformation> {
           },
           title: R.string.enter_weight.tr(),
           max: 180,
-          numberDefault: canNangThaiKy,
+          numberDefault: canNangThaiKy ?? 0,
           unit: ''),
     );
   }
 
   updatePregnancyInfo() async {
     final result = await GlucoseClient()
-        .updatePregnancyInfo(week: tuanThaiKy, weight: canNangThaiKy);
+        .updatePregnancyInfo(week: tuanThaiKy ?? 1, weight: canNangThaiKy ?? 0);
     if (result == true) {
       Navigator.pop(context);
       widget.onSuccess();

@@ -17,7 +17,7 @@ import 'package:medical/src/widget/tabbar/tabbar.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class FunkyOverlay extends StatefulWidget {
-  bool isCircular;
+  final bool isCircular;
 
   FunkyOverlay({this.isCircular = true});
 

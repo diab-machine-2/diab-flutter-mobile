@@ -54,6 +54,7 @@ class FoodTrendChartTabViewState extends State<FoodTrendChartTabView>
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return VisibilityDetector(
             key: Key('food_trend_chart${widget.type}'),
             onVisibilityChanged: (visibilityInfo) {

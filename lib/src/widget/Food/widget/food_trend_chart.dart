@@ -54,7 +54,7 @@ class FoodTrendChartState extends State<FoodTrendChart>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    final width = MediaQuery.of(context).size.width;
+    // final width = MediaQuery.of(context).size.width;
     return BlocProvider<FoodBloc>(
         create: (context) => FoodBloc(),
         child: BlocBuilder<FoodBloc, FoodState>(
