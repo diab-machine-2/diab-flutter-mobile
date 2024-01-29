@@ -26,6 +26,10 @@ class MeetingCubit extends Cubit<MeetingState> {
   // Future<String?> get sessionName => _zoom.session.getSessionName();
   Future<String?> get sessionName => Future.value('Cuộc họp');
 
+  // Cached
+  ZoomVideoSdkUser? _mySelf;
+  ZoomVideoSdkUser? get user => _mySelf;
+
   // Chat
   final ValueNotifier<bool> _haveNewChatNotifier = ValueNotifier(false);
   final ValueNotifier<List<ZoomVideoSdkChatMessage>> _chatMessagesNotifier = ValueNotifier([]);
@@ -33,14 +37,15 @@ class MeetingCubit extends Cubit<MeetingState> {
   ValueNotifier<List<ZoomVideoSdkChatMessage>> get chatMessages => _chatMessagesNotifier;
   bool _chatSheetPresented = false;
 
-  // Cached
-  ZoomVideoSdkUser? _mySelf;
-  ZoomVideoSdkUser? get user => _mySelf;
-  List<ZoomVideoSdkUser> _remoteUsers = [];
-
   // Sharing
   bool _isSharing = false;
   String _sharingUserId = '';
+  List<ZoomVideoSdkUser> _remoteUsers = [];
+
+  // Video
+  bool _initVideoOn = false;
+  final ValueNotifier<bool> _haveMultipleCamera = ValueNotifier(false);
+  ValueNotifier<bool> get haveMultipleCamera => _haveMultipleCamera;
 
   // Time out
   final int timeoutInSeconds = 30;
@@ -102,13 +107,31 @@ class MeetingCubit extends Cubit<MeetingState> {
         var videoOn = await videoStatus.isOn();
         if (videoOn) {
           await _zoom.videoHelper.stopVideo();
+          _haveMultipleCamera.value = false;
         } else {
           await _zoom.videoHelper.startVideo();
+          if (!_haveMultipleCamera.value) {
+            _haveMultipleCamera.value = await _zoom.videoHelper.getNumberOfCameras() > 1;
+          }
         }
       }
     }
     var newState = (state as MeetingJoined).copyWith(thisUser: mySelf);
     emit(newState);
+  }
+
+  void switchCamera() async {
+    ZoomVideoSdkUser? mySelf = await _zoom.session.getMySelf();
+    if (mySelf != null) {
+      final videoStatus = mySelf.videoStatus;
+      if (videoStatus != null) {
+        var videoOn = await videoStatus.isOn();
+        if (videoOn && state is MeetingJoined) {
+          await _zoom.videoHelper.switchCamera('');
+          emit((state as MeetingJoined).copyWith(thisUser: mySelf));
+        }
+      }
+    }
   }
 
   bool _lastVideoStatus = false;
@@ -181,7 +204,7 @@ class MeetingCubit extends Cubit<MeetingState> {
         "autoAdjustSpeakerVolume": false
       };
       Map<String, bool> videoOptions = {
-        "localVideoOn": false,
+        "localVideoOn": _initVideoOn,
       };
       JoinSessionConfig joinSession = JoinSessionConfig(
         sessionName: args.sessionName,
@@ -193,6 +216,7 @@ class MeetingCubit extends Cubit<MeetingState> {
         sessionIdleTimeoutMins: int.parse(args.sessionIdleTimeoutMins),
       );
       await _zoom.joinSession(joinSession);
+      _zoom.videoHelper.mirrorMyVideo(false).then((_) => null);
     } catch (e) {
       print('zoom: Error joining session: $e');
       // TODO: emit error
@@ -216,6 +240,9 @@ class MeetingCubit extends Cubit<MeetingState> {
           _chatMessagesNotifier.value = [];
         }
         _latestSessionId = value;
+      });
+      _zoom.videoHelper.getNumberOfCameras().then((value) {
+        _haveMultipleCamera.value = _initVideoOn && value > 1;
       });
       ZoomVideoSdkUser mySelf = ZoomVideoSdkUser.fromJson(jsonDecode(sessionUser.toString()));
       _mySelf = mySelf;

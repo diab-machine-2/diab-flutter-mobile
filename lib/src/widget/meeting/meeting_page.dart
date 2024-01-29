@@ -77,6 +77,8 @@ class _MeetingPageState extends State<MeetingPage>
       case AppLifecycleState.resumed:
         _cubit.turnonVideoPreviewIfNeeded();
         break;
+      default:
+        break;
     }
   }
 
@@ -234,15 +236,27 @@ class _MeetingPageState extends State<MeetingPage>
               children: [
                 // Back button
                 Container(
-                    width: leaveButtonWidth,
-                    height: leaveButtonHeight,
-                    child: IconButton(
-                      onPressed: () => _confirmAndQuitSession(context),
-                      icon: const Icon(
-                        Icons.arrow_back_ios,
-                        color: Colors.white,
-                      ),
-                    )),
+                  width: leaveButtonWidth,
+                  height: leaveButtonHeight,
+                  alignment: Alignment.centerLeft,
+                  padding: EdgeInsets.only(left: 8.0),
+                  child: ValueListenableBuilder(
+                    valueListenable: _cubit.haveMultipleCamera,
+                    builder: (context, value, child) {
+                      if (!value) {
+                        return const SizedBox();
+                      }
+                      return IconButton(
+                        onPressed: () => _cubit.switchCamera(),
+                        icon: Icon(
+                          Icons.switch_camera,
+                          color: Colors.white,
+                          size: 20.0,
+                        ),
+                      );
+                    },
+                  ),
+                ),
                 // Session name
                 Expanded(
                   child: Center(
