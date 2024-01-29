@@ -10,11 +10,13 @@ class FirebaseRemoteSetting {
 
   late String _appStoreVersion;
   late String _playStoreVersion;
-  late String _storeNavigationUrl;
+  String? _storeNavigationUrl;
 
   String get appStoreVersion => _appStoreVersion;
   String get playStoreVersion => _playStoreVersion;
-  String get storeNavigationUrl => _storeNavigationUrl;
+  String get storeNavigationUrl {
+    return _storeNavigationUrl ?? 'https://diab.com.vn/ve-diab/';
+  }
 
   Future<void> init() async {
     await remoteConfig.setConfigSettings(RemoteConfigSettings(

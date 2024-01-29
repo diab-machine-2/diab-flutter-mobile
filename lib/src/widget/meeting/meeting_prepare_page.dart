@@ -8,8 +8,21 @@ import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/meeting/meeting_page.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-class MeetingPreparePage extends StatelessWidget {
+class MeetingPreparePage extends StatefulWidget {
   const MeetingPreparePage({super.key});
+
+  @override
+  State<MeetingPreparePage> createState() => _MeetingPreparePageState();
+}
+
+class _MeetingPreparePageState extends State<MeetingPreparePage> {
+  TextEditingController _textController = TextEditingController(text: 'room-001');
+
+  @override
+  void dispose() {
+    _textController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -33,11 +46,10 @@ class MeetingPreparePage extends StatelessWidget {
                     return;
                   }
 
-                  final textController = TextEditingController(text: 'room-001');
                   Widget dialog = AlertDialog(
                     title: Text('Enter Topic'),
                     content: TextField(
-                      controller: textController,
+                      controller: _textController,
                       decoration: InputDecoration(hintText: "Topic"),
                     ),
                     actions: [
@@ -53,8 +65,7 @@ class MeetingPreparePage extends StatelessWidget {
                     context: context,
                     builder: (context) => dialog,
                   );
-                  String topic = textController.text;
-                  textController.dispose();
+                  String topic = _textController.text;
 
                   var user = AppSettings.userInfo;
                   String sessionName = topic;
