@@ -20,19 +20,11 @@ class FirebaseRemoteSetting {
   bool get activePopupHealthConnect => _activePopupHealthConnect;
 
   Future<void> init() async {
-    // await remoteConfig.setConfigSettings(RemoteConfigSettings(
-    //   fetchTimeout: const Duration(seconds: 10),
-    //   minimumFetchInterval: const Duration(seconds: 10),
-    // ));
-    // await remoteConfig.fetchAndActivate();
-    final List<Future<void>> setupFutures = [
-      remoteConfig.setConfigSettings(RemoteConfigSettings(
-        fetchTimeout: const Duration(seconds: 10),
-        minimumFetchInterval: const Duration(seconds: 10),
-      )),
-      remoteConfig.fetchAndActivate(),
-    ];
-    await Future.wait(setupFutures);
+    await remoteConfig.setConfigSettings(RemoteConfigSettings(
+      fetchTimeout: const Duration(seconds: 10),
+      minimumFetchInterval: const Duration(seconds: 1),
+    ));
+    await remoteConfig.fetchAndActivate();
     _appStoreVersion = remoteConfig.getString('APP_STORE_VERSION');
     _playStoreVersion = remoteConfig.getString('PLAY_STORE_VERSION');
     _storeNavigationUrl = remoteConfig.getString('STORE_NAVIGATION_URL');

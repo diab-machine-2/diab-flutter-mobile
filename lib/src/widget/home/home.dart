@@ -21,6 +21,7 @@ import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/Food/widget/energy_chart.dart';
 import 'package:medical/src/widget/HbA1C/widget/course_suggest.dart';
 import 'package:medical/src/widget/components/HomeButton/main.dart';
+import 'package:medical/src/widget/demo/youtube_view.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/home/widget/header.dart';
@@ -330,6 +331,28 @@ class _HomeControllerState extends State<HomeController> with Observer {
                         child: ListView(
                           padding: const EdgeInsets.only(bottom: 16),
                           children: [
+                            SizedBox(height: 15),
+                            GestureDetector(
+                              onTap: () => Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (BuildContext context) =>
+                                          YoutubeVideo())),
+                              child: Container(
+                                width: 300,
+                                padding: EdgeInsets.all(15),
+                                color: AppColors.accentColor,
+                                child: Text(
+                                  "Demo Youtube Video",
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            SizedBox(height: 15),
                             GridView.builder(
                                 physics: const NeverScrollableScrollPhysics(),
                                 shrinkWrap: true,
