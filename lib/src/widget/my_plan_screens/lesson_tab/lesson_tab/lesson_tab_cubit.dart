@@ -77,10 +77,10 @@ class LessonTabCubit extends Cubit<LessonTabState> {
     emit(const LessonTabInitial());
   }
 
-  void RefreshDataOfList(){
+  void RefreshDataOfList() {
     lessonsListRoadmap?.clear();
     lessonsListSuggest?.clear();
-  } 
+  }
 
   Future<void> updateStatusLesson({
     required String lessonId,
@@ -100,9 +100,9 @@ class LessonTabCubit extends Cubit<LessonTabState> {
     int index = lessonsList!.indexWhere((element) => element?.id == lessonId);
     lessonsList![index]!.percentComplete = percentComplete;
     lessonsList![index]!.learningStatus = learningStatus;
-    // lessonsList!.sort((a, b) => a!.percentComplete!.compareTo(b!.percentComplete!)); 
+    // lessonsList!.sort((a, b) => a!.percentComplete!.compareTo(b!.percentComplete!));
     //  emit(LessonTabScrollToLesson(firstLessonIndex));
-     emit(LessonTabInitial());
+    emit(LessonTabInitial());
   }
 
   Future<void> getInitData(
@@ -125,7 +125,13 @@ class LessonTabCubit extends Cubit<LessonTabState> {
     }
 
     await Future.delayed(Duration(milliseconds: 10));
-    if (!isRefresh) emit(const LessonTabLoading());
+    if (!isRefresh) {
+      if (currentPage == 1) {
+        emit(LessonTabLoading());
+      } else
+        emit(const LessonTabLoadMore());
+    }
+    ;
     await getLessonWeekStates(isRefresh: isRefresh);
 
     if (currentWeek != null) {
@@ -140,7 +146,8 @@ class LessonTabCubit extends Cubit<LessonTabState> {
       }
     }
 
-    await getLessonsList(isRefresh: isRefresh, iPagingPage: currentPage, size:numRecordOfPage);
+    await getLessonsList(
+        isRefresh: isRefresh, iPagingPage: currentPage, size: numRecordOfPage);
   }
 
   Future<void> onRefresh(
@@ -163,9 +170,9 @@ class LessonTabCubit extends Cubit<LessonTabState> {
     }
 
     RefreshDataOfList();
-    await getLessonsList(isRefresh: isRefresh, iPagingPage: currentPage, size: numRecordOfPage);
+    await getLessonsList(
+        isRefresh: isRefresh, iPagingPage: currentPage, size: numRecordOfPage);
   }
-
 
   Future<void> getLessonsList({
     bool isRefresh = false,
@@ -185,29 +192,30 @@ class LessonTabCubit extends Cubit<LessonTabState> {
 
     await Future.delayed(Duration.zero);
     if (isShowLoading) {
-      emit(const LessonTabLoading());
+      if (iPagingPage == 1) {
+        emit(LessonTabLoading());
+      } else
+        emit(const LessonTabLoadMore());
     }
 
-    final LessonFilterRequest request =
-        filterData.getRequest(type: currentLessonTypeIndex + 1, page: iPagingPage, size: size);
+    final LessonFilterRequest request = filterData.getRequest(
+        type: currentLessonTypeIndex + 1, page: iPagingPage, size: size);
     final ApiResult<MyLessonResponse> apiResult =
         await repository.getLessonsList(request);
     apiResult.when(success: (MyLessonResponse response) {
-      if (currentLessonTypeIndex == 0) {  
+      if (currentLessonTypeIndex == 0) {
         if (lessonsListRoadmap == null) {
           lessonsListRoadmap = response.data ?? [];
-        }   
-        else{
-          response.data?.forEach((element) { 
-              lessonsListRoadmap?.add(element);
-            });
+        } else {
+          response.data?.forEach((element) {
+            lessonsListRoadmap?.add(element);
+          });
         }
       } else {
         if (lessonsListSuggest == null) {
           lessonsListSuggest = response.data ?? [];
-        }  
-        else {
-          response.data?.forEach((element) { 
+        } else {
+          response.data?.forEach((element) {
             lessonsListSuggest?.add(element);
           });
         }

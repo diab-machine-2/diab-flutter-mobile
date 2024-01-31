@@ -48,7 +48,9 @@ class _LessonTabPageState extends State<LessonTabPage>
   final ScrollController _lessonScrollController = ScrollController();
   final ScrollController _weekScrollController = ScrollController();
 
-  int currentPage = 1; 
+  int currentPageRoad = 1;
+  int currentPageSuggest = 1;
+  bool isLoading = false;
 
   @override
   void initState() {
@@ -58,12 +60,17 @@ class _LessonTabPageState extends State<LessonTabPage>
     final AppRepository appRepository = AppRepository();
     _cubit = LessonTabCubit(appRepository, _myPlanCubit);
     _cubit.getInitData();
-    
-    _lessonScrollController.addListener(() {if (_lessonScrollController.position.pixels ==
+
+    _lessonScrollController.addListener(() {
+      if (_lessonScrollController.position.pixels ==
           _lessonScrollController.position.maxScrollExtent) {
-            currentPage = currentPage + 1;
-            _cubit.getInitData(currentPage: currentPage);
-      }});
+        if (_cubit.currentLessonTypeIndex == 0) {
+          _cubit.getInitData(currentPage: ++currentPageRoad);
+        } else {
+          _cubit.getInitData(currentPage: ++currentPageSuggest);
+        }
+      }
+    });
   }
 
   @override
@@ -113,11 +120,18 @@ class _LessonTabPageState extends State<LessonTabPage>
           if (state is LessonTabSuccess) {
             _checkExistLessonId();
           }
-          if (state is LessonTabLoading) {
+          if (state is LessonTabLoadMore) {
+            setState(() {
+              isLoading = true;
+            });
+          } else if (state is LessonTabLoading) {
             BotToast.showLoading();
           } else {
             if (state is! LessonTabWeekChanged) {
               BotToast.closeAllLoading();
+              setState(() {
+                isLoading = false;
+              });
             }
             _controller.refreshCompleted();
           }
@@ -189,9 +203,8 @@ class _LessonTabPageState extends State<LessonTabPage>
                           );
                           if (result is FilterData) {
                             _cubit.filterData = result;
-                            currentPage = 1;
                             _cubit.RefreshDataOfList();
-                            _cubit.getInitData(currentPage: currentPage);
+                            _cubit.getInitData(currentPage: 1);
                           } else {
                             _cubit.refresh();
                           }
@@ -245,7 +258,8 @@ class _LessonTabPageState extends State<LessonTabPage>
                           controller: _controller,
                           scrollController: _lessonScrollController,
                           onRefresh: () {
-                            currentPage =1;
+                            currentPageRoad = 1;
+                            currentPageSuggest = 1;
                             _cubit.onRefresh(isRefresh: true);
                           },
                           child: _cubit.lessonsList!.isEmpty
@@ -284,12 +298,12 @@ class _LessonTabPageState extends State<LessonTabPage>
                                                       .lessonsList![index]!.id!,
                                                   onComplete: (lessonId,
                                                       percentComplete) {
-                                                      //_controller.requestRefresh();
-                                                      _cubit.updateStatusLesson(
-                                                        lessonId: lessonId,
-                                                        percentComplete:
-                                                            percentComplete,
-                                                      );
+                                                    //_controller.requestRefresh();
+                                                    _cubit.updateStatusLesson(
+                                                      lessonId: lessonId,
+                                                      percentComplete:
+                                                          percentComplete,
+                                                    );
                                                   },
                                                 ),
                                               );
@@ -310,6 +324,16 @@ class _LessonTabPageState extends State<LessonTabPage>
                         ),
                       ),
               ),
+              if (isLoading)
+                Container(
+                  width: MediaQuery.of(context).size.width,
+                  height: 130,
+                  color: Colors.transparent,
+                  child: Align(
+                    alignment: Alignment.topCenter,
+                    child: CircularProgressIndicator(),
+                  ),
+                ),
             ],
           );
         },
