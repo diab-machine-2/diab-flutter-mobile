@@ -120,21 +120,24 @@ class NewVersion {
 
   /// Android info is fetched by parsing the html of the app store page.
   _getAndroidStoreVersion(String id, VersionStatus versionStatus) async {
-    final url = 'https://play.google.com/store/apps/details?id=$id';
-    final response = await http.get(Uri.parse(url));
-    if (response.statusCode != 200) {
-      print('Can\'t find an app in the Play Store with the id: $id');
-      return null;
-    }
-    final document = parse(response.body);
-    final elements = document.getElementsByClassName('G1zzid');
-    Console.log('G1zzid', elements);
-    final versionElement = elements.firstWhere(
-      (elm) => elm.querySelector('.q078ud')!.text == 'Version',
-    );
-    versionStatus.storeVersion = versionElement.querySelector('.reAt0')!.text;
-    versionStatus.appStoreLink = url;
-    return versionStatus;
+    //++20240131 - Lanh: Remove this function(It not work)
+    // final url = 'https://play.google.com/store/apps/details?id=$id';
+    // final response = await http.get(Uri.parse(url));
+    // if (response.statusCode != 200) {
+    //   print('Can\'t find an app in the Play Store with the id: $id');
+    //   return null;
+    // }
+    // final document = parse(response.body);
+    // final elements = document.getElementsByClassName('G1zzid');
+    // Console.log('G1zzid', elements);
+    // final versionElement = elements.firstWhere(
+    //   (elm) => elm.querySelector('.q078ud')!.text == 'Version',
+    // );
+    // versionStatus.storeVersion = versionElement.querySelector('.reAt0')!.text;
+    // versionStatus.appStoreLink = url;
+    // return versionStatus;
+    return "";
+    //--20240131 - Lanh: Remove this function(It not work)
   }
 
   /// Shows the user a platform-specific alert about the app update. The user

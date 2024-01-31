@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:medical/src/utils/app_log.dart';
+import 'package:medical/src/utils/const.dart';
 
 class FirebaseRemoteSetting {
   FirebaseRemoteSetting._privateConstructor();
@@ -32,7 +33,8 @@ class FirebaseRemoteSetting {
       )),
       remoteConfig.fetchAndActivate(),
     ];
-    await Future.wait(setupFutures);
+    Future.value(setupFutures);
+    await Future.delayed(const Duration(seconds: 10));
     _appStoreVersion = remoteConfig.getString('APP_STORE_VERSION');
     _playStoreVersion = remoteConfig.getString('PLAY_STORE_VERSION');
     _storeNavigationUrl = remoteConfig.getString('STORE_NAVIGATION_URL');
