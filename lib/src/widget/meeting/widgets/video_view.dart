@@ -12,6 +12,7 @@ class VideoView extends fzv.ZoomView {
     required super.fullScreen,
     required super.resolution,
     bool sharing = false,
+    bool isPiPView = false,
     bool preview = false,
     bool focused = false,
     bool hasMultiCamera = false,
@@ -19,7 +20,7 @@ class VideoView extends fzv.ZoomView {
     String videoAspect = VideoAspect.Original,
   }) : super(
           sharing: sharing,
-          isPiPView: false,
+          isPiPView: isPiPView,
           preview: preview,
           focused: focused,
           hasMultiCamera: hasMultiCamera,

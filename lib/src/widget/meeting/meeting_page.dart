@@ -195,6 +195,7 @@ class _MeetingPageState extends State<MeetingPage>
         avatarUrl: null,
         user: state.fullscreenUser,
         fullScreen: true,
+        isPiPView: true,
         sharing: state.fullscreenUser.isSharing,
         resolution: VideoResolution.Resolution720,
       );
@@ -213,10 +214,12 @@ class _MeetingPageState extends State<MeetingPage>
         ),
       );
     } else {
+      bool allowPiPMode = state.thisUser?.userId != state.fullscreenUser.userId;
       fullScreenView = VideoView(
         avatarUrl: null,
         user: state.fullscreenUser,
         fullScreen: true,
+        isPiPView: allowPiPMode,
         sharing: state.fullscreenUser.isSharing,
         resolution: VideoResolution.Resolution720,
       );
