@@ -72,10 +72,10 @@ class _MeetingPageState extends State<MeetingPage>
       case AppLifecycleState.inactive:
       case AppLifecycleState.paused:
       case AppLifecycleState.detached:
-        _cubit.turnoffVideoPreviewIfNeeded();
+        _cubit.appPaused();
         break;
       case AppLifecycleState.resumed:
-        _cubit.turnonVideoPreviewIfNeeded();
+        _cubit.appResumed();
         break;
       default:
         break;

@@ -134,8 +134,18 @@ class MeetingCubit extends Cubit<MeetingState> {
     }
   }
 
+  void appPaused() {
+    _turnoffVideoPreviewIfNeeded();
+    _turnoffAudioIfNeeded();
+  }
+
+  void appResumed() {
+    _turnonVideoPreviewIfNeeded();
+    _turnonAudioIfNeeded();
+  }
+
   bool _lastVideoStatus = false;
-  void turnoffVideoPreviewIfNeeded() async {
+  void _turnoffVideoPreviewIfNeeded() async {
     ZoomVideoSdkUser? mySelf = await _zoom.session.getMySelf();
     if (mySelf != null) {
       final videoStatus = mySelf.videoStatus;
@@ -149,7 +159,7 @@ class MeetingCubit extends Cubit<MeetingState> {
     }
   }
 
-  void turnonVideoPreviewIfNeeded() async {
+  void _turnonVideoPreviewIfNeeded() async {
     if (!_lastVideoStatus) {
       return;
     }
@@ -159,6 +169,37 @@ class MeetingCubit extends Cubit<MeetingState> {
       final videoStatus = mySelf.videoStatus;
       if (videoStatus != null) {
         await _zoom.videoHelper.startVideo();
+        var newState = (state as MeetingJoined).copyWith(thisUser: mySelf);
+        emit(newState);
+      }
+    }
+  }
+
+  bool _lastAudioStatus = false;
+  void _turnoffAudioIfNeeded() async {
+    ZoomVideoSdkUser? mySelf = await _zoom.session.getMySelf();
+    if (mySelf != null) {
+      final audioStatus = mySelf.audioStatus;
+      if (audioStatus != null) {
+        var audioOn = !(await audioStatus.isMuted());
+        if (audioOn) {
+          await _zoom.audioHelper.muteAudio(mySelf.userId);
+          _lastAudioStatus = true;
+        }
+      }
+    }
+  }
+
+  void _turnonAudioIfNeeded() async {
+    if (!_lastAudioStatus) {
+      return;
+    }
+    _lastAudioStatus = false;
+    ZoomVideoSdkUser? mySelf = await _zoom.session.getMySelf();
+    if (mySelf != null) {
+      final audioStatus = mySelf.audioStatus;
+      if (audioStatus != null) {
+        await _zoom.audioHelper.unMuteAudio(mySelf.userId);
         var newState = (state as MeetingJoined).copyWith(thisUser: mySelf);
         emit(newState);
       }
