@@ -3,7 +3,7 @@ description: DiaB mobile application
 
 publish_to: "none"
 
-version: 1.4.7+5
+version: 1.5.0+1
 
 environment:
   sdk: ">=2.18.0 <4.0.0"
@@ -140,9 +140,9 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_launcher_icons: ^0.10.0
+  flutter_launcher_icons: ^0.13.1
   retrofit_generator: ^4.0.3
-  build_runner: ^2.1.4
+  build_runner: ^2.3.3
   json_serializable: ^6.3.1
   
 
