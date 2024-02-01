@@ -41,6 +41,7 @@ class _MeetingPageState extends State<MeetingPage>
   @override
   void initState() {
     super.initState();
+    // SystemChrome.setEnabledSystemUIMode(SystemUiMode.leanBack);
     _cubit = MeetingCubit(widget.args);
     WidgetsBinding.instance.addObserver(this);
     Wakelock.enable();
@@ -225,93 +226,74 @@ class _MeetingPageState extends State<MeetingPage>
       );
     }
 
-    final double leaveButtonWidth = 100.0;
-    final double leaveButtonHeight = 32.0;
-    Widget controlAndPreviewWidget = SafeArea(
-      child: Column(
-        children: [
-          // Headers
-          Container(
-            height: 56.0,
-            color: Colors.black.withOpacity(0.5),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                // Back button
-                Container(
-                  width: leaveButtonWidth,
-                  height: leaveButtonHeight,
-                  alignment: Alignment.centerLeft,
-                  padding: EdgeInsets.only(left: 8.0),
-                  child: ValueListenableBuilder(
-                    valueListenable: _cubit.haveMultipleCamera,
-                    builder: (context, value, child) {
-                      if (!value) {
-                        return const SizedBox();
-                      }
-                      return IconButton(
-                        onPressed: () => _cubit.switchCamera(),
-                        icon: Icon(
-                          Icons.switch_camera,
-                          color: Colors.white,
-                          size: 20.0,
-                        ),
-                      );
-                    },
-                  ),
-                ),
-                // Session name
-                Expanded(
-                  child: Center(
-                    child: FutureBuilder<String?>(
-                        future: _cubit.sessionName,
-                        builder: (context, snapshot) {
-                          return Text(
-                            snapshot.data ?? '',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 18.0,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          );
-                        }),
-                  ),
-                ),
-                // More
-                Container(
-                  width: leaveButtonWidth,
-                  height: leaveButtonHeight,
-                  child: ElevatedButton(
-                    onPressed: () => _confirmAndQuitSession(context),
-                    child: const Text(
-                      'Rời khỏi',
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Colors.white,
-                      ),
-                    ),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.red,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8.0),
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 12.0)
-              ],
-            ),
-          ),
-          // Preview
-          Align(
-            alignment: Alignment.topRight,
-            child: previewView,
-          ),
-        ],
-      ),
-    );
     var media = MediaQuery.of(context);
     final size = media.size;
+
+    final double sizeComponentWidth = 100.0;
+    final double sizeComponentHeight = 38.0;
+    Widget headerAndPreviewWidget = Column(
+      children: [
+        // Headers
+        Container(
+          padding: EdgeInsets.only(top: media.padding.top / 2.0),
+          height: 56.0 + media.padding.top,
+          color: Colors.black.withOpacity(0.5),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              // Back button
+              Container(
+                width: sizeComponentWidth,
+                height: sizeComponentHeight,
+                alignment: Alignment.centerLeft,
+                padding: EdgeInsets.only(left: 8.0),
+                child: ValueListenableBuilder(
+                  valueListenable: _cubit.haveMultipleCamera,
+                  builder: (context, value, child) {
+                    if (!value) {
+                      return const SizedBox();
+                    }
+                    return IconButton(
+                      onPressed: () => _cubit.switchCamera(),
+                      icon: Image.asset(
+                        R.drawable.ic_zoom_camera_switch,
+                      ),
+                    );
+                  },
+                ),
+              ),
+              // Session name
+              Expanded(
+                child: Center(
+                  child: FutureBuilder<String?>(
+                      future: _cubit.sessionName,
+                      builder: (context, snapshot) {
+                        return Text(
+                          snapshot.data ?? '',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 18.0,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        );
+                      }),
+                ),
+              ),
+              // More
+              Container(
+                width: sizeComponentWidth,
+                height: sizeComponentHeight,
+              ),
+            ],
+          ),
+        ),
+        // Preview
+        Align(
+          alignment: Alignment.topRight,
+          child: previewView,
+        ),
+      ],
+    );
     return Stack(
       children: [
         Positioned.fill(child: fullScreenView),
@@ -319,7 +301,7 @@ class _MeetingPageState extends State<MeetingPage>
           top: 0.0,
           right: 0.0,
           left: 0.0,
-          child: controlAndPreviewWidget,
+          child: headerAndPreviewWidget,
         ),
         Positioned(
           bottom: media.padding.bottom,
@@ -352,7 +334,7 @@ class _MeetingPageState extends State<MeetingPage>
                 return const SizedBox();
               }
               final listActions = Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   // Chat
@@ -419,7 +401,7 @@ class _MeetingPageState extends State<MeetingPage>
                     R.drawable.ic_zoom_more,
                     'Xem thêm',
                     _moreAction,
-                    isOff: true,
+                    isOff: false,
                   ),
 
                   // Leave
@@ -430,15 +412,14 @@ class _MeetingPageState extends State<MeetingPage>
                     isOff: true,
                     backgroundColor: Color(0xFFD85140),
                   ),
-
                 ],
               );
               double width = MediaQuery.of(context).size.width;
-              if (width > 450.0) {
+              if (width > 368.0) {
                 return Align(
                   alignment: Alignment.center,
                   child: Container(
-                    width: 450.0,
+                    width: 368.0,
                     child: listActions,
                   ),
                 );
@@ -472,18 +453,18 @@ class _MeetingPageState extends State<MeetingPage>
     String text,
     void Function() onPressed, {
     bool isOff = false,
-    double size = 33.0,
+    double size = 28.0,
     Color? backgroundColor,
   }) {
     var color = Colors.white.withAlpha(200);
     return Column(
+      mainAxisSize: MainAxisSize.min,
       children: [
         InkWell(
           onTap: onPressed,
-          splashFactory: InkRipple.splashFactory,
           child: Container(
-            width: 62,
-            height: 62,
+            width: 56.0,
+            height: 56.0,
             alignment: Alignment.center,
             clipBehavior: Clip.antiAlias,
             decoration: BoxDecoration(
@@ -502,7 +483,7 @@ class _MeetingPageState extends State<MeetingPage>
           text,
           style: TextStyle(
             color: color,
-            fontSize: 16.0,
+            fontSize: 11.0,
           ),
         ),
       ],

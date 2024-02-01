@@ -257,7 +257,8 @@ class MeetingCubit extends Cubit<MeetingState> {
         sessionIdleTimeoutMins: int.parse(args.sessionIdleTimeoutMins),
       );
       await _zoom.joinSession(joinSession);
-      _zoom.videoHelper.mirrorMyVideo(false).then((_) => null);
+      // TODO: Check why camera is mirrored
+      // _zoom.videoHelper.mirrorMyVideo(false).then((_) => null);
     } catch (e) {
       print('zoom: Error joining session: $e');
       // TODO: emit error
