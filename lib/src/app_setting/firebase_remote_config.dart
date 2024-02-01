@@ -34,7 +34,10 @@ class FirebaseRemoteSetting {
       remoteConfig.fetchAndActivate(),
     ];
     Future.value(setupFutures);
-    await Future.delayed(const Duration(seconds: 10));
+    // Only wait when not finished yet
+    if (remoteConfig.getString('APP_STORE_VERSION') == ""){
+      await Future.delayed(const Duration(seconds: 10));
+    }
     _appStoreVersion = remoteConfig.getString('APP_STORE_VERSION');
     _playStoreVersion = remoteConfig.getString('PLAY_STORE_VERSION');
     _storeNavigationUrl = remoteConfig.getString('STORE_NAVIGATION_URL');
