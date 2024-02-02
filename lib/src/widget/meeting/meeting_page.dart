@@ -459,36 +459,41 @@ class _MeetingPageState extends State<MeetingPage>
     Color? backgroundColor,
   }) {
     var color = Colors.white.withAlpha(200);
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        InkWell(
-          onTap: onPressed,
-          child: Container(
-            width: 56.0,
-            height: 56.0,
-            alignment: Alignment.center,
-            clipBehavior: Clip.antiAlias,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: backgroundColor ?? (isOff ? Colors.white : Color(0xFF3D4043)),
-            ),
-            child: Image.asset(
-              iconPath,
-              width: size,
-              height: size,
+    return SizedBox(
+      width: 68.0,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          InkWell(
+            onTap: onPressed,
+            child: Container(
+              width: 56.0,
+              height: 56.0,
+              alignment: Alignment.center,
+              clipBehavior: Clip.antiAlias,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: backgroundColor ?? (isOff ? Colors.white : Color(0xFF3D4043)),
+              ),
+              child: Image.asset(
+                iconPath,
+                width: size,
+                height: size,
+              ),
             ),
           ),
-        ),
-        const SizedBox(height: 6.0),
-        Text(
-          text,
-          style: TextStyle(
-            color: color,
-            fontSize: 11.0,
+          const SizedBox(height: 6.0),
+          Text(
+            text,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
+              color: color,
+              fontSize: 12.0,
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
