@@ -1,13 +1,16 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_zoom_videosdk/native/zoom_videosdk_chat_message.dart';
+import 'package:linkify/linkify.dart';
 import 'package:medical/res/R.dart';
+import 'package:url_launcher/url_launcher.dart';
+import '../models/MeetingMessage.dart';
 
 class ChatView extends StatelessWidget {
   final Function(String) onSendMessage;
   final Function() onClose;
   final FocusNode focusNode;
   final TextEditingController textEditingController;
-  final ValueNotifier<List<ZoomVideoSdkChatMessage>> messagesValueNotifier;
+  final ValueNotifier<List<MeetingMessage>> messagesValueNotifier;
   const ChatView({
     super.key,
     required this.messagesValueNotifier,
@@ -16,6 +19,24 @@ class ChatView extends StatelessWidget {
     required this.focusNode,
     required this.textEditingController,
   });
+
+  void _onLinkTap(LinkableElement link) async {
+    String url = link.url;
+    try {
+      final Uri uri = Uri.parse(url);
+      if (await canLaunchUrl(uri)) {
+        if (link is EmailElement || link is PhoneNumberElement) {
+          await launchUrl(uri, mode: LaunchMode.externalNonBrowserApplication);
+          return;
+        }
+        await launchUrl(uri, mode: LaunchMode.externalApplication);
+      } else {
+        print('Could not launch $url');
+      }
+    } catch (e) {
+      print('error when launching $url, $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -53,7 +74,7 @@ class ChatView extends StatelessWidget {
             ),
           ),
           Expanded(
-            child: ValueListenableBuilder<List<ZoomVideoSdkChatMessage>>(
+            child: ValueListenableBuilder<List<MeetingMessage>>(
               valueListenable: messagesValueNotifier,
               builder: (context, messages, child) {
                 return ListView.builder(
@@ -62,12 +83,35 @@ class ChatView extends StatelessWidget {
                   itemCount: messages.length,
                   itemBuilder: (context, index) {
                     final message = messages[index];
+                    final senderNameWidget = Text(
+                      message.senderUser.userName,
+                      style: TextStyle(fontWeight: FontWeight.w300, fontSize: 10.0),
+                    );
+                    if (message.haveLink) {
+                      return ListTile(
+                        title: RichText(
+                          text: TextSpan(
+                            children: message.elements!.map((e) {
+                              if (e is TextElement) {
+                                return TextSpan(text: e.text, style: TextStyle(color: Colors.black));
+                              } else if (e is LinkableElement) {
+                                return TextSpan(
+                                  text: e.text,
+                                  style: TextStyle(color: Colors.blue, decoration: TextDecoration.underline),
+                                  recognizer: TapGestureRecognizer()
+                                    ..onTap = () => _onLinkTap(e),
+                                );
+                              }
+                              return TextSpan(text: '');
+                            }).toList(),
+                          ),
+                        ),
+                        subtitle: senderNameWidget,
+                      );
+                    }
                     return ListTile(
                       title: Text(message.content),
-                      subtitle: Text(
-                        message.senderUser.userName,
-                        style: TextStyle(fontWeight: FontWeight.w300, fontSize: 10.0),
-                      ),
+                      subtitle: senderNameWidget,
                     );
                   },
                 );

@@ -180,15 +180,12 @@ PODS:
   - fluttertoast (0.0.2):
     - Flutter
     - Toast
-  - FMDB (2.7.5):
-    - FMDB/standard (= 2.7.5)
-  - FMDB/standard (2.7.5)
   - GCDWebServer (3.5.4):
     - GCDWebServer/Core (= 3.5.4)
   - GCDWebServer/Core (3.5.4)
   - google_sign_in_ios (0.0.1):
     - Flutter
-    - GoogleSignIn (~> 6.2)
+    - GoogleSignIn (~> 7.0)
   - GoogleAppMeasurement (10.18.0):
     - GoogleAppMeasurement/AdIdSupport (= 10.18.0)
     - GoogleUtilities/AppDelegateSwizzler (~> 7.11)
@@ -213,10 +210,10 @@ PODS:
     - GoogleUtilities/Environment (~> 7.7)
     - nanopb (< 2.30910.0, >= 2.30908.0)
     - PromisesObjC (< 3.0, >= 1.2)
-  - GoogleSignIn (6.2.4):
+  - GoogleSignIn (7.0.0):
     - AppAuth (~> 1.5)
-    - GTMAppAuth (~> 1.3)
-    - GTMSessionFetcher/Core (< 3.0, >= 1.1)
+    - GTMAppAuth (< 3.0, >= 1.3)
+    - GTMSessionFetcher/Core (< 4.0, >= 1.1)
   - GoogleUtilities/AppDelegateSwizzler (7.12.0):
     - GoogleUtilities/Environment
     - GoogleUtilities/Logger
@@ -236,10 +233,10 @@ PODS:
     - GoogleUtilities/Logger
   - GoogleUtilities/UserDefaults (7.12.0):
     - GoogleUtilities/Logger
-  - GTMAppAuth (1.3.1):
+  - GTMAppAuth (2.0.0):
     - AppAuth/Core (~> 1.6)
-    - GTMSessionFetcher/Core (< 3.0, >= 1.5)
-  - GTMSessionFetcher/Core (2.3.0)
+    - GTMSessionFetcher/Core (< 4.0, >= 1.5)
+  - GTMSessionFetcher/Core (3.3.1)
   - health (1.0.4):
     - Flutter
   - HLSCachingReverseProxyServer (0.1.0):
@@ -304,7 +301,7 @@ PODS:
     - Flutter
   - sqflite (0.0.3):
     - Flutter
-    - FMDB (>= 2.7.5)
+    - FlutterMacOS
   - store_redirect (0.0.1):
     - Flutter
   - Toast (4.1.0)
@@ -366,7 +363,7 @@ DEPENDENCIES:
   - share_plus (from `.symlinks/plugins/share_plus/ios`)
   - shared_preferences_foundation (from `.symlinks/plugins/shared_preferences_foundation/darwin`)
   - sign_in_with_apple (from `.symlinks/plugins/sign_in_with_apple/ios`)
-  - sqflite (from `.symlinks/plugins/sqflite/ios`)
+  - sqflite (from `.symlinks/plugins/sqflite/darwin`)
   - store_redirect (from `.symlinks/plugins/store_redirect/ios`)
   - ua_client_hints (from `.symlinks/plugins/ua_client_hints/ios`)
   - uni_links (from `.symlinks/plugins/uni_links/ios`)
@@ -398,7 +395,6 @@ SPEC REPOS:
     - FirebaseRemoteConfig
     - FirebaseSessions
     - FirebaseSharedSwift
-    - FMDB
     - GCDWebServer
     - GoogleAppMeasurement
     - GoogleDataTransport
@@ -498,7 +494,7 @@ EXTERNAL SOURCES:
   sign_in_with_apple:
     :path: ".symlinks/plugins/sign_in_with_apple/ios"
   sqflite:
-    :path: ".symlinks/plugins/sqflite/ios"
+    :path: ".symlinks/plugins/sqflite/darwin"
   store_redirect:
     :path: ".symlinks/plugins/store_redirect/ios"
   ua_client_hints:
@@ -557,19 +553,18 @@ SPEC CHECKSUMS:
   flutter_statusbar_manager: 18588ba7dce7a28a538363d2a9989f9ede4a6710
   flutter_zoom_videosdk: 6cfe5ed4a015adaf8c2bc57e50261914f1ddd38b
   fluttertoast: 31b00dabfa7fb7bacd9e7dbee580d7a2ff4bf265
-  FMDB: 2ce00b547f966261cd18927a3ddb07cb6f3db82a
   GCDWebServer: 2c156a56c8226e2d5c0c3f208a3621ccffbe3ce4
-  google_sign_in_ios: 1256ff9d941db546373826966720b0c24804bcdd
+  google_sign_in_ios: 8115e3fbe097e6509beb819ed602d47369d9011f
   GoogleAppMeasurement: 70ce9aa438cff1cfb31ea3e660bcc67734cb716e
   GoogleDataTransport: 57c22343ab29bc686febbf7cbb13bad167c2d8fe
-  GoogleSignIn: 5651ce3a61e56ca864160e79b484cd9ed3f49b7a
+  GoogleSignIn: b232380cf495a429b8095d3178a8d5855b42e842
   GoogleUtilities: 0759d1a57ebb953965c2dfe0ba4c82e95ccc2e34
-  GTMAppAuth: 0ff230db599948a9ad7470ca667337803b3fc4dd
-  GTMSessionFetcher: 3a63d75eecd6aa32c2fc79f578064e1214dfdec2
+  GTMAppAuth: 99fb010047ba3973b7026e45393f51f27ab965ae
+  GTMSessionFetcher: 8a1b34ad97ebe6f909fb8b9b77fba99943007556
   health: 5a380c0f6c4f619535845992993964293962e99e
   HLSCachingReverseProxyServer: 59935e1e0244ad7f3375d75b5ef46e8eb26ab181
   image_cropper: f1668dd8d2cad2d357955caad15a40547856edcb
-  image_picker_ios: 4a8aadfbb6dc30ad5141a2ce3832af9214a705b5
+  image_picker_ios: 99dfe1854b4fa34d0364e74a78448a0151025425
   just_audio: baa7252489dbcf47a4c7cc9ca663e9661c99aafa
   libwebp: 1786c9f4ff8a279e4dac1e8f385004d5fc253009
   MTBBarcodeScanner: f453b33c4b7dfe545d8c6484ed744d55671788cb
@@ -577,7 +572,7 @@ SPEC CHECKSUMS:
   OrderedSet: aaeb196f7fef5a9edf55d89760da9176ad40b93c
   package_info: 873975fc26034f0b863a300ad47e7f1ac6c7ec62
   package_info_plus: 6c92f08e1f853dc01228d6f553146438dafcd14e
-  path_provider_foundation: 29f094ae23ebbca9d3d0cec13889cd9060c0e943
+  path_provider_foundation: 3784922295ac71e43754bd15e0653ccfd36a147c
   permission_handler_apple: e76247795d700c14ea09e3a2d8855d41ee80a2e6
   PINCache: 7a8fc1a691173d21dbddbf86cd515de6efa55086
   PINOperation: daa34d4aa1d8449089be7d405b9d974abc4724c6
@@ -586,18 +581,18 @@ SPEC CHECKSUMS:
   Protobuf: 34db13339da0d02d64fa8a2ac6a124cfcc603703
   qr_code_scanner: bb67d64904c3b9658ada8c402e8b4d406d5d796e
   share_plus: 056a1e8ac890df3e33cb503afffaf1e9b4fbae68
-  shared_preferences_foundation: 5b919d13b803cadd15ed2dc053125c68730e5126
+  shared_preferences_foundation: b4c3b4cddf1c21f02770737f147a3f5da9d39695
   sign_in_with_apple: f3bf75217ea4c2c8b91823f225d70230119b8440
-  sqflite: 31f7eba61e3074736dff8807a9b41581e4f7f15a
+  sqflite: 673a0e54cc04b7d6dba8d24fb8095b31c3a99eec
   store_redirect: 2977747cf81689a39bd62c248c2deacb7a0d131e
   Toast: ec33c32b8688982cecc6348adeae667c1b9938da
   TOCropViewController: edfd4f25713d56905ad1e0b9f5be3fbe0f59c863
   ua_client_hints: 314de6b4221bf713b1a6a5fb8bc68917ad3eaaec
   uni_links: d97da20c7701486ba192624d99bffaaffcfc298a
-  url_launcher_ios: 08a3dfac5fb39e8759aeb0abbd5d9480f30fc8b4
+  url_launcher_ios: bbd758c6e7f9fd7b5b1d4cde34d2b95fcce5e812
   video_thumbnail: c4e2a3c539e247d4de13cd545344fd2d26ffafd1
   wakelock: d0fc7c864128eac40eba1617cb5264d9c940b46f
-  webview_flutter_wkwebview: 2e2d318f21a5e036e2c3f26171342e95908bd60a
+  webview_flutter_wkwebview: 4f3e50f7273d31e5500066ed267e3ae4309c5ae4
   ZoomVideoSDK: 3b25f88d6278249cd6c291b513dab8e8faf3c4b5
 
 PODFILE CHECKSUM: 9578fcd3211a7870e067473fa516cb61c347b1d6

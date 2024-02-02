@@ -9,6 +9,7 @@ import 'package:flutter_zoom_videosdk/native/zoom_videosdk_event_listener.dart';
 import 'package:flutter_zoom_videosdk/native/zoom_videosdk_user.dart';
 import 'package:medical/src/widget/meeting/meeting_page.dart';
 import 'package:events_emitter/events_emitter.dart';
+import 'models/MeetingMessage.dart';
 
 import 'meeting_state.dart';
 
@@ -17,7 +18,7 @@ class MeetingCubit extends Cubit<MeetingState> {
 
   // Shared state with app session
   static String? _latestSessionId = null;
-  static List<ZoomVideoSdkChatMessage> _latestChatMessages = [];
+  static List<MeetingMessage> _latestChatMessages = [];
 
   // Zoom
   final ZoomVideoSdk _zoom = ZoomVideoSdk();
@@ -32,9 +33,9 @@ class MeetingCubit extends Cubit<MeetingState> {
 
   // Chat
   final ValueNotifier<bool> _haveNewChatNotifier = ValueNotifier(false);
-  final ValueNotifier<List<ZoomVideoSdkChatMessage>> _chatMessagesNotifier = ValueNotifier([]);
+  final ValueNotifier<List<MeetingMessage>> _chatMessagesNotifier = ValueNotifier([]);
   ValueNotifier<bool> get haveNewChat => _haveNewChatNotifier;
-  ValueNotifier<List<ZoomVideoSdkChatMessage>> get chatMessages => _chatMessagesNotifier;
+  ValueNotifier<List<MeetingMessage>> get chatMessages => _chatMessagesNotifier;
   bool _chatSheetPresented = false;
 
   // Sharing
@@ -398,7 +399,8 @@ class MeetingCubit extends Cubit<MeetingState> {
       if (_mySelf != null && !_chatSheetPresented && message.senderUser.userId != _mySelf!.userId) {
         _haveNewChatNotifier.value = true;
       }
-      _chatMessagesNotifier.value = [message, ..._chatMessagesNotifier.value];
+      final transformedMessage = MeetingMessage.fromZoomVideoSdkChatMessage(message);
+      _chatMessagesNotifier.value = [transformedMessage, ..._chatMessagesNotifier.value];
       _latestChatMessages = _chatMessagesNotifier.value;
     });
     meetingEvents.add(chatMessageReceivedListener);
