@@ -17,6 +17,7 @@ import 'package:medical/src/modal/base/referral_code_temp.dart';
 import 'package:medical/src/modal/error/error_model.dart';
 import 'package:medical/src/modal/user/user_model.dart';
 import 'package:medical/src/repo/user/user_client.dart';
+import 'package:medical/src/service/zoom_service.dart';
 import 'package:medical/src/utils/app_storages.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigation_util.dart';
@@ -140,17 +141,18 @@ class _TabbarControllerState extends State<TabbarController>
   _checkExistZoomId() async {
     final String? zoomId = DynamicLinkConfig.instance.zoomId;
     if (zoomId != null) {
-      PermissionStatus statusMicrophone = await Permission.microphone.status;
-      if (statusMicrophone.isDenied) {
-        await Permission.microphone.request();
-      }
-      PermissionStatus statusCamera = await Permission.camera.request();
-      if (statusCamera.isDenied) {
-        await Permission.camera.request();
-      }
-      Navigator.pushNamed(
-          navigatorKey.currentState!.context, NavigatorName.zoom,
-          arguments: {'id': zoomId});
+      ZoomService().launchZoom(zoomId, AppSettings.userInfo?.fullName ?? 'Người dùng', context);
+      // PermissionStatus statusMicrophone = await Permission.microphone.status;
+      // if (statusMicrophone.isDenied) {
+      //   await Permission.microphone.request();
+      // }
+      // PermissionStatus statusCamera = await Permission.camera.request();
+      // if (statusCamera.isDenied) {
+      //   await Permission.camera.request();
+      // }
+      // Navigator.pushNamed(
+      //     navigatorKey.currentState!.context, NavigatorName.zoom,
+      //     arguments: {'id': zoomId});
     }
   }
 

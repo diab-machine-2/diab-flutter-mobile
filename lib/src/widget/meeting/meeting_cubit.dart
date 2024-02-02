@@ -7,8 +7,8 @@ import 'package:flutter_zoom_videosdk/native/zoom_videosdk.dart';
 import 'package:flutter_zoom_videosdk/native/zoom_videosdk_chat_message.dart';
 import 'package:flutter_zoom_videosdk/native/zoom_videosdk_event_listener.dart';
 import 'package:flutter_zoom_videosdk/native/zoom_videosdk_user.dart';
-import 'package:medical/src/widget/meeting/meeting_page.dart';
 import 'package:events_emitter/events_emitter.dart';
+import 'package:medical/src/service/zoom_service.dart';
 import 'models/MeetingMessage.dart';
 
 import 'meeting_state.dart';

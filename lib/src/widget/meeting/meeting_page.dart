@@ -4,8 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_observer/Observable.dart';
 import 'package:flutter_zoom_videosdk/native/zoom_videosdk.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/service/zoom_service.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/meeting/widgets/chat_view.dart';
 import 'package:medical/src/widget/meeting/widgets/video_view.dart';
@@ -509,6 +511,7 @@ class _MeetingPageState extends State<MeetingPage>
           TextButton(
             onPressed: () async {
               _cubit.leaveSession();
+              Observable.instance.notifyObservers([], notifyName: "mark_completed_calendar");
               Navigator.popUntil(context, _rootPredicate);
             },
             child: Text('Đồng ý'),
@@ -565,20 +568,4 @@ class _MeetingPageState extends State<MeetingPage>
       ),
     );
   }
-}
-
-class MeetingArguments {
-  final String token;
-  final String sessionName;
-  final String displayName;
-  final String sessionPassword;
-  final String sessionIdleTimeoutMins;
-
-  MeetingArguments({
-    required this.token,
-    required this.sessionName,
-    required this.displayName,
-    required this.sessionPassword,
-    required this.sessionIdleTimeoutMins,
-  });
 }
