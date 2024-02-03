@@ -82,14 +82,13 @@ class VideoView extends fzv.ZoomView {
       return FutureBuilder(
         future: user!.videoStatus?.isOn(),
         builder: (context, snapshot) {
-          print("Fullscreen => VideoView: ${snapshot.data}");
           if (snapshot.hasData && snapshot.data == true) {
             return child;
           }
           return Container(
             margin: const EdgeInsets.symmetric(vertical: 0),
             color: Colors.black,
-            child: _buildAvatarWidget(),
+            child: _buildAvatarWidget(size: 64.0),
           );
         },
       );
@@ -98,7 +97,6 @@ class VideoView extends fzv.ZoomView {
     return FutureBuilder(
       future: user!.videoStatus?.isOn(),
       builder: (context, snapshot) {
-        print("Preview => VideoView: ${snapshot.data}");
         Widget child;
         if (snapshot.hasData && snapshot.data == true) {
           final Map<String, dynamic> creationParams = _buildCreationParams();
@@ -130,7 +128,7 @@ class VideoView extends fzv.ZoomView {
     );
   }
 
-  Widget _buildAvatarWidget() {
+  Widget _buildAvatarWidget({double? size}) {
     return Container(
       alignment: Alignment.center,
       child: avatarUrl?.isNotEmpty == true
@@ -140,7 +138,7 @@ class VideoView extends fzv.ZoomView {
             )
           : Icon(
               Icons.person,
-              size: 30,
+              size: size ?? 32.0,
               color: Colors.white,
             ),
     );

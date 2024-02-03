@@ -7,7 +7,6 @@ import '../models/MeetingMessage.dart';
 
 class ChatView extends StatelessWidget {
   final Function(String) onSendMessage;
-  final Function() onClose;
   final FocusNode focusNode;
   final TextEditingController textEditingController;
   final ValueNotifier<List<MeetingMessage>> messagesValueNotifier;
@@ -15,7 +14,6 @@ class ChatView extends StatelessWidget {
     super.key,
     required this.messagesValueNotifier,
     required this.onSendMessage,
-    required this.onClose,
     required this.focusNode,
     required this.textEditingController,
   });
@@ -58,7 +56,9 @@ class ChatView extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 IconButton(
-                  onPressed: onClose,
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
                   icon: Icon(Icons.close),
                 ),
                 Container(
@@ -93,13 +93,14 @@ class ChatView extends StatelessWidget {
                           text: TextSpan(
                             children: message.elements!.map((e) {
                               if (e is TextElement) {
-                                return TextSpan(text: e.text, style: TextStyle(color: Colors.black));
+                                return TextSpan(
+                                    text: e.text, style: TextStyle(color: Colors.black));
                               } else if (e is LinkableElement) {
                                 return TextSpan(
                                   text: e.text,
-                                  style: TextStyle(color: Colors.blue, decoration: TextDecoration.underline),
-                                  recognizer: TapGestureRecognizer()
-                                    ..onTap = () => _onLinkTap(e),
+                                  style: TextStyle(
+                                      color: Colors.blue, decoration: TextDecoration.underline),
+                                  recognizer: TapGestureRecognizer()..onTap = () => _onLinkTap(e),
                                 );
                               }
                               return TextSpan(text: '');
@@ -157,6 +158,17 @@ class ChatView extends StatelessWidget {
                 ),
               ],
             ),
+          ),
+          Builder(
+            builder: (
+              context,
+            ) {
+              final media = MediaQuery.of(context);
+              if (media.viewInsets.bottom > 0.0) {
+                return SizedBox(height: media.viewInsets.bottom);
+              }
+              return SizedBox(height: media.padding.bottom);
+            },
           ),
         ],
       ),

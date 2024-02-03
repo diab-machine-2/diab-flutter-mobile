@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -9,10 +7,11 @@ import 'package:flutter_zoom_videosdk/native/zoom_videosdk.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/service/zoom_service.dart';
 import 'package:medical/src/utils/navigator_name.dart';
-import 'package:medical/src/widget/meeting/widgets/chat_view.dart';
 import 'package:medical/src/widget/meeting/widgets/video_view.dart';
 import 'package:wakelock/wakelock.dart';
 
+import 'widgets/chat_view.dart';
+import 'widgets/top_bottom_control_autohide_widget.dart';
 import 'meeting_cubit.dart';
 import 'meeting_state.dart';
 
@@ -29,16 +28,6 @@ class _MeetingPageState extends State<MeetingPage>
   late MeetingCubit _cubit;
   final TextEditingController chatController = TextEditingController();
   final FocusNode chatFocusNode = FocusNode();
-  late final AnimationController _controller = AnimationController(
-    duration: Duration(milliseconds: 200),
-    vsync: this,
-  );
-  late final Animation<double> _animation = CurvedAnimation(
-    parent: _controller,
-    curve: Curves.easeOut,
-    reverseCurve: Curves.easeIn,
-  );
-  ValueNotifier<bool> _keyboardVisible = ValueNotifier(false);
 
   @override
   void initState() {
@@ -58,7 +47,6 @@ class _MeetingPageState extends State<MeetingPage>
   @override
   void dispose() {
     chatController.dispose();
-    _controller.dispose();
     WidgetsBinding.instance.removeObserver(this);
     Wakelock.disable();
     SystemChrome.setPreferredOrientations([
@@ -86,22 +74,6 @@ class _MeetingPageState extends State<MeetingPage>
   }
 
   @override
-  void didChangeMetrics() async {
-    final bottomInset = MediaQuery.of(context).viewInsets.bottom;
-    final keyboardVisible = bottomInset > 0.0;
-    if (keyboardVisible == this._keyboardVisible.value) {
-      return;
-    }
-    this._keyboardVisible.value = keyboardVisible;
-    await Future.delayed(Duration(milliseconds: 100));
-    if (keyboardVisible && _controller.isCompleted && !_controller.isAnimating) {
-      _controller.forward();
-    } else if (!keyboardVisible && _controller.isDismissed && !_controller.isAnimating) {
-      _controller.reverse();
-    }
-  }
-
-  @override
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
@@ -109,6 +81,7 @@ class _MeetingPageState extends State<MeetingPage>
         return false;
       },
       child: Scaffold(
+        resizeToAvoidBottomInset: false,
         body: BlocProvider(
           create: (_) => _cubit,
           child: BlocListener<MeetingCubit, MeetingState>(
@@ -193,8 +166,11 @@ class _MeetingPageState extends State<MeetingPage>
         videoAspect: VideoAspect.Original,
       );
     }
-    if (isLandScape && state.fullscreenUser.isSharing) {
-      return VideoView(
+    // Landscape mode + Other user is sharing screen
+    if (isLandScape &&
+        state.fullscreenUser.userId != state.thisUser?.userId &&
+        state.fullscreenUser.isSharing) {
+      fullScreenView = VideoView(
         avatarUrl: null,
         user: state.fullscreenUser,
         fullScreen: true,
@@ -202,120 +178,110 @@ class _MeetingPageState extends State<MeetingPage>
         sharing: state.fullscreenUser.isSharing,
         resolution: VideoResolution.Resolution720,
       );
-    }
-    if (state.thisUser != null &&
-        state.thisUser!.userId == state.fullscreenUser.userId &&
-        state.fullscreenUser.isSharing) {
-      fullScreenView = Center(
-        child: Text(
-          'Đang chia sẻ màn hình',
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 18.0,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-      );
     } else {
-      bool allowPiPMode = state.thisUser?.userId != state.fullscreenUser.userId;
-      fullScreenView = VideoView(
-        avatarUrl: null,
-        user: state.fullscreenUser,
-        fullScreen: true,
-        isPiPView: allowPiPMode,
-        sharing: state.fullscreenUser.isSharing,
-        resolution: VideoResolution.Resolution720,
-      );
+      // This user is sharing screen
+      if (state.thisUser != null &&
+          state.thisUser!.userId == state.fullscreenUser.userId &&
+          state.fullscreenUser.isSharing) {
+        fullScreenView = Center(
+          child: Text(
+            'Đang chia sẻ màn hình',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 18.0,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        );
+      } else {
+        // Other cases
+        bool allowPiPMode = state.thisUser?.userId != state.fullscreenUser.userId;
+        fullScreenView = VideoView(
+          avatarUrl: null,
+          user: state.fullscreenUser,
+          fullScreen: true,
+          isPiPView: allowPiPMode,
+          sharing: state.fullscreenUser.isSharing,
+          resolution: VideoResolution.Resolution720,
+        );
+      }
     }
 
-    var media = MediaQuery.of(context);
-    final size = media.size;
+    final media = MediaQuery.of(context);
 
     final double sizeComponentWidth = 100.0;
     final double sizeComponentHeight = 38.0;
-    Widget headerAndPreviewWidget = Column(
-      children: [
-        // Headers
-        Container(
-          padding: EdgeInsets.only(top: media.padding.top / 2.0),
-          height: 56.0 + media.padding.top,
-          color: Colors.black.withOpacity(0.5),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              // Back button
-              Container(
-                width: sizeComponentWidth,
-                height: sizeComponentHeight,
-                alignment: Alignment.centerLeft,
-                padding: EdgeInsets.only(left: 8.0),
-                child: ValueListenableBuilder(
-                  valueListenable: _cubit.haveMultipleCamera,
-                  builder: (context, value, child) {
-                    if (!value) {
-                      return const SizedBox();
-                    }
-                    return IconButton(
-                      onPressed: () => _cubit.switchCamera(),
-                      icon: Image.asset(
-                        R.drawable.ic_zoom_camera_switch,
+    Widget headerWidget = Container(
+      padding: EdgeInsets.only(top: media.padding.top),
+      height: sizeComponentHeight + media.padding.top,
+      color: Colors.black.withOpacity(0.5),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          // Back button
+          Container(
+            width: sizeComponentWidth,
+            height: sizeComponentHeight,
+            alignment: Alignment.centerLeft,
+            padding: EdgeInsets.only(left: 8.0),
+            child: ValueListenableBuilder(
+              valueListenable: _cubit.haveMultipleCamera,
+              builder: (context, value, child) {
+                if (!value) {
+                  return const SizedBox();
+                }
+                return IconButton(
+                  onPressed: () => _cubit.switchCamera(),
+                  icon: Image.asset(
+                    R.drawable.ic_zoom_camera_switch,
+                  ),
+                );
+              },
+            ),
+          ),
+          // Session name
+          Expanded(
+            child: Center(
+              child: FutureBuilder<String?>(
+                  future: _cubit.sessionName,
+                  builder: (context, snapshot) {
+                    return Text(
+                      snapshot.data ?? '',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 18.0,
+                        fontWeight: FontWeight.w600,
                       ),
                     );
-                  },
-                ),
-              ),
-              // Session name
-              Expanded(
-                child: Center(
-                  child: FutureBuilder<String?>(
-                      future: _cubit.sessionName,
-                      builder: (context, snapshot) {
-                        return Text(
-                          snapshot.data ?? '',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 18.0,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        );
-                      }),
-                ),
-              ),
-              // More
-              Container(
-                width: sizeComponentWidth,
-                height: sizeComponentHeight,
-              ),
-            ],
+                  }),
+            ),
           ),
-        ),
-        // Preview
-        Align(
-          alignment: Alignment.topRight,
-          child: previewView,
-        ),
-      ],
+          // More
+          Container(
+            width: sizeComponentWidth,
+            height: sizeComponentHeight,
+          ),
+        ],
+      ),
     );
+    Widget floatingWidget = Align(
+      alignment: Alignment.topRight,
+      child: Padding(
+        padding: const EdgeInsets.only(top: 12.0, right: 12.0),
+        child: previewView,
+      ),
+    );
+    Widget controlsWidget = _buildControls();
     return Stack(
       children: [
         Positioned.fill(child: fullScreenView),
-        Positioned(
-          top: 0.0,
-          right: 0.0,
-          left: 0.0,
-          child: headerAndPreviewWidget,
-        ),
-        Positioned(
-          bottom: media.padding.bottom,
-          left: 0.0,
-          right: 0.0,
-          child: SingleChildScrollView(
-            physics: NeverScrollableScrollPhysics(),
-            child: Column(
-              children: [
-                Container(child: _buildControls(size.height)),
-              ],
-            ),
+        Positioned.fill(
+          child: TopBottomControlAutohideWidget(
+            topWidget: headerWidget,
+            topWidgetHeight: 38.0,
+            bottomWidget: controlsWidget,
+            bottomWidgetHeight: 100.0,
+            floatingRightWidget: floatingWidget,
           ),
         ),
       ],
@@ -323,129 +289,109 @@ class _MeetingPageState extends State<MeetingPage>
   }
 
   // build controls
-  Widget _buildControls(double maxHeight) {
+  Widget _buildControls() {
     return Container(
-      color: Colors.black.withOpacity(0.8),
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: Column(
-        children: [
-          ValueListenableBuilder(
-            valueListenable: _keyboardVisible,
-            builder: (_, value, child) {
-              if (value) {
-                return const SizedBox();
-              }
-              final listActions = Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  // Chat
-                  ValueListenableBuilder(
-                    valueListenable: _cubit.haveNewChat,
-                    child: _buttonIconWithTextBelow(
-                      R.drawable.ic_zoom_chat,
-                      'Trò chuyện',
-                      _showChat,
-                      isOff: false,
-                    ),
-                    builder: (__, value, child) {
-                      return Stack(
-                        children: [
-                          child!,
-                          if (value)
-                            Positioned(
-                              top: 12.0,
-                              right: 12.0,
-                              child: Container(
-                                width: 12.0,
-                                height: 12.0,
-                                decoration: BoxDecoration(
-                                  color: Colors.red,
-                                  shape: BoxShape.circle,
-                                ),
-                              ),
+      color: Colors.black.withOpacity(0.5),
+      padding: const EdgeInsets.symmetric(horizontal: 4.0),
+      child: Builder(
+        builder: (context) {
+          final media = MediaQuery.of(context);
+          Widget listActions = Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              // Chat
+              ValueListenableBuilder(
+                valueListenable: _cubit.haveNewChat,
+                child: _buttonIconWithTextBelow(
+                  R.drawable.ic_zoom_chat,
+                  'Trò chuyện',
+                  _showChat,
+                  isOff: false,
+                ),
+                builder: (__, value, child) {
+                  return Stack(
+                    children: [
+                      child!,
+                      if (value)
+                        Positioned(
+                          top: 12.0,
+                          right: 12.0,
+                          child: Container(
+                            width: 12.0,
+                            height: 12.0,
+                            decoration: BoxDecoration(
+                              color: Colors.red,
+                              shape: BoxShape.circle,
                             ),
-                        ],
-                      );
-                    },
-                  ),
-
-                  // Camera
-                  FutureBuilder(
-                    future: _cubit.user?.videoStatus?.isOn(),
-                    builder: (context, snapshot) {
-                      bool isVideoOn = snapshot.data ?? false;
-                      return _buttonIconWithTextBelow(
-                        isVideoOn ? R.drawable.ic_zoom_video_on : R.drawable.ic_zoom_video_off,
-                        isVideoOn ? 'Bật camera' : 'Tắt camera',
-                        _cubit.toggleVideo,
-                        isOff: !isVideoOn,
-                      );
-                    },
-                  ),
-
-                  // Audio
-                  FutureBuilder(
-                    future: _cubit.user?.audioStatus?.isMuted(),
-                    builder: (context, snapshot) {
-                      bool isMuted = snapshot.data ?? false;
-                      return _buttonIconWithTextBelow(
-                        isMuted ? R.drawable.ic_zoom_audio_off : R.drawable.ic_zoom_audio_on,
-                        isMuted ? 'Bật âm' : 'Tắt âm',
-                        _cubit.toggleAudio,
-                        isOff: isMuted,
-                      );
-                    },
-                  ),
-
-                  // More
-                  _buttonIconWithTextBelow(
-                    R.drawable.ic_zoom_more,
-                    'Xem thêm',
-                    _moreAction,
-                    isOff: false,
-                  ),
-
-                  // Leave
-                  _buttonIconWithTextBelow(
-                    R.drawable.ic_zoom_end,
-                    'Kết thúc',
-                    () => _confirmAndQuitSession(context),
-                    isOff: true,
-                    backgroundColor: Color(0xFFD85140),
-                  ),
-                ],
-              );
-              double width = MediaQuery.of(context).size.width;
-              if (width > 368.0) {
-                return Align(
-                  alignment: Alignment.center,
-                  child: Container(
-                    width: 368.0,
-                    child: listActions,
-                  ),
-                );
-              }
-              return listActions;
-            },
-          ),
-          SizeTransition(
-            sizeFactor: _animation,
-            axis: Axis.vertical,
-            axisAlignment: 1.0,
-            child: Container(
-              margin: EdgeInsets.only(top: 8.0),
-              height: min(maxHeight * 0.5, 400.0),
-              child: ChatView(
-                messagesValueNotifier: _cubit.chatMessages,
-                onSendMessage: _cubit.sendChatToAll,
-                textEditingController: chatController,
-                onClose: _hideChat,
-                focusNode: chatFocusNode,
+                          ),
+                        ),
+                    ],
+                  );
+                },
               ),
-            ),
-          ),
-        ],
+      
+              // Camera
+              FutureBuilder(
+                future: _cubit.user?.videoStatus?.isOn(),
+                builder: (context, snapshot) {
+                  bool isVideoOn = snapshot.data ?? false;
+                  return _buttonIconWithTextBelow(
+                    isVideoOn ? R.drawable.ic_zoom_video_on : R.drawable.ic_zoom_video_off,
+                    isVideoOn ? 'Bật camera' : 'Tắt camera',
+                    _cubit.toggleVideo,
+                    isOff: !isVideoOn,
+                  );
+                },
+              ),
+      
+              // Audio
+              FutureBuilder(
+                future: _cubit.user?.audioStatus?.isMuted(),
+                builder: (context, snapshot) {
+                  bool isMuted = snapshot.data ?? false;
+                  return _buttonIconWithTextBelow(
+                    isMuted ? R.drawable.ic_zoom_audio_off : R.drawable.ic_zoom_audio_on,
+                    isMuted ? 'Bật âm' : 'Tắt âm',
+                    _cubit.toggleAudio,
+                    isOff: isMuted,
+                  );
+                },
+              ),
+      
+              // More
+              _buttonIconWithTextBelow(
+                R.drawable.ic_zoom_more,
+                'Xem thêm',
+                _moreAction,
+                isOff: false,
+              ),
+      
+              // Leave
+              _buttonIconWithTextBelow(
+                R.drawable.ic_zoom_end,
+                'Kết thúc',
+                () => _confirmAndQuitSession(context),
+                isOff: true,
+                backgroundColor: Color(0xFFD85140),
+              ),
+            ],
+          );
+          listActions = Padding(
+            padding: EdgeInsets.only(bottom: media.padding.bottom, top: 8.0),
+            child: listActions,
+          );
+          if (media.size.width > 368.0) {
+            return Align(
+              alignment: Alignment.center,
+              child: Container(
+                width: 368.0,
+                child: listActions,
+              ),
+            );
+          }
+          return listActions;
+        },
       ),
     );
   }
@@ -526,19 +472,75 @@ class _MeetingPageState extends State<MeetingPage>
     );
   }
 
-  void _showChat() {
+  void _showChat() async {
     _cubit.startChat();
-    chatFocusNode.requestFocus();
-    _controller.forward();
-  }
-
-  void _hideChat() {
+    await showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(12.0),
+          topRight: Radius.circular(12.0),
+        ),
+      ),
+      builder: (context) {
+        return DraggableScrollableSheet(
+          initialChildSize: 0.9,
+          minChildSize: 0.9,
+          maxChildSize: 0.9,
+          expand: false,
+          builder: (context, scrollController) {
+            return ChatView(
+              messagesValueNotifier: _cubit.chatMessages,
+              onSendMessage: _cubit.sendChatToAll,
+              textEditingController: chatController,
+              focusNode: chatFocusNode,
+              // scrollController: scrollController,
+            );
+          },
+        );
+      },
+    );
     _cubit.endChat();
-    _controller.reverse();
-    FocusScope.of(context).requestFocus(FocusNode());
   }
 
-  void _moreAction() {}
+  void _moreAction() {
+    // show bottom sheet with 3 options
+    showModalBottomSheet(
+      context: context,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(12.0),
+          topRight: Radius.circular(12.0),
+        ),
+      ),
+      builder: (context) {
+        final media = MediaQuery.of(context);
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            SizedBox(height: 20.0),
+            ListTile(
+              leading: Icon(Icons.person),
+              title: Text('Danh sách người tham gia'),
+              onTap: () {},
+            ),
+            ListTile(
+              leading: Icon(Icons.settings),
+              title: Text('Cài đặt'),
+              onTap: () {},
+            ),
+            ListTile(
+              leading: Icon(Icons.info),
+              title: Text('Thông tin'),
+              onTap: () {},
+            ),
+            Padding(padding: media.padding),
+          ],
+        );
+      },
+    );
+  }
 
   void _popupSessionEnded(BuildContext context) {
     showDialog(
