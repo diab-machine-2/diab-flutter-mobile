@@ -17,7 +17,7 @@ class VideoView extends fzv.ZoomView {
     bool focused = false,
     bool hasMultiCamera = false,
     String multiCameraIndex = "0",
-    String videoAspect = VideoAspect.Original,
+    String videoAspect = VideoAspect.PanAndScan,
   }) : super(
           sharing: sharing,
           isPiPView: isPiPView,
@@ -31,6 +31,7 @@ class VideoView extends fzv.ZoomView {
   double get _previewWidth => 110.0;
   double get _previewHeight => 146.0;
   double get _previewRoundedRadius => 10.0;
+  double get _ratio => 4 / 3;
 
   Map<String, dynamic> _buildCreationParams() {
     final Map<String, dynamic> creationParams = <String, dynamic>{};
@@ -57,23 +58,24 @@ class VideoView extends fzv.ZoomView {
     if (user == null) {
       return SizedBox();
     }
+    final media = MediaQuery.of(context);
+    bool isLandScape = media.orientation == Orientation.landscape;
     // Fullscreen view
     if (fullScreen) {
-      final size = MediaQuery.of(context).size;
       final Map<String, dynamic> creationParams = _buildCreationParams();
-      Widget child = Container(
-        width: size.width,
-        height: size.height,
-        color: Colors.black,
-        alignment: Alignment.center,
-        child: fzv.View(
-          key: Key('userId: ${user!.userId}, fullScreen: true, sharing: $sharing'),
-          creationParams: creationParams,
-        ),
+      Widget zoomView = fzv.View(
+        key: Key('userId: ${user!.userId}, fullScreen: true, sharing: $sharing'),
+        creationParams: creationParams,
       );
       if (sharing) {
         return InteractiveViewer(
-          child: child,
+          child: Container(
+            width: media.size.width,
+            height: media.size.height,
+            color: Colors.black,
+            alignment: Alignment.center,
+            child: zoomView,
+          ),
           minScale: 1.0,
           maxScale: 2.5,
           constrained: false,
@@ -82,8 +84,37 @@ class VideoView extends fzv.ZoomView {
       return FutureBuilder(
         future: user!.videoStatus?.isOn(),
         builder: (context, snapshot) {
+          final mediaData = MediaQuery.of(context);
           if (snapshot.hasData && snapshot.data == true) {
-            return child;
+            if (!isLandScape) {
+              double width = mediaData.size.width;
+              double height = width * _ratio;
+              double ratio = mediaData.size.height / height;
+              return Container(
+                width: mediaData.size.width,
+                height: mediaData.size.height,
+                color: Colors.black,
+                alignment: Alignment.center,
+                child: ClipRect(
+                  child: AspectRatio(
+                    aspectRatio: 1.0 / _ratio,
+                    child: FractionallySizedBox(
+                      widthFactor: 1.0,
+                      heightFactor: ratio,
+                      alignment: Alignment.center,
+                      child: zoomView,
+                    ),
+                  ),
+                ),
+              );
+            }
+            return Container(
+              width: media.size.width,
+              height: media.size.height,
+              color: Colors.black,
+              alignment: Alignment.center,
+              child: zoomView,
+            );
           }
           return Container(
             margin: const EdgeInsets.symmetric(vertical: 0),

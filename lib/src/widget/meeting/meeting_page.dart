@@ -163,7 +163,6 @@ class _MeetingPageState extends State<MeetingPage>
         user: state.thisUser,
         fullScreen: false,
         resolution: VideoResolution.Resolution720,
-        videoAspect: VideoAspect.Original,
       );
     }
     // Landscape mode + Other user is sharing screen
@@ -210,7 +209,7 @@ class _MeetingPageState extends State<MeetingPage>
     final media = MediaQuery.of(context);
 
     final double sizeComponentWidth = 100.0;
-    final double sizeComponentHeight = 38.0;
+    final double sizeComponentHeight = 45.0;
     Widget headerWidget = Container(
       padding: EdgeInsets.only(top: media.padding.top),
       height: sizeComponentHeight + media.padding.top,
@@ -278,7 +277,7 @@ class _MeetingPageState extends State<MeetingPage>
         Positioned.fill(
           child: TopBottomControlAutohideWidget(
             topWidget: headerWidget,
-            topWidgetHeight: 38.0,
+            topWidgetHeight: sizeComponentHeight,
             bottomWidget: controlsWidget,
             bottomWidgetHeight: 100.0,
             floatingRightWidget: floatingWidget,
