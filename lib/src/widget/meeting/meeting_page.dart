@@ -377,7 +377,7 @@ class _MeetingPageState extends State<MeetingPage>
             ],
           );
           listActions = Padding(
-            padding: EdgeInsets.only(bottom: media.padding.bottom, top: 8.0),
+            padding: EdgeInsets.only(bottom: media.padding.bottom + 8.0, top: 8.0),
             child: listActions,
           );
           if (media.size.width > 368.0) {

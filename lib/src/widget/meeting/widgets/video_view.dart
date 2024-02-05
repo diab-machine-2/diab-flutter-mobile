@@ -87,22 +87,17 @@ class VideoView extends fzv.ZoomView {
           final mediaData = MediaQuery.of(context);
           if (snapshot.hasData && snapshot.data == true) {
             if (!isLandScape) {
-              double width = mediaData.size.width;
-              double height = width * _ratio;
-              double ratio = mediaData.size.height / height;
               return Container(
-                width: mediaData.size.width,
-                height: mediaData.size.height,
-                color: Colors.black,
                 alignment: Alignment.center,
+                color: Colors.black,
                 child: ClipRect(
                   child: AspectRatio(
                     aspectRatio: 1.0 / _ratio,
-                    child: FractionallySizedBox(
-                      widthFactor: 1.0,
-                      heightFactor: ratio,
-                      alignment: Alignment.center,
-                      child: zoomView,
+                    child: OverflowBox(
+                      maxHeight: mediaData.size.height,
+                      child: SizedBox.expand(
+                        child: zoomView,
+                      ),
                     ),
                   ),
                 ),
@@ -128,31 +123,50 @@ class VideoView extends fzv.ZoomView {
     return FutureBuilder(
       future: user!.videoStatus?.isOn(),
       builder: (context, snapshot) {
-        Widget child;
         if (snapshot.hasData && snapshot.data == true) {
+          final mediaData = MediaQuery.of(context);
           final Map<String, dynamic> creationParams = _buildCreationParams();
-          child = Container(
-            child: fzv.View(
-              key: Key('fullScreen: false, sharing: false'),
-              creationParams: creationParams,
+          Widget zoomView = fzv.View(
+            key: Key('fullScreen: false, sharing: false'),
+            creationParams: creationParams,
+          );
+          // Support only portrait mode
+          return Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(_previewRoundedRadius),
+              color: Colors.black,
+              border: Border.all(color: Colors.white, width: 1.0),
+            ),
+            clipBehavior: Clip.antiAlias,
+            width: _previewWidth,
+            height: _previewHeight,
+            alignment: Alignment.center,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(_previewRoundedRadius),
+              child: AspectRatio(
+                aspectRatio: 1.0 / _ratio,
+                child: OverflowBox(
+                  maxHeight: mediaData.size.height,
+                  child: SizedBox.expand(
+                    child: zoomView,
+                  ),
+                ),
+              ),
             ),
           );
-        } else {
-          child = Container(
-            child: _buildAvatarWidget(),
-          );
         }
-        double _roundedRadius = _previewRoundedRadius;
         return Container(
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(_roundedRadius),
+            borderRadius: BorderRadius.circular(_previewRoundedRadius),
             color: Colors.black,
           ),
           width: _previewWidth,
           height: _previewHeight,
           child: ClipRRect(
-            borderRadius: BorderRadius.circular(_roundedRadius),
-            child: child,
+            borderRadius: BorderRadius.circular(_previewRoundedRadius),
+            child: SizedBox.expand(
+              child: _buildAvatarWidget(),
+            )
           ),
         );
       },
