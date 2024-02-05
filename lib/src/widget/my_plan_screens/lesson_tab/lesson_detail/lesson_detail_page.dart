@@ -123,6 +123,10 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                   onDone: (isPassed) async {
                     _cubit.onChangeSection(context, _cubit.currentSection + 1);
                   },
+                  onComplete: () {
+                    widget.onComplete(
+                        _cubit.lessonDetail!.id!, _cubit.percentComplete);
+                  },
                   lessonDetail: _cubit.lessonDetail!)
               : Scaffold(
                   body: BackgroundPage(
@@ -257,6 +261,9 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                                               objectTitle:
                                                   _cubit.lessonDetail?.name,
                                             );
+                                            widget.onComplete(
+                                                _cubit.lessonDetail!.id!,
+                                                _cubit.percentComplete);
                                             _cubit.complete();
                                           },
                                           percentCallbackDefault: 0.5,
