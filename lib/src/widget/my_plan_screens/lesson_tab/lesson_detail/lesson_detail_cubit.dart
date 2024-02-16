@@ -240,13 +240,14 @@ class LessonDetailCubit extends Cubit<LessonDetailState> {
   Future<void> completeLearningCurrentSection() async {
     await Future.delayed(Duration.zero);
     emit(const LessonDetailLoading());
+    print("percentComplete: ===================>" + percentComplete.toString());
     final ApiResult<CommonResponse> apiResult =
         await repository.setCompletedLessonAccount(
       UpdateLessonSectionRequest(
-        lessonId: lessonId,
-        type: currentSectionDetail?.type,
-        lessonSectionId: currentSectionDetail?.id,
-      ),
+          lessonId: lessonId,
+          type: currentSectionDetail?.type,
+          lessonSectionId: currentSectionDetail?.id,
+          completePercent: percentComplete),
     );
     apiResult.when(success: (CommonResponse response) {
       if (response.meta?.success == true) {

@@ -115,6 +115,10 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
           return _cubit.showQuizLesson
               ? CourseQuizPage(
                   key: Key(_cubit.currentSectionDetail?.id ?? ''),
+                  currentPercent: (((_cubit.currentSection + 1) /
+                              _cubit.sectionList.length) *
+                          100)
+                      .toInt(), // Khi hoàn thành quiz sẽ gửi luôn phần trăm đã tính sẵn
                   lessonId: _cubit.lessonId,
                   lessonSectionItem: widget.lessonType != 3
                       ? _cubit.currentSectionDetail

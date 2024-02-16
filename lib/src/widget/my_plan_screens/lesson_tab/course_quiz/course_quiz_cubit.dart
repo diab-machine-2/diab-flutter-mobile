@@ -9,28 +9,28 @@ import 'package:medical/src/model/response/quiz_lesson.dart';
 import 'package:medical/src/model/service/api_result.dart';
 import 'package:medical/src/model/service/network_exceptions.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
+import 'package:medical/src/widget/my_plan_screens/lesson_tab/lesson_detail/lesson_detail_cubit.dart';
 
 import '../../../../model/request/quiz_answer_request.dart';
 import 'course_quiz.dart';
 
 class CourseQuizCubit extends Cubit<CourseQuizState> {
-  CourseQuizCubit(
-    this.repository, {
-    required this.lessonId,
-    required this.lessonDetail,
-    required this.lessonSectionItem,
-  }) : super(InitialCourseQuizState());
+  CourseQuizCubit(this.repository,
+      {required this.lessonId,
+      required this.lessonDetail,
+      required this.lessonSectionItem,
+      required this.currentPercent})
+      : super(InitialCourseQuizState());
   final AppRepository repository;
 
   final String lessonId;
   final LessonSectionItem? lessonSectionItem;
   final LessonSectionListResponseData lessonDetail;
-
   List<QuizLesson?> listQuiz = [];
   Map<int, List<String>> answer = {};
   int selectedCourseIndex = 0;
   double minCompletePercent = 100;
-
+  int currentPercent = 0;
   List<QuizAnswerRequest> quizAnswerId = [];
 
   String quizName = '';
@@ -181,10 +181,10 @@ class CourseQuizCubit extends Cubit<CourseQuizState> {
     final ApiResult<CommonResponse> apiResult =
         await repository.setCompletedLessonAccount(
       UpdateLessonSectionRequest(
-        lessonId: lessonId,
-        type: lessonSectionItem?.type,
-        lessonSectionId: lessonSectionItem?.id,
-      ),
+          lessonId: lessonId,
+          type: lessonSectionItem?.type,
+          lessonSectionId: lessonSectionItem?.id,
+          completePercent: currentPercent),
     );
     apiResult.when(success: (CommonResponse response) {
       if (response.meta?.success == true) {
