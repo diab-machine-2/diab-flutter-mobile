@@ -13,11 +13,13 @@ class UpdateLessonSectionRequest {
   String? lessonId;
   int? type;
   String? lessonSectionId;
+  int? completePercent;
 
   UpdateLessonSectionRequest({
     this.lessonId,
     this.type,
     this.lessonSectionId,
+    this.completePercent,
   });
   UpdateLessonSectionRequest.fromJson(Map<String, dynamic> json) {
     lessonId = json["lessonId"]?.toString();
@@ -29,6 +31,7 @@ class UpdateLessonSectionRequest {
     data["lessonId"] = lessonId;
     data["type"] = type;
     data["lessonSectionId"] = lessonSectionId;
+    data["completePercent"] = completePercent;
     return data;
   }
 }
