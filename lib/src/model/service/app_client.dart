@@ -2,8 +2,6 @@ import 'package:dio/dio.dart';
 import 'package:medical/src/model/preference/app_preference.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/utils.dart';
-import 'package:pretty_dio_logger/pretty_dio_logger.dart';
-import 'package:ua_client_hints/ua_client_hints.dart';
 
 import '../app_api.dart';
 
@@ -13,17 +11,15 @@ const _defaultReceiveTimeout = Duration.millisecondsPerMinute;
 class AppClient {
   late AppApi appClient;
 
-  AppClient._privateConstructor() {
+  AppClient._() {
     _setupClient();
   }
 
-  static final AppClient _instance = AppClient._privateConstructor();
+  static final AppClient _instance = AppClient._();
 
-  AppClient() {
-    _setupClient();
-  }
+  factory AppClient() => _instance;
 
-  Future<void> _setupClient() async {
+  void _setupClient() {
     final Dio _dio = Dio();
     // final user_agent = await userAgent();
     _dio

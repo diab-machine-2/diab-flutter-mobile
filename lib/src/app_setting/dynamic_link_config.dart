@@ -6,9 +6,9 @@ import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:medical/src/modal/learning/learning_post_model.dart';
 import 'package:medical/src/modal/user/user_model.dart';
+import 'package:medical/src/service/zoom_service.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigator_name.dart';
-import 'package:permission_handler/permission_handler.dart';
 import '../model/response/lesson_section_list_response.dart';
 
 class DynamicLinkConfig {
@@ -244,18 +244,20 @@ class DynamicLinkConfig {
             final UserModel? user = AppSettings.userInfo;
             if (user != null && _zoomId == null) {
               _zoomId = calendarID;
-              PermissionStatus statusMicrophone =
-                  await Permission.microphone.status;
-              if (statusMicrophone.isDenied) {
-                await Permission.microphone.request();
-              }
-              PermissionStatus statusCamera = await Permission.camera.request();
-              if (statusCamera.isDenied) {
-                await Permission.camera.request();
-              }
-              Navigator.pushNamed(
-                  navigatorKey.currentState!.context, NavigatorName.zoom,
-                  arguments: {'id': calendarID});
+              ZoomService().launchZoom(calendarID, AppSettings.userInfo?.fullName ?? 'Người dùng',
+                  navigatorKey.currentState!.context);
+              // PermissionStatus statusMicrophone =
+              //     await Permission.microphone.status;
+              // if (statusMicrophone.isDenied) {
+              //   await Permission.microphone.request();
+              // }
+              // PermissionStatus statusCamera = await Permission.camera.request();
+              // if (statusCamera.isDenied) {
+              //   await Permission.camera.request();
+              // }
+              // Navigator.pushNamed(
+              //     navigatorKey.currentState!.context, NavigatorName.zoom,
+              //     arguments: {'id': calendarID});
             } else {
               _zoomId = calendarID;
             }

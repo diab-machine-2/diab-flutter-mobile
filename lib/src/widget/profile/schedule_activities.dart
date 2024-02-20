@@ -1,5 +1,4 @@
 import 'package:bot_toast/bot_toast.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/user/patient_time_frame.dart';
@@ -9,7 +8,6 @@ import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/modal/error/error_model.dart';
-import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:easy_localization/easy_localization.dart';
 
 class ScheduleActivityController extends StatefulWidget {

@@ -88,12 +88,11 @@ class DateUtil {
 
   static DateTime? parseStringToDate(String dateStr, String format) {
     DateTime? date;
-    if (dateStr != null)
-      try {
-        date = DateFormat(format).parse(dateStr);
-      } on FormatException catch (e) {
-        Console.log('parseStringToDate Error', e.toString());
-      }
+    try {
+      date = DateFormat(format).parse(dateStr);
+    } on FormatException catch (e) {
+      Console.log('parseStringToDate Error', e.toString());
+    }
     return date;
   }
 

@@ -12,13 +12,15 @@ class FirebaseRemoteSetting {
 
   late String _appStoreVersion;
   late String _playStoreVersion;
-  late String _storeNavigationUrl;
+  late String? _storeNavigationUrl;
   late bool _activePopupHealthConnect; //ACTIVE_POPUP_HEALTH_CONNECT
   late String _linkStoreNavigation;
 
   String get appStoreVersion => _appStoreVersion;
   String get playStoreVersion => _playStoreVersion;
-  String get storeNavigationUrl => _storeNavigationUrl;
+  String get storeNavigationUrl {
+    return _storeNavigationUrl ?? 'https://diab.com.vn/ve-diab/';
+  }
   bool get activePopupHealthConnect => _activePopupHealthConnect;
   String get linkStoreNavigation => _linkStoreNavigation;
   Future<void> init() async {

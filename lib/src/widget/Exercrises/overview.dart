@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
-import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/app_setting/firebase_tracking/kpi_motion_tracking.dart';
 import 'package:medical/src/widget/Exercrises/widget/exercrises_contain_detail.dart';
 import 'package:medical/src/widget/Exercrises/widget/exercrises_ranking_chart.dart';
 import 'package:medical/src/widget/Exercrises/widget/exercrises_trend_calo_chart.dart';
 import 'package:medical/src/widget/Exercrises/widget/exercrises_trend_chart.dart';
 import 'package:medical/src/widget/HbA1C/widget/course_suggest.dart';
-import 'package:medical/src/widget/helper/tracking_manager.dart';
 
 class ExercrisesOverviewController extends StatefulWidget {
   ExercrisesOverviewController({Key? key}) : super(key: key);

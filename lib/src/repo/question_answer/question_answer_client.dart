@@ -1,7 +1,5 @@
-import 'package:dio/dio.dart';
 import 'package:easy_localization/src/public_ext.dart';
 import 'package:medical/res/R.dart';
-import 'package:medical/src/model/request/make_comment_request.dart';
 import 'package:medical/src/model/request/make_question_request.dart';
 import 'package:medical/src/widget/helper/http_helper.dart';
 import 'package:medical/src/modal/error/error_model.dart';

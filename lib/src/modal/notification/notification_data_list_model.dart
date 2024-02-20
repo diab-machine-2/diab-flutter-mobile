@@ -1,4 +1,3 @@
-import 'package:medical/src/modal/notification/notification_model.dart';
 import 'package:meta/meta.dart';
 
 import 'notification_list_model.dart';

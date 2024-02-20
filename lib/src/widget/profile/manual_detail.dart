@@ -3,7 +3,6 @@ import 'package:flutter_html/flutter_html.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/user/manual.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
-import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class ManualDetailController extends StatefulWidget {

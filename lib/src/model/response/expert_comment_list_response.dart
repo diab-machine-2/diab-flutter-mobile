@@ -1,4 +1,3 @@
-import 'package:medical/src/model/response/my_progress_response.dart';
 import 'package:medical/src/widget/my_plan_screens/activity_tab/expert_comment/model/expert_comment_model.dart';
 
 class ExpertCommentResponseMeta {

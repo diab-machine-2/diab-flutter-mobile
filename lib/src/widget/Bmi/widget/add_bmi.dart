@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'dart:ui';
 
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
@@ -30,11 +29,6 @@ import 'package:medical/src/modal/error/error_model.dart';
 import 'package:easy_localization/easy_localization.dart';
 
 import '../../../model/repository/app_repository.dart';
-import '../../../model/request/complete_smart_goal_request.dart';
-import '../../../model/request/mark_completed_target_request.dart';
-import '../../../model/response/common_response.dart';
-import '../../../model/service/api_result.dart';
-import '../../../model/service/network_exceptions.dart';
 import '../../../repo/home/home_client.dart';
 import '../../../utils/utils.dart';
 import '../../../widgets/CalendarPicker/custom_date_picker.dart';
@@ -58,10 +52,10 @@ class AddBmiController extends StatefulWidget {
 
 class _AddBmiControllerState extends BaseState<AddBmiController>
     with SingleTickerProviderStateMixin {
-  TextEditingController _controllerWeight = TextEditingController();
-  TextEditingController _controllerHeight = TextEditingController();
+  // TextEditingController _controllerWeight = TextEditingController();
+  // TextEditingController _controllerHeight = TextEditingController();
   TextEditingController _controllerNote = TextEditingController();
-  TextEditingController _controllerHip = TextEditingController();
+  // TextEditingController _controllerHip = TextEditingController();
   int maxMedia = 5;
   List<dynamic> files = [];
   DateTime selectedDate = DateTime.now();
@@ -136,6 +130,7 @@ class _AddBmiControllerState extends BaseState<AddBmiController>
 
   @override
   void dispose() {
+    _controllerNote.dispose();
     _animtionController.dispose();
     _focusNode.dispose();
     super.dispose();
@@ -339,10 +334,8 @@ class _AddBmiControllerState extends BaseState<AddBmiController>
                                                               callback:
                                                                   (number) {
                                                                 setState(() {
-                                                                  if (number !=
-                                                                      null)
-                                                                    selectedWeight =
-                                                                        number;
+                                                                  selectedWeight =
+                                                                      number;
                                                                 });
                                                                 handleBMI();
                                                               },
@@ -987,9 +980,9 @@ class _AddBmiControllerState extends BaseState<AddBmiController>
   }
 
   editData() async {
-    final weight = _controllerWeight.text;
-    final height = _controllerHeight.text;
-    final hip = _controllerHip.text;
+    // final weight = _controllerWeight.text;
+    // final height = _controllerHeight.text;
+    // final hip = _controllerHip.text;
     final note = _controllerNote.text;
 
     // if (weight.isEmpty) {

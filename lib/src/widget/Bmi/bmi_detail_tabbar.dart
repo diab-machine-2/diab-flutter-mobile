@@ -16,7 +16,6 @@ import 'package:medical/src/widget/Bmi/widget/bmi_detail.dart';
 import 'package:medical/src/widget/HbA1C/widget/description/description.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/components/custom_action_descriptipn.dart';
-import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/nipro/health_app/widgets/request_health_connect.dart';
 import 'package:medical/src/widget/tabbar/action_list_panel.dart';
 import 'package:medical/src/widget/tabbar/fillter_bloodSugar_panel.dart';

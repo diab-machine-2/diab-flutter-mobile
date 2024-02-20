@@ -14,7 +14,6 @@ import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/card_course_quiz/card_course_quiz.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
-import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widgets/button_widget.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
 

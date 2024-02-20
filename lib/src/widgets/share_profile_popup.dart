@@ -16,7 +16,6 @@ import 'package:medical/src/widget/shared_profile/shared_profile.dart';
 import 'package:medical/src/widgets/button_widget.dart';
 
 import '../app.dart';
-import '../model/request/has_shared_profile_request.dart';
 import '../model/response/common_response.dart';
 import '../utils/navigation_util.dart';
 

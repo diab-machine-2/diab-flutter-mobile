@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
-import 'package:medical/src/utils/utils.dart';
 
 enum CustomPlayerEventType {
   videoPlay,

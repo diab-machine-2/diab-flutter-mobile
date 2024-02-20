@@ -2,7 +2,6 @@ import 'dart:math';
 
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
-import 'package:medical/src/modal/food/food_model.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 
 import '../../../../res/R.dart';
@@ -55,6 +54,7 @@ class FoodTrendChartTabViewState extends State<FoodTrendChartTabView>
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return VisibilityDetector(
             key: Key('food_trend_chart${widget.type}'),
             onVisibilityChanged: (visibilityInfo) {

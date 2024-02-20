@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:medical/res/R.dart';
 import 'package:medical/src/utils/app_media_query.dart';
 import 'package:medical/src/widgets/app_bar_widget.dart';
 import 'package:medical/src/widgets/normal_template.dart';

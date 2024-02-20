@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_observer/Observable.dart';
@@ -14,14 +13,10 @@ import 'package:medical/src/app_setting/dynamic_link_config.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
-import 'package:medical/src/widget/nipro/roche_connection/roche_connection_view.dart';
 import 'package:medical/src/widgets/button_language_picker.dart';
 import 'package:package_info/package_info.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
-import '../../modal/user/secure.dart';
-import '../../model/service/app_client.dart';
-import '../../repo/user/user_client.dart';
 
 // ignore: must_be_immutable
 class StepListController extends StatefulWidget {
@@ -386,7 +381,6 @@ class _StepListControllerState extends State<StepListController> with Observer {
 
   Widget builtItem(
       BuildContext context, String name, String image, String text) {
-    final width = MediaQuery.of(context).size.width;
     return Column(
       ///mainAxisSize: MainAxisSize.min,
       children: [

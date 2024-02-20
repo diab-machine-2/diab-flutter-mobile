@@ -2,7 +2,6 @@ import 'dart:math';
 
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/home/home_model.dart';
 

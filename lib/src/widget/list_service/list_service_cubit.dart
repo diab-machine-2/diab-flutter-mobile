@@ -4,7 +4,6 @@ import 'package:medical/src/model/response/detail_package_data.dart';
 import 'package:medical/src/model/response/list_package_response.dart';
 import 'package:medical/src/model/service/api_result.dart';
 import 'package:medical/src/model/service/network_exceptions.dart';
-import 'package:medical/src/utils/const.dart';
 
 import 'list_service.dart';
 

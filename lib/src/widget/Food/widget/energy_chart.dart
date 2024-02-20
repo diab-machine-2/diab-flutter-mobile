@@ -334,11 +334,7 @@ class GradientArcPainter extends CustomPainter {
     required this.startColor,
     required this.endColor,
     required this.width,
-  })  : assert(progress != null),
-        assert(startColor != null),
-        assert(endColor != null),
-        assert(width != null),
-        super();
+  })  : super();
 
   final double progress;
   final Color startColor;

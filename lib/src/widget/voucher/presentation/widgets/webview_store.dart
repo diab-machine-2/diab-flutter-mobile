@@ -1,11 +1,9 @@
 import 'package:bot_toast/bot_toast.dart';
-import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widgets/app_bar_widget.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:url_launcher/url_launcher_string.dart';
 
 class WebviewStore extends StatefulWidget {
   const WebviewStore({Key? key, required this.urlStore}) : super(key: key);

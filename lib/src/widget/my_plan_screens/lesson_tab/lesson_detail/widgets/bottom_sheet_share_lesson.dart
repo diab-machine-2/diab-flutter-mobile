@@ -1,10 +1,8 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
-import 'package:medical/src/widget/profile/delete_account/presentation/widgets/widgets.dart';
 import 'package:medical/src/widgets/block_bottom_sheet.dart';
 import 'package:medical/src/widgets/button_widget.dart';
-import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
 class BottomSheetShareLesson extends StatelessWidget {
   final VoidCallback onShare;

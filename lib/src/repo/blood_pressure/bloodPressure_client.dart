@@ -6,7 +6,6 @@ import 'package:medical/src/modal/blood_pressure/blood_pressure_distribution.dar
 import 'package:medical/src/modal/blood_pressure/blood_pressure_heart_rate.dart';
 import 'package:medical/src/modal/blood_pressure/blood_pressure_statistic.dart';
 import 'package:medical/src/modal/blood_pressure/blood_pressure_trend.dart';
-import 'package:medical/src/utils/app_log.dart';
 import 'package:medical/src/widget/helper/http_helper.dart';
 import 'package:medical/src/modal/error/error_model.dart';
 import 'package:easy_localization/easy_localization.dart';

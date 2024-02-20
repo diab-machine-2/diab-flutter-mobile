@@ -75,8 +75,7 @@ class CircularMenu extends StatefulWidget {
     this.key,
     this.startingAngleInRadian,
     this.endingAngleInRadian,
-  })  : assert(items != null, 'items can not be empty list'),
-        assert(items.length > 1, 'if you have one item no need to use a Menu'),
+  })  : assert(items.length > 1, 'if you have one item no need to use a Menu'),
         super(key: key);
 
   @override

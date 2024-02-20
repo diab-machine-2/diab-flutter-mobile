@@ -1,7 +1,6 @@
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/utils/date_utils.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
-import 'package:medical/src/widget/my_plan_screens/lesson_tab/lesson_detail/models/video_manager.dart';
 import 'package:medical/src/widget/my_plan_screens/my_plan/models/completion_status.dart';
 
 // LESSON (Bài học)
@@ -64,6 +63,9 @@ class LessonDetailTracking {
         break;
       case CustomPlayerEventType.videoReplay:
         componentAction = 'video_replay';
+        break;
+      case CustomPlayerEventType.videoPlay:
+        componentAction = 'video_play';
         break;
     }
     await TrackingManager.analytics.logEvent(

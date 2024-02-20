@@ -1,9 +1,7 @@
-import 'dart:io';
 
 import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_observer/Observable.dart';
 import 'package:flutter_observer/Observer.dart';
 import 'package:medical/res/R.dart';
@@ -18,17 +16,11 @@ import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/components/HomeButton/main.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
-import 'package:medical/src/widget/home/welcome_package_screen/bloc/welcome_package_screen_cubit.dart';
-import 'package:medical/src/widget/home/welcome_package_screen/welcome_package_screen_page.dart';
-import 'package:medical/src/widget/profile/user_info.dart';
 import 'package:medical/src/widget/profile/widgets/motivation_popup_widget.dart';
 import 'package:medical/src/widgets/qr_scan_widget.dart';
 import 'package:medical/src/widgets/share_profile_popup.dart';
-import 'package:url_launcher/url_launcher.dart';
-import 'package:external_app_launcher/external_app_launcher.dart';
 
 import '../../../modal/user/user_model.dart';
-import '../../../widgets/button_widget.dart';
 
 class HomeHeader extends StatefulWidget {
   const HomeHeader({this.sharedCode});
@@ -208,6 +200,19 @@ class _HomeHeaderState extends State<HomeHeader> with Observer {
                     ),
                     Row(
                       children: [
+                        InkWell(
+                          onTap: () {
+                            Navigator.pushNamed(
+                                context, NavigatorName.meeting_prepare);
+                          },
+                          child: Container(
+                            padding: EdgeInsets.only(
+                                bottom: 4, top: 4, right: 4, left: 16),
+                            color: R.color.transparent,
+                            child: Image.asset(R.drawable.ic_crown_green,
+                                color: R.color.white, width: 24, height: 24),
+                          ),
+                        ),
                         InkWell(
                           onTap: () async {
                             if (user?.isUserHasRoadmap == true) {

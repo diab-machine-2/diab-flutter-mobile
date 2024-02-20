@@ -497,9 +497,7 @@ class _InputDetailExercrisesControllerState
       return;
     }
     if (categoryId!.isNotEmpty &&
-        activeId.isNotEmpty &&
-        selectedHour != null &&
-        selectedMinute != null) {
+        activeId.isNotEmpty) {
       final duration = selectedHour * 60 + selectedMinute;
       BotToast.showLoading();
       final response = await ExercrisesClient()

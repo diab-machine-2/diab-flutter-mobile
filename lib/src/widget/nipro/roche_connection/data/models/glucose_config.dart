@@ -1,4 +1,3 @@
-import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 
 class GlucoseProfileConfiguration {
   static List<String> accuCheckAvivaConnect = ['483','484','497','498','499','500','502','685'];

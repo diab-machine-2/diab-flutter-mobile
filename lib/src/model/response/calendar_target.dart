@@ -1,6 +1,3 @@
-import 'package:medical/src/modal/user/user_model.dart';
-import 'package:medical/src/model/response/user_info_referral_code_response.dart';
-import 'package:medical/src/model/response/user_info_response.dart';
 
 import 'user_coach.dart';
 

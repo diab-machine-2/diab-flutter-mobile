@@ -246,10 +246,10 @@ class CreateSmartGoalResponse {
     if (meta != null) {
       data['meta'] = meta!.toJson();
     }
-    if (data != null) {
+    if (this.data != null) {
       data['data'] = this.data!.toJson();
     }
-    if (error != null) {
+    if (this.error != null) {
       data['error'] = this.error!.toJson();
     }
     return data;

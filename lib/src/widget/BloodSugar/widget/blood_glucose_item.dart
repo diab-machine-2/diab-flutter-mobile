@@ -3,10 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/bloc/glucose/glucose_bloc.dart';
-import 'package:medical/src/modal/glucose/Glucose_Input_data_model.dart';
 import 'package:medical/src/modal/glucose/glucose_input.dart';
-import 'package:medical/src/repo/glucose/glucose_client.dart';
-import 'package:medical/src/widget/BloodSugar/bloodSugar_detail.dart';
 import 'package:medical/src/widget/BloodSugar/bloodSugar_detail_tabbar.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widgets/spacing_row.dart';
@@ -37,6 +34,7 @@ class BloodGlucoseItemState extends State<BloodGlucoseItem>
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return BlocProvider<GlucoseBloc>(
       create: (context) => GlucoseBloc(),
       child: BlocBuilder<GlucoseBloc, GlucoseState>(

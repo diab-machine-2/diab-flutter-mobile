@@ -1,5 +1,3 @@
-import 'dart:async';
-import 'dart:io';
 
 import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -16,7 +14,6 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/modal/error/error_model.dart';
 import 'package:medical/src/modal/user/category_item_user_model.dart';
-import 'package:medical/src/modal/user/category_user_model.dart';
 import 'package:medical/src/modal/user/motivation_model.dart';
 import 'package:medical/src/modal/user/user_model.dart';
 import 'package:medical/src/repo/login/login_client.dart';
@@ -29,10 +26,7 @@ import 'package:medical/src/widget/Bmi/widget/add_bmi.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
-import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/profile/address.dart';
-import 'package:medical/src/widget/profile/widgets/currency_formatter.dart';
-import 'package:medical/src/widget/profile/widgets/item_profile.dart';
 import 'package:medical/src/widgets/select_bottom_sheet_widget.dart';
 import 'package:medical/src/widgets/user_icon_widget.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -2169,7 +2163,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController>
       context: context,
       builder: (_) => CustomWeightPicker(
           callback: (weight) {
-            if (weight == null || weight <= 0) {
+            if (weight <= 0) {
               Message.showToastMessage(
                   context, R.string.mes_weight_must_greater_than_zero.tr());
               return;

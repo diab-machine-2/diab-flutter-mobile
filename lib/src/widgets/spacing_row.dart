@@ -77,8 +77,6 @@ class SpacingColumn extends Flex {
         );
 }
 
-extension ListExt on List {}
-
 extension ListExtension<T> on List<T> {
   List<T> addBetweenEvery(T value) {
     List<T> r = [];

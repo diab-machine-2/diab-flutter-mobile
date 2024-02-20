@@ -15,7 +15,7 @@ class WelcomePackageScreenCubit extends Cubit<WelcomePackageScreenState> {
   UserModel? user;
 
   WelcomePackageScreenCubit(this.repository)
-      : super(WelcomePackageScreenInitial()) {}
+      : super(WelcomePackageScreenInitial());
 
   Future<void> getContentWelcome() async {
 //    await Future.delayed(Duration.zero);

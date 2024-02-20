@@ -2,7 +2,6 @@
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/utils/date_utils.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
-import 'package:medical/src/widget/my_plan_screens/lesson_tab/lesson_detail/models/video_manager.dart';
 import 'package:medical/src/widget/my_plan_screens/my_plan/models/completion_status.dart';
 
 class ExcerciseDetailTracking {

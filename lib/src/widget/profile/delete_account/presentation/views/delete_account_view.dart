@@ -1,9 +1,6 @@
-import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
-import 'package:medical/src/widget/base/customDropdown.dart';
 import 'package:medical/src/widget/base/text_field_custom.dart';
-import 'package:medical/src/widget/helper/tracking_manager.dart';
 
 import '../blocs/deleteAccount_bloc.dart';
 import '../widgets/widgets.dart';

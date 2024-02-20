@@ -470,4 +470,13 @@ class Drawables {
   String get img_loading => "lib/res/drawables/img_loading.png";
   String get ic_sugar_blood => "lib/res/drawables/ic_sugar_blood.png";
   String get ic_pregnancy => "lib/res/drawables/ic_pregnancy.jpg";
+  String get ic_zoom_audio_off => "lib/res/drawables/ic_zoom_audio_off.png";
+  String get ic_zoom_audio_on => "lib/res/drawables/ic_zoom_audio_on.png";
+  String get ic_zoom_camera_switch => "lib/res/drawables/ic_zoom_camera_switch.png";
+  String get ic_zoom_chat => "lib/res/drawables/ic_zoom_chat.png";
+  String get ic_zoom_end => "lib/res/drawables/ic_zoom_end.png";
+  String get ic_zoom_more => "lib/res/drawables/ic_zoom_more.png";
+  String get ic_zoom_sound => "lib/res/drawables/ic_zoom_sound.png";
+  String get ic_zoom_video_on => "lib/res/drawables/ic_zoom_video_on.png";
+  String get ic_zoom_video_off => "lib/res/drawables/ic_zoom_video_off.png";
 }
