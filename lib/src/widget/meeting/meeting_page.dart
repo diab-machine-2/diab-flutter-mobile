@@ -217,7 +217,7 @@ class _MeetingPageState extends State<MeetingPage>
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          // Back button
+          // Switch camera
           Container(
             width: sizeComponentWidth,
             height: sizeComponentHeight,
@@ -255,10 +255,30 @@ class _MeetingPageState extends State<MeetingPage>
                   }),
             ),
           ),
-          // More
+          // Speaker
           Container(
             width: sizeComponentWidth,
             height: sizeComponentHeight,
+            alignment: Alignment.centerRight,
+            padding: EdgeInsets.only(right: 8.0),
+            child: ValueListenableBuilder(
+              valueListenable: _cubit.currentSpeaker,
+              builder: (context, value, _) {
+                final icon = value == SpeakerMode.speaker
+                    ? Icons.volume_up
+                    : value == SpeakerMode.telephony
+                        ? Icons.phone
+                        : Icons.volume_off;
+                return IconButton(
+                  onPressed: () => _switchSpeaker(context),
+                  icon: Icon(
+                    icon,
+                    color: Colors.white,
+                    size: 24.0,
+                  ),
+                );
+              },
+            ),
           ),
         ],
       ),
@@ -329,7 +349,7 @@ class _MeetingPageState extends State<MeetingPage>
                   );
                 },
               ),
-      
+
               // Camera
               FutureBuilder(
                 future: _cubit.user?.videoStatus?.isOn(),
@@ -343,7 +363,7 @@ class _MeetingPageState extends State<MeetingPage>
                   );
                 },
               ),
-      
+
               // Audio
               FutureBuilder(
                 future: _cubit.user?.audioStatus?.isMuted(),
@@ -357,7 +377,7 @@ class _MeetingPageState extends State<MeetingPage>
                   );
                 },
               ),
-      
+
               // More
               _buttonIconWithTextBelow(
                 R.drawable.ic_zoom_more,
@@ -365,7 +385,7 @@ class _MeetingPageState extends State<MeetingPage>
                 _moreAction,
                 isOff: false,
               ),
-      
+
               // Leave
               _buttonIconWithTextBelow(
                 R.drawable.ic_zoom_end,
@@ -501,6 +521,51 @@ class _MeetingPageState extends State<MeetingPage>
       },
     );
     _cubit.endChat();
+  }
+
+  void _switchSpeaker(BuildContext context) {
+    // show bottom sheet _cubit.speakerModes + Huỷ
+    showModalBottomSheet(
+      context: context,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(12.0),
+          topRight: Radius.circular(12.0),
+        ),
+      ),
+      builder: (context) {
+        return SafeArea(
+          bottom: true,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              for (var mode in _cubit.speakerModes)
+                ListTile(
+                  leading: Icon(
+                    mode == SpeakerMode.speaker
+                        ? Icons.volume_up
+                        : mode == SpeakerMode.telephony
+                            ? Icons.phone
+                            : Icons.volume_off,
+                  ),
+                  title: Text(mode.name),
+                  onTap: () {
+                    _cubit.switchSpeaker(mode);
+                    Navigator.pop(context);
+                  },
+                ),
+              ListTile(
+                leading: Icon(Icons.close),
+                title: Text('Huỷ'),
+                onTap: () {
+                  Navigator.pop(context);
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   void _moreAction() {

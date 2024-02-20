@@ -43,7 +43,14 @@ class MeetingCubit extends Cubit<MeetingState> {
   String _sharingUserId = '';
   List<ZoomVideoSdkUser> _remoteUsers = [];
 
-  // Video
+  // Audio
+  bool _audioStopped = false;
+  final ValueNotifier<SpeakerMode> _currentSpeaker = ValueNotifier(SpeakerMode.speaker);
+  ValueNotifier<SpeakerMode> get currentSpeaker => _currentSpeaker;
+  List<SpeakerMode> _speakerModes = [SpeakerMode.speaker, SpeakerMode.telephony, SpeakerMode.off];
+  List<SpeakerMode> get speakerModes => _speakerModes;
+
+  // Camera
   bool _initVideoOn = false;
   final ValueNotifier<bool> _haveMultipleCamera = ValueNotifier(false);
   ValueNotifier<bool> get haveMultipleCamera => _haveMultipleCamera;
@@ -81,6 +88,26 @@ class MeetingCubit extends Cubit<MeetingState> {
     _timeoutTimer = null;
 
     return super.close();
+  }
+
+  void switchSpeaker(SpeakerMode mode) async {
+    _currentSpeaker.value = mode;
+    if (_audioStopped && mode != SpeakerMode.off) {
+      _audioStopped = false;
+      await _zoom.audioHelper.startAudio();
+    }
+    switch (mode) {
+      case SpeakerMode.speaker:
+        await _zoom.audioHelper.setSpeaker(true);
+        break;
+      case SpeakerMode.telephony:
+        await _zoom.audioHelper.setSpeaker(false);
+        break;
+      case SpeakerMode.off:
+        _audioStopped = true;
+        await _zoom.audioHelper.stopAudio();
+        break;
+    }
   }
 
   void toggleAudio() async {
@@ -232,6 +259,7 @@ class MeetingCubit extends Cubit<MeetingState> {
 
   void leaveSession() async {
     try {
+      await _zoom.audioHelper.stopAudio();
       await _zoom.leaveSession(false);
     } catch (e) {
       print('zoom: Error leaving session: $e');
@@ -270,39 +298,11 @@ class MeetingCubit extends Cubit<MeetingState> {
     _eventListener.addEventListener();
     EventEmitter emitter = _eventListener.eventEmitter;
     // * This user joined the session
-    final sessionJoinListener = emitter.on(EventType.onSessionJoin, (sessionUser) async {
-      _isJoined = true;
-      _timeoutTimer?.cancel();
-      _timeoutTimer = null;
-      print('zoom: onSessionJoin: $sessionUser');
-      _zoom.session.getSessionID().then((value) {
-        if (_latestSessionId != null && _latestSessionId == value) {
-          _chatMessagesNotifier.value = _latestChatMessages;
-        } else {
-          _latestChatMessages = [];
-          _chatMessagesNotifier.value = [];
-        }
-        _latestSessionId = value;
-      });
-      _zoom.videoHelper.getNumberOfCameras().then((value) {
-        _haveMultipleCamera.value = _initVideoOn && value > 1;
-      });
-      ZoomVideoSdkUser mySelf = ZoomVideoSdkUser.fromJson(jsonDecode(sessionUser.toString()));
-      _mySelf = mySelf;
-      List<ZoomVideoSdkUser>? otherUsers = await _zoom.session.getRemoteUsers();
-      _remoteUsers = otherUsers ?? [];
-      MeetingJoined newState =
-          await _composeJoinedState(thisUser: mySelf, remoteUsers: _remoteUsers);
-      emit(newState);
-    });
+    final sessionJoinListener = emitter.on(EventType.onSessionJoin, _userJoined);
     meetingEvents.add(sessionJoinListener);
 
     // * This user left the session
-    final sessionLeaveListener = emitter.on(EventType.onSessionLeave, (data) async {
-      _isJoined = false;
-      print('zoom: onSessionLeave: $data');
-      emit(MeetingLeaving());
-    });
+    final sessionLeaveListener = emitter.on(EventType.onSessionLeave, _userLeft);
     meetingEvents.add(sessionLeaveListener);
 
     // * Video status of a user changed
@@ -455,6 +455,43 @@ class MeetingCubit extends Cubit<MeetingState> {
     meetingEvents.add(sessionErrorListener);
   }
 
+  void _userJoined(Object? sessionUser) async {
+    _isJoined = true;
+    _timeoutTimer?.cancel();
+    _timeoutTimer = null;
+    print('zoom: onSessionJoin: $sessionUser');
+    _zoom.session.getSessionID().then((value) {
+      if (_latestSessionId != null && _latestSessionId == value) {
+        _chatMessagesNotifier.value = _latestChatMessages;
+      } else {
+        _latestChatMessages = [];
+        _chatMessagesNotifier.value = [];
+      }
+      _latestSessionId = value;
+    });
+    _zoom.videoHelper.getNumberOfCameras().then((value) {
+      _haveMultipleCamera.value = _initVideoOn && value > 1;
+    });
+    ZoomVideoSdkUser mySelf = ZoomVideoSdkUser.fromJson(jsonDecode(sessionUser.toString()));
+    _mySelf = mySelf;
+    List<ZoomVideoSdkUser>? otherUsers = await _zoom.session.getRemoteUsers();
+    _remoteUsers = otherUsers ?? [];
+    // Prepare audio
+    bool isTelephonySupport = await _zoom.audioHelper.canSwitchSpeaker();
+    if (!isTelephonySupport) {
+      _speakerModes.remove(SpeakerMode.telephony);
+    }
+
+    MeetingJoined newState = await _composeJoinedState(thisUser: mySelf, remoteUsers: _remoteUsers);
+    emit(newState);
+  }
+
+  void _userLeft(Object? data) {
+    _isJoined = false;
+    print('zoom: onSessionLeave: $data');
+    emit(MeetingLeaving());
+  }
+
   Future<MeetingJoined> _composeJoinedState({
     required ZoomVideoSdkUser thisUser,
     List<ZoomVideoSdkUser> remoteUsers = const [],
@@ -522,6 +559,25 @@ class MeetingCubit extends Cubit<MeetingState> {
           remoteUsers: remoteUsers,
         );
       }
+    }
+  }
+}
+
+enum SpeakerMode {
+  speaker,
+  telephony,
+  off,
+}
+
+extension SpeakerModeExtension on SpeakerMode {
+  String get name {
+    switch (this) {
+      case SpeakerMode.speaker:
+        return 'Loa ngoài';
+      case SpeakerMode.telephony:
+        return 'Loa thoại';
+      case SpeakerMode.off:
+        return 'Tắt loa';
     }
   }
 }
