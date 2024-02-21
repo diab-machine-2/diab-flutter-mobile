@@ -25,9 +25,7 @@ import 'package:medical/src/widget/my_plan_screens/activity_tab/create_goal/crea
 import 'package:medical/src/widget/nipro/health_app/widgets/request_health_connect.dart';
 import 'package:medical/src/widget/shared_profile/pages/share_app_detail/widgets/banner_share_app.dart';
 import 'package:medical/src/widget/voucher/presentation/widgets/voucher_popup.dart';
-import 'package:medical/src/widgets/network_image_widget.dart';
 import 'package:medical/src/widgets/share_profile_popup.dart';
-
 import '../../repo/user/user_client.dart';
 import '../my_plan_screens/activity_tab/my_progress/my_progress.dart';
 import 'welcome_package_screen/welcome_package_screen.dart';

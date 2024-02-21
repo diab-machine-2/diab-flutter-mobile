@@ -1,6 +1,7 @@
 import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/base/images.dart';
 import 'package:medical/src/model/response/quiz_lesson.dart';
+import 'package:medical/src/utils/app_log.dart';
 import 'package:medical/src/utils/const.dart';
 
 ///
@@ -913,6 +914,7 @@ class LessonSectionItem {
   String? imageId;
   String? imageTitle;
   String? videoAddressLink;
+  late int linkType;
   String? videoDescription;
   String? audioAddressLink;
   String? audioDescription;
@@ -952,6 +954,7 @@ class LessonSectionItem {
     this.lessonSectionStates,
     this.lessonSectionTypes,
     this.image,
+    this.linkType = 0,
   });
 
   String get icon {
@@ -975,6 +978,7 @@ class LessonSectionItem {
     status = json['status']?.toInt();
     firstContent = json['firstContent']?.toString();
     secondContent = json['secondContent']?.toString();
+    linkType = json['linkType'] ?? 0;
     imageId = json['imageId']?.toString();
     imageTitle = json['imageTitle']?.toString();
     videoAddressLink = json['videoAddressLink']?.toString();
@@ -1041,6 +1045,7 @@ class LessonSectionItem {
     data['code'] = code;
     data['lessonId'] = lessonId;
     data['name'] = name;
+    data['linkType'] = linkType;
     data['type'] = type;
     data['status'] = status;
     data['firstContent'] = firstContent;

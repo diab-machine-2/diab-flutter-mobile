@@ -15,6 +15,7 @@ class FirebaseRemoteSetting {
   late String? _storeNavigationUrl;
   late bool _activePopupHealthConnect; //ACTIVE_POPUP_HEALTH_CONNECT
   late String _linkStoreNavigation;
+  bool? _appDeveloperMode = false;
 
   String get appStoreVersion => _appStoreVersion;
   String get playStoreVersion => _playStoreVersion;
@@ -23,6 +24,8 @@ class FirebaseRemoteSetting {
   }
   bool get activePopupHealthConnect => _activePopupHealthConnect;
   String get linkStoreNavigation => _linkStoreNavigation;
+  bool get appDeveloperMode => _appDeveloperMode ?? false;
+
   Future<void> init() async {
     // await remoteConfig.setConfigSettings(RemoteConfigSettings(
     //   fetchTimeout: const Duration(seconds: 10),
@@ -47,5 +50,6 @@ class FirebaseRemoteSetting {
     _activePopupHealthConnect =
         remoteConfig.getBool('ACTIVE_POPUP_HEALTH_CONNECT');
     _linkStoreNavigation = remoteConfig.getString('LINKSTORE_NAVIGATION_URL');
+    _appDeveloperMode = remoteConfig.getBool('APP_DEVELOPER_MODE');
   }
 }

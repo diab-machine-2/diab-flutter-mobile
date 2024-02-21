@@ -131,6 +131,7 @@ dependencies:
   flutter_blue_plus: 1.5.2
   fwfh_text_style: ^2.22.8+3
   store_redirect: ^2.0.1
+  youtube_player_flutter: ^8.1.2
   # zoom video sdk
   flutter_zoom_videosdk:
     path: packages/zoom_video_sdk

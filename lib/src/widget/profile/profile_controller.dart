@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -26,6 +28,7 @@ import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/shared_profile/shared_profile.dart';
 import 'package:medical/src/widgets/button_language_picker.dart';
+import '../../app_setting/firebase_remote_config.dart';
 import '../food_menu_screens/food_menu/food_menu_page.dart';
 
 class ProfileController extends StatefulWidget {
@@ -40,6 +43,23 @@ class _ProfileControllerState extends State<ProfileController> with Observer {
   SecureModel? secureModel;
   final AppRepository _appRepository = AppRepository();
   var userInfo = AppSettings.userInfo;
+
+  Timer? _timer;
+  int _count = 0;
+  final int _requiredCount = 5;
+
+  void _startTimer() {
+    // delay 2s to reset count to 0
+    _timer?.cancel();
+    _timer = Timer(Duration(seconds: 2), () {
+      if (!mounted) return;
+      _count = 0;
+    });
+  }
+
+  void _launchMeeting(BuildContext context) {
+    Navigator.pushNamed(context, NavigatorName.meeting_prepare);
+  }
 
   @override
   void initState() {
@@ -311,16 +331,33 @@ class _ProfileControllerState extends State<ProfileController> with Observer {
                   buildAction(
                       R.string.password.tr(), R.drawable.ic_password, 5),
                   buildAction(R.string.your_voucher.tr(), R.icons.ic_gift, 8),
-                  Padding(
-                    padding: const EdgeInsets.all(15),
-                    child: Text(
-                      'App version: ${AppSettings.version} (${AppSettings.buildNumber})',
-                      style: TextStyle(
-                          fontWeight: FontWeight.w500,
-                          fontSize: 16,
-                          color: AppColors.accentColor),
-                    ),
-                  ),
+                  Builder(builder: (ctx) {
+                    Widget child = Padding(
+                      padding: const EdgeInsets.all(15),
+                      child: Text(
+                        'App version: ${AppSettings.version} (${AppSettings.buildNumber})',
+                        style: TextStyle(
+                            fontWeight: FontWeight.w500,
+                            fontSize: 16,
+                            color: AppColors.accentColor),
+                      ),
+                    );
+                    if (FirebaseRemoteSetting.instance.appDeveloperMode) {
+                      child = GestureDetector(
+                        onTap: () {
+                          _count++;
+                          if (_count >= _requiredCount) {
+                            _count = 0;
+                            _launchMeeting(ctx);
+                          } else {
+                            _startTimer();
+                          }
+                        },
+                        child: child,
+                      );
+                    }
+                    return child;
+                  }),
                 ],
               ),
             )));
