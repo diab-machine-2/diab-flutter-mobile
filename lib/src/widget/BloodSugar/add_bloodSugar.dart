@@ -13,7 +13,6 @@ import 'package:medical/src/repo/glucose/glucose_client.dart';
 import 'package:medical/src/repo/home/home_client.dart';
 import 'package:medical/src/repo/user/user_client.dart';
 import 'package:medical/src/utils/app_media_query.dart';
-import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/BloodSugar/widget/action_list_trend.dart';
 import 'package:medical/src/widget/HbA1C/widget/description/description.dart';
 import 'package:medical/src/widget/base/base_state.dart';

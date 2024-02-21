@@ -1,0 +1,125 @@
+import 'dart:io';
+import 'dart:math';
+
+import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
+import 'package:flutter/widgets.dart';
+import 'package:medical/src/utils/navigator_name.dart';
+import 'package:permission_handler/permission_handler.dart';
+
+class ZoomService {
+  void launchZoom(String roomId, String displayName, BuildContext context) async {
+    bool ok = await grantPermission();
+    if (!ok) {
+      return;
+    }
+    MeetingArguments args = generateMeetingArgument(roomId, displayName);
+    Navigator.pushNamed(
+      context,
+      NavigatorName.meeting,
+      arguments: args,
+    );
+  }
+
+  MeetingArguments generateMeetingArgument(String roomId, String displayName) {
+    String sessionName = roomId;
+    String token = _generateToken(roomId);
+    String sessionIdleTimeoutMins = "40";
+    String sessionPassword = "1";
+
+    return MeetingArguments(
+      token: token,
+      sessionName: sessionName,
+      displayName: displayName,
+      sessionIdleTimeoutMins: sessionIdleTimeoutMins,
+      sessionPassword: sessionPassword,
+    );
+  }
+
+  /// At least microphone permission is required to join a meeting
+  Future<bool> grantPermission() async {
+    if (!Platform.isAndroid && !Platform.isIOS) {
+      return false;
+    }
+    Map<String, List<Permission>> platformPermissions = {
+      "ios": [
+        Permission.camera,
+        Permission.microphone,
+      ],
+      "android": [
+        Permission.camera,
+        Permission.microphone,
+        Permission.bluetoothConnect,
+        Permission.phone,
+        Permission.storage,
+      ],
+    };
+
+    List<Permission> permissions =
+        (Platform.isAndroid ? platformPermissions["android"] : platformPermissions["ios"])!;
+    Map<Permission, PermissionStatus> statuses = await permissions.request();
+    // at least microphone permission is granted
+    bool microGranted = statuses[Permission.microphone] == PermissionStatus.granted;
+
+    if (!microGranted) {
+      await openAppSettings();
+      return false;
+    }
+    return microGranted;
+  }
+
+  String _makeId(int length) {
+    String result = "";
+    String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    int charactersLength = characters.length;
+    for (var i = 0; i < length; i++) {
+      result += characters[Random().nextInt(charactersLength)];
+    }
+    return result;
+  }
+
+  String _generateToken(String topic) {
+    String userId = _makeId(10);
+    const Map configs = {
+      'ZOOM_SDK_KEY': 'mGEaJOJsQcW8OGAXZzawsg',
+      'ZOOM_SDK_SECRET': 'cKwuffl2tTQXLLheIar6YQP7axs8HA3rbVpZ',
+    };
+
+    try {
+      var iat = DateTime.now();
+      var exp = DateTime.now().add(Duration(days: 2));
+      final jwt = JWT(
+        {
+          'app_key': configs["ZOOM_SDK_KEY"],
+          'version': 1,
+          'user_identity': userId,
+          'iat': (iat.millisecondsSinceEpoch / 1000).round(),
+          'exp': (exp.millisecondsSinceEpoch / 1000).round(),
+          'tpc': topic,
+          'role_type': 0,
+          'cloud_recording_option': 0,
+        },
+      );
+      var token = jwt.sign(SecretKey(configs["ZOOM_SDK_SECRET"]));
+      return token;
+    } catch (e) {
+      print(e);
+      return '';
+    }
+  }
+}
+
+class MeetingArguments {
+  final String token;
+  final String sessionName;
+  final String displayName;
+  final String sessionPassword;
+  final String sessionIdleTimeoutMins;
+
+  MeetingArguments({
+    required this.token,
+    required this.sessionName,
+    required this.displayName,
+    required this.sessionPassword,
+    required this.sessionIdleTimeoutMins,
+  });
+}

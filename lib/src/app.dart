@@ -1,14 +1,13 @@
 import 'dart:io';
+import 'dart:math';
+
 import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medical/res/R.dart';
-import 'package:medical/src/app_setting/dynamic_link_config.dart';
-import 'package:medical/src/model/localization/localization.dart';
-import 'package:medical/src/model/preference/app_preference.dart';
+import 'package:medical/src/service/zoom_service.dart';
 import 'package:medical/src/theme/app_theme.dart';
 import 'package:medical/src/utils/app_log.dart';
 import 'package:medical/src/widget/BloodPressure/add_bloodPressure.dart';
@@ -39,7 +38,6 @@ import 'package:medical/src/widget/HbA1C/hba1c_detail_tabbar.dart';
 import 'package:medical/src/widget/HbA1C/hba1c_tabble.dart';
 import 'package:medical/src/widget/base/base_state.dart';
 import 'package:medical/src/widget/flash_screen/flash_screen.dart';
-import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/login/change_password.dart';
 import 'package:medical/src/widget/login/create_new_password.dart';
 import 'package:medical/src/widget/login/forgot_password.dart';
@@ -51,6 +49,8 @@ import 'package:medical/src/widget/login/rules.dart';
 import 'package:medical/src/widget/login/step_list.dart';
 import 'package:medical/src/widget/login/update_info.dart';
 import 'package:medical/src/widget/login/verify_phone.dart';
+import 'package:medical/src/widget/meeting/meeting_page.dart';
+import 'package:medical/src/widget/meeting/meeting_prepare_page.dart';
 import 'package:medical/src/widget/nipro/connect_device_app.dart';
 import 'package:medical/src/widget/nipro/connection_instructions.dart';
 import 'package:medical/src/widget/my_plan_screens/lesson_tab/lesson_detail/lesson_detail.dart';
@@ -73,16 +73,15 @@ import 'package:medical/src/widget/question_answer/question_detail/question_deta
 import 'package:medical/src/widget/tabbar/tabbar.dart';
 import 'package:medical/src/widget/voucher/presentation/voucher_detail/pages/voucher_detail_view.dart';
 import 'package:medical/src/widget/voucher/presentation/voucher_list/pages/voucher_list_view.dart';
-import 'package:medical/src/widget/zoom/zoom_android_view.dart';
+import 'package:medical/src/widget/zoom_b/zoom_android_view.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'utils/navigator_name.dart';
 import 'widget/BloodSugar/add_bloodSugar_new.dart';
-import 'widget/Food/add_food.dart';
 import 'widget/helper/photo_view.dart';
 import 'widget/news_detail/presentation/news_detail_view.dart';
 import 'widget/profile/profile_controller.dart';
 import 'widget/shared_profile/pages/share_app_detail/share_app_detail.dart';
-import 'widget/zoom/zoom_ios_view.dart';
+import 'widget/zoom_b/zoom_ios_view.dart';
 
 class App extends StatefulWidget {
   @override
@@ -106,12 +105,6 @@ class _AppState extends State<App> {
 
   @override
   Widget build(BuildContext context) {
-    MediaQueryData mediaData =
-        MediaQueryData.fromWindow(WidgetsBinding.instance.window);
-    mediaData = mediaData.copyWith(
-      textScaleFactor:
-          mediaData.textScaleFactor > 1.1 ? 1.1 : mediaData.textScaleFactor,
-    );
     return ScreenUtilInit(
       minTextAdapt: true,
       splitScreenMode: true,
@@ -123,220 +116,225 @@ class _AppState extends State<App> {
             color: R.color.accentColor,
           ), // Configure the default header indicator. If you have the same header indicator for each page, you need to set this
           footerBuilder: () => const ClassicFooter(),
-          child: MediaQuery(
-            data: mediaData,
-            child: MaterialApp(
-                useInheritedMediaQuery: true,
-                title: 'diaB',
-                color: Colors.white,
-                theme: AppTheme.theme,
-                builder: BotToastInit(),
-                navigatorKey: navigatorKey,
-                navigatorObservers: [
-                  BotToastNavigatorObserver(),
-                  routeObserver,
-                  // TrackingManager.observerFirebase
-                ],
-                localizationsDelegates: context.localizationDelegates,
-                supportedLocales: context.supportedLocales,
-                locale: context.locale,
-                home: FlashScreenController(),
-                debugShowCheckedModeBanner: false,
-                onGenerateRoute: (settings) {
-                  Console.log('settings.name', settings.name);
-                  switch (settings.name) {
-                    case NavigatorName.tabbar:
-                      String sharedCode = '';
-                      bool isRedirectFromNotification = false;
-                      if (settings.arguments != null) {
-                        if (settings.arguments is String) {
-                          sharedCode = settings.arguments! as String;
-                        } else if (settings.arguments is Map<String, dynamic>) {
+          child: MaterialApp(
+              title: 'diaB',
+              color: Colors.white,
+              theme: AppTheme.theme,
+              builder: (context, child) {
+                MediaQueryData mediaData = MediaQuery.of(context);
+                child = MediaQuery(
+                  data: mediaData.copyWith(textScaleFactor: min(1.1, mediaData.textScaleFactor)),
+                  child: child!,
+                );
+                child = BotToastInit()(context, child);
+                return child;
+              },
+              navigatorKey: navigatorKey,
+              navigatorObservers: [
+                BotToastNavigatorObserver(),
+                routeObserver,
+                // TrackingManager.observerFirebase
+              ],
+              localizationsDelegates: context.localizationDelegates,
+              supportedLocales: context.supportedLocales,
+              locale: context.locale,
+              home: FlashScreenController(),
+              debugShowCheckedModeBanner: false,
+              onGenerateRoute: (settings) {
+                Console.log('settings.name', settings.name);
+                switch (settings.name) {
+                  case NavigatorName.tabbar:
+                    String sharedCode = '';
+                    bool isRedirectFromNotification = false;
+                    if (settings.arguments != null) {
+                      if (settings.arguments is String) {
+                        sharedCode = settings.arguments! as String;
+                      } else if (settings.arguments is Map<String, dynamic>) {
                           final data =
                               settings.arguments as Map<String, dynamic>?;
                           isRedirectFromNotification =
                               data!['isRedirectFromNotification'];
-                        }
                       }
-                      return _buildRoute(
-                          settings,
-                          TabbarController(
-                            sharedCode: sharedCode,
+                    }
+                    return _buildRoute(
+                        settings,
+                        TabbarController(
+                          sharedCode: sharedCode,
                             isRedirectFromNotification:
                                 isRedirectFromNotification,
-                          ));
-                    case NavigatorName.login:
-                      String sharedCode = '';
-                      if (settings.arguments != null) {
-                        sharedCode = settings.arguments! as String;
-                      }
+                        ));
+                  case NavigatorName.login:
+                    String sharedCode = '';
+                    if (settings.arguments != null) {
+                      sharedCode = settings.arguments! as String;
+                    }
                       return _buildRoute(settings, LoginController(sharedCode),
                           isPresent: true);
-                    case NavigatorName.register:
-                      String sharedCode = '';
-                      if (settings.arguments != null) {
-                        sharedCode = settings.arguments! as String;
-                      }
+                  case NavigatorName.register:
+                    String sharedCode = '';
+                    if (settings.arguments != null) {
+                      sharedCode = settings.arguments! as String;
+                    }
                       return _buildRoute(
                           settings, RegisterController(sharedCode),
                           isPresent: true);
-                    case NavigatorName.register_success:
-                      final data = settings.arguments as Map<String, dynamic>?;
-                      return _buildRoute(
-                          settings,
-                          RegisterSuccess(
-                            phone: data?['phone'],
-                            password: data?['password'],
-                            referalCode: data?['referalCode'],
-                            type: data?['type'],
-                            googleAccount: data?['googleAccount'],
-                            appleAccount: data?['appleAccount'],
-                            diabeteStates: data?['diabeteStates'],
-                          ));
-                    case NavigatorName.update_info:
-                      final data = settings.arguments as Map<String, dynamic>?;
-                      return _buildRoute(
-                          settings,
-                          UpdateInfoController(
-                            type: data?['type'],
-                            googleAccount: data?['googleAccount'],
-                            facebookAccount: data?['facebookAccount'],
-                            appleAccount: data?['appleAccount'],
-                            userInfo: data?['userInfo'],
-                            referalCode: data?['referalCode'],
-                            diabeteStates: data?['diabeteStates'],
-                          ));
-                    case NavigatorName.forgot_password:
-                      return _buildRoute(settings, ForgotPasswordController());
-                    case NavigatorName.new_password:
-                      final data = settings.arguments as Map<String, dynamic>?;
+                  case NavigatorName.register_success:
+                    final data = settings.arguments as Map<String, dynamic>?;
+                    return _buildRoute(
+                        settings,
+                        RegisterSuccess(
+                          phone: data?['phone'],
+                          password: data?['password'],
+                          referalCode: data?['referalCode'],
+                          type: data?['type'],
+                          googleAccount: data?['googleAccount'],
+                          appleAccount: data?['appleAccount'],
+                          diabeteStates: data?['diabeteStates'],
+                        ));
+                  case NavigatorName.update_info:
+                    final data = settings.arguments as Map<String, dynamic>?;
+                    return _buildRoute(
+                        settings,
+                        UpdateInfoController(
+                          type: data?['type'],
+                          googleAccount: data?['googleAccount'],
+                          facebookAccount: data?['facebookAccount'],
+                          appleAccount: data?['appleAccount'],
+                          userInfo: data?['userInfo'],
+                          referalCode: data?['referalCode'],
+                          diabeteStates: data?['diabeteStates'],
+                        ));
+                  case NavigatorName.forgot_password:
+                    return _buildRoute(settings, ForgotPasswordController());
+                  case NavigatorName.new_password:
+                    final data = settings.arguments as Map<String, dynamic>?;
                       return _buildRoute(
                           settings,
                           NewPasswordController(
                               phone: data?['phone'], token: data?['token']),
-                          isPresent: true);
-                    case NavigatorName.verify:
-                      final data = settings.arguments as Map<String, dynamic>?;
-                      return _buildRoute(
-                          settings,
-                          VerifyPhoneController(
-                              type: data?['type'],
-                              otp: data?['otp'],
-                              phone: data?['phone'],
-                              password: data?['password'],
+                        isPresent: true);
+                  case NavigatorName.verify:
+                    final data = settings.arguments as Map<String, dynamic>?;
+                    return _buildRoute(
+                        settings,
+                        VerifyPhoneController(
+                            type: data?['type'],
+                            otp: data?['otp'],
+                            phone: data?['phone'],
+                            password: data?['password'],
                               remainingRequestCount:
                                   data?['remainingRequestCount'],
-                              referalCode: data?['referalCode'],
-                              googleAccount: data?['googleAccount'],
-                              facebookAccount: data?['facebookAccount'],
-                              appleAccount: data?['appleAccount'],
-                              userInfo: data?['userInfo']));
+                            referalCode: data?['referalCode'],
+                            googleAccount: data?['googleAccount'],
+                            facebookAccount: data?['facebookAccount'],
+                            appleAccount: data?['appleAccount'],
+                            userInfo: data?['userInfo']));
 
-                    case NavigatorName.change_password:
-                      return _buildRoute(settings, ChangePasswordController());
-                    case NavigatorName.policy:
+                  case NavigatorName.change_password:
+                    return _buildRoute(settings, ChangePasswordController());
+                  case NavigatorName.policy:
                       return _buildRoute(settings, PolicyController(),
                           isPresent: true);
-                    case NavigatorName.step_list:
-                      String sharedCode = '';
-                      if (settings.arguments != null) {
-                        sharedCode = settings.arguments! as String;
-                      }
+                  case NavigatorName.step_list:
+                    String sharedCode = '';
+                    if (settings.arguments != null) {
+                      sharedCode = settings.arguments! as String;
+                    }
                       return _buildRoute(
                           settings, StepListController(sharedCode),
                           isPresent: true);
-                    case NavigatorName.rules:
-                      final data = settings.arguments as Map<String, dynamic>?;
-                      return _buildRoute(
-                          settings,
-                          RulesController(
-                            googleAccount: data?['googleAccount'],
-                            appleCredential: data?['appleCredential'],
-                          ));
-                    case NavigatorName.add_hba1c:
-                      final data = settings.arguments as Map<String, dynamic>?;
-                      return _buildRoute(
-                          settings,
-                          AddHBA1CController(
-                            type: data?['type'],
-                            id: data?['id'],
-                          ));
-                    case NavigatorName.detail_hba1c:
+                  case NavigatorName.rules:
+                    final data = settings.arguments as Map<String, dynamic>?;
+                    return _buildRoute(
+                        settings,
+                        RulesController(
+                          googleAccount: data?['googleAccount'],
+                          appleCredential: data?['appleCredential'],
+                        ));
+                  case NavigatorName.add_hba1c:
+                    final data = settings.arguments as Map<String, dynamic>?;
+                    return _buildRoute(
+                        settings,
+                        AddHBA1CController(
+                          type: data?['type'],
+                          id: data?['id'],
+                        ));
+                  case NavigatorName.detail_hba1c:
                       return _buildRoute(
                           settings, Hba1cDetailTabbarController(),
                           isPresent: true);
-                    case NavigatorName.detail_exercrises:
+                  case NavigatorName.detail_exercrises:
                       return _buildRoute(
                           settings, ExercrisesDetailTabbarController(),
-                          isPresent: true);
-                    case NavigatorName.detail_blood_sugar:
-                      final data = settings.arguments as Map<dynamic, dynamic>?;
+                        isPresent: true);
+                  case NavigatorName.detail_blood_sugar:
+                    final data = settings.arguments as Map<dynamic, dynamic>?;
                       return _buildRoute(settings,
                           BloodSugarDetailTabbarController(data: data),
-                          isPresent: true);
-                    case NavigatorName.hba1c_tabble:
+                        isPresent: true);
+                  case NavigatorName.hba1c_tabble:
                       return _buildRoute(settings, HbA1CTable(),
                           isPresent: true);
-                    case NavigatorName.add_blood_sugar:
-                      final data = settings.arguments as Map<String, dynamic>?;
-                      return _buildRoute(
-                          settings,
-                          AddBloodSugarController(
-                            type: data?['type'],
-                            id: data?['id'],
-                            goalId: data?['goalId'],
-                          ));
-                    case NavigatorName.add_blood_sugar_new:
-                      final data = settings.arguments as Map<String, dynamic>?;
-                      return _buildRoute(
-                          settings,
-                          AddBloodSugarControllerNew(
-                            type: data?['type'],
-                            id: data?['id'],
-                            goalId: data?['goalId'],
-                          ));
-                    case NavigatorName.add_exercrises:
-                      final data = settings.arguments as Map<String, dynamic>?;
-                      return _buildRoute(
-                          settings,
-                          AddExercrisesController(
-                            type: data?['type'],
-                            id: data?['id'],
-                            goalId: data?['goalId'],
-                          ));
-                    case NavigatorName.search_exercrises:
-                      final data = settings.arguments as Map<String, dynamic>?;
-                      return _buildRoute(
-                          settings,
-                          SearchExercrisesController(
-                            type: data?['type'],
-                            id: data?['id'],
-                            model: data?['model'],
-                          ));
-                    case NavigatorName.add_blood_pressure:
-                      final data = settings.arguments as Map<String, dynamic>?;
-                      return _buildRoute(
-                          settings,
-                          AddBloodPressureController(
-                            type: data?['type'],
-                            id: data?['id'],
-                            goalId: data?['goalId'],
-                          ));
-                    case NavigatorName.input_detail_exercrise:
-                      final data = settings.arguments as Map<String, dynamic>?;
-                      return _buildRoute(
-                          settings,
-                          InputDetailExercrisesController(
-                            model: data?['model'],
-                          ));
-                    case NavigatorName.blood_pressure_table:
-                      final data = settings.arguments as Map<String, dynamic>?;
-                      return _buildRoute(
-                          settings,
-                          BloodPressureTableController(
-                              title: data?['title'],
-                              bloodPressureType: data?['bloodPressureType'],
-                              periodFilterType: data?['periodFilterType'],
+                  case NavigatorName.add_blood_sugar:
+                    final data = settings.arguments as Map<String, dynamic>?;
+                    return _buildRoute(
+                        settings,
+                        AddBloodSugarController(
+                          type: data?['type'],
+                          id: data?['id'],
+                          goalId: data?['goalId'],
+                        ));
+                  case NavigatorName.add_blood_sugar_new:
+                    final data = settings.arguments as Map<String, dynamic>?;
+                    return _buildRoute(
+                        settings,
+                        AddBloodSugarControllerNew(
+                          type: data?['type'],
+                          id: data?['id'],
+                          goalId: data?['goalId'],
+                        ));
+                  case NavigatorName.add_exercrises:
+                    final data = settings.arguments as Map<String, dynamic>?;
+                    return _buildRoute(
+                        settings,
+                        AddExercrisesController(
+                          type: data?['type'],
+                          id: data?['id'],
+                          goalId: data?['goalId'],
+                        ));
+                  case NavigatorName.search_exercrises:
+                    final data = settings.arguments as Map<String, dynamic>?;
+                    return _buildRoute(
+                        settings,
+                        SearchExercrisesController(
+                          type: data?['type'],
+                          id: data?['id'],
+                          model: data?['model'],
+                        ));
+                  case NavigatorName.add_blood_pressure:
+                    final data = settings.arguments as Map<String, dynamic>?;
+                    return _buildRoute(
+                        settings,
+                        AddBloodPressureController(
+                          type: data?['type'],
+                          id: data?['id'],
+                          goalId: data?['goalId'],
+                        ));
+                  case NavigatorName.input_detail_exercrise:
+                    final data = settings.arguments as Map<String, dynamic>?;
+                    return _buildRoute(
+                        settings,
+                        InputDetailExercrisesController(
+                          model: data?['model'],
+                        ));
+                  case NavigatorName.blood_pressure_table:
+                    final data = settings.arguments as Map<String, dynamic>?;
+                    return _buildRoute(
+                        settings,
+                        BloodPressureTableController(
+                            title: data?['title'],
+                            bloodPressureType: data?['bloodPressureType'],
+                            periodFilterType: data?['periodFilterType'],
                               isPulseRate: data?['isPulseRate']),
                           isPresent: true);
                     case NavigatorName.blood_sugar_table:
@@ -370,8 +368,8 @@ class _AppState extends State<App> {
                             title: data?['title'],
                             comparerType: data?['comparerType'],
                             periodFilterType: data?['periodFilterType'],
-                          ),
-                          isPresent: true);
+                        ),
+                        isPresent: true);
                     case NavigatorName.detail_blood_pressure:
                       return _buildRoute(
                           settings, BloodPressureDetailTabbarController(),
@@ -544,77 +542,81 @@ class _AppState extends State<App> {
                           QuestionDetailPage(
                               questionModel: data!['questionModel'],
                               isAll: data['isAll']),
-                          isPresent: true);
-                    case NavigatorName.news_detail:
-                      final data = settings.arguments as Map<String, dynamic>?;
-                      return _buildRoute(
-                        settings,
-                        NewsDetailView(id: data?['id']),
-                      );
-                    case NavigatorName.connection_instructions:
-                      final data = settings.arguments as Map<String, dynamic>?;
-                      return _buildRoute(
-                        settings,
-                        ConnectionInstructionsController(
+                        isPresent: true);
+                  case NavigatorName.news_detail:
+                    final data = settings.arguments as Map<String, dynamic>?;
+                    return _buildRoute(
+                      settings,
+                      NewsDetailView(id: data?['id']),
+                    );
+                  case NavigatorName.connection_instructions:
+                    final data = settings.arguments as Map<String, dynamic>?;
+                    return _buildRoute(
+                      settings,
+                      ConnectionInstructionsController(
                             connectOnly:
                                 data == null ? false : data['connectOnly']),
-                      );
+                    );
 
-                    case NavigatorName.connect_device_app:
-                      return _buildRoute(
-                        settings,
-                        ConnectDeviceApp(),
-                      );
-                    case NavigatorName.voucher_list:
-                      final data = settings.arguments as Map<String, dynamic>?;
+                  case NavigatorName.connect_device_app:
+                    return _buildRoute(
+                      settings,
+                      ConnectDeviceApp(),
+                    );
+                  case NavigatorName.voucher_list:
+                    final data = settings.arguments as Map<String, dynamic>?;
                       return _buildRoute(settings,
                           VoucherListView(voucherId: data?['voucherId']));
-                    case NavigatorName.voucher_detail:
-                      final data = settings.arguments as Map<String, dynamic>?;
-                      return _buildRoute(
-                          settings,
-                          VoucherDetailView(
-                            voucherId: data?['voucherId'],
-                            updateVoucherList: data?['updateVoucherList'],
-                          ));
-                    case NavigatorName.share_app_detail:
-                      final data = settings.arguments as Map<String, dynamic>?;
-                      return _buildRoute(
+                  case NavigatorName.voucher_detail:
+                    final data = settings.arguments as Map<String, dynamic>?;
+                    return _buildRoute(
+                        settings,
+                        VoucherDetailView(
+                          voucherId: data?['voucherId'],
+                          updateVoucherList: data?['updateVoucherList'],
+                        ));
+                  case NavigatorName.share_app_detail:
+                    final data = settings.arguments as Map<String, dynamic>?;
+                    return _buildRoute(
                           settings,
                           ShareAppDetail(
                               isVoucherAvailable: data?['isVoucherAvailable']));
-                    case NavigatorName.lesson_detail:
-                      final data = settings.arguments as Map<String, dynamic>?;
-                      return _buildRoute(
-                        settings,
-                        LessonDetailPage(
-                          lessonId: data?['lessonId'],
-                          lessonType: data?['lessonType'],
-                          onComplete: (String, int) {},
-                        ),
-                      );
-                    case NavigatorName.zoom:
-                      final data = settings.arguments as Map<String, dynamic>?;
-                      if (Platform.isAndroid) {
+                  case NavigatorName.lesson_detail:
+                    final data = settings.arguments as Map<String, dynamic>?;
+                    return _buildRoute(
+                      settings,
+                      LessonDetailPage(
+                        lessonId: data?['lessonId'],
+                        lessonType: data?['lessonType'],
+                        onComplete: (String, int) {},
+                      ),
+                    );
+                  case NavigatorName.zoom:
+                    final data = settings.arguments as Map<String, dynamic>?;
+                    if (Platform.isAndroid) {
                         return _buildRoute(
                             settings, ZoomAndroidView(calendarID: data?['id']));
-                      } else {
+                    } else {
                         return _buildRoute(
                             settings, ZoomIosView(calendarID: data?['id']));
-                      }
+                    }
+                  
+                  case NavigatorName.meeting_prepare:
+                    return _buildRoute(settings, MeetingPreparePage());
+                  case NavigatorName.meeting:
+                    final args = settings.arguments as MeetingArguments;
+                    return _buildRoute(settings, MeetingPage(args));
 
-                    default:
-                      return null;
-                  }
-                }),
-          ),
+                  default:
+                    return null;
+                }
+              }),
         );
       },
     );
   }
 
-  PageRoute _buildRoute(RouteSettings settings, Widget builder,
-      {bool isPresent = false}) {
+  PageRoute _buildRoute(RouteSettings settings, Widget builder, {bool isPresent = false}) {
     // return MaterialPageRoute(
     //   fullscreenDialog: true,
     //   settings: settings,
@@ -622,9 +624,7 @@ class _AppState extends State<App> {
     // );
     if (isPresent) {
       return CupertinoPageRoute(
-          settings: settings,
-          fullscreenDialog: true,
-          builder: (context) => builder);
+          settings: settings, fullscreenDialog: true, builder: (context) => builder);
     } else {
       return MaterialPageRoute(
         settings: settings,

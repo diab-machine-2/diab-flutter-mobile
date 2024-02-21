@@ -1,14 +1,11 @@
 import 'dart:async';
 import 'dart:io';
-import 'dart:ui';
 
 import 'package:better_player/better_player.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:medical/src/model/response/exercise_movement_response.dart';
 import 'package:medical/res/R.dart';
-import 'package:medical/src/widget/helper/show_message.dart';
-import 'package:medical/src/widget/my_plan_screens/lesson_tab/lesson_detail/models/video_manager.dart';
 import 'package:medical/src/widget/my_plan_screens/my_plan/models/completion_status.dart';
 
 class VideoManager {

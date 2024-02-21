@@ -1,15 +1,12 @@
 import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
-import 'dart:typed_data';
 import 'dart:ui' as ui;
 
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:intl/intl.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/model/preference/app_preference.dart';
@@ -101,7 +98,7 @@ class Utils {
   }
 
   static bool isEmptyArray(List list) {
-    return list == null || list.isEmpty;
+    return list.isEmpty;
   }
 
   static void hideKeyboard(BuildContext context) {

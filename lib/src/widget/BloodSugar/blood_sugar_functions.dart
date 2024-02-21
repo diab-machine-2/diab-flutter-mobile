@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/utils/app_storages.dart';
 import 'package:medical/src/utils/navigator_name.dart';
-import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/nipro/health_app/widgets/request_health_connect.dart';
 import 'package:medical/src/widget/nipro/roche_connection/roche_connection_view.dart';
 import 'package:medical/src/widgets/button_widget.dart';

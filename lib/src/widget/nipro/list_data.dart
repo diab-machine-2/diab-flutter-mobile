@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_observer/Observable.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/repo/glucose/glucose_client.dart';
-import 'package:medical/src/widget/Bmi/widget/add_bmi.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 

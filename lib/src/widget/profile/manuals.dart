@@ -5,7 +5,6 @@ import 'package:medical/src/modal/user/manual.dart';
 import 'package:medical/src/repo/user/user_client.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
-import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:easy_localization/easy_localization.dart';
 
 class ManualController extends StatefulWidget {

@@ -1,11 +1,9 @@
 import 'package:easy_localization/easy_localization.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_observer/Observable.dart';
 import 'package:flutter_observer/Observer.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/utils/const.dart';
-import 'package:medical/src/widget/helper/show_message.dart';
 
 typedef TabbarSelected = Function(int);
 

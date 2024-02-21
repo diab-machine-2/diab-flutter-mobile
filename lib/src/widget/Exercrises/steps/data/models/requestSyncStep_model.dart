@@ -1,4 +1,3 @@
-import 'package:medical/src/modal/base/images.dart';
 import 'package:meta/meta.dart';
 
 @immutable

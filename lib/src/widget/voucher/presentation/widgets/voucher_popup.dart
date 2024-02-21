@@ -3,8 +3,6 @@ import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/repo/user/user_client.dart';
-import 'package:medical/src/utils/app_log.dart';
-import 'package:url_launcher/url_launcher.dart';
 import '../../../../app_setting/app_setting.dart';
 import '../../../../model/preference/app_preference.dart';
 import '../../../../utils/const.dart';

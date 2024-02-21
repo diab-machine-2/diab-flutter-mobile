@@ -1,6 +1,5 @@
 import 'package:medical/src/modal/base/images.dart';
 import 'package:medical/src/modal/user/update_profile_request.dart';
-import 'package:medical/src/utils/app_log.dart';
 import 'package:meta/meta.dart';
 
 import '../../model/response/statistic_data.dart';

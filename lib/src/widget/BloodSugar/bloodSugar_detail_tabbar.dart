@@ -1,17 +1,12 @@
-import 'dart:io' show Platform;
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_observer/Observable.dart';
 import 'package:flutter_observer/Observer.dart';
 import 'package:medical/res/R.dart';
-import 'package:medical/src/app_setting/dynamic_link_config.dart';
 import 'package:medical/src/app_setting/firebase_tracking/kpi_glycemic_tracking.dart';
 import 'package:medical/src/modal/HbA1C/short_gui.dart';
 import 'package:medical/src/repo/HbA1C/HbA1C_client.dart';
-import 'package:medical/src/repo/glucose/glucose_client.dart';
-import 'package:medical/src/utils/app_storages.dart';
 import 'package:medical/src/utils/navigation_util.dart';
-import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/BloodSugar/bloodSugar_detail.dart';
 import 'package:medical/src/widget/BloodSugar/overview.dart';
@@ -19,14 +14,11 @@ import 'package:medical/src/widget/HbA1C/widget/description/description.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/components/custom_action_descriptipn.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
-import 'package:medical/src/widget/nipro/health_app/widgets/request_health_connect.dart';
-import 'package:medical/src/widget/nipro/roche_connection/roche_connection_view.dart';
 import 'package:medical/src/widget/tabbar/action_list_panel.dart';
 import 'package:medical/src/widget/tabbar/fillter_bloodSugar_panel.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../app_setting/app_setting.dart';
-import '../../widgets/button_widget.dart';
 import '../blood_sugar_survey_screens/blood_sugar_start_survey/blood_sugar_start_survey.dart';
 import 'blood_sugar_functions.dart';
 

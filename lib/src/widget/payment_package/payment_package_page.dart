@@ -5,7 +5,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/response/detail_package_data.dart';
-import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/congratulation/congratulation_page.dart';

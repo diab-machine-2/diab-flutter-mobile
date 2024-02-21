@@ -1,13 +1,9 @@
 import 'dart:async';
-import 'dart:io';
 import 'package:better_player/better_player.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/utils/navigation_util.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:video_thumbnail/video_thumbnail.dart';
 
 class VideoPlayerWidget extends StatefulWidget {
   const VideoPlayerWidget({required this.videoUrl});

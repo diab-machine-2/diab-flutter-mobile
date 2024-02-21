@@ -43,7 +43,7 @@ class EmotionBloc extends Bloc<EmotionEvent, EmotionState> {
           currentDateTime, periodFilterType, emotionId, page);
 
       if (currenState is EmotionLoaded) {
-        if (currenState.inputModel != null && page != 1) {
+        if (page != 1) {
           model.inputs.insertAll(0, currenState.inputModel.inputs);
         }
       }

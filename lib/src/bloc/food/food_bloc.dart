@@ -162,7 +162,7 @@ class FoodBloc extends Bloc<FoodEvent, FoodState> {
           await client.fetchInput(currentDateTime, periodFilterType, page);
 
       if (currenState is FoodInputLoaded) {
-        if (currenState.inputs != null && page != 1) {
+        if (page != 1) {
           model.inputs.insertAll(0, currenState.inputs);
         }
       }

@@ -1,4 +1,3 @@
-import 'package:medical/src/modal/base/images.dart';
 
 class VoucherListResponse {
   late int totalActive;

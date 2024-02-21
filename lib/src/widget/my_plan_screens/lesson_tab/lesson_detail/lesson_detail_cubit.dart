@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -11,8 +10,6 @@ import 'package:medical/src/model/response/lesson_section_list_response.dart';
 import 'package:medical/src/model/service/api_result.dart';
 import 'package:medical/src/model/service/network_exceptions.dart';
 import 'package:medical/src/utils/const.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:video_thumbnail/video_thumbnail.dart';
 
 import 'lesson_detail.dart';
 import 'models/audio_manager.dart';
@@ -242,13 +239,14 @@ class LessonDetailCubit extends Cubit<LessonDetailState> {
   Future<void> completeLearningCurrentSection() async {
     await Future.delayed(Duration.zero);
     emit(const LessonDetailLoading());
+    print("percentComplete: ===================>" + percentComplete.toString());
     final ApiResult<CommonResponse> apiResult =
         await repository.setCompletedLessonAccount(
       UpdateLessonSectionRequest(
-        lessonId: lessonId,
-        type: currentSectionDetail?.type,
-        lessonSectionId: currentSectionDetail?.id,
-      ),
+          lessonId: lessonId,
+          type: currentSectionDetail?.type,
+          lessonSectionId: currentSectionDetail?.id,
+          completePercent: percentComplete),
     );
     apiResult.when(success: (CommonResponse response) {
       if (response.meta?.success == true) {

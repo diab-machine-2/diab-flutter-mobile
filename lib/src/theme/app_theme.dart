@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:medical/res/R.dart';
 
 class AppTheme {
@@ -6,18 +7,18 @@ class AppTheme {
       platform: TargetPlatform.iOS,
       primaryColor: R.color.white,
       indicatorColor: R.color.mainColor,
-      accentColor: R.color.mainColor,
-      colorScheme: ThemeData().colorScheme.copyWith(primary: R.color.mainColor),
       appBarTheme: AppBarTheme(
           elevation: 0,
           centerTitle: true,
-          color: R.color.primaryColor,
-          brightness: Brightness.light,
-          textTheme: TextTheme(
+          color: R.color.primaryColor, toolbarTextStyle: TextTheme(
               headline6: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
-                  color: R.color.white))),
+                  color: R.color.white)).bodyText2, titleTextStyle: TextTheme(
+              headline6: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: R.color.white)).headline6, systemOverlayStyle: SystemUiOverlayStyle.dark),
       primaryIconTheme: IconThemeData(color: R.color.white),
-      brightness: Brightness.light);
+      brightness: Brightness.light, colorScheme: ThemeData().colorScheme.copyWith(primary: R.color.mainColor).copyWith(secondary: R.color.mainColor));
 }

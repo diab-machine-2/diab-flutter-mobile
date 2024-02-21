@@ -158,7 +158,7 @@ class BloodPressureDistributionChartState
                     sections: List.generate(6, (i) {
                       late final Color color;
                       late final value;
-                      const bool showTitle = false;
+                      // const bool showTitle = false;
                       const double radius = 20;
                       if (i == 0) {
                         color = toColor(model.increaseLevelThreeColor);

@@ -2,7 +2,6 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_observer/Observable.dart';
 import 'package:flutter_observer/Observer.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/firebase_tracking/kpi_nutrition_tracking.dart';
 import 'package:medical/src/modal/HbA1C/short_gui.dart';
@@ -14,13 +13,11 @@ import 'package:medical/src/widget/HbA1C/widget/description/description.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/components/custom_action_descriptipn.dart';
 import 'package:medical/src/widget/food_menu_screens/food_menu/food_menu_page.dart';
-import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/tabbar/action_list_panel.dart';
 import 'package:medical/src/widget/tabbar/fillter_bloodSugar_panel.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../app_setting/app_setting.dart';
-import '../../widgets/button_widget.dart';
 import 'daily_nutrition/daily_nutrition.dart';
 
 class FoodDetailTabbarController extends StatefulWidget {

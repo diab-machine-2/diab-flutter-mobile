@@ -1,25 +1,19 @@
 import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_observer/Observable.dart';
 import 'package:flutter_observer/Observer.dart';
-import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/response/lesson_module_response.dart';
-import 'package:medical/src/utils/date_utils.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/question_answer/all_question_answer/model/question_model.dart';
 import 'package:medical/src/widget/question_answer/all_question_answer/widget/make_question_header.dart';
 import 'package:medical/src/widget/question_answer/all_question_answer/widget/question_item.dart';
-import 'package:medical/src/widgets/network_image_widget.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
-import '../../../utils/navigation_util.dart';
-import '../question_answer_utils.dart';
 import 'my_question_answer.dart';
 
 class MyQuestionAnswerPage extends StatefulWidget {

@@ -74,7 +74,7 @@ class HbA1CBloc extends Bloc<HbA1CEvent, HbA1CState> {
           await client.fetchInput(currentDateTime, periodFilterType, page);
 
       if (currenState is HbA1CDetailLoaded) {
-        if (currenState.inputHbA1CModel != null && page != 1) {
+        if (page != 1) {
           model.inputs.insertAll(0, currenState.inputHbA1CModel);
         }
       }

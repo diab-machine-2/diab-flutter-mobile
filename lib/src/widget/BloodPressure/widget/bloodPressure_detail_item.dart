@@ -169,19 +169,16 @@ handleStatus(status) {
       {
         return R.string.high.tr();
       }
-      break;
 
     case 'low':
       {
         return R.string.low.tr();
       }
-      break;
 
     default:
       {
         return R.string.good.tr();
       }
-      break;
   }
 }
 
@@ -191,18 +188,15 @@ chooseColor(status) {
       {
         return R.color.red;
       }
-      break;
 
     case 'low':
       {
         return R.color.green;
       }
-      break;
 
     default:
       {
         return R.color.statusAverage;
       }
-      break;
   }
 }

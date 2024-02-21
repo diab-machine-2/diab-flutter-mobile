@@ -1,6 +1,5 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:bot_toast/bot_toast.dart';
-import 'package:dio/dio.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -18,6 +17,7 @@ import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
+import 'package:medical/src/widget/my_plan_screens/lesson_tab/lesson_detail/lesson_detail.dart';
 import 'package:medical/src/widget/my_plan_screens/lesson_tab/lesson_detail/widgets/bottom_sheet_share_lesson.dart';
 import 'package:medical/src/widgets/custom_bottom_bar_widget.dart';
 import 'package:medical/src/widgets/custom_scroll_physics.dart';
@@ -33,13 +33,14 @@ const Duration duration = Duration(milliseconds: 1);
 class CourseQuizPage extends StatefulWidget {
   const CourseQuizPage(
       {Key? key,
+      required this.currentPercent,
       required this.lessonId,
       this.lessonSectionItem,
       this.onDone,
       required this.lessonDetail,
       this.onComplete})
       : super(key: key);
-
+  final int currentPercent;
   final String lessonId;
   final LessonSectionItem? lessonSectionItem;
   final LessonSectionListResponseData lessonDetail;
@@ -55,6 +56,7 @@ class _CourseQuizPageState extends State<CourseQuizPage> {
   List<GlobalKey<CardCourseQuizPageState>> listGlobal = [];
   final AutoScrollController _controller =
       AutoScrollController(axis: Axis.horizontal);
+  late final LessonDetailCubit lessonDetailCubit;
 
   @override
   void initState() {
@@ -65,6 +67,7 @@ class _CourseQuizPageState extends State<CourseQuizPage> {
       lessonId: widget.lessonId,
       lessonSectionItem: widget.lessonSectionItem,
       lessonDetail: widget.lessonDetail,
+      currentPercent: widget.currentPercent,
     );
     _cubit.initData();
     Utils.onWidgetDidBuild(() {

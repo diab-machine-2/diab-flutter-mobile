@@ -1,15 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
-import 'package:medical/src/app_setting/app_setting.dart';
-import 'package:medical/src/app_setting/health_setting.dart';
 import 'package:medical/src/utils/app_storages.dart';
-import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
-import 'package:medical/src/widget/helper/show_message.dart';
 import 'dart:io' show Platform;
 import 'package:medical/src/widget/nipro/health_app/widgets/request_health_connect.dart';
 import 'package:medical/src/widget/nipro/roche_connection/roche_connection_view.dart';
-import 'health_app/sync_health_app_view.dart';
 
 class ConnectDeviceApp extends StatefulWidget {
   @override

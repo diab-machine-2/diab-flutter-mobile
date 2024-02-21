@@ -10,7 +10,6 @@ import 'package:medical/src/widget/Food/food_detail_tabbar.dart';
 import 'package:medical/src/widget/components/load_more.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
-import 'package:medical/src/widget/helper/tracking_manager.dart';
 
 import '../../widgets/network_image_widget.dart';
 import 'daily_nutrition/daily_nutrition.dart';

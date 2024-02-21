@@ -159,7 +159,7 @@ class ExercrisesBloc extends Bloc<ExercrisesEvent, ExercrisesState> {
           await client.fetchInput(currentDateTime, periodFilterType, page);
 
       if (currenState is ExercrisesDataLoaded) {
-        if (currenState.inputExercrisesModel != null && page != 1) {
+        if (page != 1) {
           model.inputs.insertAll(0, currenState.inputExercrisesModel);
         }
       }

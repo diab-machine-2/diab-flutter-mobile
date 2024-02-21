@@ -1,13 +1,8 @@
 import 'package:dio/dio.dart';
-import 'package:medical/src/modal/learning/learning_post_model.dart';
 import 'package:medical/src/model/request/SelectRoadmapRequest.dart';
-import 'package:medical/src/model/request/complete_update_profile_request.dart';
-import 'package:medical/src/model/request/has_shared_profile_request.dart';
 import 'package:medical/src/model/request/make_comment_request.dart';
 import 'package:medical/src/model/request/make_question_request.dart';
-import 'package:medical/src/model/request/mark_completed_calendar_request.dart';
 import 'package:medical/src/model/request/mark_completed_target_request.dart';
-import 'package:medical/src/model/request/read_welcome_request.dart';
 import 'package:medical/src/model/response/app_version_response.dart';
 import 'package:medical/src/model/response/calendar_training_response.dart';
 import 'package:medical/src/model/response/content_welcome_response.dart';
@@ -173,7 +168,7 @@ abstract class AppApi {
   Future<UserInfoResponse> getCurrentUserInfo();
 
   //My Plan
-  @POST("App/Lesson/MyLessons")
+  @POST("App/Lesson/MyLessonsOptimizedAndCacheLessonPercent")
   Future<MyLessonResponse> getLessonsList(
     @Body() LessonFilterRequest request,
   );

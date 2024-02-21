@@ -12,7 +12,6 @@ import 'package:medical/src/widget/Emotion/widget/emotion_detail.dart';
 import 'package:medical/src/widget/HbA1C/widget/description/description.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/components/custom_action_descriptipn.dart';
-import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/tabbar/action_list_panel.dart';
 import 'package:medical/src/widget/tabbar/fillter_bloodSugar_panel.dart';
 import 'package:shared_preferences/shared_preferences.dart';

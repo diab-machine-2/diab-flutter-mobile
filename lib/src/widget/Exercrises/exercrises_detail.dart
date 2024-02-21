@@ -1,19 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:loadmore/loadmore.dart';
 import 'package:medical/res/R.dart';
-import 'package:medical/src/app_setting/firebase_tracking/kpi_motion_tracking.dart';
 import 'package:medical/src/bloc/exercrises/exercrises_bloc.dart';
 import 'package:medical/src/modal/exercrises/exercrise_input.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/Exercrises/exercrises_detail_tabbar.dart';
 import 'package:medical/src/widget/components/load_more.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
-import 'package:medical/src/widget/helper/tracking_manager.dart';
-import 'package:easy_localization/easy_localization.dart';
 
-import '../../widgets/network_image_widget.dart';
 import 'widget/exercrises_list_card.dart';
 
 class ExercrisesDetailController extends StatefulWidget {

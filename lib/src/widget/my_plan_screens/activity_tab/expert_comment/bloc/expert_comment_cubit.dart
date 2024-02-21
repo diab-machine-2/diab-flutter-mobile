@@ -2,7 +2,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/response/expert_comment_list_response.dart';
-import 'package:medical/src/model/response/user_info_referral_code_response.dart';
 import 'package:medical/src/widget/my_plan_screens/activity_tab/expert_comment/model/expert_comment_model.dart';
 import '../../../../../model/service/api_result.dart';
 import '../../../../../model/service/network_exceptions.dart';

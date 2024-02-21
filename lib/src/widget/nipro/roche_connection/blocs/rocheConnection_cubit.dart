@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'package:medical/src/utils/app_log.dart';
 import '../data/models/device_info_model.dart';
 import '../views/scan_device_view.dart';
 import 'rocheConnection_state.dart';

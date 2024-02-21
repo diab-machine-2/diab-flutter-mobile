@@ -6,14 +6,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/utils/navigation_util.dart';
-import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widgets/button_widget.dart';
 import 'package:medical/src/widgets/common_page.dart';
 import 'package:medical/src/widgets/update_required_widget.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../utils/navigator_name.dart';
-import '../blood_sugar_schedule_template/blood_sugar_schedule_template.dart';
 import '../blood_sugar_survey/blood_sugar_survey.dart';
 import 'blood_sugar_start_survey.dart';
 

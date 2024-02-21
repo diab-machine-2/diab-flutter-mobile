@@ -5,7 +5,6 @@ import 'package:medical/src/widget/Food/food_detail.dart';
 import 'package:medical/src/widget/Food/overview.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/components/custom_action_descriptipn.dart';
-import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/notification/notification_controller.dart';
 import 'package:medical/src/widget/notification/notification_read_controller.dart';
 

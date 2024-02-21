@@ -35,7 +35,7 @@ class AudioManager {
         url: url,
       );
       newAudioController.audioPlayer.onPlayerStateChanged.listen((state) {});
-      newAudioController.audioPlayer.onPlayerCompletion.listen((_) {
+      newAudioController.audioPlayer.onPlayerComplete.listen((_) {
         finishedAudio = true;
         onCompleted?.call();
       });

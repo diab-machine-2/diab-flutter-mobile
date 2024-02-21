@@ -232,7 +232,7 @@ class SmartGoalStatisticResponse {
     if (meta != null) {
       data['meta'] = meta!.toJson();
     }
-    if (data != null) {
+    if (this.data != null) {
       data['data'] = this.data!.toJson();
     }
     return data;

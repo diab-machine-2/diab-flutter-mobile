@@ -38,16 +38,14 @@ class _NearFoodState extends State<NearFood>
   void update(
       Observable observable, String? notifyName, Map<dynamic, dynamic>? map) {
     final FoodModel foodModel = map?['food'];
-    if (foodModel != null) {
-      if (notifyName == 'add_food_to_cart') {
-        this.selectedFoods.removeWhere((element) => foodModel.id == element.id);
-        this.selectedFoods.add(foodModel);
-        setState(() {});
-      }
-      if (notifyName == 'remove_food_from_cart') {
-        selectedFoods.removeWhere((element) => foodModel.id == element.id);
-        setState(() {});
-      }
+    if (notifyName == 'add_food_to_cart') {
+      this.selectedFoods.removeWhere((element) => foodModel.id == element.id);
+      this.selectedFoods.add(foodModel);
+      setState(() {});
+    }
+    if (notifyName == 'remove_food_from_cart') {
+      selectedFoods.removeWhere((element) => foodModel.id == element.id);
+      setState(() {});
     }
   }
 

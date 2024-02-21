@@ -1,4 +1,3 @@
-import 'dart:ui';
 
 import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';

@@ -1,6 +1,5 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:medical/src/modal/user/user_model.dart';
 import 'package:medical/src/model/response/user_info_referral_code_response.dart';
 
 import '../../../../../../res/R.dart';

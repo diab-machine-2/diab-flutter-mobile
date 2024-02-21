@@ -55,28 +55,25 @@ class _AudioPlayerWidgetState extends State<AudioPlayerWidget> {
     return Row(
       children: [
         StreamBuilder<PlayerState>(
-            initialData: PlayerState.STOPPED,
+            initialData: PlayerState.stopped,
             stream: _audioPlayer.onPlayerStateChanged,
             builder: (context, snapshot) {
-              final bool isPlaying = snapshot.data == PlayerState.PLAYING;
+              final bool isPlaying = snapshot.data == PlayerState.playing;
               return IconButton(
                 onPressed: () {
                   isPlaying ? _pause() : _play();
                 },
-                icon: isPlaying
-                    ? const Icon(Icons.pause)
-                    : const Icon(Icons.play_arrow),
+                icon: isPlaying ? const Icon(Icons.pause) : const Icon(Icons.play_arrow),
                 iconSize: 24.sp,
               );
             }),
         Text(
-          _position != null
-              ? '$_positionText / $_durationText'
-              : _duration != null
-                  ? _durationText
-                  : '',
-          style: R.style.normalTextStyle
-        ),
+            _position != null
+                ? '$_positionText / $_durationText'
+                : _duration != null
+                    ? _durationText
+                    : '',
+            style: R.style.normalTextStyle),
         Expanded(
           child: Slider(
             inactiveColor: R.color.gray,
@@ -97,57 +94,53 @@ class _AudioPlayerWidgetState extends State<AudioPlayerWidget> {
   }
 
   double get value {
-    if (_position == null ||
-        _duration == null ||
-        _position!.inMilliseconds <= 0) return 0.0;
+    if (_position == null || _duration == null || _position!.inMilliseconds <= 0) return 0.0;
     if (_position!.inMilliseconds >= _duration!.inMilliseconds) return 1.0;
     return _position!.inMilliseconds / _duration!.inMilliseconds;
   }
 
   void _initAudioPlayer() {
-    _audioPlayer = AudioPlayer(mode: PlayerMode.MEDIA_PLAYER);
+    _audioPlayer = AudioPlayer()..setPlayerMode(PlayerMode.mediaPlayer);
 
     _durationSubscription = _audioPlayer.onDurationChanged.listen((duration) {
       setState(() => _duration = duration);
 
       if (Theme.of(context).platform == TargetPlatform.iOS) {
         // optional: listen for notification updates in the background
-        _audioPlayer.notificationService.startHeadlessService();
+        // _audioPlayer.notificationService.startHeadlessService();
 
-        // set at least title to see the notification bar on ios.
-        _audioPlayer.notificationService.setNotification(
-          title: 'App Name',
-          artist: 'Artist or blank',
-          albumTitle: 'Name or blank',
-          imageUrl: 'Image URL or blank',
-          forwardSkipInterval: const Duration(seconds: 30), // default is 30s
-          backwardSkipInterval: const Duration(seconds: 30), // default is 30s
-          duration: duration,
-          enableNextTrackButton: true,
-          enablePreviousTrackButton: true,
-        );
+        // // set at least title to see the notification bar on ios.
+        // _audioPlayer.notificationService.setNotification(
+        //   title: 'App Name',
+        //   artist: 'Artist or blank',
+        //   albumTitle: 'Name or blank',
+        //   imageUrl: 'Image URL or blank',
+        //   forwardSkipInterval: const Duration(seconds: 30), // default is 30s
+        //   backwardSkipInterval: const Duration(seconds: 30), // default is 30s
+        //   duration: duration,
+        //   enableNextTrackButton: true,
+        //   enablePreviousTrackButton: true,
+        // );
       }
     });
 
-    _positionSubscription =
-        _audioPlayer.onAudioPositionChanged.listen((p) => setState(() {
-              _position = p;
-            }));
+    _positionSubscription = _audioPlayer.onPositionChanged.listen((p) => setState(() {
+          _position = p;
+        }));
 
-    _playerCompleteSubscription =
-        _audioPlayer.onPlayerCompletion.listen((event) {
+    _playerCompleteSubscription = _audioPlayer.onPlayerComplete.listen((event) {
       _onComplete();
       setState(() {
         _position = _duration;
       });
     });
 
-    _playerErrorSubscription = _audioPlayer.onPlayerError.listen((msg) {
-      setState(() {
-        _duration = const Duration();
-        _position = const Duration();
-      });
-    });
+    // _playerErrorSubscription = _audioPlayer.onPlayerError.listen((msg) {
+    //   setState(() {
+    //     _duration = const Duration();
+    //     _position = const Duration();
+    //   });
+    // });
   }
 
   Future<int> _play() async {
@@ -157,16 +150,13 @@ class _AudioPlayerWidgetState extends State<AudioPlayerWidget> {
             _position!.inMilliseconds < _duration!.inMilliseconds)
         ? _position
         : null;
-    final result = await _audioPlayer.play(url, position: playPosition);
-    if (result == 1) {}
-
-    return result;
+    await _audioPlayer.play(UrlSource(url), position: playPosition);
+    return 0;
   }
 
   Future<int> _pause() async {
-    final result = await _audioPlayer.pause();
-    if (result == 1) {}
-    return result;
+    await _audioPlayer.pause();
+    return 0;
   }
 
   void _onComplete() {

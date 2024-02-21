@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
-import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/app_setting/firebase_tracking/kpi_emotional_tracking.dart';
 import 'package:medical/src/widget/Emotion/widget/emotion_activity_chart.dart';
 import 'package:medical/src/widget/Emotion/widget/emotion_symptom_chart.dart';
 import 'package:medical/src/widget/Emotion/widget/emotion_distribution_chart.dart';
 import 'package:medical/src/widget/HbA1C/widget/course_suggest.dart';
-import 'package:medical/src/widget/helper/tracking_manager.dart';
 
 class EmotionOverviewController extends StatefulWidget {
   EmotionOverviewController({Key? key}) : super(key: key);

@@ -1,8 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
 
-import '../data/models/GlucoseMeasurementRecord.dart';
-import 'rocheConnection_cubit.dart';
 
 @immutable
 abstract class RocheConnectionState extends Equatable {

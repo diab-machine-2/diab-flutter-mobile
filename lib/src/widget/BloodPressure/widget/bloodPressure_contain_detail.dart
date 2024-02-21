@@ -503,9 +503,7 @@ class BloodPressureDetailState extends State<BloodPressureDetail>
                                     padding: const EdgeInsets.only(
                                         left: 16, right: 16, top: 8, bottom: 8),
                                     child: Text(
-                                        modelLastest == null
-                                            ? '--'
-                                            : modelLastest.bloodPressureType!,
+                                       modelLastest.bloodPressureType!,
                                         style: TextStyle(
                                             color:
                                                 toColor(modelLastest.fontColor),

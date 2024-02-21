@@ -7,7 +7,6 @@ import 'package:medical/src/repo/food/food_client.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 
 import '../../../modal/food/food_model.dart';
-import '../../../model/response/menu_response.dart';
 
 class FoodInfo extends StatefulWidget {
   final FoodModel? model;
@@ -236,6 +235,7 @@ class _FoodInfoState extends State<FoodInfo> {
     if (widget.kcalLeft != null) {
       return widget.kcalLeft! / (widget.model?.calorie ?? 1);
     }
+    return null;
   }
 
   Widget buildItem(String title, double? number, String unit) {

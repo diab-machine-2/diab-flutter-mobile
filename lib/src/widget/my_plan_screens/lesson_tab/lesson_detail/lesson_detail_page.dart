@@ -1,21 +1,17 @@
-import 'package:better_player/better_player.dart';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
-import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/app_setting/app_sharing.dart';
 import 'package:medical/src/app_setting/dynamic_link_config.dart';
 import 'package:medical/src/app_setting/firebase_tracking/lesson_detail_tracking.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/response/lesson_section_list_response.dart';
-import 'package:medical/src/app_setting/firebase_tracking/firebase_tracking.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
-import 'package:medical/src/widget/my_plan_screens/exercise_tab/exercise_detail/models/video_manager.dart';
 import 'package:medical/src/widget/my_plan_screens/lesson_tab/lesson_detail/widgets/video_widget.dart';
 import 'package:medical/src/widgets/background_page.dart';
 import 'package:medical/src/widgets/custom_bottom_bar_widget.dart';
@@ -116,6 +112,10 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
           return _cubit.showQuizLesson
               ? CourseQuizPage(
                   key: Key(_cubit.currentSectionDetail?.id ?? ''),
+                  currentPercent: (((_cubit.currentSection + 1) /
+                              _cubit.sectionList.length) *
+                          100)
+                      .toInt(), // Khi hoàn thành quiz sẽ gửi luôn phần trăm đã tính sẵn
                   lessonId: _cubit.lessonId,
                   lessonSectionItem: widget.lessonType != 3
                       ? _cubit.currentSectionDetail

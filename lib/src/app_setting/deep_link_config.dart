@@ -1,8 +1,6 @@
 import 'dart:async';
 import 'package:flutter/services.dart' show PlatformException;
 import 'package:uni_links/uni_links.dart';
-import 'dart:io' show Platform;
-import 'dynamic_link_config.dart';
 
 class DeepLinkConfig {
   DeepLinkConfig._privateConstructor();
@@ -49,7 +47,7 @@ class DeepLinkConfig {
       }
     } on PlatformException {}
     try {
-      final Uri? initialUri = await getInitialUri();
+      final Uri? _ = await getInitialUri();
     } on FormatException {}
     return null;
   }
