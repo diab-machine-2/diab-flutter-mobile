@@ -84,7 +84,7 @@ class _FlashScreenControllerState extends State<FlashScreenController> {
     await AppSettings.saveEnvironment(appVersion.enviroment);
     AppSettings.environment = appVersion.enviroment ?? "";
     AppSettings.secureModel = secureModel;
-    appClient = AppClient().appClient;
+    appClient = AppClient().getAppClient();
   }
 
   getData(BuildContext context) async {
