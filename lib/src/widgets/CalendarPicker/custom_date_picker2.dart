@@ -3,16 +3,10 @@ library flutter_datetime_picker;
 import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_datetime_picker/src/date_model.dart';
-import 'package:flutter_datetime_picker/src/datetime_picker_theme.dart';
-import 'package:flutter_datetime_picker/src/i18n_model.dart';
+import 'package:flutter/material.dart' hide DatePickerTheme;
+import 'package:flutter_datetime_picker_plus/flutter_datetime_picker_plus.dart';
 import 'package:medical/res/R.dart';
 import 'package:easy_localization/easy_localization.dart';
-
-export 'package:flutter_datetime_picker/src/date_model.dart';
-export 'package:flutter_datetime_picker/src/datetime_picker_theme.dart';
-export 'package:flutter_datetime_picker/src/i18n_model.dart';
 
 typedef DateChangedCallback(DateTime? time);
 typedef DateCancelledCallback();
@@ -24,13 +18,13 @@ class CustomCalendarDatePicker2 {
   ///
   static Future<DateTime?> showDatePicker(
     BuildContext context, {
-    bool showTitleActions: true,
+    bool showTitleActions =true,
     DateTime? minTime,
     DateTime? maxTime,
     DateChangedCallback? onChanged,
     DateChangedCallback? onConfirm,
     DateCancelledCallback? onCancel,
-    locale: LocaleType.en,
+    locale = LocaleType.en,
     DateTime? currentTime,
     DatePickerTheme? theme,
   }) async {
@@ -57,12 +51,12 @@ class CustomCalendarDatePicker2 {
   ///
   static Future<DateTime?> showTimePicker(
     BuildContext context, {
-    bool showTitleActions: true,
-    bool showSecondsColumn: true,
+    bool showTitleActions = true,
+    bool showSecondsColumn = true,
     DateChangedCallback? onChanged,
     DateChangedCallback? onConfirm,
     DateCancelledCallback? onCancel,
-    locale: LocaleType.en,
+    locale = LocaleType.en,
     DateTime? currentTime,
     DatePickerTheme? theme,
   }) async {
@@ -88,11 +82,11 @@ class CustomCalendarDatePicker2 {
   ///
   static Future<DateTime?> showTime12hPicker(
     BuildContext context, {
-    bool showTitleActions: true,
+    bool showTitleActions = true,
     DateChangedCallback? onChanged,
     DateChangedCallback? onConfirm,
     DateCancelledCallback? onCancel,
-    locale: LocaleType.en,
+    locale = LocaleType.en,
     DateTime? currentTime,
     DatePickerTheme? theme,
   }) async {
@@ -116,13 +110,13 @@ class CustomCalendarDatePicker2 {
   ///
   static Future<DateTime?> showDateTimePicker(
     BuildContext context, {
-    bool showTitleActions: true,
+    bool showTitleActions = true,
     DateTime? minTime,
     DateTime? maxTime,
     DateChangedCallback? onChanged,
     DateChangedCallback? onConfirm,
     DateCancelledCallback? onCancel,
-    locale: LocaleType.en,
+    locale = LocaleType.en,
     DateTime? currentTime,
     DatePickerTheme? theme,
   }) async {
@@ -149,11 +143,11 @@ class CustomCalendarDatePicker2 {
   ///
   static Future<DateTime?> showPicker(
     BuildContext context, {
-    bool showTitleActions: true,
+    bool showTitleActions = true,
     DateChangedCallback? onChanged,
     DateChangedCallback? onConfirm,
     DateCancelledCallback? onCancel,
-    locale: LocaleType.en,
+    locale = LocaleType.en,
     BasePickerModel? pickerModel,
     DatePickerTheme? theme,
   }) async {
@@ -231,17 +225,14 @@ class _DatePickerRoute<T> extends PopupRoute<T> {
       ),
     );
     ThemeData inheritTheme = Theme.of(context);
-    if (inheritTheme != null) {
-      bottomSheet = new Theme(data: inheritTheme, child: bottomSheet);
-    }
+    bottomSheet = new Theme(data: inheritTheme, child: bottomSheet);
     return bottomSheet;
   }
 }
 
 class _DatePickerComponent extends StatefulWidget {
   _DatePickerComponent(
-      {Key? key,
-      required this.route,
+      {required this.route,
       this.onChanged,
       this.locale,
       this.pickerModel});
@@ -462,7 +453,6 @@ class _DatePickerState extends State<_DatePickerComponent> {
   // Title View
   Widget _renderTitleActionsView(DatePickerTheme theme) {
     String? done = _localeDone();
-    String? cancel = _localeCancel();
 
     return Container(
       height: theme.titleHeight,
@@ -518,18 +508,13 @@ class _DatePickerState extends State<_DatePickerComponent> {
   String? _localeDone() {
     return i18nObjInLocale(widget.locale)['done'] as String?;
   }
-
-  String? _localeCancel() {
-    return i18nObjInLocale(widget.locale)['cancel'] as String?;
-  }
 }
 
 class _BottomPickerLayout extends SingleChildLayoutDelegate {
   _BottomPickerLayout(this.progress, this.theme,
-      {this.itemCount, this.showTitleActions, this.bottomPadding = 0});
+      {this.showTitleActions, this.bottomPadding = 0});
 
   final double progress;
-  final int? itemCount;
   final bool? showTitleActions;
   final DatePickerTheme theme;
   final double bottomPadding;

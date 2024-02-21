@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_observer/Observable.dart';
 import 'package:medical/res/R.dart';
-import 'package:medical/res/colors.dart';
 import 'package:medical/src/app_setting/health_setting.dart';
 import 'package:medical/src/utils/app_storages.dart';
 import 'package:medical/src/widget/helper/show_message.dart';

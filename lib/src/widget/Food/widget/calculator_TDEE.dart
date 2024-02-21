@@ -114,13 +114,10 @@ class CalculatorTDEEFoodState extends State<CalculatorTDEEFood> {
                                                   builder: (_) =>
                                                       CustomWeightPicker(
                                                           callback: (number) {
-                                                            if (number !=
-                                                                null) {
-                                                              setState(() {
-                                                                selectedWeight =
-                                                                    number;
-                                                              });
-                                                            }
+                                                            setState(() {
+                                                              selectedWeight =
+                                                                  number;
+                                                            });
                                                           },
                                                           title: R.string
                                                               .enter_weight

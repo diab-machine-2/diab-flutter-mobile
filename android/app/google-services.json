@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "116899682757-6ap2sqdfcf56jubonkb0gchfqd8visll.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.vbhc.diab",
+            "certificate_hash": "bf7da0d90684d234702d123f5f245ab68c1fb92a"
+          }
+        },
+        {
           "client_id": "116899682757-6bmrpvdlm703d1h68j3t3ahf3ilfcntg.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {

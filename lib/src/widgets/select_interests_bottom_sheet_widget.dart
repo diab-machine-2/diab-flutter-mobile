@@ -162,7 +162,7 @@ class _SelectInterestsBottomSheetWidgetState extends State<SelectInterestsBottom
   }
 
   Widget _buildItem({required String title, bool isLast = false, required int position}) {
-    bool isSelected = title != null && selectedList.contains(title);
+    bool isSelected = selectedList.contains(title);
     if(position == 0){
       if(selectedList.length == widget.elementList.length){
         isSelected = true;

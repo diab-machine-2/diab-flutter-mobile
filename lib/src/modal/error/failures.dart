@@ -1,6 +1,4 @@
-import 'package:easy_localization/easy_localization.dart';
 import 'package:equatable/equatable.dart';
-import 'package:medical/res/R.dart';
 
 class Failure extends Equatable {
   final String? message;

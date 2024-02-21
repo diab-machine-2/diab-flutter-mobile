@@ -112,7 +112,7 @@ class GlucoseBloc extends Bloc<GlucoseEvent, GlucoseState> {
         size: size ?? '20');
 
     if (currenState is GlucoseAlllLoaded) {
-      if (currenState.inputGlucoseModel != null && page != 1) {
+      if (page != 1) {
         model.inputs.insertAll(0, currenState.inputGlucoseModel);
       }
     }

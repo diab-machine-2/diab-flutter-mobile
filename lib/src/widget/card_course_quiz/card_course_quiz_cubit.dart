@@ -1,7 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/response/list_quiz_lesson_response.dart';
-import 'package:medical/src/widget/helper/tracking_manager.dart';
 
 import 'card_course_quiz.dart';
 

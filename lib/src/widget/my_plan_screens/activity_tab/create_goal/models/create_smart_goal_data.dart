@@ -76,11 +76,8 @@ class CreateSmartGoalData {
           endDate = DateTime.now().add(const Duration(days: 90));
           return;
         }
-        if (smartGoalData != null) {
-          fillDataFromSmartGoal(smartGoalData);
-          return;
-        }
-        break;
+        fillDataFromSmartGoal(smartGoalData);
+        return;
       case ScheduleType.weight:
         if (smartGoalData == null) {
           goalTimeOrFrequency = '1';
@@ -90,11 +87,8 @@ class CreateSmartGoalData {
           endDate = DateTime.now().add(const Duration(days: 90));
           return;
         }
-        if (smartGoalData != null) {
-          fillDataFromSmartGoal(smartGoalData);
-          return;
-        }
-        break;
+        fillDataFromSmartGoal(smartGoalData);
+        return;
       case ScheduleType.emotion:
         if (smartGoalData == null) {
           goalTimeOrFrequency = '3';
@@ -104,19 +98,14 @@ class CreateSmartGoalData {
           endDate = DateTime.now().add(const Duration(days: 90));
           return;
         }
-        if (smartGoalData != null) {
-          fillDataFromSmartGoal(smartGoalData);
-          return;
-        }
-        break;
+        fillDataFromSmartGoal(smartGoalData);
+        return;
       case ScheduleType.exercise:
         if (smartGoalData == null) {
           dailyTargetDuration = '30';
           return;
         }
-        if (smartGoalData != null) {
-          dailyTargetDuration = '${smartGoalData.executeDayTimes}';
-        }
+        dailyTargetDuration = '${smartGoalData.executeDayTimes}';
         break;
 
       default:

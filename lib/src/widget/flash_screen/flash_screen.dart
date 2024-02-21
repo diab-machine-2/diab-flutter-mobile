@@ -1,6 +1,5 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/app_setting/deep_link_config.dart';
@@ -13,14 +12,12 @@ import 'package:medical/src/utils/app_media_query.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
-import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:package_info/package_info.dart';
 
 import '../../modal/user/secure.dart';
 import '../../model/repository/app_repository.dart';
 import '../../model/response/app_version_response.dart';
 import '../../model/service/app_client.dart';
-import '../helper/version.dart';
 
 class FlashScreenController extends StatefulWidget {
   @override
@@ -87,8 +84,7 @@ class _FlashScreenControllerState extends State<FlashScreenController> {
     await AppSettings.saveEnvironment(appVersion.enviroment);
     AppSettings.environment = appVersion.enviroment ?? "";
     AppSettings.secureModel = secureModel;
-    AppClient();
-    appClient = AppClient().appClient;
+    appClient = AppClient().getAppClient();
   }
 
   getData(BuildContext context) async {

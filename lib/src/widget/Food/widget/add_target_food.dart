@@ -94,8 +94,7 @@ class AddTargetFoodState extends State<AddTargetFood> {
                                               fontWeight: FontWeight.w500),
                                           onChanged: (value) {
                                             setState(() {
-                                              selectedCalo = (value == null ||
-                                                      value.isEmpty)
+                                              selectedCalo = (value.isEmpty)
                                                   ? 0
                                                   : int.parse(value);
                                             });

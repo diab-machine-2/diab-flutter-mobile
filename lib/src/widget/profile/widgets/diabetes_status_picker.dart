@@ -1,13 +1,10 @@
-import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
-import 'package:medical/res/colors.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/modal/user/category_item_user_model.dart';
 import 'package:medical/src/repo/glucose/glucose_client.dart';
-import 'package:medical/src/repo/user/user_client.dart';
 import 'package:medical/src/utils/app_media_query.dart';
 import 'package:medical/src/widget/Bmi/widget/add_bmi.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
@@ -128,8 +125,8 @@ class DiabetesInformation extends StatefulWidget {
 }
 
 class _DiabetesInformationState extends State<DiabetesInformation> {
-  int tuanThaiKy = 1;
-  num canNangThaiKy = 0;
+  int? tuanThaiKy = 1;
+  num? canNangThaiKy = 0;
   bool isExpanded = false;
 
   @override
@@ -367,7 +364,7 @@ class _DiabetesInformationState extends State<DiabetesInformation> {
       context: context,
       builder: (_) => CustomWeightPicker(
           callback: (weight) {
-            if (weight == null || weight <= 0) {
+            if (weight <= 0) {
               Message.showToastMessage(
                   context, R.string.mes_weight_must_greater_than_zero.tr());
               return;
@@ -378,14 +375,14 @@ class _DiabetesInformationState extends State<DiabetesInformation> {
           },
           title: R.string.enter_weight.tr(),
           max: 180,
-          numberDefault: canNangThaiKy,
+          numberDefault: canNangThaiKy ?? 0,
           unit: ''),
     );
   }
 
   updatePregnancyInfo() async {
     final result = await GlucoseClient()
-        .updatePregnancyInfo(week: tuanThaiKy, weight: canNangThaiKy);
+        .updatePregnancyInfo(week: tuanThaiKy ?? 1, weight: canNangThaiKy ?? 0);
     if (result == true) {
       Navigator.pop(context);
       widget.onSuccess();

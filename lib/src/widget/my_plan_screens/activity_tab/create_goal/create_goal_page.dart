@@ -568,9 +568,7 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
                                   .map((e) => e.title)
                                   .toList(),
                               onSelected: (dayList) {
-                                if (dayList != null) {
-                                  _cubit.onChangeRepeatDay(dayList);
-                                }
+                                _cubit.onChangeRepeatDay(dayList);
                               },
                               isMultipleChoice: true,
                             );

@@ -6,7 +6,6 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/user/secure.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/helper/notification_manager.dart';
-import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:package_info/package_info.dart';
 import 'package:url_launcher/url_launcher.dart';
 

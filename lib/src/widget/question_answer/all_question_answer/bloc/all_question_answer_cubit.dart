@@ -1,9 +1,6 @@
 import 'package:bot_toast/bot_toast.dart';
-import 'package:easy_localization/src/public_ext.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_observer/Observable.dart';
-import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/response/common_response.dart';

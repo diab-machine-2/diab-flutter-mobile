@@ -7,7 +7,6 @@ import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/utils/date_utils.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
-import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widgets/button_widget.dart';
 
 import '../models/schedule_state.dart';

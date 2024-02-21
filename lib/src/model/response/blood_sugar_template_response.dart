@@ -246,7 +246,7 @@ class BloodSugarTemplateResponse {
     data["id"] = id;
     data["statusCode"] = statusCode;
     data["message"] = message;
-    if (data != null) {
+    if (this.data != null) {
       data["data"] = this.data!.toJson();
     }
     return data;

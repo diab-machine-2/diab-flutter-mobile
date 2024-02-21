@@ -161,7 +161,7 @@ class _SelectBottomSheetWidgetState extends State<SelectBottomSheetWidget> {
   }
 
   Widget _buildItem({required String title, bool isLast = false}) {
-    final bool isSelected = title != null && selectedList.contains(title);
+    final bool isSelected = selectedList.contains(title);
     return Column(
       children: [
         GestureDetector(

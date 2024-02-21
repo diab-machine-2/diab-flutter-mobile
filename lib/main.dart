@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
+import 'package:flutter_zoom_videosdk/native/zoom_videosdk.dart';
 import 'package:medical/src/app.dart';
 import 'package:medical/src/model/localization/localization.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
@@ -41,12 +42,12 @@ class SimpleBlocObserver extends BlocObserver {
 //   }
 // }
 
-Future<void> _ensureScreenSize(window) async {
-  return window.viewConfiguration.geometry.isEmpty
-      ? Future.delayed(
-          const Duration(milliseconds: 10), () => _ensureScreenSize(window))
-      : Future.value();
-}
+// Future<void> _ensureScreenSize(SingletonFlutterWindow window) async {
+//   return window.viewConfiguration.geometry.isEmpty
+//       ? Future.delayed(
+//           const Duration(milliseconds: 10), () => _ensureScreenSize(window))
+//       : Future.value();
+// }
 
 Future<void> main() async {
   // SystemChrome.setSystemUIOverlayStyle(
@@ -81,7 +82,6 @@ Future<void> main() async {
   }
 
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
-  final window = WidgetsFlutterBinding.ensureInitialized().window;
 
   ByteData data =
       await PlatformAssetBundle().load('assets/ca/lets-encrypt-r3.pem');
@@ -97,9 +97,17 @@ Future<void> main() async {
   // ]);
   //await initializeDateFormatting('vi_VN');
   await TrackingManager.initializeFlutterFire();
-  await _ensureScreenSize(window);
+  // final window = widgetsBinding.window;
+  // await _ensureScreenSize(window);
   await EasyLocalization.ensureInitialized();
   await Firebase.initializeApp();
+
+  var zoom = ZoomVideoSdk();
+  InitConfig initConfig = InitConfig(
+    domain: "zoom.us",
+    enableLog: true,
+  );
+  zoom.initSdk(initConfig);
 
   SystemChrome.setPreferredOrientations(
       [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]).then((_) {

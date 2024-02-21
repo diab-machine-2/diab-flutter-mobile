@@ -10,7 +10,6 @@ import 'package:medical/src/repo/user/user_client.dart';
 import 'package:medical/src/widget/Bmi/widget/add_bmi.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
-import 'package:medical/src/widget/helper/tracking_manager.dart';
 
 class SettingScheduleGlucoseController extends StatefulWidget {
   @override

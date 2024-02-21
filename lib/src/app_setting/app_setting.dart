@@ -9,13 +9,11 @@ import 'package:medical/src/modal/user/category_user_model.dart';
 import 'package:medical/src/modal/user/user_model.dart';
 import 'package:medical/src/model/preference/app_preference.dart';
 import 'package:medical/src/model/response/smart_goal_list_reponse.dart';
-import 'package:medical/src/model/response/statistic_data.dart';
 import 'package:medical/src/repo/login/login_client.dart';
 import 'package:medical/src/utils/app_log.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/helper/http_helper.dart';
-import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 import '../modal/user/secure.dart';
 
@@ -37,14 +35,14 @@ class AppSettings {
 
   static bool isReloadCurrentUserInfo = false;
 
-  static Future<bool> saveEnvironment(String? token) async {
-    appPreference.setData(Const.ENVIRONMENT, token);
+  static Future<bool> saveEnvironment(String? env) async {
+    appPreference.setData(Const.ENVIRONMENT, env);
     return true;
   }
 
   static Future<String> getEnvironment() async {
-    final token = appPreference.getData(Const.ENVIRONMENT) ?? '';
-    return token;
+    final env = appPreference.getData(Const.ENVIRONMENT) ?? '';
+    return env;
   }
 
   static Future<bool> clearEnvironment() async {

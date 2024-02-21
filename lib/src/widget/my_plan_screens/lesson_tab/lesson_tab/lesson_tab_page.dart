@@ -13,11 +13,9 @@ import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/response/my_lesson_response.dart';
 import 'package:medical/src/model/response/week_states_response.dart';
 import 'package:medical/src/utils/const.dart';
-import 'package:medical/src/app_setting/firebase_tracking/firebase_tracking.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
-import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/my_plan_screens/my_plan/models/plan_type.dart';
 import 'package:medical/src/widgets/button_widget.dart';
 import 'package:medical/src/widgets/lesson_status_widget.dart';
@@ -370,7 +368,7 @@ class _LessonTabPageState extends State<LessonTabPage>
         children: [
           InkWell(
             onTap: () {
-              if (_cubit.currentWeekIndex == null || _cubit.isFiltering) return;
+              if (_cubit.isFiltering) return;
               animateToIndex(_cubit.currentWeekIndex - 1);
             },
             child: Icon(
@@ -402,7 +400,7 @@ class _LessonTabPageState extends State<LessonTabPage>
           ),
           InkWell(
             onTap: () {
-              if (_cubit.currentWeekIndex == null || _cubit.isFiltering) return;
+              if (_cubit.isFiltering) return;
               animateToIndex(_cubit.currentWeekIndex + 1);
             },
             child: Icon(

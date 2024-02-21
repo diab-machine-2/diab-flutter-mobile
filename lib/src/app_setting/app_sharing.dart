@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_share/flutter_share.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:share_plus/share_plus.dart';
 

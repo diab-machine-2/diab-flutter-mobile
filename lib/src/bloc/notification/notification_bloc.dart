@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:medical/res/R.dart';
-import 'package:medical/src/modal/notification/notification_data_model.dart';
 import 'package:medical/src/repo/notification/notification_client.dart';
 import 'package:meta/meta.dart';
 import 'package:medical/src/modal/error/error_model.dart';

@@ -94,36 +94,30 @@ class CardCourseQuizSurveyPageState extends State<CardCourseQuizSurveyPage>
               }
               if (state is CardCourseQuizFillText) {
                 _textController.text = state.text;
-                if (widget.onSubmitAnswer != null && state.text != null) {
-                  widget.onSubmitAnswer(
-                      QuestionAnswerResults(
-                          surveyQuestionId: widget.quizData.id,
-                          surveySectionId: widget.surveySectionId,
-                          content: state.text.trim()),
-                      false);
-                }
+                widget.onSubmitAnswer(
+                    QuestionAnswerResults(
+                        surveyQuestionId: widget.quizData.id,
+                        surveySectionId: widget.surveySectionId,
+                        content: state.text.trim()),
+                    false);
               }
               if (state is CardCourseQuizFillTextField) {
                 _textController.text = state.text;
-                if (widget.onSubmitAnswer != null && state.text != null) {
-                  widget.onSubmitAnswer(
-                      QuestionAnswerResults(
-                          surveyQuestionId: widget.quizData.id,
-                          surveySectionId: widget.surveySectionId,
-                          content: state.text.trim()),
-                      false);
-                }
-              }
-              if (state is ChooseAnswerSuccess) {
-                if (widget.onSubmitAnswer != null) {
-                  widget.onSubmitAnswer(
-                      QuestionAnswerResults(
+                widget.onSubmitAnswer(
+                    QuestionAnswerResults(
                         surveyQuestionId: widget.quizData.id,
                         surveySectionId: widget.surveySectionId,
-                        surveyAnswerIdList: _cubit.listAnswerChoosing,
-                      ),
-                      false);
-                }
+                        content: state.text.trim()),
+                    false);
+              }
+              if (state is ChooseAnswerSuccess) {
+                widget.onSubmitAnswer(
+                    QuestionAnswerResults(
+                      surveyQuestionId: widget.quizData.id,
+                      surveySectionId: widget.surveySectionId,
+                      surveyAnswerIdList: _cubit.listAnswerChoosing,
+                    ),
+                    false);
               }
             },
             builder: (context, state) {

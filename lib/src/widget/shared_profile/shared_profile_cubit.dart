@@ -27,6 +27,7 @@ class SharedProfileCubit extends Cubit<SharedProfileState> {
       emit(SharedProfileFailure(NetworkExceptions.getErrorMessage(error)));
     });
     emit(const SharedProfileInitial());
+    return null;
   }
 
   Future<void> stopSharing({required String code}) async {

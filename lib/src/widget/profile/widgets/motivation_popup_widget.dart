@@ -1,10 +1,8 @@
 import 'package:easy_localization/easy_localization.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/user/motivation_model.dart';
 import 'package:medical/src/utils/length_limit_text_field.dart';
-import 'package:medical/src/widget/helper/show_message.dart';
 
 class MotivationPopup extends StatefulWidget {
   final MotivationModel? model;

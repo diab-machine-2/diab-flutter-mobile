@@ -40,22 +40,22 @@ class _HorizontalMenuState extends State<HorizontalMenu> with TickerProviderStat
   final Duration _duration = const Duration(milliseconds: 500);
 
   /// Animation controller that animates the menu item
-  late AnimationController _iconAnimationCtrl;
+  // late AnimationController _iconAnimationCtrl;
 
   /// Animation that animates the menu item
-  late Animation<double> _iconAnimationTween;
+  // late Animation<double> _iconAnimationTween;
 
   @override
   void initState() {
     super.initState();
-    _iconAnimationCtrl = AnimationController(
-      vsync: this,
-      duration: _duration,
-    );
-    _iconAnimationTween = Tween(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(_iconAnimationCtrl);
+    // _iconAnimationCtrl = AnimationController(
+    //   vsync: this,
+    //   duration: _duration,
+    // );
+    // _iconAnimationTween = Tween(
+    //   begin: 0.0,
+    //   end: 1.0,
+    // ).animate(_iconAnimationCtrl);
   }
 
   /// Closes the menu if open and vice versa
