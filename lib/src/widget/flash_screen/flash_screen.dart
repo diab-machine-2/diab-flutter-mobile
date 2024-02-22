@@ -89,7 +89,11 @@ class _FlashScreenControllerState extends State<FlashScreenController> {
 
   getData(BuildContext context) async {
     final String? sharedCode = await DeepLinkConfig.instance.getInitLink();
+    try {
     await FirebaseRemoteSetting.instance.init();
+    } catch (e) {
+      print('remote config fetch error: $e');
+    }
     try {
       final token = await AppSettings.getToken();
       AppSettings.environment = await AppSettings.getEnvironment();
