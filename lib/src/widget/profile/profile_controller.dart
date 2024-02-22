@@ -28,6 +28,7 @@ import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/shared_profile/shared_profile.dart';
 import 'package:medical/src/widgets/button_language_picker.dart';
+import '../../app_setting/firebase_remote_config.dart';
 import '../food_menu_screens/food_menu/food_menu_page.dart';
 
 class ProfileController extends StatefulWidget {
@@ -341,18 +342,20 @@ class _ProfileControllerState extends State<ProfileController> with Observer {
                             color: AppColors.accentColor),
                       ),
                     );
-                    child = GestureDetector(
-                      onTap: () {
-                        _count++;
-                        if (_count >= _requiredCount) {
-                          _count = 0;
-                          _launchMeeting(ctx);
-                        } else {
-                          _startTimer();
-                        }
-                      },
-                      child: child,
-                    );
+                    if (FirebaseRemoteSetting.instance.appDeveloperMode) {
+                      child = GestureDetector(
+                        onTap: () {
+                          _count++;
+                          if (_count >= _requiredCount) {
+                            _count = 0;
+                            _launchMeeting(ctx);
+                          } else {
+                            _startTimer();
+                          }
+                        },
+                        child: child,
+                      );
+                    }
                     return child;
                   }),
                 ],
