@@ -33,19 +33,23 @@ class _FlashScreenControllerState extends State<FlashScreenController> {
   void initState() {
     super.initState();
     isNavigateToStepList = false;
-    getSecuredModel();
-    getData(context);
-    getVersion();
-    DynamicLinkConfig.instance.setUpHandleDeepLink();
+    _initLoad();
   }
 
-  getVersion() async {
+  void _initLoad() async {
+    await getSecuredModel();
+    await getVersion();
+    await getData(context);
+    await DynamicLinkConfig.instance.setUpHandleDeepLink();
+  }
+
+  Future<void> getVersion() async {
     PackageInfo packageInfo = await PackageInfo.fromPlatform();
     AppSettings.version = packageInfo.version;
     AppSettings.buildNumber = packageInfo.buildNumber;
   }
 
-  getSecuredModel() async {
+  Future<void> getSecuredModel() async {
     AppVersionResponse? appVersion;
     try {
       appVersion = await UserClient().getAppVersion(context);
@@ -87,9 +91,13 @@ class _FlashScreenControllerState extends State<FlashScreenController> {
     appClient = AppClient().getAppClient();
   }
 
-  getData(BuildContext context) async {
+  Future<void> getData(BuildContext context) async {
     final String? sharedCode = await DeepLinkConfig.instance.getInitLink();
-    await FirebaseRemoteSetting.instance.init();
+    try {
+      await FirebaseRemoteSetting.instance.init();
+    } catch (e) {
+      print('remote config fetch error: $e');
+    }
     try {
       final token = await AppSettings.getToken();
       AppSettings.environment = await AppSettings.getEnvironment();
@@ -106,8 +114,8 @@ class _FlashScreenControllerState extends State<FlashScreenController> {
         AppSettings.userInfo = user;
         if (user == null) {
           if (!isNavigateToStepList) {
-            Message.showToastMessage(context,
-                R.string.phien_dang_nhap_het_han_vui_long_dang_nhap_lai.tr());
+            Message.showToastMessage(
+                context, R.string.phien_dang_nhap_het_han_vui_long_dang_nhap_lai.tr());
             AppSettings.logout(isNavigateToStepListScreen: false);
             await Navigator.pushReplacementNamed(
               context,
@@ -140,8 +148,8 @@ class _FlashScreenControllerState extends State<FlashScreenController> {
       };
       LoginClient().appLogs(errorData);
       if (!isNavigateToStepList) {
-        Message.showToastMessage(context,
-            R.string.phien_dang_nhap_het_han_vui_long_dang_nhap_lai.tr());
+        Message.showToastMessage(
+            context, R.string.phien_dang_nhap_het_han_vui_long_dang_nhap_lai.tr());
         AppSettings.logout();
         isNavigateToStepList = true;
       }
