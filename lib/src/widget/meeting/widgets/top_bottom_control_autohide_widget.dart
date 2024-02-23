@@ -50,7 +50,7 @@ class _FadeTransitionStateWidget extends State<TopBottomControlAutohideWidget>
           duration: _animationDuration,
           curve: Curves.easeInOut,
           height: media.padding.top + (_visible ? widget.topWidgetHeight : 0.0),
-          child: widget.topWidget,
+          child: _visible ? widget.topWidget : null,
         ),
         Expanded(
           child: GestureDetector(
@@ -69,14 +69,13 @@ class _FadeTransitionStateWidget extends State<TopBottomControlAutohideWidget>
             ),
           ),
         ),
-        // TODO: Handle unhide when tapping on the bottom widget
         AnimatedContainer(
           duration: _animationDuration,
           curve: Curves.easeInOut,
           height: _visible ? widget.bottomWidgetHeight : 0.0,
           transformAlignment: Alignment.bottomCenter,
           child: SingleChildScrollView(
-            child: widget.bottomWidget,
+            child: _visible ? widget.bottomWidget : SizedBox.shrink(),
             physics: NeverScrollableScrollPhysics(),
           ),
         ),
