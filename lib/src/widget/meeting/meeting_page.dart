@@ -357,7 +357,7 @@ class _MeetingPageState extends State<MeetingPage>
                   bool isVideoOn = snapshot.data ?? false;
                   return _buttonIconWithTextBelow(
                     isVideoOn ? R.drawable.ic_zoom_video_on : R.drawable.ic_zoom_video_off,
-                    isVideoOn ? 'Bật camera' : 'Tắt camera',
+                    isVideoOn ? 'Tắt camera' : 'Bật camera',
                     _cubit.toggleVideo,
                     isOff: !isVideoOn,
                   );
