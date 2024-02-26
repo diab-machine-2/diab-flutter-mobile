@@ -29,6 +29,7 @@ import 'package:medical/src/widgets/share_profile_popup.dart';
 import '../../repo/user/user_client.dart';
 import '../my_plan_screens/activity_tab/my_progress/my_progress.dart';
 import 'welcome_package_screen/welcome_package_screen.dart';
+import 'package:medical/src/widget/nipro/health_app/blocs/healthApp_bloc.dart';
 
 class HomeController extends StatefulWidget {
   const HomeController({this.sharedCode});
@@ -100,7 +101,6 @@ class _HomeControllerState extends State<HomeController> with Observer {
 
   int page = 1;
   bool isLoading = false;
-  bool _hasHealthConnection = false;
 
   var user = AppSettings.userInfo;
   var popupStore = PopupStore;
@@ -131,9 +131,9 @@ class _HomeControllerState extends State<HomeController> with Observer {
             FirebaseRemoteSetting.instance.activePopupHealthConnect) {
           RequestHealthConnect.showModal(context, callback: () {});
         } else if (hasHealthConnection == true) {
-          setState(() {
-            _hasHealthConnection = hasHealthConnection ?? false;
-          });
+            HealthAppBloc()..add(SubmitSyncData(true));
+        } else if (hasHealthConnection == null) {
+          RequestHealthConnect.showModal(context, callback: () {});
         }
       });
       await ChooseUrl();
@@ -151,7 +151,7 @@ class _HomeControllerState extends State<HomeController> with Observer {
 
   @override
   void update(
-      Observable observable, String? notifyName, Map<dynamic, dynamic>? map) {
+      Observable observable, String? notifyName, Map<dynamic, dynamic>? map) async {
     if (notifyName == 'BloodPressure_change_data') {
       _refresh();
       checkScreen(NavigatorName.detail_blood_pressure);
@@ -181,13 +181,13 @@ class _HomeControllerState extends State<HomeController> with Observer {
       checkScreen(NavigatorName.detail_hba1c);
     }
     if (notifyName == 'goal_calo_changed' || notifyName == 'refresh_home') {
-      _hasHealthConnection = false;
       _refresh();
     }
     if (notifyName == 'syncing_heath_app') {
-      setState(() {
-        _hasHealthConnection = true;
-      });
+      bool? hasHealthConnection = await AppStorages.getHealthAppPermission();
+      if (hasHealthConnection == true) {
+        HealthAppBloc()..add(SubmitSyncData(true));
+      }
     }
     if (notifyName == Const.NAVIGATE_TO_PROFILE_TAB) {
       _refresh();
@@ -309,8 +309,6 @@ class _HomeControllerState extends State<HomeController> with Observer {
                 child: Column(
                   children: [
                     HomeHeader(sharedCode: widget.sharedCode),
-                    if (_hasHealthConnection == true)
-                      RequestHealthConnect(isSyncing: true, callback: () {}),
                     Expanded(
                       child: SafeArea(
                         top: false,

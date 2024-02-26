@@ -111,6 +111,11 @@ class _BottomTabbar extends State<BottomTabbar> with Observer {
             ),
           ),
           onTap: () {
+            // Start to sync data from google fit
+            if (title == "Trang chủ") {
+              Observable.instance
+                  .notifyObservers([], notifyName: "syncing_heath_app");
+            }
             Observable.instance
                 .notifyObservers([], notifyName: Const.HIDE_OVERLAY_KEY);
             setState(() {

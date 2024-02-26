@@ -67,7 +67,7 @@ class HealthAppBloc extends Bloc<HealthAppEvent, HealthAppState> {
       }
     }
 
-    dateFrom = dateFrom.add(Duration(minutes: 1));
+    dateFrom = dateFrom.add(Duration(seconds: 1));
 
     if (dateFrom.difference(dateTo).inDays > 90) {
       dateFrom = dateTo.add(Duration(days: 90));
@@ -261,7 +261,7 @@ class HealthAppBloc extends Bloc<HealthAppEvent, HealthAppState> {
       }
     }
 
-    dateFrom = dateFrom.add(Duration(minutes: 1));
+    dateFrom = dateFrom.add(Duration(seconds: 1));
 
     if (dateFrom.difference(dateTo).inDays > 90) {
       dateFrom = dateTo.add(Duration(days: 90));
@@ -354,7 +354,7 @@ class HealthAppBloc extends Bloc<HealthAppEvent, HealthAppState> {
       }
     }
 
-    dateFrom = dateFrom.add(Duration(minutes: 1));
+    dateFrom = dateFrom.add(Duration(seconds: 1));
 
     if (dateFrom.difference(dateTo).inDays > 90) {
       dateFrom = dateTo.add(Duration(days: 90));

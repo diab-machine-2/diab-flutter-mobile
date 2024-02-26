@@ -125,9 +125,6 @@ class RequestHealthConnect extends StatelessWidget {
                           callback();
                           Message.showToastMessage(
                               context, "Đã hoàn thành kết nối với $appTitle");
-                          context
-                              .read<HealthAppBloc>()
-                              .add(SubmitSyncData(true));
                           Observable.instance.notifyObservers([],
                               notifyName: "syncing_heath_app");
                         }
