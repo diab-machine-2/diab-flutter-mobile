@@ -836,11 +836,9 @@ class UserClient extends FetchClient {
     }
   }
 
-  Future<ScheduleReminderDataModel> fetchScheduleReminders(int page) async {
+  Future<ScheduleReminderDataModel> fetchScheduleReminders() async {
     try {
-      final Response response = await super.fetchData(
-          url: '/App/Patient/PatientRemind',
-          params: {'page': page.toString(), 'size': '20'});
+      final Response response = await super.fetchData(url: '/App/Patient/PatientRemind');
       if (response.statusCode == 200) {
         return ScheduleReminderDataModel(
             models: ScheduleReminderModel.toList(response.data['data']),
