@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/services.dart' show PlatformException;
+import 'package:medical/src/app_setting/dynamic_link_config.dart';
 import 'package:uni_links/uni_links.dart';
 
 class DeepLinkConfig {
@@ -21,7 +22,9 @@ class DeepLinkConfig {
           !link.contains("lessonId") &&
           !link.contains("calendar")) {
         onHaveLink(getShareCodeFromUrl(link));
-      } 
+      }  else if (link != null && link.contains("calendar")) {
+        DynamicLinkConfig.instance.progressDynamicLink(link);
+      }
       // else if (link != null &&
       //     !link.contains("click.diab.com.vn") &&
       //     !link.contains("referralCode") &&
