@@ -42,6 +42,14 @@ class LessonTabLoading extends LessonTabState {
   }
 }
 
+class LessonTabLoadMore extends LessonTabState {
+  const LessonTabLoadMore();
+  @override
+  String toString() {
+    return 'LessonTabInitLoading{}';
+  }
+}
+
 class LessonTabChangeType extends LessonTabState {
   const LessonTabChangeType();
   @override

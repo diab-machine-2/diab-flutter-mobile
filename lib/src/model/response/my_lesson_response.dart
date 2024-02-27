@@ -122,6 +122,7 @@ class MyLessonResponseData {
   int? status;
   int? type;
   String? level;
+  String? description;
   String? module;
   int? learningStatus;
   int? percentComplete;
@@ -139,6 +140,7 @@ class MyLessonResponseData {
     this.status,
     this.type,
     this.level,
+    this.description,
     this.module,
     this.learningStatus,
     this.percentComplete,
@@ -162,6 +164,7 @@ class MyLessonResponseData {
     status = json['status']?.toInt();
     type = json['type']?.toInt();
     level = json['level']?.toString();
+    description = json['description']?.toString();
     module = json['module']?.toString();
     learningStatus = json['learningStatus']?.toInt();
     percentComplete = json['percentComplete'] != null ? json['percentComplete'].toInt() : 0;
@@ -188,6 +191,7 @@ class MyLessonResponseData {
     data['status'] = status;
     data['type'] = type;
     data['level'] = level;
+    data['description'] = description;
     data['module'] = module;
     data['learningStatus'] = learningStatus;
     data['percentComplete'] = percentComplete;

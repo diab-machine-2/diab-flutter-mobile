@@ -68,9 +68,11 @@ class _LevelOffDiabetesRulePickerState
   @override
   Widget build(BuildContext context) {
     return BlockBottomSheet(
-      title: 'Chọn loại bệnh',
-      description:
-          'Chọn loại bệnh để cập nhật số liệu phù hợp theo từng tình trạng bệnh.',
+      // Chọn loại bệnh
+      title: R.string.select_disease_type.tr(),
+      //'Chọn loại bệnh để cập nhật số liệu phù hợp theo từng tình trạng bệnh.',
+      description: R.string.select_disease_type_content.tr(),
+
       child: Padding(
         padding: const EdgeInsets.all(15),
         child: SpacingColumn(
@@ -133,11 +135,11 @@ class _LevelOffDiabetesRulePickerState
                     height: 43,
                     title: R.string.cap_nhat.tr(),
                     onPressed: () {
-                      if (diabeteSelected.text == 'Đái tháo đường thai kỳ') {
-                        Navigator.pop(context);
-                      } else {
-                        _updateData();
-                      }
+                      // if (diabeteSelected.text == 'Đái tháo đường thai kỳ') {
+                      //   Navigator.pop(context);
+                      // } else {
+                      _updateData();
+                      // }
                     },
                     textSize: 14,
                   ),
@@ -162,8 +164,8 @@ class _LevelOffDiabetesRulePickerState
       isUpdateDiabetes: true,
     );
     await UserClient().fetchUser();
-    widget.onSuccess();
     BotToast.closeAllLoading();
+    widget.onSuccess();
     Navigator.pop(context);
   }
 }

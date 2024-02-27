@@ -210,6 +210,7 @@ class FetchClient {
     request.fields.addAll(params);
     Console.log('token', token);
     Console.log('uri', uri);
+    Console.logJson('Request', params);
 
     for (final file in files ?? []) {
       final value = await http.MultipartFile.fromPath('images', file);

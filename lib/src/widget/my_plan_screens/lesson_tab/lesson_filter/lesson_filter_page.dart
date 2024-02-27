@@ -149,31 +149,33 @@ class _LessonFilterPageState extends State<LessonFilterPage> {
             _cubit.refresh();
           },
         ),
-        const SizedBox(height: 16),
-        Padding(
-          padding: const EdgeInsets.only(left: 4.0),
-          child: CustomCheckboxWidget(
-            isChecked: _cubit.filterData.isCompleted,
-            title: R.string.filter_not_learnt_lesson_yet.tr(),
-            titleStyle: TextStyle(
-              color: R.color.grey_1,
-              fontSize: 14,
-              fontWeight: FontWeight.w400,
-            ),
-            onTap: () async {
-              await TrackingManager.analytics.logEvent(
-                name: 'component_clicked',
-                parameters: {
-                  "screen_name": 'my_schedule',
-                  'component_name': 'filter_lesson_learned',
-                  'filter_learned_check':
-                      _cubit.filterData.isCompleted ? "uncheck" : 'check',
-                },
-              );
-              _cubit.onToggleCheckBox();
-            },
-          ),
-        ),
+        //++20230115-LanhVC: remove checkbox
+        // const SizedBox(height: 16),
+        // Padding(
+        //   padding: const EdgeInsets.only(left: 4.0),
+        //   child: CustomCheckboxWidget(
+        //     isChecked: _cubit.filterData.isCompleted,
+        //     title: R.string.filter_not_learnt_lesson_yet.tr(),
+        //     titleStyle: TextStyle(
+        //       color: R.color.grey_1,
+        //       fontSize: 14,
+        //       fontWeight: FontWeight.w400,
+        //     ),
+        //     onTap: () async {
+        //       await TrackingManager.analytics.logEvent(
+        //         name: 'component_clicked',
+        //         parameters: {
+        //           "screen_name": 'my_schedule',
+        //           'component_name': 'filter_lesson_learned',
+        //           'filter_learned_check':
+        //               _cubit.filterData.isCompleted ? "uncheck" : 'check',
+        //         },
+        //       );
+        //       _cubit.onToggleCheckBox();
+        //     },
+        //   ),
+        // ),
+        //--20230115-LanhVC: remove checkbox
         const Spacer(),
         _buildButtonFilter(),
         const SizedBox(height: 20),

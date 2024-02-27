@@ -25,8 +25,6 @@ class ReminderController extends StatefulWidget {
 class _ReminderControllerState extends State<ReminderController> with Observer  {
   List<ScheduleReminderModel>? models;
 
-  int page = 1;
-  bool hasMore = false;
   bool isLoading = false;
 
   @override
@@ -60,33 +58,12 @@ class _ReminderControllerState extends State<ReminderController> with Observer  
   }
 
   Future<bool> loadData() async {
-    page = 1;
-    final result = await UserClient().fetchScheduleReminders(page);
+    final result = await UserClient().fetchScheduleReminders();
     models = result.models;
-    hasMore = result.hasMore;
-    if (hasMore) {
-      page += 1;
-    }
     setState(() {});
     return true;
   }
 
-  Future<bool> _loadMore() async {
-    if (isLoading || !hasMore) {
-      return true;
-    } else {
-      isLoading = true;
-      final result = await UserClient().fetchScheduleReminders(page);
-      models!.addAll(result.models);
-      hasMore = result.hasMore;
-      if (hasMore) {
-        page += 1;
-      }
-      isLoading = false;
-      setState(() {});
-    }
-    return true;
-  }
 
   @override
   void dispose() {
@@ -136,58 +113,50 @@ class _ReminderControllerState extends State<ReminderController> with Observer  
                           onRefresh: loadData,
                           child: models == null
                               ? Center(child: CircularProgressIndicator())
-                              : LoadMore(
-                                  onLoadMore: _loadMore,
-                                  isFinish: !hasMore,
-                                  whenEmptyLoad: false,
-                                  delegate: CustomLoadMoreDelegate(),
-                                  textBuilder:
-                                      DefaultLoadMoreTextBuilder.english,
-                                  child: ListView(
-                                      padding: EdgeInsets.all(0),
-                                      keyboardDismissBehavior:
-                                          ScrollViewKeyboardDismissBehavior
-                                              .onDrag,
+                              : ListView(
+                                  padding: EdgeInsets.all(0),
+                                  keyboardDismissBehavior:
+                                      ScrollViewKeyboardDismissBehavior
+                                          .onDrag,
+                                  children: [
+                                    Column(
                                       children: [
-                                        Column(
-                                          children: [
-                                            Image.asset(
-                                                R.drawable.img_reminder,
-                                                height: 113),
-                                            Padding(
-                                              padding: EdgeInsets.only(
-                                                  left: 16,
-                                                  right: 16,
-                                                  top: 32,
-                                                  bottom: 32),
-                                              child: Text(
-                                                  R.string.let_diab_remind_you.tr(),
-                                                  style:
-                                                      TextStyle(fontSize: 16),
-                                                  textAlign: TextAlign.center),
-                                            )
-                                          ],
-                                        ),
-                                        ListView.separated(
-                                          padding: EdgeInsets.all(0),
-                                          physics:
-                                              NeverScrollableScrollPhysics(),
-                                          shrinkWrap: true,
-                                          itemCount: models!.length,
-                                          separatorBuilder:
-                                              (BuildContext context,
-                                                  int index) {
-                                            return Container(
-                                                height: 1,
-                                                color: R.color.color0xffE5E5E5);
-                                          },
-                                          itemBuilder: (BuildContext context,
-                                              int index) {
-                                            return buildItem(index);
-                                          },
+                                        Image.asset(
+                                            R.drawable.img_reminder,
+                                            height: 113),
+                                        Padding(
+                                          padding: EdgeInsets.only(
+                                              left: 16,
+                                              right: 16,
+                                              top: 32,
+                                              bottom: 32),
+                                          child: Text(
+                                              R.string.let_diab_remind_you.tr(),
+                                              style:
+                                                  TextStyle(fontSize: 16),
+                                              textAlign: TextAlign.center),
                                         )
-                                      ]),
-                                ),
+                                      ],
+                                    ),
+                                    ListView.separated(
+                                      padding: EdgeInsets.all(0),
+                                      physics:
+                                          NeverScrollableScrollPhysics(),
+                                      shrinkWrap: true,
+                                      itemCount: models!.length,
+                                      separatorBuilder:
+                                          (BuildContext context,
+                                              int index) {
+                                        return Container(
+                                            height: 1,
+                                            color: R.color.color0xffE5E5E5);
+                                      },
+                                      itemBuilder: (BuildContext context,
+                                          int index) {
+                                        return buildItem(index);
+                                      },
+                                    )
+                                  ]),
                         ))),
                 SizedBox(height: 32)
               ])),

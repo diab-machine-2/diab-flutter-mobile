@@ -140,6 +140,7 @@ class _DiabetesInformationState extends State<DiabetesInformation> {
             AppSettings.userInfo!.weight == 0
         ? 50
         : AppSettings.userInfo!.weight)!;
+    tuanThaiKy = AppSettings.userInfo!.curentWeekPregnancy ?? 1;
     setState(() {});
   }
 

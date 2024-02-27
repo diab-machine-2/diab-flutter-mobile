@@ -23,6 +23,7 @@ import 'models/audio_data.dart';
 import 'widgets/bottom_sheet_share_lesson.dart';
 import 'widgets/bottom_sheet_widget.dart';
 import 'widgets/share_lesson_button.dart';
+import 'widgets/youtube_video_widget.dart';
 
 class LessonDetailPage extends StatefulWidget {
   final Function(String, int) onComplete;
@@ -111,12 +112,20 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
           return _cubit.showQuizLesson
               ? CourseQuizPage(
                   key: Key(_cubit.currentSectionDetail?.id ?? ''),
+                  currentPercent: (((_cubit.currentSection + 1) /
+                              _cubit.sectionList.length) *
+                          100)
+                      .toInt(), // Khi hoàn thành quiz sẽ gửi luôn phần trăm đã tính sẵn
                   lessonId: _cubit.lessonId,
                   lessonSectionItem: widget.lessonType != 3
                       ? _cubit.currentSectionDetail
                       : null,
                   onDone: (isPassed) async {
                     _cubit.onChangeSection(context, _cubit.currentSection + 1);
+                  },
+                  onComplete: () {
+                    widget.onComplete(
+                        _cubit.lessonDetail!.id!, _cubit.percentComplete);
                   },
                   lessonDetail: _cubit.lessonDetail!)
               : Scaffold(
@@ -176,6 +185,7 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                                 ),
                                 if (_cubit.currentSectionDetail != null)
                                   ShareLessonButton(
+                                    lessonDescription: _cubit.lessonDescription,
                                     featureImage: _cubit.featureImage,
                                     lesson: _cubit.currentSectionDetail!,
                                   ),
@@ -217,8 +227,10 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     if (_cubit.currentSectionDetail
-                                            ?.videoAddressLink !=
-                                        null)
+                                                ?.videoAddressLink !=
+                                            null &&
+                                        _cubit.currentSectionDetail?.linkType ==
+                                            0)
                                       _buildTitleWidget(
                                         child:
                                             //BetterPlayer(controller: _cubit.videoManager!.controller!),
@@ -238,36 +250,10 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                                           url: _cubit.currentSectionDetail
                                                   ?.videoAddressLink ??
                                               '',
-                                          onPlay: () async {
-                                            LessonDetailTracking.playVideo(
-                                              objectId:
-                                                  '${_cubit.lessonDetail?.id}',
-                                              objectTitle:
-                                                  '${_cubit.lessonDetail?.name}',
-                                            );
-                                          },
-                                          onComplete: () {
-                                            if (_cubit.sectionList.length ==
-                                                    1 &&
-                                                _isShowModal == false) {
-                                              BottomSheetShareLesson
-                                                  .showDialogShareLesson(
-                                                context,
-                                                onShare: () => _onShareLesson(
-                                                    context,
-                                                    _cubit
-                                                        .currentSectionDetail!),
-                                                onCancel: () {
-                                                  NavigationUtil.pop(context,
-                                                      result: 0);
-                                                  BotToast.closeAllLoading();
-                                                },
-                                              );
-                                              setState(() {
-                                                _isShowModal = true;
-                                              });
-                                            }
-                                          },
+                                          onPlay: () async =>
+                                              _onTrackingVideoPlay(),
+                                          onComplete: () =>
+                                              _onTrackingVideoComplete(),
                                           callbackByPercentVideo: () {
                                             LessonDetailTracking
                                                 .completed50PercentVideo(
@@ -275,6 +261,9 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                                               objectTitle:
                                                   _cubit.lessonDetail?.name,
                                             );
+                                            widget.onComplete(
+                                                _cubit.lessonDetail!.id!,
+                                                _cubit.percentComplete);
                                             _cubit.complete();
                                           },
                                           percentCallbackDefault: 0.5,
@@ -285,6 +274,26 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                                         ),
                                         title: _cubit.currentSectionDetail
                                             ?.videoDescription,
+                                      ),
+                                    if (_cubit.currentSectionDetail
+                                                ?.videoAddressLink !=
+                                            null &&
+                                        _cubit.currentSectionDetail?.linkType ==
+                                            1)
+                                      YoutubeVideoWidget(
+                                        videoUrl: _cubit.currentSectionDetail!
+                                            .videoAddressLink!,
+                                        onPlay: () => _onTrackingVideoPlay(),
+                                        onEnded: () {
+                                          LessonDetailTracking
+                                              .completed50PercentVideo(
+                                            objectId: _cubit.lessonDetail?.id,
+                                            objectTitle:
+                                                _cubit.lessonDetail?.name,
+                                          );
+                                          _cubit.complete();
+                                          _onTrackingVideoComplete();
+                                        },
                                       ),
                                     SizedBox(height: 8),
                                     Padding(
@@ -402,6 +411,29 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
     );
   }
 
+  _onTrackingVideoPlay() {
+    LessonDetailTracking.playVideo(
+      objectId: '${_cubit.lessonDetail?.id}',
+      objectTitle: '${_cubit.lessonDetail?.name}',
+    );
+  }
+
+  _onTrackingVideoComplete() {
+    if (_cubit.sectionList.length == 1 && _isShowModal == false) {
+      BottomSheetShareLesson.showDialogShareLesson(
+        context,
+        onShare: () => _onShareLesson(context, _cubit.currentSectionDetail!),
+        onCancel: () {
+          NavigationUtil.pop(context, result: 0);
+          BotToast.closeAllLoading();
+        },
+      );
+      setState(() {
+        _isShowModal = true;
+      });
+    }
+  }
+
   Widget _buildTitleWidget({required Widget child, String? title}) {
     return Column(
       children: [
@@ -422,7 +454,9 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
 
   _onShareLesson(BuildContext context, LessonSectionItem lesson) async {
     String shareLink = await DynamicLinkConfig.instance.createShareLessonLink(
-        lesson: lesson, featureImage: _cubit.featureImage);
+        lesson: lesson,
+        featureImage: _cubit.featureImage,
+        lessonDescription: _cubit.lessonDescription);
     AppShare.instance.lessonDetail(context, shareLink, lesson.name ?? "");
   }
 

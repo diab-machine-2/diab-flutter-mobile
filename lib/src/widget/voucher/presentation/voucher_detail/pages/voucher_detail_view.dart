@@ -1,6 +1,7 @@
 import 'package:bot_toast/bot_toast.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -12,6 +13,8 @@ import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import '../../../data/models/voucherList_response.dart';
 import '../blocs/voucherDetail_bloc.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'dart:convert';
+import 'package:medical/src/app_setting/firebase_remote_config.dart';
 
 class VoucherDetailView extends StatefulWidget {
   final String voucherId;
@@ -26,7 +29,8 @@ class VoucherDetailView extends StatefulWidget {
 
 class _VoucherDetailViewState extends State<VoucherDetailView> {
   late BuildContext currentContext;
-
+  late String _linkStoreNavigation =
+      FirebaseRemoteSetting.instance.linkStoreNavigation;
   @override
   void initState() {
     super.initState();
@@ -339,7 +343,8 @@ class _VoucherDetailViewState extends State<VoucherDetailView> {
   }
 
   void _launchSHOPEE() async {
-    const url = 'https://shopee.vn/diab_official123#product_list';
+    Map<String, dynamic> linkStoreNavigation = jsonDecode(_linkStoreNavigation);
+    var url = linkStoreNavigation["Shopee"];
     if (await canLaunch(url)) {
       await launch(url);
     } else {
@@ -348,8 +353,9 @@ class _VoucherDetailViewState extends State<VoucherDetailView> {
   }
 
   void _launchLAZADA() async {
-    const url =
-        'https://pages.lazada.vn/wow/gcp/vn/store_lp/voucher?sellerId=v8r0l559q7w&voucherId=vrroy74m2nkzoe&scene=store&domain=SHOP';
+    Map<String, dynamic> linkStoreNavigation = jsonDecode(_linkStoreNavigation);
+
+    var url = linkStoreNavigation["Lazada"];
     if (await canLaunch(url)) {
       await launch(url);
     } else {
@@ -358,7 +364,9 @@ class _VoucherDetailViewState extends State<VoucherDetailView> {
   }
 
   void _launchWEBSITE() async {
-    const url = 'https://diab.com.vn/cua-hang-diab?p=tat-ca';
+    Map<String, dynamic> linkStoreNavigation = jsonDecode(_linkStoreNavigation);
+
+    var url = linkStoreNavigation["Store"];
     if (await canLaunch(url)) {
       await launch(url);
     } else {

@@ -10,10 +10,12 @@ import '../../../../../model/response/lesson_section_list_response.dart';
 class ShareLessonButton extends StatelessWidget {
   final LessonSectionItem lesson;
   final String? featureImage;
+  final String? lessonDescription;
   const ShareLessonButton({
     Key? key,
     required this.lesson,
     required this.featureImage,
+    required this.lessonDescription,
   }) : super(key: key);
 
   @override
@@ -56,7 +58,7 @@ class ShareLessonButton extends StatelessWidget {
 
   _onShareLesson(BuildContext context) async {
     String shareLink = await DynamicLinkConfig.instance
-        .createShareLessonLink(lesson: lesson, featureImage: featureImage);
+        .createShareLessonLink(lesson: lesson, featureImage: featureImage, lessonDescription: lessonDescription);
     AppShare.instance.lessonDetail(context, shareLink, lesson.name ?? "");
   }
 }

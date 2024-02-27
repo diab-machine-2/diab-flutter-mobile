@@ -10,6 +10,7 @@ import 'package:medical/src/modal/HbA1C/short_gui.dart';
 import 'package:medical/src/repo/HbA1C/HbA1C_client.dart';
 import 'package:medical/src/utils/app_storages.dart';
 import 'package:medical/src/utils/navigator_name.dart';
+import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/Bmi/overview.dart';
 import 'package:medical/src/widget/Bmi/widget/bmi_detail.dart';
 import 'package:medical/src/widget/HbA1C/widget/description/description.dart';
@@ -40,7 +41,7 @@ class _BmiDetailTabbarControllerState extends State<BmiDetailTabbarController>
   GlobalKey<BmiOverviewControllerState> overViewKey = GlobalKey();
   GlobalKey<BmiDetailControllerState> detailKey = GlobalKey();
 
-  int periodFilterType = 1;
+  int periodFilterType = 3;
 
   ShortGuiModel? des;
 
@@ -67,6 +68,7 @@ class _BmiDetailTabbarControllerState extends State<BmiDetailTabbarController>
     if (notifyName == 'Weight_change_data') {
       overViewKey.currentState?.reloadData(periodFilterType);
       detailKey.currentState?.reloadData(periodFilterType);
+      setState(() {});
     }
   }
 
@@ -100,6 +102,7 @@ class _BmiDetailTabbarControllerState extends State<BmiDetailTabbarController>
 
   @override
   Widget build(BuildContext context) {
+    bool isGestationalDiabetes = Utils.isGestationalDiabetes();
     return Container(
       child: Scaffold(
           resizeToAvoidBottomInset: false,
@@ -155,10 +158,17 @@ class _BmiDetailTabbarControllerState extends State<BmiDetailTabbarController>
               BmiDetailController(key: detailKey)
             ])),
           ]),
-          floatingActionButton: FloatingActionButton(
-            onPressed: () => _showMaterialDialog(),
-            child:
-                Image.asset(R.drawable.ic_button_plus, width: 80, height: 80),
+          floatingActionButton: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              FloatingActionButton(
+                onPressed: () => _showMaterialDialog(),
+                child: Image.asset(R.drawable.ic_button_plus,
+                    width: 80, height: 80),
+              ),
+              if (isGestationalDiabetes && _tabController?.index == 0)
+                SizedBox(height: 55, width: 10),
+            ],
           )),
     );
   }
@@ -172,8 +182,9 @@ class _BmiDetailTabbarControllerState extends State<BmiDetailTabbarController>
       String healthIcon = Platform.isIOS
           ? R.drawable.logo_healthkit
           : R.drawable.logo_googleFit;
-      String healthTitle =
-          Platform.isIOS ? 'Kết nối từ Apple Health' : 'Kết nối từ Google Fit';
+      String healthTitle = Platform.isIOS
+          ? R.string.connect_from_Apple_Health.tr()
+          : R.string.connect_from_Google_Fit.tr();
       showModalBottomSheet(
         shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.vertical(top: Radius.circular(15))),
@@ -196,7 +207,7 @@ class _BmiDetailTabbarControllerState extends State<BmiDetailTabbarController>
                     border:
                         Border(bottom: BorderSide(color: Color(0xffF2F2F2)))),
                 child: Text(
-                  'Chọn cách nhập',
+                  R.string.choose_how_to_enter.tr(),
                   style: TextStyle(
                     fontSize: 16,
                     color: R.color.textDark,
@@ -213,24 +224,29 @@ class _BmiDetailTabbarControllerState extends State<BmiDetailTabbarController>
                       backgroundColor: Color(0xFFE4FCF3),
                       textColor: Color(0xff249B92),
                       title: healthTitle,
-                      onPressed: () => RequestHealthConnect.showModal(context,
-                          callback: () => Navigator.pop(context)),
+                      onPressed: () {
+                        Navigator.pop(context);
+                        RequestHealthConnect.showModal(context,
+                            callback: () => Navigator.pop(context));
+                      },
                     ),
                     SizedBox(height: 15),
                     ButtonWidget(
                       icon: R.icons.ic_tap,
                       backgroundColor: Color(0xFFE4FCF3),
                       textColor: Color(0xff249B92),
-                      title: 'Nhập thủ công',
-                      onPressed: () => Navigator.pushNamed(
-                          context, NavigatorName.add_bmi,
-                          arguments: {'type': 'input', 'id': null}),
+                      title: R.string.enter_manually.tr(),
+                      onPressed: () {
+                        Navigator.pop(context);
+                        Navigator.pushNamed(context, NavigatorName.add_bmi,
+                            arguments: {'type': 'input', 'id': null});
+                      },
                     ),
                     SizedBox(height: 15),
                     ButtonWidget(
                       backgroundColor: Color(0xFFF4F4F4),
                       textColor: Color(0xff172823),
-                      title: 'Đóng',
+                      title: R.string.close.tr(),
                       onPressed: () => Navigator.pop(context),
                     ),
                   ],
@@ -328,8 +344,8 @@ class ActionFilter extends StatefulWidget {
 }
 
 class _ActionFilterState extends State<ActionFilter> {
-  String name = R.string.filter_day.tr(args: ['7']);
-  int selectedIndex = 0;
+  String name = R.string.filter_day.tr(args: ['30']);
+  int selectedIndex = 2;
 
   @override
   Widget build(BuildContext context) {

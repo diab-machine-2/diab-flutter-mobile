@@ -6,6 +6,7 @@ import 'package:flutter_observer/Observer.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/app_setting/dynamic_link_config.dart';
+import 'package:medical/src/app_setting/firebase_remote_config.dart';
 import 'package:medical/src/bloc/home/home_bloc.dart';
 import 'package:medical/src/modal/home/home_model.dart';
 import 'package:medical/src/modal/home/package_account_home_model.dart';
@@ -24,9 +25,7 @@ import 'package:medical/src/widget/my_plan_screens/activity_tab/create_goal/crea
 import 'package:medical/src/widget/nipro/health_app/widgets/request_health_connect.dart';
 import 'package:medical/src/widget/shared_profile/pages/share_app_detail/widgets/banner_share_app.dart';
 import 'package:medical/src/widget/voucher/presentation/widgets/voucher_popup.dart';
-import 'package:medical/src/widgets/network_image_widget.dart';
 import 'package:medical/src/widgets/share_profile_popup.dart';
-
 import '../../repo/user/user_client.dart';
 import '../my_plan_screens/activity_tab/my_progress/my_progress.dart';
 import 'welcome_package_screen/welcome_package_screen.dart';
@@ -128,11 +127,12 @@ class _HomeControllerState extends State<HomeController> with Observer {
     if (lessonId == null && zoomId == null && activityId == null) {
       Future.delayed(Duration(milliseconds: 1000), () async {
         bool? hasHealthConnection = await AppStorages.getHealthAppPermission();
-        if (hasHealthConnection == null) {
+        if (hasHealthConnection == null &&
+            FirebaseRemoteSetting.instance.activePopupHealthConnect) {
           RequestHealthConnect.showModal(context, callback: () {});
         } else if (hasHealthConnection == true) {
           setState(() {
-            _hasHealthConnection = hasHealthConnection;
+            _hasHealthConnection = hasHealthConnection ?? false;
           });
         }
       });
@@ -712,11 +712,11 @@ class _HomeControllerState extends State<HomeController> with Observer {
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      NetWorkImageWidget(
-                          imageUrl: model.icon?.url ?? '',
-                          width: 25,
-                          height: 25),
-                      const SizedBox(width: 4),
+                      // NetWorkImageWidget(
+                      //     imageUrl: model.icon?.url ?? '',
+                      //     width: 25,
+                      //     height: 25),
+                      // const SizedBox(width: 4),
                       Padding(
                         padding: const EdgeInsets.only(top: 8),
                         child: Text(
@@ -802,9 +802,9 @@ class _HomeControllerState extends State<HomeController> with Observer {
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    NetWorkImageWidget(
-                        imageUrl: model.icon?.url ?? '', width: 25, height: 25),
-                    const SizedBox(width: 4),
+                    // NetWorkImageWidget(
+                    //     imageUrl: model.icon?.url ?? '', width: 25, height: 25),
+                    // const SizedBox(width: 4),
                     Padding(
                       padding: const EdgeInsets.only(top: 8),
                       child: Text(
@@ -923,27 +923,27 @@ class _HomeControllerState extends State<HomeController> with Observer {
                 ]),
                 Column(
                   children: List.generate(
-                      model.details!.length,
-                      (index) => Padding(
-                            padding: const EdgeInsets.only(top: 6),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Text(model.details![index].text!,
-                                    style: TextStyle(
-                                        color: R.color.textDark,
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w400)),
-                                const SizedBox(width: 4),
-                                NetWorkImageWidget(
-                                    imageUrl:
-                                        model.details![index].icon!.url ?? '',
-                                    width: 25,
-                                    height: 25),
-                              ],
-                            ),
-                          )),
+                    model.details!.length,
+                    (index) => Padding(
+                      padding: const EdgeInsets.only(top: 6),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Text(model.details![index].text!,
+                              style: TextStyle(
+                                  color: R.color.textDark,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w400)),
+                          // const SizedBox(width: 4),
+                          // NetWorkImageWidget(
+                          //     imageUrl: model.details![index].icon!.url ?? '',
+                          //     width: 25,
+                          //     height: 25),
+                        ],
+                      ),
+                    ),
+                  ),
                 )
               ],
             ),
@@ -1087,16 +1087,16 @@ class _HomeControllerState extends State<HomeController> with Observer {
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Image.asset(
-                      getExerciseIcon(
-                          model.facExercise ?? 0, model.targetExercise ?? 0),
-                      width: 25,
-                      height: 25,
-                      errorBuilder: (context, error, stackTrace) {
-                        return Container();
-                      },
-                    ),
-                    const SizedBox(width: 6),
+                    // Image.asset(
+                    //   getExerciseIcon(
+                    //       model.facExercise ?? 0, model.targetExercise ?? 0),
+                    //   width: 25,
+                    //   height: 25,
+                    //   errorBuilder: (context, error, stackTrace) {
+                    //     return Container();
+                    //   },
+                    // ),
+                    // const SizedBox(width: 6),
                     Flexible(
                       child: Padding(
                         padding: const EdgeInsets.only(top: 0),
@@ -1203,11 +1203,11 @@ class _HomeControllerState extends State<HomeController> with Observer {
                         Row(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            NetWorkImageWidget(
-                                imageUrl: model.icon?.url ?? '',
-                                width: 25,
-                                height: 25),
-                            const SizedBox(width: 4),
+                            // NetWorkImageWidget(
+                            //     imageUrl: model.icon?.url ?? '',
+                            //     width: 25,
+                            //     height: 25),
+                            // const SizedBox(width: 4),
                             Padding(
                               padding: const EdgeInsets.only(top: 8),
                               child: Text(
@@ -1412,9 +1412,9 @@ class _HomeControllerState extends State<HomeController> with Observer {
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    NetWorkImageWidget(
-                        imageUrl: model.icon?.url ?? '', width: 25, height: 25),
-                    const SizedBox(width: 4),
+                    // NetWorkImageWidget(
+                    //     imageUrl: model.icon?.url ?? '', width: 25, height: 25),
+                    // const SizedBox(width: 4),
                     Padding(
                       padding: const EdgeInsets.only(top: 8, left: 2),
                       child: Text(

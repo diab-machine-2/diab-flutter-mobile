@@ -31,7 +31,7 @@ class BmiHipTrendChartState extends State<BmiHipTrendChart>
   bool get wantKeepAlive => true;
 
   late BuildContext currentContext;
-  int periodFilterType = 1;
+  int periodFilterType = 3;
   int trendTypeIndex = 1;
   int touchIndex = -1;
   String trendType = R.string.all.tr();

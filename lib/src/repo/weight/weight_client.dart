@@ -6,6 +6,8 @@ import 'package:medical/src/modal/bmi/weight_input.dart';
 import 'package:medical/src/modal/bmi/weight_input_data_model.dart';
 import 'package:medical/src/modal/bmi/weight_trend.dart';
 import 'package:medical/src/utils/app_log.dart';
+import 'package:medical/src/utils/utils.dart';
+import 'package:medical/src/widget/Bmi/models/weight_ranger_model.dart';
 import 'package:medical/src/widget/helper/http_helper.dart';
 import 'package:medical/src/modal/error/error_model.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -15,20 +17,20 @@ class WeightClient extends FetchClient {
   Future<bool> postWeightInput(int date, List<String> files, String weight,
       String? waist, String height, String note, String? timeFrameId) async {
     // try {
+    bool isGestationalDiabetes = Utils.isGestationalDiabetes();
     Map<String, String> params = {
       'date': date.toString(),
       'weight': weight,
       'height': height,
       'timeFrameId': timeFrameId ?? '',
       'note': note,
+      'thresholdType': isGestationalDiabetes ? '1' : '0',
     };
     if (waist != null) {
       params['waist'] = waist;
     }
     final response = await super
         .postHttp(path: '/App/Weight/Input', params: params, files: files);
-
-    Console.logJson("postWeightInput",params);
 
     if (response.statusCode == 200) {
       return true;
@@ -120,6 +122,7 @@ class WeightClient extends FetchClient {
       List<String?> removalImageIds,
       List<String> files) async {
     try {
+      bool isGestationalDiabetes = Utils.isGestationalDiabetes();
       final Map<String, String> params = {
         'id': id ?? '',
         'date': date.toString(),
@@ -128,6 +131,7 @@ class WeightClient extends FetchClient {
         'height': height,
         'timeFrameId': timeFrameId ?? '',
         'note': note,
+        'thresholdType': isGestationalDiabetes ? '1' : '0',
       };
       for (int i = 0; i < removalImageIds.length; i++) {
         params['removalImageIds[$i]'] = removalImageIds[i] ?? '';
@@ -136,7 +140,6 @@ class WeightClient extends FetchClient {
           .putHttp(path: '/App/Weight/Input', params: params, files: files);
 
       if (response.statusCode == 200) {
-        print(await response.stream.bytesToString());
         return true;
       } else {
         throw response.reasonPhrase!;
@@ -149,22 +152,26 @@ class WeightClient extends FetchClient {
   //============ lấy xu hướng =============/
   Future<TrendWeightModel> fetchWeightTrend(
       String? currentDateTime, String? periodFilterType, String? page) async {
-    try {
-      final Response response =
-          await super.fetchData(url: '/App/Weight/Statistic/Weight', params: {
-        'currentDateTime': currentDateTime,
-        'periodFilterType': periodFilterType,
-        'page': page ?? '10'
-      });
-      if (response.statusCode == 200) {
-        return TrendWeightModel.fromJson(response.data['data']);
-      } else {
-        final error = Error.fromJson(response);
-        throw error;
-      }
-    } catch (e) {
-      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+    // try {
+    bool isGestationalDiabetes = Utils.isGestationalDiabetes();
+    final Response response =
+        await super.fetchData(url: '/App/Weight/Statistic/Weight', params: {
+      'currentDateTime': currentDateTime,
+      'periodFilterType': periodFilterType,
+      'page': page ?? '10',
+      'thresholdType': isGestationalDiabetes ? '1' : '0',
+    });
+    Console.logJson('response: ', response.data);
+
+    if (response.statusCode == 200) {
+      return TrendWeightModel.fromJson(response.data['data']);
+    } else {
+      final error = Error.fromJson(response);
+      throw error;
     }
+    // } catch (e) {
+    //   throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+    // }
   }
 
   //============ lấy xu hướng =============/
@@ -262,14 +269,60 @@ class WeightClient extends FetchClient {
     }
   }
 
+  Future<List<WeightRangeModel>> getWeightThreshold({
+    int? date,
+    double? weight,
+    int? height,
+    int? waist,
+  }) async {
+    try {
+      bool isGestationalDiabetes = Utils.isGestationalDiabetes();
+      Map<String, String> params = {
+        'thresholdType': isGestationalDiabetes ? '1' : '0',
+      };
+
+      if (date != null && isGestationalDiabetes) {
+        params['date'] = date.toString();
+      }
+      if (height != null && height != 0) {
+        params['height'] = height.toString();
+      }
+      if (waist != null && waist != 0) {
+        params['waist'] = waist.toString();
+      }
+      if (weight != null && weight != 0) {
+        params['weight'] = weight.toString();
+      }
+
+      final Response response = await super
+          .fetchData(url: '/App/Weight/GetWeightThreshold', params: params);
+
+      if (response.statusCode == 200) {
+        List<WeightRangeModel> responseData = [];
+        response.data['data'].forEach((element) {
+          responseData.add(WeightRangeModel.fromJson(element));
+        });
+        return responseData;
+      } else {
+        final error = Error.fromJson(response);
+        throw error;
+      }
+    } catch (e) {
+      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+    }
+  }
+
   Future<TrendBmiModel> fetchTrendBMI(
       String? currentDateTime, String? periodFilterType) async {
     try {
+      bool isGestationalDiabetes = Utils.isGestationalDiabetes();
       Map<String, String> params = {
         'currentDateTime': '$currentDateTime',
         'periodFilterType': '$periodFilterType',
-        'size': '100'
+        'size': '100',
+        'thresholdType': isGestationalDiabetes ? '1' : '0',
       };
+
       final Response response = await super
           .fetchData(url: '/App/Weight/Statistic/Bmi', params: params);
       if (response.statusCode == 200) {

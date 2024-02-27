@@ -168,7 +168,7 @@ abstract class AppApi {
   Future<UserInfoResponse> getCurrentUserInfo();
 
   //My Plan
-  @POST("App/Lesson/MyLessons")
+  @POST("App/Lesson/MyLessonsOptimizedAndCacheLessonPercent")
   Future<MyLessonResponse> getLessonsList(
     @Body() LessonFilterRequest request,
   );

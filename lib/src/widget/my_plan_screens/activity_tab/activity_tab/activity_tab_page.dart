@@ -6,6 +6,7 @@ import 'package:flutter_observer/Observable.dart';
 import 'package:flutter_observer/Observer.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/app.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/app_setting/dynamic_link_config.dart';
 import 'package:medical/src/app_setting/firebase_tracking/activity_list_tracking.dart';
@@ -118,7 +119,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
       SmartGoalList smartGoal = SmartGoalList(surveyId: activityId, state: 0);
       await Future.delayed(Duration(milliseconds: 500));
       NavigationUtil.navigatePage(
-          context, IntroduceSurveyPage(survey: smartGoal));
+          navigatorKey.currentState!.context, IntroduceSurveyPage(survey: smartGoal));
     }
   }
 

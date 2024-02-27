@@ -4,6 +4,7 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/app_setting/deep_link_config.dart';
 import 'package:medical/src/app_setting/dynamic_link_config.dart';
+import 'package:medical/src/app_setting/firebase_remote_config.dart';
 import 'package:medical/src/modal/user/user_model.dart';
 import 'package:medical/src/repo/login/login_client.dart';
 import 'package:medical/src/repo/user/user_client.dart';
@@ -32,19 +33,23 @@ class _FlashScreenControllerState extends State<FlashScreenController> {
   void initState() {
     super.initState();
     isNavigateToStepList = false;
-    getSecuredModel();
-    getData(context);
-    getVersion();
-    DynamicLinkConfig.instance.setUpHandleDeepLink();
+    _initLoad();
   }
 
-  getVersion() async {
+  void _initLoad() async {
+    await DynamicLinkConfig.instance.setUpHandleDeepLink();
+    await getSecuredModel();
+    await getVersion();
+    await getData(context);
+  }
+
+  Future<void> getVersion() async {
     PackageInfo packageInfo = await PackageInfo.fromPlatform();
     AppSettings.version = packageInfo.version;
     AppSettings.buildNumber = packageInfo.buildNumber;
   }
 
-  getSecuredModel() async {
+  Future<void> getSecuredModel() async {
     AppVersionResponse? appVersion;
     try {
       appVersion = await UserClient().getAppVersion(context);
@@ -83,12 +88,16 @@ class _FlashScreenControllerState extends State<FlashScreenController> {
     await AppSettings.saveEnvironment(appVersion.enviroment);
     AppSettings.environment = appVersion.enviroment ?? "";
     AppSettings.secureModel = secureModel;
-    appClient = AppClient().appClient;
+    appClient = AppClient().getAppClient();
   }
 
-  getData(BuildContext context) async {
+  Future<void> getData(BuildContext context) async {
     final String? sharedCode = await DeepLinkConfig.instance.getInitLink();
-
+    try {
+      await FirebaseRemoteSetting.instance.init();
+    } catch (e) {
+      print('remote config fetch error: $e');
+    }
     try {
       final token = await AppSettings.getToken();
       AppSettings.environment = await AppSettings.getEnvironment();
@@ -105,8 +114,8 @@ class _FlashScreenControllerState extends State<FlashScreenController> {
         AppSettings.userInfo = user;
         if (user == null) {
           if (!isNavigateToStepList) {
-            Message.showToastMessage(context,
-                R.string.phien_dang_nhap_het_han_vui_long_dang_nhap_lai.tr());
+            Message.showToastMessage(
+                context, R.string.phien_dang_nhap_het_han_vui_long_dang_nhap_lai.tr());
             AppSettings.logout(isNavigateToStepListScreen: false);
             await Navigator.pushReplacementNamed(
               context,
@@ -139,8 +148,8 @@ class _FlashScreenControllerState extends State<FlashScreenController> {
       };
       LoginClient().appLogs(errorData);
       if (!isNavigateToStepList) {
-        Message.showToastMessage(context,
-            R.string.phien_dang_nhap_het_han_vui_long_dang_nhap_lai.tr());
+        Message.showToastMessage(
+            context, R.string.phien_dang_nhap_het_han_vui_long_dang_nhap_lai.tr());
         AppSettings.logout();
         isNavigateToStepList = true;
       }

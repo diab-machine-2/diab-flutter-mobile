@@ -67,8 +67,7 @@ class DynamicLinkConfig {
     longDynamicLink += "&apn=com.vbhc.diab";
     longDynamicLink += "&ibi=com.cactusoftware.diab";
     longDynamicLink += "&isi=1569353448";
-    longDynamicLink +=
-        "&st=Tải ngay ứng dụng diaB";
+    longDynamicLink += "&st=Tải ngay ứng dụng diaB";
     longDynamicLink +=
         "&sd=Ứng dụng hoàn toàn miễn phí giúp kiểm soát bệnh đái tháo đường và kết nối với chuyên gia.";
     longDynamicLink +=
@@ -110,6 +109,7 @@ class DynamicLinkConfig {
   Future<String> createShareLessonLink({
     required LessonSectionItem lesson,
     required String? featureImage,
+    required String? lessonDescription,
   }) async {
     final user = AppSettings.userInfo!;
     final dynamicLink = FirebaseDynamicLinks.instance;
@@ -117,7 +117,7 @@ class DynamicLinkConfig {
     String lessonImage = featureImage ??
         "https://diab.com.vn/wp-content/uploads/2022/02/hinh-1-banner-trang-chu.png";
 
-    String lessonName =
+    String lessonName = lesson.name ??
         "Tải ngay DiaB để xem bài học trên và còn nhiều hướng dẫn về chế độ dinh dưỡng, vận động, nghỉ ngơi cho người đái tháo đường!";
 
     String domain = "https://click.diab.com.vn/referralCode";
@@ -125,11 +125,11 @@ class DynamicLinkConfig {
     longDynamicLink +=
         "?link=https://diab.com.vn/referralCode=${user.shareRefCode}?lessonId=${lesson.lessonId}";
     longDynamicLink += "&ofl=https://diab.com.vn/giai-phap";
-    longDynamicLink += "&st=${lesson.name}";
+    longDynamicLink += "&st=$lessonName";
     longDynamicLink += "&apn=com.vbhc.diab";
     longDynamicLink += "&ibi=com.cactusoftware.diab";
     longDynamicLink += "&isi=1569353448";
-    longDynamicLink += "&sd=$lessonName";
+    longDynamicLink += "&sd=$lessonDescription";
     longDynamicLink += "&si=$lessonImage";
 
     final DynamicLinkParameters parameters = DynamicLinkParameters(
@@ -216,8 +216,8 @@ class DynamicLinkConfig {
         case "referralCode":
           if (urlString.contains(functionName)) {
             _referalCode = separatedString[1].substring(0, 6);
-            Observable.instance.notifyObservers([],
-                notifyName: Const.NAVIGATE_TO_REGISTER);
+            Observable.instance
+                .notifyObservers([], notifyName: Const.NAVIGATE_TO_REGISTER);
           }
           if (urlString.contains('lessonId')) {
             _lessonId = urlString.split('lessonId=').last;

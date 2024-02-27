@@ -17,6 +17,7 @@ import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
+import 'package:medical/src/widget/my_plan_screens/lesson_tab/lesson_detail/lesson_detail.dart';
 import 'package:medical/src/widget/my_plan_screens/lesson_tab/lesson_detail/widgets/bottom_sheet_share_lesson.dart';
 import 'package:medical/src/widgets/custom_bottom_bar_widget.dart';
 import 'package:medical/src/widgets/custom_scroll_physics.dart';
@@ -32,16 +33,19 @@ const Duration duration = Duration(milliseconds: 1);
 class CourseQuizPage extends StatefulWidget {
   const CourseQuizPage(
       {Key? key,
+      required this.currentPercent,
       required this.lessonId,
       this.lessonSectionItem,
       this.onDone,
-      required this.lessonDetail})
+      required this.lessonDetail,
+      this.onComplete})
       : super(key: key);
-
+  final int currentPercent;
   final String lessonId;
   final LessonSectionItem? lessonSectionItem;
   final LessonSectionListResponseData lessonDetail;
   final Function(bool isPassed)? onDone;
+  final Function()? onComplete;
 
   @override
   _CourseQuizPageState createState() => _CourseQuizPageState();
@@ -52,6 +56,7 @@ class _CourseQuizPageState extends State<CourseQuizPage> {
   List<GlobalKey<CardCourseQuizPageState>> listGlobal = [];
   final AutoScrollController _controller =
       AutoScrollController(axis: Axis.horizontal);
+  late final LessonDetailCubit lessonDetailCubit;
 
   @override
   void initState() {
@@ -62,6 +67,7 @@ class _CourseQuizPageState extends State<CourseQuizPage> {
       lessonId: widget.lessonId,
       lessonSectionItem: widget.lessonSectionItem,
       lessonDetail: widget.lessonDetail,
+      currentPercent: widget.currentPercent,
     );
     _cubit.initData();
     Utils.onWidgetDidBuild(() {
@@ -180,8 +186,9 @@ class _CourseQuizPageState extends State<CourseQuizPage> {
                 ),
                 SizedBox(width: 10.w),
                 ShareLessonButton(
-                  featureImage: _cubit.featureImage,
+                  featureImage: _cubit.lessonDetail.image?.url,
                   lesson: _cubit.lessonSectionItem!,
+                  lessonDescription: _cubit.lessonDetail.description,
                 ),
               ],
             ),
@@ -317,6 +324,8 @@ class _CourseQuizPageState extends State<CourseQuizPage> {
                 }
                 //   if (_cubit.isPassed) {
                 _cubit.setCompleteQuiz();
+                // To update progress
+                widget.onComplete!();
                 //   }
                 _buildDialogCompleted(seeResultCallback: () async {
                   await TrackingManager.analytics.logEvent(
@@ -528,7 +537,6 @@ class _CourseQuizPageState extends State<CourseQuizPage> {
       onShare: () => _onShareLesson(
         context,
         lesson: _cubit.lessonSectionItem!,
-        featureImage: _cubit.featureImage,
       ),
       onCancel: () {
         NavigationUtil.pop(context);
@@ -544,10 +552,11 @@ class _CourseQuizPageState extends State<CourseQuizPage> {
   _onShareLesson(
     BuildContext context, {
     required LessonSectionItem lesson,
-    required String? featureImage,
   }) async {
-    String shareLink = await DynamicLinkConfig.instance
-        .createShareLessonLink(lesson: lesson, featureImage: featureImage);
+    String shareLink = await DynamicLinkConfig.instance.createShareLessonLink(
+        lesson: lesson,
+        featureImage: _cubit.lessonDetail.image?.url,
+        lessonDescription: _cubit.lessonDetail.description);
     AppShare.instance.lessonDetail(context, shareLink, lesson.name ?? "");
   }
 }
