@@ -44,7 +44,8 @@ class MeetingCubit extends Cubit<MeetingState> {
   List<ZoomVideoSdkUser> _remoteUsers = [];
 
   // Audio
-  bool _audioStopped = false;
+  bool _audioAttached = false;
+  bool _mutedBeforeOffSpeaker = false;
   final ValueNotifier<SpeakerMode> _currentSpeaker = ValueNotifier(SpeakerMode.speaker);
   ValueNotifier<SpeakerMode> get currentSpeaker => _currentSpeaker;
   List<SpeakerMode> _speakerModes = [SpeakerMode.speaker, SpeakerMode.telephony, SpeakerMode.off];
@@ -92,9 +93,16 @@ class MeetingCubit extends Cubit<MeetingState> {
 
   void switchSpeaker(SpeakerMode mode) async {
     _currentSpeaker.value = mode;
-    if (_audioStopped && mode != SpeakerMode.off) {
-      _audioStopped = false;
+    ZoomVideoSdkUser? mySelf = await _zoom.session.getMySelf();
+    if (mySelf != null) {
+      _mySelf = mySelf;
+    }
+    if (!_audioAttached && mode != SpeakerMode.off) {
+      _audioAttached = true;
       await _zoom.audioHelper.startAudio();
+      if (!_mutedBeforeOffSpeaker) {
+        await _zoom.audioHelper.unMuteAudio(_mySelf!.userId);
+      }
     }
     switch (mode) {
       case SpeakerMode.speaker:
@@ -104,19 +112,34 @@ class MeetingCubit extends Cubit<MeetingState> {
         await _zoom.audioHelper.setSpeaker(false);
         break;
       case SpeakerMode.off:
-        _audioStopped = true;
+        _audioAttached = false;
+        if (_mySelf!.audioStatus != null) {
+          _mutedBeforeOffSpeaker = await _mySelf!.audioStatus!.isMuted();
+        }
+        await _zoom.audioHelper.muteAudio(_mySelf!.userId);
         await _zoom.audioHelper.stopAudio();
         break;
+    }
+    if (state is MeetingJoined) {
+      var newState = (state as MeetingJoined).copyWith(thisUser: _mySelf);
+      emit(newState);
     }
   }
 
   void toggleAudio() async {
+    if (_currentSpeaker.value == SpeakerMode.off) {
+      return;
+    }
     ZoomVideoSdkUser? mySelf = await _zoom.session.getMySelf();
     if (mySelf != null) {
       final audioStatus = mySelf.audioStatus;
       if (audioStatus != null) {
         var muted = await audioStatus.isMuted();
         if (muted) {
+          if (!_audioAttached) {
+            _audioAttached = true;
+            await _zoom.audioHelper.startAudio();
+          }
           await _zoom.audioHelper.unMuteAudio(mySelf.userId);
         } else {
           await _zoom.audioHelper.muteAudio(mySelf.userId);
@@ -259,7 +282,9 @@ class MeetingCubit extends Cubit<MeetingState> {
 
   void leaveSession() async {
     try {
-      await _zoom.audioHelper.stopAudio();
+      if (_audioAttached) {
+        await _zoom.audioHelper.stopAudio();
+      }
       await _zoom.leaveSession(false);
     } catch (e) {
       print('zoom: Error leaving session: $e');
