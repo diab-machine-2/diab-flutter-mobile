@@ -199,6 +199,25 @@ class _HomeHeaderState extends State<HomeHeader> with Observer {
                     ),
                     Row(
                       children: [
+                        // InkWell(
+                        //   onTap: () async {
+                        //     if (user?.isUserHasRoadmap == true) {
+                        //       showChatMenu();
+                        //     } else {
+                        //       NavigationUtil.showUpdateRequirePopup(
+                        //           context: context,
+                        //           title: R.string.chat_with_coach.tr());
+                        //     }
+                        //   },
+                        //   child: Container(
+                        //     padding: EdgeInsets.only(
+                        //         bottom: 4, top: 4, right: 4, left: 16),
+                        //     color: R.color.transparent,
+                        //     child: Image.asset(R.drawable.ic_direct_chat,
+                        //         color: R.color.white, width: 24, height: 24),
+                        //   ),
+                        // ),
+                        // const SizedBox(width: 10),
                         InkWell(
                           onTap: () async {
                             final scanedResult =
