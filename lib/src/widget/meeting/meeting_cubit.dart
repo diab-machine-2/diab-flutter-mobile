@@ -53,6 +53,7 @@ class MeetingCubit extends Cubit<MeetingState> {
 
   // Camera
   bool _initVideoOn = false;
+  bool _videoStatisticChecked = false;
   final ValueNotifier<bool> _haveMultipleCamera = ValueNotifier(false);
   ValueNotifier<bool> get haveMultipleCamera => _haveMultipleCamera;
 
@@ -161,8 +162,16 @@ class MeetingCubit extends Cubit<MeetingState> {
           _haveMultipleCamera.value = false;
         } else {
           await _zoom.videoHelper.startVideo();
-          if (!_haveMultipleCamera.value) {
-            _haveMultipleCamera.value = await _zoom.videoHelper.getNumberOfCameras() > 1;
+          try {
+            if (!_videoStatisticChecked) {
+              if (await _zoom.videoHelper.isMyVideoMirrored()) {
+                await _zoom.videoHelper.mirrorMyVideo(false);
+              }
+              _haveMultipleCamera.value = await _zoom.videoHelper.getNumberOfCameras() > 1;
+              _videoStatisticChecked = true;
+            }
+          } catch (e) {
+            print('error checking video statistic: $e');
           }
         }
       }
@@ -493,9 +502,6 @@ class MeetingCubit extends Cubit<MeetingState> {
         _chatMessagesNotifier.value = [];
       }
       _latestSessionId = value;
-    });
-    _zoom.videoHelper.getNumberOfCameras().then((value) {
-      _haveMultipleCamera.value = _initVideoOn && value > 1;
     });
     ZoomVideoSdkUser mySelf = ZoomVideoSdkUser.fromJson(jsonDecode(sessionUser.toString()));
     _mySelf = mySelf;
