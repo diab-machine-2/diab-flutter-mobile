@@ -117,16 +117,20 @@ class RequestHealthConnect extends StatelessWidget {
                           await Permission.activityRecognition.request();
                           await Permission.location.request();
                         }
-                        bool? _hasPermission = await HealthSetting.instance
-                            .requestConnectionPermission();
-                        if (_hasPermission != null) {
-                          AppStorages.setHealthAppPermission(_hasPermission);
+                        bool _hasPermission = await HealthSetting.instance
+                                .requestConnectionPermission() ??
+                            false;
+                        AppStorages.setHealthAppPermission(_hasPermission);
+                        if (_hasPermission == true) {
                           Navigator.pop(context);
                           callback();
                           Message.showToastMessage(
                               context, "Đã hoàn thành kết nối với $appTitle");
                           Observable.instance.notifyObservers([],
                               notifyName: "syncing_heath_app");
+                        } else {
+                          Message.showToastMessage(
+                              context, "Kết nối thất bại với $appTitle");
                         }
                       },
                     ),
