@@ -60,6 +60,14 @@ class _BmiDetailTabbarControllerState extends State<BmiDetailTabbarController>
 
     checkShowDes();
     loadDescription();
+    _tabController!.addListener(() {
+      if (_tabController!.indexIsChanging) {
+        if (_tabController!.index == 1) {
+          KpiBodyWeightTracking.clickDetailTab();
+          print("tracking KpiBodyWeightTracking.clickDetailTab()");
+        }
+      }
+    });
   }
 
   @override
@@ -314,10 +322,7 @@ class CustomTabbarImageState extends State<CustomTabbarImage> {
                         TextStyle(fontSize: 14, fontWeight: FontWeight.w400),
                     tabs: [
                       Tab(text: R.string.bieu_do.tr()),
-                      GestureDetector(
-                        onTap: () => KpiBodyWeightTracking.clickDetailTab(),
-                        child: Tab(text: R.string.detail.tr()),
-                      ),
+                      Tab(text: R.string.detail.tr())
                     ],
                     controller: widget.tabController,
                     indicatorColor: R.color.mainColor,

@@ -148,10 +148,17 @@ class HealthAppBloc extends Bloc<HealthAppEvent, HealthAppState> {
     bool result = false;
     requestSyncData['syncSTEP'] = true;
     StepListModel stepData = await stepRepository.getStepList(1);
+    int? latestTime = 0;
+    for (int i = stepData.items.length - 1; i >= 0; i--) {
+      var step = stepData.items[i];
+      if (step.value != 0) {
+        latestTime = step.dateFrom ?? stepData.items.last.dateFrom;
+        break;
+      }
+    }
     if (stepData.items.isNotEmpty) {
-      DateTime dateTime =
-          DateUtil.parseTimespanToDateTime(stepData.items.last.dateFrom!)
-              .add(Duration(days: -1));
+      DateTime dateTime = DateUtil.parseTimespanToDateTime(latestTime!)
+          .add(Duration(hours: -7));
       // Nếu ngày sync gần nhất nhỏ hơn ngày Release thì lấy ngày release làm mốc
       if (dateTime.difference(releaseDate).inDays > 0) {
         dateFrom = dateTime;
@@ -167,22 +174,27 @@ class HealthAppBloc extends Bloc<HealthAppEvent, HealthAppState> {
         dateTo.day,
         23, // Giờ
         59);
-
     List<HealthDataPoint> steps = await health
         .getHealthDataFromTypes(dateFrom, dateTo, [HealthDataType.STEPS]);
 
     if (steps.isNotEmpty) {
       List<RequestSyncStepModel> stepCollected = [];
 
-      steps.forEach((element) {
+      for (int i = 0; i < steps.length; i++) {
+        final element = steps[i];
         int dateFrom = DateTime(element.dateFrom.year, element.dateFrom.month,
                     element.dateFrom.day)
                 .millisecondsSinceEpoch ~/
             1000;
-
+        DateTime dateTo = DateTime(element.dateFrom.year,
+            element.dateFrom.month, element.dateFrom.day, 23, 59, 59);
         int index =
             stepCollected.indexWhere((item) => item.dateFrom == dateFrom);
-        int newValue = roundDouble(element.value).toInt();
+        int newValue = await health.getTotalStepsInInterval(
+                DateTime(element.dateFrom.year, element.dateFrom.month,
+                    element.dateFrom.day),
+                dateTo) ??
+            0;
         int newTotalMinute =
             element.dateTo.difference(element.dateFrom).inMinutes;
 
@@ -197,7 +209,6 @@ class HealthAppBloc extends Bloc<HealthAppEvent, HealthAppState> {
           );
           stepCollected.add(requestSyncStepModel);
         } else {
-          newValue = stepCollected[index].value + newValue;
           newTotalMinute = stepCollected[index].totalMinute + newTotalMinute;
 
           RequestSyncStepModel requestSyncStepModel =
@@ -207,7 +218,7 @@ class HealthAppBloc extends Bloc<HealthAppEvent, HealthAppState> {
           );
           stepCollected[index] = requestSyncStepModel;
         }
-      });
+      }
 
       // CHECK DATA IS UPDATED
       int index = 0;

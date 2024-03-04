@@ -65,6 +65,15 @@ class _BloodSugarDetailTabbarControllerState
     checkShowDes();
     loadDescription();
     KpiGlycemicTracking.firebaseSetup();
+
+    _tabController!.addListener(() {
+      if (_tabController!.indexIsChanging) {
+        if (_tabController!.index == 1) {
+          KpiGlycemicTracking.clickDetailTab();
+          print("tracking KpiGlycemicTracking.clickDetailTab()");
+        }
+      }
+    });
   }
 
   @override
@@ -255,12 +264,7 @@ class CustomTabbarImageState extends State<CustomTabbarImage> {
                     const TextStyle(fontSize: 14, fontWeight: FontWeight.w400),
                 tabs: [
                   Tab(text: R.string.bieu_do.tr()),
-                  GestureDetector(
-                    onTap: () {
-                      KpiGlycemicTracking.clickDetailTab();
-                    },
-                    child: Tab(text: R.string.detail.tr()),
-                  ),
+                  Tab(text: R.string.detail.tr()),
                 ],
                 controller: widget.tabController,
                 indicatorColor: R.color.mainColor,

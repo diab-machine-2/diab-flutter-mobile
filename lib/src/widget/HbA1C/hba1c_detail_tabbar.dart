@@ -57,6 +57,14 @@ class _Hba1cDetailTabbarControllerState
 
     checkShowDes();
     loadDescription();
+    _tabController!.addListener(() {
+      if (_tabController!.indexIsChanging) {
+        if (_tabController!.index == 1) {
+          KpiHba1cTracking.clickDetailTab();
+          print("tracking KpiHba1cTracking.clickDetailTab()");
+        }
+      }
+    });
   }
 
   @override

@@ -54,6 +54,14 @@ class _ExercrisesDetailTabbarControllerState
     Observable.instance.addObserver(this);
     checkShowDes();
     loadDescription();
+    _tabController!.addListener(() {
+      if (_tabController!.indexIsChanging) {
+        if (_tabController!.index == 1) {
+          KpiMotionTracking.clickDetailTab();
+          print("tracking KpiMotionTracking.clickDetailTab()");
+        }
+      }
+    });
   }
 
   @override
@@ -300,9 +308,7 @@ class CustomTabbarImageState extends State<CustomTabbarImage> {
                         fontSize: 14, fontWeight: FontWeight.w400),
                     tabs: [
                       Tab(text: R.string.bieu_do.tr()),
-                      GestureDetector(
-                          onTap: () => KpiMotionTracking.clickDetailTab(),
-                          child: Tab(text: R.string.detail.tr())),
+                      Tab(text: R.string.detail.tr()),
                     ],
                     controller: widget.tabController,
                     indicatorColor: R.color.mainColor,
