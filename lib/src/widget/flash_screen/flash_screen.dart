@@ -37,10 +37,10 @@ class _FlashScreenControllerState extends State<FlashScreenController> {
   }
 
   void _initLoad() async {
+    await DynamicLinkConfig.instance.setUpHandleDeepLink();
     await getSecuredModel();
     await getVersion();
     await getData(context);
-    await DynamicLinkConfig.instance.setUpHandleDeepLink();
   }
 
   Future<void> getVersion() async {
