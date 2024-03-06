@@ -35,14 +35,14 @@ dependencies:
   flutter_observer: ^2.0.0
   grouped_list: ^5.1.2
   device_info: ^2.0.2
-  ua_client_hints: 1.1.0
+  # ua_client_hints: 1.1.0
   shared_preferences: ^2.0.15
   #Networking
   dio: ^4.0.6
   retrofit: ^3.0.1+1
-  logger: ^1.1.0
+  # logger: ^1.1.0
   #freezed
-  freezed: ^2.1.0+1
+  # freezed: ^2.1.0+1
   freezed_annotation: ^2.1.0
   # Multi Languages
   easy_localization: ^3.0.0
@@ -67,14 +67,14 @@ dependencies:
     git:
       url: https://github.com/samlythemanly/flutter_facebook_login.git
       ref: null_safety
-  flutter_statusbar_manager:
-    git:
-      url: https://github.com/NarHakobyan/flutter_statusbar_manager.git
+  # flutter_statusbar_manager:
+  #   git:
+  #     url: https://github.com/NarHakobyan/flutter_statusbar_manager.git
   google_sign_in: ^5.4.1
   sign_in_with_apple: ^4.1.0
   package_info: ^2.0.2
   flutter_svg: ^1.1.2
-  google_fonts: ^3.0.1
+  # google_fonts: ^3.0.1
   firebase_core: ^2.24.2
   firebase_crashlytics: ^3.4.9
   firebase_analytics: ^10.0.8
@@ -101,8 +101,8 @@ dependencies:
   better_player: 
     git:
       url: https://github.com/tintran-dev/betterplayer
-  video_thumbnail: ^0.5.2
-  path_provider: ^2.0.10
+  # video_thumbnail: ^0.5.2
+  # path_provider: ^2.0.10
   #audio player
   audioplayers: ^4.1.0
   just_audio: ^0.9.28
@@ -123,13 +123,13 @@ dependencies:
   app_settings: 4.1.8
   dotted_border: ^2.0.0+2
   sticky_headers: ^0.3.0+2
-  flutter_share: ^2.0.0
-  webview_flutter: ^4.0.7
+  # flutter_share: ^2.0.0
+  # webview_flutter: ^4.0.7
   health: ^4.4.0
   flutter_inappwebview: ^5.7.2+3
-  flutter_app_version_checker: ^0.3.2
+  # flutter_app_version_checker: ^0.3.2
   flutter_blue_plus: 1.5.2
-  fwfh_text_style: ^2.22.8+3
+  # fwfh_text_style: ^2.22.8+3
   store_redirect: ^2.0.1
   youtube_player_flutter: ^8.1.2
   # zoom video sdk

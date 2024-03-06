@@ -591,15 +591,15 @@ class _AppState extends State<App> {
                         onComplete: (String, int) {},
                       ),
                     );
-                  case NavigatorName.zoom:
-                    final data = settings.arguments as Map<String, dynamic>?;
-                    if (Platform.isAndroid) {
-                        return _buildRoute(
-                            settings, ZoomAndroidView(calendarID: data?['id']));
-                    } else {
-                        return _buildRoute(
-                            settings, ZoomIosView(calendarID: data?['id']));
-                    }
+                  // case NavigatorName.zoom:
+                  //   final data = settings.arguments as Map<String, dynamic>?;
+                  //   if (Platform.isAndroid) {
+                  //       return _buildRoute(
+                  //           settings, ZoomAndroidView(calendarID: data?['id']));
+                  //   } else {
+                  //       return _buildRoute(
+                  //           settings, ZoomIosView(calendarID: data?['id']));
+                  //   }
                   
                   case NavigatorName.meeting_prepare:
                     return _buildRoute(settings, MeetingPreparePage());
