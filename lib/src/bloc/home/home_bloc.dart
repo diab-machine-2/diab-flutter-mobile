@@ -13,7 +13,7 @@ part 'home_bloc_state.dart';
 
 class HomeBloc extends Bloc<HomeEvent, HomeState> {
   HomeBloc() : super(HomeInitial());
-  final timeToRetry = 5;
+  final timeToRetry = 10;
 
   @override
   Stream<HomeState> mapEventToState(HomeEvent event) async* {
@@ -51,7 +51,5 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     }
   }
 
-  Stream<HomeState> _syncHealthApp() async* {
-    
-  }
+  Stream<HomeState> _syncHealthApp() async* {}
 }

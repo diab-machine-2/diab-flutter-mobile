@@ -8,6 +8,7 @@ import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_zoom_videosdk/native/zoom_videosdk.dart';
 import 'package:medical/src/app.dart';
+import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/model/localization/localization.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -80,7 +81,7 @@ Future<void> main() async {
     //   ));
     // }
   }
-
+  await AppSettings.setIsSyncing(false);
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
 
   ByteData data =
