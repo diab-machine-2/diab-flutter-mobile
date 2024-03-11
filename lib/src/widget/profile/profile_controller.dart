@@ -112,7 +112,7 @@ class _ProfileControllerState extends State<ProfileController> with Observer {
 
   @override
   void dispose() {
-    Observable.instance.removeObserver(this)
+    Observable.instance.removeObserver(this);
     AppSettings.syncDataFromHealthApp();
     super.dispose();
   }
