@@ -57,6 +57,12 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
     firebaseSetup();
   }
 
+  @override
+  void dispose() {
+    AppSettings.syncDataFromHealthApp();
+    super.dispose();
+  }
+
   Future firebaseSetup() async {
     await TrackingManager.analytics.logScreenView(
       screenName: "target_setting",

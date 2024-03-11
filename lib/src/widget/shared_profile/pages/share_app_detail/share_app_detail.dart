@@ -1,5 +1,6 @@
 import 'package:medical/res/R.dart';
 import 'package:flutter/material.dart';
+import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/widgets/button_widget.dart';
 import 'package:medical/src/app_setting/app_sharing.dart';
 import 'package:medical/src/app_setting/dynamic_link_config.dart';
@@ -49,6 +50,12 @@ class _ShareAppDetailState extends State<ShareAppDetail> {
         isSticky = false;
       });
     }
+  }
+
+  @override
+  void dispose() {
+    AppSettings.syncDataFromHealthApp();
+    super.dispose();
   }
 
   @override

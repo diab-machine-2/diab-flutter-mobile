@@ -131,7 +131,7 @@ class _HomeControllerState extends State<HomeController> with Observer {
             FirebaseRemoteSetting.instance.activePopupHealthConnect) {
           RequestHealthConnect.showModal(context, callback: () {});
         } else if (hasHealthConnection == true) {
-            HealthAppBloc()..add(SubmitSyncData(true));
+          HealthAppBloc()..add(SubmitSyncData(true));
         } else if (hasHealthConnection == null) {
           RequestHealthConnect.showModal(context, callback: () {});
         }
@@ -150,8 +150,8 @@ class _HomeControllerState extends State<HomeController> with Observer {
   }
 
   @override
-  void update(
-      Observable observable, String? notifyName, Map<dynamic, dynamic>? map) async {
+  void update(Observable observable, String? notifyName,
+      Map<dynamic, dynamic>? map) async {
     if (notifyName == 'BloodPressure_change_data') {
       _refresh();
       checkScreen(NavigatorName.detail_blood_pressure);
@@ -183,7 +183,8 @@ class _HomeControllerState extends State<HomeController> with Observer {
     if (notifyName == 'goal_calo_changed' || notifyName == 'refresh_home') {
       _refresh();
     }
-    if (notifyName == 'syncing_heath_app') {
+    if (notifyName == 'syncing_heath_app' &&
+        AppSettings.currentScreenName != 'welcome') {
       bool? hasHealthConnection = await AppStorages.getHealthAppPermission();
       if (hasHealthConnection == true) {
         HealthAppBloc()..add(SubmitSyncData(true));

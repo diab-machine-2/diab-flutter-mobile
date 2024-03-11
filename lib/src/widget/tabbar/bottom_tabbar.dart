@@ -112,11 +112,9 @@ class _BottomTabbar extends State<BottomTabbar> with Observer {
             ),
           ),
           onTap: () async {
-            var isSyncing = await AppSettings.getIsSyncing();
             // Start to sync data from google fit
-            if (title == "Trang chủ" && !isSyncing) {
-              Observable.instance
-                  .notifyObservers([], notifyName: "syncing_heath_app");
+            if (title == "Trang chủ") {
+              await AppSettings.syncDataFromHealthApp();
             }
             Observable.instance
                 .notifyObservers([], notifyName: Const.HIDE_OVERLAY_KEY);

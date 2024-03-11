@@ -78,6 +78,7 @@ class _ExercrisesDetailTabbarControllerState
   @override
   void dispose() {
     Observable.instance.removeObserver(this);
+    AppSettings.syncDataFromHealthApp();
     super.dispose();
   }
 

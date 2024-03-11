@@ -91,6 +91,7 @@ class _BloodSugarDetailTabbarControllerState
   @override
   void dispose() {
     Observable.instance.removeObserver(this);
+    AppSettings.syncDataFromHealthApp();
     super.dispose();
   }
 

@@ -112,7 +112,8 @@ class _ProfileControllerState extends State<ProfileController> with Observer {
 
   @override
   void dispose() {
-    Observable.instance.removeObserver(this);
+    Observable.instance.removeObserver(this)
+    AppSettings.syncDataFromHealthApp();
     super.dispose();
   }
 
@@ -190,8 +191,8 @@ class _ProfileControllerState extends State<ProfileController> with Observer {
                               decoration: BoxDecoration(
                                   color: R.color.white,
                                   borderRadius: BorderRadius.circular(16)),
-                              padding: const EdgeInsets.only(
-                                  left: 16, right: 16),
+                              padding:
+                                  const EdgeInsets.only(left: 16, right: 16),
                               child: Row(
                                 children: [
                                   Image.asset(

@@ -1,6 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/widget/Food/food_detail.dart';
 import 'package:medical/src/widget/Food/overview.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
@@ -42,6 +43,7 @@ class _NotificationTabbarControllerState
 
   @override
   void dispose() {
+    AppSettings.syncDataFromHealthApp();
     super.dispose();
   }
 
@@ -55,10 +57,11 @@ class _NotificationTabbarControllerState
           CustomAppBar(
             backgroundColor: R.color.transparent,
             title: Text(R.string.notification,
-                style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
-                    color: R.color.textDark)).tr(),
+                    style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
+                        color: R.color.textDark))
+                .tr(),
             leadingIcon: IconButton(
                 splashColor: R.color.transparent,
                 highlightColor: R.color.transparent,

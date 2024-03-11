@@ -1,4 +1,5 @@
 import 'package:intl/intl.dart';
+import 'package:medical/src/app_setting/app_setting.dart';
 import 'blocs/newsDetail_bloc.dart';
 import 'package:medical/res/R.dart';
 import 'package:flutter/material.dart';
@@ -55,6 +56,12 @@ class _NewsDetailViewState extends State<NewsDetailView> {
         isSticky = false;
       });
     }
+  }
+
+  @override
+  void dispose() {
+    AppSettings.syncDataFromHealthApp();
+    super.dispose();
   }
 
   @override

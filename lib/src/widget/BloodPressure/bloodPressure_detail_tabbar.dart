@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_observer/Observable.dart';
 import 'package:flutter_observer/Observer.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/app_setting/firebase_tracking/kpi_blood_pressure_tracking.dart';
 import 'package:medical/src/modal/HbA1C/short_gui.dart';
 import 'package:medical/src/repo/HbA1C/HbA1C_client.dart';
@@ -88,6 +89,7 @@ class _BloodPressureDetailTabbarControllerState
     Observable.instance.removeObserver(this);
     // DartNotificationCenter.unsubscribe(
     //     channel: 'BloodPressure_change_data', observer: this);
+    AppSettings.syncDataFromHealthApp();
     super.dispose();
   }
 

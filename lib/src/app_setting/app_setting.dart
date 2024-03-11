@@ -40,6 +40,13 @@ class AppSettings {
     return isSyncing;
   }
 
+  static Future<void> syncDataFromHealthApp() async {
+    var isSyncing = await AppSettings.getIsSyncing();
+    print("isSyncing======>" + isSyncing.toString());
+    if (!isSyncing)
+      Observable.instance.notifyObservers([], notifyName: "syncing_heath_app");
+  }
+
   static Future<bool> getIsSyncing() async {
     return appPreference.getBoolData("isSyncing");
   }

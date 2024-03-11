@@ -81,6 +81,7 @@ class _FoodDetailTabbarControllerState extends State<FoodDetailTabbarController>
   @override
   void dispose() {
     Observable.instance.removeObserver(this);
+    AppSettings.syncDataFromHealthApp();
     super.dispose();
   }
 
