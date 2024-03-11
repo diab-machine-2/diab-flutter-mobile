@@ -88,11 +88,21 @@ class _BloodSugarDetailTabbarControllerState
     }
   }
 
+  static bool _isDisposing = false;
   @override
-  void dispose() {
-    Observable.instance.removeObserver(this);
-    AppSettings.syncDataFromHealthApp();
-    super.dispose();
+  void dispose() async {
+    if (_isDisposing) {
+      return; // Already disposing, do nothing
+    }
+    _isDisposing = true;
+    try {
+      Observable.instance.removeObserver(this);
+      // Add your await statement, it won't be executed concurrently
+      await AppSettings.syncDataFromHealthApp();
+    } finally {
+      _isDisposing = false;
+      super.dispose();
+    }
   }
 
   loadInputWithId(int index, String? id) {

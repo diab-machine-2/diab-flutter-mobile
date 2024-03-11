@@ -57,10 +57,20 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
     firebaseSetup();
   }
 
+  static bool _isDisposing = false;
   @override
-  void dispose() {
-    AppSettings.syncDataFromHealthApp();
-    super.dispose();
+  void dispose() async {
+    if (_isDisposing) {
+      return; // Already disposing, do nothing
+    }
+    _isDisposing = true;
+    try {
+      // Add your await statement, it won't be executed concurrently
+      await AppSettings.syncDataFromHealthApp();
+    } finally {
+      _isDisposing = false;
+      super.dispose();
+    }
   }
 
   Future firebaseSetup() async {

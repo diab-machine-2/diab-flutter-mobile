@@ -44,7 +44,8 @@ class AppSettings {
     var isSyncing = await AppSettings.getIsSyncing();
     print("isSyncing======>" + isSyncing.toString());
     if (!isSyncing)
-      Observable.instance.notifyObservers([], notifyName: "syncing_heath_app");
+      await Observable.instance
+          .notifyObservers([], notifyName: "syncing_heath_app");
   }
 
   static Future<bool> getIsSyncing() async {
