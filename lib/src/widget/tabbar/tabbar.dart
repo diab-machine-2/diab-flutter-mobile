@@ -4,7 +4,6 @@ import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_app_version_checker/flutter_app_version_checker.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_observer/Observable.dart';
 import 'package:flutter_observer/Observer.dart';
@@ -27,17 +26,13 @@ import 'package:medical/src/widget/components/HomeButton/main.dart';
 import 'package:medical/src/widget/helper/notification_manager.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
-import 'package:medical/src/widget/helper/version.dart';
-// import 'package:medical/src/widget/helper/version.dart';
 import 'package:medical/src/widget/home/home.dart';
 import 'package:medical/src/widget/my_plan_screens/my_plan/my_plan.dart';
 import 'package:medical/src/widget/profile/profile_controller.dart';
 import 'package:medical/src/widget/question_answer/question_answer_page.dart';
 import 'package:medical/src/widget/tabbar/bottom_tabbar.dart';
 import 'package:package_info/package_info.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:store_redirect/store_redirect.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:medical/src/widget/voucher/presentation/widgets/webview_store.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 
@@ -62,7 +57,7 @@ class _TabbarControllerState extends State<TabbarController>
   BottomTabbar? _bottomTabbar;
   late List<Widget> tabs;
   bool isNavigateToStepList = false;
-  final _checker = AppVersionChecker();
+  // final _checker = AppVersionChecker();
 
   @override
   void initState() {
@@ -322,88 +317,88 @@ class _TabbarControllerState extends State<TabbarController>
     }
   }
 
-  getNewVersion1() async {
-    if (Platform.isAndroid) {
-      _checker.checkUpdate().then((value) {
-        if (value.canUpdate) {
-          showDialog(
-            context: context,
-            barrierDismissible: false,
-            builder: (BuildContext context) => CupertinoAlertDialog(
-              title: Text(R.string.cap_nhat.tr()),
-              content: Text(
-                  R.string.mes_new_version_available
-                      .tr(args: ['${value.newVersion}']),
-                  textAlign: TextAlign.center),
-              actions: <Widget>[
-                CupertinoDialogAction(
-                  isDefaultAction: true,
-                  child: Text(R.string.cap_nhat.tr()),
-                  onPressed: () async {
-                    final _url = value.appURL!;
-                    await canLaunch(_url)
-                        ? await launch(_url)
-                        : throw 'Could not launch $_url';
-                  },
-                )
-              ],
-            ),
-          );
-        }
-      });
-      return;
-    }
+  // getNewVersion1() async {
+  //   if (Platform.isAndroid) {
+  //     _checker.checkUpdate().then((value) {
+  //       if (value.canUpdate) {
+  //         showDialog(
+  //           context: context,
+  //           barrierDismissible: false,
+  //           builder: (BuildContext context) => CupertinoAlertDialog(
+  //             title: Text(R.string.cap_nhat.tr()),
+  //             content: Text(
+  //                 R.string.mes_new_version_available
+  //                     .tr(args: ['${value.newVersion}']),
+  //                 textAlign: TextAlign.center),
+  //             actions: <Widget>[
+  //               CupertinoDialogAction(
+  //                 isDefaultAction: true,
+  //                 child: Text(R.string.cap_nhat.tr()),
+  //                 onPressed: () async {
+  //                   final _url = value.appURL!;
+  //                   await canLaunch(_url)
+  //                       ? await launch(_url)
+  //                       : throw 'Could not launch $_url';
+  //                 },
+  //               )
+  //             ],
+  //           ),
+  //         );
+  //       }
+  //     });
+  //     return;
+  //   }
 
-    try {
-      final newVersion = NewVersion(context: context);
-      final status = await newVersion.getVersionStatus();
-      if (status == null) return;
-      final localVersion = status.localVersion!.split('.');
-      final storeVersion = status.storeVersion!.split('.');
-      if (localVersion.length == 3 && storeVersion.length == 3) {
-        if (int.parse(storeVersion[0]) < int.parse(localVersion[0])) {
-          return;
-        } else if (int.parse(storeVersion[0]) == int.parse(localVersion[0])) {
-          if (int.parse(storeVersion[1]) < int.parse(localVersion[1])) {
-            return;
-          } else if (int.parse(storeVersion[1]) == int.parse(localVersion[1])) {
-            if (int.parse(storeVersion[2]) <= int.parse(localVersion[2])) {
-              return;
-            }
-          }
-        }
-      } else {
-        return;
-      }
+  //   try {
+  //     final newVersion = NewVersion(context: context);
+  //     final status = await newVersion.getVersionStatus();
+  //     if (status == null) return;
+  //     final localVersion = status.localVersion!.split('.');
+  //     final storeVersion = status.storeVersion!.split('.');
+  //     if (localVersion.length == 3 && storeVersion.length == 3) {
+  //       if (int.parse(storeVersion[0]) < int.parse(localVersion[0])) {
+  //         return;
+  //       } else if (int.parse(storeVersion[0]) == int.parse(localVersion[0])) {
+  //         if (int.parse(storeVersion[1]) < int.parse(localVersion[1])) {
+  //           return;
+  //         } else if (int.parse(storeVersion[1]) == int.parse(localVersion[1])) {
+  //           if (int.parse(storeVersion[2]) <= int.parse(localVersion[2])) {
+  //             return;
+  //           }
+  //         }
+  //       }
+  //     } else {
+  //       return;
+  //     }
 
-      if (status.storeVersion != 'Varies with device') {
-        showDialog(
-            context: context,
-            barrierDismissible: false,
-            builder: (BuildContext context) => CupertinoAlertDialog(
-                  title: Text(R.string.cap_nhat.tr()),
-                  content: Text(
-                      R.string.mes_new_version_available
-                          .tr(args: ['${status.storeVersion}']),
-                      textAlign: TextAlign.center),
-                  actions: <Widget>[
-                    CupertinoDialogAction(
-                      isDefaultAction: true,
-                      child: Text(R.string.cap_nhat.tr()),
-                      onPressed: () async {
-                        final _url = status.appStoreLink!;
-                        await canLaunch(_url)
-                            ? await launch(_url)
-                            : throw 'Could not launch $_url';
-                      },
-                    )
-                  ],
-                ));
-      }
-    } catch (e) {
-      print(e.toString());
-    }
-  }
+  //     if (status.storeVersion != 'Varies with device') {
+  //       showDialog(
+  //           context: context,
+  //           barrierDismissible: false,
+  //           builder: (BuildContext context) => CupertinoAlertDialog(
+  //                 title: Text(R.string.cap_nhat.tr()),
+  //                 content: Text(
+  //                     R.string.mes_new_version_available
+  //                         .tr(args: ['${status.storeVersion}']),
+  //                     textAlign: TextAlign.center),
+  //                 actions: <Widget>[
+  //                   CupertinoDialogAction(
+  //                     isDefaultAction: true,
+  //                     child: Text(R.string.cap_nhat.tr()),
+  //                     onPressed: () async {
+  //                       final _url = status.appStoreLink!;
+  //                       await canLaunch(_url)
+  //                           ? await launch(_url)
+  //                           : throw 'Could not launch $_url';
+  //                     },
+  //                   )
+  //                 ],
+  //               ));
+  //     }
+  //   } catch (e) {
+  //     print(e.toString());
+  //   }
+  // }
 }
 
 showPopupWeight() {

@@ -1,6 +1,5 @@
 import 'package:dio/dio.dart';
 import 'package:medical/src/model/preference/app_preference.dart';
-import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/utils.dart';
 

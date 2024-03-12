@@ -116,7 +116,7 @@ dependencies {
     implementation 'com.android.billingclient:billing:5.2.1'
     implementation "us.zoom.videosdk:zoomvideosdk-core:1.9.10"
     implementation "us.zoom.videosdk:zoomvideosdk-videoeffects:1.9.10"
-    implementation "us.zoom.videosdk:zoomvideosdk-annotation:1.9.10"
+    // implementation "us.zoom.videosdk:zoomvideosdk-annotation:1.9.10"
 }
 
 flutter {
