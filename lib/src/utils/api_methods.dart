@@ -41,9 +41,10 @@ class ApiMethods {
   }) async {
     final token = await AppSettings.getToken();
     print("apiUrl DELETE: $apiUrl");
+    Uri pathUri = Uri.parse('https://' + (baseURL) + apiUrl);
 
     http.Response response;
-    response = await http.delete(Uri.parse(apiUrl), headers: _headers);
+    response = await http.delete(pathUri, headers: _headers);
     var dataResult = jsonDecode(response.body);
     return dataResult;
   }

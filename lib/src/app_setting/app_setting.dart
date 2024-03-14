@@ -40,16 +40,39 @@ class AppSettings {
     return isSyncing;
   }
 
+  static Future<bool> getIsSyncing() async {
+    return appPreference.getBoolData("isSyncing");
+  }
+
+  static Future<bool> setIsRemainStep(bool isRemainStep) async {
+    appPreference.setData("isRemainStep", isRemainStep);
+    return isRemainStep;
+  }
+
+  static Future<bool> getIsRemainStep() async {
+    return appPreference.getBoolData("isRemainStep");
+  }
+
+  static Future<String> setLatestTimeStep(String latestTimeStep) async {
+    appPreference.setData("latestTimeStep", latestTimeStep);
+    return latestTimeStep;
+  }
+
+  static Future<String?> getLatestTimeStep() async {
+    return appPreference.getData("latestTimeStep");
+  }
+
+  static Future<void> clearStepStatus() async {
+    appPreference.removeData("isRemainStep");
+    appPreference.removeData("latestTimeStep");
+  }
+
   static Future<void> syncDataFromHealthApp() async {
     var isSyncing = await AppSettings.getIsSyncing();
     print("isSyncing======>" + isSyncing.toString());
     if (!isSyncing)
       await Observable.instance
           .notifyObservers([], notifyName: "syncing_heath_app");
-  }
-
-  static Future<bool> getIsSyncing() async {
-    return appPreference.getBoolData("isSyncing");
   }
 
   static Future<bool> clearIsSyncing() async {

@@ -81,7 +81,6 @@ Future<void> main() async {
     //   ));
     // }
   }
-  await AppSettings.setIsSyncing(false);
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
 
   ByteData data =

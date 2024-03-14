@@ -121,6 +121,7 @@ class _HomeControllerState extends State<HomeController> with Observer {
   }
 
   initHealthApp() async {
+    await AppSettings.setIsSyncing(false);
     final String? lessonId = DynamicLinkConfig.instance.lessonId;
     final String? zoomId = DynamicLinkConfig.instance.zoomId;
     final String? activityId = DynamicLinkConfig.instance.activityId;

@@ -56,7 +56,7 @@ class HealthAppBloc extends Bloc<HealthAppEvent, HealthAppState> {
 
   // Tâm thu - Tâm trương - Nhịp tim
   syncSystolicAndDiastolic() async {
-    var syncStatus = await ApiMethods.get(path: "/App/Activity/sync-health");
+    var syncStatus = await ApiMethods.get(path: "/App/Step/sync-health");
     if (jsonDecode(syncStatus.body)["syncSystolicAndDiastolic"]) {
       return;
     }
@@ -134,7 +134,6 @@ class HealthAppBloc extends Bloc<HealthAppEvent, HealthAppState> {
       List<Map<String, dynamic>> syncData = [];
       if (count != dataSyncLength) {
         for (SyncSystolicAndDiastolicModel element in dataSync) {
-
           syncData.add({
             'systolic': element.systolic.toString(),
             'diastolic': element.diastolic.toString(),
@@ -156,9 +155,205 @@ class HealthAppBloc extends Bloc<HealthAppEvent, HealthAppState> {
     responseSyncData['syncSYSTOLICAndDIASTOLIC'] = result;
   }
 
+  static bool isStepRemain = false;
+  static DateTime? latestStep;
+
+  syncStepLatestWeek() async {
+    var syncStatus = await ApiMethods.get(path: "/App/Step/sync-health");
+    if (syncStatus.statusCode == 200 &&
+        jsonDecode(syncStatus.body)["syncStep"]) {
+      return;
+    }
+    // case đang sync thì out app => sync status trước
+    isStepRemain = await AppSettings.getIsRemainStep();
+    String? latestTimeStepFromStorage = await AppSettings.getLatestTimeStep();
+    if (latestTimeStepFromStorage != null && latestTimeStepFromStorage != "0") {
+      latestStep = DateTime.parse(latestTimeStepFromStorage!);
+    }
+    DateTime dateTo = DateTime.now();
+    DateTime dateFrom = dateTo.add(Duration(days: -7));
+    StepListModel stepData = await stepRepository.getStepList(4);
+    bool result = false;
+    DateTime? latestTime;
+    StepItemModel? latestStepModel;
+    requestSyncData['syncStepLatestWeek'] = true;
+
+    if (stepData.items.isNotEmpty)
+      for (int i = stepData.items.length - 1; i >= 0; i--) {
+        var step = stepData.items[i];
+        if (step.value != 0) {
+          latestTime = DateUtil.parseTimespanToDateTime(step.dateFrom!);
+          latestStepModel = step;
+          break;
+        }
+      }
+
+    if (latestTime == null) {
+      // Chưa sync lần nào latestStep = null =>  latestStep sẽ là 90 ngày trước
+      DateTime targetDate = dateTo.add(Duration(days: -90));
+      latestStep = DateTime(targetDate.year, targetDate.month, targetDate.day);
+      isStepRemain = true; // Còn sync tiếp
+      AppSettings.setIsRemainStep(isStepRemain);
+      AppSettings.setLatestTimeStep(latestStep!.toIso8601String());
+    } else {
+      if (latestTime.isAfter(dateFrom)) {
+        // latest nằm trong 1 tuần gần nhất thì datefrom = latest
+        dateFrom = latestTime;
+      } else {
+        isStepRemain = true; // Còn sync tiếp
+        latestStep = latestTime; // Cập nhật lần cuối cùng sync
+        AppSettings.setIsRemainStep(isStepRemain);
+        AppSettings.setLatestTimeStep(latestStep!.toIso8601String());
+      }
+    }
+
+    dateTo = DateTime(
+        dateTo.year,
+        dateTo.month,
+        dateTo.day,
+        23, // Giờ
+        59, // Phút
+        59, // Giây
+        999, // millisecond
+        999999); // microsecond
+    dateFrom = DateTime(
+      dateFrom.year,
+      dateFrom.month,
+      dateFrom.day - 1,
+    );
+
+    result =
+        await syncStepByDateV2(dateFrom, dateTo, latestStep: latestStepModel);
+    responseSyncData['syncStepLatestWeek'] = result;
+  }
+
+  syncStepRemain() async {
+    var syncStatus = await ApiMethods.get(path: "/App/Step/sync-health");
+    if (syncStatus.statusCode == 200 &&
+        jsonDecode(syncStatus.body)["syncStep"]) {
+      return;
+    }
+    DateTime dateTo = DateTime.now().add(Duration(days: -8));
+    DateTime dateFrom = latestStep ?? DateTime.now().add(Duration(days: -90));
+    bool result = false;
+    requestSyncData['syncStepRemain'] = true;
+    dateFrom = DateTime(dateFrom.year, dateFrom.month, dateFrom.day);
+    dateTo = DateTime(
+        dateTo.year,
+        dateTo.month,
+        dateTo.day,
+        23, // Giờ
+        59, // Phút
+        59, // Giây
+        999, // millisecond
+        999999); // microsecond
+    result = await syncStepByDateV2(dateFrom, dateTo);
+    responseSyncData['syncStepRemain'] = result;
+    isStepRemain = false;
+    AppSettings.clearStepStatus();
+  }
+
+  syncStepByDateV2(DateTime dateFrom, DateTime dateTo,
+      {StepItemModel? latestStep}) async {
+    List<HealthDataPoint> steps = await health
+        .getHealthDataFromTypes(dateFrom, dateTo, [HealthDataType.STEPS]);
+    if (steps.isNotEmpty) {
+      List<RequestSyncStepModel> stepCollected = [];
+      for (int i = 0; i < steps.length; i++) {
+        final element = steps[i];
+        int dateFrom = DateTime(element.dateFrom.year, element.dateFrom.month,
+                    element.dateFrom.day)
+                .millisecondsSinceEpoch ~/
+            1000;
+        DateTime dateTo = DateTime(
+            element.dateFrom.year,
+            element.dateFrom.month,
+            element.dateFrom.day,
+            23,
+            59,
+            59,
+            999,
+            999999);
+        int index =
+            stepCollected.indexWhere((item) => item.dateFrom == dateFrom);
+        int newValue = await health.getTotalStepsInInterval(
+                DateTime(element.dateFrom.year, element.dateFrom.month,
+                    element.dateFrom.day),
+                dateTo) ??
+            0;
+
+        int newTotalMinute =
+            element.dateTo.difference(element.dateFrom).inMinutes;
+
+        if (index.isNegative) {
+          RequestSyncStepModel requestSyncStepModel = RequestSyncStepModel(
+            dateTo: dateFrom,
+            dateFrom: dateFrom,
+            value: newValue,
+            totalMinute: newTotalMinute,
+            platform:
+                steps.first.platform == PlatformType.IOS ? 'ios' : 'android',
+          );
+          stepCollected.add(requestSyncStepModel);
+        } else {
+          newTotalMinute = stepCollected[index].totalMinute + newTotalMinute;
+          RequestSyncStepModel requestSyncStepModel =
+              stepCollected[index].copyWith(
+            value: newValue,
+            totalMinute: newTotalMinute,
+          );
+          stepCollected[index] = requestSyncStepModel;
+        }
+      }
+      if (stepCollected.isNotEmpty) {
+        try {
+          stepCollected =
+              stepCollected.where((element) => element.value != 0).toList();
+          // // Check if latestStep exists
+          // if (latestStep != null) {
+          //   // Remove elements with the same value as latestStep and the same dateFrom
+          //   stepCollected.removeWhere((element) =>
+          //       element.value == latestStep.value &&
+          //       DateUtil.parseTimespanToDateTime(element.dateFrom)
+          //               .difference(DateUtil.parseTimespanToDateTime(
+          //                   latestStep.dateFrom ?? 0))
+          //               .inDays
+          //               .abs() ==
+          //           0);
+          // }
+          for (RequestSyncStepModel step in stepCollected) {
+            if (step.totalMinute >= 1400) {
+              DateTime target = DateUtil.parseTimespanToDateTime(step.dateFrom);
+              DateTime start = DateTime(target.year, target.month, target.day);
+              DateTime end =
+                  DateTime(start.year, start.month, start.day, 23, 59, 59);
+              // get min move of this day
+              List<HealthDataPoint> minutes = await health
+                  .getHealthDataFromTypes(
+                      start, end, [HealthDataType.MOVE_MINUTES]);
+              // get total value of this day
+              int totalMinuteValue = 0;
+              for (HealthDataPoint minute in minutes) {
+                totalMinuteValue +=
+                    minute.dateTo.difference(minute.dateFrom).inMinutes.abs();
+              }
+              step.totalMinute = totalMinuteValue;
+            }
+          }
+          if (stepCollected.length > 0)
+            stepRepository.syncStepData(stepCollected);
+        } catch (e) {
+          return false;
+        }
+      }
+    }
+    return true;
+  }
+
   syncSTEP() async {
-    var syncStatus = await ApiMethods.get(path: "/App/Activity/sync-health");
-    if (jsonDecode(syncStatus.body)["syncStep"]) {
+    var syncStatus = await ApiMethods.get(path: "/App/Step/sync-health");
+    if (syncStatus.statusCode == 200 &&
+        jsonDecode(syncStatus.body)["syncStep"]) {
       return;
     }
     DateTime dateTo = DateTime.now();
@@ -192,8 +387,10 @@ class HealthAppBloc extends Bloc<HealthAppEvent, HealthAppState> {
         dateTo.month,
         dateTo.day,
         23, // Giờ
-        59);
-
+        59, // Phút
+        59, // Giây
+        999, // millisecond
+        999999); // microsecond
     List<HealthDataPoint> steps = await health
         .getHealthDataFromTypes(dateFrom, dateTo, [HealthDataType.STEPS]);
 
@@ -206,8 +403,15 @@ class HealthAppBloc extends Bloc<HealthAppEvent, HealthAppState> {
                     element.dateFrom.day)
                 .millisecondsSinceEpoch ~/
             1000;
-        DateTime dateTo = DateTime(element.dateFrom.year,
-            element.dateFrom.month, element.dateFrom.day, 23, 59, 59);
+        DateTime dateTo = DateTime(
+            element.dateFrom.year,
+            element.dateFrom.month,
+            element.dateFrom.day,
+            23,
+            59,
+            59,
+            999,
+            999999);
         int index =
             stepCollected.indexWhere((item) => item.dateFrom == dateFrom);
         int newValue = await health.getTotalStepsInInterval(
@@ -273,7 +477,7 @@ class HealthAppBloc extends Bloc<HealthAppEvent, HealthAppState> {
   }
 
   syncWeight() async {
-    var syncStatus = await ApiMethods.get(path: "/App/Activity/sync-health");
+    var syncStatus = await ApiMethods.get(path: "/App/Step/sync-health");
     if (jsonDecode(syncStatus.body)["syncWeight"]) {
       return;
     }
@@ -331,7 +535,6 @@ class HealthAppBloc extends Bloc<HealthAppEvent, HealthAppState> {
             heightData = heightList.first;
           }
 
-
           if (heightData != null) {
             height = roundDouble(heightData.value) * 100;
           } else {
@@ -369,6 +572,8 @@ class HealthAppBloc extends Bloc<HealthAppEvent, HealthAppState> {
         } catch (e, stackTrace) {
           print('Error in updateUserInfo: $e');
           print('Stack trace: $stackTrace');
+        } finally {
+          await AppSettings.setIsSyncing(false);
         }
         result = true;
       }
@@ -379,13 +584,14 @@ class HealthAppBloc extends Bloc<HealthAppEvent, HealthAppState> {
   }
 
   syncBlodGlucose() async {
-    var syncStatus = await ApiMethods.get(path: "/App/Activity/sync-health");
+    var syncStatus = await ApiMethods.get(path: "/App/Step/sync-health");
     if (jsonDecode(syncStatus.body)["syncGlucose"]) {
       return;
     }
     DateTime dateTo = DateTime.now();
     DateTime dateFrom = releaseDate;
     bool result = false;
+    requestSyncData['syncBlodGlucose'] = true;
 
     // Lấy thời gian sync dữ liệu gần nhất
     int dayToSync = DateUtil.getDayInMillis(dateTo);
@@ -458,11 +664,17 @@ class HealthAppBloc extends Bloc<HealthAppEvent, HealthAppState> {
                   true; // Gọi lại _requestSyncData() sau khi hoàn thành syncSystolicAndDiastolic()
             }
             break;
-          case 'syncSTEP':
-            if (requestSyncData[key] == false) {
-              await syncSTEP();
+          case 'syncStepRemain':
+            if (isStepRemain && requestSyncData[key] == false) {
+              await syncStepRemain();
               needRetry =
                   true; // Gọi lại _requestSyncData() sau khi hoàn thành syncSTEP()
+            }
+            break;
+          case 'syncStepLatestWeek':
+            if (requestSyncData[key] == false) {
+              await syncStepLatestWeek();
+              needRetry = true;
             }
             break;
           case 'syncWeight':
@@ -496,14 +708,17 @@ class HealthAppBloc extends Bloc<HealthAppEvent, HealthAppState> {
     yield state.copyWith(blocStatus: BlocStatus.loading);
     final List<HealthDataType> _types = HealthSetting.instance.types;
     requestSyncData = {
-      'syncSTEP': false,
+      'syncStepLatestWeek': false,
       'syncSYSTOLICAndDIASTOLIC': false,
       'syncWeight': false,
       'syncBlodGlucose': false,
+      'syncStepRemain': false,
     };
 
     try {
       await _requestSyncData();
+    } catch (e) {
+      print('Error in x: $e');
     } finally {
       await AppSettings.setIsSyncing(false);
     }
