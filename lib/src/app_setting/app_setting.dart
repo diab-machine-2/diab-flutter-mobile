@@ -35,6 +35,51 @@ class AppSettings {
 
   static bool isReloadCurrentUserInfo = false;
 
+  static Future<bool> setIsSyncing(bool isSyncing) async {
+    appPreference.setData("isSyncing", isSyncing);
+    return isSyncing;
+  }
+
+  static Future<bool> getIsSyncing() async {
+    return appPreference.getBoolData("isSyncing");
+  }
+
+  static Future<bool> setIsRemainStep(bool isRemainStep) async {
+    appPreference.setData("isRemainStep", isRemainStep);
+    return isRemainStep;
+  }
+
+  static Future<bool> getIsRemainStep() async {
+    return appPreference.getBoolData("isRemainStep");
+  }
+
+  static Future<String> setLatestTimeStep(String latestTimeStep) async {
+    appPreference.setData("latestTimeStep", latestTimeStep);
+    return latestTimeStep;
+  }
+
+  static Future<String?> getLatestTimeStep() async {
+    return appPreference.getData("latestTimeStep");
+  }
+
+  static Future<void> clearStepStatus() async {
+    appPreference.removeData("isRemainStep");
+    appPreference.removeData("latestTimeStep");
+  }
+
+  static Future<void> syncDataFromHealthApp() async {
+    var isSyncing = await AppSettings.getIsSyncing();
+    print("isSyncing======>" + isSyncing.toString());
+    if (!isSyncing)
+      await Observable.instance
+          .notifyObservers([], notifyName: "syncing_heath_app");
+  }
+
+  static Future<bool> clearIsSyncing() async {
+    appPreference.removeData("isSyncing");
+    return true;
+  }
+
   static Future<bool> saveEnvironment(String? env) async {
     appPreference.setData(Const.ENVIRONMENT, env);
     return true;
@@ -174,6 +219,7 @@ class AppSettings {
       await deleteHomeData();
       await clearToken();
       await clearRefreshToken();
+      await clearIsSyncing();
       appPreference.removeData("hasNewReports");
       appPreference.removeData("reports");
       appPreference.removeData("user");

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_observer/Observable.dart';
 import 'package:flutter_observer/Observer.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/app_setting/firebase_tracking/kpi_body_weight_tracking.dart';
 import 'package:medical/src/modal/HbA1C/short_gui.dart';
 import 'package:medical/src/repo/HbA1C/HbA1C_client.dart';
@@ -56,6 +57,14 @@ class _EmotionDetailTabbarControllerState
     //     });
     checkShowDes();
     loadDescription();
+    _tabController!.addListener(() {
+      if (_tabController!.indexIsChanging) {
+        if (_tabController!.index == 1) {
+          KpiBodyWeightTracking.clickDetailTab();
+          print("tracking KpiBodyWeightTracking.clickDetailTab..");
+        }
+      }
+    });
   }
 
   @override
@@ -68,12 +77,21 @@ class _EmotionDetailTabbarControllerState
     }
   }
 
+  static bool _isDisposing = false;
   @override
-  void dispose() {
-    Observable.instance.removeObserver(this);
-    // DartNotificationCenter.unsubscribe(
-    //     channel: 'Emotion_change_data', observer: this);
-    super.dispose();
+  void dispose() async {
+    if (_isDisposing) {
+      return; // Already disposing, do nothing
+    }
+    _isDisposing = true;
+    try {
+      Observable.instance.removeObserver(this);
+      // Add your await statement, it won't be executed concurrently
+      await AppSettings.syncDataFromHealthApp();
+    } finally {
+      _isDisposing = false;
+      super.dispose();
+    }
   }
 
   changeIndex(int index) {
@@ -249,10 +267,7 @@ class CustomTabbarImageState extends State<CustomTabbarImage> {
                         TextStyle(fontSize: 14, fontWeight: FontWeight.w400),
                     tabs: [
                       Tab(text: R.string.bieu_do.tr()),
-                      GestureDetector(
-                        onTap: () => KpiBodyWeightTracking.clickDetailTab(),
-                        child: Tab(text: R.string.detail.tr()),
-                      ),
+                      Tab(text: R.string.detail.tr()),
                     ],
                     controller: widget.tabController,
                     indicatorColor: R.color.mainColor,
@@ -319,7 +334,6 @@ class _ActionFilterState extends State<ActionFilter> {
         builder: (context) => FillterBloodPanel(
             selectedIndex: selectedIndex,
             callback: (value, index) {
-
               if (index != null) {
                 setState(() {
                   name = value;

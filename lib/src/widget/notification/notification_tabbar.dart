@@ -1,6 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/widget/Food/food_detail.dart';
 import 'package:medical/src/widget/Food/overview.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
@@ -40,9 +41,20 @@ class _NotificationTabbarControllerState
     _tabController = TabController(vsync: this, length: 3);
   }
 
+  static bool _isDisposing = false;
   @override
-  void dispose() {
-    super.dispose();
+  void dispose() async {
+    if (_isDisposing) {
+      return; // Already disposing, do nothing
+    }
+    _isDisposing = true;
+    try {
+      // Add your await statement, it won't be executed concurrently
+      await AppSettings.syncDataFromHealthApp();
+    } finally {
+      _isDisposing = false;
+      super.dispose();
+    }
   }
 
   @override
@@ -55,10 +67,11 @@ class _NotificationTabbarControllerState
           CustomAppBar(
             backgroundColor: R.color.transparent,
             title: Text(R.string.notification,
-                style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
-                    color: R.color.textDark)).tr(),
+                    style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
+                        color: R.color.textDark))
+                .tr(),
             leadingIcon: IconButton(
                 splashColor: R.color.transparent,
                 highlightColor: R.color.transparent,

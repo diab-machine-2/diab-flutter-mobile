@@ -50,6 +50,10 @@ class AppPreference {
     return _preference?.getInt(key);
   }
 
+  bool getBoolData(String key) {
+    return _preference?.getBool(key) ?? false;
+  }
+
   void setData(String key, Object? data) {
     if (data == null) return;
     if (data is int) {

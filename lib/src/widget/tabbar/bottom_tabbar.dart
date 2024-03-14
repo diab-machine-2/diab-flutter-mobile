@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_observer/Observable.dart';
 import 'package:flutter_observer/Observer.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/utils/const.dart';
 
 typedef TabbarSelected = Function(int);
@@ -110,7 +111,11 @@ class _BottomTabbar extends State<BottomTabbar> with Observer {
               ],
             ),
           ),
-          onTap: () {
+          onTap: () async {
+            // Start to sync data from google fit
+            if (title == "Trang chủ") {
+              await AppSettings.syncDataFromHealthApp();
+            }
             Observable.instance
                 .notifyObservers([], notifyName: Const.HIDE_OVERLAY_KEY);
             setState(() {

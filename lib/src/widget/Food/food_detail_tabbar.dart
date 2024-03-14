@@ -55,6 +55,14 @@ class _FoodDetailTabbarControllerState extends State<FoodDetailTabbarController>
     Observable.instance.addObserver(this);
     checkShowDes();
     loadDescription();
+    _tabController!.addListener(() {
+      if (_tabController!.indexIsChanging) {
+        if (_tabController!.index == 1) {
+          KpiNutritionTracking.clickDetailTab();
+          print("tracking KpiNutritionTracking.clickDetailTab()");
+        }
+      }
+    });
   }
 
   @override
@@ -70,10 +78,21 @@ class _FoodDetailTabbarControllerState extends State<FoodDetailTabbarController>
     }
   }
 
+  static bool _isDisposing = false;
   @override
-  void dispose() {
-    Observable.instance.removeObserver(this);
-    super.dispose();
+  void dispose() async {
+    if (_isDisposing) {
+      return; // Already disposing, do nothing
+    }
+    _isDisposing = true;
+    try {
+      Observable.instance.removeObserver(this);
+      // Add your await statement, it won't be executed concurrently
+      await AppSettings.syncDataFromHealthApp();
+    } finally {
+      _isDisposing = false;
+      super.dispose();
+    }
   }
 
   checkShowDes() async {
@@ -246,9 +265,7 @@ class CustomTabbarImageState extends State<CustomTabbarImage> {
                         fontSize: 14, fontWeight: FontWeight.w400),
                     tabs: [
                       Tab(text: R.string.bieu_do.tr()),
-                      GestureDetector(
-                          onTap: () => KpiNutritionTracking.clickDetailTab(),
-                          child: Tab(text: R.string.detail.tr())),
+                      Tab(text: R.string.detail.tr()),
                     ],
                     controller: widget.tabController,
                     indicatorColor: R.color.mainColor,

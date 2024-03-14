@@ -3,7 +3,6 @@
 // ignore_for_file: non_constant_identifier_names
 
 class Drawables {
-  String get promotion_popup => "lib/res/drawables/popup.jpg";
   String get promotion15_shopee => "lib/res/drawables/shopee.jpg";
   String get promotion15_lazada => "lib/res/drawables/lazada.jpg";
   String get promotion15_website => "lib/res/drawables/website.jpg";
@@ -452,8 +451,6 @@ class Drawables {
   String get ic_connect_samsung => "lib/res/drawables/ic_connect_samsung.png";
   String get ic_heart_connect => "lib/res/drawables/ic_heart_connect.png";
   String get voucher_reward => "lib/res/drawables/voucher_reward.jpg";
-  String get voucher_reward_detail =>
-      "lib/res/drawables/voucher_reward_detail.png";
   String get share_app_detail => "lib/res/drawables/share_app_detail.jpg";
 
   String get share_app_detail_default =>
