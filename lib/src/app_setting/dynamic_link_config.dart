@@ -19,10 +19,9 @@ class DynamicLinkConfig {
   static String _iosBundleId = "com.cactusoftware.diab";
   static String _appStoreId = "1569353448";
 
-  List<String> dynamicLinkType = [
+  List<String> dynamicLinkTypes = [
     "referralCode",
     "newsDetail",
-    "calendar",
     "activityId",
   ];
 
@@ -203,64 +202,52 @@ class DynamicLinkConfig {
     final Uri? deepLink = data?.link;
 
     if (deepLink != null) {
-      _referalCode = progressDynamicLink(deepLink);
+      progressDynamicLink(deepLink);
     }
     return null;
   }
 
-  progressDynamicLink(deepLink) {
-    dynamicLinkType.forEach((functionName) async {
-      String urlString = deepLink.toString();
+  void progressDynamicLink(Uri deepLink) {
+    String urlString = deepLink.toString();
+
+    // Zoom handler
+    String meetUrl = "meet.diab.com.vn";
+    if (urlString.contains(meetUrl)) {
+      String roomId = urlString.split(meetUrl + "/").last;
+      final UserModel? user = AppSettings.userInfo;
+      if (user != null && _zoomId == null) {
+        _zoomId = roomId;
+        ZoomService().launchZoom(roomId, AppSettings.userInfo?.fullName ?? 'Người dùng',
+            navigatorKey.currentState!.context);
+      } else {
+        _zoomId = roomId;
+      }
+      return;
+    }
+
+    // Other handlers (old)
+    dynamicLinkTypes.forEach((functionName) async {
       List<String> separatedString = urlString.split('$functionName=');
       switch (functionName) {
         case "referralCode":
           if (urlString.contains(functionName)) {
             _referalCode = separatedString[1].substring(0, 6);
-            Observable.instance
-                .notifyObservers([], notifyName: Const.NAVIGATE_TO_REGISTER);
+            Observable.instance.notifyObservers([], notifyName: Const.NAVIGATE_TO_REGISTER);
           }
           if (urlString.contains('lessonId')) {
             _lessonId = urlString.split('lessonId=').last;
-            Observable.instance.notifyObservers([],
-                notifyName: Const.NAVIGATE_TO_LESSON_DETAIL);
+            Observable.instance.notifyObservers([], notifyName: Const.NAVIGATE_TO_LESSON_DETAIL);
           }
           if (urlString.contains('activityId')) {
             _activityId = urlString.split('activityId=').last;
-            Observable.instance.notifyObservers([],
-                notifyName: Const.NAVIGATE_TO_ACTIVITY_DETAIL);
+            Observable.instance.notifyObservers([], notifyName: Const.NAVIGATE_TO_ACTIVITY_DETAIL);
           }
           break;
         case "newsDetail":
           if (urlString.contains(functionName)) {
             String newsDetailId = separatedString[1];
-            Navigator.pushNamed(
-                navigatorKey.currentState!.context, NavigatorName.news_detail,
+            Navigator.pushNamed(navigatorKey.currentState!.context, NavigatorName.news_detail,
                 arguments: {'id': newsDetailId});
-          }
-          break;
-        case "calendar":
-          if (urlString.contains(functionName)) {
-            String calendarID = separatedString[1];
-            final UserModel? user = AppSettings.userInfo;
-            if (user != null && _zoomId == null) {
-              _zoomId = calendarID;
-              ZoomService().launchZoom(calendarID, AppSettings.userInfo?.fullName ?? 'Người dùng',
-                  navigatorKey.currentState!.context);
-              // PermissionStatus statusMicrophone =
-              //     await Permission.microphone.status;
-              // if (statusMicrophone.isDenied) {
-              //   await Permission.microphone.request();
-              // }
-              // PermissionStatus statusCamera = await Permission.camera.request();
-              // if (statusCamera.isDenied) {
-              //   await Permission.camera.request();
-              // }
-              // Navigator.pushNamed(
-              //     navigatorKey.currentState!.context, NavigatorName.zoom,
-              //     arguments: {'id': calendarID});
-            } else {
-              _zoomId = calendarID;
-            }
           }
           break;
       }
