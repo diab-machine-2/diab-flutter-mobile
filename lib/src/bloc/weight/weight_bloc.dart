@@ -1,10 +1,12 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/modal/bmi/bmi_trend.dart';
 import 'package:medical/src/modal/bmi/weight_input.dart';
 import 'package:medical/src/modal/bmi/weight_trend.dart';
 import 'package:medical/src/repo/weight/weight_client.dart';
+import 'package:medical/src/widget/home/fliter_enum.dart';
 import 'package:meta/meta.dart';
 import 'package:medical/src/modal/error/error_model.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -13,7 +15,6 @@ part 'weight_bloc_event.dart';
 part 'weight_bloc_state.dart';
 
 class WeightBloc extends Bloc<WeightEvent, WeightState> {
-
   WeightBloc() : super(WeightInitial());
 
   @override
@@ -67,12 +68,14 @@ class WeightBloc extends Bloc<WeightEvent, WeightState> {
 
   Stream<WeightState> fetchTrendWeight(
       String? currentDateTime, String? periodFilterType, String? page) async* {
+    periodFilterType =
+        await AppSettings.getPeriodByScreen(ScreenList.WEIGHT.index);
     // try {
-      final client = WeightClient();
-      yield WeightLoading();
-      var model = await client.fetchWeightTrend(
-          currentDateTime, periodFilterType, page);
-      yield WeightTrendLoaded(trend: model);
+    final client = WeightClient();
+    yield WeightLoading();
+    var model =
+        await client.fetchWeightTrend(currentDateTime, periodFilterType, page);
+    yield WeightTrendLoaded(trend: model);
     // } catch (e, _) {
     //   if (e is Error) {
     //     yield WeightError(message: e.message);
@@ -87,6 +90,8 @@ class WeightBloc extends Bloc<WeightEvent, WeightState> {
   Stream<WeightState> fetchTrendHip(
       String? currentDateTime, String? periodFilterType, String? page) async* {
     try {
+      periodFilterType =
+          await AppSettings.getPeriodByScreen(ScreenList.WEIGHT.index);
       final client = WeightClient();
       yield WeightLoading();
       var model =
@@ -109,6 +114,8 @@ class WeightBloc extends Bloc<WeightEvent, WeightState> {
     int? page,
   ) async* {
     try {
+      periodFilterType =
+          await AppSettings.getPeriodByScreen(ScreenList.WEIGHT.index);
       final client = WeightClient();
       final WeightState currenState = state;
       var model =
@@ -135,6 +142,8 @@ class WeightBloc extends Bloc<WeightEvent, WeightState> {
   Stream<WeightState> fetchTrendBMI(
       String? currentDateTime, String? periodFilterType) async* {
     try {
+      periodFilterType =
+          await AppSettings.getPeriodByScreen(ScreenList.WEIGHT.index);
       final client = WeightClient();
       yield WeightLoading();
       var model = await client.fetchTrendBMI(currentDateTime, periodFilterType);

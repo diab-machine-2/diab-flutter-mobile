@@ -1,10 +1,12 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/modal/emotion/emotion_statistic_item_model.dart';
 import 'package:medical/src/modal/emotion/emotion_statistic_model.dart';
 import 'package:medical/src/modal/emotion/input_emotion_data_model.dart';
 import 'package:medical/src/repo/emotion/emotion_client.dart';
+import 'package:medical/src/widget/home/fliter_enum.dart';
 import 'package:meta/meta.dart';
 import 'package:medical/src/modal/error/error_model.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -37,6 +39,8 @@ class EmotionBloc extends Bloc<EmotionEvent, EmotionState> {
   Stream<EmotionState> fetchInputEmotion(String? currentDateTime,
       String? periodFilterType, String? emotionId, int? page) async* {
     try {
+      periodFilterType =
+          await AppSettings.getPeriodByScreen(ScreenList.EMOTION.index);
       final client = EmotionClient();
       final EmotionState currenState = state;
       var model = await client.fetchInput(
@@ -62,6 +66,8 @@ class EmotionBloc extends Bloc<EmotionEvent, EmotionState> {
   Stream<EmotionState> fetchEmotionStatistic(
       String? currentDateTime, String? periodFilterType) async* {
     try {
+      periodFilterType =
+          await AppSettings.getPeriodByScreen(ScreenList.EMOTION.index);
       yield EmotionLoading();
       yield EmotionStatisticLoaded(
           model: await EmotionClient()
@@ -80,6 +86,8 @@ class EmotionBloc extends Bloc<EmotionEvent, EmotionState> {
   Stream<EmotionState> fetchSymptomStatistic(
       String? currentDateTime, String? periodFilterType) async* {
     try {
+      periodFilterType =
+          await AppSettings.getPeriodByScreen(ScreenList.EMOTION.index);
       yield EmotionLoading();
       yield SymptomStatisticLoaded(
           symptoms: await EmotionClient()
@@ -98,6 +106,8 @@ class EmotionBloc extends Bloc<EmotionEvent, EmotionState> {
   Stream<EmotionState> fetchActivityStatistic(
       String? currentDateTime, String? periodFilterType) async* {
     try {
+      periodFilterType =
+          await AppSettings.getPeriodByScreen(ScreenList.EMOTION.index);
       yield EmotionLoading();
       yield ActivityStatisticLoaded(
           activities: await EmotionClient()

@@ -184,4 +184,21 @@ class HbA1CClient extends FetchClient {
           : R.string.error_can_not_connect_to_server.tr();
     }
   }
+
+  Future<List<double>> fetchRange() async {
+    try {
+      final Response response = await super.fetchData(
+        url: '/App/HbA1C/Range',
+      );
+      if (response.statusCode == 200) {
+        List<double> data = List<double>.from(response.data);
+        return data;
+      } else {
+        final error = Error.fromJson(response);
+        throw error;
+      }
+    } catch (e) {
+      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+    }
+  }
 }

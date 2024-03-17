@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_observer/Observable.dart';
 import 'package:flutter_observer/Observer.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/app_setting/firebase_tracking/kpi_body_weight_tracking.dart';
 import 'package:medical/src/modal/HbA1C/short_gui.dart';
 import 'package:medical/src/repo/HbA1C/HbA1C_client.dart';
@@ -16,6 +17,7 @@ import 'package:medical/src/widget/Bmi/widget/bmi_detail.dart';
 import 'package:medical/src/widget/HbA1C/widget/description/description.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/components/custom_action_descriptipn.dart';
+import 'package:medical/src/widget/home/fliter_enum.dart';
 import 'package:medical/src/widget/nipro/health_app/widgets/request_health_connect.dart';
 import 'package:medical/src/widget/tabbar/action_list_panel.dart';
 import 'package:medical/src/widget/tabbar/fillter_bloodSugar_panel.dart';
@@ -346,6 +348,18 @@ class ActionFilter extends StatefulWidget {
 class _ActionFilterState extends State<ActionFilter> {
   String name = R.string.filter_day.tr(args: ['30']);
   int selectedIndex = 2;
+  @override
+  void initState() {
+    loadFilter();
+    super.initState();
+  }
+
+  void loadFilter() async {
+    List<String> filters = await AppSettings.getHomeFilters();
+    name = filters[ScreenList.WEIGHT.index];
+    selectedIndex = valueOfSelectedFilter[name]!;
+    setState(() {});
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -383,7 +397,8 @@ class _ActionFilterState extends State<ActionFilter> {
         isScrollControlled: true,
         builder: (context) => FillterBloodPanel(
             selectedIndex: selectedIndex,
-            callback: (value, index) {
+            callback: (value, index) async {
+              await AppSettings.setHomeFilters(ScreenList.WEIGHT.index, value);
               if (index != null) {
                 setState(() {
                   name = value;
