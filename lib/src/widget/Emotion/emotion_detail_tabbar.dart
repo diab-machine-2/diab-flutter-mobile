@@ -13,6 +13,7 @@ import 'package:medical/src/widget/Emotion/widget/emotion_detail.dart';
 import 'package:medical/src/widget/HbA1C/widget/description/description.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/components/custom_action_descriptipn.dart';
+import 'package:medical/src/widget/home/fliter_enum.dart';
 import 'package:medical/src/widget/tabbar/action_list_panel.dart';
 import 'package:medical/src/widget/tabbar/fillter_bloodSugar_panel.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -294,8 +295,21 @@ class ActionFilter extends StatefulWidget {
 }
 
 class _ActionFilterState extends State<ActionFilter> {
-  String name = R.string.filter_day.tr(args: ['7']);
-  int selectedIndex = 0;
+  String name = R.string.filter_day.tr(args: ['30']);
+  int selectedIndex = 2;
+
+  @override
+  void initState() {
+    loadFilter();
+    super.initState();
+  }
+
+  void loadFilter() async {
+    List<String> filters = await AppSettings.getHomeFilters();
+    name = filters[ScreenList.EMOTION.index];
+    selectedIndex = valueOfSelectedFilter[name]!;
+    setState(() {});
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -333,7 +347,8 @@ class _ActionFilterState extends State<ActionFilter> {
         isScrollControlled: true,
         builder: (context) => FillterBloodPanel(
             selectedIndex: selectedIndex,
-            callback: (value, index) {
+            callback: (value, index) async {
+              await AppSettings.setHomeFilters(ScreenList.EMOTION.index, value);
               if (index != null) {
                 setState(() {
                   name = value;
