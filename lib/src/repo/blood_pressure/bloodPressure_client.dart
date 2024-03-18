@@ -6,6 +6,7 @@ import 'package:medical/src/modal/blood_pressure/blood_pressure_distribution.dar
 import 'package:medical/src/modal/blood_pressure/blood_pressure_heart_rate.dart';
 import 'package:medical/src/modal/blood_pressure/blood_pressure_statistic.dart';
 import 'package:medical/src/modal/blood_pressure/blood_pressure_trend.dart';
+import 'package:medical/src/utils/api_methods.dart';
 import 'package:medical/src/widget/helper/http_helper.dart';
 import 'package:medical/src/modal/error/error_model.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -179,6 +180,21 @@ class BloodPressureClient extends FetchClient {
     // } catch (e) {
     //   throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
     // }
+  }
+
+  Future<bool> postBloodPressureInputs(
+      List<Map<String, dynamic>> bloodPressureDataList) async {
+    try {
+      final response = await ApiMethods.post(
+          path: '/App/BloodPressure/Inputs', data: bloodPressureDataList);
+      if (response.statusCode == 200) {
+        return true;
+      } else {
+        throw response.reasonPhrase!;
+      }
+    } catch (e) {
+      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+    }
   }
 
   /// cập nhỉ chỉ số huyết áp

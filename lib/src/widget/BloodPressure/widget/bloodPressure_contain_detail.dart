@@ -120,26 +120,26 @@ class BloodPressureDetailState extends State<BloodPressureDetail>
                                         mainAxisAlignment:
                                             MainAxisAlignment.spaceBetween,
                                         children: [
-                                          // Text(
-                                          //     model == null
-                                          //         ? '--'
-                                          //         : model.systolicLowest!
-                                          //                         .toInt() ==
-                                          //                     0 &&
-                                          //                 model.diastolicLowest!
-                                          //                         .toInt() ==
-                                          //                     0
-                                          //             ? '--'
-                                          //             : '${model.systolicLowest!.toInt()}/${model.diastolicLowest!.toInt()}'
-                                          //                 .toString(),
-                                          //     style: TextStyle(
-                                          //         fontFamily: 'Viga',
-                                          //         color: model == null
-                                          //             ? R.color.black
-                                          //             : toColor(
-                                          //                 model.lowestColor),
-                                          //         fontSize: 15,
-                                          //         fontWeight: FontWeight.w400)),
+                                          Text(
+                                              model == null
+                                                  ? '--'
+                                                  : model.systolicLowest!
+                                                                  .toInt() ==
+                                                              0 &&
+                                                          model.diastolicLowest!
+                                                                  .toInt() ==
+                                                              0
+                                                      ? '--'
+                                                      : '${model.systolicLowest!.toInt()}/${model.diastolicLowest!.toInt()}'
+                                                          .toString(),
+                                              style: TextStyle(
+                                                  fontFamily: 'Viga',
+                                                  color: model == null
+                                                      ? R.color.black
+                                                      : toColor(
+                                                          model.lowestColor),
+                                                  fontSize: 15,
+                                                  fontWeight: FontWeight.w400)),
                                           SizedBox(width: 10),
                                           Image.asset(R.drawable.ic_line_low,
                                               width: 20, height: 15)
@@ -502,8 +502,7 @@ class BloodPressureDetailState extends State<BloodPressureDetail>
                                   child: Padding(
                                     padding: const EdgeInsets.only(
                                         left: 16, right: 16, top: 8, bottom: 8),
-                                    child: Text(
-                                       modelLastest.bloodPressureType!,
+                                    child: Text(modelLastest.bloodPressureType!,
                                         style: TextStyle(
                                             color:
                                                 toColor(modelLastest.fontColor),

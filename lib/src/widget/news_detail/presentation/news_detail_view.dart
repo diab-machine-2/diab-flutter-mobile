@@ -1,4 +1,5 @@
 import 'package:intl/intl.dart';
+import 'package:medical/src/app_setting/app_setting.dart';
 import 'blocs/newsDetail_bloc.dart';
 import 'package:medical/res/R.dart';
 import 'package:flutter/material.dart';
@@ -54,6 +55,22 @@ class _NewsDetailViewState extends State<NewsDetailView> {
       setState(() {
         isSticky = false;
       });
+    }
+  }
+
+  static bool _isDisposing = false;
+  @override
+  void dispose() async {
+    if (_isDisposing) {
+      return; // Already disposing, do nothing
+    }
+    _isDisposing = true;
+    try {
+      // Add your await statement, it won't be executed concurrently
+      await AppSettings.syncDataFromHealthApp();
+    } finally {
+      _isDisposing = false;
+      super.dispose();
     }
   }
 

@@ -5,6 +5,7 @@ import 'package:medical/src/modal/bmi/calculate_bmi.dart';
 import 'package:medical/src/modal/bmi/weight_input.dart';
 import 'package:medical/src/modal/bmi/weight_input_data_model.dart';
 import 'package:medical/src/modal/bmi/weight_trend.dart';
+import 'package:medical/src/utils/api_methods.dart';
 import 'package:medical/src/utils/app_log.dart';
 import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/Bmi/models/weight_ranger_model.dart';
@@ -42,6 +43,21 @@ class WeightClient extends FetchClient {
     //       ? e
     //       : R.string.error_can_not_connect_to_server.tr();
     // }
+  }
+
+  Future<bool> postWeightInputs(List<Map<String, dynamic>> weightInputs) async {
+    // try {
+    try {
+      final response =
+          await ApiMethods.post(path: '/App/Weight/Inputs', data: weightInputs);
+      if (response.statusCode == 200) {
+        return true;
+      } else {
+        throw response.reasonPhrase!;
+      }
+    } catch (e) {
+      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+    }
   }
   // //============ lấy danh sách chỉ số Weight =============/
 

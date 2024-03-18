@@ -66,6 +66,15 @@ class _BloodSugarDetailTabbarControllerState
     checkShowDes();
     loadDescription();
     KpiGlycemicTracking.firebaseSetup();
+
+    _tabController!.addListener(() {
+      if (_tabController!.indexIsChanging) {
+        if (_tabController!.index == 1) {
+          KpiGlycemicTracking.clickDetailTab();
+          print("tracking KpiGlycemicTracking.clickDetailTab()");
+        }
+      }
+    });
   }
 
   @override
@@ -80,10 +89,21 @@ class _BloodSugarDetailTabbarControllerState
     }
   }
 
+  static bool _isDisposing = false;
   @override
-  void dispose() {
-    Observable.instance.removeObserver(this);
-    super.dispose();
+  void dispose() async {
+    if (_isDisposing) {
+      return; // Already disposing, do nothing
+    }
+    _isDisposing = true;
+    try {
+      Observable.instance.removeObserver(this);
+      // Add your await statement, it won't be executed concurrently
+      await AppSettings.syncDataFromHealthApp();
+    } finally {
+      _isDisposing = false;
+      super.dispose();
+    }
   }
 
   loadInputWithId(int index, String? id) {
@@ -256,12 +276,7 @@ class CustomTabbarImageState extends State<CustomTabbarImage> {
                     const TextStyle(fontSize: 14, fontWeight: FontWeight.w400),
                 tabs: [
                   Tab(text: R.string.bieu_do.tr()),
-                  GestureDetector(
-                    onTap: () {
-                      KpiGlycemicTracking.clickDetailTab();
-                    },
-                    child: Tab(text: R.string.detail.tr()),
-                  ),
+                  Tab(text: R.string.detail.tr()),
                 ],
                 controller: widget.tabController,
                 indicatorColor: R.color.mainColor,

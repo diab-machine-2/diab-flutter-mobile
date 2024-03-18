@@ -154,7 +154,7 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController>
   }
 
   loadExercriseRegularly() async {
-    exercriseRegularly = await ExercrisesClient().fetchExercriseRegularly();
+    // exercriseRegularly = await ExercrisesClient().fetchExercriseRegularly();
     BotToast.closeAllLoading();
     setState(() {});
   }
