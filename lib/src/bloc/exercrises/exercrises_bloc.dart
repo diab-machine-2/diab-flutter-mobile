@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:flutter/foundation.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/modal/exercrises/excercise_rank_model.dart';
 import 'package:medical/src/modal/exercrises/exercrise_input.dart';
 import 'package:medical/src/modal/exercrises/exercrise_summary.dart';
@@ -11,6 +12,7 @@ import 'package:medical/src/modal/exercrises/exercrise_walk_summary.dart';
 import 'package:medical/src/modal/exercrises/exercrises_Category.dart';
 import 'package:medical/src/modal/glucose/glucose_timeFrame.dart';
 import 'package:medical/src/repo/exercrises/exercrises_client.dart';
+import 'package:medical/src/widget/home/fliter_enum.dart';
 import 'package:meta/meta.dart';
 import 'package:medical/src/modal/error/error_model.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -153,18 +155,20 @@ class ExercrisesBloc extends Bloc<ExercrisesEvent, ExercrisesState> {
   Stream<ExercrisesState> fetchInputExercrises(
       String? currentDateTime, String? periodFilterType, int? page) async* {
     // try {
-      final client = ExercrisesClient();
-      final ExercrisesState currenState = state;
-      var model =
-          await client.fetchInput(currentDateTime, periodFilterType, page);
+    periodFilterType =
+        await AppSettings.getPeriodByScreen(ScreenList.EXERCISE.index);
+    final client = ExercrisesClient();
+    final ExercrisesState currenState = state;
+    var model =
+        await client.fetchInput(currentDateTime, periodFilterType, page);
 
-      if (currenState is ExercrisesDataLoaded) {
-        if (page != 1) {
-          model.inputs.insertAll(0, currenState.inputExercrisesModel);
-        }
+    if (currenState is ExercrisesDataLoaded) {
+      if (page != 1) {
+        model.inputs.insertAll(0, currenState.inputExercrisesModel);
       }
-      yield ExercrisesDataLoaded(
-          inputExercrisesModel: model.inputs, hasMore: model.hasMore);
+    }
+    yield ExercrisesDataLoaded(
+        inputExercrisesModel: model.inputs, hasMore: model.hasMore);
     // } catch (e, _) {
     //   if (e is Error) {
     //     yield ExercrisesError(message: e.message);
@@ -203,6 +207,8 @@ class ExercrisesBloc extends Bloc<ExercrisesEvent, ExercrisesState> {
     String? periodFilterType,
   ) async* {
     try {
+      periodFilterType =
+          await AppSettings.getPeriodByScreen(ScreenList.EXERCISE.index);
       final client = ExercrisesClient();
       yield ExercrisesLoading();
       var model = await client.fetchExercriseTimeTrend(
@@ -224,6 +230,8 @@ class ExercrisesBloc extends Bloc<ExercrisesEvent, ExercrisesState> {
     String? periodFilterType,
   ) async* {
     try {
+      periodFilterType =
+          await AppSettings.getPeriodByScreen(ScreenList.EXERCISE.index);
       final client = ExercrisesClient();
       yield ExercrisesLoading();
       var model = await client.fetchExercriseCaloTrend(
@@ -245,6 +253,8 @@ class ExercrisesBloc extends Bloc<ExercrisesEvent, ExercrisesState> {
     String? periodFilterType,
   ) async* {
     try {
+      periodFilterType =
+          await AppSettings.getPeriodByScreen(ScreenList.EXERCISE.index);
       final client = ExercrisesClient();
       yield ExercrisesLoading();
       var model = await client.fetchRank(currentDateTime, periodFilterType);

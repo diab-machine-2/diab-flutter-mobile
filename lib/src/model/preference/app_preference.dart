@@ -46,6 +46,10 @@ class AppPreference {
     return _preference?.getString(key);
   }
 
+  List<String>? getStringList(String key) {
+    return _preference?.getStringList(key);
+  }
+
   int? getIntData(String key) {
     return _preference?.getInt(key);
   }

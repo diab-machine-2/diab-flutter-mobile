@@ -10,7 +10,10 @@ import 'package:medical/src/modal/blood_pressure/blood_pressure_trend.dart';
 import 'package:medical/src/modal/error/error_model.dart';
 import 'package:medical/src/modal/glucose/glucose_timeFrame.dart';
 import 'package:medical/src/repo/blood_pressure/bloodPressure_client.dart';
+import 'package:medical/src/widget/home/fliter_enum.dart';
 import 'package:meta/meta.dart';
+
+import '../../app_setting/app_setting.dart';
 
 part 'bloodPressure_bloc_event.dart';
 part 'bloodPressure_bloc_state.dart';
@@ -62,6 +65,8 @@ class BloodPressureBloc extends Bloc<BloodPressureEvent, BloodPressureState> {
   Stream<BloodPressureState> fetchInputPressureGlucose(String? currentDateTime,
       String? periodFilterType, String? bloodPressureType, int? page) async* {
     try {
+      periodFilterType =
+          await AppSettings.getPeriodByScreen(ScreenList.BLOOD_PRESSURE.index);
       final client = BloodPressureClient();
       final BloodPressureState currenState = state;
       var model = await client.fetchBloodPressureInput(
@@ -92,6 +97,8 @@ class BloodPressureBloc extends Bloc<BloodPressureEvent, BloodPressureState> {
     String? periodFilterType,
   ) async* {
     try {
+      periodFilterType =
+          await AppSettings.getPeriodByScreen(ScreenList.BLOOD_PRESSURE.index);
       final client = BloodPressureClient();
       yield BloodPressureLoading();
       yield BloodPressureDataHeartRateLoaded(
@@ -113,6 +120,8 @@ class BloodPressureBloc extends Bloc<BloodPressureEvent, BloodPressureState> {
     String? periodFilterType,
   ) async* {
     try {
+      periodFilterType =
+          await AppSettings.getPeriodByScreen(ScreenList.BLOOD_PRESSURE.index);
       final client = BloodPressureClient();
       yield BloodPressureLoading();
       var model = await client.fetchBloodDistribution(
@@ -133,6 +142,8 @@ class BloodPressureBloc extends Bloc<BloodPressureEvent, BloodPressureState> {
     int? periodFilterType,
   ) async* {
     try {
+      periodFilterType = int.parse(
+          await AppSettings.getPeriodByScreen(ScreenList.BLOOD_PRESSURE.index));
       final client = BloodPressureClient();
       yield BloodPressureLoading();
       var model = await client.fetchBloodPressureTrend(
@@ -153,6 +164,8 @@ class BloodPressureBloc extends Bloc<BloodPressureEvent, BloodPressureState> {
     int? periodFilterType,
   ) async* {
     try {
+      periodFilterType = int.parse(
+          await AppSettings.getPeriodByScreen(ScreenList.BLOOD_PRESSURE.index));
       final client = BloodPressureClient();
       yield BloodPressureLoading();
       var model =

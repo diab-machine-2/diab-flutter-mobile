@@ -1,8 +1,10 @@
 import 'dart:convert';
 
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'package:flutter_observer/Observable.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/app.dart';
 import 'package:medical/src/modal/home/home_model.dart';
 import 'package:medical/src/modal/user/category_user_model.dart';
@@ -14,6 +16,7 @@ import 'package:medical/src/utils/app_log.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/helper/http_helper.dart';
+import 'package:medical/src/widget/home/fliter_enum.dart';
 
 import '../modal/user/secure.dart';
 
@@ -60,6 +63,27 @@ class AppSettings {
     final token = appPreference.getData(Const.TOKEN) ?? '';
     Console.log("getToken", token);
     return token;
+  }
+
+  static Future<List<String>> getHomeFilters() async {
+    List<String>? filterList = appPreference.getStringList("homeFilters");
+    return filterList ??
+        [
+          R.string.filter_day.tr(args: ['30']), // BLOOD_SUGAR
+          R.string.filter_day.tr(args: ['30']), // BLOOD_PRESSURE
+          R.string.filter_day.tr(args: ['30']), // WEIGHT
+          R.string.filter_day.tr(args: ['30']), // EMOTION
+          R.string.filter_day.tr(args: ['30']), // FOOD
+          R.string.filter_day.tr(args: ['30']), // EXERCISE
+          R.string.mot_nam.tr() // HBA1C
+        ];
+  }
+
+  static Future<bool> setHomeFilters(int screenIndex, String value) async {
+    List<String> filterList = await getHomeFilters();
+    filterList[screenIndex] = value;
+    appPreference.setData("homeFilters", filterList);
+    return true;
   }
 
   static Future<bool> clearToken() async {
@@ -159,6 +183,12 @@ class AppSettings {
     }
     final listData = json.decode(data) as List;
     return listData.map((e) => Map<String, String>.from(e)).toList();
+  }
+
+  static Future<String> getPeriodByScreen(int indexOfScreen) async {
+    List<String> flilters = await AppSettings.getHomeFilters();
+    int preriod = valueOfSelectedFilter[flilters[indexOfScreen]]!;
+    return (preriod + 1).toString();
   }
 
   static Future<bool> logout({bool isNavigateToStepListScreen = true}) async {

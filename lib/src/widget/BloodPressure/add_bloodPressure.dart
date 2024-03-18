@@ -30,6 +30,7 @@ import 'package:permission_handler/permission_handler.dart';
 
 import '../../repo/home/home_client.dart';
 import '../../widgets/CalendarPicker/custom_date_picker.dart';
+import '../../widgets/spacing_row.dart';
 import '../my_plan_screens/activity_tab/activity_tab/models/schedule_type.dart';
 
 class AddBloodPressureController extends StatefulWidget {
@@ -62,9 +63,18 @@ class _AddBloodPressureControllerState
   TimeFrameModel? selectedTimeFrame;
   List<String?> removeIDs = [];
   String? textValidate = '';
-
   ShortGuiModel? des;
-
+  List<int> rangeValueSystolic = [0, 90, 130, 140, 160, 180]; // init value
+  List<int> rangeValueDiastolic = [0, 60, 85, 90, 100, 220]; // init value
+  List<String> rangeLabel = [
+    "Thấp",
+    "Bình thường",
+    "Bình thường cao",
+    "Tăng huyết áp độ 1",
+    "Tăng huyết áp độ 2",
+    "Tăng huyết áp độ 3",
+  ];
+  bool isLoading = true;
   late AnimationController _controller;
   late Animation _animation;
   FocusNode _focusNode = FocusNode();
@@ -98,6 +108,24 @@ class _AddBloodPressureControllerState
     }
     loadDescription();
     firebaseSetup();
+    initData();
+  }
+
+  void initData() async {
+    BotToast.showLoading();
+    try {
+      Map<String, List<int>> ranges = await BloodPressureClient().fetchRange();
+      rangeValueSystolic = ranges['systolic']!;
+      rangeValueDiastolic = ranges['diastolic']!;
+      isLoading = false;
+      BotToast.closeAllLoading();
+    } catch (e) {
+      // Handle errors
+      print('Error: $e');
+      BotToast.showText(text: 'Error fetching data');
+      isLoading = false;
+      BotToast.closeAllLoading();
+    }
   }
 
   Future firebaseSetup() async {
@@ -271,6 +299,7 @@ class _AddBloodPressureControllerState
                                                           diastolicFocus
                                                               .requestFocus();
                                                         }
+                                                        setState(() {});
                                                       },
                                                       controller:
                                                           _controllerSystolic,
@@ -330,6 +359,7 @@ class _AddBloodPressureControllerState
                                                           heartFocus
                                                               .requestFocus();
                                                         }
+                                                        setState(() {});
                                                       },
                                                       controller:
                                                           _controllerDiastolic,
@@ -375,7 +405,17 @@ class _AddBloodPressureControllerState
                                                         FontWeight.w400))
                                           ]),
                                     ),
-                                    textValidate!.isNotEmpty
+                                    _controllerDiastolic.text.isEmpty ||
+                                            _controllerDiastolic.text == "0" ||
+                                            _controllerSystolic.text.isEmpty ||
+                                            _controllerSystolic.text == "0"
+                                        ? SizedBox(height: 50)
+                                        : SizedBox(height: 20),
+                                    isLoading ? SizedBox() : _bloodSugarRange(),
+                                    textValidate!.isNotEmpty &&
+                                            _controllerDiastolic
+                                                .text.isNotEmpty &&
+                                            _controllerSystolic.text.isNotEmpty
                                         ? Column(
                                             children: [
                                               SizedBox(
@@ -872,6 +912,366 @@ class _AddBloodPressureControllerState
           ),
         ),
       ),
+    );
+  }
+
+  int determineBloodPressureType(double systolic, double diastolic) {
+    int systolicIndex = -1;
+    int diastolicIndex = -1;
+
+    for (int i = 0; i < rangeValueSystolic.length - 1; i++) {
+      if (systolic >= rangeValueSystolic[i] &&
+          systolic < rangeValueSystolic[i + 1]) {
+        systolicIndex = i;
+        break;
+      }
+    }
+
+    for (int i = 0; i < rangeValueDiastolic.length - 1; i++) {
+      if (diastolic >= rangeValueDiastolic[i] &&
+          diastolic < rangeValueDiastolic[i + 1]) {
+        diastolicIndex = i;
+        break;
+      }
+    }
+
+    int typeIndex = -1;
+
+    switch (systolicIndex) {
+      case 0:
+        if (diastolicIndex == 0) {
+          typeIndex = 0;
+        }
+        break;
+      case 1:
+        if (diastolicIndex == 1) {
+          typeIndex = 1;
+        }
+        break;
+      case 2:
+        if (diastolicIndex == 2) {
+          typeIndex = 2;
+        }
+        break;
+      case 3:
+        if (diastolicIndex == 3) {
+          typeIndex = 3;
+        }
+        break;
+      case 4:
+        if (diastolicIndex == 4) {
+          typeIndex = 4;
+        }
+        break;
+      case 5:
+        typeIndex = 5;
+        break;
+      default:
+        typeIndex = -1; // None
+    }
+
+    if (typeIndex == -1) {
+      if (systolic > diastolic) {
+        typeIndex = determineCustomTypeIndex(systolic, false);
+      } else if (systolic < diastolic) {
+        typeIndex = determineCustomTypeIndex(diastolic, true);
+      } else if (systolic == diastolic) {
+        typeIndex = determineCustomTypeIndex(systolic, false);
+      }
+    }
+
+    return typeIndex;
+  }
+
+  int determineCustomTypeIndex(double value, bool isDiastolic) {
+    if (isDiastolic) {
+      if (value < 60)
+        return 0;
+      else if (value >= 60 && value < 85)
+        return 1;
+      else if (value >= 85 && value < 90)
+        return 2;
+      else if (value >= 90 && value < 100)
+        return 3;
+      else if (value >= 100 && value < 110)
+        return 4;
+      else
+        return 5;
+    } else {
+      if (value < 90)
+        return 0;
+      else if (value >= 90 && value < 130)
+        return 1;
+      else if (value >= 130 && value < 140)
+        return 2;
+      else if (value >= 140 && value < 160)
+        return 3;
+      else if (value >= 160 && value < 180)
+        return 4;
+      else
+        return 5;
+    }
+  }
+
+  int findIndexInRanges(double number, List<int> ranges) {
+    for (int i = 0; i < ranges.length - 1; i++) {
+      if (number >= ranges[i] && number < ranges[i + 1]) {
+        return i;
+      }
+    }
+    // If the number is greater than or equal to the last range value
+    return ranges.length - 1;
+  }
+
+  Widget _bloodSugarRange() {
+    // double? _number = 0;
+    double _valueOfSystolic = 0;
+    double _valueOfDiastolic = 0;
+
+    try {
+      _valueOfSystolic = double.tryParse(
+          _controllerSystolic.text.replaceAll(",", ".") != ""
+              ? _controllerSystolic.text.replaceAll(",", ".")
+              : "0")!;
+      _valueOfDiastolic = double.tryParse(
+          _controllerDiastolic.text.replaceAll(",", ".") != ""
+              ? _controllerDiastolic.text.replaceAll(",", ".")
+              : "0")!;
+    } catch (e) {}
+
+    List<Color> colorList = [
+      Color(0xFFF48222),
+      Color(0xFF02635A),
+      Color(0xFF9CD9B8),
+      Color(0xFFFFCCD1),
+      Color.fromARGB(255, 244, 111, 117),
+      Color(0xFFE53935),
+    ];
+    int index = -1;
+    int indexRangeSystolic =
+        findIndexInRanges(_valueOfSystolic, rangeValueSystolic);
+    int indexRangeDiastolic =
+        findIndexInRanges(_valueOfDiastolic, rangeValueDiastolic);
+    num widthRange = (AppMediaQuery.deviceWidth - 72) / (rangeLabel.length);
+
+    // num width = _number == 0 ? 0 : widthRange * (indexRange);
+    num widthOfSystolic =
+        _valueOfSystolic == 0 ? 0 : widthRange * (indexRangeSystolic);
+    num widthDiastolic =
+        _valueOfDiastolic == 0 ? 0 : widthRange * (indexRangeDiastolic);
+
+    if (_valueOfDiastolic != 0 || _valueOfSystolic != 0) {
+      num minSystolic = rangeValueSystolic[indexRangeSystolic];
+      num minDiastolic = rangeValueDiastolic[indexRangeDiastolic];
+
+      num maxSystolic = indexRangeSystolic + 1 >= rangeValueSystolic.length
+          ? rangeValueSystolic[indexRangeSystolic] + minSystolic
+          : rangeValueSystolic[indexRangeSystolic + 1];
+      num maxDiastolic = indexRangeDiastolic + 1 >= rangeValueDiastolic.length
+          ? rangeValueDiastolic[indexRangeDiastolic] + minDiastolic
+          : rangeValueDiastolic[indexRangeDiastolic + 1];
+
+      num maximumValueSystolic = maxSystolic - minSystolic;
+      num maximumValueDiastolic = maxDiastolic - minDiastolic;
+
+      num pxPerValueSystolic = widthRange / maximumValueSystolic;
+      num pxPerValueDiastolic = widthRange / maximumValueDiastolic;
+
+      num widthPlusSystolic =
+          pxPerValueSystolic * (_valueOfSystolic - minSystolic);
+      num widthPlusDiastolic =
+          pxPerValueDiastolic * (_valueOfDiastolic - minDiastolic);
+
+      widthOfSystolic += widthPlusSystolic;
+      widthDiastolic += widthPlusDiastolic;
+
+      widthOfSystolic =
+          widthOfSystolic > (widthRange * rangeValueSystolic.length)
+              ? widthRange * rangeValueSystolic.length
+              : widthOfSystolic;
+      widthDiastolic =
+          widthDiastolic > (widthRange * rangeValueDiastolic.length)
+              ? widthRange * rangeValueDiastolic.length
+              : widthDiastolic;
+    }
+    int indexRange =
+        determineBloodPressureType(_valueOfSystolic, _valueOfDiastolic);
+    return SpacingColumn(
+      spacing: 50,
+      children: [
+        if (_valueOfSystolic != 0 && _valueOfDiastolic != 0)
+          RichText(
+            text: TextSpan(
+              text: 'Huyết áp đang ở mức ',
+              style: TextStyle(
+                  color: R.color.textDark,
+                  fontWeight: FontWeight.w400,
+                  fontSize: 16),
+              children: <TextSpan>[
+                TextSpan(
+                  text: '“${rangeLabel[indexRange]}”',
+                  style: TextStyle(
+                    color: colorList[indexRange],
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        Stack(
+          clipBehavior: Clip.none,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(bottom: 40),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(5),
+                child: Row(
+                  children: colorList.map(
+                    (e) {
+                      index++;
+                      return Container(
+                        height: 8,
+                        width: widthRange.toDouble(),
+                        color: colorList[index],
+                      );
+                    },
+                  ).toList(),
+                ),
+              ),
+            ),
+            Positioned(
+              left: widthDiastolic.toDouble() - 20,
+              bottom: 10,
+              child:
+                  Container(child: Icon(Icons.arrow_drop_up_rounded, size: 40)),
+            ),
+            Positioned(
+              left: widthOfSystolic.toDouble() - 20,
+              bottom: 40,
+              child: Container(
+                  child: Icon(Icons.arrow_drop_down_rounded, size: 40)),
+            ),
+            Positioned(
+              left: 0,
+              right: 0,
+              bottom: 20,
+              child: Row(
+                  children: rangeValueDiastolic
+                      .map(
+                        (e) => Expanded(
+                          child: Stack(
+                            clipBehavior: Clip.none,
+                            children: [
+                              SizedBox(),
+                              Positioned(
+                                left: e.toString().length == 3 ? -10 : -7,
+                                child: e == 0
+                                    ? Text(
+                                        'Tâm trương',
+                                        style: TextStyle(
+                                          fontSize: 10,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      )
+                                    : Text(
+                                        '$e',
+                                        style: TextStyle(
+                                            // Default style for other values of e
+                                            ),
+                                      ),
+                              )
+                            ],
+                          ),
+                        ),
+                      )
+                      .toList()),
+            ),
+            Positioned(
+              left: 0,
+              right: 0,
+              top: -30,
+              child: Row(
+                  children: rangeValueSystolic
+                      .map(
+                        (e) => Expanded(
+                          child: Stack(
+                            clipBehavior: Clip.none,
+                            children: [
+                              SizedBox(),
+                              Positioned(
+                                left: e.toString().length == 3 ? -10 : -7,
+                                child: e == 0
+                                    ? Text(
+                                        'Tâm Thu',
+                                        style: TextStyle(
+                                          fontSize: 10,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      )
+                                    : Text(
+                                        '$e',
+                                        style: TextStyle(
+                                            // Default style for other values of e
+                                            ),
+                                      ),
+                              )
+                            ],
+                          ),
+                        ),
+                      )
+                      .toList()),
+            ),
+            Positioned(
+              left: 0,
+              right: 0,
+              top: -15,
+              child: Row(
+                  children: rangeValueSystolic
+                      .map(
+                        (e) => Expanded(
+                          child: Container(
+                            width: 30,
+                            child: Text(
+                              '|',
+                              style: TextStyle(
+                                color: e == 0
+                                    ? Colors.transparent
+                                    : Color(0xFFD7D7D7),
+                                fontSize: 10,
+                              ),
+                            ),
+                          ),
+                        ),
+                      )
+                      .toList()),
+            ),
+            Positioned(
+              left: 0,
+              right: 0,
+              bottom: 25,
+              child: Row(
+                  children: rangeValueDiastolic
+                      .map(
+                        (e) => Expanded(
+                          child: Container(
+                            width: 30,
+                            child: Text(
+                              '|',
+                              style: TextStyle(
+                                color: e == 0
+                                    ? Colors.transparent
+                                    : Color(0xFFD7D7D7),
+                                fontSize: 10,
+                              ),
+                            ),
+                          ),
+                        ),
+                      )
+                      .toList()),
+            ),
+          ],
+        ),
+      ],
     );
   }
 
