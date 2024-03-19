@@ -139,6 +139,10 @@ dependencies:
   wakelock: ^0.6.2
   # Metadata detection
   linkify: ^5.0.0
+  # integrating ocr
+  camera: ^0.10.5
+  image: ^4.1.4
+  crop_your_image: ^1.0.0
 
 dev_dependencies:
   flutter_test:

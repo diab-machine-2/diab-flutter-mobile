@@ -79,6 +79,9 @@ import 'utils/navigator_name.dart';
 import 'widget/BloodSugar/add_bloodSugar_new.dart';
 import 'widget/helper/photo_view.dart';
 import 'widget/news_detail/presentation/news_detail_view.dart';
+import 'widget/ocr/test_ocr_camera_page.dart';
+import 'widget/ocr/test_ocr_gallery_page.dart';
+import 'widget/ocr/test_ocr_page.dart';
 import 'widget/profile/profile_controller.dart';
 import 'widget/shared_profile/pages/share_app_detail/share_app_detail.dart';
 import 'widget/zoom_b/zoom_ios_view.dart';
@@ -606,6 +609,14 @@ class _AppState extends State<App> {
                   case NavigatorName.meeting:
                     final args = settings.arguments as MeetingArguments;
                     return _buildRoute(settings, MeetingPage(args));
+
+                  // test ocr
+                  case NavigatorName.test_ocr:
+                    return _buildRoute(settings, TestOcrPage());
+                  case NavigatorName.test_ocr_camera:
+                    return _buildRoute(settings, TestOcrCamera());
+                  case NavigatorName.test_ocr_gallery:
+                    return _buildRoute(settings, TestOcrGallery());
 
                   default:
                     return null;
