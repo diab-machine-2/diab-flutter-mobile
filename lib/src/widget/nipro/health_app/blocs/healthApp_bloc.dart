@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:bloc/bloc.dart';
 import 'package:collection/collection.dart';
@@ -15,7 +14,6 @@ import 'package:medical/src/repo/blood_pressure/bloodPressure_client.dart';
 import 'package:medical/src/repo/glucose/glucose_client.dart';
 import 'package:medical/src/repo/user/user_client.dart';
 import 'package:medical/src/repo/weight/weight_client.dart';
-import 'package:medical/src/utils/api_methods.dart';
 import 'package:medical/src/utils/app_log.dart';
 import 'package:medical/src/utils/date_utils.dart';
 import 'package:medical/src/utils/utils.dart';
@@ -56,10 +54,6 @@ class HealthAppBloc extends Bloc<HealthAppEvent, HealthAppState> {
 
   // Tâm thu - Tâm trương - Nhịp tim
   syncSystolicAndDiastolic() async {
-    var syncStatus = await ApiMethods.get(path: "/App/Step/sync-health");
-    if (jsonDecode(syncStatus.body)["syncSystolicAndDiastolic"]) {
-      return;
-    }
     DateTime dateTo = DateTime.now();
     DateTime dateFrom = releaseDate;
 
@@ -140,7 +134,8 @@ class HealthAppBloc extends Bloc<HealthAppEvent, HealthAppState> {
             'pulseRate': element.heartRate
                 .toString(), // Assuming element.heartRate is of type int or double
             'date': element.dateFrom.millisecondsSinceEpoch ~/ 1000,
-            // 'timeFrameId': timeFrames.first.id,
+            'timeFrameId': "",
+            "timeFrameValue": DateUtil.getDayInMillis(element.dateFrom),
             'note': "",
             'reason': "Đồng bộ dữ liệu từ Health App",
             'files': [],
@@ -159,11 +154,6 @@ class HealthAppBloc extends Bloc<HealthAppEvent, HealthAppState> {
   static DateTime? latestStep;
 
   syncStepLatestWeek() async {
-    var syncStatus = await ApiMethods.get(path: "/App/Step/sync-health");
-    if (syncStatus.statusCode == 200 &&
-        jsonDecode(syncStatus.body)["syncStep"]) {
-      return;
-    }
     // case đang sync thì out app => sync status trước
     isStepRemain = await AppSettings.getIsRemainStep();
     String? latestTimeStepFromStorage = await AppSettings.getLatestTimeStep();
@@ -228,11 +218,6 @@ class HealthAppBloc extends Bloc<HealthAppEvent, HealthAppState> {
   }
 
   syncStepRemain() async {
-    var syncStatus = await ApiMethods.get(path: "/App/Step/sync-health");
-    if (syncStatus.statusCode == 200 &&
-        jsonDecode(syncStatus.body)["syncStep"]) {
-      return;
-    }
     DateTime dateTo = DateTime.now().add(Duration(days: -8));
     DateTime dateFrom = latestStep ?? DateTime.now().add(Duration(days: -90));
     bool result = false;
@@ -351,11 +336,6 @@ class HealthAppBloc extends Bloc<HealthAppEvent, HealthAppState> {
   }
 
   syncSTEP() async {
-    var syncStatus = await ApiMethods.get(path: "/App/Step/sync-health");
-    if (syncStatus.statusCode == 200 &&
-        jsonDecode(syncStatus.body)["syncStep"]) {
-      return;
-    }
     DateTime dateTo = DateTime.now();
     DateTime dateFrom = releaseDate;
     bool result = false;
@@ -477,10 +457,6 @@ class HealthAppBloc extends Bloc<HealthAppEvent, HealthAppState> {
   }
 
   syncWeight() async {
-    var syncStatus = await ApiMethods.get(path: "/App/Step/sync-health");
-    if (jsonDecode(syncStatus.body)["syncWeight"]) {
-      return;
-    }
     bool result = false;
     DateTime dateTo = DateTime.now();
     DateTime dateFrom = releaseDate;
@@ -547,7 +523,8 @@ class HealthAppBloc extends Bloc<HealthAppEvent, HealthAppState> {
               "height": height != null
                   ? height.toString()
                   : userInfo.height.toString(),
-              // "timeFrameId": timeFrames.first.id,
+              "timeFrameValue": DateUtil.getDayInMillis(weightData.dateFrom),
+              // 'timeFrameId': "",
               "note": 'Đồng bộ dữ liệu từ Health App',
               // "waist": null,
               "files": [],
@@ -584,10 +561,6 @@ class HealthAppBloc extends Bloc<HealthAppEvent, HealthAppState> {
   }
 
   syncBlodGlucose() async {
-    var syncStatus = await ApiMethods.get(path: "/App/Step/sync-health");
-    if (jsonDecode(syncStatus.body)["syncGlucose"]) {
-      return;
-    }
     DateTime dateTo = DateTime.now();
     DateTime dateFrom = releaseDate;
     bool result = false;

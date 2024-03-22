@@ -46,7 +46,7 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
   DateTime today = DateTime.now();
   bool btnAction = true;
   List<int> rangeValue = [0, 60, 65, 75];
-  List<String> rangeLabel = ["Rất tốt", "Tốt", "Cao", "Rất cao"];
+  List<String> rangeLabel = ["Tuyệt vời", "Tốt", "Khá cao", "Rất cao"];
   InputHbA1CModel? model;
   List<String?> removeIDs = [];
   bool isLoading = true;
