@@ -211,9 +211,10 @@ class DynamicLinkConfig {
     String urlString = deepLink.toString();
 
     // Zoom handler
-    String meetUrl = "meet.diab.com.vn";
-    if (urlString.contains(meetUrl)) {
-      String roomId = urlString.split(meetUrl + "/").last;
+    String meetingSignalPattern = "calendar=";
+    bool isMeetingLink = urlString.contains(meetingSignalPattern);
+    if (isMeetingLink) {
+      String roomId = urlString.split(meetingSignalPattern).last;
       final UserModel? user = AppSettings.userInfo;
       if (user != null && _zoomId == null) {
         _zoomId = roomId;
