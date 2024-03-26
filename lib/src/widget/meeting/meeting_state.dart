@@ -17,11 +17,13 @@ class MeetingJoined extends MeetingState {
   final ZoomVideoSdkUser? thisUser;
   final ZoomVideoSdkUser fullscreenUser;
   final List<ZoomVideoSdkUser> remoteUsers;
+  final bool isUserVideoOn;
 
   MeetingJoined({
     this.thisUser,
     required this.fullscreenUser,
     this.remoteUsers = const [],
+    this.isUserVideoOn = false,
   });
 
   @override
@@ -31,21 +33,18 @@ class MeetingJoined extends MeetingState {
     ZoomVideoSdkUser? thisUser,
     ZoomVideoSdkUser? fullscreenUser,
     List<ZoomVideoSdkUser>? remoteUsers,
+    bool? isUserVideoOn,
   }) {
     return MeetingJoined(
       thisUser: thisUser ?? this.thisUser,
       fullscreenUser: fullscreenUser ?? this.fullscreenUser,
       remoteUsers: remoteUsers ?? this.remoteUsers,
+      isUserVideoOn: isUserVideoOn ?? this.isUserVideoOn,
     );
   }
 
   @override
-  List<Object> get props => [
-    if (thisUser != null)
-      thisUser!,
-    fullscreenUser,
-    remoteUsers
-  ];
+  List<Object> get props => [if (thisUser != null) thisUser!, fullscreenUser, remoteUsers, isUserVideoOn];
 }
 
 class MeetingLeaving extends MeetingState {
