@@ -178,32 +178,15 @@ class _MeetingPageState extends State<MeetingPage>
         resolution: VideoResolution.Resolution720,
       );
     } else {
-      // This user is sharing screen
-      if (state.thisUser != null &&
-          state.thisUser!.userId == state.fullscreenUser.userId &&
-          state.fullscreenUser.isSharing) {
-        fullScreenView = Center(
-          child: Text(
-            'Đang chia sẻ màn hình',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 18.0,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-        );
-      } else {
-        // Other cases
-        bool allowPiPMode = state.thisUser?.userId != state.fullscreenUser.userId;
-        fullScreenView = VideoView(
-          avatarUrl: null,
-          user: state.fullscreenUser,
-          fullScreen: true,
-          isPiPView: allowPiPMode,
-          sharing: state.fullscreenUser.isSharing,
-          resolution: VideoResolution.Resolution720,
-        );
-      }
+      bool allowPiPMode = state.thisUser?.userId != state.fullscreenUser.userId;
+      fullScreenView = VideoView(
+        avatarUrl: null,
+        user: state.fullscreenUser,
+        fullScreen: true,
+        isPiPView: allowPiPMode,
+        sharing: state.fullscreenUser.isSharing,
+        resolution: VideoResolution.Resolution720,
+      );
     }
 
     final media = MediaQuery.of(context);
@@ -290,7 +273,7 @@ class _MeetingPageState extends State<MeetingPage>
         child: previewView,
       ),
     );
-    Widget controlsWidget = _buildControls();
+    Widget controlsWidget = _buildControls(state.isUserVideoOn);
     return Stack(
       children: [
         Positioned.fill(child: fullScreenView),
@@ -308,7 +291,7 @@ class _MeetingPageState extends State<MeetingPage>
   }
 
   // build controls
-  Widget _buildControls() {
+  Widget _buildControls(bool isVideoOn) {
     return Container(
       color: Colors.black.withOpacity(0.5),
       padding: const EdgeInsets.symmetric(horizontal: 4.0),
@@ -351,17 +334,11 @@ class _MeetingPageState extends State<MeetingPage>
               ),
 
               // Camera
-              FutureBuilder(
-                future: _cubit.user?.videoStatus?.isOn(),
-                builder: (context, snapshot) {
-                  bool isVideoOn = snapshot.data ?? false;
-                  return _buttonIconWithTextBelow(
-                    isVideoOn ? R.drawable.ic_zoom_video_on : R.drawable.ic_zoom_video_off,
-                    isVideoOn ? 'Tắt camera' : 'Bật camera',
-                    _cubit.toggleVideo,
-                    isOff: !isVideoOn,
-                  );
-                },
+              _buttonIconWithTextBelow(
+                isVideoOn ? R.drawable.ic_zoom_video_on : R.drawable.ic_zoom_video_off,
+                isVideoOn ? 'Tắt camera' : 'Bật camera',
+                _cubit.toggleVideo,
+                isOff: !isVideoOn,
               ),
 
               // Audio

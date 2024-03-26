@@ -180,8 +180,6 @@ class MeetingCubit extends Cubit<MeetingState> {
         }
       }
     }
-    var newState = (state as MeetingJoined).copyWith(thisUser: mySelf);
-    emit(newState);
   }
 
   void switchCamera() async {
@@ -192,7 +190,7 @@ class MeetingCubit extends Cubit<MeetingState> {
         var videoOn = await videoStatus.isOn();
         if (videoOn && state is MeetingJoined) {
           await _zoom.videoHelper.switchCamera('');
-          emit((state as MeetingJoined).copyWith(thisUser: mySelf));
+          emit((state as MeetingJoined).copyWith(isUserVideoOn: true));
         }
       }
     }
@@ -233,8 +231,6 @@ class MeetingCubit extends Cubit<MeetingState> {
       final videoStatus = mySelf.videoStatus;
       if (videoStatus != null) {
         await _zoom.videoHelper.startVideo();
-        var newState = (state as MeetingJoined).copyWith(thisUser: mySelf);
-        emit(newState);
       }
     }
   }
@@ -357,12 +353,17 @@ class MeetingCubit extends Cubit<MeetingState> {
         var userListJson = jsonDecode(data['changedUsers']) as List;
         List<ZoomVideoSdkUser> userList =
             userListJson.map((userJson) => ZoomVideoSdkUser.fromJson(userJson)).toList();
+        bool isUserVideoOn = await mySelf.videoStatus?.isOn() ?? false;
         // Change if mySelf is in the list
         if (userList.any((e) => e.userId == mySelf.userId)) {
           _mySelf = mySelf;
           if (state is MeetingJoined) {
-            MeetingJoined newState = (state as MeetingJoined).copyWith(thisUser: mySelf);
-            emit(newState);
+            FutureFunc action = () async => await _sendJoinedState(
+                  thisUser: mySelf,
+                  remoteUsers: _remoteUsers,
+                  isUserVideoOn: isUserVideoOn,
+                );
+            _actionQueue.enqueue(action);
           }
         } else {
           _remoteUsers = (await _zoom.session.getRemoteUsers()) ?? [];
@@ -370,6 +371,7 @@ class MeetingCubit extends Cubit<MeetingState> {
           FutureFunc action = () async => await _sendJoinedState(
                 thisUser: mySelf,
                 remoteUsers: _remoteUsers,
+                isUserVideoOn: isUserVideoOn,
               );
           _actionQueue.enqueue(action);
         }
@@ -537,6 +539,7 @@ class MeetingCubit extends Cubit<MeetingState> {
   Future<void> _sendJoinedState({
     required ZoomVideoSdkUser thisUser,
     List<ZoomVideoSdkUser> remoteUsers = const [],
+    bool? isUserVideoOn,
   }) async {
     // Just this user in the session
     if (remoteUsers.isEmpty) {
@@ -558,63 +561,102 @@ class MeetingCubit extends Cubit<MeetingState> {
           }
         }
       }
+
+      // Priority: Host > Manager > Attendee (any with video on)
+      ZoomVideoSdkUser? hostUser = null;
+
+      final hostUsers = remoteUsers.where((user) => user.isHost ?? false).toList();
+      final managerUsers = remoteUsers.where((user) => user.isManager ?? false).toList();
+      final otherUsers = remoteUsers
+          .where((user) => !(user.isHost ?? false) && !(user.isManager ?? false))
+          .toList();
+      final orderedUsers = [...hostUsers, ...managerUsers, ...otherUsers];
+
+      ZoomVideoSdkUser? hostSharingAndVideoOn;
+      for (var user in orderedUsers) {
+        bool isVideoOn = await user.videoStatus?.isOn() ?? false;
+        if ((user.isHost ?? false) && isVideoOn) {
+          hostUser = user;
+          if (_isSharing) {
+            hostSharingAndVideoOn = user;
+          }
+          break;
+        }
+        if ((user.isManager ?? false) && isVideoOn) {
+          hostUser = user;
+          if (_isSharing) {
+            hostSharingAndVideoOn = user;
+          }
+          break;
+        }
+        if (isVideoOn) {
+          hostUser = user;
+          break;
+        }
+      }
+      if (hostUser == null) {
+        hostUser = remoteUsers.first;
+      }
+
       if (sharingUser != null) {
         // This user is sharing screen
         if (sharingUser.userId == thisUser.userId) {
-          final newState = MeetingJoined(
-            thisUser: thisUser,
-            fullscreenUser: thisUser,
-            remoteUsers: remoteUsers,
-          );
-          emit(newState);
+          if (state is MeetingJoined) {
+            final currentState = state as MeetingJoined;
+            final newState = currentState.copyWith(
+              thisUser: hostSharingAndVideoOn ?? thisUser,
+              fullscreenUser: thisUser,
+              remoteUsers: remoteUsers,
+              isUserVideoOn: isUserVideoOn ?? currentState.isUserVideoOn,
+            );
+            emit(newState);
+          } else {
+            final newState = MeetingJoined(
+              thisUser: hostSharingAndVideoOn ?? thisUser,
+              fullscreenUser: thisUser,
+              remoteUsers: remoteUsers,
+            );
+            emit(newState);
+          }
         } else {
           // Someone else is sharing screen
-          final newState = MeetingJoined(
-            thisUser: thisUser,
-            fullscreenUser: sharingUser,
-            remoteUsers: remoteUsers,
-          );
-          emit(newState);
+          if (state is MeetingJoined) {
+            final currentState = state as MeetingJoined;
+            final newState = currentState.copyWith(
+              thisUser: hostSharingAndVideoOn ?? thisUser,
+              fullscreenUser: sharingUser,
+              remoteUsers: remoteUsers,
+              isUserVideoOn: isUserVideoOn ?? currentState.isUserVideoOn,
+            );
+            emit(newState);
+          } else {
+            final newState = MeetingJoined(
+              thisUser: hostSharingAndVideoOn ?? thisUser,
+              fullscreenUser: sharingUser,
+              remoteUsers: remoteUsers,
+            );
+            emit(newState);
+          }
         }
       } else {
         // No one is sharing screen
-        // Priority: Host > Manager > Attendee (any with video on)
-        ZoomVideoSdkUser? hostUser = null;
-
-        final hostUsers = remoteUsers.where((user) => user.isHost ?? false).toList();
-        final managerUsers = remoteUsers.where((user) => user.isManager ?? false).toList();
-        final otherUsers = remoteUsers
-            .where((user) => !(user.isHost ?? false) && !(user.isManager ?? false))
-            .toList();
-        final orderedUsers = [...hostUsers, ...managerUsers, ...otherUsers];
-
-        ZoomVideoSdkUser? hostSharingAndVideoOn;
-        for (var user in orderedUsers) {
-          bool isVideoOn = await user.videoStatus?.isOn() ?? false;
-          if ((user.isHost ?? false) && isVideoOn) {
-            hostUser = user;
-            hostSharingAndVideoOn = user;
-            break;
-          }
-          if ((user.isManager ?? false) && isVideoOn) {
-            hostUser = user;
-            hostSharingAndVideoOn = user;
-            break;
-          }
-          if (isVideoOn) {
-            hostUser = user;
-            break;
-          }
+        if (state is MeetingJoined) {
+          final currentState = state as MeetingJoined;
+          final newState = currentState.copyWith(
+            thisUser: hostSharingAndVideoOn ?? thisUser,
+            fullscreenUser: hostUser,
+            remoteUsers: remoteUsers,
+            isUserVideoOn: isUserVideoOn ?? currentState.isUserVideoOn,
+          );
+          emit(newState);
+        } else {
+          final newState = MeetingJoined(
+            thisUser: hostSharingAndVideoOn ?? thisUser,
+            fullscreenUser: hostUser,
+            remoteUsers: remoteUsers,
+          );
+          emit(newState);
         }
-        if (hostUser == null) {
-          hostUser = remoteUsers.first;
-        }
-        final newState = MeetingJoined(
-          thisUser: hostSharingAndVideoOn ?? thisUser,
-          fullscreenUser: hostUser,
-          remoteUsers: remoteUsers,
-        );
-        emit(newState);
       }
     }
   }
