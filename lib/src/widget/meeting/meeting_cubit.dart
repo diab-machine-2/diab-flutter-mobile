@@ -9,6 +9,7 @@ import 'package:flutter_zoom_videosdk/native/zoom_videosdk_event_listener.dart';
 import 'package:flutter_zoom_videosdk/native/zoom_videosdk_user.dart';
 import 'package:events_emitter/events_emitter.dart';
 import 'package:medical/src/service/zoom_service.dart';
+import 'package:medical/src/utils/async_queue.dart';
 import 'models/MeetingMessage.dart';
 
 import 'meeting_state.dart';
@@ -19,6 +20,10 @@ class MeetingCubit extends Cubit<MeetingState> {
   // Shared state with app session
   static String? _latestSessionId = null;
   static List<MeetingMessage> _latestChatMessages = [];
+
+  // Queue to state
+  AsyncActionQueue _actionQueue = AsyncActionQueue();
+  Map<String, bool> _videoOnCached = {};
 
   // Zoom
   final ZoomVideoSdk _zoom = ZoomVideoSdk();
@@ -291,9 +296,7 @@ class MeetingCubit extends Cubit<MeetingState> {
 
   void leaveSession() async {
     try {
-      if (_audioAttached) {
-        await _zoom.audioHelper.stopAudio();
-      }
+      await _zoom.audioHelper.cleanAudioSession();
       await _zoom.leaveSession(false);
     } catch (e) {
       print('zoom: Error leaving session: $e');
@@ -359,11 +362,11 @@ class MeetingCubit extends Cubit<MeetingState> {
         } else {
           _remoteUsers = (await _zoom.session.getRemoteUsers()) ?? [];
           print('zoom: remoteUsers: $_remoteUsers');
-          MeetingJoined newState = await _composeJoinedState(
-            thisUser: mySelf,
-            remoteUsers: _remoteUsers,
-          );
-          emit(newState);
+          FutureFunc action = () async => await _sendJoinedState(
+                thisUser: mySelf,
+                remoteUsers: _remoteUsers,
+              );
+          _actionQueue.enqueue(action);
         }
         return;
       }
@@ -408,19 +411,19 @@ class MeetingCubit extends Cubit<MeetingState> {
         _sharingUserId = shareUser?.userId ?? '';
         _remoteUsers = (await _zoom.session.getRemoteUsers()) ?? [];
         ZoomVideoSdkUser? mySelf = await _zoom.session.getMySelf();
-        MeetingJoined newState = await _composeJoinedState(
-          thisUser: _mySelf ?? mySelf!,
-          remoteUsers: _remoteUsers,
-        );
-        emit(newState);
+        FutureFunc action = () async => await _sendJoinedState(
+              thisUser: _mySelf ?? mySelf!,
+              remoteUsers: _remoteUsers,
+            );
+        _actionQueue.enqueue(action);
       } else {
         _isSharing = false;
         _sharingUserId = '';
-        MeetingJoined newState = await _composeJoinedState(
-          thisUser: _mySelf!,
-          remoteUsers: await _zoom.session.getRemoteUsers() ?? [],
-        );
-        emit(newState);
+        FutureFunc action = () async => await _sendJoinedState(
+              thisUser: _mySelf!,
+              remoteUsers: await _zoom.session.getRemoteUsers() ?? [],
+            );
+        _actionQueue.enqueue(action);
       }
     });
     meetingEvents.add(userShareStatusChangeListener);
@@ -447,9 +450,9 @@ class MeetingCubit extends Cubit<MeetingState> {
       List<ZoomVideoSdkUser> remoteUsers =
           userListJson.map((userJson) => ZoomVideoSdkUser.fromJson(userJson)).toList();
       _remoteUsers = remoteUsers;
-      MeetingJoined newState =
-          await _composeJoinedState(thisUser: _mySelf!, remoteUsers: _remoteUsers);
-      emit(newState);
+      FutureFunc action =
+          () async => await _sendJoinedState(thisUser: _mySelf!, remoteUsers: _remoteUsers);
+      _actionQueue.enqueue(action);
     });
     meetingEvents.add(userJoinListener);
 
@@ -462,9 +465,9 @@ class MeetingCubit extends Cubit<MeetingState> {
           userListJson.map((userJson) => ZoomVideoSdkUser.fromJson(userJson)).toList();
       _remoteUsers = remoteUsers;
       if (_mySelf != null) {
-        MeetingJoined newState =
-            await _composeJoinedState(thisUser: _mySelf!, remoteUsers: _remoteUsers);
-        emit(newState);
+        FutureFunc action =
+            () async => await _sendJoinedState(thisUser: _mySelf!, remoteUsers: _remoteUsers);
+        _actionQueue.enqueue(action);
       }
     });
     meetingEvents.add(userLeaveListener);
@@ -513,27 +516,31 @@ class MeetingCubit extends Cubit<MeetingState> {
       _speakerModes.remove(SpeakerMode.telephony);
     }
 
-    MeetingJoined newState = await _composeJoinedState(thisUser: mySelf, remoteUsers: _remoteUsers);
-    emit(newState);
+    FutureFunc action =
+        () async => await _sendJoinedState(thisUser: mySelf, remoteUsers: _remoteUsers);
+    _actionQueue.enqueue(action);
   }
 
   void _userLeft(Object? data) {
     _isJoined = false;
     print('zoom: onSessionLeave: $data');
+    _zoom.audioHelper.cleanAudioSession();
+
     emit(MeetingLeaving());
   }
 
-  Future<MeetingJoined> _composeJoinedState({
+  Future<void> _sendJoinedState({
     required ZoomVideoSdkUser thisUser,
     List<ZoomVideoSdkUser> remoteUsers = const [],
   }) async {
     // Just this user in the session
     if (remoteUsers.isEmpty) {
-      return MeetingJoined(
+      final newState = MeetingJoined(
         thisUser: thisUser,
         fullscreenUser: thisUser,
         remoteUsers: remoteUsers,
       );
+      emit(newState);
     } else {
       // Someone is sharing screen
       ZoomVideoSdkUser? sharingUser;
@@ -549,25 +556,42 @@ class MeetingCubit extends Cubit<MeetingState> {
       if (sharingUser != null) {
         // This user is sharing screen
         if (sharingUser.userId == thisUser.userId) {
-          return MeetingJoined(
+          final newState = MeetingJoined(
             thisUser: thisUser,
             fullscreenUser: thisUser,
             remoteUsers: remoteUsers,
           );
+          emit(newState);
         } else {
           // Someone else is sharing screen
-          return MeetingJoined(
+          final newState = MeetingJoined(
             thisUser: thisUser,
             fullscreenUser: sharingUser,
             remoteUsers: remoteUsers,
           );
+          emit(newState);
         }
       } else {
         // No one is sharing screen
         // Priority: Host > Manager > Attendee (any with video on)
         ZoomVideoSdkUser? hostUser = null;
-        for (var user in remoteUsers) {
-          bool isVideoOn = await user.videoStatus?.isOn() ?? false;
+
+        final hostUsers = remoteUsers.where((user) => user.isHost ?? false).toList();
+        final managerUsers = remoteUsers.where((user) => user.isManager ?? false).toList();
+        final otherUsers = remoteUsers
+            .where((user) => !(user.isHost ?? false) && !(user.isManager ?? false))
+            .toList();
+        final orderedUsers = [...hostUsers, ...managerUsers, ...otherUsers];
+
+        for (var user in orderedUsers) {
+          bool isVideoOn = false;
+          if (_videoOnCached.containsKey(user.userId)) {
+            isVideoOn = _videoOnCached[user.userId]!;
+          } else {
+            isVideoOn = await user.videoStatus?.isOn() ?? false;
+          }
+          _videoOnCached.putIfAbsent(user.userId, () => isVideoOn);
+
           if ((user.isHost ?? false) && isVideoOn) {
             hostUser = user;
             break;
@@ -584,11 +608,12 @@ class MeetingCubit extends Cubit<MeetingState> {
         if (hostUser == null) {
           hostUser = remoteUsers.first;
         }
-        return MeetingJoined(
+        final newState = MeetingJoined(
           thisUser: thisUser,
           fullscreenUser: hostUser,
           remoteUsers: remoteUsers,
         );
+        emit(newState);
       }
     }
   }
