@@ -151,7 +151,7 @@ dev_dependencies:
 dependency_overrides:
   provider: 6.0.2
   meta: 1.7.0
-  fwfh_text_style: 2.23.8
+  # fwfh_text_style: 2.23.8 <- to build with flutter 3.16
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
