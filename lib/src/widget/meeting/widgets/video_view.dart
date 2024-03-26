@@ -40,7 +40,7 @@ class VideoView extends fzv.ZoomView {
     creationParams.putIfAbsent("preview", () => preview);
     creationParams.putIfAbsent("focused", () => focused);
     creationParams.putIfAbsent("hasMultiCamera", () => hasMultiCamera);
-    creationParams.putIfAbsent("isPiPView", () => isPiPView);
+    creationParams.putIfAbsent("isPiPView", () => false);
     if (videoAspect.isEmpty) {
       creationParams.putIfAbsent("videoAspect", () => VideoAspect.PanAndScan);
     } else {

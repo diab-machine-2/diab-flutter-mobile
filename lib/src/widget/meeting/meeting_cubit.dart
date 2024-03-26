@@ -23,7 +23,6 @@ class MeetingCubit extends Cubit<MeetingState> {
 
   // Queue to state
   AsyncActionQueue _actionQueue = AsyncActionQueue();
-  Map<String, bool> _videoOnCached = {};
 
   // Zoom
   final ZoomVideoSdk _zoom = ZoomVideoSdk();
@@ -296,7 +295,13 @@ class MeetingCubit extends Cubit<MeetingState> {
 
   void leaveSession() async {
     try {
+      print('stop audio');
       await _zoom.audioHelper.cleanAudioSession();
+    } catch (e) {
+      print('zoom: Error when clean audio: $e');
+    }
+    try {
+      print('leave session');
       await _zoom.leaveSession(false);
     } catch (e) {
       print('zoom: Error leaving session: $e');
@@ -583,21 +588,17 @@ class MeetingCubit extends Cubit<MeetingState> {
             .toList();
         final orderedUsers = [...hostUsers, ...managerUsers, ...otherUsers];
 
+        ZoomVideoSdkUser? hostSharingAndVideoOn;
         for (var user in orderedUsers) {
-          bool isVideoOn = false;
-          if (_videoOnCached.containsKey(user.userId)) {
-            isVideoOn = _videoOnCached[user.userId]!;
-          } else {
-            isVideoOn = await user.videoStatus?.isOn() ?? false;
-          }
-          _videoOnCached.putIfAbsent(user.userId, () => isVideoOn);
-
+          bool isVideoOn = await user.videoStatus?.isOn() ?? false;
           if ((user.isHost ?? false) && isVideoOn) {
             hostUser = user;
+            hostSharingAndVideoOn = user;
             break;
           }
           if ((user.isManager ?? false) && isVideoOn) {
             hostUser = user;
+            hostSharingAndVideoOn = user;
             break;
           }
           if (isVideoOn) {
@@ -609,7 +610,7 @@ class MeetingCubit extends Cubit<MeetingState> {
           hostUser = remoteUsers.first;
         }
         final newState = MeetingJoined(
-          thisUser: thisUser,
+          thisUser: hostSharingAndVideoOn ?? thisUser,
           fullscreenUser: hostUser,
           remoteUsers: remoteUsers,
         );
