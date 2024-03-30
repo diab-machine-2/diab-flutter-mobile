@@ -180,6 +180,8 @@ class MeetingCubit extends Cubit<MeetingState> {
         }
       }
     }
+    var newState = (state as MeetingJoined).copyWith(thisUser: mySelf);
+    emit(newState);
   }
 
   void switchCamera() async {
