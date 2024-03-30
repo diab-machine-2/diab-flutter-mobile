@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart' show PlatformException;
 import 'package:uni_links/uni_links.dart';
 
@@ -14,6 +15,7 @@ class DeepLinkConfig {
   static void setUpHandleDeepLink(
       {required Function(String? code) onHaveLink}) {
     linkStream.listen((link) {
+      debugPrint('setUpHandleDeepLink > linkStream > $link');
       if (link != null &&
           !link.contains("click.diab.com.vn") &&
           !link.contains("referralCode") &&
@@ -38,6 +40,7 @@ class DeepLinkConfig {
   Future<String?> getInitLink() async {
     try {
       final String? initialLink = await getInitialLink();
+      debugPrint('getInitLink > getInitialLink > $initialLink');
       if (initialLink != null &&
           !initialLink.contains("click.diab.com.vn") &&
           !initialLink.contains("referralCode") &&
@@ -48,15 +51,22 @@ class DeepLinkConfig {
     } on PlatformException {}
     try {
       final Uri? _ = await getInitialUri();
+      if (_ != null) {
+        debugPrint('getInitLink > getInitialUri > $_');
+      } else {
+        debugPrint('getInitLink > getInitialUri > null');
+      }
     } on FormatException {}
     return null;
   }
 
   Future<void> handleDeepLink() async {
     _subLink = linkStream.listen((String? link) {
+      debugPrint('handleDeepLink > linkStream > $link');
     }, onError: (err) {});
 
     _subUni = uriLinkStream.listen((Uri? uri) {
+      debugPrint('handleDeepLink > uriLinkStream > $uri');
     }, onError: (err) {});
   }
 

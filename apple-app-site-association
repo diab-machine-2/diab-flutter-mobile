@@ -1,0 +1,20 @@
+{
+  "applinks": {
+    "apps": [],
+    "details": [
+      {
+        "appID": "Q4KKVXCYN6.com.cactusoftware.diab",
+        "paths": ["*"]
+      }
+    ]
+  },
+  "hosting": {
+    "appAssociation": "AUTO",
+    "rewrites": [
+      {
+        "source": "/meet/**",
+        "dynamicLinks": true
+      }
+    ]
+  }
+}

@@ -6,7 +6,6 @@ import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:medical/src/modal/learning/learning_post_model.dart';
 import 'package:medical/src/modal/user/user_model.dart';
-import 'package:medical/src/service/zoom_service.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import '../model/response/lesson_section_list_response.dart';
@@ -44,10 +43,14 @@ class DynamicLinkConfig {
     final Uri? deepLink = data?.link;
 
     if (deepLink != null) {
-      progressDynamicLink(deepLink);
+      debugPrint('setUpHandleDeepLink > deepLink > $deepLink');
+      progressDynamicLink(deepLink, initializing: true);
+    } else {
+      debugPrint('setUpHandleDeepLink > deepLink > null');
     }
 
     _subLink = FirebaseDynamicLinks.instance.onLink.listen((dynamicLinkData) {
+      debugPrint('setUpHandleDeepLink > FirebaseDynamicLinks.instance.onLink > $dynamicLinkData');
       final Uri? deepLink = dynamicLinkData.link;
       if (deepLink != null) {
         progressDynamicLink(deepLink);
@@ -207,7 +210,7 @@ class DynamicLinkConfig {
     return null;
   }
 
-  void progressDynamicLink(Uri deepLink) {
+  void progressDynamicLink(Uri deepLink, {bool initializing = false}) async {
     String urlString = deepLink.toString();
 
     // Zoom handler
@@ -218,8 +221,8 @@ class DynamicLinkConfig {
       final UserModel? user = AppSettings.userInfo;
       if (user != null && _zoomId == null) {
         _zoomId = roomId;
-        ZoomService().launchZoom(roomId, AppSettings.userInfo?.fullName ?? 'Người dùng',
-            navigatorKey.currentState!.context);
+        // ZoomService().launchZoom(roomId, AppSettings.userInfo?.fullName ?? 'Người dùng',
+        //     navigatorKey.currentState!.context);
       } else {
         _zoomId = roomId;
       }
