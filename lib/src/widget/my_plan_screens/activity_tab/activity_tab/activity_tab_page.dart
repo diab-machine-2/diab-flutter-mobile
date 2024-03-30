@@ -78,7 +78,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
     String? calendarId = DynamicLinkConfig.instance.zoomId;
     if (calendarId != null) {
       DynamicLinkConfig.instance.removeZoomId();
-      await _cubit.markCompletedCalendar(calendarId);
+      // await _cubit.markCompletedCalendar(calendarId);
       if (isVisible) {
         _cubit.refreshData(isRefresh: true);
       }
@@ -917,7 +917,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
           //           forceSafariVC: false, forceWebView: false)
           //       : throw 'Could not launch ${smartGoal.calendar!.meetingLink!}';
         } else {
-          await _cubit.markCompletedCalendar(smartGoal?.calendarId);
+          // await _cubit.markCompletedCalendar(smartGoal?.calendarId);
         }
       },
       child: Column(
