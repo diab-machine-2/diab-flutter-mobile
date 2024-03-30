@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'dart:math';
 
 import 'package:bot_toast/bot_toast.dart';
@@ -20,7 +19,6 @@ import 'package:medical/src/widget/BloodSugar/widget/bloodSugar_table.dart';
 import 'package:medical/src/widget/BloodSugar/widget/bloodSugar_table_compare.dart';
 import 'package:medical/src/widget/Bmi/bmi_detail_tabbar.dart';
 import 'package:medical/src/widget/Bmi/views/add_bmi_view/add_bmi_view.dart';
-import 'package:medical/src/widget/Bmi/widget/add_bmi.dart';
 import 'package:medical/src/widget/Emotion/emotion_detail_tabbar.dart';
 import 'package:medical/src/widget/Emotion/widget/add_emo.dart';
 import 'package:medical/src/widget/Emotion/widget/add_insight.dart';
@@ -73,7 +71,6 @@ import 'package:medical/src/widget/question_answer/question_detail/question_deta
 import 'package:medical/src/widget/tabbar/tabbar.dart';
 import 'package:medical/src/widget/voucher/presentation/voucher_detail/pages/voucher_detail_view.dart';
 import 'package:medical/src/widget/voucher/presentation/voucher_list/pages/voucher_list_view.dart';
-import 'package:medical/src/widget/zoom_b/zoom_android_view.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'utils/navigator_name.dart';
 import 'widget/BloodSugar/add_bloodSugar_new.dart';
@@ -81,7 +78,6 @@ import 'widget/helper/photo_view.dart';
 import 'widget/news_detail/presentation/news_detail_view.dart';
 import 'widget/profile/profile_controller.dart';
 import 'widget/shared_profile/pages/share_app_detail/share_app_detail.dart';
-import 'widget/zoom_b/zoom_ios_view.dart';
 
 class App extends StatefulWidget {
   @override

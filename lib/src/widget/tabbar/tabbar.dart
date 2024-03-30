@@ -127,21 +127,11 @@ class _TabbarControllerState extends State<TabbarController>
     _checkExistZoomId();
   }
 
-  _checkExistZoomId() async {
+  void _checkExistZoomId() async {
     final String? zoomId = DynamicLinkConfig.instance.zoomId;
     if (zoomId != null) {
+      await Future.delayed(Duration(seconds: 1));
       ZoomService().launchZoom(zoomId, AppSettings.userInfo?.fullName ?? 'Người dùng', context);
-      // PermissionStatus statusMicrophone = await Permission.microphone.status;
-      // if (statusMicrophone.isDenied) {
-      //   await Permission.microphone.request();
-      // }
-      // PermissionStatus statusCamera = await Permission.camera.request();
-      // if (statusCamera.isDenied) {
-      //   await Permission.camera.request();
-      // }
-      // Navigator.pushNamed(
-      //     navigatorKey.currentState!.context, NavigatorName.zoom,
-      //     arguments: {'id': zoomId});
     }
   }
 

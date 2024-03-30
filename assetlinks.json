@@ -1,0 +1,17 @@
+[
+    {
+      "relation": [
+        "delegate_permission/common.handle_all_urls"
+      ],
+      "target": {
+        "namespace": "android_app",
+        "package_name": "com.vbhc.diab",
+        "sha256_cert_fingerprints": [
+          "A0:C7:4A:94:C5:00:65:A9:59:FA:9C:56:F0:B7:B8:2B:86:AB:BE:86:C3:18:AB:28:FC:60:E6:54:1E:65:A8:79",
+          "59:6B:EC:63:5E:5D:51:33:6B:84:0E:DD:C6:FD:B2:45:3B:39:45:9B:59:F3:E1:C1:84:6E:98:73:DB:0D:22:E8",
+          "B2:A1:E6:65:71:2F:68:B9:1D:85:71:4A:E5:1C:8A:30:16:D9:05:45:BA:B6:40:EE:22:DF:6D:0E:57:7B:04:51",
+          "BE:A1:9C:7C:94:3E:62:66:8D:84:E1:92:72:21:46:26:48:25:7C:06:48:AC:79:9E:B2:B8:7F:62:CF:5A:B1:55"
+        ]
+      }
+    }
+  ]

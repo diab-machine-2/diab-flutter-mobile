@@ -289,21 +289,21 @@ class ActivityTabCubit extends Cubit<ActivityTabState> {
     // emit(const ActivityTabInitial());
   }
 
-  Future<void> markCompletedCalendar(String? calendarId) async {
-    if (calendarId == null) return;
-    emit(const ActivityTabLoading());
-    final ApiResult<CommonResponse> apiResult =
-        await repository.markCompletedCalendar(calendarId);
-    apiResult.when(success: (CommonResponse response) {
-      //   Observable.instance
-      //         .notifyObservers([], notifyName: "food_change_data");
-      refreshData(isRefresh: true);
-      //   emit(const ActivityTabSuccess());
-    }, failure: (NetworkExceptions error) {
-      emit(ActivityTabFailure(NetworkExceptions.getErrorMessage(error)));
-    });
-    //   emit(const ActivityTabInitial());
-  }
+  // Future<void> markCompletedCalendar(String? calendarId) async {
+  //   if (calendarId == null) return;
+  //   emit(const ActivityTabLoading());
+  //   final ApiResult<CommonResponse> apiResult =
+  //       await repository.markCompletedCalendar(calendarId);
+  //   apiResult.when(success: (CommonResponse response) {
+  //     //   Observable.instance
+  //     //         .notifyObservers([], notifyName: "food_change_data");
+  //     refreshData(isRefresh: true);
+  //     //   emit(const ActivityTabSuccess());
+  //   }, failure: (NetworkExceptions error) {
+  //     emit(ActivityTabFailure(NetworkExceptions.getErrorMessage(error)));
+  //   });
+  //   //   emit(const ActivityTabInitial());
+  // }
 
   Future<void> getReports({bool isRefresh = false}) async {
     await Future.delayed(Duration.zero);
