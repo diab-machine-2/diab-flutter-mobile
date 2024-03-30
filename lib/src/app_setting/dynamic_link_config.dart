@@ -146,7 +146,7 @@ class DynamicLinkConfig {
     _lessonId = null;
   }
 
-  removeActivityId() {
+  void removeActivityId() {
     _activityId = null;
   }
 
