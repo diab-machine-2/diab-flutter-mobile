@@ -157,17 +157,17 @@ class _MeetingPageState extends State<MeetingPage>
     Widget previewView = const SizedBox();
     Widget fullScreenView = const SizedBox();
 
-    if (!isLandScape && state.remoteUsers.isNotEmpty && state.thisUser != null) {
+    if (!isLandScape && state.remoteUsers.isNotEmpty && state.previewUser != null) {
       previewView = VideoView(
         avatarUrl: null,
-        user: state.thisUser,
+        user: state.previewUser,
         fullScreen: false,
         resolution: VideoResolution.Resolution720,
       );
     }
     // Landscape mode + Other user is sharing screen
     if (isLandScape &&
-        state.fullscreenUser.userId != state.thisUser?.userId &&
+        state.fullscreenUser.userId != state.previewUser?.userId &&
         state.fullscreenUser.isSharing) {
       fullScreenView = VideoView(
         avatarUrl: null,
@@ -178,7 +178,7 @@ class _MeetingPageState extends State<MeetingPage>
         resolution: VideoResolution.Resolution720,
       );
     } else {
-      bool allowPiPMode = state.thisUser?.userId != state.fullscreenUser.userId;
+      bool allowPiPMode = state.previewUser?.userId != state.fullscreenUser.userId;
       fullScreenView = VideoView(
         avatarUrl: null,
         user: state.fullscreenUser,
@@ -273,7 +273,7 @@ class _MeetingPageState extends State<MeetingPage>
         child: previewView,
       ),
     );
-    Widget controlsWidget = _buildControls(state.isUserVideoOn);
+    Widget controlsWidget = _buildControls();
     return Stack(
       children: [
         Positioned.fill(child: fullScreenView),
@@ -291,7 +291,7 @@ class _MeetingPageState extends State<MeetingPage>
   }
 
   // build controls
-  Widget _buildControls(bool isVideoOn) {
+  Widget _buildControls() {
     return Container(
       color: Colors.black.withOpacity(0.5),
       padding: const EdgeInsets.symmetric(horizontal: 4.0),
@@ -334,11 +334,17 @@ class _MeetingPageState extends State<MeetingPage>
               ),
 
               // Camera
-              _buttonIconWithTextBelow(
-                isVideoOn ? R.drawable.ic_zoom_video_on : R.drawable.ic_zoom_video_off,
-                isVideoOn ? 'Tắt camera' : 'Bật camera',
-                _cubit.toggleVideo,
-                isOff: !isVideoOn,
+              FutureBuilder(
+                future: _cubit.user?.videoStatus?.isOn(),
+                builder: (context, snapshot) {
+                  bool isVideoOn = snapshot.data ?? false;
+                  return _buttonIconWithTextBelow(
+                    isVideoOn ? R.drawable.ic_zoom_video_on : R.drawable.ic_zoom_video_off,
+                    isVideoOn ? 'Tắt camera' : 'Bật camera',
+                    _cubit.toggleVideo,
+                    isOff: !isVideoOn,
+                  );
+                },
               ),
 
               // Audio

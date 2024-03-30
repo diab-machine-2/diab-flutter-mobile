@@ -151,8 +151,10 @@ class MeetingCubit extends Cubit<MeetingState> {
         }
       }
     }
-    var newState = (state as MeetingJoined).copyWith(thisUser: mySelf);
-    emit(newState);
+    if (state is MeetingJoined) {
+      var newState = (state as MeetingJoined).copyWith(thisUser: mySelf);
+      emit(newState);
+    }
   }
 
   void toggleVideo() async {
@@ -180,8 +182,10 @@ class MeetingCubit extends Cubit<MeetingState> {
         }
       }
     }
-    var newState = (state as MeetingJoined).copyWith(thisUser: mySelf);
-    emit(newState);
+    if (state is MeetingJoined) {
+      var newState = (state as MeetingJoined).copyWith(thisUser: mySelf);
+      emit(newState);
+    }
   }
 
   void switchCamera() async {
@@ -192,7 +196,7 @@ class MeetingCubit extends Cubit<MeetingState> {
         var videoOn = await videoStatus.isOn();
         if (videoOn && state is MeetingJoined) {
           await _zoom.videoHelper.switchCamera('');
-          emit((state as MeetingJoined).copyWith(isUserVideoOn: true));
+          emit((state as MeetingJoined).copyWith(thisUser: mySelf));
         }
       }
     }
@@ -355,7 +359,6 @@ class MeetingCubit extends Cubit<MeetingState> {
         var userListJson = jsonDecode(data['changedUsers']) as List;
         List<ZoomVideoSdkUser> userList =
             userListJson.map((userJson) => ZoomVideoSdkUser.fromJson(userJson)).toList();
-        bool isUserVideoOn = await mySelf.videoStatus?.isOn() ?? false;
         // Change if mySelf is in the list
         if (userList.any((e) => e.userId == mySelf.userId)) {
           _mySelf = mySelf;
@@ -363,7 +366,6 @@ class MeetingCubit extends Cubit<MeetingState> {
             FutureFunc action = () async => await _sendJoinedState(
                   thisUser: mySelf,
                   remoteUsers: _remoteUsers,
-                  isUserVideoOn: isUserVideoOn,
                 );
             _actionQueue.enqueue(action);
           }
@@ -373,7 +375,6 @@ class MeetingCubit extends Cubit<MeetingState> {
           FutureFunc action = () async => await _sendJoinedState(
                 thisUser: mySelf,
                 remoteUsers: _remoteUsers,
-                isUserVideoOn: isUserVideoOn,
               );
           _actionQueue.enqueue(action);
         }
@@ -420,11 +421,13 @@ class MeetingCubit extends Cubit<MeetingState> {
         _sharingUserId = shareUser?.userId ?? '';
         _remoteUsers = (await _zoom.session.getRemoteUsers()) ?? [];
         ZoomVideoSdkUser? mySelf = await _zoom.session.getMySelf();
-        FutureFunc action = () async => await _sendJoinedState(
-              thisUser: _mySelf ?? mySelf!,
-              remoteUsers: _remoteUsers,
-            );
-        _actionQueue.enqueue(action);
+        if (mySelf != null) {
+          FutureFunc action = () async => await _sendJoinedState(
+                thisUser: mySelf,
+                remoteUsers: _remoteUsers,
+              );
+          _actionQueue.enqueue(action);
+        }
       } else {
         _isSharing = false;
         _sharingUserId = '';
@@ -541,12 +544,12 @@ class MeetingCubit extends Cubit<MeetingState> {
   Future<void> _sendJoinedState({
     required ZoomVideoSdkUser thisUser,
     List<ZoomVideoSdkUser> remoteUsers = const [],
-    bool? isUserVideoOn,
   }) async {
     // Just this user in the session
     if (remoteUsers.isEmpty) {
       final newState = MeetingJoined(
         thisUser: thisUser,
+        previewUser: null,
         fullscreenUser: thisUser,
         remoteUsers: remoteUsers,
       );
@@ -597,7 +600,7 @@ class MeetingCubit extends Cubit<MeetingState> {
         }
       }
       if (hostUser == null) {
-        hostUser = remoteUsers.first;
+        hostUser = orderedUsers.first;
       }
 
       if (sharingUser != null) {
@@ -606,17 +609,18 @@ class MeetingCubit extends Cubit<MeetingState> {
           if (state is MeetingJoined) {
             final currentState = state as MeetingJoined;
             final newState = currentState.copyWith(
-              thisUser: hostSharingAndVideoOn ?? thisUser,
+              thisUser: thisUser,
+              previewUser: hostSharingAndVideoOn ?? thisUser,
               fullscreenUser: thisUser,
-              remoteUsers: remoteUsers,
-              isUserVideoOn: isUserVideoOn ?? currentState.isUserVideoOn,
+              remoteUsers: orderedUsers,
             );
             emit(newState);
           } else {
             final newState = MeetingJoined(
-              thisUser: hostSharingAndVideoOn ?? thisUser,
+              thisUser: thisUser,
+              previewUser: hostSharingAndVideoOn ?? thisUser,
               fullscreenUser: thisUser,
-              remoteUsers: remoteUsers,
+              remoteUsers: orderedUsers,
             );
             emit(newState);
           }
@@ -625,17 +629,18 @@ class MeetingCubit extends Cubit<MeetingState> {
           if (state is MeetingJoined) {
             final currentState = state as MeetingJoined;
             final newState = currentState.copyWith(
-              thisUser: hostSharingAndVideoOn ?? thisUser,
+              thisUser: thisUser,
+              previewUser: hostSharingAndVideoOn ?? thisUser,
               fullscreenUser: sharingUser,
-              remoteUsers: remoteUsers,
-              isUserVideoOn: isUserVideoOn ?? currentState.isUserVideoOn,
+              remoteUsers: orderedUsers,
             );
             emit(newState);
           } else {
             final newState = MeetingJoined(
-              thisUser: hostSharingAndVideoOn ?? thisUser,
+              thisUser: thisUser,
+              previewUser: hostSharingAndVideoOn ?? thisUser,
               fullscreenUser: sharingUser,
-              remoteUsers: remoteUsers,
+              remoteUsers: orderedUsers,
             );
             emit(newState);
           }
@@ -645,17 +650,18 @@ class MeetingCubit extends Cubit<MeetingState> {
         if (state is MeetingJoined) {
           final currentState = state as MeetingJoined;
           final newState = currentState.copyWith(
-            thisUser: hostSharingAndVideoOn ?? thisUser,
+            thisUser: thisUser,
+            previewUser: thisUser,
             fullscreenUser: hostUser,
-            remoteUsers: remoteUsers,
-            isUserVideoOn: isUserVideoOn ?? currentState.isUserVideoOn,
+            remoteUsers: orderedUsers,
           );
           emit(newState);
         } else {
           final newState = MeetingJoined(
-            thisUser: hostSharingAndVideoOn ?? thisUser,
+            thisUser: thisUser,
+            previewUser: thisUser,
             fullscreenUser: hostUser,
-            remoteUsers: remoteUsers,
+            remoteUsers: orderedUsers,
           );
           emit(newState);
         }
