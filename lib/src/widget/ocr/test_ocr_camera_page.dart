@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:image/image.dart';
 
 import 'test_ocr_final_image_page.dart';
@@ -102,11 +103,15 @@ class _TestOcrCameraState extends State<TestOcrCamera> {
       final image = decodeImage(File(file.path).readAsBytesSync());
       if (image != null) {
         int horizontalPadding = (image.width * sidePaddingPercent).round();
-        int expectedWidth = (image.width * (1 - sidePaddingPercent * 2)).round();
+        int expectedWidth =
+            (image.width * (1 - sidePaddingPercent * 2)).round();
         int expectedHeight = (expectedWidth * ratio).round();
         int verticalPadding = ((image.height - expectedHeight) / 2).round();
         final a4Image = copyCrop(image,
-            x: horizontalPadding, y: verticalPadding, width: expectedWidth, height: expectedHeight);
+            x: horizontalPadding,
+            y: verticalPadding,
+            width: expectedWidth,
+            height: expectedHeight);
         final bytes = encodeJpg(a4Image);
 
         Navigator.pop(context);

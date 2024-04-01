@@ -60,7 +60,8 @@ class _TestOcrGalleryState extends State<TestOcrGallery> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => TestOcrFinalImage(bytes: image),
+                        builder: (context) => TestOcrFinalImage(
+                            bytes: image, fullImage: _imageData),
                       ),
                     );
                   },
@@ -84,7 +85,8 @@ class _TestOcrGalleryState extends State<TestOcrGallery> {
                     // if returning false, scaling will be canceled
                     return newScale < 3;
                   },
-                  cornerDotBuilder: (size, edgeAlignment) => const DotControl(color: Colors.blue),
+                  cornerDotBuilder: (size, edgeAlignment) =>
+                      const DotControl(color: Colors.blue),
                   clipBehavior: Clip.none,
                   interactive: true,
                   fixCropRect: false,
