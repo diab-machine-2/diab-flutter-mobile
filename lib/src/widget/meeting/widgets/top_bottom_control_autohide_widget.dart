@@ -26,13 +26,13 @@ class _FadeTransitionStateWidget extends State<TopBottomControlAutohideWidget>
     with TickerProviderStateMixin {
   bool _visible = true;
   Timer? _timer;
-  final int _autohideInSeconds = 10;
+  // final int _autohideInSeconds = 10;
   final Duration _animationDuration = const Duration(milliseconds: 300);
 
   @override
   void initState() {
     super.initState();
-    _triggerTimer(seconds: 15);
+    // _triggerTimer(seconds: 15);
   }
 
   @override
@@ -53,21 +53,20 @@ class _FadeTransitionStateWidget extends State<TopBottomControlAutohideWidget>
           child: _visible ? widget.topWidget : null,
         ),
         Expanded(
-          child: GestureDetector(
-            onTap: _toggleVisibility,
-            onDoubleTap: () {},
-            child: Container(
+          child: Builder(builder: (context) {
+            bool isLandScape = MediaQuery.of(context).orientation == Orientation.landscape;
+            Widget child = Container(
               width: double.infinity,
               height: double.infinity,
               color: Colors.transparent,
-              child: widget.floatingRightWidget == null
-                  ? null
-                  : Align(
-                      alignment: Alignment.topRight,
-                      child: widget.floatingRightWidget!,
-                    ),
-            ),
-          ),
+              child: widget.floatingRightWidget == null ? null : widget.floatingRightWidget!,
+            );
+            return isLandScape ? GestureDetector(
+              onTap: _toggleVisibility,
+              onDoubleTap: () {},
+              child: child,
+            ) : child;
+          }),
         ),
         AnimatedContainer(
           duration: _animationDuration,
@@ -87,19 +86,19 @@ class _FadeTransitionStateWidget extends State<TopBottomControlAutohideWidget>
     setState(() {
       _visible = !_visible;
     });
-    _triggerTimer();
+    // _triggerTimer();
   }
 
-  void _triggerTimer({int? seconds}) {
-    _timer?.cancel();
-    if (_visible) {
-      _timer = Timer(Duration(seconds: seconds ?? _autohideInSeconds), () {
-        if (_visible) {
-          setState(() {
-            _visible = false;
-          });
-        }
-      });
-    }
-  }
+  // void _triggerTimer({int? seconds}) {
+  //   _timer?.cancel();
+  //   if (_visible) {
+  //     _timer = Timer(Duration(seconds: seconds ?? _autohideInSeconds), () {
+  //       if (_visible) {
+  //         setState(() {
+  //           _visible = false;
+  //         });
+  //       }
+  //     });
+  //   }
+  // }
 }

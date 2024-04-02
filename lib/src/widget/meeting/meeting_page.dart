@@ -1,3 +1,4 @@
+import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -42,6 +43,7 @@ class _MeetingPageState extends State<MeetingPage>
       DeviceOrientation.landscapeLeft,
       DeviceOrientation.landscapeRight,
     ]);
+    BotToast.closeAllLoading();
   }
 
   @override
@@ -157,17 +159,17 @@ class _MeetingPageState extends State<MeetingPage>
     Widget previewView = const SizedBox();
     Widget fullScreenView = const SizedBox();
 
-    if (!isLandScape && state.remoteUsers.isNotEmpty && state.thisUser != null) {
+    if (!isLandScape && state.remoteUsers.isNotEmpty && state.previewUser != null) {
       previewView = VideoView(
         avatarUrl: null,
-        user: state.thisUser,
+        user: state.previewUser,
         fullScreen: false,
         resolution: VideoResolution.Resolution720,
       );
     }
     // Landscape mode + Other user is sharing screen
     if (isLandScape &&
-        state.fullscreenUser.userId != state.thisUser?.userId &&
+        state.fullscreenUser.userId != state.previewUser?.userId &&
         state.fullscreenUser.isSharing) {
       fullScreenView = VideoView(
         avatarUrl: null,
@@ -178,32 +180,15 @@ class _MeetingPageState extends State<MeetingPage>
         resolution: VideoResolution.Resolution720,
       );
     } else {
-      // This user is sharing screen
-      if (state.thisUser != null &&
-          state.thisUser!.userId == state.fullscreenUser.userId &&
-          state.fullscreenUser.isSharing) {
-        fullScreenView = Center(
-          child: Text(
-            'Đang chia sẻ màn hình',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 18.0,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-        );
-      } else {
-        // Other cases
-        bool allowPiPMode = state.thisUser?.userId != state.fullscreenUser.userId;
-        fullScreenView = VideoView(
-          avatarUrl: null,
-          user: state.fullscreenUser,
-          fullScreen: true,
-          isPiPView: allowPiPMode,
-          sharing: state.fullscreenUser.isSharing,
-          resolution: VideoResolution.Resolution720,
-        );
-      }
+      bool allowPiPMode = state.previewUser?.userId != state.fullscreenUser.userId;
+      fullScreenView = VideoView(
+        avatarUrl: null,
+        user: state.fullscreenUser,
+        fullScreen: true,
+        isPiPView: allowPiPMode,
+        sharing: state.fullscreenUser.isSharing,
+        resolution: VideoResolution.Resolution720,
+      );
     }
 
     final media = MediaQuery.of(context);
