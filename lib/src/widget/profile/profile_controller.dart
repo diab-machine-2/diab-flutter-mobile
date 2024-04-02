@@ -78,7 +78,7 @@ class _ProfileControllerState extends State<ProfileController> with Observer {
   void update(
       Observable observable, String? notifyName, Map<dynamic, dynamic>? map) {
     if (notifyName == 'user_info_change') {
-      setState(() {});
+      if (_isDisposing) setState(() {});
     }
   }
 
