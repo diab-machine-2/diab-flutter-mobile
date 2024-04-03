@@ -128,10 +128,7 @@ class _HomeControllerState extends State<HomeController> with Observer {
     if (lessonId == null && zoomId == null && activityId == null) {
       Future.delayed(Duration(milliseconds: 1000), () async {
         bool? hasHealthConnection = await AppStorages.getHealthAppPermission();
-        if (hasHealthConnection == null &&
-            FirebaseRemoteSetting.instance.activePopupHealthConnect) {
-          RequestHealthConnect.showModal(context, callback: () {});
-        } else if (hasHealthConnection == true) {
+        if (hasHealthConnection == true) {
           HealthAppBloc()..add(SubmitSyncData(true));
         }
       });
