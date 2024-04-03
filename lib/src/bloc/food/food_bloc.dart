@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/modal/food/food_calo_model.dart';
 import 'package:medical/src/modal/food/food_category_model.dart';
 import 'package:medical/src/modal/food/food_data_model.dart';
@@ -10,6 +11,7 @@ import 'package:medical/src/modal/food/food_statistic_diet_model.dart';
 import 'package:medical/src/modal/food/food_statistic_distribute_model.dart';
 import 'package:medical/src/modal/food/food_statistic_trend_model.dart';
 import 'package:medical/src/repo/food/food_client.dart';
+import 'package:medical/src/widget/home/fliter_enum.dart';
 import 'package:meta/meta.dart';
 import 'package:medical/src/modal/error/error_model.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -156,6 +158,8 @@ class FoodBloc extends Bloc<FoodEvent, FoodState> {
   Stream<FoodState> fetchInputFood(
       String currentDateTime, String periodFilterType, int page) async* {
     try {
+      periodFilterType =
+          await AppSettings.getPeriodByScreen(ScreenList.FOOD.index);
       final client = FoodClient();
       final FoodState currenState = state;
       var model =
@@ -197,9 +201,7 @@ class FoodBloc extends Bloc<FoodEvent, FoodState> {
       if (e is Error) {
         yield FoodError(message: e.message);
       } else {
-        yield FoodError(
-            message:
-                R.string.error_can_not_connect_to_server.tr());
+        yield FoodError(message: R.string.error_can_not_connect_to_server.tr());
       }
     }
   }
@@ -213,9 +215,7 @@ class FoodBloc extends Bloc<FoodEvent, FoodState> {
       if (e is Error) {
         yield FoodError(message: e.message);
       } else {
-        yield FoodError(
-            message:
-                R.string.error_can_not_connect_to_server.tr());
+        yield FoodError(message: R.string.error_can_not_connect_to_server.tr());
       }
     }
   }
@@ -229,9 +229,7 @@ class FoodBloc extends Bloc<FoodEvent, FoodState> {
       if (e is Error) {
         yield FoodError(message: e.message);
       } else {
-        yield FoodError(
-            message:
-                R.string.error_can_not_connect_to_server.tr());
+        yield FoodError(message: R.string.error_can_not_connect_to_server.tr());
       }
     }
   }
@@ -239,6 +237,8 @@ class FoodBloc extends Bloc<FoodEvent, FoodState> {
   Stream<FoodState> fetchStatisticDetail(
       String? currentDateTime, String? periodFilterType) async* {
     try {
+      periodFilterType =
+          await AppSettings.getPeriodByScreen(ScreenList.FOOD.index);
       final client = FoodClient();
       yield FoodLoading();
       yield FoodStatisticDetailLoaded(
@@ -248,9 +248,7 @@ class FoodBloc extends Bloc<FoodEvent, FoodState> {
       if (e is Error) {
         yield FoodError(message: e.message);
       } else {
-        yield FoodError(
-            message:
-                R.string.error_can_not_connect_to_server.tr());
+        yield FoodError(message: R.string.error_can_not_connect_to_server.tr());
       }
     }
   }
@@ -258,6 +256,8 @@ class FoodBloc extends Bloc<FoodEvent, FoodState> {
   Stream<FoodState> fetchStatisticTrend(
       String? currentDateTime, String? periodFilterType) async* {
     try {
+      periodFilterType =
+          await AppSettings.getPeriodByScreen(ScreenList.FOOD.index);
       final client = FoodClient();
       yield FoodLoading();
       yield FoodStatisticTrendLoaded(
@@ -267,9 +267,7 @@ class FoodBloc extends Bloc<FoodEvent, FoodState> {
       if (e is Error) {
         yield FoodError(message: e.message);
       } else {
-        yield FoodError(
-            message:
-                R.string.error_can_not_connect_to_server.tr());
+        yield FoodError(message: R.string.error_can_not_connect_to_server.tr());
       }
     }
   }
@@ -277,6 +275,8 @@ class FoodBloc extends Bloc<FoodEvent, FoodState> {
   Stream<FoodState> fetchStatisticDistribute(
       String? currentDateTime, String? periodFilterType) async* {
     try {
+      periodFilterType =
+          await AppSettings.getPeriodByScreen(ScreenList.FOOD.index);
       final client = FoodClient();
       yield FoodLoading();
       yield FoodStatisticDistributeLoaded(
@@ -286,9 +286,7 @@ class FoodBloc extends Bloc<FoodEvent, FoodState> {
       if (e is Error) {
         yield FoodError(message: e.message);
       } else {
-        yield FoodError(
-            message:
-                R.string.error_can_not_connect_to_server.tr());
+        yield FoodError(message: R.string.error_can_not_connect_to_server.tr());
       }
     }
   }

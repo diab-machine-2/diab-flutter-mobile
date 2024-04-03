@@ -15,11 +15,13 @@ class MeetingJoining extends MeetingState {
 
 class MeetingJoined extends MeetingState {
   final ZoomVideoSdkUser? thisUser;
+  final ZoomVideoSdkUser? previewUser;
   final ZoomVideoSdkUser fullscreenUser;
   final List<ZoomVideoSdkUser> remoteUsers;
 
   MeetingJoined({
     this.thisUser,
+    this.previewUser,
     required this.fullscreenUser,
     this.remoteUsers = const [],
   });
@@ -29,11 +31,13 @@ class MeetingJoined extends MeetingState {
 
   MeetingJoined copyWith({
     ZoomVideoSdkUser? thisUser,
+    ZoomVideoSdkUser? previewUser,
     ZoomVideoSdkUser? fullscreenUser,
     List<ZoomVideoSdkUser>? remoteUsers,
   }) {
     return MeetingJoined(
       thisUser: thisUser ?? this.thisUser,
+      previewUser: previewUser ?? this.previewUser,
       fullscreenUser: fullscreenUser ?? this.fullscreenUser,
       remoteUsers: remoteUsers ?? this.remoteUsers,
     );
@@ -41,11 +45,11 @@ class MeetingJoined extends MeetingState {
 
   @override
   List<Object> get props => [
-    if (thisUser != null)
-      thisUser!,
-    fullscreenUser,
-    remoteUsers
-  ];
+        if (thisUser != null) thisUser!,
+        if (previewUser != null) previewUser!,
+        fullscreenUser,
+        remoteUsers,
+      ];
 }
 
 class MeetingLeaving extends MeetingState {

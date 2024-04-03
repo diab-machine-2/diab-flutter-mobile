@@ -26,7 +26,7 @@ import 'widgets/custom_progress_bar_widget.dart';
 class SurveyQuestionPage extends StatefulWidget {
   final int index;
   final SurveyData surveyData;
-  List<String> listAnsweredQuestionId;
+  final List<String> listAnsweredQuestionId;
 
   SurveyQuestionPage({
     Key? key,

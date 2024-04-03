@@ -11,8 +11,8 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:easy_localization/easy_localization.dart';
 
 class RulesController extends StatefulWidget {
-  GoogleSignInAccount? googleAccount;
-  AuthorizationCredentialAppleID? appleCredential;
+  final GoogleSignInAccount? googleAccount;
+  final AuthorizationCredentialAppleID? appleCredential;
 
   RulesController({this.googleAccount, this.appleCredential});
 

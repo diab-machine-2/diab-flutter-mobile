@@ -305,4 +305,28 @@ class BloodPressureClient extends FetchClient {
       throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
     }
   }
+
+  Future<Map<String, List<int>>> fetchRange() async {
+    try {
+      final Response response = await super.fetchData(
+        url: '/App/BloodPressure/Range',
+      );
+      if (response.statusCode == 200) {
+        Map<String, dynamic> responseData = response.data;
+        Map<String, List<int>> processedData = {};
+
+        responseData.forEach((key, value) {
+          List<int> list = List<int>.from(value);
+          processedData[key] = list;
+        });
+
+        return processedData;
+      } else {
+        final error = Error.fromJson(response);
+        throw error;
+      }
+    } catch (e) {
+      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+    }
+  }
 }

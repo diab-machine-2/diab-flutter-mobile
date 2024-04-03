@@ -32,16 +32,16 @@ class _FlashScreenControllerState extends State<FlashScreenController> {
   @override
   void initState() {
     super.initState();
-    isNavigateToStepList = false;
-    _initLoad();
+    _initStateAsync();
   }
 
-  void _initLoad() async {
+  void _initStateAsync() async {
     await DynamicLinkConfig.instance.setUpHandleDeepLink();
     await getSecuredModel();
     await getVersion();
     await getData(context);
   }
+
 
   Future<void> getVersion() async {
     PackageInfo packageInfo = await PackageInfo.fromPlatform();

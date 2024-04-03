@@ -17,6 +17,8 @@ import 'package:medical/src/widget/helper/http_helper.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'dart:io' show Platform;
 
+import '../../widget/home/fliter_enum.dart';
+
 class GlucoseClient extends FetchClient {
   Future<List<TimeFrameModel>> fetchFlucoseTimeFrame({int? time}) async {
     // try {
@@ -45,6 +47,8 @@ class GlucoseClient extends FetchClient {
     //   params['periodFilterType'] = '$periodFilterType';
     // }
     try {
+      periodFilterType =
+          await AppSettings.getPeriodByScreen(ScreenList.BLOOD_SUGAR.index);
       bool isGestationalDiabetes = Utils.isGestationalDiabetes();
       final Response response =
           await super.fetchData(url: '/App/Glucose/Distribution', params: {
@@ -73,6 +77,8 @@ class GlucoseClient extends FetchClient {
       String? glucoseDistributionType,
       {String size = '20'}) async {
     try {
+      periodFilterType =
+          await AppSettings.getPeriodByScreen(ScreenList.BLOOD_SUGAR.index);
       bool isGestationalDiabetes = Utils.isGestationalDiabetes();
       Map<String, String> params = {
         'size': size,
@@ -307,6 +313,8 @@ class GlucoseClient extends FetchClient {
   Future<TrendDataModel> fetchGlucoseTrend(String? timeFrameId,
       String? currentDateTime, String? periodFilterType, String? page) async {
     try {
+      periodFilterType =
+          await AppSettings.getPeriodByScreen(ScreenList.BLOOD_SUGAR.index);
       bool isGestationalDiabetes = Utils.isGestationalDiabetes();
       Map<String, String?> requestData = {
         'page': page,
@@ -335,6 +343,8 @@ class GlucoseClient extends FetchClient {
   Future<List<ComparerModel>> fetchFlucoseComparer(String? currentDateTime,
       String? periodFilterType, int? page, String? comparerType) async {
     try {
+      periodFilterType =
+          await AppSettings.getPeriodByScreen(ScreenList.BLOOD_SUGAR.index);
       final Response response =
           await super.fetchData(url: '/App/Glucose/Comparer', params: {
         'currentDateTime': currentDateTime,

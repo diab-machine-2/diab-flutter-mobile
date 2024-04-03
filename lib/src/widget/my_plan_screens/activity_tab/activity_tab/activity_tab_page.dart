@@ -74,11 +74,11 @@ class _ActivityTabPageState extends State<ActivityTabPage>
     _cubit.initData();
   }
 
-  _checkExistZoomId() async {
+  void _checkExistZoomId() async {
     String? calendarId = DynamicLinkConfig.instance.zoomId;
     if (calendarId != null) {
       DynamicLinkConfig.instance.removeZoomId();
-      await _cubit.markCompletedCalendar(calendarId);
+      // await _cubit.markCompletedCalendar(calendarId);
       if (isVisible) {
         _cubit.refreshData(isRefresh: true);
       }
@@ -113,13 +113,16 @@ class _ActivityTabPageState extends State<ActivityTabPage>
     }
   }
 
-  _checkExistActivityId() async {
+  void _checkExistActivityId() async {
     final String? activityId = DynamicLinkConfig.instance.activityId;
     if (activityId != null) {
       SmartGoalList smartGoal = SmartGoalList(surveyId: activityId, state: 0);
       await Future.delayed(Duration(milliseconds: 500));
       NavigationUtil.navigatePage(
           navigatorKey.currentState!.context, IntroduceSurveyPage(survey: smartGoal));
+      Future.delayed(Duration(seconds: 1), () {
+        DynamicLinkConfig.instance.removeActivityId();
+      });
     }
   }
 
@@ -917,7 +920,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
           //           forceSafariVC: false, forceWebView: false)
           //       : throw 'Could not launch ${smartGoal.calendar!.meetingLink!}';
         } else {
-          await _cubit.markCompletedCalendar(smartGoal?.calendarId);
+          // await _cubit.markCompletedCalendar(smartGoal?.calendarId);
         }
       },
       child: Column(

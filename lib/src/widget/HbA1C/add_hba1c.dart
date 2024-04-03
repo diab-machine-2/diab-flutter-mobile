@@ -19,8 +19,10 @@ import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widgets/btn_add_photo.dart';
+import 'package:medical/src/widgets/spacing_row.dart';
 import 'package:permission_handler/permission_handler.dart';
 
+import '../../utils/app_media_query.dart';
 import '../../widgets/CalendarPicker/custom_date_picker.dart';
 import '../../widgets/network_image_widget.dart';
 
@@ -43,13 +45,15 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
   bool isClicked = false;
   DateTime today = DateTime.now();
   bool btnAction = true;
-
+  List<int> rangeValue = [0, 60, 65, 75];
+  List<String> rangeLabel = ["Tuyệt vời", "Tốt", "Khá cao", "Rất cao"];
   InputHbA1CModel? model;
   List<String?> removeIDs = [];
-
+  bool isLoading = true;
   ShortGuiModel? des;
 
   void initState() {
+    initData();
     super.initState();
     if (widget.type == 'update') {
       loadDetail();
@@ -72,6 +76,15 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
       },
     );
     AppSettings.currentScreenName = 'kpi_hba1c_add';
+  }
+
+  void initData() async {
+    BotToast.showLoading();
+    List<double> values = await HbA1CClient().fetchRange();
+    rangeValue = values.map((value) => (value * 10).toInt()).toList();
+    isLoading = false;
+    setState(() {});
+    BotToast.closeAllLoading();
   }
 
   void dispose() {
@@ -194,6 +207,9 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
                                             child: TextField(
                                                 controller: _controller,
                                                 maxLength: 4,
+                                                onChanged: (value) {
+                                                  setState(() {});
+                                                },
                                                 textAlign: TextAlign.center,
                                                 inputFormatters: [],
                                                 keyboardType: TextInputType
@@ -227,6 +243,10 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
                                           width: 74,
                                           color: R.color.color0xffE5E5E5)),
                                   SizedBox(height: 8),
+                                  SizedBox(
+                                    height: 20,
+                                  ),
+                                  isLoading ? SizedBox() : _hba1cRange(),
                                 ]),
                           ),
                         ),
@@ -880,6 +900,166 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
         Message.showToastMessage(context, e.toString());
       }
     }
+  }
+
+  int findIndexInRanges(double number, List<int> ranges) {
+    for (int i = 0; i < ranges.length - 1; i++) {
+      if (number >= ranges[i] && number < ranges[i + 1]) {
+        return i;
+      }
+    }
+    // If the number is greater than or equal to the last range value
+    return ranges.length - 1;
+  }
+
+  Widget _hba1cRange() {
+    double _number = 0;
+    try {
+      _number = double.tryParse(_controller.text.replaceAll(",", ".") != ""
+              ? _controller.text.replaceAll(",", ".")
+              : "0")! *
+          10;
+    } catch (e) {}
+    List<Color> colorList = [
+      Color(0xFF20A468),
+      Color(0xFF9CD9B8),
+      Color(0xFFFFCCD1),
+      Color(0xFFE53935),
+    ];
+
+    int index = -1;
+    int indexRange = findIndexInRanges(_number, rangeValue);
+    num widthRange = (AppMediaQuery.deviceWidth - 64) / (rangeValue.length);
+    print('hihi widthRange: $widthRange');
+    num width = _number == 0 ? 0 : widthRange * (indexRange);
+
+    // lấy pxPerValue = max - min => 55 - 0
+    // lấy pxPerValue * value
+
+    if (_number != null && _number != 0) {
+      num min = rangeValue[indexRange];
+      print('hihi min: $min');
+      num max = indexRange + 1 >= rangeValue.length
+          ? rangeValue[indexRange] + min
+          : rangeValue[indexRange + 1];
+      print('hihi max: $max');
+      // giá trị từ 0 -> 55 sẽ nằm ở mức 0
+
+      // sau đó tính toán mỗi px trên 1 mức value
+      num maximumValue = max - min;
+      print('hihi maximumValue: $maximumValue');
+      num pxPerValue = widthRange / maximumValue;
+      print('hihi pxPerValue: $pxPerValue');
+      num widthPlus = pxPerValue * (_number - min);
+      print('hihi widthPlus: $widthPlus');
+      width += widthPlus;
+
+      width = width > (widthRange * rangeValue.length)
+          ? widthRange * rangeValue.length
+          : width;
+
+      //   print('hihi number: $number');
+    }
+
+    return SpacingColumn(
+      spacing: 30,
+      children: [
+        if (_number != 0)
+          RichText(
+            text: TextSpan(
+              text: 'HbA1c đang ở mức ',
+              style: TextStyle(
+                  color: R.color.textDark,
+                  fontWeight: FontWeight.w400,
+                  fontSize: 16),
+              children: <TextSpan>[
+                TextSpan(
+                  text: '“${rangeLabel[indexRange]}”',
+                  style: TextStyle(
+                    color: colorList[indexRange],
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        Stack(
+          clipBehavior: Clip.none,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(bottom: 40),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(5),
+                child: Row(
+                  children: colorList.map(
+                    (e) {
+                      index++;
+                      return Container(
+                        height: 8,
+                        width: widthRange.toDouble(),
+                        color: colorList[index],
+                      );
+                    },
+                  ).toList(),
+                ),
+              ),
+            ),
+            Positioned(
+              left: width.toDouble() - 20,
+              bottom: 40,
+              child: Container(
+                  child: Icon(Icons.arrow_drop_down_rounded, size: 40)),
+            ),
+            Positioned(
+              left: 0,
+              right: 0,
+              bottom: 20,
+              child: Row(
+                  children: rangeValue
+                      .map(
+                        (e) => Expanded(
+                          child: Stack(
+                            clipBehavior: Clip.none,
+                            children: [
+                              SizedBox(),
+                              Positioned(
+                                left: e.toString().length == 2 ? -9 : -7,
+                                child: Text('${e == 0 ? '' : '${e / 10}%'}'),
+                              )
+                            ],
+                          ),
+                        ),
+                      )
+                      .toList()),
+            ),
+            Positioned(
+              left: -3,
+              right: 0,
+              bottom: 25,
+              child: Row(
+                  children: rangeValue
+                      .map(
+                        (e) => Expanded(
+                          child: Container(
+                            width: 30,
+                            child: Text(
+                              '|',
+                              style: TextStyle(
+                                color: e == 0
+                                    ? Colors.transparent
+                                    : Color(0xFFD7D7D7),
+                                fontSize: 10,
+                              ),
+                            ),
+                          ),
+                        ),
+                      )
+                      .toList()),
+            ),
+          ],
+        ),
+      ],
+    );
   }
 
   showActionSheet(BuildContext context) {

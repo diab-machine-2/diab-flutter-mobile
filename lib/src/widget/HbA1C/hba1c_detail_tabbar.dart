@@ -14,6 +14,7 @@ import 'package:medical/src/widget/HbA1C/widget/description/description.dart';
 import 'package:medical/src/widget/HbA1C/widget/hba1c_filter.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/components/custom_action_descriptipn.dart';
+import 'package:medical/src/widget/home/fliter_enum.dart';
 import 'package:medical/src/widget/tabbar/action_list_panel.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -276,8 +277,20 @@ class ActionFilter extends StatefulWidget {
 }
 
 class _ActionFilterState extends State<ActionFilter> {
-  String name = R.string.sau_thang.tr();
-  int selectedIndex = 0;
+  String name = R.string.mot_nam.tr();
+  int selectedIndex = 1;
+  @override
+  void initState() {
+    loadFilter();
+    super.initState();
+  }
+
+  void loadFilter() async {
+    List<String> filters = await AppSettings.getHomeFilters();
+    name = filters[ScreenList.HBA1C.index];
+    selectedIndex = valueOfSelectedFilter[name]!;
+    setState(() {});
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -318,7 +331,8 @@ class _ActionFilterState extends State<ActionFilter> {
         isScrollControlled: true,
         builder: (context) => FillterHbA1C(
             selectedIndex: selectedIndex,
-            callback: (value, index) {
+            callback: (value, index) async {
+              await AppSettings.setHomeFilters(ScreenList.HBA1C.index, value);
               if (index != null) {
                 setState(() {
                   name = value;
