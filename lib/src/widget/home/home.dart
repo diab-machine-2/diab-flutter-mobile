@@ -133,8 +133,6 @@ class _HomeControllerState extends State<HomeController> with Observer {
           RequestHealthConnect.showModal(context, callback: () {});
         } else if (hasHealthConnection == true) {
           HealthAppBloc()..add(SubmitSyncData(true));
-        } else if (hasHealthConnection == null) {
-          RequestHealthConnect.showModal(context, callback: () {});
         }
       });
       await ChooseUrl();
