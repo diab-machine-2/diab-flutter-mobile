@@ -296,12 +296,11 @@ class MeetingCubit extends Cubit<MeetingState> {
   }
 
   void leaveSession() async {
-    try {
-      print('stop audio');
-      await _zoom.audioHelper.cleanAudioSession();
-    } catch (e) {
-      print('zoom: Error when clean audio: $e');
-    }
+    _zoom.audioHelper.cleanAudioSession()
+        .then((_) => print('clean audio'))
+        .catchError((e) {
+          print('zoom: Error when clean audio: $e');
+        });
     try {
       print('leave session');
       await _zoom.leaveSession(false);
