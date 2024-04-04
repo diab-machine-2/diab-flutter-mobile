@@ -472,32 +472,6 @@ class _VerifyPhoneControllerState extends State<VerifyPhoneController> {
     }
   }
 
-  // getToken() async {
-  //   if (widget.type != 'register') {
-  //     Navigator.pushReplacementNamed(context, NavigatorName.update_info,
-  //         arguments: {
-  //           'type': widget.type,
-  //           'googleAccount': widget.googleAccount,
-  //           'appleAccount': widget.appleAccount,
-  //         });
-  //   } else {
-  //     // BotToast.showLoading();
-  //     final result = await LoginClient().login({
-  //       "client_id": Const.CLIENT_ID,
-  //       "client_secret": Const.CLIENT_SECRET,
-  //       "grant_type": "phone_number_password",
-  //       "password": widget.password,
-  //       "phone_number": widget.phone
-  //     });
-  //     // BotToast.closeAllLoading();
-  //     Navigator.pushReplacementNamed(context, NavigatorName.update_info,
-  //         arguments: {
-  //           'type': 'phone',
-  //           'referalCode': widget.referalCode,
-  //         });
-  //   }
-  // }
-
   resendOTP() async {
     await TrackingManager.analytics.logEvent(
       name: 'cta_button_clicked',
@@ -517,50 +491,11 @@ class _VerifyPhoneControllerState extends State<VerifyPhoneController> {
     startTimer();
     BotToast.showLoading();
     try {
-      if (widget.type == 'google') {
-        final result = await LoginClient().registerWithSocial({
-          'providerName': 'Google',
-          'providerKey': widget.googleAccount!.id,
-          'phoneNumber': widget.phone
-        });
-        otpCount = result.remainingRequestCount;
-        otpTemp = result.token;
-      } else if (widget.type == 'facebook') {
-        final result = await LoginClient().registerWithSocial({
-          'providerName': 'Facebook',
-          'providerKey': widget.facebookAccount!.accessToken?.userId,
-          'phoneNumber': widget.phone
-        });
-        otpCount = result.remainingRequestCount;
-        otpTemp = result.token;
-      } else if (widget.type == 'linked_google') {
-        final result = await LoginClient().linkedAccountOTP({
-          'providerName': 'Google',
-          'providerKey': widget.googleAccount!.id,
-          'phoneNumber': widget.phone,
-          'email': widget.googleAccount!.email
-        });
-        otpCount = result.remainingRequestCount;
-        otpTemp = result.token;
-      } else if (widget.type == 'linked_facebook') {
-        final result = await LoginClient().linkedAccountOTP({
-          'providerName': 'Facebook',
-          'providerKey': widget.facebookAccount!.accessToken?.userId,
-          'phoneNumber': widget.phone
-        });
-        otpCount = result.remainingRequestCount;
-        otpTemp = result.token;
-      } else if (widget.type == 'forgot_password') {
-        final result = await LoginClient()
-            .requestOTPRecover({"phoneNumber": widget.phone});
-        otpCount = result.remainingRequestCount;
-        otpTemp = result.token;
-      } else {
-        final result = await LoginClient().requestOTP(
-            {"password": widget.password, "phoneNumber": widget.phone});
-        otpCount = result.remainingRequestCount;
-        otpTemp = result.token;
-      }
+      final result = await LoginClient().submitRegister(widget.phone!);
+      // final result = await LoginClient().requestOTP(
+      //     {"password": widget.password, "phoneNumber": widget.phone});
+      otpCount = result.remainingRequestCount;
+      otpTemp = result.token;
       setState(() {});
       BotToast.closeAllLoading();
       _showDialogSuccess();

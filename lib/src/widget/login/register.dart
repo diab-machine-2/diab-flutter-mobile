@@ -71,7 +71,6 @@ class _RegisterControllerState extends State<RegisterController> {
     //   });
     // }
     firebaseSetup();
-    FocusScope.of(context).requestFocus(passwordFocusNode);
   }
 
   Future firebaseSetup() async {
@@ -255,7 +254,7 @@ class _RegisterControllerState extends State<RegisterController> {
                           TextFieldCustom(
                               focusNode: passwordFocusNode,
                               // key: passwordKey,
-                              autoFocus: widget.phone != null,
+                              autoFocus: true,
                               title: R.string.password.tr(),
                               placeholder:
                                   R.string.password_least_character.tr(),
@@ -264,57 +263,6 @@ class _RegisterControllerState extends State<RegisterController> {
                                 password = value;
                               }),
                           const SizedBox(height: 20),
-                          // TextFieldCustom(
-                          //     focusNode: confirmPasswordFocusNode,
-                          //     key: confirmPasswordKey,
-                          //     title: R.string.xac_nhan_mat_khau.tr(),
-                          //     placeholder: R.string.nhap_lai_mat_khau.tr(),
-                          //     isPassword: true,
-                          //     onChanged: (value) {
-                          //       confirmPassword = value;
-                          //     }),
-                          // const SizedBox(height: 20),
-                          // TextFieldCustom(
-                          //     key: referralCodeKey,
-                          //     initText: referralCode,
-                          //     maxLength: 6,
-                          //     title: R.string.references_code.tr(),
-                          //     placeholder: R.string.input_references_code.tr(),
-                          //     hintTextSize: 15,
-                          //     isSharedCode: true,
-                          //     rightIcon: R.drawable.ic_qr_scan,
-                          //     onRightWidgetClick: () async {
-                          //       await TrackingManager.analytics.logEvent(
-                          //         name: 'component_clicked',
-                          //         parameters: {
-                          //           "screen_name": 'sign_up',
-                          //           'component_name': 'icon_sign_up_scan',
-                          //         },
-                          //       );
-                          //       final dynamic scanResult =
-                          //           await NavigationUtil.navigatePage(
-                          //               context, const QRScanWidget());
-                          //       if (scanResult is String) {
-                          //         referralCode = scanResult;
-                          //         referralCodeKey
-                          //             .currentState
-                          //             ?.textEditingController
-                          //             .text = referralCode;
-                          //         referralCodeKey.currentState
-                          //             ?.valideReferralCode(referralCode);
-                          //         await TrackingManager.analytics.logEvent(
-                          //           name: 'scan_qr_success',
-                          //           parameters: {
-                          //             "screen_name": 'sign_up',
-                          //             'object_title': scanResult,
-                          //           },
-                          //         );
-                          //       }
-                          //     },
-                          //     onChanged: (value) {
-                          //       referralCode = value.trim();
-                          //     }),
-                          const SizedBox(height: 32),
                           GestureDetector(
                             onTap: () => submitUpdatePassword(),
                             child: Container(
@@ -345,40 +293,6 @@ class _RegisterControllerState extends State<RegisterController> {
                         ],
                       ),
                     ),
-                    // Row(
-                    //   mainAxisAlignment: MainAxisAlignment.center,
-                    //   children: [
-                    //     InkWell(
-                    //       onTap: () async {
-                    //         final dynamic scanResult = await NavigationUtil.navigatePage(context, const QRScanWidget());
-                    //         if (scanResult is String) {
-                    //           referralCode = scanResult;
-                    //           referralCodeKey.currentState?.textEditingController.text = referralCode;
-                    //           referralCodeKey.currentState?.valideReferralCode(referralCode);
-                    //         }
-                    //       },
-                    //       child: Row(
-                    //         mainAxisAlignment: MainAxisAlignment.center,
-                    //         children: [
-                    //           Image.asset(
-                    //             R.drawable.ic_qr_scan,
-                    //             width: 26,
-                    //             height: 26,
-                    //           ),
-                    //           const SizedBox(width: 12),
-                    //           Text(
-                    //             R.string.scan_references_code.tr(),
-                    //             style: TextStyle(
-                    //               color: R.color.mainColor,
-                    //               fontSize: 16,
-                    //               fontWeight: FontWeight.w700,
-                    //             ),
-                    //           ),
-                    //         ],
-                    //       ),
-                    //     ),
-                    //   ],
-                    // ),
                   ],
                 ),
               ),
