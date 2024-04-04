@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_zoom_videosdk/flutter_zoom_view.dart' as fzv;
 import 'package:flutter_zoom_videosdk/native/zoom_videosdk.dart';
@@ -124,42 +126,44 @@ class VideoView extends fzv.ZoomView {
       future: user!.videoStatus?.isOn(),
       builder: (context, snapshot) {
         if (snapshot.hasData && snapshot.data == true) {
-          // final mediaData = MediaQuery.of(context);
+          final mediaData = MediaQuery.of(context);
           final Map<String, dynamic> creationParams = _buildCreationParams();
           Widget zoomView = fzv.View(
             key: Key('fullScreen: false, sharing: false, userId: ${user!.userId}'),
             creationParams: creationParams,
           );
           // Support only portrait mode
+          if (Platform.isAndroid) {
+            return Container(
+              width: _previewWidth,
+              height: _previewHeight,
+              alignment: Alignment.topRight,
+              child: zoomView,
+            );
+          }
           return Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(_previewRoundedRadius),
+              color: Colors.black,
+              border: Border.all(color: Colors.white, width: 1.0),
+            ),
+            clipBehavior: Clip.antiAlias,
             width: _previewWidth,
             height: _previewHeight,
-            alignment: Alignment.topRight,
-            child: zoomView,
+            alignment: Alignment.center,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(_previewRoundedRadius),
+              child: AspectRatio(
+                aspectRatio: 1.0 / _ratio,
+                child: OverflowBox(
+                  maxHeight: mediaData.size.height,
+                  child: SizedBox.expand(
+                    child: zoomView,
+                  ),
+                ),
+              ),
+            ),
           );
-          // return Container(
-          //   decoration: BoxDecoration(
-          //     borderRadius: BorderRadius.circular(_previewRoundedRadius),
-          //     color: Colors.black,
-          //     border: Border.all(color: Colors.white, width: 1.0),
-          //   ),
-          //   clipBehavior: Clip.antiAlias,
-          //   width: _previewWidth,
-          //   height: _previewHeight,
-          //   alignment: Alignment.center,
-          //   child: ClipRRect(
-          //     borderRadius: BorderRadius.circular(_previewRoundedRadius),
-          //     child: AspectRatio(
-          //       aspectRatio: 1.0 / _ratio,
-          //       child: OverflowBox(
-          //         maxHeight: mediaData.size.height,
-          //         child: SizedBox.expand(
-          //           child: zoomView,
-          //         ),
-          //       ),
-          //     ),
-          //   ),
-          // );
         }
         return Container(
           decoration: BoxDecoration(
