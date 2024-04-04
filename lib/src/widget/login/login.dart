@@ -18,6 +18,8 @@ import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/base/text_field_custom.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
+import 'package:medical/src/widget/login/widgets/social_login_section.dart';
+import 'package:medical/src/widgets/spacing_row.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 class LoginController extends StatefulWidget {
@@ -36,6 +38,7 @@ class _LoginControllerState extends State<LoginController> {
   final GlobalKey<TextFieldCustomState> passwordKey = GlobalKey();
   String phone = '';
   String password = '';
+  bool isLogin = false;
   TextEditingController userNameController = TextEditingController();
 
   @override
@@ -108,23 +111,27 @@ class _LoginControllerState extends State<LoginController> {
       child: Scaffold(
         resizeToAvoidBottomInset: false,
         backgroundColor: R.color.white,
-        body: Stack(children: [
-          Container(
-              decoration: BoxDecoration(
-                  image: DecorationImage(
-                image: AssetImage(R.drawable.bg_splash),
-                fit: BoxFit.cover,
-              )),
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Padding(
-                        padding: EdgeInsets.only(top: 24),
-                      ),
-                      Column(children: [
-                        Row(children: [
+        body: Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage(R.drawable.bg_splash),
+              fit: BoxFit.cover,
+            ),
+          ),
+          child: SafeArea(
+            child: SpacingColumn(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                SpacingColumn(
+                  spacing: 30,
+                  children: [
+                    GestureDetector(
+                      onTap: () => Navigator.maybePop(context),
+                      child: SpacingRow(
+                        spacing: 20,
+                        children: [
+                          Icon(Icons.west, size: 24),
                           Text(
                             R.string.login.tr(),
                             style: TextStyle(
@@ -132,194 +139,227 @@ class _LoginControllerState extends State<LoginController> {
                                 fontSize: 28,
                                 fontWeight: FontWeight.w600),
                           ),
-                        ]),
-                        const SizedBox(height: 24),
-                        TextFieldCustom(
-                            key: phoneKey,
-                            focusNode: phoneFocusNode,
-                            title: R.string.so_dien_thoai.tr(),
-                            placeholder: R.string.nhap_so_dien_thoai.tr(),
-                            onChanged: (value) {
-                              phone = value;
-                            }),
-                        const SizedBox(height: 20),
-                        TextFieldCustom(
-                            key: passwordKey,
-                            focusNode: passwordFocusNode,
-                            title: R.string.password.tr(),
-                            placeholder: R.string.nhap_mat_khau.tr(),
-                            isPassword: true,
-                            onChanged: (value) {
-                              password = value;
-                            }),
-                        const SizedBox(height: 30),
-                        GestureDetector(
-                          onTap: () {
-                            login();
-                          },
-                          child: Container(
-                              height: 48,
-                              width: 195,
-                              decoration: BoxDecoration(
-                                  color: R.color.mainColor,
-                                  borderRadius: BorderRadius.circular(200),
-                                  gradient: LinearGradient(
-                                      begin: Alignment.topLeft,
-                                      end: Alignment.centerRight,
-                                      colors: [
-                                        R.color.greenGradientTop,
-                                        R.color.greenGradientBottom
-                                      ])),
-                              child: Center(
-                                child: Text(R.string.login.tr(),
-                                    style: TextStyle(
-                                        color: R.color.white,
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w600)),
-                              )),
-                        ),
-                        const SizedBox(height: 8),
-                        Container(
-                            height: 48,
-                            color: R.color.transparent,
-                            child: Center(
-                              child: InkWell(
-                                onTap: () async {
-                                  await TrackingManager.analytics.logEvent(
-                                    name: 'cta_button_clicked',
-                                    parameters: {
-                                      "screen_name": 'login',
-                                      'cta_button_name':
-                                          'cta_login_forget_password',
-                                    },
-                                  );
-                                  Navigator.pushNamed(
-                                      context, NavigatorName.forgot_password);
-                                },
-                                child: Text(R.string.forgot_password.tr(),
-                                    style: TextStyle(
-                                        color: R.color.mainColor,
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w600)),
-                              ),
-                            ))
-                      ]),
-                      Column(children: [
-                        Text(R.string.hoac_dang_nhap_bang.tr(),
-                            style: TextStyle(
-                                color: R.color.textDark,
-                                fontSize: 16,
-                                fontWeight: FontWeight.w400)),
-                        const SizedBox(height: 16),
-                        Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              if (Platform.isIOS)
-                                GestureDetector(
-                                  onTap: () {
-                                    loginApple();
-                                  },
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(
-                                        left: 8, right: 8),
-                                    child: Container(
-                                        height: 50,
-                                        width: 50,
-                                        decoration: BoxDecoration(
-                                            color: R.color.white,
-                                            borderRadius:
-                                                BorderRadius.circular(25)),
-                                        child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
-                                            children: [
-                                              Image.asset(
-                                                  R.drawable.ic_login_apple,
-                                                  width: 26,
-                                                  height: 26),
-                                            ])),
-                                  ),
-                                ),
-                              GestureDetector(
-                                onTap: () {
-                                  loginGG();
-                                },
-                                child: Padding(
-                                  padding:
-                                      const EdgeInsets.only(left: 8, right: 8),
-                                  child: Container(
-                                      height: 50,
-                                      width: 50,
-                                      decoration: BoxDecoration(
-                                          color: R.color.white,
-                                          borderRadius:
-                                              BorderRadius.circular(25)),
-                                      child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            Image.asset(R.drawable.ic_google,
-                                                width: 26, height: 26),
-                                          ])),
-                                ),
-                              )
-                            ]),
-                        const SizedBox(height: 30),
-                        Text(R.string.chua_co_tai_khoan.tr(),
-                            style: const TextStyle(
-                                fontSize: 14, fontWeight: FontWeight.w400)),
-                        const SizedBox(height: 10),
-                        GestureDetector(
+                        ],
+                      ),
+                    ),
+                    SizedBox(height: 1),
+                    TextFieldCustom(
+                      key: phoneKey,
+                      focusNode: phoneFocusNode,
+                      title: R.string.so_dien_thoai.tr(),
+                      placeholder: R.string.nhap_so_dien_thoai.tr(),
+                      onChanged: (value) {
+                        phone = value;
+                      },
+                    ),
+                    if (isLogin)
+                      TextFieldCustom(
+                        key: passwordKey,
+                        focusNode: passwordFocusNode,
+                        title: R.string.password.tr(),
+                        placeholder: R.string.nhap_mat_khau.tr(),
+                        isPassword: true,
+                        onChanged: (value) {
+                          password = value;
+                        },
+                      ),
+                    if (isLogin)
+                      Container(
+                        height: 48,
+                        alignment: Alignment.centerRight,
+                        color: R.color.transparent,
+                        child: InkWell(
                           onTap: () async {
                             await TrackingManager.analytics.logEvent(
                               name: 'cta_button_clicked',
                               parameters: {
                                 "screen_name": 'login',
-                                'cta_button_name': 'cta_login_sign_up',
+                                'cta_button_name': 'cta_login_forget_password',
                               },
                             );
                             Navigator.pushNamed(
-                                context, NavigatorName.register);
+                                context, NavigatorName.forgot_password);
                           },
-                          child: Container(
-                              height: 48,
-                              width: 195,
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(200),
-                                  color: R.color.white,
-                                  border: Border.all(
-                                      color: R.color.mainColor, width: 1)),
-                              child: Center(
-                                child: Text(R.string.tao_tai_khoan_moi.tr(),
-                                    style: TextStyle(
-                                        color: R.color.mainColor,
-                                        fontWeight: FontWeight.w600)),
-                              )),
+                          child: Text(R.string.forgot_password.tr(),
+                              style: TextStyle(
+                                  color: R.color.mainColor,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600)),
                         ),
-                        const SizedBox(height: 20),
-                      ])
-                    ]),
-              )),
-          Positioned(
-            //Place it at the top, and not use the entire screen
-            top: 0,
-            left: 0,
-            right: 0,
-            child: AppBar(
-                leading: const SizedBox(),
-                backgroundColor: R.color.transparent,
-                actions: [
-                  IconButton(
-                      padding: const EdgeInsets.only(right: 30),
-                      icon: Icon(Icons.close, color: R.color.black),
-                      onPressed: () {
-                        Navigator.pop(context);
-                      })
-                ]),
-          )
-        ]),
+                      ),
+                    if (!isLogin) SizedBox(height: 30),
+                    GestureDetector(
+                      onTap: () {
+                        if (isLogin) {
+                          login();
+                        } else {
+                          checkExistPhoneNumber();
+                        }
+                      },
+                      child: Container(
+                        height: 52,
+                        decoration: BoxDecoration(
+                          color: R.color.mainColor,
+                          borderRadius: BorderRadius.circular(200),
+                          gradient: LinearGradient(
+                            begin: Alignment.topLeft,
+                            end: Alignment.centerRight,
+                            colors: [
+                              R.color.greenGradientTop,
+                              R.color.greenGradientBottom
+                            ],
+                          ),
+                        ),
+                        child: Center(
+                          child: Text(
+                              isLogin
+                                  ? R.string.login.tr()
+                                  : R.string.tiep_tuc.tr(),
+                              style: TextStyle(
+                                  color: R.color.white,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600)),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                SocialLoginSection(),
+                // Column(children: [
+                //   Text(R.string.hoac_dang_nhap_bang.tr(),
+                //       style: TextStyle(
+                //           color: R.color.textDark,
+                //           fontSize: 16,
+                //           fontWeight: FontWeight.w400)),
+                //   const SizedBox(height: 16),
+                //   Row(
+                //       mainAxisAlignment: MainAxisAlignment.center,
+                //       children: [
+                //         if (Platform.isIOS)
+                //           GestureDetector(
+                //             onTap: () {
+                //               loginApple();
+                //             },
+                //             child: Padding(
+                //               padding:
+                //                   const EdgeInsets.only(left: 8, right: 8),
+                //               child: Container(
+                //                   height: 50,
+                //                   width: 50,
+                //                   decoration: BoxDecoration(
+                //                       color: R.color.white,
+                //                       borderRadius:
+                //                           BorderRadius.circular(25)),
+                //                   child: Row(
+                //                       mainAxisAlignment:
+                //                           MainAxisAlignment.center,
+                //                       children: [
+                //                         Image.asset(
+                //                             R.drawable.ic_login_apple,
+                //                             width: 26,
+                //                             height: 26),
+                //                       ])),
+                //             ),
+                //           ),
+                //         GestureDetector(
+                //           onTap: () {
+                //             loginGG();
+                //           },
+                //           child: Padding(
+                //             padding:
+                //                 const EdgeInsets.only(left: 8, right: 8),
+                //             child: Container(
+                //                 height: 50,
+                //                 width: 50,
+                //                 decoration: BoxDecoration(
+                //                     color: R.color.white,
+                //                     borderRadius:
+                //                         BorderRadius.circular(25)),
+                //                 child: Row(
+                //                     mainAxisAlignment:
+                //                         MainAxisAlignment.center,
+                //                     children: [
+                //                       Image.asset(R.drawable.ic_google,
+                //                           width: 26, height: 26),
+                //                     ])),
+                //           ),
+                //         )
+                //       ]),
+                //   const SizedBox(height: 30),
+                //   Text(R.string.chua_co_tai_khoan.tr(),
+                //       style: const TextStyle(
+                //           fontSize: 14, fontWeight: FontWeight.w400)),
+                //   const SizedBox(height: 10),
+                //   GestureDetector(
+                //     onTap: () async {
+                //       await TrackingManager.analytics.logEvent(
+                //         name: 'cta_button_clicked',
+                //         parameters: {
+                //           "screen_name": 'login',
+                //           'cta_button_name': 'cta_login_sign_up',
+                //         },
+                //       );
+                //       Navigator.pushNamed(context, NavigatorName.register);
+                //     },
+                //     child: Container(
+                //         height: 48,
+                //         width: 195,
+                //         decoration: BoxDecoration(
+                //             borderRadius: BorderRadius.circular(200),
+                //             color: R.color.white,
+                //             border: Border.all(
+                //                 color: R.color.mainColor, width: 1)),
+                //         child: Center(
+                //           child: Text(R.string.tao_tai_khoan_moi.tr(),
+                //               style: TextStyle(
+                //                   color: R.color.mainColor,
+                //                   fontWeight: FontWeight.w600)),
+                //         )),
+                //   ),
+                //   const SizedBox(height: 20),
+                // ]),
+              ],
+            ),
+          ),
+        ),
       ),
     );
+  }
+
+  checkExistPhoneNumber() async {
+    if (phone.isEmpty) {
+      phoneKey.currentState!
+          .validate(R.string.ban_chua_nhap_so_dien_thoai.tr());
+      return;
+    }
+    // BotToast.showLoading();
+    // try {
+    bool isExistAccount = await LoginClient().checkExistPhoneNumber(phone);
+    if (isExistAccount) {
+      setState(() {
+        isLogin = true;
+      });
+    } else {
+      sendOtpRegister();
+    }
+    // } catch (e) {}
+  }
+
+  sendOtpRegister() async {
+    final result = await LoginClient().submitRegister(phone);
+    if (result.remainingRequestCount! <= 0) {
+      _showDialogError();
+      return;
+    }
+
+    Navigator.pushNamed(context, NavigatorName.verify, arguments: {
+      'type': 'register',
+      'otp': result.token,
+      'phone': phone,
+      'password': password,
+      'remainingRequestCount': result.remainingRequestCount,
+      // 'referalCode': referralCode,
+    });
   }
 
   login() async {

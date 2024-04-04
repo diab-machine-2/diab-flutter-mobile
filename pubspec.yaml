@@ -85,11 +85,7 @@ dependencies:
   flutter_screenutil: ^5.9.0
 
   # modal_bottom_sheet: ^2.0.0
-  modal_bottom_sheet:
-    git:
-      url: https://github.com/jamesblasco/modal_bottom_sheet.git
-      path: modal_bottom_sheet
-      ref: main
+  modal_bottom_sheet: ^3.0.0-pre
   pull_to_refresh: ^2.0.0
   visibility_detector: ^0.3.3
   #avatars

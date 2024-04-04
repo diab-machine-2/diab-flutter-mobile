@@ -1,3 +1,4 @@
+// import 'package:flutter_zalo_login/flutter_zalo_login.dart';
 import 'dart:convert';
 import 'dart:io' show Platform;
 
@@ -19,6 +20,7 @@ import 'package:medical/src/model/service/api_result.dart';
 import 'package:medical/src/model/service/network_exceptions.dart';
 import 'package:medical/src/repo/login/login_client.dart';
 import 'package:medical/src/repo/user/user_client.dart';
+import 'package:medical/src/utils/app_log.dart';
 import 'package:medical/src/utils/app_storages.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigation_util.dart';
@@ -30,29 +32,31 @@ import 'package:medical/src/widgets/qr_scan_widget.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 class RegisterController extends StatefulWidget {
-  const RegisterController(this.sharedCode);
-  final String sharedCode;
+  const RegisterController({this.sharedCode, this.phone});
+  final String? phone;
+  final String? sharedCode;
   @override
   _RegisterControllerState createState() => _RegisterControllerState();
 }
 
 class _RegisterControllerState extends State<RegisterController> {
-  FocusNode phoneFocusNode = FocusNode();
+  // FocusNode phoneFocusNode = FocusNode();
   FocusNode passwordFocusNode = FocusNode();
-  FocusNode confirmPasswordFocusNode = FocusNode();
-  FocusNode referralCodeFocusNode = FocusNode();
+  // FocusNode confirmPasswordFocusNode = FocusNode();
+  // FocusNode referralCodeFocusNode = FocusNode();
 
   final AppRepository _appRepository = AppRepository();
 
   final GlobalKey<TextFieldCustomState> phoneKey = GlobalKey();
   final GlobalKey<TextFieldCustomState> passwordKey = GlobalKey();
-  final GlobalKey<TextFieldCustomState> confirmPasswordKey = GlobalKey();
-  final GlobalKey<TextFieldCustomState> referralCodeKey = GlobalKey();
+  // final GlobalKey<TextFieldCustomState> confirmPasswordKey = GlobalKey();
+  // final GlobalKey<TextFieldCustomState> referralCodeKey = GlobalKey();
 
   String phone = '';
   String password = '';
   String confirmPassword = '';
   late String referralCode;
+  String _hashKey = '';
 
   bool checked = false;
 
@@ -61,129 +65,136 @@ class _RegisterControllerState extends State<RegisterController> {
     super.initState();
     final String? referalCode = DynamicLinkConfig.instance.referalCode;
     referralCode = referalCode ?? "";
+    // if (widget.phone != null) {
+    //   setState(() {
+    //     phone = widget.phone!;
+    //   });
+    // }
     firebaseSetup();
+    FocusScope.of(context).requestFocus(passwordFocusNode);
   }
 
   Future firebaseSetup() async {
     await TrackingManager.analytics.logScreenView(
         screenName: "sign_up", screenClass: "RegisterController");
     AppSettings.currentScreenName = 'sign_up';
-    phoneFocusNode.addListener(() async {
-      if (phoneFocusNode.hasFocus) {
-        await TrackingManager.analytics.logEvent(
-          name: 'text_field_focus',
-          parameters: {
-            "screen_name": 'sign_up',
-            'text_field_name': 'text_field_sign_up_phone',
-            'object_value': phone
-          },
-        );
-      } else {
-        bool isValid = phone.length == 9 || phone.length == 10;
-        await TrackingManager.analytics.logEvent(
-          name: 'text_field_input',
-          parameters: {
-            "screen_name": 'sign_up',
-            'text_field_name': 'text_field_sign_up_phone',
-            'object_value': phone,
-            'validate_state': isValid ? 'pass' : 'fail',
-            'error_message': isValid ? 'none' : R.string.phone_not_valid.tr(),
-          },
-        );
-      }
-    });
-    passwordFocusNode.addListener(() async {
-      if (passwordFocusNode.hasFocus) {
-        await TrackingManager.analytics.logEvent(
-          name: 'text_field_focus',
-          parameters: {
-            "screen_name": 'sign_up',
-            'text_field_name': 'text_field_sign_up_password',
-            'object_value': password
-          },
-        );
-      } else {
-        bool isValid = password.length >= 6;
-        await TrackingManager.analytics.logEvent(
-          name: 'text_field_input',
-          parameters: {
-            "screen_name": 'sign_up',
-            'text_field_name': 'text_field_sign_up_password',
-            'object_value': password.length,
-            'validate_state': isValid ? 'pass' : 'fail',
-            'error_message':
-                isValid ? 'none' : R.string.password_least_character.tr()
-          },
-        );
-      }
-    });
-    confirmPasswordFocusNode.addListener(() async {
-      if (passwordFocusNode.hasFocus) {
-        await TrackingManager.analytics.logEvent(
-          name: 'text_field_focus',
-          parameters: {
-            "screen_name": 'sign_up',
-            'text_field_name': 'text_field_sign_up_confirm',
-            'object_value': confirmPassword
-          },
-        );
-      } else {
-        String validateState = 'pass';
-        String errorMessage = 'none';
-        if (confirmPassword.isEmpty) {
-          errorMessage = R.string.ban_chua_nhap_lai_mat_khau.tr();
-          validateState = 'fail';
-        }
-        if (confirmPassword != password) {
-          errorMessage = R.string.nhap_lai_mat_khau_khong_chinh_xac.tr();
-          validateState = 'fail';
-        }
-        await TrackingManager.analytics.logEvent(
-          name: 'text_field_input',
-          parameters: {
-            "screen_name": 'sign_up',
-            'text_field_name': 'text_field_sign_up_confirm',
-            'object_value': confirmPassword.length,
-            'validate_state': validateState,
-            'error_message': errorMessage
-          },
-        );
-      }
-    });
-    referralCodeFocusNode.addListener(() async {
-      if (passwordFocusNode.hasFocus) {
-        await TrackingManager.analytics.logEvent(
-          name: 'text_field_focus',
-          parameters: {
-            "screen_name": 'sign_up',
-            'text_field_name': 'text_field_sign_up_referral',
-            'object_value': referralCode
-          },
-        );
-      } else {
-        String validateState = 'pass';
-        String errorMessage = 'none';
-        bool isValid = valideReferralCode(referralCode);
-        if (!isValid) {
-          errorMessage = R.string.data_input_not_valid.tr();
-          validateState = 'fail';
-        }
-        await TrackingManager.analytics.logEvent(
-          name: 'text_field_input',
-          parameters: {
-            "screen_name": 'sign_up',
-            'text_field_name': 'text_field_sign_up_referral',
-            'object_value': referralCode,
-            'validate_state': validateState,
-            'error_message': errorMessage
-          },
-        );
-      }
-    });
+    // phoneFocusNode.addListener(() async {
+    //   if (phoneFocusNode.hasFocus) {
+    //     await TrackingManager.analytics.logEvent(
+    //       name: 'text_field_focus',
+    //       parameters: {
+    //         "screen_name": 'sign_up',
+    //         'text_field_name': 'text_field_sign_up_phone',
+    //         'object_value': phone
+    //       },
+    //     );
+    //   } else {
+    //     bool isValid = phone.length == 9 || phone.length == 10;
+    //     await TrackingManager.analytics.logEvent(
+    //       name: 'text_field_input',
+    //       parameters: {
+    //         "screen_name": 'sign_up',
+    //         'text_field_name': 'text_field_sign_up_phone',
+    //         'object_value': phone,
+    //         'validate_state': isValid ? 'pass' : 'fail',
+    //         'error_message': isValid ? 'none' : R.string.phone_not_valid.tr(),
+    //       },
+    //     );
+    //   }
+    // });
+    // passwordFocusNode.addListener(() async {
+    //   if (passwordFocusNode.hasFocus) {
+    //     await TrackingManager.analytics.logEvent(
+    //       name: 'text_field_focus',
+    //       parameters: {
+    //         "screen_name": 'sign_up',
+    //         'text_field_name': 'text_field_sign_up_password',
+    //         'object_value': password
+    //       },
+    //     );
+    //   } else {
+    //     bool isValid = password.length >= 6;
+    //     await TrackingManager.analytics.logEvent(
+    //       name: 'text_field_input',
+    //       parameters: {
+    //         "screen_name": 'sign_up',
+    //         'text_field_name': 'text_field_sign_up_password',
+    //         'object_value': password.length,
+    //         'validate_state': isValid ? 'pass' : 'fail',
+    //         'error_message':
+    //             isValid ? 'none' : R.string.password_least_character.tr()
+    //       },
+    //     );
+    //   }
+    // });
+    // confirmPasswordFocusNode.addListener(() async {
+    //   if (passwordFocusNode.hasFocus) {
+    //     await TrackingManager.analytics.logEvent(
+    //       name: 'text_field_focus',
+    //       parameters: {
+    //         "screen_name": 'sign_up',
+    //         'text_field_name': 'text_field_sign_up_confirm',
+    //         'object_value': confirmPassword
+    //       },
+    //     );
+    //   } else {
+    //     String validateState = 'pass';
+    //     String errorMessage = 'none';
+    //     if (confirmPassword.isEmpty) {
+    //       errorMessage = R.string.ban_chua_nhap_lai_mat_khau.tr();
+    //       validateState = 'fail';
+    //     }
+    //     if (confirmPassword != password) {
+    //       errorMessage = R.string.nhap_lai_mat_khau_khong_chinh_xac.tr();
+    //       validateState = 'fail';
+    //     }
+    //     await TrackingManager.analytics.logEvent(
+    //       name: 'text_field_input',
+    //       parameters: {
+    //         "screen_name": 'sign_up',
+    //         'text_field_name': 'text_field_sign_up_confirm',
+    //         'object_value': confirmPassword.length,
+    //         'validate_state': validateState,
+    //         'error_message': errorMessage
+    //       },
+    //     );
+    //   }
+    // });
+    // referralCodeFocusNode.addListener(() async {
+    //   if (passwordFocusNode.hasFocus) {
+    //     await TrackingManager.analytics.logEvent(
+    //       name: 'text_field_focus',
+    //       parameters: {
+    //         "screen_name": 'sign_up',
+    //         'text_field_name': 'text_field_sign_up_referral',
+    //         'object_value': referralCode
+    //       },
+    //     );
+    //   } else {
+    //     String validateState = 'pass';
+    //     String errorMessage = 'none';
+    //     bool isValid = valideReferralCode(referralCode);
+    //     if (!isValid) {
+    //       errorMessage = R.string.data_input_not_valid.tr();
+    //       validateState = 'fail';
+    //     }
+    //     await TrackingManager.analytics.logEvent(
+    //       name: 'text_field_input',
+    //       parameters: {
+    //         "screen_name": 'sign_up',
+    //         'text_field_name': 'text_field_sign_up_referral',
+    //         'object_value': referralCode,
+    //         'validate_state': validateState,
+    //         'error_message': errorMessage
+    //       },
+    //     );
+    //   }
+    // });
   }
 
   @override
   Widget build(BuildContext context) {
+    // BotToast.closeAllLoading();
     return GestureDetector(
       onTap: () {
         FocusScope.of(context).requestFocus(FocusNode());
@@ -231,8 +242,10 @@ class _RegisterControllerState extends State<RegisterController> {
                       child: Column(
                         children: [
                           TextFieldCustom(
-                              focusNode: phoneFocusNode,
-                              key: phoneKey,
+                              // focusNode: phoneFocusNode,
+                              // key: phoneKey,
+                              readOnly: widget.phone != null,
+                              initText: widget.phone,
                               title: R.string.so_dien_thoai.tr(),
                               placeholder: R.string.nhap_so_dien_thoai.tr(),
                               onChanged: (value) {
@@ -241,7 +254,8 @@ class _RegisterControllerState extends State<RegisterController> {
                           const SizedBox(height: 20),
                           TextFieldCustom(
                               focusNode: passwordFocusNode,
-                              key: passwordKey,
+                              // key: passwordKey,
+                              autoFocus: widget.phone != null,
                               title: R.string.password.tr(),
                               placeholder:
                                   R.string.password_least_character.tr(),
@@ -250,64 +264,61 @@ class _RegisterControllerState extends State<RegisterController> {
                                 password = value;
                               }),
                           const SizedBox(height: 20),
-                          TextFieldCustom(
-                              focusNode: confirmPasswordFocusNode,
-                              key: confirmPasswordKey,
-                              title: R.string.xac_nhan_mat_khau.tr(),
-                              placeholder: R.string.nhap_lai_mat_khau.tr(),
-                              isPassword: true,
-                              onChanged: (value) {
-                                confirmPassword = value;
-                              }),
-                          const SizedBox(height: 20),
-                          TextFieldCustom(
-                              key: referralCodeKey,
-                              initText: referralCode,
-                              maxLength: 6,
-                              title: R.string.references_code.tr(),
-                              placeholder: R.string.input_references_code.tr(),
-                              hintTextSize: 15,
-                              isSharedCode: true,
-                              rightIcon: R.drawable.ic_qr_scan,
-                              onRightWidgetClick: () async {
-                                await TrackingManager.analytics.logEvent(
-                                  name: 'component_clicked',
-                                  parameters: {
-                                    "screen_name": 'sign_up',
-                                    'component_name': 'icon_sign_up_scan',
-                                  },
-                                );
-                                final dynamic scanResult =
-                                    await NavigationUtil.navigatePage(
-                                        context, const QRScanWidget());
-                                if (scanResult is String) {
-                                  referralCode = scanResult;
-                                  referralCodeKey
-                                      .currentState
-                                      ?.textEditingController
-                                      .text = referralCode;
-                                  referralCodeKey.currentState
-                                      ?.valideReferralCode(referralCode);
-                                  await TrackingManager.analytics.logEvent(
-                                    name: 'scan_qr_success',
-                                    parameters: {
-                                      "screen_name": 'sign_up',
-                                      'object_title': scanResult,
-                                    },
-                                  );
-                                }
-                              },
-                              onChanged: (value) {
-                                referralCode = value.trim();
-                              }),
+                          // TextFieldCustom(
+                          //     focusNode: confirmPasswordFocusNode,
+                          //     key: confirmPasswordKey,
+                          //     title: R.string.xac_nhan_mat_khau.tr(),
+                          //     placeholder: R.string.nhap_lai_mat_khau.tr(),
+                          //     isPassword: true,
+                          //     onChanged: (value) {
+                          //       confirmPassword = value;
+                          //     }),
+                          // const SizedBox(height: 20),
+                          // TextFieldCustom(
+                          //     key: referralCodeKey,
+                          //     initText: referralCode,
+                          //     maxLength: 6,
+                          //     title: R.string.references_code.tr(),
+                          //     placeholder: R.string.input_references_code.tr(),
+                          //     hintTextSize: 15,
+                          //     isSharedCode: true,
+                          //     rightIcon: R.drawable.ic_qr_scan,
+                          //     onRightWidgetClick: () async {
+                          //       await TrackingManager.analytics.logEvent(
+                          //         name: 'component_clicked',
+                          //         parameters: {
+                          //           "screen_name": 'sign_up',
+                          //           'component_name': 'icon_sign_up_scan',
+                          //         },
+                          //       );
+                          //       final dynamic scanResult =
+                          //           await NavigationUtil.navigatePage(
+                          //               context, const QRScanWidget());
+                          //       if (scanResult is String) {
+                          //         referralCode = scanResult;
+                          //         referralCodeKey
+                          //             .currentState
+                          //             ?.textEditingController
+                          //             .text = referralCode;
+                          //         referralCodeKey.currentState
+                          //             ?.valideReferralCode(referralCode);
+                          //         await TrackingManager.analytics.logEvent(
+                          //           name: 'scan_qr_success',
+                          //           parameters: {
+                          //             "screen_name": 'sign_up',
+                          //             'object_title': scanResult,
+                          //           },
+                          //         );
+                          //       }
+                          //     },
+                          //     onChanged: (value) {
+                          //       referralCode = value.trim();
+                          //     }),
                           const SizedBox(height: 32),
                           GestureDetector(
-                            onTap: () {
-                              verify();
-                            },
+                            onTap: () => submitUpdatePassword(),
                             child: Container(
-                              height: 48,
-                              width: 195,
+                              height: 52,
                               decoration: BoxDecoration(
                                 color: R.color.mainColor,
                                 borderRadius: BorderRadius.circular(200),
@@ -368,74 +379,6 @@ class _RegisterControllerState extends State<RegisterController> {
                     //     ),
                     //   ],
                     // ),
-                    SafeArea(
-                      child: Column(
-                        children: [
-                          Text(R.string.hoac_dang_nhap_bang.tr(),
-                              style: TextStyle(
-                                  color: R.color.textDark,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w400)),
-                          const SizedBox(height: 16),
-                          Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                if (Platform.isIOS)
-                                  GestureDetector(
-                                    onTap: () {
-                                      loginApple();
-                                    },
-                                    child: Padding(
-                                      padding: const EdgeInsets.only(
-                                          left: 8, right: 8),
-                                      child: Container(
-                                          height: 50,
-                                          width: 50,
-                                          decoration: BoxDecoration(
-                                              color: R.color.white,
-                                              borderRadius:
-                                                  BorderRadius.circular(25)),
-                                          child: Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.center,
-                                              children: [
-                                                Image.asset(
-                                                    R.drawable.ic_login_apple,
-                                                    width: 26,
-                                                    height: 26),
-                                              ])),
-                                    ),
-                                  )
-                                else
-                                  const SizedBox(),
-                                GestureDetector(
-                                  onTap: () {
-                                    loginGG();
-                                  },
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(
-                                        left: 8, right: 8),
-                                    child: Container(
-                                        height: 50,
-                                        width: 50,
-                                        decoration: BoxDecoration(
-                                            color: R.color.white,
-                                            borderRadius:
-                                                BorderRadius.circular(25)),
-                                        child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
-                                            children: [
-                                              Image.asset(R.drawable.ic_google,
-                                                  width: 26, height: 26),
-                                            ])),
-                                  ),
-                                )
-                              ]),
-                          const SizedBox(height: 16)
-                        ],
-                      ),
-                    )
                   ],
                 ),
               ),
@@ -444,6 +387,73 @@ class _RegisterControllerState extends State<RegisterController> {
         ),
       ),
     );
+  }
+
+  submitUpdatePassword() async {
+    await TrackingManager.analytics.logEvent(
+      name: 'cta_button_clicked',
+      parameters: {
+        "screen_name": 'sign_up',
+        'cta_button_name': 'cta_sign_up_phone',
+      },
+    );
+    if (phone.isEmpty) {
+      phoneKey.currentState!
+          .validate(R.string.ban_chua_nhap_so_dien_thoai.tr());
+      return;
+    }
+    if (password.isEmpty) {
+      passwordKey.currentState!.validate(R.string.ban_chua_nhap_mat_khau.tr());
+      return;
+    }
+    if (password.contains(' ')) {
+      passwordKey.currentState!
+          .validate(R.string.mat_khau_khong_chua_khoang_trang.tr());
+      return;
+    }
+    if (password.length < 6) {
+      passwordKey.currentState!
+          .validate(R.string.password_least_character.tr());
+      return;
+    }
+    try {
+      final result = await LoginClient()
+          .submitUpdatePasswordRegister(phone: phone, password: password);
+      if (result) {
+        getToken();
+      }
+    } catch (e, _) {
+      BotToast.closeAllLoading();
+      if (e is Error) {
+        if (e.code == 'USER002') {
+          phoneKey.currentState!
+              .validate(R.string.so_dien_thoai_da_ton_tai.tr());
+        } else {
+          Message.showToastMessage(
+              context, R.string.error_can_not_connect_to_server.tr());
+        }
+      } else {
+        Message.showToastMessage(
+            context, R.string.error_can_not_connect_to_server.tr());
+      }
+    }
+  }
+
+  getToken() async {
+    BotToast.showLoading();
+    final result = await LoginClient().login({
+      "client_id": Const.CLIENT_ID,
+      "client_secret": Const.CLIENT_SECRET,
+      "grant_type": "phone_number_password",
+      "password": password,
+      "phone_number": widget.phone
+    });
+    BotToast.closeAllLoading();
+    Navigator.pushReplacementNamed(context, NavigatorName.update_info,
+        arguments: {
+          'type': 'phone',
+          'phone': widget.phone,
+        });
   }
 
   Future<bool> _isReferralCodeExist(String code) async {
@@ -493,22 +503,22 @@ class _RegisterControllerState extends State<RegisterController> {
           .validate(R.string.password_least_character.tr());
       return;
     }
-    if (confirmPassword.isEmpty) {
-      confirmPasswordKey.currentState!
-          .validate(R.string.ban_chua_nhap_lai_mat_khau.tr());
-      return;
-    }
-    if (confirmPassword != password) {
-      confirmPasswordKey.currentState!
-          .validate(R.string.nhap_lai_mat_khau_khong_chinh_xac.tr());
-      return;
-    }
+    // if (confirmPassword.isEmpty) {
+    //   confirmPasswordKey.currentState!
+    //       .validate(R.string.ban_chua_nhap_lai_mat_khau.tr());
+    //   return;
+    // }
+    // if (confirmPassword != password) {
+    //   confirmPasswordKey.currentState!
+    //       .validate(R.string.nhap_lai_mat_khau_khong_chinh_xac.tr());
+    //   return;
+    // }
 
-    if (referralCode.isNotEmpty) {
-      if (!referralCodeKey.currentState!.isCorrect) {
-        return;
-      }
-    }
+    // if (referralCode.isNotEmpty) {
+    //   if (!referralCodeKey.currentState!.isCorrect) {
+    //     return;
+    //   }
+    // }
 
     const String pattern = r'(^(?:[+0]9)?[0-9]{9}|\d{10}$)';
     final RegExp regExp = RegExp(pattern);

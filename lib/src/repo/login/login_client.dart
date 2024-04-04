@@ -4,6 +4,7 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/modal/login/login_model.dart';
 import 'package:medical/src/modal/register/register_model.dart';
+import 'package:medical/src/utils/app_log.dart';
 import 'package:medical/src/widget/helper/http_helper.dart';
 import 'package:medical/src/modal/error/error_model.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -13,6 +14,8 @@ class LoginClient extends FetchClient {
     try {
       final Response<dynamic> response = await super
           .postUri(baseIdentify: true, url: '/connect/token', params: params);
+      Console.log('login', response.statusCode);
+      Console.log('response', response.data);
       if (response.statusCode == 200) {
         final loginModel = LoginModel.fromJson(response.data);
         await AppSettings.saveToken(loginModel.access_token);
@@ -25,6 +28,73 @@ class LoginClient extends FetchClient {
     } catch (e) {
       throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
     }
+  }
+
+  Future<bool> checkExistPhoneNumber(String phone) async {
+    // try {
+    final Response<dynamic> response = await super.fetchData(
+      baseIdentify: true,
+      url: '/api/auth/v1/mobile/register/exist',
+      params: {'phoneNumber': phone},
+    );
+    if (response.statusCode == 200) {
+      return response.data['isExistAccount'] ?? false;
+    } else {
+      final error = Error.fromJson1(response);
+      throw error;
+    }
+    // } catch (e) {
+    //   throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+    // }
+  }
+
+  Future<RegisterModel> submitRegister(String phone) async {
+    // try {
+    final Response<dynamic> response = await super.postUri(
+      baseIdentify: true,
+      baseOption: true,
+      url: '/api/auth/v1/mobile/register',
+      params: {
+        'phoneNumber': phone,
+        'password': "123@56789",
+      },
+    );
+    if (response.statusCode == 200) {
+      return RegisterModel.fromJson(response.data);
+    } else {
+      final error = Error.fromJson1(response);
+      throw error;
+    }
+    // } catch (e) {
+    //   throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+    // }
+  }
+
+  Future<bool> submitUpdatePasswordRegister({
+    required String phone,
+    required String password,
+  }) async {
+    // try {
+    final Response<dynamic> response = await super.postUri(
+      baseIdentify: true,
+      baseOption: true,
+      url: '/api/auth/v1/mobile/register/complete',
+      params: {
+        'phoneNumber': phone,
+        'password': password,
+        'OldPassword': "123@56789",
+      },
+    );
+
+    if (response.statusCode == 200) {
+      return true;
+    } else {
+      final error = Error.fromJson1(response);
+      throw error;
+    }
+    // } catch (e) {
+    //   throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+    // }
   }
 
   Future<RegisterModel> requestOTP(params) async {
@@ -138,20 +208,18 @@ class LoginClient extends FetchClient {
     }
   }
 
-  Future<bool> createPatient(Map<String, String> params) async {
+  Future<bool> createPatient(Map<String, dynamic> params) async {
     try {
-      // final response = await super.postHttp(path: '/App/Patient/Input', params: params);
       final response = await super.postData(
-          url: '/App/Patient/Input', params: FormData.fromMap(params));
-      // logger.i(response.requestOptions);
-      // logger.i(response.headers);
+        url: '/App/Patient/Input',
+        params: FormData.fromMap(params),
+      );
+      Console.log('createPatient', response.statusCode);
       if (response.statusCode == 200) {
         return true;
       } else {
         final error = Error.fromJson(response);
         throw error;
-        // final error = await response.stream.bytesToString();
-        // throw Error.fromString(error);
       }
     } catch (e) {
       throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
@@ -277,6 +345,8 @@ class LoginClient extends FetchClient {
           baseOption: true,
           url: '/api/Auth/v1/mobile/external/register',
           params: params);
+        Console.log('registerWithSocial', response.statusCode);
+        Console.log('response', response.data);
       if (response.statusCode == 200) {
         return RegisterModel.fromJson(response.data);
       } else {

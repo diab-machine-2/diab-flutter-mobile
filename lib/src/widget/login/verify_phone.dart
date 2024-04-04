@@ -97,6 +97,7 @@ class _VerifyPhoneControllerState extends State<VerifyPhoneController> {
 
   @override
   Widget build(BuildContext context) {
+    // BotToast.closeAllLoading();
     return GestureDetector(
       onTap: () {
         FocusScope.of(context).requestFocus(FocusNode());
@@ -437,19 +438,26 @@ class _VerifyPhoneControllerState extends State<VerifyPhoneController> {
         BotToast.closeAllLoading();
       } else {
         final result = await LoginClient().verifyOTP(widget.phone, otpCode);
+        BotToast.closeAllLoading();
         await TrackingManager.analytics.logEvent(
           name: 'sign_up',
           parameters: {
             "screen_name": 'otp_verify',
           },
         );
-        Navigator.pushReplacementNamed(context, NavigatorName.register_success,
-            arguments: {
-              'phone': widget.phone,
-              'password': widget.password,
-              'referalCode': widget.referalCode,
-            });
-        BotToast.closeAllLoading();
+        if (result) {
+          Navigator.pushReplacementNamed(context, NavigatorName.register,
+              arguments: {
+                'phone': widget.phone,
+                'referalCode': widget.referalCode,
+              });
+        }
+        // Remove
+
+        // Navigator.pushReplacementNamed(context, NavigatorName.update_info,
+        //     arguments: {'type': widget.type});
+        // BotToast.closeAllLoading();
+        // getToken();
       }
     } catch (e, _) {
       setState(() {
@@ -463,6 +471,32 @@ class _VerifyPhoneControllerState extends State<VerifyPhoneController> {
       // }
     }
   }
+
+  // getToken() async {
+  //   if (widget.type != 'register') {
+  //     Navigator.pushReplacementNamed(context, NavigatorName.update_info,
+  //         arguments: {
+  //           'type': widget.type,
+  //           'googleAccount': widget.googleAccount,
+  //           'appleAccount': widget.appleAccount,
+  //         });
+  //   } else {
+  //     // BotToast.showLoading();
+  //     final result = await LoginClient().login({
+  //       "client_id": Const.CLIENT_ID,
+  //       "client_secret": Const.CLIENT_SECRET,
+  //       "grant_type": "phone_number_password",
+  //       "password": widget.password,
+  //       "phone_number": widget.phone
+  //     });
+  //     // BotToast.closeAllLoading();
+  //     Navigator.pushReplacementNamed(context, NavigatorName.update_info,
+  //         arguments: {
+  //           'type': 'phone',
+  //           'referalCode': widget.referalCode,
+  //         });
+  //   }
+  // }
 
   resendOTP() async {
     await TrackingManager.analytics.logEvent(
