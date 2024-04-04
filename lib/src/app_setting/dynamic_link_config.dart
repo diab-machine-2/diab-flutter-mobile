@@ -214,7 +214,7 @@ class DynamicLinkConfig {
     bool isMeetingLink = urlString.contains(meetingSignalPattern);
     if (isMeetingLink) {
       String roomId = urlString.split(meetingSignalPattern).last;
-      if (initializing) {
+      if (initializing || AppSettings.userInfo == null) {
         _zoomId = roomId;
       } else {
         ZoomService().launchZoom(roomId, AppSettings.userInfo?.fullName ?? 'Người dùng',
