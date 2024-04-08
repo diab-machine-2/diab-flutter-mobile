@@ -338,17 +338,19 @@ class LoginClient extends FetchClient {
     }
   }
 
-  Future<RegisterModel> registerWithSocial(params) async {
+  Future<RegisterModel?> registerWithSocial(params) async {
     try {
       final Response<dynamic> response = await super.postUri(
           baseIdentify: true,
           baseOption: true,
           url: '/api/Auth/v1/mobile/external/register',
           params: params);
-        Console.log('registerWithSocial', response.statusCode);
-        Console.log('response', response.data);
+      Console.log('registerWithSocial', response.statusCode);
+      Console.log('response', response.data);
       if (response.statusCode == 200) {
-        return RegisterModel.fromJson(response.data);
+        if (response.data != null && response.data != "")
+          return RegisterModel.fromJson(response.data);
+        return null;
       } else {
         final error = Error.fromJson1(response);
         throw error;

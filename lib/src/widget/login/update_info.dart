@@ -520,6 +520,7 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
         await LoginClient().registerWithSocial({
           'providerName': 'Google',
           'providerKey': widget.googleAccount!.id,
+          'IsHasPatient': false
         });
         final authen = await widget.googleAccount!.authentication;
         await LoginClient().login({
@@ -534,6 +535,7 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
         await LoginClient().registerWithSocial({
           'providerName': 'Facebook',
           'providerKey': widget.facebookAccount!.accessToken?.userId,
+          'IsHasPatient': false
         });
         await LoginClient().login({
           "client_id": Const.CLIENT_ID,
@@ -551,6 +553,7 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
         await LoginClient().registerWithSocial({
           'providerName': 'Apple',
           'providerKey': widget.appleAccount?.userIdentifier,
+          'IsHasPatient': false
         });
         await LoginClient().login({
           "client_id": Const.CLIENT_ID,
