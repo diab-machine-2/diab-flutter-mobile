@@ -367,7 +367,7 @@ class _MeetingPageState extends State<MeetingPage>
               _buttonIconWithTextBelow(
                 R.drawable.ic_zoom_more,
                 'Xem thêm',
-                _moreAction,
+                null, // _moreAction,
                 isOff: false,
               ),
 
@@ -403,7 +403,7 @@ class _MeetingPageState extends State<MeetingPage>
   Widget _buttonIconWithTextBelow(
     String iconPath,
     String text,
-    void Function() onPressed, {
+    void Function()? onPressed, {
     bool isOff = false,
     double size = 28.0,
     Color? backgroundColor,
