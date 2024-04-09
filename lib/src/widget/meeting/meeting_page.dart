@@ -364,12 +364,12 @@ class _MeetingPageState extends State<MeetingPage>
               ),
 
               // More
-              _buttonIconWithTextBelow(
-                R.drawable.ic_zoom_more,
-                'Xem thêm',
-                null, // _moreAction,
-                isOff: false,
-              ),
+              // _buttonIconWithTextBelow(
+              //   R.drawable.ic_zoom_more,
+              //   'Xem thêm',
+              //   _moreAction,
+              //   isOff: false,
+              // ),
 
               // Leave
               _buttonIconWithTextBelow(
@@ -553,43 +553,43 @@ class _MeetingPageState extends State<MeetingPage>
     );
   }
 
-  void _moreAction() {
-    // show bottom sheet with 3 options
-    showModalBottomSheet(
-      context: context,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(12.0),
-          topRight: Radius.circular(12.0),
-        ),
-      ),
-      builder: (context) {
-        final media = MediaQuery.of(context);
-        return Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            SizedBox(height: 20.0),
-            ListTile(
-              leading: Icon(Icons.person),
-              title: Text('Danh sách người tham gia'),
-              onTap: () {},
-            ),
-            ListTile(
-              leading: Icon(Icons.settings),
-              title: Text('Cài đặt'),
-              onTap: () {},
-            ),
-            ListTile(
-              leading: Icon(Icons.info),
-              title: Text('Thông tin'),
-              onTap: () {},
-            ),
-            Padding(padding: media.padding),
-          ],
-        );
-      },
-    );
-  }
+  // void _moreAction() {
+  //   // show bottom sheet with 3 options
+  //   showModalBottomSheet(
+  //     context: context,
+  //     shape: RoundedRectangleBorder(
+  //       borderRadius: BorderRadius.only(
+  //         topLeft: Radius.circular(12.0),
+  //         topRight: Radius.circular(12.0),
+  //       ),
+  //     ),
+  //     builder: (context) {
+  //       final media = MediaQuery.of(context);
+  //       return Column(
+  //         mainAxisSize: MainAxisSize.min,
+  //         children: [
+  //           SizedBox(height: 20.0),
+  //           ListTile(
+  //             leading: Icon(Icons.person),
+  //             title: Text('Danh sách người tham gia'),
+  //             onTap: () {},
+  //           ),
+  //           ListTile(
+  //             leading: Icon(Icons.settings),
+  //             title: Text('Cài đặt'),
+  //             onTap: () {},
+  //           ),
+  //           ListTile(
+  //             leading: Icon(Icons.info),
+  //             title: Text('Thông tin'),
+  //             onTap: () {},
+  //           ),
+  //           Padding(padding: media.padding),
+  //         ],
+  //       );
+  //     },
+  //   );
+  // }
 
   void _popupSessionEnded(BuildContext context) {
     showDialog(
