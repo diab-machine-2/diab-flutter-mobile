@@ -481,8 +481,6 @@ class _AppState extends State<App> {
                               emotionId: data?['emotionId'],
                               periodFilterType: data?['periodFilterType']),
                           isPresent: true);
-                    case NavigatorName.profile:
-                      return _buildRoute(settings, const ProfileController());
                     case NavigatorName.goal_setting:
                       return _buildRoute(settings, GoalSettingController());
                     case NavigatorName.notification:
