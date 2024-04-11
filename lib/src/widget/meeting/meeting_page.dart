@@ -106,8 +106,6 @@ class _MeetingPageState extends State<MeetingPage>
                   return _buildJoining();
                 } else if (state is MeetingJoined) {
                   return _buildJoinedState(state);
-                } else if (state is MeetingJoinError) {
-                  // TODO: Handle error
                 }
                 return Container(
                   alignment: Alignment.center,
@@ -281,6 +279,7 @@ class _MeetingPageState extends State<MeetingPage>
         Positioned.fill(child: fullScreenView),
         Positioned.fill(
           child: TopBottomControlAutohideWidget(
+            key: isLandScape ? UniqueKey() : null,
             topWidget: headerWidget,
             topWidgetHeight: sizeComponentHeight,
             bottomWidget: controlsWidget,
