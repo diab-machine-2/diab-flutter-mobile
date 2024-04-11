@@ -96,6 +96,8 @@ class _FlashScreenControllerState extends State<FlashScreenController> {
     try {
       await FirebaseRemoteSetting.instance.init();
     } catch (e) {
+      await AppSettings.setIsRetryFetchFirebaseRemoteConfig(
+          true); // should retry fetch it
       print('remote config fetch error: $e');
     }
     try {

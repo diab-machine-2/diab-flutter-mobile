@@ -20,6 +20,8 @@ import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
+import '../../app_setting/firebase_remote_config.dart';
+
 class LoginController extends StatefulWidget {
   const LoginController(this.sharedCode);
 
@@ -44,7 +46,28 @@ class _LoginControllerState extends State<LoginController> {
     firebaseSetup();
   }
 
+  Future firebaseRemoteConfig() async {
+    bool isRetry = await AppSettings.getIsRetryFetchFirebaseRemoteConfig();
+    try {
+      if (isRetry) {
+        await FirebaseRemoteSetting.instance.init();
+      }
+    } catch (e) {
+      // get local config
+      FirebaseRemoteSetting.instance.setValue(
+          appStoreVersion: "1.4.3",
+          playStoreVersion: "1.4.5",
+          activePopupHealthConnect: false,
+          linkStoreNavigation:
+              "{\"Lazada\":\"https://www.lazada.vn/shop/diab-official123/?spm=a2o4n.pdp_revamp.seller.1.22551b10iVUR71&itemId=2204466993&channelSource=pdp\",\"Shopee\":\"https://shopee.vn/diab_official123?categoryId=100001&entryPoint=ShopByPDP&itemId=17493490410\",\"Store\":\"https://store.diab.com.vn\"}",
+          appDeveloperMode: true,
+          storeNavigationUrl: "https://chuongtrinh.diab.com.vn/");
+      await AppSettings.setIsRetryFetchFirebaseRemoteConfig(false);
+    }
+  }
+
   Future firebaseSetup() async {
+    firebaseRemoteConfig();
     await TrackingManager.analytics
         .logScreenView(screenName: "login", screenClass: "LoginController");
     AppSettings.currentScreenName = 'login';

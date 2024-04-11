@@ -1,10 +1,12 @@
 import 'dart:async';
 
 import 'package:firebase_remote_config/firebase_remote_config.dart';
+import 'package:medical/src/app_setting/app_setting.dart';
 
 class FirebaseRemoteSetting {
   FirebaseRemoteSetting._privateConstructor();
-  static final FirebaseRemoteSetting instance = FirebaseRemoteSetting._privateConstructor();
+  static final FirebaseRemoteSetting instance =
+      FirebaseRemoteSetting._privateConstructor();
   final remoteConfig = FirebaseRemoteConfig.instance;
 
   late String _appStoreVersion;
@@ -26,10 +28,10 @@ class FirebaseRemoteSetting {
 
   Future<void> init() async {
     await remoteConfig.setConfigSettings(RemoteConfigSettings(
-      fetchTimeout: const Duration(minutes: 1),
+      fetchTimeout: const Duration(seconds: 10),
       minimumFetchInterval: const Duration(hours: 1),
     ));
-    await remoteConfig.fetchAndActivate();
+    await remoteConfig.fetchAndActivate().timeout(Duration(seconds: 3));
     // final List<Future<void>> setupFutures = [
     //   remoteConfig.setConfigSettings(RemoteConfigSettings(
     //     fetchTimeout: const Duration(seconds: 10),
@@ -46,8 +48,27 @@ class FirebaseRemoteSetting {
     _appStoreVersion = remoteConfig.getString('APP_STORE_VERSION');
     _playStoreVersion = remoteConfig.getString('PLAY_STORE_VERSION');
     _storeNavigationUrl = remoteConfig.getString('STORE_NAVIGATION_URL');
-    _activePopupHealthConnect = remoteConfig.getBool('ACTIVE_POPUP_HEALTH_CONNECT');
+    _activePopupHealthConnect =
+        remoteConfig.getBool('ACTIVE_POPUP_HEALTH_CONNECT');
     _linkStoreNavigation = remoteConfig.getString('LINKSTORE_NAVIGATION_URL');
     _appDeveloperMode = remoteConfig.getBool('APP_DEVELOPER_MODE');
+
+    await AppSettings.setIsRetryFetchFirebaseRemoteConfig(false);
+  }
+
+  void setValue({
+    required String appStoreVersion,
+    required String playStoreVersion,
+    String? storeNavigationUrl,
+    required bool activePopupHealthConnect,
+    required String linkStoreNavigation,
+    bool? appDeveloperMode,
+  }) {
+    _appStoreVersion = appStoreVersion;
+    _playStoreVersion = playStoreVersion;
+    _storeNavigationUrl = storeNavigationUrl;
+    _activePopupHealthConnect = activePopupHealthConnect;
+    _linkStoreNavigation = linkStoreNavigation;
+    _appDeveloperMode = appDeveloperMode;
   }
 }
