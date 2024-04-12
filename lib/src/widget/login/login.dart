@@ -48,10 +48,7 @@ class _LoginControllerState extends State<LoginController> {
 
   Future firebaseRemoteConfig() async {
     bool isRetry = await AppSettings.getIsRetryFetchFirebaseRemoteConfig();
-    var localSettings = await AppSettings.getFirebaseRemoteSettings();
-
-    Map<String, dynamic> localSetting =
-        localSettings.isNotEmpty ? jsonDecode(localSettings) : {};
+    // if retry true fetch againt onetime and set retry to false
     if (isRetry) {
       FirebaseRemoteSetting.instance.init(timeout: Duration(minutes: 5));
       await AppSettings.setIsRetryFetchFirebaseRemoteConfig(false);

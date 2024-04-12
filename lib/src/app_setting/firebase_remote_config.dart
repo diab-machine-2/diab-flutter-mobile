@@ -28,11 +28,11 @@ class FirebaseRemoteSetting {
   bool get appDeveloperMode => _appDeveloperMode ?? false;
 
   Future<void> init({Duration timeout = const Duration(seconds: 10)}) async {
+    // Get local settings
     var localSettings = await AppSettings.getFirebaseRemoteSettings();
-
     Map<String, dynamic> localSetting =
         localSettings.isNotEmpty ? jsonDecode(localSettings) : {};
-
+    // Set default for settings if fetch fail
     await remoteConfig.setDefaults({
       "APP_STORE_VERSION": localSetting["APP_STORE_VERSION"] ?? '1.4.3',
       "PLAY_STORE_VERSION": localSetting["PLAY_STORE_VERSION"] ?? '1.4.5',
@@ -45,21 +45,25 @@ class FirebaseRemoteSetting {
       "APP_DEVELOPER_MODE":
           bool.parse(localSetting["APP_DEVELOPER_MODE"] ?? "true"),
     });
+    // Config timeout for remoteConfig
     await remoteConfig.setConfigSettings(RemoteConfigSettings(
       fetchTimeout: timeout,
       minimumFetchInterval: const Duration(hours: 1),
     ));
 
+    /**
+     * if fetch success it get all config save local and set retry false
+     * else set retry true to retry fetch again in login screen
+     */
     try {
       await remoteConfig.fetchAndActivate();
-
       Map<String, RemoteConfigValue> allValues = remoteConfig.getAll();
       Map<String, String> parsedValues = {};
       for (var entry in allValues.entries) {
         String key = entry.key;
         RemoteConfigValue value = entry.value;
-        String parsedValue = value.asString(); // Chuyển đổi giá trị thành chuỗi
-        parsedValues[key] = parsedValue; // Thêm vào Map kết quả đã chuyển đổi
+        String parsedValue = value.asString();
+        parsedValues[key] = parsedValue;
       }
       String settings = jsonEncode(parsedValues);
       await AppSettings.setFirebaseRemoteSettings(settings);
