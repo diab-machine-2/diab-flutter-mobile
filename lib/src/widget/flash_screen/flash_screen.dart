@@ -42,7 +42,6 @@ class _FlashScreenControllerState extends State<FlashScreenController> {
     await getData(context);
   }
 
-
   Future<void> getVersion() async {
     PackageInfo packageInfo = await PackageInfo.fromPlatform();
     AppSettings.version = packageInfo.version;
@@ -96,8 +95,6 @@ class _FlashScreenControllerState extends State<FlashScreenController> {
     try {
       await FirebaseRemoteSetting.instance.init();
     } catch (e) {
-      await AppSettings.setIsRetryFetchFirebaseRemoteConfig(
-          true); // should retry fetch it
       print('remote config fetch error: $e');
     }
     try {
@@ -116,8 +113,8 @@ class _FlashScreenControllerState extends State<FlashScreenController> {
         AppSettings.userInfo = user;
         if (user == null) {
           if (!isNavigateToStepList) {
-            Message.showToastMessage(
-                context, R.string.phien_dang_nhap_het_han_vui_long_dang_nhap_lai.tr());
+            Message.showToastMessage(context,
+                R.string.phien_dang_nhap_het_han_vui_long_dang_nhap_lai.tr());
             AppSettings.logout(isNavigateToStepListScreen: false);
             await Navigator.pushReplacementNamed(
               context,
@@ -150,8 +147,8 @@ class _FlashScreenControllerState extends State<FlashScreenController> {
       };
       LoginClient().appLogs(errorData);
       if (!isNavigateToStepList) {
-        Message.showToastMessage(
-            context, R.string.phien_dang_nhap_het_han_vui_long_dang_nhap_lai.tr());
+        Message.showToastMessage(context,
+            R.string.phien_dang_nhap_het_han_vui_long_dang_nhap_lai.tr());
         AppSettings.logout();
         isNavigateToStepList = true;
       }

@@ -49,6 +49,15 @@ class AppSettings {
     return appPreference.getBoolData("isRetryFetchFirebaseRemoteConfig");
   }
 
+  static Future<String> setFirebaseRemoteSettings(String settings) async {
+    appPreference.setData("firebaseRemoteSettings", settings);
+    return settings;
+  }
+
+  static Future<String> getFirebaseRemoteSettings() async {
+    return appPreference.getData("firebaseRemoteSettings") ?? "";
+  }
+
   static Future<bool> setIsSyncing(bool isSyncing) async {
     appPreference.setData("isSyncing", isSyncing);
     return isSyncing;

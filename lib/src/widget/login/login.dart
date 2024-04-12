@@ -48,20 +48,12 @@ class _LoginControllerState extends State<LoginController> {
 
   Future firebaseRemoteConfig() async {
     bool isRetry = await AppSettings.getIsRetryFetchFirebaseRemoteConfig();
-    try {
-      if (isRetry) {
-        await FirebaseRemoteSetting.instance.init();
-      }
-    } catch (e) {
-      // get local config
-      FirebaseRemoteSetting.instance.setValue(
-          appStoreVersion: "1.4.3",
-          playStoreVersion: "1.4.5",
-          activePopupHealthConnect: false,
-          linkStoreNavigation:
-              "{\"Lazada\":\"https://www.lazada.vn/shop/diab-official123/?spm=a2o4n.pdp_revamp.seller.1.22551b10iVUR71&itemId=2204466993&channelSource=pdp\",\"Shopee\":\"https://shopee.vn/diab_official123?categoryId=100001&entryPoint=ShopByPDP&itemId=17493490410\",\"Store\":\"https://store.diab.com.vn\"}",
-          appDeveloperMode: true,
-          storeNavigationUrl: "https://chuongtrinh.diab.com.vn/");
+    var localSettings = await AppSettings.getFirebaseRemoteSettings();
+
+    Map<String, dynamic> localSetting =
+        localSettings.isNotEmpty ? jsonDecode(localSettings) : {};
+    if (isRetry) {
+      FirebaseRemoteSetting.instance.init(timeout: Duration(minutes: 5));
       await AppSettings.setIsRetryFetchFirebaseRemoteConfig(false);
     }
   }
