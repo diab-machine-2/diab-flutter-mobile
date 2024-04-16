@@ -292,9 +292,9 @@ PODS:
     - Flutter
   - wakelock (0.0.1):
     - Flutter
-  - ZoomVideoSDK/CptShare (1.9.10)
-  - ZoomVideoSDK/zoomcml (1.9.10)
-  - ZoomVideoSDK/ZoomVideoSDK (1.9.10)
+  - ZoomVideoSDK/CptShare (1.10.11)
+  - ZoomVideoSDK/zoomcml (1.10.11)
+  - ZoomVideoSDK/ZoomVideoSDK (1.10.11)
 
 DEPENDENCIES:
   - app_settings (from `.symlinks/plugins/app_settings/ios`)
@@ -336,9 +336,9 @@ DEPENDENCIES:
   - uni_links (from `.symlinks/plugins/uni_links/ios`)
   - url_launcher_ios (from `.symlinks/plugins/url_launcher_ios/ios`)
   - wakelock (from `.symlinks/plugins/wakelock/ios`)
-  - ZoomVideoSDK/CptShare (= 1.9.10)
-  - ZoomVideoSDK/zoomcml (= 1.9.10)
-  - ZoomVideoSDK/ZoomVideoSDK (= 1.9.10)
+  - ZoomVideoSDK/CptShare (= 1.10.11)
+  - ZoomVideoSDK/zoomcml (= 1.10.11)
+  - ZoomVideoSDK/ZoomVideoSDK (= 1.10.11)
 
 SPEC REPOS:
   trunk:
@@ -490,7 +490,7 @@ SPEC CHECKSUMS:
   FirebaseRemoteConfig: bbd42790a4e84fde6aab7eae810b608e7b5c0bf6
   FirebaseSessions: 2f348975f6d1c139231c180e12194161da2e0cd6
   FirebaseSharedSwift: 2fbf73618288b7a36b2014b957745dcdd781389e
-  Flutter: f04841e97a9d0b0a8025694d0796dd46242b2854
+  Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
   flutter_blue_plus: 316ac8d1179789616d2c148e8a03c37720e63933
   flutter_facebook_login: cfb5659f686b1c575ef205c6b6fd20db9679d3c4
   flutter_inapp_purchase: 5c6a1ac3f11b11d0c8c0321c0c41c1f05805e4c8
@@ -534,8 +534,8 @@ SPEC CHECKSUMS:
   uni_links: d97da20c7701486ba192624d99bffaaffcfc298a
   url_launcher_ios: bbd758c6e7f9fd7b5b1d4cde34d2b95fcce5e812
   wakelock: d0fc7c864128eac40eba1617cb5264d9c940b46f
-  ZoomVideoSDK: 3b25f88d6278249cd6c291b513dab8e8faf3c4b5
+  ZoomVideoSDK: 51087fd802fe61cf7d0c2ae539555170417829e7
 
-PODFILE CHECKSUM: 27276069015cb3747393a49d8222d34f72d34a4d
+PODFILE CHECKSUM: cca2cf16c95577a2beb08bc3c381fec6587d3ede
 
 COCOAPODS: 1.14.3

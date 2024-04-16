@@ -22,11 +22,11 @@ public class FlutterZoomVideoSdkRemoteCameraControlHelper {
         this.activity = activity;
     }
 
-    private ZoomVideoSDKRemoteCameraControlHelper getRemoteCameraControlHelper() {
+    private ZoomVideoSDKRemoteCameraControlHelper getRemoteCameraControlHelper(String userId) {
         ZoomVideoSDKRemoteCameraControlHelper remoteCameraControlHelper = null;
         try {
-            ZoomVideoSDKUser mySelf = ZoomVideoSDK.getInstance().getSession().getMySelf();
-            remoteCameraControlHelper = mySelf.getRemoteCameraControlHelper();
+            ZoomVideoSDKUser user = FlutterZoomVideoSdkUser.getUser(userId);
+            remoteCameraControlHelper = user.getRemoteCameraControlHelper();
             if (remoteCameraControlHelper == null) {
                 throw new Exception("No Remote Camera Control Helper Found");
             }
@@ -36,20 +36,24 @@ public class FlutterZoomVideoSdkRemoteCameraControlHelper {
         return remoteCameraControlHelper;
     }
 
-    public void requestControlRemoteCamera(@NonNull MethodChannel.Result result) {
+    public void requestControlRemoteCamera(@NonNull MethodCall call, @NonNull MethodChannel.Result result) {
+        Map<String, Object> params = call.arguments();
+        String userId = (String) params.get("userId");
         activity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                result.success(FlutterZoomVideoSdkErrors.valueOf(getRemoteCameraControlHelper().requestControlRemoteCamera()));
+                result.success(FlutterZoomVideoSdkErrors.valueOf(getRemoteCameraControlHelper(userId).requestControlRemoteCamera()));
             }
         });
     }
 
-    public void giveUpControlRemoteCamera(@NonNull MethodChannel.Result result) {
+    public void giveUpControlRemoteCamera(@NonNull MethodCall call, @NonNull MethodChannel.Result result) {
+        Map<String, Object> params = call.arguments();
+        String userId = (String) params.get("userId");
         activity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                result.success(FlutterZoomVideoSdkErrors.valueOf(getRemoteCameraControlHelper().giveUpControlRemoteCamera()));
+                result.success(FlutterZoomVideoSdkErrors.valueOf(getRemoteCameraControlHelper(userId).giveUpControlRemoteCamera()));
             }
         });
     }
@@ -57,11 +61,12 @@ public class FlutterZoomVideoSdkRemoteCameraControlHelper {
     public void turnLeft(@NonNull MethodCall call, @NonNull MethodChannel.Result result) {
         Map<String, Object> params = call.arguments();
         int range = (Integer) params.get("range");
+        String userId = (String) params.get("userId");
 
         activity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                result.success(FlutterZoomVideoSdkErrors.valueOf(getRemoteCameraControlHelper().turnLeft(range)));
+                result.success(FlutterZoomVideoSdkErrors.valueOf(getRemoteCameraControlHelper(userId).turnLeft(range)));
             }
         });
     }
@@ -69,11 +74,12 @@ public class FlutterZoomVideoSdkRemoteCameraControlHelper {
     public void turnRight(@NonNull MethodCall call, @NonNull MethodChannel.Result result) {
         Map<String, Object> params = call.arguments();
         int range = (Integer) params.get("range");
+        String userId = (String) params.get("userId");
 
         activity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                result.success(FlutterZoomVideoSdkErrors.valueOf(getRemoteCameraControlHelper().turnRight(range)));
+                result.success(FlutterZoomVideoSdkErrors.valueOf(getRemoteCameraControlHelper(userId).turnRight(range)));
             }
         });
     }
@@ -81,11 +87,12 @@ public class FlutterZoomVideoSdkRemoteCameraControlHelper {
     public void turnDown(@NonNull MethodCall call, @NonNull MethodChannel.Result result) {
         Map<String, Object> params = call.arguments();
         int range = (Integer) params.get("range");
+        String userId = (String) params.get("userId");
 
         activity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                result.success(FlutterZoomVideoSdkErrors.valueOf(getRemoteCameraControlHelper().turnDown(range)));
+                result.success(FlutterZoomVideoSdkErrors.valueOf(getRemoteCameraControlHelper(userId).turnDown(range)));
             }
         });
     }
@@ -93,11 +100,12 @@ public class FlutterZoomVideoSdkRemoteCameraControlHelper {
     public void turnUp(@NonNull MethodCall call, @NonNull MethodChannel.Result result) {
         Map<String, Object> params = call.arguments();
         int range = (Integer) params.get("range");
+        String userId = (String) params.get("userId");
 
         activity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                result.success(FlutterZoomVideoSdkErrors.valueOf(getRemoteCameraControlHelper().turnUp(range)));
+                result.success(FlutterZoomVideoSdkErrors.valueOf(getRemoteCameraControlHelper(userId).turnUp(range)));
             }
         });
     }
@@ -105,11 +113,12 @@ public class FlutterZoomVideoSdkRemoteCameraControlHelper {
     public void zoomIn(@NonNull MethodCall call, @NonNull MethodChannel.Result result) {
         Map<String, Object> params = call.arguments();
         int range = (Integer) params.get("range");
+        String userId = (String) params.get("userId");
 
         activity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                result.success(FlutterZoomVideoSdkErrors.valueOf(getRemoteCameraControlHelper().zoomIn(range)));
+                result.success(FlutterZoomVideoSdkErrors.valueOf(getRemoteCameraControlHelper(userId).zoomIn(range)));
             }
         });
     }
@@ -117,11 +126,12 @@ public class FlutterZoomVideoSdkRemoteCameraControlHelper {
     public void zoomOut(@NonNull MethodCall call, @NonNull MethodChannel.Result result) {
         Map<String, Object> params = call.arguments();
         int range = (Integer) params.get("range");
+        String userId = (String) params.get("userId");
 
         activity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                result.success(FlutterZoomVideoSdkErrors.valueOf(getRemoteCameraControlHelper().zoomOut(range)));
+                result.success(FlutterZoomVideoSdkErrors.valueOf(getRemoteCameraControlHelper(userId).zoomOut(range)));
             }
         });
     }

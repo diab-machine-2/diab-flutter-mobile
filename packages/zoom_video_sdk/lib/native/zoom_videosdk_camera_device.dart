@@ -1,4 +1,7 @@
+import 'dart:convert';
 import 'dart:core';
+import 'package:flutter/services.dart';
+import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
 /// Zoom Video SDK camera device.
 class ZoomVideoSdkCameraDevice {
