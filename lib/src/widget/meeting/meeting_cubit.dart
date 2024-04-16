@@ -10,6 +10,7 @@ import 'package:flutter_zoom_videosdk/native/zoom_videosdk_user.dart';
 import 'package:events_emitter/events_emitter.dart';
 import 'package:medical/src/service/zoom_service.dart';
 import 'package:medical/src/utils/async_queue.dart';
+import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'models/MeetingMessage.dart';
 
 import 'meeting_state.dart';
@@ -176,8 +177,8 @@ class MeetingCubit extends Cubit<MeetingState> {
               _haveMultipleCamera.value = await _zoom.videoHelper.getNumberOfCameras() > 1;
               _videoStatisticChecked = true;
             }
-          } catch (e) {
-            print('error checking video statistic: $e');
+          } catch (e, s) {
+            TrackingManager.recordError(e, s, reason: 'zoom check video statistic');
           }
         }
       }
@@ -296,16 +297,13 @@ class MeetingCubit extends Cubit<MeetingState> {
   }
 
   void leaveSession() async {
-    _zoom.audioHelper.cleanAudioSession()
-        .then((_) => print('clean audio'))
-        .catchError((e) {
-          print('zoom: Error when clean audio: $e');
-        });
+    _zoom.audioHelper.cleanAudioSession().then((_) => print('clean audio')).catchError((e, s) {
+      TrackingManager.recordError(e, s, reason: 'zoom clean audio');
+    });
     try {
-      print('leave session');
       await _zoom.leaveSession(false);
-    } catch (e) {
-      print('zoom: Error leaving session: $e');
+    } catch (e, s) {
+      TrackingManager.recordError(e, s, reason: 'zoom leave session');
     }
   }
 
@@ -331,9 +329,9 @@ class MeetingCubit extends Cubit<MeetingState> {
       await _zoom.joinSession(joinSession);
       // TODO: Check why camera is mirrored
       // _zoom.videoHelper.mirrorMyVideo(false).then((_) => null);
-    } catch (e) {
-      print('zoom: Error joining session: $e');
-      // TODO: emit error
+    } catch (e, s) {
+      TrackingManager.recordError(e, s, reason: 'zoom join session');
+      emit(MeetingJoinError());
     }
   }
 
@@ -499,6 +497,15 @@ class MeetingCubit extends Cubit<MeetingState> {
     // ! Session error
     final sessionErrorListener = emitter.on(EventType.onError, (data) async {
       print('zoom: onError: $data');
+      // data is { errorType, details }
+      if (data == null) {
+        return;
+      }
+      await TrackingManager.recordError(
+        data,
+        null,
+        printDetails: true,
+      );
     });
     meetingEvents.add(sessionErrorListener);
   }
