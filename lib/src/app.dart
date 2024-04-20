@@ -122,11 +122,12 @@ class _AppState extends State<App> {
               color: Colors.white,
               theme: AppTheme.theme,
               builder: (context, child) {
-                MediaQueryData mediaData = MediaQuery.of(context);
-                child = MediaQuery(
-                  data: mediaData.copyWith(textScaleFactor: min(1.1, mediaData.textScaleFactor)),
-                  child: child!,
-                );
+                // TODO: textScaleFactor deprecated >> CHECK LATER
+                // MediaQueryData mediaData = MediaQuery.of(context);
+                // child = MediaQuery(
+                //   data: mediaData.copyWith(textScaleFactor: min(1.1, mediaData.textScaleFactor)),
+                //   child: child!,
+                // );
                 child = BotToastInit()(context, child);
                 return child;
               },
@@ -141,6 +142,7 @@ class _AppState extends State<App> {
               locale: context.locale,
               home: FlashScreenController(),
               debugShowCheckedModeBanner: false,
+              useInheritedMediaQuery: true,
               onGenerateRoute: (settings) {
                 Console.log('settings.name', settings.name);
                 switch (settings.name) {
