@@ -72,7 +72,7 @@ class _MeetingPreparePageState extends State<MeetingPreparePage> {
     );
     String topic = _textController.text;
     var user = AppSettings.userInfo;
-    final args = zoomServiceHelper.generateMeetingArgument(topic, user?.fullName ?? "Test Meeting");
+    final args = zoomServiceHelper.generateMeetingArgument(topic, user?.fullName ?? "Test Meeting", user?.id);
 
     Navigator.pushNamed(
       context,

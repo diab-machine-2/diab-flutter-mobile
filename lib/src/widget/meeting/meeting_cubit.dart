@@ -8,6 +8,7 @@ import 'package:flutter_zoom_videosdk/native/zoom_videosdk_chat_message.dart';
 import 'package:flutter_zoom_videosdk/native/zoom_videosdk_event_listener.dart';
 import 'package:flutter_zoom_videosdk/native/zoom_videosdk_user.dart';
 import 'package:events_emitter/events_emitter.dart';
+import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/service/zoom_service.dart';
 import 'package:medical/src/utils/async_queue.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
@@ -215,6 +216,9 @@ class MeetingCubit extends Cubit<MeetingState> {
 
   bool _lastVideoStatus = false;
   void _turnoffVideoPreviewIfNeeded() async {
+    if (_remoteUsers.isEmpty) {
+      return;
+    }
     ZoomVideoSdkUser? mySelf = await _zoom.session.getMySelf();
     if (mySelf != null) {
       final videoStatus = mySelf.videoStatus;
@@ -289,7 +293,6 @@ class MeetingCubit extends Cubit<MeetingState> {
       return;
     }
     String chatPrivilege = await _zoom.chatHelper.getChatPrivilege();
-    print('chatPrivilege: $chatPrivilege');
     if (chatPrivilege == 'none') {
       return;
     }
@@ -297,7 +300,7 @@ class MeetingCubit extends Cubit<MeetingState> {
   }
 
   void leaveSession() async {
-    _zoom.audioHelper.cleanAudioSession().then((_) => print('clean audio')).catchError((e, s) {
+    _zoom.audioHelper.cleanAudioSession().catchError((e, s) {
       TrackingManager.recordError(e, s, reason: 'zoom clean audio');
     });
     try {
@@ -350,7 +353,6 @@ class MeetingCubit extends Cubit<MeetingState> {
     final userVideoStatusChangedListener =
         emitter.on(EventType.onUserVideoStatusChanged, (data) async {
       data = data as Map;
-      print('zoom: onUserVideoStatusChanged: $data');
       ZoomVideoSdkUser? mySelf = await _zoom.session.getMySelf();
       if (mySelf != null) {
         var userListJson = jsonDecode(data['changedUsers']) as List;
@@ -368,7 +370,6 @@ class MeetingCubit extends Cubit<MeetingState> {
           }
         } else {
           _remoteUsers = (await _zoom.session.getRemoteUsers()) ?? [];
-          print('zoom: remoteUsers: $_remoteUsers');
           FutureFunc action = () async => await _sendJoinedState(
                 thisUser: mySelf,
                 remoteUsers: _remoteUsers,
@@ -377,7 +378,6 @@ class MeetingCubit extends Cubit<MeetingState> {
         }
         return;
       }
-      print('zoom: onUserVideoStatusChanged: mySelf is null');
     });
     meetingEvents.add(userVideoStatusChangedListener);
 
@@ -385,7 +385,6 @@ class MeetingCubit extends Cubit<MeetingState> {
     final userAudioStatusChangedListener =
         emitter.on(EventType.onUserAudioStatusChanged, (data) async {
       data = data as Map;
-      print('zoom: onUserAudioStatusChanged: $data');
       ZoomVideoSdkUser? mySelf = await _zoom.session.getMySelf();
       if (mySelf != null) {
         var userListJson = jsonDecode(data['changedUsers']) as List;
@@ -401,7 +400,6 @@ class MeetingCubit extends Cubit<MeetingState> {
         }
         return;
       }
-      print('zoom: onUserAudioStatusChanged: mySelf is null');
     });
     meetingEvents.add(userAudioStatusChangedListener);
 
@@ -409,7 +407,6 @@ class MeetingCubit extends Cubit<MeetingState> {
     final userShareStatusChangeListener =
         emitter.on(EventType.onUserShareStatusChanged, (data) async {
       data = data as Map;
-      print('zoom: onUserShareStatusChanged: $data');
       if (data['status'] == ShareStatus.Start) {
         ZoomVideoSdkUser? shareUser = data['user'] == null
             ? null
@@ -439,7 +436,6 @@ class MeetingCubit extends Cubit<MeetingState> {
 
     // * Chat message received
     final chatMessageReceivedListener = emitter.on(EventType.onChatNewMessageNotify, (data) async {
-      print('zoom: onChatNewMessageNotify: $data');
       ZoomVideoSdkChatMessage message =
           ZoomVideoSdkChatMessage.fromJson(jsonDecode(data.toString()));
       if (_mySelf != null && !_chatSheetPresented && message.senderUser.userId != _mySelf!.userId) {
@@ -454,7 +450,6 @@ class MeetingCubit extends Cubit<MeetingState> {
     // * Other user joined the session
     final userJoinListener = emitter.on(EventType.onUserJoin, (data) async {
       data = data as Map;
-      print('zoom: onUserJoin: $data');
       var userListJson = jsonDecode(data['remoteUsers']) as List;
       List<ZoomVideoSdkUser> remoteUsers =
           userListJson.map((userJson) => ZoomVideoSdkUser.fromJson(userJson)).toList();
@@ -468,7 +463,6 @@ class MeetingCubit extends Cubit<MeetingState> {
     // * Other user left the session
     final userLeaveListener = emitter.on(EventType.onUserLeave, (data) async {
       data = data as Map;
-      print('zoom: onUserLeave: $data');
       var userListJson = jsonDecode(data['remoteUsers']) as List;
       List<ZoomVideoSdkUser> remoteUsers =
           userListJson.map((userJson) => ZoomVideoSdkUser.fromJson(userJson)).toList();
@@ -481,30 +475,24 @@ class MeetingCubit extends Cubit<MeetingState> {
     });
     meetingEvents.add(userLeaveListener);
 
-    // * username changed
-    final userNameChangedListener = emitter.on(EventType.onUserNameChanged, (data) async {
-      print('zoom: onUserNameChanged: $data');
-    });
-    meetingEvents.add(userNameChangedListener);
-
-    // * User's network quality changed
-    final networkStatusChangeListener =
-        emitter.on(EventType.onUserVideoNetworkStatusChanged, (data) async {
-      print('zoom: onUserVideoNetworkStatusChanged: $data');
-    });
-    meetingEvents.add(networkStatusChangeListener);
-
     // ! Session error
     final sessionErrorListener = emitter.on(EventType.onError, (data) async {
-      print('zoom: onError: $data');
-      // data is { errorType, details }
       if (data == null) {
         return;
+      }
+      String username = '';
+      String id = '';
+      if (AppSettings.userInfo != null) {
+        username = AppSettings.userInfo!.userName ?? '';
+        id = AppSettings.userInfo!.id ?? '';
       }
       await TrackingManager.recordError(
         data,
         null,
-        printDetails: true,
+        information: [
+          'User: $username ($id)',
+          'Session: ${args.sessionName}',
+        ],
       );
     });
     meetingEvents.add(sessionErrorListener);
@@ -514,7 +502,6 @@ class MeetingCubit extends Cubit<MeetingState> {
     _isJoined = true;
     _timeoutTimer?.cancel();
     _timeoutTimer = null;
-    print('zoom: onSessionJoin: $sessionUser');
     _zoom.session.getSessionID().then((value) {
       if (_latestSessionId != null && _latestSessionId == value) {
         _chatMessagesNotifier.value = _latestChatMessages;
@@ -541,7 +528,6 @@ class MeetingCubit extends Cubit<MeetingState> {
 
   void _userLeft(Object? data) {
     _isJoined = false;
-    print('zoom: onSessionLeave: $data');
     _zoom.audioHelper.cleanAudioSession();
 
     emit(MeetingLeaving());

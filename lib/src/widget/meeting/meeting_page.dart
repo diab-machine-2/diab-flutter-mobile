@@ -101,7 +101,6 @@ class _MeetingPageState extends State<MeetingPage>
                 current is MeetingLeaving || current is MeetingJoinError,
             child: BlocBuilder<MeetingCubit, MeetingState>(
               builder: (context, state) {
-                print('zoom: Building state: $state');
                 if (state is MeetingJoining) {
                   return _buildJoining();
                 } else if (state is MeetingJoined) {

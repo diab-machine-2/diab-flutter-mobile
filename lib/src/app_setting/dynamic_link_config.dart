@@ -217,8 +217,12 @@ class DynamicLinkConfig {
       if (initializing || AppSettings.userInfo == null) {
         _zoomId = roomId;
       } else {
-        ZoomService().launchZoom(roomId, AppSettings.userInfo?.fullName ?? 'Người dùng',
-            navigatorKey.currentState!.context);
+        ZoomService().launchZoom(
+          roomId,
+          AppSettings.userInfo?.fullName ?? 'Người dùng',
+          navigatorKey.currentState!.context,
+          userId: AppSettings.userInfo?.id,
+        );
       }
       return;
     }
