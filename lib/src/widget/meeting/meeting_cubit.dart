@@ -32,6 +32,7 @@ class MeetingCubit extends Cubit<MeetingState> {
   final List<EventListener<Object?>> meetingEvents = [];
   // Future<String?> get sessionName => _zoom.session.getSessionName();
   Future<String?> get sessionName => Future.value('Cuộc họp');
+  bool _isRejoining = false;
 
   // Cached
   ZoomVideoSdkUser? _mySelf;
@@ -483,7 +484,9 @@ class MeetingCubit extends Cubit<MeetingState> {
       data = data as Map;
       // ZoomVideoSDKError_Session_Already_In_Progress
       if (data['errorType']?.toString() == 'ZoomVideoSDKError_Session_Already_In_Progress') {
-        _userJoined(_zoom.session.getMySelf());
+        _isRejoining = true;
+        await _zoom.leaveSession(false);
+        _doJoinMeeting();
         return;
       }
       String username = '';
@@ -533,6 +536,10 @@ class MeetingCubit extends Cubit<MeetingState> {
   }
 
   void _userLeft(Object? data) {
+    if (_isRejoining) {
+      _isRejoining = false;
+      return;
+    }
     _isJoined = false;
     _zoom.audioHelper.cleanAudioSession();
 

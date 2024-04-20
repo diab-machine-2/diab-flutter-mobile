@@ -88,7 +88,8 @@ class _MeetingPageState extends State<MeetingPage>
     _isPipMode = true;
     if (_cubit.state is! MeetingJoined) return;
     double space = 16.0;
-    double width = (size.width - space * 2.0) * 2.0 / 3.0;
+    double minWH = size.width < size.height ? size.width : size.height;
+    double width = (minWH - space * 2.0) * 2.0 / 3.0;
     double height = width * 9.0 / 16.0;
     PictureInPicture.updatePiPParams(
       pipParams: PiPParams(
@@ -97,6 +98,11 @@ class _MeetingPageState extends State<MeetingPage>
         initialCorner: PIPViewCorner.bottomRight,
       ),
     );
+
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
     PictureInPicture.startPiP(
       pipWidget: PiPWidget(
         onPiPClose: () {},

@@ -61,16 +61,18 @@ class MeetingPagePip extends StatelessWidget with WidgetsBindingObserver {
         child: BlocBuilder<MeetingCubit, MeetingState>(
           builder: (context, state) {
             MeetingJoined meetingJoined = state as MeetingJoined;
+            final key = Key('userId: ${meetingJoined.fullscreenUser.userId}, sharing: ${meetingJoined.fullscreenUser.isSharing}');
             return Stack(
               children: [
                 VideoView(
-                  key: ValueKey('pip-video-view'),
+                  key: key,
                   avatarUrl: null,
                   user: meetingJoined.fullscreenUser,
                   fullScreen: true,
                   isPiPView: true,
                   sharing: meetingJoined.fullscreenUser.isSharing,
                   resolution: VideoResolution.Resolution720,
+                  isPiPMode: true,
                 ),
                 Positioned(
                   top: 0,
