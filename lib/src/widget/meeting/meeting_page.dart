@@ -591,6 +591,7 @@ class _MeetingPageState extends State<MeetingPage>
   // }
 
   void _popupSessionEnded(BuildContext context) {
+    if (context.mounted == false) return;
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -608,6 +609,7 @@ class _MeetingPageState extends State<MeetingPage>
   }
 
   void _popupUnknowError(BuildContext context) {
+    if (context.mounted == false) return;
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
