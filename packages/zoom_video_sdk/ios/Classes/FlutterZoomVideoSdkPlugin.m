@@ -28,6 +28,7 @@
 #import "FlutterZoomVideoSdkCRCHelper.h"
 #import "FlutterZoomVideoSdkAnnotationHelper.h"
 #import "FlutterZoomVideoSdkRemoteCameraControlHelper.h"
+#import "SDKCallKitManager.h"
 
 @implementation FlutterZoomVideoSdkPlugin
 
@@ -506,6 +507,9 @@ FlutterZoomVideoSdkRemoteCameraControlHelper* flutterZoomVideoSdkRemoteCameraCon
 
 -(void) leaveSession:(FlutterMethodCall *)call withResult:(FlutterResult) result {
     dispatch_async(dispatch_get_main_queue(), ^{
+        [[SDKCallKitManager sharedManager] endCallWithComplete: ^{
+            NSLog(@" ----CallKitManager endCall Complete ------");
+        }];
         result([[JSONConvert ZoomVideoSDKErrorValuesReversed] objectForKey: @([[ZoomVideoSDK shareInstance] leaveSession: [call.arguments[@"endSession"] boolValue]])]);
     });
 }
@@ -587,6 +591,10 @@ FlutterZoomVideoSdkRemoteCameraControlHelper* flutterZoomVideoSdkRemoteCameraCon
 
 - (void)onSessionJoin {
     if (self.eventSink) {
+        NSString* sessionName = [[[ZoomVideoSDK shareInstance] getSession] getSessionName];
+        [[SDKCallKitManager sharedManager] startCallWithHandle:sessionName complete:^{
+            NSLog(@" ----CallKitManager startCall Complete ------");
+        }];
         self.eventSink(@{
            @"name": @"onSessionJoin",
            @"message": [FlutterZoomVideoSdkUser mapUser: [[[ZoomVideoSDK shareInstance] getSession] getMySelf]]

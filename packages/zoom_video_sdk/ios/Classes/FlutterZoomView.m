@@ -92,10 +92,6 @@
     }
     if (newIsPiPView) {
         [[SDKPiPHelper shared] presetPiPWithSrcView:self];
-        [[SDKCallKitManager sharedManager] startCallWithHandle:@"<Your Email>" complete:^{
-            NSLog(@" ----CallKitManager startCall Complete ------");
-            [[SDKPiPHelper shared] presetPiPWithSrcView:self];
-        }];
     } else {
         [[SDKPiPHelper shared] cleanUpPictureInPicture];
     }

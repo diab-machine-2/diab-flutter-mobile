@@ -217,9 +217,6 @@ class MeetingCubit extends Cubit<MeetingState> {
 
   bool _lastVideoStatus = false;
   void _turnoffVideoPreviewIfNeeded() async {
-    if (_remoteUsers.isEmpty) {
-      return;
-    }
     ZoomVideoSdkUser? mySelf = await _zoom.session.getMySelf();
     if (mySelf != null) {
       final videoStatus = mySelf.videoStatus;
@@ -301,9 +298,6 @@ class MeetingCubit extends Cubit<MeetingState> {
   }
 
   void leaveSession() async {
-    _zoom.audioHelper.cleanAudioSession().catchError((e, s) {
-      TrackingManager.recordError(e, s, reason: 'zoom clean audio');
-    });
     try {
       await _zoom.leaveSession(false);
     } catch (e, s) {
@@ -541,7 +535,9 @@ class MeetingCubit extends Cubit<MeetingState> {
       return;
     }
     _isJoined = false;
-    _zoom.audioHelper.cleanAudioSession();
+    _zoom.audioHelper.cleanAudioSession().catchError((e, s) {
+      TrackingManager.recordError(e, s, reason: 'zoom clean audio');
+    });
 
     emit(MeetingLeaving());
   }

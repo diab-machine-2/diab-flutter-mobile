@@ -127,7 +127,7 @@ class _MeetingPageState extends State<MeetingPage>
           child: BlocListener<MeetingCubit, MeetingState>(
             listener: (context, state) {
               // Handle leave session
-              if (state is MeetingLeaving) {
+              if (!_confirmQuit && state is MeetingLeaving) {
                 _popupSessionEnded(context);
                 return;
               } else if (state is MeetingJoinError) {
@@ -202,29 +202,14 @@ class _MeetingPageState extends State<MeetingPage>
         resolution: VideoResolution.Resolution720,
       );
     }
-    // Landscape mode + Other user is sharing screen
-    if (isLandScape &&
-        state.fullscreenUser.userId != state.previewUser?.userId &&
-        state.fullscreenUser.isSharing) {
-      fullScreenView = VideoView(
-        avatarUrl: null,
-        user: state.fullscreenUser,
-        fullScreen: true,
-        isPiPView: true,
-        sharing: state.fullscreenUser.isSharing,
-        resolution: VideoResolution.Resolution720,
-      );
-    } else {
-      bool allowPiPMode = state.previewUser?.userId != state.fullscreenUser.userId;
-      fullScreenView = VideoView(
-        avatarUrl: null,
-        user: state.fullscreenUser,
-        fullScreen: true,
-        isPiPView: allowPiPMode,
-        sharing: state.fullscreenUser.isSharing,
-        resolution: VideoResolution.Resolution720,
-      );
-    }
+    fullScreenView = VideoView(
+      avatarUrl: null,
+      user: state.fullscreenUser,
+      fullScreen: true,
+      isPiPView: true,
+      sharing: state.fullscreenUser.isSharing,
+      resolution: VideoResolution.Resolution720,
+    );
 
     final media = MediaQuery.of(context);
 
