@@ -480,6 +480,12 @@ class MeetingCubit extends Cubit<MeetingState> {
       if (data == null) {
         return;
       }
+      data = data as Map;
+      // ZoomVideoSDKError_Session_Already_In_Progress
+      if (data['errorType']?.toString() == 'ZoomVideoSDKError_Session_Already_In_Progress') {
+        _userJoined(_zoom.session.getMySelf());
+        return;
+      }
       String username = '';
       String id = '';
       if (AppSettings.userInfo != null) {

@@ -145,6 +145,8 @@ dependencies:
   crop_your_image: ^1.0.0
   flutter_image_compress: ^2.2.0
 
+  flutter_in_app_pip: ^1.7.3
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

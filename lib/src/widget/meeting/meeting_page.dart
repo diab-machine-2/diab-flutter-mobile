@@ -3,11 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_in_app_pip/flutter_in_app_pip.dart';
 import 'package:flutter_observer/Observable.dart';
 import 'package:flutter_zoom_videosdk/native/zoom_videosdk.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/service/zoom_service.dart';
 import 'package:medical/src/utils/navigator_name.dart';
+import 'package:medical/src/widget/meeting/meeting_page_pip.dart';
 import 'package:medical/src/widget/meeting/widgets/video_view.dart';
 import 'package:wakelock/wakelock.dart';
 
@@ -17,8 +19,9 @@ import 'meeting_cubit.dart';
 import 'meeting_state.dart';
 
 class MeetingPage extends StatefulWidget {
-  final MeetingArguments args;
-  const MeetingPage(this.args, {super.key});
+  final MeetingArguments? args;
+  final MeetingCubit? cubit;
+  const MeetingPage(this.args, this.cubit, {super.key});
 
   @override
   State<MeetingPage> createState() => _MeetingPageState();
@@ -30,11 +33,14 @@ class _MeetingPageState extends State<MeetingPage>
   final TextEditingController chatController = TextEditingController();
   final FocusNode chatFocusNode = FocusNode();
 
+  bool _isPipMode = false;
+  bool _confirmQuit = false;
+
   @override
   void initState() {
     super.initState();
     // SystemChrome.setEnabledSystemUIMode(SystemUiMode.leanBack);
-    _cubit = MeetingCubit(widget.args);
+    _cubit = widget.cubit ?? MeetingCubit(widget.args!);
     WidgetsBinding.instance.addObserver(this);
     Wakelock.enable();
     SystemChrome.setPreferredOrientations([
@@ -55,6 +61,9 @@ class _MeetingPageState extends State<MeetingPage>
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
     ]);
+    if (!_isPipMode) {
+      _cubit.close();
+    }
     super.dispose();
   }
 
@@ -75,17 +84,40 @@ class _MeetingPageState extends State<MeetingPage>
     }
   }
 
+  void _pipMode(Size size) {
+    _isPipMode = true;
+    if (_cubit.state is! MeetingJoined) return;
+    double space = 16.0;
+    double width = (size.width - space * 2.0) * 2.0 / 3.0;
+    double height = width * 9.0 / 16.0;
+    PictureInPicture.updatePiPParams(
+      pipParams: PiPParams(
+        pipWindowWidth: width,
+        pipWindowHeight: height,
+        initialCorner: PIPViewCorner.bottomRight,
+      ),
+    );
+    PictureInPicture.startPiP(
+      pipWidget: PiPWidget(
+        onPiPClose: () {},
+        child: MeetingPagePip(cubit: _cubit),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async {
-        _confirmAndQuitSession(context);
-        return false;
+    return PopScope(
+      canPop: true,
+      onPopInvoked: (didPop) {
+        if (!_confirmQuit) {
+          _pipMode(MediaQuery.of(context).size);
+        }
       },
       child: Scaffold(
         resizeToAvoidBottomInset: false,
-        body: BlocProvider(
-          create: (_) => _cubit,
+        body: BlocProvider.value(
+          value: _cubit,
           child: BlocListener<MeetingCubit, MeetingState>(
             listener: (context, state) {
               // Handle leave session
@@ -463,6 +495,7 @@ class _MeetingPageState extends State<MeetingPage>
           ),
           TextButton(
             onPressed: () async {
+              _confirmQuit = true;
               _cubit.leaveSession();
               Observable.instance.notifyObservers([], notifyName: "mark_completed_calendar");
               Navigator.popUntil(context, _rootPredicate);
