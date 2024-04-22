@@ -38,9 +38,7 @@ class AppSettings {
 
   static bool isReloadCurrentUserInfo = false;
 
-  static bool isOwnPackage = AppSettings.userInfo?.ownPackage != null &&
-      AppSettings.userInfo?.ownPackage?.logo != null &&
-      AppSettings.userInfo?.ownPackage?.logo != "";
+  static bool isOwnPackage = false;
 
   static Future<bool> setIsSyncing(bool isSyncing) async {
     appPreference.setData("isSyncing", isSyncing);
@@ -257,6 +255,7 @@ class AppSettings {
       appPreference.removeData("hasNewReports");
       appPreference.removeData("reports");
       appPreference.removeData("user");
+      isOwnPackage = false;
       final GoogleSignIn _googleSignIn = GoogleSignIn();
       _googleSignIn.signOut();
       final facebookLogin = FacebookLogin();

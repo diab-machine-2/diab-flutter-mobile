@@ -204,6 +204,40 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                             ),
                           ),
                         ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          child: Column(children: [
+                            SizedBox(
+                              height: 16,
+                            ),
+                            if (AppSettings.isOwnPackage)
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Image.network(
+                                    AppSettings.userInfo!.ownPackage!.logo ??
+                                        "",
+                                    color: R.color.greenPackage,
+                                    height: 20,
+                                  ),
+                                  SizedBox(width: 2),
+                                  Text(
+                                    "Tài trợ bởi Manulife - Mega",
+                                    textAlign: TextAlign.center,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStyle(
+                                      color: R.color.primaryGreyColor,
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            SizedBox(
+                              height: 5,
+                            ),
+                          ]),
+                        ),
                         const SizedBox(height: 14),
                         Expanded(
                           child: Padding(
@@ -225,14 +259,19 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                               child: SingleChildScrollView(
                                 child: Container(
                                   decoration: BoxDecoration(
-                                    image: DecorationImage(
-                                        opacity: 0.3,
-                                        image: NetworkImage(
-                                            'https://res.cloudinary.com/dzgugrqxz/image/upload/v1713760799/x9tzcqbvvbsli8hra46m.png'),
-                                        fit: BoxFit.fitWidth,
-                                        colorFilter: ColorFilter.mode(
-                                            R.color.greenPackage,
-                                            BlendMode.srcIn)),
+                                    image: AppSettings.isOwnPackage
+                                        ? DecorationImage(
+                                            opacity: 0.2,
+                                            image: NetworkImage(AppSettings
+                                                    .userInfo!
+                                                    .ownPackage!
+                                                    .logo ??
+                                                ""),
+                                            fit: BoxFit.fitWidth,
+                                            colorFilter: ColorFilter.mode(
+                                                R.color.greenPackage,
+                                                BlendMode.srcIn))
+                                        : null,
                                   ),
                                   child: Column(
                                     crossAxisAlignment:
@@ -458,7 +497,7 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
         if (title != null) const SizedBox(height: 6),
         if (title != null)
           Text(
-            title,
+            "title",
             style: TextStyle(
               color: R.color.mediaTitle,
               fontSize: 10,

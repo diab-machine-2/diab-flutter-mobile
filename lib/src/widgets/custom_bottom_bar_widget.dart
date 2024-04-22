@@ -56,8 +56,7 @@ class CustomBottomBarWidget extends StatelessWidget {
               _buildNextButton(),
             ],
           ),
-          if (AppSettings.userInfo?.ownPackage?.logo != null &&
-              AppSettings.userInfo!.ownPackage!.logo!.isNotEmpty)
+          if (AppSettings.isOwnPackage)
             Column(
               children: [
                 SizedBox(height: 12), // Move the SizedBox inside the Column
