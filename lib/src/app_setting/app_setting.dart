@@ -38,6 +38,10 @@ class AppSettings {
 
   static bool isReloadCurrentUserInfo = false;
 
+  static bool isOwnPackage = AppSettings.userInfo?.ownPackage != null &&
+      AppSettings.userInfo?.ownPackage?.logo != null &&
+      AppSettings.userInfo?.ownPackage?.logo != "";
+
   static Future<bool> setIsSyncing(bool isSyncing) async {
     appPreference.setData("isSyncing", isSyncing);
     return isSyncing;
