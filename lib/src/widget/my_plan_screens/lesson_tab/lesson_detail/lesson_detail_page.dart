@@ -223,7 +223,8 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                                   ),
                                   SizedBox(width: 2),
                                   Text(
-                                    "Tài trợ bởi Manulife - Mega",
+                                    AppSettings.userInfo?.ownPackage?.sponsor ??
+                                        "Tài trợ bởi Manulife - Mega",
                                     textAlign: TextAlign.center,
                                     overflow: TextOverflow.ellipsis,
                                     style: TextStyle(

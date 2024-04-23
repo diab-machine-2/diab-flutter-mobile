@@ -73,7 +73,8 @@ class CustomBottomBarWidget extends StatelessWidget {
                         width: 4), // Add some space between the image and text
                     Flexible(
                       child: Text(
-                        userInfo?.packageName ?? "",
+                        AppSettings.userInfo?.ownPackage?.sponsor ??
+                            "Tài trợ bởi Manulife - Mega",
                         textAlign: TextAlign.center,
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
