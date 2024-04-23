@@ -27,6 +27,8 @@
 #import "FlutterZoomViewViewFactory.h"
 #import "FlutterZoomVideoSdkCRCHelper.h"
 #import "FlutterZoomVideoSdkAnnotationHelper.h"
+#import "FlutterZoomVideoSdkRemoteCameraControlHelper.h"
+#import "SDKCallKitManager.h"
 
 @implementation FlutterZoomVideoSdkPlugin
 
@@ -57,6 +59,7 @@ FlutterZoomVideoSdkShareHelper* flutterZoomVideoSdkShareHelper;
 FlutterZoomVideoSdkVirtualBackgroundHelper* flutterZoomVideoSdkVirtualBackgroundHelper;
 FlutterZoomVideoSdkCRCHelper* flutterZoomVideoSdkCRCHelper;
 FlutterZoomVideoSdkAnnotationHelper* flutterZoomVideoSdkAnnotationHelper;
+FlutterZoomVideoSdkRemoteCameraControlHelper* flutterZoomVideoSdkRemoteCameraControlHelper;
 
 - (dispatch_queue_t)methodQueue {
     return dispatch_get_main_queue();
@@ -96,10 +99,10 @@ FlutterZoomVideoSdkAnnotationHelper* flutterZoomVideoSdkAnnotationHelper;
   flutterZoomVideoSdkVideoHelper = [[FlutterZoomVideoSdkVideoHelper alloc] init];
   flutterZoomVideoSdkVideoStatisticInfo = [[FlutterZoomVideoSdkVideoStatisticInfo alloc] init];
   flutterZoomVideoSdkVideoStatus = [[FlutterZoomVideoSdkVideoStatus alloc] init];
-  flutterZoomVideoSdkShareHelper = [[FlutterZoomVideoSdkShareHelper alloc] init];
   flutterZoomVideoSdkVirtualBackgroundHelper = [[FlutterZoomVideoSdkVirtualBackgroundHelper alloc] init];
   flutterZoomVideoSdkCRCHelper = [[FlutterZoomVideoSdkCRCHelper alloc] init];
   flutterZoomVideoSdkAnnotationHelper = [[FlutterZoomVideoSdkAnnotationHelper alloc] init];
+  flutterZoomVideoSdkRemoteCameraControlHelper = [[FlutterZoomVideoSdkRemoteCameraControlHelper alloc] init];
 
   if ([@"initSdk" isEqualToString:call.method]) {
     return [self initSDK:call withResult:result];
@@ -391,6 +394,22 @@ FlutterZoomVideoSdkAnnotationHelper* flutterZoomVideoSdkAnnotationHelper;
       return [flutterZoomVideoSdkAnnotationHelper redo:result];
    } else if ([@"clear" isEqualToString:call.method]) {
       return [flutterZoomVideoSdkAnnotationHelper clear:call withResult:result];
+   } else if ([@"giveUpControlRemoteCamera" isEqualToString:call.method]) {
+      return [flutterZoomVideoSdkRemoteCameraControlHelper giveUpControlRemoteCamera:call withResult:result];
+   } else if ([@"requestControlRemoteCamera" isEqualToString:call.method]) {
+       return [flutterZoomVideoSdkRemoteCameraControlHelper requestControlRemoteCamera:call withResult:result];
+   } else if ([@"turnLeft" isEqualToString:call.method]) {
+       return [flutterZoomVideoSdkRemoteCameraControlHelper turnLeft:call withResult:result];
+   } else if ([@"turnRight" isEqualToString:call.method]) {
+       return [flutterZoomVideoSdkRemoteCameraControlHelper turnRight:call withResult:result];
+   } else if ([@"turnDown" isEqualToString:call.method]) {
+       return [flutterZoomVideoSdkRemoteCameraControlHelper turnDown:call withResult:result];
+   } else if ([@"turnUp" isEqualToString:call.method]) {
+       return [flutterZoomVideoSdkRemoteCameraControlHelper turnUp:call withResult:result];
+   } else if ([@"zoomIn" isEqualToString:call.method]) {
+       return [flutterZoomVideoSdkRemoteCameraControlHelper zoomIn:call withResult:result];
+   } else if ([@"zoomOut" isEqualToString:call.method]) {
+       return [flutterZoomVideoSdkRemoteCameraControlHelper zoomOut:call withResult:result];
    } else {
       result(FlutterMethodNotImplemented);
    }
@@ -402,8 +421,15 @@ FlutterZoomVideoSdkAnnotationHelper* flutterZoomVideoSdkAnnotationHelper;
   initParams.enableLog = call.arguments[@"enableLog"];
   if ([call.arguments[@"logFilePrefix"] isKindOfClass:[NSString class]])
     initParams.logFilePrefix = call.arguments[@"logFilePrefix"];
-  if ([call.arguments[@"appGroupId"] isKindOfClass:[NSString class]])
-    initParams.appGroupId = call.arguments[@"appGroupId"];
+  if ([call.arguments[@"appGroupId"] isKindOfClass:[NSString class]]) {
+      initParams.appGroupId = call.arguments[@"appGroupId"];
+  }
+  if ([call.arguments[@"screeShareBundleId"] isKindOfClass:[NSString class]]) {
+      NSLog(@"bundle= %@", call.arguments[@"screeShareBundleId"]);
+      flutterZoomVideoSdkShareHelper = [[FlutterZoomVideoSdkShareHelper alloc] initWithBundleId:call.arguments[@"screeShareBundleId"]];
+  } else {
+      flutterZoomVideoSdkShareHelper = [[FlutterZoomVideoSdkShareHelper alloc] init];
+  }
   if ([call.arguments[@"videoRawdataMemoryMode"] isKindOfClass:[NSString class]])
     initParams.videoRawdataMemoryMode = [JSONConvert ZoomVideoSDKRawDataMemoryMode: call.arguments[@"videoRawdataMemoryMode"]];
   if ([call.arguments[@"audioRawdataMemoryMode"] isKindOfClass:[NSString class]])
@@ -480,8 +506,10 @@ FlutterZoomVideoSdkAnnotationHelper* flutterZoomVideoSdkAnnotationHelper;
 }
 
 -(void) leaveSession:(FlutterMethodCall *)call withResult:(FlutterResult) result {
-    [ZoomVideoSDK shareInstance].delegate = nil;
     dispatch_async(dispatch_get_main_queue(), ^{
+        [[SDKCallKitManager sharedManager] endCallWithComplete: ^{
+            NSLog(@" ----CallKitManager endCall Complete ------");
+        }];
         result([[JSONConvert ZoomVideoSDKErrorValuesReversed] objectForKey: @([[ZoomVideoSDK shareInstance] leaveSession: [call.arguments[@"endSession"] boolValue]])]);
     });
 }
@@ -563,6 +591,10 @@ FlutterZoomVideoSdkAnnotationHelper* flutterZoomVideoSdkAnnotationHelper;
 
 - (void)onSessionJoin {
     if (self.eventSink) {
+        NSString* sessionName = [[[ZoomVideoSDK shareInstance] getSession] getSessionName];
+        [[SDKCallKitManager sharedManager] startCallWithHandle:sessionName complete:^{
+            NSLog(@" ----CallKitManager startCall Complete ------");
+        }];
         self.eventSink(@{
            @"name": @"onSessionJoin",
            @"message": [FlutterZoomVideoSdkUser mapUser: [[[ZoomVideoSDK shareInstance] getSession] getMySelf]]
@@ -589,6 +621,7 @@ FlutterZoomVideoSdkAnnotationHelper* flutterZoomVideoSdkAnnotationHelper;
            @"message": @"onSessionLeave"
        });
     }
+    [ZoomVideoSDK shareInstance].delegate = nil;
 }
 
 - (void)onUserJoin:(ZoomVideoSDKUserHelper *)helper users:(NSArray<ZoomVideoSDKUser *> *)userArray {
@@ -989,6 +1022,44 @@ FlutterZoomVideoSdkAnnotationHelper* flutterZoomVideoSdkAnnotationHelper;
                 @"failReason": [[JSONConvert ZoomVideoSDKSubscribeFailReasonValuesReversed] objectForKey: @(failReason)],
                 @"user": [FlutterZoomVideoSdkUser mapUser: user],
             }
+        });
+    }
+}
+
+- (void)onMicSpeakerVolumeChanged:(int)micVolume speakerVolume:(int)speakerVolume
+{
+    if (self.eventSink) {
+        self.eventSink(@{
+            @"name": @"onMicSpeakerVolumeChanged",
+            @"message": @{
+                @"micVolume": [NSNumber numberWithInt:micVolume],
+                @"speakerVolume": [NSNumber numberWithInt:speakerVolume],
+            }
+        });
+    }
+}
+
+- (void)onTestMicStatusChanged:(ZoomVideoSDKTestMicStatus)status;
+{
+    if (self.eventSink) {
+        self.eventSink(@{
+            @"name": @"onTestMicStatusChanged",
+            @"message": @{
+                @"status": [[JSONConvert ZoomVideoSDKTestMicStatusValuesReversed] objectForKey: @(status)],
+            }
+        });
+    }
+}
+
+- (void)onCameraControlRequestResult:(ZoomVideoSDKUser*)user approved:(BOOL)isApproved
+{
+    if (self.eventSink) {
+        self.eventSink(@{
+           @"name": @"onCameraControlRequestResult",
+           @"message": @{
+                   @"approved": @(isApproved),
+                   @"user": [FlutterZoomVideoSdkUser mapUser: user],
+           }
         });
     }
 }

@@ -4,6 +4,7 @@ import 'package:medical/res/R.dart';
 
 class AppTheme {
   static ThemeData theme = ThemeData(
+      useMaterial3: false,
       platform: TargetPlatform.iOS,
       primaryColor: R.color.white,
       indicatorColor: R.color.mainColor,

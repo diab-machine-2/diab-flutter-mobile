@@ -51,6 +51,7 @@ import us.zoom.sdk.ZoomVideoSDKSession;
 import us.zoom.sdk.ZoomVideoSDKSessionContext;
 import us.zoom.sdk.ZoomVideoSDKShareHelper;
 import us.zoom.sdk.ZoomVideoSDKShareStatus;
+import us.zoom.sdk.ZoomVideoSDKTestMicStatus;
 import us.zoom.sdk.ZoomVideoSDKUser;
 import us.zoom.sdk.ZoomVideoSDKUserHelper;
 import us.zoom.sdk.ZoomVideoSDKVideoCanvas;
@@ -511,10 +512,10 @@ public class FlutterZoomVideoSdkPlugin implements FlutterPlugin, MethodCallHandl
         openBrowser(call, result);
         break;
       case "giveUpControlRemoteCamera":
-        remoteCameraControlHelper.giveUpControlRemoteCamera(result);
+        remoteCameraControlHelper.giveUpControlRemoteCamera(call, result);
         break;
       case "requestControlRemoteCamera":
-        remoteCameraControlHelper.requestControlRemoteCamera(result);
+        remoteCameraControlHelper.requestControlRemoteCamera(call, result);
         break;
       case "turnUp":
         remoteCameraControlHelper.turnUp(call, result);
@@ -1374,6 +1375,25 @@ public class FlutterZoomVideoSdkPlugin implements FlutterPlugin, MethodCallHandl
     params.put("message", message);
     eventSink.success(params);
 
+  }
+
+  public void onMicSpeakerVolumeChanged(int micVolume, int speakerVolume) {
+    Map<String, Object> params = new HashMap<>();
+    params.put("name", "onMicSpeakerVolumeChanged");
+    Map<String, Object> message = new HashMap<>();
+    message.put("micVolume", micVolume);
+    message.put("speakerVolume", speakerVolume);
+    params.put("message", message);
+    eventSink.success(params);
+  }
+
+  public void onTestMicStatusChanged(ZoomVideoSDKTestMicStatus status) {
+    Map<String, Object> params = new HashMap<>();
+    params.put("name", "onTestMicStatusChanged");
+    Map<String, Object> message = new HashMap<>();
+    message.put("status", FlutterZoomVideoSdkTestMicStatus.valueOf(status));
+    params.put("message", message);
+    eventSink.success(params);
   }
   // -----------------------------------------------------------------------------------------------
   // endregion

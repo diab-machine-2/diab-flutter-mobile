@@ -3,6 +3,8 @@
 
 @interface FlutterZoomVideoSdkShareHelper: NSObject
 
+-(instancetype)initWithBundleId:(NSString*)bundleId;
+
 -(void) shareScreen: (FlutterResult) result;
 
 -(void) shareView: (FlutterResult) result;
