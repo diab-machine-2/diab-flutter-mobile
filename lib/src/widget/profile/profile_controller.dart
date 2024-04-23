@@ -204,12 +204,18 @@ class _ProfileControllerState extends State<ProfileController> with Observer {
                                   const EdgeInsets.only(left: 16, right: 16),
                               child: Row(
                                 children: [
-                                  Image.asset(
-                                      isPro
-                                          ? R.drawable.ic_pro
-                                          : R.drawable.ic_crown_green,
-                                      width: 20,
-                                      height: 20),
+                                  AppSettings.isOwnPackage
+                                      ? Image.network(
+                                          AppSettings
+                                              .userInfo!.ownPackage!.logo!,
+                                          color: R.color.accentColor,
+                                        )
+                                      : Image.asset(
+                                          isPro
+                                              ? R.drawable.ic_pro
+                                              : R.drawable.ic_crown_green,
+                                          width: 20,
+                                          height: 20),
                                   const SizedBox(width: 8),
                                   Expanded(
                                     child: AutoSizeText(

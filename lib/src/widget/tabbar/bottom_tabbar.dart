@@ -26,9 +26,9 @@ class _BottomTabbar extends State<BottomTabbar> with Observer {
 
   @override
   void initState() {
+    super.initState();
     currentTab = widget.index;
     Observable.instance.addObserver(this);
-    super.initState();
   }
 
   @override
@@ -65,8 +65,14 @@ class _BottomTabbar extends State<BottomTabbar> with Observer {
                 children: [
                   tabWidget(R.string.home.tr(), R.drawable.ic_home,
                       Const.HOME_SCREEN),
-                  tabWidget(R.string.title_lesson.tr(), R.drawable.ic_plan,
-                      Const.PLAN_SCREEN),
+                  tabWidget(
+                      R.string.title_lesson.tr(),
+                      AppSettings.isOwnPackage
+                          ? AppSettings.userInfo?.ownPackage?.logo ??
+                              R.drawable.ic_plan
+                          : R.drawable.ic_plan,
+                      Const.PLAN_SCREEN,
+                      isFromNetwork: AppSettings.isOwnPackage),
                   Expanded(flex: 1, child: Container()),
                   tabWidget(R.string.qa_title.tr(), R.drawable.ic_qa,
                       Const.COURSE_SCREEN),
@@ -77,7 +83,8 @@ class _BottomTabbar extends State<BottomTabbar> with Observer {
         ));
   }
 
-  Widget tabWidget(String title, String image, int screenIndex) {
+  Widget tabWidget(String title, String image, int screenIndex,
+      {bool isFromNetwork = false}) {
     return Expanded(
       flex: 1,
       child: GestureDetector(
@@ -87,11 +94,17 @@ class _BottomTabbar extends State<BottomTabbar> with Observer {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Image.asset(image,
-                    height: 20,
-                    color: currentTab == screenIndex
-                        ? R.color.accentColor
-                        : R.color.gray),
+                isFromNetwork
+                    ? Image.network(image,
+                        height: 20,
+                        color: currentTab == screenIndex
+                            ? R.color.accentColor
+                            : R.color.gray)
+                    : Image.asset(image,
+                        height: 20,
+                        color: currentTab == screenIndex
+                            ? R.color.accentColor
+                            : R.color.gray),
                 const SizedBox(height: 3),
                 FittedBox(
                   fit: BoxFit.scaleDown,

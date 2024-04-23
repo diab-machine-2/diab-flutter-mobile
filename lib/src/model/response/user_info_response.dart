@@ -7,6 +7,33 @@ enum PackageType {
   has_road_map,
 }
 
+Map<String, String> packageMapping = {
+  "NC1": "Nâng cao Coach 1-1",
+  "TN": "Thử nghiệm",
+  "MNLE": "Manulife - Tiền đái tháo đường",
+  "PVIP": "VIP - Tiền đái tháo đường",
+  "TDTD": "Tiền đái tháo đường",
+  "VIP": "VIP",
+  "DT-2": "Duy trì lối sống 2",
+  "MEGA": "Mega - Tiền đái tháo đường",
+  "PVVIP": "VVIP - Tiền đái tháo đường",
+  "CB1": "Cơ bản Coach 1-1",
+  "AB1": "CGM 14 ngày",
+  "NC2": "Nâng cao Coach 1-N",
+  "NVIP": "VIP - Dinh Dưỡng",
+  "MVIP": "VIP - Tinh thần",
+  "EVIP": "EVIP - Vận động",
+  "ROBIN": "ROBIN",
+  "ABC": "TEST Tiền Đái tháo đường 1-N",
+  "P1N": "Tiền Đái tháo đường 1-N",
+  "CB2": "Cơ bản Coach 1-N",
+  "VVIP": "VVIP",
+  "TK1": "Gói thai kỳ Coach 1-1",
+  "TN1": "Thay đổi lối sống – 14N",
+  "DT-1": "Duy trì lối sống 1",
+  "TK2": "Gói thai kỳ Coach 1-N",
+};
+
 class UserInfoResponseDataOwnPackageOwnRoadmap {
 /*
 {
@@ -79,17 +106,20 @@ class UserInfoResponseDataOwnPackage {
   int? activationDate;
   int? expirationDate;
   int? endDateFirst;
+  String? logo;
+  String? sponsor;
   UserInfoResponseDataOwnPackageOwnRoadmap? ownRoadmap;
 
-  UserInfoResponseDataOwnPackage({
-    this.code,
-    this.duration,
-    this.durationType,
-    this.activationDate,
-    this.expirationDate,
-    this.endDateFirst,
-    this.ownRoadmap,
-  });
+  UserInfoResponseDataOwnPackage(
+      {this.code,
+      this.duration,
+      this.durationType,
+      this.activationDate,
+      this.expirationDate,
+      this.endDateFirst,
+      this.ownRoadmap,
+      this.logo,
+      this.sponsor});
   UserInfoResponseDataOwnPackage.fromJson(Map<String, dynamic> json) {
     code = json['code']?.toString();
     duration = json['duration']?.toInt();
@@ -97,8 +127,11 @@ class UserInfoResponseDataOwnPackage {
     activationDate = json['activationDate']?.toInt();
     expirationDate = json['expirationDate']?.toInt();
     endDateFirst = json['endDateFirst']?.toInt();
-    ownRoadmap =
-        (json['ownRoadmap'] != null) ? UserInfoResponseDataOwnPackageOwnRoadmap.fromJson(json['ownRoadmap']) : null;
+    logo = json['logo']?.toString();
+    sponsor = json['sponsor']?.toString();
+    ownRoadmap = (json['ownRoadmap'] != null)
+        ? UserInfoResponseDataOwnPackageOwnRoadmap.fromJson(json['ownRoadmap'])
+        : null;
   }
   Map<String, dynamic> toJson() {
     final data = <String, dynamic>{};
@@ -108,6 +141,8 @@ class UserInfoResponseDataOwnPackage {
     data['activationDate'] = activationDate;
     data['expirationDate'] = expirationDate;
     data['endDateFirst'] = endDateFirst;
+    data['logo'] = logo;
+    data['sponsor'] = sponsor;
     if (ownRoadmap != null) {
       data['ownRoadmap'] = ownRoadmap!.toJson();
     }
@@ -164,7 +199,9 @@ class UserInfoResponseData {
     hasFoodMenu = json['hasFoodMenu'];
     currentDateTime = json['currentDateTime'];
     roadmapId = json['roadmapId']?.toString();
-    ownPackage = (json['ownPackage'] != null) ? UserInfoResponseDataOwnPackage.fromJson(json['ownPackage']) : null;
+    ownPackage = (json['ownPackage'] != null)
+        ? UserInfoResponseDataOwnPackage.fromJson(json['ownPackage'])
+        : null;
   }
   Map<String, dynamic> toJson() {
     final data = <String, dynamic>{};
@@ -223,7 +260,9 @@ class UserInfoResponse {
     id = json['id']?.toString();
     statusCode = json['statusCode']?.toInt();
     message = json['message']?.toString();
-    data = (json['data'] != null) ? UserInfoResponseData.fromJson(json['data']) : null;
+    data = (json['data'] != null)
+        ? UserInfoResponseData.fromJson(json['data'])
+        : null;
   }
   Map<String, dynamic> toJson() {
     final data = <String, dynamic>{};

@@ -194,10 +194,22 @@ class _ActivityTabPageState extends State<ActivityTabPage>
                             // _showSurveyPopup();
                           },
                           child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            mainAxisAlignment: MainAxisAlignment.end,
+                            // mainAxisSize: MainAxisSize.min,
+                            // mainAxisAlignment: MainAxisAlignment.end,
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
+                              if (AppSettings.userInfo!.packageName != null)
+                                Expanded(
+                                  child: Text(
+                                    AppSettings.userInfo!.packageName!,
+                                    textAlign: TextAlign.left,
+                                    style: TextStyle(
+                                      color: R.color.greenGradientBottom,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
+                                ),
                               Text(
                                 R.string.statistical.tr(),
                                 style: TextStyle(
