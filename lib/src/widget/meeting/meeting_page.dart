@@ -11,7 +11,6 @@ import 'package:medical/src/service/zoom_service.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/meeting/meeting_page_pip.dart';
 import 'package:medical/src/widget/meeting/widgets/video_view.dart';
-import 'package:wakelock/wakelock.dart';
 
 import 'widgets/chat_view.dart';
 import 'widgets/top_bottom_control_autohide_widget.dart';
@@ -27,8 +26,7 @@ class MeetingPage extends StatefulWidget {
   State<MeetingPage> createState() => _MeetingPageState();
 }
 
-class _MeetingPageState extends State<MeetingPage>
-    with TickerProviderStateMixin, WidgetsBindingObserver {
+class _MeetingPageState extends State<MeetingPage> with TickerProviderStateMixin {
   late MeetingCubit _cubit;
   final TextEditingController chatController = TextEditingController();
   final FocusNode chatFocusNode = FocusNode();
@@ -39,10 +37,7 @@ class _MeetingPageState extends State<MeetingPage>
   @override
   void initState() {
     super.initState();
-    // SystemChrome.setEnabledSystemUIMode(SystemUiMode.leanBack);
     _cubit = widget.cubit ?? MeetingCubit(widget.args!);
-    WidgetsBinding.instance.addObserver(this);
-    Wakelock.enable();
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
@@ -55,8 +50,6 @@ class _MeetingPageState extends State<MeetingPage>
   @override
   void dispose() {
     chatController.dispose();
-    WidgetsBinding.instance.removeObserver(this);
-    Wakelock.disable();
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
@@ -65,23 +58,6 @@ class _MeetingPageState extends State<MeetingPage>
       _cubit.close();
     }
     super.dispose();
-  }
-
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    super.didChangeAppLifecycleState(state);
-    switch (state) {
-      case AppLifecycleState.inactive:
-      case AppLifecycleState.paused:
-      case AppLifecycleState.detached:
-        _cubit.appPaused();
-        break;
-      case AppLifecycleState.resumed:
-        _cubit.appResumed();
-        break;
-      default:
-        break;
-    }
   }
 
   void _pipMode(Size size) {
@@ -103,6 +79,7 @@ class _MeetingPageState extends State<MeetingPage>
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
     ]);
+
     PictureInPicture.startPiP(
       pipWidget: PiPWidget(
         onPiPClose: () {},
@@ -192,23 +169,22 @@ class _MeetingPageState extends State<MeetingPage>
   Widget _buildJoinedState(MeetingJoined state) {
     bool isLandScape = MediaQuery.of(context).orientation == Orientation.landscape;
     Widget previewView = const SizedBox();
-    Widget fullScreenView = const SizedBox();
 
     if (!isLandScape && state.remoteUsers.isNotEmpty && state.previewUser != null) {
       previewView = VideoView(
         avatarUrl: null,
         user: state.previewUser,
         fullScreen: false,
-        resolution: VideoResolution.Resolution720,
+        resolution: VideoResolution.Resolution360,
       );
     }
-    fullScreenView = VideoView(
+    Widget fullScreenView = VideoView(
       avatarUrl: null,
       user: state.fullscreenUser,
       fullScreen: true,
       isPiPView: true,
       sharing: state.fullscreenUser.isSharing,
-      resolution: VideoResolution.Resolution720,
+      resolution: VideoResolution.Resolution360,
     );
 
     final media = MediaQuery.of(context);
@@ -228,19 +204,36 @@ class _MeetingPageState extends State<MeetingPage>
             height: sizeComponentHeight,
             alignment: Alignment.centerLeft,
             padding: EdgeInsets.only(left: 8.0),
-            child: ValueListenableBuilder(
-              valueListenable: _cubit.haveMultipleCamera,
-              builder: (context, value, child) {
-                if (!value) {
-                  return const SizedBox();
-                }
-                return IconButton(
-                  onPressed: () => _cubit.switchCamera(),
-                  icon: Image.asset(
-                    R.drawable.ic_zoom_camera_switch,
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                IconButton(
+                  onPressed: () {
+                    _pipMode(media.size);
+                    Navigator.pop(context);
+                  },
+                  icon: Icon(
+                    Icons.keyboard_arrow_down,
+                    color: Colors.white,
+                    size: 24.0,
                   ),
-                );
-              },
+                ),
+                const SizedBox(width: 8.0),
+                ValueListenableBuilder(
+                  valueListenable: _cubit.haveMultipleCamera,
+                  builder: (context, value, child) {
+                    if (!value) {
+                      return const SizedBox();
+                    }
+                    return IconButton(
+                      onPressed: () => _cubit.switchCamera(),
+                      icon: Image.asset(
+                        R.drawable.ic_zoom_camera_switch,
+                      ),
+                    );
+                  },
+                ),
+              ],
             ),
           ),
           // Session name

@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_zoom_videosdk/native/zoom_videosdk.dart';
 import 'package:flutter_zoom_videosdk/native/zoom_videosdk_chat_message.dart';
@@ -12,11 +12,12 @@ import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/service/zoom_service.dart';
 import 'package:medical/src/utils/async_queue.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
+import 'package:wakelock/wakelock.dart';
 import 'models/MeetingMessage.dart';
 
 import 'meeting_state.dart';
 
-class MeetingCubit extends Cubit<MeetingState> {
+class MeetingCubit extends Cubit<MeetingState> with WidgetsBindingObserver {
   final MeetingArguments args;
 
   // Shared state with app session
@@ -70,6 +71,9 @@ class MeetingCubit extends Cubit<MeetingState> {
   Timer? _timeoutTimer;
 
   MeetingCubit(this.args) : super(MeetingJoining()) {
+    WidgetsBinding.instance.addObserver(this);
+    Wakelock.enable();
+
     // Join session
     _doJoinMeeting();
 
@@ -85,6 +89,23 @@ class MeetingCubit extends Cubit<MeetingState> {
   }
 
   @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+    switch (state) {
+      case AppLifecycleState.inactive:
+      case AppLifecycleState.paused:
+      case AppLifecycleState.detached:
+        _appPaused();
+        break;
+      case AppLifecycleState.resumed:
+        _appResumed();
+        break;
+      default:
+        break;
+    }
+  }
+
+  @override
   Future<void> close() async {
     // Remove listeners
     meetingEvents.forEach((listener) {
@@ -95,6 +116,9 @@ class MeetingCubit extends Cubit<MeetingState> {
 
     _timeoutTimer?.cancel();
     _timeoutTimer = null;
+
+    WidgetsBinding.instance.removeObserver(this);
+    Wakelock.disable();
 
     return super.close();
   }
@@ -205,12 +229,12 @@ class MeetingCubit extends Cubit<MeetingState> {
     }
   }
 
-  void appPaused() {
+  void _appPaused() {
     _turnoffVideoPreviewIfNeeded();
     _turnoffAudioIfNeeded();
   }
 
-  void appResumed() {
+  void _appResumed() {
     _turnonVideoPreviewIfNeeded();
     _turnonAudioIfNeeded();
   }

@@ -66,10 +66,29 @@ class VideoView extends fzv.ZoomView {
     bool isLandScape = media.orientation == Orientation.landscape;
     final key = Key('userId: ${user!.userId}, sharing: $sharing');
     if (isPiPMode) {
-      final Map<String, dynamic> creationParams = _buildCreationParams();
-      return fzv.View(
-        key: key,
-        creationParams: creationParams,
+      final Future<bool> futureSharing = Future.value(sharing);
+      final Future<bool> futureVideoOn = user!.videoStatus?.isOn() ?? Future.value(false);
+      return FutureBuilder(
+        future: Future.wait([futureSharing, futureVideoOn]),
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            final bool sharing = snapshot.data![0];
+            final bool videoOn = snapshot.data![1];
+            if (!sharing && !videoOn) {
+              return Container(
+                margin: const EdgeInsets.symmetric(vertical: 0),
+                color: Colors.black,
+                child: _buildAvatarWidget(size: 32.0),
+              );
+            }
+            final Map<String, dynamic> creationParams = _buildCreationParams();
+            return fzv.View(
+              key: key,
+              creationParams: creationParams,
+            );
+          }
+          return SizedBox();
+        },
       );
     }
     // Fullscreen view

@@ -9,7 +9,7 @@ import 'package:medical/src/widget/meeting/meeting_state.dart';
 
 import 'widgets/video_view.dart';
 
-class MeetingPagePip extends StatelessWidget with WidgetsBindingObserver {
+class MeetingPagePip extends StatelessWidget {
   final MeetingCubit cubit;
   const MeetingPagePip({super.key, required this.cubit});
 
@@ -22,23 +22,6 @@ class MeetingPagePip extends StatelessWidget with WidgetsBindingObserver {
   void _backToFullScreen() {
     PictureInPicture.stopPiP();
     navigatorKey.currentState!.pushNamed(NavigatorName.meeting, arguments: cubit);
-  }
-
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    super.didChangeAppLifecycleState(state);
-    switch (state) {
-      case AppLifecycleState.inactive:
-      case AppLifecycleState.paused:
-      case AppLifecycleState.detached:
-        cubit.appPaused();
-        break;
-      case AppLifecycleState.resumed:
-        cubit.appResumed();
-        break;
-      default:
-        break;
-    }
   }
 
   @override
@@ -71,7 +54,7 @@ class MeetingPagePip extends StatelessWidget with WidgetsBindingObserver {
                   fullScreen: true,
                   isPiPView: true,
                   sharing: meetingJoined.fullscreenUser.isSharing,
-                  resolution: VideoResolution.Resolution720,
+                  resolution: VideoResolution.Resolution180,
                   isPiPMode: true,
                 ),
                 Positioned(
