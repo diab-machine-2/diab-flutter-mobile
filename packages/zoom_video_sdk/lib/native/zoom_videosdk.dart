@@ -197,6 +197,12 @@ class AnnotationClearType {
   static const My = 'ZoomVideoSDKAnnotationClearType_My';
 }
 
+class TestMicStatus {
+  static const CanTest = 'ZoomVideoSDKMic_CanTest';
+  static const Recording = 'ZoomVideoSDKMic_Recording';
+  static const CanPlay = 'ZoomVideoSDKMic_CanPlay';
+}
+
 class AnnotationToolType {
   static const None = 'ZoomVideoSDKAnnotationToolType_None';
   static const Pen = 'ZoomVideoSDKAnnotationToolType_Pen';
@@ -355,6 +361,7 @@ class InitConfig {
   bool? enableLog;
   String? logFilePrefix;
   String? appGroupId;
+  String? screeShareBundleId;
   bool? enableFullHD; // Availble for certain Android hardware only.
   RawDataMemoryMode? videoRawDataMemoryMode;
   RawDataMemoryMode? audioRawDataMemoryMode;
@@ -367,6 +374,7 @@ class InitConfig {
       required this.enableLog,
       this.logFilePrefix,
       this.appGroupId,
+      this.screeShareBundleId,
       this.enableFullHD,
       this.videoRawDataMemoryMode,
       this.audioRawDataMemoryMode,
@@ -470,6 +478,7 @@ class ZoomVideoSdk extends ZoomVideoSdkPlatform {
     configMap.putIfAbsent("enableLog", () => configs.enableLog);
     configMap.putIfAbsent("logFilePrefix", () => configs.logFilePrefix);
     configMap.putIfAbsent("appGroupId", () => configs.appGroupId);
+    configMap.putIfAbsent("screeShareBundleId", () => configs.screeShareBundleId);
     configMap.putIfAbsent("enableFullHD", () => configs.enableFullHD);
     configMap.putIfAbsent(
         "videoRawDataMemoryMode", () => configs.videoRawDataMemoryMode);

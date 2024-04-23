@@ -12,6 +12,7 @@ import 'package:medical/src/utils/app_media_query.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
+import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:package_info/package_info.dart';
 
 import '../../modal/user/secure.dart';
@@ -95,8 +96,8 @@ class _FlashScreenControllerState extends State<FlashScreenController> {
     final String? sharedCode = await DeepLinkConfig.instance.getInitLink();
     try {
       await FirebaseRemoteSetting.instance.init();
-    } catch (e) {
-      print('remote config fetch error: $e');
+    } catch (e, s) {
+      TrackingManager.recordError(e, s, reason: 'Splash get remote config');
     }
     try {
       final token = await AppSettings.getToken();
@@ -138,7 +139,8 @@ class _FlashScreenControllerState extends State<FlashScreenController> {
           arguments: sharedCode,
         );
       }
-    } catch (e) {
+    } catch (e, s) {
+      TrackingManager.recordError(e, s, reason: 'FlashScreenController.getData');
       UserModel? userInfo = AppSettings.userInfo;
       Map<String, dynamic> errorData = {
         'phone': userInfo?.phoneNumber,
