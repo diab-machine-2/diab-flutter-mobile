@@ -20,11 +20,11 @@ class QuestionAnswerPage extends StatefulWidget {
 class _QuestionAnswerPageState extends State<QuestionAnswerPage> with Observer {
   final PageController _pageController = PageController(initialPage: 0);
   List<QuestionAnswerType> questionAnswerList = [
-    QuestionAnswerType.Mine,
-    QuestionAnswerType.All
+    QuestionAnswerType.All,
+    QuestionAnswerType.Mine
   ];
 
-  QuestionAnswerType currentQuestionAnswerType = QuestionAnswerType.Mine;
+  QuestionAnswerType currentQuestionAnswerType = QuestionAnswerType.All;
 
   int get currentQuestionAnswerTypeIndex {
     final int index = questionAnswerList.indexOf(currentQuestionAnswerType);
