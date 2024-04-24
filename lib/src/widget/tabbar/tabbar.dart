@@ -131,7 +131,12 @@ class _TabbarControllerState extends State<TabbarController>
     final String? zoomId = DynamicLinkConfig.instance.zoomId;
     if (zoomId != null) {
       await Future.delayed(Duration(seconds: 1));
-      ZoomService().launchZoom(zoomId, AppSettings.userInfo?.fullName ?? 'Người dùng', context);
+      ZoomService().launchZoom(
+        zoomId,
+        AppSettings.userInfo?.fullName ?? 'Người dùng',
+        context,
+        userId: AppSettings.userInfo?.id,
+      );
     }
   }
 

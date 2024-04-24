@@ -62,6 +62,9 @@ class UserClient extends FetchClient {
           var user = UserModel.fromJson(response.data['data']);
           AppSettings.userInfo = user;
           AppSettings.isGetUser = true;
+          AppSettings.isOwnPackage = user.ownPackage != null &&
+              user.ownPackage?.logo != null &&
+              user.ownPackage?.logo != "";
           await saveUserPreferences(user);
 
           //await fetchUserInfo(user.patientId);
@@ -838,7 +841,8 @@ class UserClient extends FetchClient {
 
   Future<ScheduleReminderDataModel> fetchScheduleReminders() async {
     try {
-      final Response response = await super.fetchData(url: '/App/Patient/PatientRemind');
+      final Response response =
+          await super.fetchData(url: '/App/Patient/PatientRemind');
       if (response.statusCode == 200) {
         return ScheduleReminderDataModel(
             models: ScheduleReminderModel.toList(response.data['data']),

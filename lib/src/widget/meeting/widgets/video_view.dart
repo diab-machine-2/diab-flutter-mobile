@@ -7,11 +7,13 @@ import 'package:flutter_zoom_videosdk/native/zoom_videosdk.dart';
 // To show video or avatar of user
 class VideoView extends fzv.ZoomView {
   final String? avatarUrl;
+  final bool isPiPMode;
   const VideoView({
     super.key,
     required this.avatarUrl,
     required super.user,
     required super.fullScreen,
+    this.isPiPMode = false,
     required super.resolution,
     bool sharing = false,
     bool isPiPView = false,
@@ -42,7 +44,7 @@ class VideoView extends fzv.ZoomView {
     creationParams.putIfAbsent("preview", () => preview);
     creationParams.putIfAbsent("focused", () => focused);
     creationParams.putIfAbsent("hasMultiCamera", () => hasMultiCamera);
-    creationParams.putIfAbsent("isPiPView", () => false);
+    creationParams.putIfAbsent("isPiPView", () => isPiPView);
     if (videoAspect.isEmpty) {
       creationParams.putIfAbsent("videoAspect", () => VideoAspect.PanAndScan);
     } else {
@@ -62,11 +64,38 @@ class VideoView extends fzv.ZoomView {
     }
     final media = MediaQuery.of(context);
     bool isLandScape = media.orientation == Orientation.landscape;
+    final key = Key('userId: ${user!.userId}, sharing: $sharing');
+    if (isPiPMode) {
+      final Future<bool> futureSharing = Future.value(sharing);
+      final Future<bool> futureVideoOn = user!.videoStatus?.isOn() ?? Future.value(false);
+      return FutureBuilder(
+        future: Future.wait([futureSharing, futureVideoOn]),
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            final bool sharing = snapshot.data![0];
+            final bool videoOn = snapshot.data![1];
+            if (!sharing && !videoOn) {
+              return Container(
+                margin: const EdgeInsets.symmetric(vertical: 0),
+                color: Colors.black,
+                child: _buildAvatarWidget(size: 32.0),
+              );
+            }
+            final Map<String, dynamic> creationParams = _buildCreationParams();
+            return fzv.View(
+              key: key,
+              creationParams: creationParams,
+            );
+          }
+          return SizedBox();
+        },
+      );
+    }
     // Fullscreen view
     if (fullScreen) {
       final Map<String, dynamic> creationParams = _buildCreationParams();
       Widget zoomView = fzv.View(
-        key: Key('userId: ${user!.userId}, fullScreen: true, sharing: $sharing'),
+        key: key,
         creationParams: creationParams,
       );
       if (sharing) {
@@ -176,7 +205,7 @@ class VideoView extends fzv.ZoomView {
             borderRadius: BorderRadius.circular(_previewRoundedRadius),
             child: SizedBox.expand(
               child: _buildAvatarWidget(),
-            )
+            ),
           ),
         );
       },

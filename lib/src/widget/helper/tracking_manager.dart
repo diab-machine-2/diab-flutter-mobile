@@ -13,7 +13,7 @@ class TrackingManager {
 
   static Future<void> _testAsyncErrorOnInit() async {
     Future<void>.delayed(const Duration(seconds: 2), () {
-      final List<int> list = <int>[];
+      // final List<int> list = <int>[];
       // print(list[100]);
     });
   }
@@ -36,8 +36,7 @@ class TrackingManager {
     } else {
       // Else only enable it in non-debug builds.
       // You could additionally extend this to allow users to opt-in.
-      await FirebaseCrashlytics.instance
-          .setCrashlyticsCollectionEnabled(!kDebugMode);
+      await FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(!kDebugMode);
     }
 
     // Pass all uncaught errors to Crashlytics.
@@ -45,11 +44,33 @@ class TrackingManager {
     FlutterError.onError = (FlutterErrorDetails errorDetails) async {
       await FirebaseCrashlytics.instance.recordFlutterError(errorDetails);
       // Forward to original handler.
-      originalOnError!(errorDetails);
+      if (originalOnError != null) originalOnError(errorDetails);
+    };
+
+    // Pass all uncaught asynchronous errors that aren't handled by the Flutter framework to Crashlytics
+    PlatformDispatcher.instance.onError = (error, stack) {
+      FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
+      return true;
     };
 
     if (_kShouldTestAsyncErrorOnInit) {
       await _testAsyncErrorOnInit();
     }
+  }
+
+  static Future<void> recordError(dynamic exception, StackTrace? stack,
+      {dynamic reason,
+      Iterable<Object> information = const [],
+      bool? printDetails,
+      bool fatal = false}) {
+    bool isDebug = kDebugMode;
+    return FirebaseCrashlytics.instance.recordError(
+      exception,
+      stack,
+      reason: reason,
+      information: information,
+      printDetails: isDebug || (printDetails ?? false),
+      fatal: fatal,
+    );
   }
 }

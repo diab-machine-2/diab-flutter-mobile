@@ -92,10 +92,6 @@
     }
     if (newIsPiPView) {
         [[SDKPiPHelper shared] presetPiPWithSrcView:self];
-        [[SDKCallKitManager sharedManager] startCallWithHandle:@"<Your Email>" complete:^{
-            NSLog(@" ----CallKitManager startCall Complete ------");
-            [[SDKPiPHelper shared] presetPiPWithSrcView:self];
-        }];
     } else {
         [[SDKPiPHelper shared] cleanUpPictureInPicture];
     }
@@ -140,13 +136,10 @@
     preview = newPreview;
 
     ZoomVideoSDKVideoHelper* videoHelper = [[ZoomVideoSDK shareInstance] getVideoHelper];
-    if (preview == YES && currentCanvas == nil) {
+    if (preview == YES) {
         [videoHelper startVideoCanvasPreview: self andAspectMode: videoAspect];
-        ZoomVideoSDKUser* user = [[[ZoomVideoSDK shareInstance] getSession] getMySelf];
-        currentCanvas = [user getVideoCanvas];
     } else {
         [videoHelper stopVideoCanvasPreview: self];
-        currentCanvas = nil;
     }
 }
 
@@ -171,12 +164,18 @@
 
     // Get the user
     ZoomVideoSDKUser *user = [FlutterZoomVideoSdkUser getUser:userId];
+    // Get myself
+    ZoomVideoSDKUser* mySelf = [[[ZoomVideoSDK shareInstance] getSession] getMySelf];
 
     // Get the canvas
     if (sharing) {
-        currentCanvas = [user getShareCanvas];
-        videoAspect = ZoomVideoSDKVideoAspect_Original;
-        [[SDKPiPHelper shared] updatePiPVideoUser:user videoType:ZoomVideoSDKVideoType_ShareData];
+        if ([user getUserID] != [mySelf getUserID]) {
+            currentCanvas = [user getShareCanvas];
+            videoAspect = ZoomVideoSDKVideoAspect_Original;
+            [[SDKPiPHelper shared] updatePiPVideoUser:user videoType:ZoomVideoSDKVideoType_ShareData];
+        } else {
+            currentCanvas = [user getVideoCanvas];
+        }
     } else {
         videoAspect = ZoomVideoSDKVideoAspect_LetterBox;
         [[SDKPiPHelper shared] updatePiPVideoUser:user videoType:ZoomVideoSDKVideoType_VideoData];

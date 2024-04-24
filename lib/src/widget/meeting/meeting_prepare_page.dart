@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_in_app_pip/flutter_in_app_pip.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/service/zoom_service.dart';
 import 'package:medical/src/utils/navigator_name.dart';
@@ -45,6 +46,9 @@ class _MeetingPreparePageState extends State<MeetingPreparePage> {
   }
 
   void _joinCall(BuildContext context) async {
+    if (PictureInPicture.isActive) {
+      return;
+    }
     ZoomService zoomServiceHelper = ZoomService();
     bool ok = await zoomServiceHelper.grantPermission();
     if (!ok) {
@@ -72,7 +76,8 @@ class _MeetingPreparePageState extends State<MeetingPreparePage> {
     );
     String topic = _textController.text;
     var user = AppSettings.userInfo;
-    final args = zoomServiceHelper.generateMeetingArgument(topic, user?.fullName ?? "Test Meeting");
+    final args = zoomServiceHelper.generateMeetingArgument(
+        topic, user?.fullName ?? "Test Meeting", user?.id);
 
     Navigator.pushNamed(
       context,

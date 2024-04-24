@@ -35,6 +35,7 @@ public class FlutterZoomVideoSdkTestAudioDeviceHelper {
         activity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
+                getTestAudioDeviceHelper().stopMicTest();
                 result.success(FlutterZoomVideoSdkErrors.valueOf(getTestAudioDeviceHelper().startMicTest()));
             }
         });

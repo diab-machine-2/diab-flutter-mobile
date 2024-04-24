@@ -34,6 +34,7 @@
 #if ENABLE_CALLKIT_VOIP_MEETING
         if (@available(iOS 10.0, *)) {
             CXProviderConfiguration *providerConfig = [[CXProviderConfiguration alloc] initWithLocalizedName:@"VideoSDK"];
+            providerConfig.iconTemplateImageData = UIImagePNGRepresentation([UIImage imageNamed:@"AppIcon"]);
             self.provider = [[CXProvider alloc] initWithConfiguration:providerConfig];
             [self.provider setDelegate:self queue:nil];
             self.callController = [[CXCallController alloc] init];
