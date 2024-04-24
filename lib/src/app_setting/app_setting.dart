@@ -38,7 +38,25 @@ class AppSettings {
 
   static bool isReloadCurrentUserInfo = false;
 
-  static bool isOwnPackage = false;
+  static Future<bool> setIsRetryFetchFirebaseRemoteConfig(
+      bool isRetryFetchFirebaseRemoteConfig) async {
+    appPreference.setData(
+        "isRetryFetchFirebaseRemoteConfig", isRetryFetchFirebaseRemoteConfig);
+    return isRetryFetchFirebaseRemoteConfig;
+  }
+
+  static Future<bool> getIsRetryFetchFirebaseRemoteConfig() async {
+    return appPreference.getBoolData("isRetryFetchFirebaseRemoteConfig");
+  }
+
+  static Future<String> setFirebaseRemoteSettings(String settings) async {
+    appPreference.setData("firebaseRemoteSettings", settings);
+    return settings;
+  }
+
+  static Future<String> getFirebaseRemoteSettings() async {
+    return appPreference.getData("firebaseRemoteSettings") ?? "";
+  }
 
   static Future<bool> setIsSyncing(bool isSyncing) async {
     appPreference.setData("isSyncing", isSyncing);
