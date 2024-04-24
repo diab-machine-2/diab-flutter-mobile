@@ -129,185 +129,214 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                   },
                   lessonDetail: _cubit.lessonDetail!)
               : Scaffold(
-                  body: BackgroundPage(
-                    background: R.drawable.bg_lesson_detail,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        SafeArea(
-                          bottom: false,
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                                vertical: 18, horizontal: 16),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.max,
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Expanded(
-                                  child: Row(
-                                    children: [
-                                      GestureDetector(
-                                        onTap: () async {
-                                          await TrackingManager.analytics
-                                              .logEvent(
-                                            name: 'component_clicked',
-                                            parameters: {
-                                              "screen_name": 'lesson_detail',
-                                              "component_name": 'close_lesson',
-                                              'object_id':
-                                                  _cubit.lessonDetail?.id,
-                                              'object_title':
-                                                  _cubit.lessonDetail?.name,
+                  body: Stack(
+                    children: [
+                      BackgroundPage(
+                        background: R.drawable.bg_lesson_detail,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            SafeArea(
+                              bottom: false,
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    vertical: 18, horizontal: 16),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.max,
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Expanded(
+                                      child: Row(
+                                        children: [
+                                          GestureDetector(
+                                            onTap: () async {
+                                              await TrackingManager.analytics
+                                                  .logEvent(
+                                                name: 'component_clicked',
+                                                parameters: {
+                                                  "screen_name":
+                                                      'lesson_detail',
+                                                  "component_name":
+                                                      'close_lesson',
+                                                  'object_id':
+                                                      _cubit.lessonDetail?.id,
+                                                  'object_title':
+                                                      _cubit.lessonDetail?.name,
+                                                },
+                                              );
+                                              NavigationUtil.pop(context);
                                             },
-                                          );
-                                          NavigationUtil.pop(context);
-                                        },
-                                        child: Icon(
-                                          Icons.clear_rounded,
-                                          size: 26,
-                                          color: R.color.grey_2,
-                                        ),
+                                            child: Icon(
+                                              Icons.clear_rounded,
+                                              size: 26,
+                                              color: R.color.grey_2,
+                                            ),
+                                          ),
+                                          SizedBox(width: 5),
+                                          Text(
+                                            R.string.section_position.tr(
+                                                args: [_cubit.sectionPosition]),
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: TextStyle(
+                                                fontSize: 16,
+                                                color: R.color.textDark,
+                                                fontWeight: FontWeight.w400),
+                                          ),
+                                        ],
                                       ),
-                                      SizedBox(width: 5),
+                                    ),
+                                    if (_cubit.currentSectionDetail != null)
+                                      ShareLessonButton(
+                                        lessonDescription:
+                                            _cubit.lessonDescription,
+                                        featureImage: _cubit.featureImage,
+                                        lesson: _cubit.currentSectionDetail!,
+                                      ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 16),
+                              child: Text(
+                                _cubit.currentSectionDetail?.name ?? '',
+                                style: TextStyle(
+                                  color: R.color.textDark,
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                            ),
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 16),
+                              child: Column(children: [
+                                SizedBox(
+                                  height: 16,
+                                ),
+                                if (AppSettings.isOwnPackage)
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Image.network(
+                                        AppSettings
+                                                .userInfo!.ownPackage!.logo ??
+                                            "",
+                                        color: R.color.greenPackage,
+                                        height: 20,
+                                      ),
+                                      SizedBox(width: 2),
                                       Text(
-                                        R.string.section_position
-                                            .tr(args: [_cubit.sectionPosition]),
-                                        maxLines: 1,
+                                        AppSettings.userInfo?.ownPackage
+                                                ?.sponsor ??
+                                            "Tài trợ bởi Manulife - Mega",
+                                        textAlign: TextAlign.center,
                                         overflow: TextOverflow.ellipsis,
                                         style: TextStyle(
-                                            fontSize: 16,
-                                            color: R.color.textDark,
-                                            fontWeight: FontWeight.w400),
+                                          color: R.color.primaryGreyColor,
+                                          fontWeight: FontWeight.w700,
+                                        ),
                                       ),
                                     ],
                                   ),
+                                SizedBox(
+                                  height: 5,
                                 ),
-                                if (_cubit.currentSectionDetail != null)
-                                  ShareLessonButton(
-                                    lessonDescription: _cubit.lessonDescription,
-                                    featureImage: _cubit.featureImage,
-                                    lesson: _cubit.currentSectionDetail!,
-                                  ),
-                              ],
+                              ]),
                             ),
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16),
-                          child: Text(
-                            _cubit.currentSectionDetail?.name ?? '',
-                            style: TextStyle(
-                              color: R.color.textDark,
-                              fontSize: 20,
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16),
-                          child: Column(children: [
-                            SizedBox(
-                              height: 16,
-                            ),
-                            if (AppSettings.isOwnPackage)
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Image.network(
-                                    AppSettings.userInfo!.ownPackage!.logo ??
-                                        "",
-                                    color: R.color.greenPackage,
-                                    height: 20,
-                                  ),
-                                  SizedBox(width: 2),
-                                  Text(
-                                    AppSettings.userInfo?.ownPackage?.sponsor ??
-                                        "Tài trợ bởi Manulife - Mega",
-                                    textAlign: TextAlign.center,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: TextStyle(
-                                      color: R.color.primaryGreyColor,
-                                      fontWeight: FontWeight.w700,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            SizedBox(
-                              height: 5,
-                            ),
-                          ]),
-                        ),
-                        const SizedBox(height: 14),
-                        Expanded(
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 16),
-                            child: NotificationListener<ScrollNotification>(
-                              onNotification: (scrollNotification) {
-                                int currentPosition =
-                                    (scrollNotification.metrics.pixels /
-                                            scrollNotification
-                                                .metrics.maxScrollExtent *
-                                            100)
-                                        .round();
-                                if (currentPosition >= percentComplete) {
-                                  percentComplete = currentPosition;
-                                  print('currentPosition: $percentComplete');
-                                }
-                                return true;
-                              },
-                              child: SingleChildScrollView(
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    image: AppSettings.isOwnPackage
-                                        ? DecorationImage(
-                                            opacity: 0.2,
-                                            image: NetworkImage(AppSettings
-                                                    .userInfo!
-                                                    .ownPackage!
-                                                    .logo ??
-                                                ""),
-                                            fit: BoxFit.fitWidth,
-                                            colorFilter: ColorFilter.mode(
-                                                R.color.greenPackage,
-                                                BlendMode.srcIn))
-                                        : null,
-                                  ),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      if (_cubit.currentSectionDetail
-                                                  ?.videoAddressLink !=
-                                              null &&
-                                          _cubit.currentSectionDetail
-                                                  ?.linkType ==
-                                              0)
-                                        _buildTitleWidget(
-                                          child:
-                                              //BetterPlayer(controller: _cubit.videoManager!.controller!),
-                                              VideoWidget(
-                                            callbackEventListener:
-                                                (event, videoDuration) {
-                                              LessonDetailTracking
-                                                  .videoPlayerLesson(
-                                                videoDuration: videoDuration,
-                                                objectTitle:
-                                                    _cubit.lessonDetail!.name!,
-                                                objectId:
+                            const SizedBox(height: 14),
+                            Expanded(
+                              child: Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 16),
+                                child: NotificationListener<ScrollNotification>(
+                                  onNotification: (scrollNotification) {
+                                    int currentPosition =
+                                        (scrollNotification.metrics.pixels /
+                                                scrollNotification
+                                                    .metrics.maxScrollExtent *
+                                                100)
+                                            .round();
+                                    if (currentPosition >= percentComplete) {
+                                      percentComplete = currentPosition;
+                                      print(
+                                          'currentPosition: $percentComplete');
+                                    }
+                                    return true;
+                                  },
+                                  child: SingleChildScrollView(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        if (_cubit.currentSectionDetail
+                                                    ?.videoAddressLink !=
+                                                null &&
+                                            _cubit.currentSectionDetail
+                                                    ?.linkType ==
+                                                0)
+                                          _buildTitleWidget(
+                                            child:
+                                                //BetterPlayer(controller: _cubit.videoManager!.controller!),
+                                                VideoWidget(
+                                              callbackEventListener:
+                                                  (event, videoDuration) {
+                                                LessonDetailTracking
+                                                    .videoPlayerLesson(
+                                                  videoDuration: videoDuration,
+                                                  objectTitle: _cubit
+                                                      .lessonDetail!.name!,
+                                                  objectId:
+                                                      _cubit.lessonDetail!.id!,
+                                                  eventType: event,
+                                                );
+                                              },
+                                              url: _cubit.currentSectionDetail
+                                                      ?.videoAddressLink ??
+                                                  '',
+                                              onPlay: () async =>
+                                                  _onTrackingVideoPlay(),
+                                              onComplete: () =>
+                                                  _onTrackingVideoComplete(),
+                                              callbackByPercentVideo: () {
+                                                LessonDetailTracking
+                                                    .completed50PercentVideo(
+                                                  objectId:
+                                                      _cubit.lessonDetail?.id,
+                                                  objectTitle:
+                                                      _cubit.lessonDetail?.name,
+                                                );
+                                                widget.onComplete(
                                                     _cubit.lessonDetail!.id!,
-                                                eventType: event,
-                                              );
-                                            },
-                                            url: _cubit.currentSectionDetail
-                                                    ?.videoAddressLink ??
-                                                '',
-                                            onPlay: () async =>
+                                                    _cubit.percentComplete);
+                                                _cubit.complete();
+                                              },
+                                              percentCallbackDefault: 0.5,
+                                              setVideoManager: (videoManager) {
+                                                _cubit.setVideoManager(
+                                                    videoManager);
+                                              },
+                                            ),
+                                            title: _cubit.currentSectionDetail
+                                                ?.videoDescription,
+                                          ),
+                                        if (_cubit.currentSectionDetail
+                                                    ?.videoAddressLink !=
+                                                null &&
+                                            _cubit.currentSectionDetail
+                                                    ?.linkType ==
+                                                1)
+                                          YoutubeVideoWidget(
+                                            videoUrl: _cubit
+                                                .currentSectionDetail!
+                                                .videoAddressLink!,
+                                            onPlay: () =>
                                                 _onTrackingVideoPlay(),
-                                            onComplete: () =>
-                                                _onTrackingVideoComplete(),
-                                            callbackByPercentVideo: () {
+                                            onEnded: () {
                                               LessonDetailTracking
                                                   .completed50PercentVideo(
                                                 objectId:
@@ -315,152 +344,136 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                                                 objectTitle:
                                                     _cubit.lessonDetail?.name,
                                               );
-                                              widget.onComplete(
-                                                  _cubit.lessonDetail!.id!,
-                                                  _cubit.percentComplete);
                                               _cubit.complete();
-                                            },
-                                            percentCallbackDefault: 0.5,
-                                            setVideoManager: (videoManager) {
-                                              _cubit.setVideoManager(
-                                                  videoManager);
+                                              _onTrackingVideoComplete();
                                             },
                                           ),
-                                          title: _cubit.currentSectionDetail
-                                              ?.videoDescription,
-                                        ),
-                                      if (_cubit.currentSectionDetail
-                                                  ?.videoAddressLink !=
-                                              null &&
-                                          _cubit.currentSectionDetail
-                                                  ?.linkType ==
-                                              1)
-                                        YoutubeVideoWidget(
-                                          videoUrl: _cubit.currentSectionDetail!
-                                              .videoAddressLink!,
-                                          onPlay: () => _onTrackingVideoPlay(),
-                                          onEnded: () {
-                                            LessonDetailTracking
-                                                .completed50PercentVideo(
-                                              objectId: _cubit.lessonDetail?.id,
-                                              objectTitle:
-                                                  _cubit.lessonDetail?.name,
-                                            );
-                                            _cubit.complete();
-                                            _onTrackingVideoComplete();
-                                          },
-                                        ),
-                                      SizedBox(height: 8),
-                                      Padding(
-                                        padding:
-                                            const EdgeInsets.only(bottom: 24),
-                                        child: WidgetHtmlText(_cubit
-                                                .currentSectionDetail
-                                                ?.firstContent ??
-                                            ''),
-                                      ),
-                                      if (_cubit.currentSectionDetail?.image
-                                              ?.url?.isNotEmpty ==
-                                          true)
-                                        Container(
-                                          alignment: Alignment.center,
-                                          padding:
-                                              const EdgeInsets.only(bottom: 24),
-                                          child: _buildTitleWidget(
-                                            child: CachedNetworkImage(
-                                                height: 90,
-                                                imageUrl: _cubit
-                                                    .currentSectionDetail!
-                                                    .image!
-                                                    .url!),
-                                            title: _cubit.currentSectionDetail
-                                                ?.imageTitle,
-                                          ),
-                                        ),
-                                      if (_cubit.currentSectionDetail
-                                              ?.secondContent?.isNotEmpty ==
-                                          true)
+                                        SizedBox(height: 8),
                                         Padding(
                                           padding:
                                               const EdgeInsets.only(bottom: 24),
                                           child: WidgetHtmlText(_cubit
-                                              .currentSectionDetail!
-                                              .secondContent!),
+                                                  .currentSectionDetail
+                                                  ?.firstContent ??
+                                              ''),
                                         ),
-                                      if (_cubit.audioManager?.controller !=
-                                          null)
-                                        _buildTitleWidget(
-                                            child: StreamBuilder<AudioData>(
-                                                stream: _cubit
-                                                    .audioManager
-                                                    ?.controller!
-                                                    .onChanged
-                                                    .stream,
-                                                builder: (context, snapshot) {
-                                                  return _buildAudioController(
-                                                    audioData: snapshot.data,
-                                                    seektoPosition:
-                                                        (newPosition) {
-                                                      _cubit.audioManager
-                                                          ?.controller!
-                                                          .seekTo(newPosition);
-                                                    },
-                                                    onTogglePlay: () {
-                                                      _cubit.audioManager
-                                                          ?.controller!
-                                                          .togglePlay();
-                                                    },
-                                                  );
-                                                }),
-                                            title: _cubit.currentSectionDetail
-                                                ?.audioDescription),
-                                      const SizedBox(height: 20),
-                                    ],
+                                        if (_cubit.currentSectionDetail?.image
+                                                ?.url?.isNotEmpty ==
+                                            true)
+                                          Container(
+                                            alignment: Alignment.center,
+                                            padding: const EdgeInsets.only(
+                                                bottom: 24),
+                                            child: _buildTitleWidget(
+                                              child: CachedNetworkImage(
+                                                  height: 90,
+                                                  imageUrl: _cubit
+                                                      .currentSectionDetail!
+                                                      .image!
+                                                      .url!),
+                                              title: _cubit.currentSectionDetail
+                                                  ?.imageTitle,
+                                            ),
+                                          ),
+                                        if (_cubit.currentSectionDetail
+                                                ?.secondContent?.isNotEmpty ==
+                                            true)
+                                          Padding(
+                                            padding: const EdgeInsets.only(
+                                                bottom: 24),
+                                            child: WidgetHtmlText(_cubit
+                                                .currentSectionDetail!
+                                                .secondContent!),
+                                          ),
+                                        if (_cubit.audioManager?.controller !=
+                                            null)
+                                          _buildTitleWidget(
+                                              child: StreamBuilder<AudioData>(
+                                                  stream: _cubit
+                                                      .audioManager
+                                                      ?.controller!
+                                                      .onChanged
+                                                      .stream,
+                                                  builder: (context, snapshot) {
+                                                    return _buildAudioController(
+                                                      audioData: snapshot.data,
+                                                      seektoPosition:
+                                                          (newPosition) {
+                                                        _cubit.audioManager
+                                                            ?.controller!
+                                                            .seekTo(
+                                                                newPosition);
+                                                      },
+                                                      onTogglePlay: () {
+                                                        _cubit.audioManager
+                                                            ?.controller!
+                                                            .togglePlay();
+                                                      },
+                                                    );
+                                                  }),
+                                              title: _cubit.currentSectionDetail
+                                                  ?.audioDescription),
+                                        const SizedBox(height: 20),
+                                      ],
+                                    ),
                                   ),
                                 ),
                               ),
                             ),
+                            CustomBottomBarWidget(
+                              isPreviousButtonActive: _cubit.isFirstSection,
+                              onTapPrevious: () async {
+                                await TrackingManager.analytics.logEvent(
+                                  name: 'cta_button_clicked',
+                                  parameters: {
+                                    "screen_name": 'lesson_detail',
+                                    "component_name": 'cta_previous_lesson',
+                                    'object_id': _cubit.lessonDetail?.id,
+                                    'object_title': _cubit.lessonDetail?.name,
+                                  },
+                                );
+                                _cubit.onChangeSection(
+                                    context, _cubit.currentSection - 1);
+                              },
+                              isNextButtonActive: (!_cubit.isLastSection &&
+                                  (_cubit.currentSectionDetail?.isComplete ??
+                                      false)),
+                              onTapNext: () async {
+                                await TrackingManager.analytics.logEvent(
+                                  name: 'cta_button_clicked',
+                                  parameters: {
+                                    "screen_name": 'lesson_detail',
+                                    "component_name": 'cta_next_lesson',
+                                    'object_id': _cubit.lessonDetail?.id,
+                                    'object_title': _cubit.lessonDetail?.name,
+                                  },
+                                );
+                                _cubit.onChangeSection(
+                                    context, _cubit.currentSection + 1);
+                              },
+                              currentPositionTitle: _cubit.sectionPosition,
+                              onTapCenter: () {
+                                showLessonCategoryList();
+                              },
+                              isCompleted: _cubit.canComplete,
+                            ),
+                          ],
+                        ),
+                      ),
+                      Positioned(
+                        child: Container(
+                          child: Opacity(
+                            opacity: 0.15,
+                            child: Image.network(
+                              AppSettings.userInfo!.ownPackage!.logo ?? "",
+                              color: R.color.accentColor,
+                            ),
                           ),
                         ),
-                        CustomBottomBarWidget(
-                          isPreviousButtonActive: _cubit.isFirstSection,
-                          onTapPrevious: () async {
-                            await TrackingManager.analytics.logEvent(
-                              name: 'cta_button_clicked',
-                              parameters: {
-                                "screen_name": 'lesson_detail',
-                                "component_name": 'cta_previous_lesson',
-                                'object_id': _cubit.lessonDetail?.id,
-                                'object_title': _cubit.lessonDetail?.name,
-                              },
-                            );
-                            _cubit.onChangeSection(
-                                context, _cubit.currentSection - 1);
-                          },
-                          isNextButtonActive: (!_cubit.isLastSection &&
-                              (_cubit.currentSectionDetail?.isComplete ??
-                                  false)),
-                          onTapNext: () async {
-                            await TrackingManager.analytics.logEvent(
-                              name: 'cta_button_clicked',
-                              parameters: {
-                                "screen_name": 'lesson_detail',
-                                "component_name": 'cta_next_lesson',
-                                'object_id': _cubit.lessonDetail?.id,
-                                'object_title': _cubit.lessonDetail?.name,
-                              },
-                            );
-                            _cubit.onChangeSection(
-                                context, _cubit.currentSection + 1);
-                          },
-                          currentPositionTitle: _cubit.sectionPosition,
-                          onTapCenter: () {
-                            showLessonCategoryList();
-                          },
-                          isCompleted: _cubit.canComplete,
-                        ),
-                      ],
-                    ),
+                        top: MediaQuery.of(context).size.height * 0.55,
+                        left: MediaQuery.of(context).size.width * 0.5 - 50,
+                      ),
+                    ],
                   ),
                 );
         },
@@ -498,7 +511,7 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
         if (title != null) const SizedBox(height: 6),
         if (title != null)
           Text(
-            "title",
+            title,
             style: TextStyle(
               color: R.color.mediaTitle,
               fontSize: 10,
