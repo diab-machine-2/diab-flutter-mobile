@@ -101,6 +101,8 @@ class LoginClient extends FetchClient {
 
   Future<bool> syncToken(String? deviceID, String? token, int platform) async {
     try {
+      var appVersion = AppSettings.version;
+      var appBuild = AppSettings.buildNumber;
       final Response response = await super.postUri(
           baseOption: true,
           url:
@@ -109,7 +111,9 @@ class LoginClient extends FetchClient {
           params: {
             'deviceInformation': deviceID,
             'firebaseToken': token,
-            'deviceType': platform.toString()
+            'deviceType': platform.toString(),
+            'version': appVersion,
+            'build': appBuild
           });
       if (response.statusCode == 200) {
         return true;
