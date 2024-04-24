@@ -460,19 +460,20 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                           ],
                         ),
                       ),
-                      Positioned(
-                        child: Container(
-                          child: Opacity(
-                            opacity: 0.15,
-                            child: Image.network(
-                              AppSettings.userInfo!.ownPackage!.logo ?? "",
-                              color: R.color.accentColor,
+                      if (AppSettings.isOwnPackage)
+                        Positioned(
+                          child: Container(
+                            child: Opacity(
+                              opacity: 0.15,
+                              child: Image.network(
+                                AppSettings.userInfo!.ownPackage!.logo ?? "",
+                                color: R.color.accentColor,
+                              ),
                             ),
                           ),
+                          top: MediaQuery.of(context).size.height * 0.55,
+                          left: MediaQuery.of(context).size.width * 0.5 - 50,
                         ),
-                        top: MediaQuery.of(context).size.height * 0.55,
-                        left: MediaQuery.of(context).size.width * 0.5 - 50,
-                      ),
                     ],
                   ),
                 );
