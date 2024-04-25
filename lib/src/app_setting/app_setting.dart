@@ -289,7 +289,7 @@ class AppSettings {
       await clearToken();
       await clearRefreshToken();
       await clearIsSyncing();
-      appPreference.setData("valueOfClickShortGuide", "0 0 0 0 0 0 0");
+      // appPreference.setData("valueOfClickShortGuide", "0 0 0 0 0 0 0");
       appPreference.removeData("hasNewReports");
       appPreference.removeData("reports");
       appPreference.removeData("user");
