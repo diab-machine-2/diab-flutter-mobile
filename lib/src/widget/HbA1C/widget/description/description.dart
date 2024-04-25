@@ -38,7 +38,7 @@ class Description extends StatelessWidget {
     // final height = (MediaQuery.of(context).size.width - 32) * 153 / 343 - 54;
     final width = MediaQuery.of(context).size.width - 32;
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (clickTime != null && clickTime! >= 2 && data != null) {
+      if (clickTime != null && clickTime! > 2 && data != null) {
         showDialog(
           barrierColor: R.color.color0xff003F38.withOpacity(0.8),
           useSafeArea: false,
