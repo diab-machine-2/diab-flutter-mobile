@@ -298,7 +298,14 @@ class CustomTabbarImage extends StatefulWidget {
 class CustomTabbarImageState extends State<CustomTabbarImage> {
   bool showDes = false;
 
-  showDescription() {
+  int clickTime = 0;
+
+  showDescription() async {
+    List<int> valueOfClickTime = await AppSettings.getValueOfClickShortGuide();
+    clickTime = valueOfClickTime[ScreenList.WEIGHT.index];
+    clickTime += 1;
+    await AppSettings.setValueOfClickShortGuideIndex(
+        ScreenList.WEIGHT.index, clickTime);
     showDes = !showDes;
     setState(() {});
   }
@@ -308,13 +315,15 @@ class CustomTabbarImageState extends State<CustomTabbarImage> {
       color: R.color.white,
       child: Column(
         children: [
-          showDes
+          showDes || clickTime >= 2
               ? Padding(
                   padding: EdgeInsets.only(left: 16, right: 16),
                   child: Description(
-                      input: false,
-                      data: widget.data,
-                      titleDetail: R.string.diabetes_weight_control.tr()),
+                    input: false,
+                    data: widget.data,
+                    titleDetail: R.string.diabetes_weight_control.tr(),
+                    clickTime: clickTime,
+                  ),
                 )
               : SizedBox(),
           Row(
