@@ -230,8 +230,17 @@ class CustomTabbarImageState extends State<CustomTabbarImage> {
 
   var userInfo = AppSettings.userInfo!;
 
-  showDescription() {
+  int clickTime = 0;
+
+  showDescription() async {
+    List<int> valueOfClickTime = await AppSettings.getValueOfClickShortGuide();
+    clickTime = valueOfClickTime[ScreenList.BLOOD_SUGAR.index];
+    clickTime += 1;
     print(showDes);
+    print(clickTime);
+    await AppSettings.setValueOfClickShortGuideIndex(
+        ScreenList.BLOOD_SUGAR.index, clickTime);
+
     showDes = !showDes;
     setState(() {});
   }
@@ -242,13 +251,15 @@ class CustomTabbarImageState extends State<CustomTabbarImage> {
       color: R.color.white,
       child: Column(
         children: [
-          if (showDes)
+          if (showDes || clickTime >= 2)
             Padding(
               padding: const EdgeInsets.only(left: 16, right: 16),
               child: Description(
-                  input: false,
-                  data: widget.data,
-                  titleDetail: R.string.blood_sugar_for_diabetes.tr()),
+                input: false,
+                data: widget.data,
+                titleDetail: R.string.blood_sugar_for_diabetes.tr(),
+                clickTime: clickTime,
+              ),
             ),
           _buildButton(
               title: R.string.testing_schedule_suggest.tr(),
