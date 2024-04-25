@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:linkify/linkify.dart';
 import 'package:medical/res/R.dart';
 import 'package:url_launcher/url_launcher.dart';
-import '../models/MeetingMessage.dart';
+import '../models/meeting_message.dart';
 
 class ChatView extends StatelessWidget {
   final Function(String) onSendMessage;
