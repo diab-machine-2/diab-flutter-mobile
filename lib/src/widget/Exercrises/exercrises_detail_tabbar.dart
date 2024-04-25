@@ -281,8 +281,16 @@ class CustomTabbarImage extends StatefulWidget {
 class CustomTabbarImageState extends State<CustomTabbarImage> {
   bool showDes = false;
 
-  showDescription() {
-    print(showDes);
+  int clickTime = 0;
+
+  showDescription() async {
+    List<int> valueOfClickTime = await AppSettings.getValueOfClickShortGuide();
+    clickTime = valueOfClickTime[ScreenList.EXERCISE.index];
+    clickTime += 1;
+
+    await AppSettings.setValueOfClickShortGuideIndex(
+        ScreenList.EXERCISE.index, clickTime);
+
     showDes = !showDes;
     setState(() {});
   }
@@ -293,14 +301,15 @@ class CustomTabbarImageState extends State<CustomTabbarImage> {
       color: R.color.white,
       child: Column(
         children: [
-          if (showDes)
+          if (showDes || clickTime >= 2)
             Padding(
               padding: const EdgeInsets.only(left: 16, right: 16),
               child: Description(
                   input: false,
                   data: widget.data,
                   titleDetail:
-                      R.string.che_do_tap_luyen_doi_voi_benh_tieu_duong.tr()),
+                      R.string.che_do_tap_luyen_doi_voi_benh_tieu_duong.tr(),
+                  clickTime: clickTime),
             )
           else
             const SizedBox(),

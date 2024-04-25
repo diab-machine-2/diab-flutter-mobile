@@ -66,6 +66,15 @@ class ZoomService {
     // at least microphone permission is granted
     bool microGranted = statuses[Permission.microphone] == PermissionStatus.granted;
 
+    // log if any permission is denied
+    if (statuses.isNotEmpty && statuses.entries.any((e) => e.value == PermissionStatus.denied)) {
+      final entries = statuses.entries;
+      String message = "Permissions " + entries
+          .map((e) => "${e.key.toString()}=${e.value.isGranted}")
+          .join(", ");
+      TrackingManager.recordError(Exception(message), null);
+    }
+
     if (!microGranted) {
       await openAppSettings();
       return false;

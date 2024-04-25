@@ -13,7 +13,7 @@ import 'package:medical/src/service/zoom_service.dart';
 import 'package:medical/src/utils/async_queue.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:wakelock/wakelock.dart';
-import 'models/MeetingMessage.dart';
+import 'models/meeting_message.dart';
 
 import 'meeting_state.dart';
 

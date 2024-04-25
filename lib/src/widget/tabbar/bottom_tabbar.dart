@@ -24,9 +24,12 @@ class _BottomTabbar extends State<BottomTabbar> with Observer {
   int currentTab = 0;
   int? ticketCount;
 
+  static var user;
+
   @override
   void initState() {
     super.initState();
+    user = AppSettings.userInfo;
     currentTab = widget.index;
     Observable.instance.addObserver(this);
   }
@@ -67,12 +70,15 @@ class _BottomTabbar extends State<BottomTabbar> with Observer {
                       Const.HOME_SCREEN),
                   tabWidget(
                       R.string.title_lesson.tr(),
-                      AppSettings.isOwnPackage
-                          ? AppSettings.userInfo?.ownPackage?.logo ??
-                              R.drawable.ic_plan
+                      user.ownPackage != null &&
+                              user.ownPackage?.logo != null &&
+                              user.ownPackage?.logo != ""
+                          ? user.ownPackage?.logo ?? R.drawable.ic_plan
                           : R.drawable.ic_plan,
                       Const.PLAN_SCREEN,
-                      isFromNetwork: AppSettings.isOwnPackage),
+                      isFromNetwork: user.ownPackage != null &&
+                              user.ownPackage?.logo != null &&
+                              user.ownPackage?.logo != ""),
                   Expanded(flex: 1, child: Container()),
                   tabWidget(R.string.qa_title.tr(), R.drawable.ic_qa,
                       Const.COURSE_SCREEN),

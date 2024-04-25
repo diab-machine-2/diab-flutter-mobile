@@ -13,7 +13,6 @@
 		5A88EF00294CC7160038A34F /* ibtFramework.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 600D316828DB0B2D000C7EE7 /* ibtFramework.xcframework */; };
 		5A88EF01294CC7160038A34F /* ibtFramework.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 600D316828DB0B2D000C7EE7 /* ibtFramework.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		5A88EF04294CC71C0038A34F /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6C731C1F270ABB8800B4BC5B /* StoreKit.framework */; };
-		5AA46BF828F7FEE9009E7CC5 /* GoogleService-Info.vn.com.diab.plist in Resources */ = {isa = PBXBuildFile; fileRef = 5AA46BF728F7FEE8009E7CC5 /* GoogleService-Info.vn.com.diab.plist */; };
 		5AE2ED6C294C759100013BFA /* (null) in Embed Frameworks */ = {isa = PBXBuildFile; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		600D316F28DB0B33000C7EE7 /* UIVIewController+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 600D316528DB0B2A000C7EE7 /* UIVIewController+Extension.swift */; };
 		600D317028DB0B33000C7EE7 /* UIColor+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 600D316628DB0B2B000C7EE7 /* UIColor+Extension.swift */; };
@@ -23,7 +22,7 @@
 		600D317628DB0B33000C7EE7 /* iConstant.swift in Sources */ = {isa = PBXBuildFile; fileRef = 600D316C28DB0B31000C7EE7 /* iConstant.swift */; };
 		600D317728DB0B33000C7EE7 /* String+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 600D316D28DB0B32000C7EE7 /* String+Extension.swift */; };
 		600D317828DB0B33000C7EE7 /* ToastManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 600D316E28DB0B33000C7EE7 /* ToastManager.swift */; };
-		60A6D331265F8670008272BB /* GoogleService-Info.com.cactusoftware.diab.plist in Resources */ = {isa = PBXBuildFile; fileRef = 60A6D330265F8670008272BB /* GoogleService-Info.com.cactusoftware.diab.plist */; };
+		60A6D331265F8670008272BB /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 60A6D330265F8670008272BB /* GoogleService-Info.plist */; };
 		74858FAF1ED2DC5600515810 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74858FAE1ED2DC5600515810 /* AppDelegate.swift */; };
 		97C146FC1CF9000F007C117D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FA1CF9000F007C117D /* Main.storyboard */; };
 		97C146FE1CF9000F007C117D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FD1CF9000F007C117D /* Assets.xcassets */; };
@@ -64,7 +63,7 @@
 		600D316D28DB0B32000C7EE7 /* String+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "String+Extension.swift"; sourceTree = "<group>"; };
 		600D316E28DB0B33000C7EE7 /* ToastManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ToastManager.swift; sourceTree = "<group>"; };
 		60A6D32F265F7AE9008272BB /* Runner.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Runner.entitlements; sourceTree = "<group>"; };
-		60A6D330265F8670008272BB /* GoogleService-Info.com.cactusoftware.diab.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.com.cactusoftware.diab.plist"; sourceTree = "<group>"; };
+		60A6D330265F8670008272BB /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		6C731C1F270ABB8800B4BC5B /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		74858FAD1ED2DC5600515810 /* Runner-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Runner-Bridging-Header.h"; sourceTree = "<group>"; };
 		74858FAE1ED2DC5600515810 /* AppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -79,6 +78,7 @@
 		97C147001CF9000F007C117D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		97C147021CF9000F007C117D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		B466A99A5D7A6746DF100D9F /* Pods_Runner.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Runner.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		C5AD034C2BDA1C43005D4F41 /* GoogleService-Info.com.cactusoftware.diab.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.com.cactusoftware.diab.plist"; sourceTree = "<group>"; };
 		DFF6CEFE46EF252BFC3FCAE5 /* Pods-Runner.stag.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.stag.release.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.stag.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -145,7 +145,8 @@
 				60A6D32F265F7AE9008272BB /* Runner.entitlements */,
 				97C146FA1CF9000F007C117D /* Main.storyboard */,
 				97C146FD1CF9000F007C117D /* Assets.xcassets */,
-				60A6D330265F8670008272BB /* GoogleService-Info.com.cactusoftware.diab.plist */,
+				60A6D330265F8670008272BB /* GoogleService-Info.plist */,
+				C5AD034C2BDA1C43005D4F41 /* GoogleService-Info.com.cactusoftware.diab.plist */,
 				5AA46BF728F7FEE8009E7CC5 /* GoogleService-Info.vn.com.diab.plist */,
 				97C146FF1CF9000F007C117D /* LaunchScreen.storyboard */,
 				97C147021CF9000F007C117D /* Info.plist */,
@@ -192,6 +193,7 @@
 				9705A1C41CF9048500538489 /* Embed Frameworks */,
 				3B06AD1E1E4923F5004D2608 /* Thin Binary */,
 				E076A838C16F9A0C96A0A52F /* [CP] Embed Pods Frameworks */,
+				C5AD034D2BDA1E9D005D4F41 /* Copy crashlytics dSYM */,
 			);
 			buildRules = (
 			);
@@ -240,10 +242,9 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				5AA46BF828F7FEE9009E7CC5 /* GoogleService-Info.vn.com.diab.plist in Resources */,
 				97C147011CF9000F007C117D /* LaunchScreen.storyboard in Resources */,
 				3B3967161E833CAA004F5970 /* AppFrameworkInfo.plist in Resources */,
-				60A6D331265F8670008272BB /* GoogleService-Info.com.cactusoftware.diab.plist in Resources */,
+				60A6D331265F8670008272BB /* GoogleService-Info.plist in Resources */,
 				97C146FE1CF9000F007C117D /* Assets.xcassets in Resources */,
 				97C146FC1CF9000F007C117D /* Main.storyboard in Resources */,
 			);
@@ -279,7 +280,30 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "/bin/sh \"$FLUTTER_ROOT/packages/flutter_tools/bin/xcode_backend.sh\" build\n\nPATH_TO_GOOGLE_PLISTS=\"${PROJECT_DIR}/Runner\"\n\ncase \"${CONFIGURATION}\" in\n\n   \"Debug\" | \"Release\")\n        cp -r \"$PATH_TO_GOOGLE_PLISTS/GoogleService-Info.com.cactusoftware.diab.plist\" \"${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.app/GoogleService-Info.plist\" ;;\n        \n    \"Stag.Debug\" | \"Stag.Release\")\n        cp -r \"$PATH_TO_GOOGLE_PLISTS/GoogleService-Info.vn.com.diab.plist\" \"${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.app/GoogleService-Info.plist\" ;;\n\n    *)\n        ;;\nesac\n";
+			shellScript = "/bin/sh \"$FLUTTER_ROOT/packages/flutter_tools/bin/xcode_backend.sh\" build\n\n# case \"${CONFIGURATION}\" in\n\n#    \"Debug\" | \"Release\")\n#         cp -r \"$PATH_TO_GOOGLE_PLISTS/GoogleService-Info.com.cactusoftware.diab.plist\" \"${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.app/GoogleService-Info.plist\" ;;\n        \n#     \"Stag.Debug\" | \"Stag.Release\")\n#         cp -r \"$PATH_TO_GOOGLE_PLISTS/GoogleService-Info.vn.com.diab.plist\" \"${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.app/GoogleService-Info.plist\" ;;\n\n#     *)\n#         ;;\n# esac\n";
+		};
+		C5AD034D2BDA1E9D005D4F41 /* Copy crashlytics dSYM */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}",
+				"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Resources/DWARF/${PRODUCT_NAME}",
+				"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Info.plist",
+				"$(TARGET_BUILD_DIR)/$(UNLOCALIZED_RESOURCES_FOLDER_PATH)/GoogleService-Info.plist",
+				"$(TARGET_BUILD_DIR)/$(EXECUTABLE_PATH)",
+			);
+			name = "Copy crashlytics dSYM";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/FirebaseCrashlytics/run\"\n\n";
 		};
 		D03EEB85FD4DB19E2094A4B1 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;

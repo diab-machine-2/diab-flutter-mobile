@@ -1,10 +1,13 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:firebase_remote_config/firebase_remote_config.dart';
+import 'package:medical/src/app_setting/app_setting.dart';
 
 class FirebaseRemoteSetting {
   FirebaseRemoteSetting._privateConstructor();
-  static final FirebaseRemoteSetting instance = FirebaseRemoteSetting._privateConstructor();
+  static final FirebaseRemoteSetting instance =
+      FirebaseRemoteSetting._privateConstructor();
   final remoteConfig = FirebaseRemoteConfig.instance;
 
   late String _appStoreVersion;
@@ -24,29 +27,56 @@ class FirebaseRemoteSetting {
   String get linkStoreNavigation => _linkStoreNavigation;
   bool get appDeveloperMode => _appDeveloperMode ?? false;
 
-  Future<void> init() async {
+  Future<void> init({Duration timeout = const Duration(seconds: 10)}) async {
+    // Get local settings
+    var localSettings = await AppSettings.getFirebaseRemoteSettings();
+    Map<String, dynamic> localSetting =
+        localSettings.isNotEmpty ? jsonDecode(localSettings) : {};
+    // Set default for settings if fetch fail
+    await remoteConfig.setDefaults({
+      "APP_STORE_VERSION": localSetting["APP_STORE_VERSION"] ?? '1.4.3',
+      "PLAY_STORE_VERSION": localSetting["PLAY_STORE_VERSION"] ?? '1.4.5',
+      "STORE_NAVIGATION_URL": localSetting["STORE_NAVIGATION_URL"] ??
+          'https://chuongtrinh.diab.com.vn/',
+      "ACTIVE_POPUP_HEALTH_CONNECT":
+          bool.parse(localSetting["ACTIVE_POPUP_HEALTH_CONNECT"] ?? "false"),
+      "LINKSTORE_NAVIGATION_URL": localSetting["LINKSTORE_NAVIGATION_URL"] ??
+          "{\"Lazada\":\"https://www.lazada.vn/shop/diab-official123/?spm=a2o4n.pdp_revamp.seller.1.22551b10iVUR71&itemId=2204466993&channelSource=pdp\",\"Shopee\":\"https://shopee.vn/diab_official123?categoryId=100001&entryPoint=ShopByPDP&itemId=17493490410\",\"Store\":\"https://store.diab.com.vn\"}",
+      "APP_DEVELOPER_MODE":
+          bool.parse(localSetting["APP_DEVELOPER_MODE"] ?? "true"),
+    });
+    // Config timeout for remoteConfig
     await remoteConfig.setConfigSettings(RemoteConfigSettings(
-      fetchTimeout: const Duration(minutes: 1),
+      fetchTimeout: timeout,
       minimumFetchInterval: const Duration(hours: 1),
     ));
-    await remoteConfig.fetchAndActivate();
-    // final List<Future<void>> setupFutures = [
-    //   remoteConfig.setConfigSettings(RemoteConfigSettings(
-    //     fetchTimeout: const Duration(seconds: 10),
-    //     minimumFetchInterval: const Duration(seconds: 10),
-    //   )),
-    //   remoteConfig.fetchAndActivate(),
-    // ];
-    // Future.value(setupFutures);
-    // Only wait when not finished yet
-    // if (remoteConfig.getString('APP_STORE_VERSION') == "") {
-    //   // await Future.delayed(const Duration(seconds: 10));
-    //   return;
-    // }
+
+    /**
+     * if fetch success it get all config save local and set retry false
+     * else set retry true to retry fetch again in login screen
+     */
+    try {
+      await remoteConfig.fetchAndActivate();
+      Map<String, RemoteConfigValue> allValues = remoteConfig.getAll();
+      Map<String, String> parsedValues = {};
+      for (var entry in allValues.entries) {
+        String key = entry.key;
+        RemoteConfigValue value = entry.value;
+        String parsedValue = value.asString();
+        parsedValues[key] = parsedValue;
+      }
+      String settings = jsonEncode(parsedValues);
+      await AppSettings.setFirebaseRemoteSettings(settings);
+      await AppSettings.setIsRetryFetchFirebaseRemoteConfig(false);
+    } catch (e) {
+      await AppSettings.setIsRetryFetchFirebaseRemoteConfig(true);
+    }
+
     _appStoreVersion = remoteConfig.getString('APP_STORE_VERSION');
     _playStoreVersion = remoteConfig.getString('PLAY_STORE_VERSION');
     _storeNavigationUrl = remoteConfig.getString('STORE_NAVIGATION_URL');
-    _activePopupHealthConnect = remoteConfig.getBool('ACTIVE_POPUP_HEALTH_CONNECT');
+    _activePopupHealthConnect =
+        remoteConfig.getBool('ACTIVE_POPUP_HEALTH_CONNECT');
     _linkStoreNavigation = remoteConfig.getString('LINKSTORE_NAVIGATION_URL');
     _appDeveloperMode = remoteConfig.getBool('APP_DEVELOPER_MODE');
   }
