@@ -1,7 +1,11 @@
 import 'dart:convert';
+import 'dart:typed_data';
+import 'package:bot_toast/bot_toast.dart';
+import 'package:dartz/dartz_streaming.dart';
 import 'package:http/http.dart' as http;
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/utils/const.dart';
+import 'package:http_parser/http_parser.dart';
 
 class ApiMethods {
   static final Map<String, String> _headers = {
@@ -98,6 +102,50 @@ class ApiMethods {
     } catch (e) {
       print("Server Error $apiUrl: $e");
       return null;
+    }
+  }
+
+  static Future<Map<String, dynamic>?> postFile(
+      Uint8List bytes, Uint8List? fullImage, String apiUrl,
+      {int retry = 0}) async {
+    if (retry > 1) {
+      return null;
+    }
+    final token = await AppSettings.getToken();
+    _headers.addAll({'Authorization': 'Bearer $token'});
+    print("apiUrl POST: $apiUrl");
+    try {
+      var request = http.MultipartRequest('POST', Uri.parse(apiUrl));
+      request.headers.addAll(_headers);
+      request.files.add(
+        http.MultipartFile.fromBytes(
+          'file', // Name of the field where you want to send the file
+          bytes,
+          filename: 'image.jpg', // Filename for the file
+          contentType: MediaType('image', 'jpeg'), // Content type of the file
+        ),
+      );
+
+      var response = await request.send();
+
+      if (response.statusCode == 200) {
+        // If you expect JSON response, you can decode it here
+        var responseData = await response.stream.bytesToString();
+        return jsonDecode(responseData);
+      } else {
+        if (fullImage != null)
+          return postFile(fullImage, fullImage, apiUrl, retry: retry + 1);
+        else
+          return null;
+      }
+    } catch (e) {
+      BotToast.showLoading();
+      // if error retry with full image
+      print("Server Error $apiUrl: $e");
+      if (fullImage != null)
+        return postFile(fullImage, fullImage, apiUrl, retry: retry + 1);
+      else
+        return null;
     }
   }
 }

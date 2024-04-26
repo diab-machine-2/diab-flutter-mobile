@@ -18,6 +18,8 @@ PODS:
     - HLSCachingReverseProxyServer
     - PINCache
   - Cache (6.0.0)
+  - camera_avfoundation (0.0.1):
+    - Flutter
   - device_info (0.0.1):
     - Flutter
   - device_info_plus (0.0.1):
@@ -155,6 +157,11 @@ PODS:
     - FBSDKCoreKit (~> 5.5)
     - FBSDKLoginKit (~> 5.5)
     - Flutter
+  - flutter_image_compress_common (1.0.0):
+    - Flutter
+    - Mantle
+    - SDWebImage
+    - SDWebImageWebPCoder
   - flutter_inapp_purchase (0.0.1):
     - Flutter
   - flutter_inappwebview (0.0.1):
@@ -243,6 +250,21 @@ PODS:
     - Flutter
   - just_audio (0.0.1):
     - Flutter
+  - libwebp (1.3.2):
+    - libwebp/demux (= 1.3.2)
+    - libwebp/mux (= 1.3.2)
+    - libwebp/sharpyuv (= 1.3.2)
+    - libwebp/webp (= 1.3.2)
+  - libwebp/demux (1.3.2):
+    - libwebp/webp
+  - libwebp/mux (1.3.2):
+    - libwebp/demux
+  - libwebp/sharpyuv (1.3.2)
+  - libwebp/webp (1.3.2):
+    - libwebp/sharpyuv
+  - Mantle (2.2.0):
+    - Mantle/extobjc (= 2.2.0)
+  - Mantle/extobjc (2.2.0)
   - MTBBarcodeScanner (5.0.11)
   - nanopb (2.30909.1):
     - nanopb/decode (= 2.30909.1)
@@ -272,6 +294,12 @@ PODS:
   - qr_code_scanner (0.2.0):
     - Flutter
     - MTBBarcodeScanner
+  - SDWebImage (5.19.1):
+    - SDWebImage/Core (= 5.19.1)
+  - SDWebImage/Core (5.19.1)
+  - SDWebImageWebPCoder (0.14.5):
+    - libwebp (~> 1.0)
+    - SDWebImage/Core (~> 5.17)
   - share_plus (0.0.1):
     - Flutter
   - shared_preferences_foundation (0.0.1):
@@ -292,15 +320,16 @@ PODS:
     - Flutter
   - wakelock (0.0.1):
     - Flutter
-  - ZoomVideoSDK/CptShare (1.9.10)
-  - ZoomVideoSDK/zoomcml (1.9.10)
-  - ZoomVideoSDK/ZoomVideoSDK (1.9.10)
+  - ZoomVideoSDK/CptShare (1.10.11)
+  - ZoomVideoSDK/zoomcml (1.10.11)
+  - ZoomVideoSDK/ZoomVideoSDK (1.10.11)
 
 DEPENDENCIES:
   - app_settings (from `.symlinks/plugins/app_settings/ios`)
   - audio_session (from `.symlinks/plugins/audio_session/ios`)
   - audioplayers_darwin (from `.symlinks/plugins/audioplayers_darwin/ios`)
   - better_player (from `.symlinks/plugins/better_player/ios`)
+  - camera_avfoundation (from `.symlinks/plugins/camera_avfoundation/ios`)
   - device_info (from `.symlinks/plugins/device_info/ios`)
   - device_info_plus (from `.symlinks/plugins/device_info_plus/ios`)
   - external_app_launcher (from `.symlinks/plugins/external_app_launcher/ios`)
@@ -313,6 +342,7 @@ DEPENDENCIES:
   - Flutter (from `Flutter`)
   - flutter_blue_plus (from `.symlinks/plugins/flutter_blue_plus/ios`)
   - flutter_facebook_login (from `.symlinks/plugins/flutter_facebook_login/ios`)
+  - flutter_image_compress_common (from `.symlinks/plugins/flutter_image_compress_common/ios`)
   - flutter_inapp_purchase (from `.symlinks/plugins/flutter_inapp_purchase/ios`)
   - flutter_inappwebview (from `.symlinks/plugins/flutter_inappwebview/ios`)
   - flutter_native_splash (from `.symlinks/plugins/flutter_native_splash/ios`)
@@ -336,9 +366,9 @@ DEPENDENCIES:
   - uni_links (from `.symlinks/plugins/uni_links/ios`)
   - url_launcher_ios (from `.symlinks/plugins/url_launcher_ios/ios`)
   - wakelock (from `.symlinks/plugins/wakelock/ios`)
-  - ZoomVideoSDK/CptShare (= 1.9.10)
-  - ZoomVideoSDK/zoomcml (= 1.9.10)
-  - ZoomVideoSDK/ZoomVideoSDK (= 1.9.10)
+  - ZoomVideoSDK/CptShare (= 1.10.11)
+  - ZoomVideoSDK/zoomcml (= 1.10.11)
+  - ZoomVideoSDK/ZoomVideoSDK (= 1.10.11)
 
 SPEC REPOS:
   trunk:
@@ -367,6 +397,8 @@ SPEC REPOS:
     - GTMAppAuth
     - GTMSessionFetcher
     - HLSCachingReverseProxyServer
+    - libwebp
+    - Mantle
     - MTBBarcodeScanner
     - nanopb
     - OrderedSet
@@ -375,6 +407,8 @@ SPEC REPOS:
     - PromisesObjC
     - PromisesSwift
     - Protobuf
+    - SDWebImage
+    - SDWebImageWebPCoder
     - Toast
     - TOCropViewController
     - ZoomVideoSDK
@@ -388,6 +422,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/audioplayers_darwin/ios"
   better_player:
     :path: ".symlinks/plugins/better_player/ios"
+  camera_avfoundation:
+    :path: ".symlinks/plugins/camera_avfoundation/ios"
   device_info:
     :path: ".symlinks/plugins/device_info/ios"
   device_info_plus:
@@ -412,6 +448,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/flutter_blue_plus/ios"
   flutter_facebook_login:
     :path: ".symlinks/plugins/flutter_facebook_login/ios"
+  flutter_image_compress_common:
+    :path: ".symlinks/plugins/flutter_image_compress_common/ios"
   flutter_inapp_purchase:
     :path: ".symlinks/plugins/flutter_inapp_purchase/ios"
   flutter_inappwebview:
@@ -466,6 +504,7 @@ SPEC CHECKSUMS:
   audioplayers_darwin: 877d9a4d06331c5c374595e46e16453ac7eafa40
   better_player: 2406bfe8175203c7a46fa15f9d778d73b12e1646
   Cache: 4ca7e00363fca5455f26534e5607634c820ffc2d
+  camera_avfoundation: 8b8d780bcfb6a4a02b0fbe2b4bd17b5b71946e68
   device_info: d7d233b645a32c40dfdc212de5cf646ca482f175
   device_info_plus: e5c5da33f982a436e103237c0c85f9031142abed
   external_app_launcher: ad55ac844aa21f2d2197d7cec58ff0d0dc40bbc0
@@ -490,9 +529,10 @@ SPEC CHECKSUMS:
   FirebaseRemoteConfig: bbd42790a4e84fde6aab7eae810b608e7b5c0bf6
   FirebaseSessions: 2f348975f6d1c139231c180e12194161da2e0cd6
   FirebaseSharedSwift: 2fbf73618288b7a36b2014b957745dcdd781389e
-  Flutter: f04841e97a9d0b0a8025694d0796dd46242b2854
+  Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
   flutter_blue_plus: 316ac8d1179789616d2c148e8a03c37720e63933
   flutter_facebook_login: cfb5659f686b1c575ef205c6b6fd20db9679d3c4
+  flutter_image_compress_common: ec1d45c362c9d30a3f6a0426c297f47c52007e3e
   flutter_inapp_purchase: 5c6a1ac3f11b11d0c8c0321c0c41c1f05805e4c8
   flutter_inappwebview: 3d32228f1304635e7c028b0d4252937730bbc6cf
   flutter_native_splash: 52501b97d1c0a5f898d687f1646226c1f93c56ef
@@ -512,6 +552,8 @@ SPEC CHECKSUMS:
   image_cropper: f1668dd8d2cad2d357955caad15a40547856edcb
   image_picker_ios: 99dfe1854b4fa34d0364e74a78448a0151025425
   just_audio: baa7252489dbcf47a4c7cc9ca663e9661c99aafa
+  libwebp: 1786c9f4ff8a279e4dac1e8f385004d5fc253009
+  Mantle: c5aa8794a29a022dfbbfc9799af95f477a69b62d
   MTBBarcodeScanner: f453b33c4b7dfe545d8c6484ed744d55671788cb
   nanopb: d4d75c12cd1316f4a64e3c6963f879ecd4b5e0d5
   OrderedSet: aaeb196f7fef5a9edf55d89760da9176ad40b93c
@@ -524,6 +566,8 @@ SPEC CHECKSUMS:
   PromisesSwift: 28dca69a9c40779916ac2d6985a0192a5cb4a265
   Protobuf: 34db13339da0d02d64fa8a2ac6a124cfcc603703
   qr_code_scanner: bb67d64904c3b9658ada8c402e8b4d406d5d796e
+  SDWebImage: 40b0b4053e36c660a764958bff99eed16610acbb
+  SDWebImageWebPCoder: c94f09adbca681822edad9e532ac752db713eabf
   share_plus: 056a1e8ac890df3e33cb503afffaf1e9b4fbae68
   shared_preferences_foundation: b4c3b4cddf1c21f02770737f147a3f5da9d39695
   sign_in_with_apple: f3bf75217ea4c2c8b91823f225d70230119b8440
@@ -534,8 +578,8 @@ SPEC CHECKSUMS:
   uni_links: d97da20c7701486ba192624d99bffaaffcfc298a
   url_launcher_ios: bbd758c6e7f9fd7b5b1d4cde34d2b95fcce5e812
   wakelock: d0fc7c864128eac40eba1617cb5264d9c940b46f
-  ZoomVideoSDK: 3b25f88d6278249cd6c291b513dab8e8faf3c4b5
+  ZoomVideoSDK: 51087fd802fe61cf7d0c2ae539555170417829e7
 
-PODFILE CHECKSUM: 27276069015cb3747393a49d8222d34f72d34a4d
+PODFILE CHECKSUM: cca2cf16c95577a2beb08bc3c381fec6587d3ede
 
 COCOAPODS: 1.14.3

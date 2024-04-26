@@ -47,6 +47,7 @@ import 'package:medical/src/widget/login/rules.dart';
 import 'package:medical/src/widget/login/step_list.dart';
 import 'package:medical/src/widget/login/update_info.dart';
 import 'package:medical/src/widget/login/verify_phone.dart';
+import 'package:medical/src/widget/meeting/meeting_cubit.dart';
 import 'package:medical/src/widget/meeting/meeting_page.dart';
 import 'package:medical/src/widget/meeting/meeting_prepare_page.dart';
 import 'package:medical/src/widget/nipro/connect_device_app.dart';
@@ -72,10 +73,14 @@ import 'package:medical/src/widget/tabbar/tabbar.dart';
 import 'package:medical/src/widget/voucher/presentation/voucher_detail/pages/voucher_detail_view.dart';
 import 'package:medical/src/widget/voucher/presentation/voucher_list/pages/voucher_list_view.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:flutter_in_app_pip/flutter_in_app_pip.dart';
 import 'utils/navigator_name.dart';
 import 'widget/BloodSugar/add_bloodSugar_new.dart';
 import 'widget/helper/photo_view.dart';
 import 'widget/news_detail/presentation/news_detail_view.dart';
+import 'widget/ocr/test_ocr_camera_page.dart';
+import 'widget/ocr/test_ocr_gallery_page.dart';
+import 'widget/ocr/test_ocr_page.dart';
 import 'widget/profile/profile_controller.dart';
 import 'widget/shared_profile/pages/share_app_detail/share_app_detail.dart';
 
@@ -112,16 +117,17 @@ class _AppState extends State<App> {
             color: R.color.accentColor,
           ), // Configure the default header indicator. If you have the same header indicator for each page, you need to set this
           footerBuilder: () => const ClassicFooter(),
-          child: MaterialApp(
+          child: PiPMaterialApp(
               title: 'diaB',
               color: Colors.white,
               theme: AppTheme.theme,
               builder: (context, child) {
-                MediaQueryData mediaData = MediaQuery.of(context);
-                child = MediaQuery(
-                  data: mediaData.copyWith(textScaleFactor: min(1.1, mediaData.textScaleFactor)),
-                  child: child!,
-                );
+                // TODO: textScaleFactor deprecated >> CHECK LATER
+                // MediaQueryData mediaData = MediaQuery.of(context);
+                // child = MediaQuery(
+                //   data: mediaData.copyWith(textScaleFactor: min(1.1, mediaData.textScaleFactor)),
+                //   child: child!,
+                // );
                 child = BotToastInit()(context, child);
                 return child;
               },
@@ -136,6 +142,7 @@ class _AppState extends State<App> {
               locale: context.locale,
               home: FlashScreenController(),
               debugShowCheckedModeBanner: false,
+              useInheritedMediaQuery: true,
               onGenerateRoute: (settings) {
                 Console.log('settings.name', settings.name);
                 switch (settings.name) {
@@ -597,9 +604,21 @@ class _AppState extends State<App> {
                   
                   case NavigatorName.meeting_prepare:
                     return _buildRoute(settings, MeetingPreparePage());
-                  case NavigatorName.meeting:
+                  case NavigatorName.meeting: {
+                    if (settings.arguments is MeetingCubit) {
+                      final cubit = settings.arguments as MeetingCubit;
+                      return _buildRoute(settings, MeetingPage(null, cubit));
+                    }
                     final args = settings.arguments as MeetingArguments;
-                    return _buildRoute(settings, MeetingPage(args));
+                    return _buildRoute(settings, MeetingPage(args, null));
+                  }
+                  // test ocr
+                  case NavigatorName.test_ocr:
+                    return _buildRoute(settings, TestOcrPage());
+                  case NavigatorName.test_ocr_camera:
+                    return _buildRoute(settings, TestOcrCamera());
+                  case NavigatorName.test_ocr_gallery:
+                    return _buildRoute(settings, TestOcrGallery());
 
                   default:
                     return null;

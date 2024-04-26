@@ -3,13 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_in_app_pip/flutter_in_app_pip.dart';
 import 'package:flutter_observer/Observable.dart';
 import 'package:flutter_zoom_videosdk/native/zoom_videosdk.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/service/zoom_service.dart';
 import 'package:medical/src/utils/navigator_name.dart';
+import 'package:medical/src/widget/meeting/meeting_page_pip.dart';
 import 'package:medical/src/widget/meeting/widgets/video_view.dart';
-import 'package:wakelock/wakelock.dart';
 
 import 'widgets/chat_view.dart';
 import 'widgets/top_bottom_control_autohide_widget.dart';
@@ -17,26 +18,26 @@ import 'meeting_cubit.dart';
 import 'meeting_state.dart';
 
 class MeetingPage extends StatefulWidget {
-  final MeetingArguments args;
-  const MeetingPage(this.args, {super.key});
+  final MeetingArguments? args;
+  final MeetingCubit? cubit;
+  const MeetingPage(this.args, this.cubit, {super.key});
 
   @override
   State<MeetingPage> createState() => _MeetingPageState();
 }
 
-class _MeetingPageState extends State<MeetingPage>
-    with TickerProviderStateMixin, WidgetsBindingObserver {
+class _MeetingPageState extends State<MeetingPage> with TickerProviderStateMixin {
   late MeetingCubit _cubit;
   final TextEditingController chatController = TextEditingController();
   final FocusNode chatFocusNode = FocusNode();
 
+  bool _isPipMode = false;
+  bool _confirmQuit = false;
+
   @override
   void initState() {
     super.initState();
-    // SystemChrome.setEnabledSystemUIMode(SystemUiMode.leanBack);
-    _cubit = MeetingCubit(widget.args);
-    WidgetsBinding.instance.addObserver(this);
-    Wakelock.enable();
+    _cubit = widget.cubit ?? MeetingCubit(widget.args!);
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
@@ -49,47 +50,61 @@ class _MeetingPageState extends State<MeetingPage>
   @override
   void dispose() {
     chatController.dispose();
-    WidgetsBinding.instance.removeObserver(this);
-    Wakelock.disable();
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
     ]);
+    if (!_isPipMode) {
+      _cubit.close();
+    }
     super.dispose();
   }
 
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    super.didChangeAppLifecycleState(state);
-    switch (state) {
-      case AppLifecycleState.inactive:
-      case AppLifecycleState.paused:
-      case AppLifecycleState.detached:
-        _cubit.appPaused();
-        break;
-      case AppLifecycleState.resumed:
-        _cubit.appResumed();
-        break;
-      default:
-        break;
-    }
+  void _pipMode(Size size) {
+    _isPipMode = true;
+    if (_cubit.state is! MeetingJoined) return;
+    double space = 16.0;
+    double minWH = size.width < size.height ? size.width : size.height;
+    double width = (minWH - space * 2.0) * 2.0 / 3.0;
+    double height = width * 9.0 / 16.0;
+    PictureInPicture.updatePiPParams(
+      pipParams: PiPParams(
+        pipWindowWidth: width,
+        pipWindowHeight: height,
+        initialCorner: PIPViewCorner.bottomRight,
+      ),
+    );
+
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
+
+    PictureInPicture.startPiP(
+      pipWidget: PiPWidget(
+        onPiPClose: () {},
+        child: MeetingPagePip(cubit: _cubit),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async {
-        _confirmAndQuitSession(context);
-        return false;
+    return PopScope(
+      canPop: true,
+      onPopInvoked: (didPop) {
+        if (!_confirmQuit) {
+          _pipMode(MediaQuery.of(context).size);
+        }
       },
       child: Scaffold(
         resizeToAvoidBottomInset: false,
-        body: BlocProvider(
-          create: (_) => _cubit,
+        body: BlocProvider.value(
+          value: _cubit,
           child: BlocListener<MeetingCubit, MeetingState>(
             listener: (context, state) {
               // Handle leave session
-              if (state is MeetingLeaving) {
+              if (!_confirmQuit && state is MeetingLeaving) {
                 _popupSessionEnded(context);
                 return;
               } else if (state is MeetingJoinError) {
@@ -101,13 +116,10 @@ class _MeetingPageState extends State<MeetingPage>
                 current is MeetingLeaving || current is MeetingJoinError,
             child: BlocBuilder<MeetingCubit, MeetingState>(
               builder: (context, state) {
-                print('zoom: Building state: $state');
                 if (state is MeetingJoining) {
                   return _buildJoining();
                 } else if (state is MeetingJoined) {
                   return _buildJoinedState(state);
-                } else if (state is MeetingJoinError) {
-                  // TODO: Handle error
                 }
                 return Container(
                   alignment: Alignment.center,
@@ -157,39 +169,23 @@ class _MeetingPageState extends State<MeetingPage>
   Widget _buildJoinedState(MeetingJoined state) {
     bool isLandScape = MediaQuery.of(context).orientation == Orientation.landscape;
     Widget previewView = const SizedBox();
-    Widget fullScreenView = const SizedBox();
 
     if (!isLandScape && state.remoteUsers.isNotEmpty && state.previewUser != null) {
       previewView = VideoView(
         avatarUrl: null,
         user: state.previewUser,
         fullScreen: false,
-        resolution: VideoResolution.Resolution720,
+        resolution: VideoResolution.Resolution360,
       );
     }
-    // Landscape mode + Other user is sharing screen
-    if (isLandScape &&
-        state.fullscreenUser.userId != state.previewUser?.userId &&
-        state.fullscreenUser.isSharing) {
-      fullScreenView = VideoView(
-        avatarUrl: null,
-        user: state.fullscreenUser,
-        fullScreen: true,
-        isPiPView: true,
-        sharing: state.fullscreenUser.isSharing,
-        resolution: VideoResolution.Resolution720,
-      );
-    } else {
-      bool allowPiPMode = state.previewUser?.userId != state.fullscreenUser.userId;
-      fullScreenView = VideoView(
-        avatarUrl: null,
-        user: state.fullscreenUser,
-        fullScreen: true,
-        isPiPView: allowPiPMode,
-        sharing: state.fullscreenUser.isSharing,
-        resolution: VideoResolution.Resolution720,
-      );
-    }
+    Widget fullScreenView = VideoView(
+      avatarUrl: null,
+      user: state.fullscreenUser,
+      fullScreen: true,
+      isPiPView: true,
+      sharing: state.fullscreenUser.isSharing,
+      resolution: VideoResolution.Resolution360,
+    );
 
     final media = MediaQuery.of(context);
 
@@ -208,19 +204,36 @@ class _MeetingPageState extends State<MeetingPage>
             height: sizeComponentHeight,
             alignment: Alignment.centerLeft,
             padding: EdgeInsets.only(left: 8.0),
-            child: ValueListenableBuilder(
-              valueListenable: _cubit.haveMultipleCamera,
-              builder: (context, value, child) {
-                if (!value) {
-                  return const SizedBox();
-                }
-                return IconButton(
-                  onPressed: () => _cubit.switchCamera(),
-                  icon: Image.asset(
-                    R.drawable.ic_zoom_camera_switch,
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                IconButton(
+                  onPressed: () {
+                    _pipMode(media.size);
+                    Navigator.pop(context);
+                  },
+                  icon: Icon(
+                    Icons.keyboard_arrow_down,
+                    color: Colors.white,
+                    size: 24.0,
                   ),
-                );
-              },
+                ),
+                const SizedBox(width: 8.0),
+                ValueListenableBuilder(
+                  valueListenable: _cubit.haveMultipleCamera,
+                  builder: (context, value, child) {
+                    if (!value) {
+                      return const SizedBox();
+                    }
+                    return IconButton(
+                      onPressed: () => _cubit.switchCamera(),
+                      icon: Image.asset(
+                        R.drawable.ic_zoom_camera_switch,
+                      ),
+                    );
+                  },
+                ),
+              ],
             ),
           ),
           // Session name
@@ -281,6 +294,7 @@ class _MeetingPageState extends State<MeetingPage>
         Positioned.fill(child: fullScreenView),
         Positioned.fill(
           child: TopBottomControlAutohideWidget(
+            key: isLandScape ? UniqueKey() : null,
             topWidget: headerWidget,
             topWidgetHeight: sizeComponentHeight,
             bottomWidget: controlsWidget,
@@ -465,6 +479,7 @@ class _MeetingPageState extends State<MeetingPage>
           ),
           TextButton(
             onPressed: () async {
+              _confirmQuit = true;
               _cubit.leaveSession();
               Observable.instance.notifyObservers([], notifyName: "mark_completed_calendar");
               Navigator.popUntil(context, _rootPredicate);
@@ -592,6 +607,7 @@ class _MeetingPageState extends State<MeetingPage>
   // }
 
   void _popupSessionEnded(BuildContext context) {
+    if (context.mounted == false) return;
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -609,6 +625,7 @@ class _MeetingPageState extends State<MeetingPage>
   }
 
   void _popupUnknowError(BuildContext context) {
+    if (context.mounted == false) return;
     showDialog(
       context: context,
       builder: (context) => AlertDialog(

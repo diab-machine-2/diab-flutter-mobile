@@ -20,6 +20,8 @@ import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
+import '../../app_setting/firebase_remote_config.dart';
+
 class LoginController extends StatefulWidget {
   const LoginController(this.sharedCode);
 
@@ -44,7 +46,17 @@ class _LoginControllerState extends State<LoginController> {
     firebaseSetup();
   }
 
+  Future firebaseRemoteConfig() async {
+    bool isRetry = await AppSettings.getIsRetryFetchFirebaseRemoteConfig();
+    // if retry true fetch againt onetime and set retry to false
+    if (isRetry) {
+      FirebaseRemoteSetting.instance.init(timeout: Duration(minutes: 5));
+      await AppSettings.setIsRetryFetchFirebaseRemoteConfig(false);
+    }
+  }
+
   Future firebaseSetup() async {
+    firebaseRemoteConfig();
     await TrackingManager.analytics
         .logScreenView(screenName: "login", screenClass: "LoginController");
     AppSettings.currentScreenName = 'login';

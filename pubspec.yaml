@@ -139,6 +139,13 @@ dependencies:
   wakelock: ^0.6.2
   # Metadata detection
   linkify: ^5.0.0
+  # integrating ocr
+  camera: ^0.10.5
+  image: ^4.1.4
+  crop_your_image: ^1.0.0
+  flutter_image_compress: ^2.2.0
+
+  flutter_in_app_pip: ^1.7.3
 
 dev_dependencies:
   flutter_test:
@@ -151,7 +158,7 @@ dev_dependencies:
 dependency_overrides:
   provider: 6.0.2
   meta: 1.7.0
-  # fwfh_text_style: 2.23.8 <- to build with flutter 3.16
+  fwfh_text_style: 2.23.8 # <- to build with flutter 3.16
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

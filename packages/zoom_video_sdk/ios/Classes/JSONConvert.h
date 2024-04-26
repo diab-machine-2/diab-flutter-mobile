@@ -88,4 +88,7 @@
 + (ZoomVideoSDKSubscribeFailReason)ZoomVideoSDKSubscribeFailReason:(id)json;
 + (NSDictionary *)ZoomVideoSDKSubscribeFailReasonValuesReversed;
 
++ (ZoomVideoSDKTestMicStatus)ZoomVideoSDKTestMicStatus:(id)json;
++ (NSDictionary *)ZoomVideoSDKTestMicStatusValuesReversed;
+
 @end

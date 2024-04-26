@@ -158,8 +158,13 @@ class _HomeHeaderState extends State<HomeHeader> with Observer {
                                       shape: BoxShape.circle,
                                       color: R.color.white,
                                     ),
-                                    child:
-                                        Image.asset(R.drawable.ic_crown_green),
+                                    child: AppSettings.isOwnPackage
+                                        ? Image.network(
+                                            user?.ownPackage?.logo ?? "",
+                                            color: R.color.accentColor,
+                                          )
+                                        : Image.asset(
+                                            R.drawable.ic_crown_green),
                                   )
                                 ]),
                             const SizedBox(width: 8),
@@ -252,6 +257,19 @@ class _HomeHeaderState extends State<HomeHeader> with Observer {
                                     : R.drawable.ic_bell,
                                 width: 24,
                                 height: 24),
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        InkWell(
+                          onTap: () async {
+                            Navigator.pushNamed(
+                                context, NavigatorName.test_ocr);
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.all(4),
+                            color: R.color.transparent,
+                            child: Image.asset(R.drawable.ic_connect_apple,
+                                width: 24, height: 24),
                           ),
                         ),
                       ],

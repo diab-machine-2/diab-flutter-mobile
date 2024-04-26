@@ -27,8 +27,8 @@
 
 -(void) addVirtualBackgroundItem: (FlutterMethodCall *)call withResult:(FlutterResult) result {
      dispatch_async(dispatch_get_main_queue(), ^{
-        NSData *data = [NSData dataWithContentsOfFile: call.arguments[@"filePath"]];
-        UIImage *img = [UIImage imageWithData:data];
+        NSURL *fileURL = [NSURL fileURLWithPath: call.arguments[@"filePath"]];
+        UIImage *img = [UIImage imageWithContentsOfFile:[fileURL path]];
         ZoomVideoSDKVirtualBackgroundItem* item = [[self getVirtualBackgroundHelper] addVirtualBackgroundItem:img];
         result([FlutterZoomVideoSdkVirtualBackgroundItem mapVBItem:item]);
      });

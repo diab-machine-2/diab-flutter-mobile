@@ -66,4 +66,10 @@ class NavigatorName {
   static const String zoom = '/zoom';
   static const String meeting_prepare = '/prepare-meeting';
   static const String meeting = '/meeting';
+
+  // Test OCR ZONE
+  static const String test_ocr = '/test_ocr';
+  static const String test_ocr_camera = '/test_ocr_camera';
+  static const String test_ocr_gallery = '/test_ocr_gallery';
+  static const String test_ocr_result = '/test_ocr_result';
 }
