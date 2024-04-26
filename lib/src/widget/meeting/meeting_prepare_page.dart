@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_in_app_pip/flutter_in_app_pip.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/service/zoom_service.dart';
 import 'package:medical/src/utils/navigator_name.dart';
@@ -37,6 +38,15 @@ class _MeetingPreparePageState extends State<MeetingPreparePage> {
               child: ElevatedButton(
                 child: Text('Start Meeting'),
                 onPressed: () => _joinCall(context),
+              ),
+            ),
+            SizedBox(height: 10),
+            Container(
+              padding: const EdgeInsets.all(20),
+              child: ElevatedButton(
+                child: Text('OCR'),
+                onPressed: () =>
+                    Navigator.pushNamed(context, NavigatorName.test_ocr),
               ),
             ),
           ],
