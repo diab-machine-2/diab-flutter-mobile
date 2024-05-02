@@ -135,7 +135,6 @@ dependencies:
   # zoom video sdk
   flutter_zoom_videosdk:
     path: packages/zoom_video_sdk
-  dart_jsonwebtoken: ^2.4.2
   wakelock: ^0.6.2
   # Metadata detection
   linkify: ^5.0.0
