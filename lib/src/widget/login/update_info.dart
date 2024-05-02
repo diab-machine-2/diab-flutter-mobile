@@ -339,14 +339,14 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
                                   InkWell(
                                     onTap: () {
                                       setState(() {
-                                        _choosenGender = 0;
+                                        _choosenGender = 2;
                                       });
                                     },
                                     child: SpacingRow(
                                       spacing: 15,
                                       children: [
                                         RadioCustom(
-                                            isSelected: _choosenGender == 0),
+                                            isSelected: _choosenGender == 2),
                                         Text(
                                           R.string.nu.tr(),
                                           style: TextStyle(
@@ -566,6 +566,7 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
 
       final result = await LoginClient().createPatient(params);
       if (result == true) {
+        await UserClient().fetchUser();
         Navigator.popUntil(context, (route) => route.isFirst);
         Navigator.pushReplacementNamed(context, NavigatorName.tabbar);
       }
