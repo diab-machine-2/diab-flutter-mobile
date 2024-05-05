@@ -373,7 +373,7 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
                     children: [
                       // Bằng cách Đăng nhập, bạn đã đồng ý với Điều khoản sử dụng · Quy định bảo mật
                       CustomCheckboxWidget(
-                        isChecked: true,
+                        isChecked: isAcceptPolicy,
                         child: Expanded(
                           child: RichText(
                             text: TextSpan(

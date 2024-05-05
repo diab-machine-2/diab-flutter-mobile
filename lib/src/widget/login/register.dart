@@ -65,11 +65,11 @@ class _RegisterControllerState extends State<RegisterController> {
     super.initState();
     final String? referalCode = DynamicLinkConfig.instance.referalCode;
     referralCode = referalCode ?? "";
-    // if (widget.phone != null) {
-    //   setState(() {
-    //     phone = widget.phone!;
-    //   });
-    // }
+    if (widget.phone != null) {
+      setState(() {
+        phone = widget.phone!;
+      });
+    }
     firebaseSetup();
   }
 

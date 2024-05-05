@@ -11,6 +11,7 @@ import 'package:http/http.dart' as http;
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/modal/error/error_model.dart';
+import 'package:medical/src/modal/register/register_model.dart';
 import 'package:medical/src/repo/login/login_client.dart';
 import 'package:medical/src/repo/user/user_client.dart';
 import 'package:medical/src/utils/const.dart';
@@ -245,34 +246,64 @@ class _LoginControllerState extends State<LoginController> {
     }
     try {
       BotToast.showLoading();
-      bool isExistAccount = await LoginClient().checkExistPhoneNumber(phone);
-      if (isExistAccount) {
+      List<bool> resultIsExits =
+          await LoginClient().checkExistPhoneNumber(phone);
+      bool isExistAccount = resultIsExits[0];
+      bool isActive = resultIsExits[1];
+      bool phoneNumberConfirmed = resultIsExits[2];
+      bool isExist = isExistAccount && isActive && phoneNumberConfirmed;
+      if (isExist) {
         setState(() {
           isLogin = true;
         });
         FocusScope.of(context).requestFocus(passwordFocusNode);
       } else {
-        sendOtpRegister();
+        sendOtpRegister(phone, phoneNumberConfirmed);
       }
       BotToast.closeAllLoading();
     } catch (e) {}
   }
 
-  sendOtpRegister() async {
-    final result = await LoginClient().submitRegister(phone);
-    if (result.remainingRequestCount! <= 0) {
-      _showDialogError();
-      return;
+  sendOtpRegister(String phone, bool phoneNumberConfirmed) async {
+    RegisterModel? result;
+    // if (phoneNumberConfirmed) {
+    //   Navigator.pushReplacementNamed(context, NavigatorName.register,
+    //       arguments: {
+    //         'phone': phone,
+    //         'referalCode': null,
+    //       });
+    //   return;
+    // }
+    try {
+      result = await LoginClient().submitRegister(phone);
+      if (result.remainingRequestCount! <= 0) {
+        _showDialogError();
+        return;
+      }
+      Navigator.pushNamed(context, NavigatorName.verify, arguments: {
+        'type': 'register',
+        'otp': result.token,
+        'phone': phone,
+        'password': password,
+        'remainingRequestCount': result.remainingRequestCount,
+        'isCompleted': true,
+        // 'referalCode': referralCode,
+      });
+    } catch (e) {
+      if (e is Error) {
+        if (e.code == 'USER002') {
+          Navigator.pushNamed(context, NavigatorName.verify, arguments: {
+            'type': 'register',
+            'otp': result?.token,
+            'phone': phone,
+            'password': password,
+            'remainingRequestCount': result?.remainingRequestCount,
+            'isCompleted': true,
+            // 'referalCode': referralCode,
+          });
+        }
+      }
     }
-
-    Navigator.pushNamed(context, NavigatorName.verify, arguments: {
-      'type': 'register',
-      'otp': result.token,
-      'phone': phone,
-      'password': password,
-      'remainingRequestCount': result.remainingRequestCount,
-      // 'referalCode': referralCode,
-    });
   }
 
   login() async {
@@ -351,7 +382,8 @@ class _LoginControllerState extends State<LoginController> {
         'otp': result.token,
         'phone': phone,
         'password': password,
-        'remainingRequestCount': result.remainingRequestCount
+        'remainingRequestCount': result.remainingRequestCount,
+        'isCompleted': true,
       });
     } catch (e, _) {
       BotToast.closeAllLoading();

@@ -30,22 +30,27 @@ class LoginClient extends FetchClient {
     }
   }
 
-  Future<bool> checkExistPhoneNumber(String phone) async {
-    // try {
-    final Response<dynamic> response = await super.fetchData(
-      baseIdentify: true,
-      url: '/api/auth/v1/mobile/register/exist',
-      params: {'phoneNumber': phone},
-    );
-    if (response.statusCode == 200) {
-      return response.data['isExistAccount'] ?? false;
-    } else {
-      final error = Error.fromJson1(response);
-      throw error;
+  Future<List<bool>> checkExistPhoneNumber(String phone) async {
+    try {
+      final Response<dynamic> response = await super.fetchData(
+        baseIdentify: true,
+        url: '/api/auth/v1/mobile/register/exist',
+        params: {'phoneNumber': phone},
+      );
+      if (response.statusCode == 200) {
+        final data = response.data as Map<String, dynamic>? ?? {};
+        final isExistAccount = data['isExistAccount'] ?? false;
+        final isActive = data['isActive'] ?? false;
+        final phoneNumberConfirmed = data['phoneNumberConfirmed'] ?? false;
+        return [isExistAccount, isActive, phoneNumberConfirmed];
+      } else {
+        final error = Error.fromJson1(response);
+        throw error;
+      }
+    } catch (e) {
+      // throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+      return [false, false, false];
     }
-    // } catch (e) {
-    //   throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
-    // }
   }
 
   Future<RegisterModel> submitRegister(String phone) async {
@@ -134,12 +139,20 @@ class LoginClient extends FetchClient {
     }
   }
 
-  Future<bool> verifyOTP(String? phone, String otp) async {
+  Future<bool> verifyOTP(String? phone, String otp,
+      {bool isCompleted = false}) async {
     try {
+      final Map<String, dynamic> params = {
+        'phoneNumber': phone,
+        'token': otp,
+      };
+      if (isCompleted) {
+        params['isCompleted'] = isCompleted;
+      }
       final Response response = await super.putData(
           baseIdentify: true,
           url: '/api/auth/v1/mobile/register/verify',
-          params: {'phoneNumber': phone, 'token': otp});
+          params: params);
       if (response.statusCode == 204 || response.statusCode == 200) {
         return true;
       } else {

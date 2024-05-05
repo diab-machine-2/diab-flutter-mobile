@@ -437,7 +437,11 @@ class _VerifyPhoneControllerState extends State<VerifyPhoneController> {
             arguments: {'phone': widget.phone, 'token': otpCode});
         BotToast.closeAllLoading();
       } else {
-        final result = await LoginClient().verifyOTP(widget.phone, otpCode);
+        final arguments = (ModalRoute.of(context)?.settings.arguments ??
+            <String, dynamic>{}) as Map;
+
+        final result = await LoginClient().verifyOTP(widget.phone, otpCode,
+            isCompleted: arguments.containsKey("isCompleted"));
         BotToast.closeAllLoading();
         await TrackingManager.analytics.logEvent(
           name: 'sign_up',
