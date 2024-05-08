@@ -410,7 +410,7 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
                       ),
                       GestureDetector(
                         onTap: () {
-                          _submitData();
+                          if (isAcceptPolicy) _submitData();
                         },
                         child: SafeArea(
                           top: false,

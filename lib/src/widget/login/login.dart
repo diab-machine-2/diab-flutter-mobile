@@ -244,6 +244,9 @@ class _LoginControllerState extends State<LoginController> {
           .validate(R.string.ban_chua_nhap_so_dien_thoai.tr());
       return;
     }
+    if (!(phone.length == 9 || phone.length == 10)) {
+      return;
+    }
     try {
       BotToast.showLoading();
       List<bool> resultIsExits =
