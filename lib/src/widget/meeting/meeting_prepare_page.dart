@@ -1,10 +1,9 @@
-import 'dart:io';
-
+import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
+import 'package:medical/src/service/zalo_service.dart';
 import 'package:medical/src/service/zoom_service.dart';
 import 'package:medical/src/utils/navigator_name.dart';
-import 'package:zalo_flutter/zalo_flutter.dart';
 
 class MeetingPreparePage extends StatefulWidget {
   const MeetingPreparePage({super.key});
@@ -17,22 +16,9 @@ class _MeetingPreparePageState extends State<MeetingPreparePage> {
   TextEditingController _textController = TextEditingController(text: 'room-001');
 
   @override
-  void initState() {
-    super.initState();
-    _initZaloFlutter();
-  }
-
-  @override
   void dispose() {
     _textController.dispose();
     super.dispose();
-  }
-
-  Future<void> _initZaloFlutter() async {
-    if (Platform.isAndroid) {
-      final String? hashKey = await ZaloFlutter.getHashKeyAndroid();
-      print('HashKey: $hashKey');
-    }
   }
 
   @override
@@ -43,21 +29,16 @@ class _MeetingPreparePageState extends State<MeetingPreparePage> {
         actions: [
           IconButton(
             onPressed: () async {
-              final Map<dynamic, dynamic>? data = await ZaloFlutter.login(
-                refreshToken: null,
-                // externalInfo: {},
-              );
               try {
-                print("login: $data");
-                if (data?['isSuccess'] == true) {
-                  final _accessToken = data?["data"]["accessToken"] as String?;
-                  final _refreshToken = data?["data"]["refreshToken"] as String?;
-                  print("accessToken: $_accessToken");
-                  print("refreshToken: $_refreshToken");
-                  return;
-                }
+                ZaloLoginResult result = await ZaloService().login();
+                print('ZaloLoginResult: $result');
+                print('ZaloLoginResult: ${result.accessToken}');
+                BotToast.showText(text: 'Logged in successfully');
+              } on ZaloLoginException catch (e) {
+                print('ZaloLoginException: ${e.message}');
+                BotToast.showText(text: e.message);
               } catch (e) {
-                print("login: $e");
+                BotToast.showText(text: 'Login failed - Unknown error');
               }
             },
             icon: Icon(Icons.join_full),
