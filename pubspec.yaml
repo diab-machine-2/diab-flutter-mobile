@@ -136,6 +136,9 @@ dependencies:
   # Metadata detection
   linkify: ^5.0.0
 
+  # Social login
+  zalo_flutter: ^0.0.6
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
