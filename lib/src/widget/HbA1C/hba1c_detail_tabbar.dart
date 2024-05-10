@@ -220,7 +220,11 @@ class CustomTabbarImageState extends State<CustomTabbarImage> {
 
     await AppSettings.setValueOfClickShortGuideIndex(
         ScreenList.HBA1C.index, clickTime);
-
+    if (clickTime > 2 && widget.data != null) {
+      Description.showTooltip(context,
+          data: widget.data!,
+          title: R.string.chi_so_hba1c_doi_voi_benh_tieu_duong.tr());
+    }
     showDes = !showDes;
     setState(() {});
   }

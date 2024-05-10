@@ -22,6 +22,7 @@ import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
+import 'package:medical/src/widget/home/fliter_enum.dart';
 import 'package:medical/src/widget/nipro/roche_connection/roche_connection_view.dart';
 import 'package:medical/src/widgets/btn_add_photo.dart';
 import 'package:medical/src/widgets/custom_checkbox_widget.dart';
@@ -70,6 +71,7 @@ class _AddBloodSugarControllerNewState
   bool fromNipro = false;
   bool isMgPerDl = false;
   bool isPregnancy = false;
+  int clickTime = 0;
 
   late AnimationController _animtionController;
   late Animation _animation;
@@ -90,7 +92,8 @@ class _AddBloodSugarControllerNewState
       await loadTimeFrame();
     }
     isMgPerDl = AppSettings.userInfo!.glucoseUnit == 1;
-
+    List<int> valueOfClickTime = await AppSettings.getValueOfClickShortGuide();
+    clickTime = valueOfClickTime[ScreenList.BLOOD_SUGAR.index];
     loadDescription();
     firebaseSetup();
   }
@@ -220,7 +223,7 @@ class _AddBloodSugarControllerNewState
                 Expanded(
                   child: SingleChildScrollView(
                     child: Column(children: [
-                      _inforSection(),
+                      _inforSection(context),
                       Container(
                         margin: const EdgeInsets.only(
                             bottom: 16, left: 16, right: 16),
@@ -1008,6 +1011,14 @@ class _AddBloodSugarControllerNewState
     }
   }
 
+  showGuide(BuildContext context) async {
+    Description.showTooltip(context,
+        data: des!, title: R.string.blood_sugar_for_diabetes.tr());
+    clickTime = clickTime + 1;
+    await AppSettings.setValueOfClickShortGuideIndex(
+        ScreenList.BLOOD_SUGAR.index, clickTime);
+  }
+
   showAlertDialog(BuildContext context) {
     Widget cancelButton = TextButton(
       child: Text(R.string.cancel.tr()),
@@ -1059,10 +1070,15 @@ class _AddBloodSugarControllerNewState
           }),
       actions: [
         GestureDetector(
-          onTap: () {
-            setState(() {
-              isClicked = !isClicked;
-            });
+          onTap: () async {
+            if (clickTime >= 2) {
+              await showGuide(context);
+            } else {
+              setState(() {
+                isClicked = !isClicked;
+                clickTime = clickTime + 1;
+              });
+            }
           },
           child: Padding(
             padding: const EdgeInsets.only(left: 16, right: 16),
@@ -1076,11 +1092,12 @@ class _AddBloodSugarControllerNewState
     );
   }
 
-  Widget _inforSection() {
+  Widget _inforSection(BuildContext context) {
     return Padding(
         padding: const EdgeInsets.only(bottom: 16, left: 16, right: 16),
-        child: isClicked
+        child: isClicked && clickTime < 2
             ? Description(
+                isCreateData: true,
                 input: true,
                 data: des,
                 titleDetail: R.string.blood_sugar_for_diabetes.tr())
@@ -1495,7 +1512,7 @@ class _AddBloodSugarControllerNewState
       print('hihi maximumValue: $maximumValue');
       num pxPerValue = widthRange / maximumValue;
       print('hihi pxPerValue: $pxPerValue');
-      num widthPlus = pxPerValue * (_number- min);
+      num widthPlus = pxPerValue * (_number - min);
       print('hihi widthPlus: $widthPlus');
       width += widthPlus;
 
@@ -1504,7 +1521,6 @@ class _AddBloodSugarControllerNewState
           : width;
 
       //   print('hihi number: $number');
-
     }
 
     return SpacingColumn(

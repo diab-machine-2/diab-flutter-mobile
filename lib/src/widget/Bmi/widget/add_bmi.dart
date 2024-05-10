@@ -21,6 +21,7 @@ import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
+import 'package:medical/src/widget/home/fliter_enum.dart';
 import 'package:medical/src/widgets/btn_add_photo.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/cupertino.dart';
@@ -70,12 +71,22 @@ class _AddBmiControllerState extends BaseState<AddBmiController>
   int selectedHip = 0;
   double? bmiNumber = 0;
 
+  int clickTime = 0;
+
   ShortGuiModel? des;
   final AppRepository repository = AppRepository();
 
   late AnimationController _animtionController;
   late Animation _animation;
   FocusNode _focusNode = FocusNode();
+
+  showGuide(BuildContext context) async {
+    Description.showTooltip(context,
+        data: des!, title: R.string.diabetes_weight_control.tr());
+    clickTime = clickTime + 1;
+    await AppSettings.setValueOfClickShortGuideIndex(
+        ScreenList.WEIGHT.index, clickTime);
+  }
 
   @override
   void initState() {
@@ -90,8 +101,15 @@ class _AddBmiControllerState extends BaseState<AddBmiController>
     } else {
       loadTimeFrame();
     }
+
     loadDescription();
     firebaseSetup();
+    initData();
+  }
+
+  void initData() async {
+    List<int> valueOfClickTime = await AppSettings.getValueOfClickShortGuide();
+    clickTime = valueOfClickTime[ScreenList.WEIGHT.index];
   }
 
   animationFocus() {
@@ -206,10 +224,15 @@ class _AddBmiControllerState extends BaseState<AddBmiController>
                       }),
                   actions: [
                     GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          isClicked = !isClicked;
-                        });
+                      onTap: () async {
+                        if (clickTime >= 2) {
+                          await showGuide(context);
+                        } else {
+                          setState(() {
+                            isClicked = !isClicked;
+                            clickTime = clickTime + 1;
+                          });
+                        }
                       },
                       child: Padding(
                         padding: const EdgeInsets.only(left: 16, right: 16),
@@ -230,6 +253,7 @@ class _AddBmiControllerState extends BaseState<AddBmiController>
                         child: isClicked
                             ? Description(
                                 input: true,
+                                isCreateData: true,
                                 data: des,
                                 titleDetail:
                                     R.string.diabetes_weight_control.tr())

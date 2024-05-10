@@ -236,11 +236,12 @@ class CustomTabbarImageState extends State<CustomTabbarImage> {
     List<int> valueOfClickTime = await AppSettings.getValueOfClickShortGuide();
     clickTime = valueOfClickTime[ScreenList.BLOOD_SUGAR.index];
     clickTime += 1;
-    print(showDes);
-    print(clickTime);
     await AppSettings.setValueOfClickShortGuideIndex(
         ScreenList.BLOOD_SUGAR.index, clickTime);
-
+    if (clickTime > 2 && widget.data != null) {
+      Description.showTooltip(context,
+          data: widget.data!, title: R.string.blood_sugar_for_diabetes.tr());
+    }
     showDes = !showDes;
     setState(() {});
   }

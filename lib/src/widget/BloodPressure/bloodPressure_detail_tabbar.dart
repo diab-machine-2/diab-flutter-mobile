@@ -314,7 +314,10 @@ class CustomTabbarImageState extends State<CustomTabbarImage> {
 
     await AppSettings.setValueOfClickShortGuideIndex(
         ScreenList.BLOOD_PRESSURE.index, clickTime);
-
+    if (clickTime > 2 && widget.data != null) {
+      Description.showTooltip(context,
+          data: widget.data!, title: R.string.blood_pressure_for_diabetes.tr());
+    }
     showDes = !showDes;
     setState(() {});
   }

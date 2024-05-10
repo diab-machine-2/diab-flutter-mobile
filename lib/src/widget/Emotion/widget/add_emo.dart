@@ -1,4 +1,3 @@
-
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
@@ -16,6 +15,7 @@ import 'package:medical/src/widget/components/card_horizontal/card_horizontal.da
 import 'package:medical/src/widget/components/card_horizontal/card_item.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
+import 'package:medical/src/widget/home/fliter_enum.dart';
 
 import '../../../widgets/network_image_widget.dart';
 
@@ -35,7 +35,7 @@ class AddEmoController extends StatefulWidget {
 class _AddEmoControllerState extends BaseState<AddEmoController> {
   bool isClicked = false;
   EmotionModel? selectedEmotion;
-
+  int clickTime = 0;
   List<EmotionModel> model = [];
 
   ShortGuiModel? des;
@@ -70,6 +70,14 @@ class _AddEmoControllerState extends BaseState<AddEmoController> {
     super.dispose();
   }
 
+  showGuide(BuildContext context) async {
+    Description.showTooltip(context,
+        data: des!, title: R.string.kiem_soat_cam_xuc_benh_tieu_duong.tr());
+    clickTime = clickTime + 1;
+    await AppSettings.setValueOfClickShortGuideIndex(
+        ScreenList.EMOTION.index, clickTime);
+  }
+
   loadData() async {
     try {
       BotToast.showLoading();
@@ -88,6 +96,8 @@ class _AddEmoControllerState extends BaseState<AddEmoController> {
   }
 
   loadDescription() async {
+    List<int> valueOfClickTime = await AppSettings.getValueOfClickShortGuide();
+    clickTime = valueOfClickTime[ScreenList.EMOTION.index];
     des = await HbA1CClient().fetchShortGuide(6);
     setState(() {});
   }
@@ -127,10 +137,15 @@ class _AddEmoControllerState extends BaseState<AddEmoController> {
                     }),
                 actions: [
                   GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        isClicked = !isClicked;
-                      });
+                    onTap: () async {
+                      if (clickTime >= 2) {
+                        await showGuide(context);
+                      } else {
+                        setState(() {
+                          isClicked = !isClicked;
+                          clickTime = clickTime + 1;
+                        });
+                      }
                     },
                     child: Padding(
                       padding: const EdgeInsets.only(left: 16, right: 16),
@@ -150,9 +165,10 @@ class _AddEmoControllerState extends BaseState<AddEmoController> {
                       // height:
                       //     (MediaQuery.of(context).size.width) * 153 / 343 + 16,
                       padding: EdgeInsets.only(left: 16, right: 16),
-                      child: isClicked
+                      child: isClicked && clickTime < 2
                           ? Description(
                               input: true,
+                              isCreateData: true,
                               data: des,
                               titleDetail: R
                                   .string.kiem_soat_cam_xuc_benh_tieu_duong

@@ -24,6 +24,7 @@ import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
+import 'package:medical/src/widget/home/fliter_enum.dart';
 import 'package:medical/src/widgets/btn_add_photo.dart';
 import 'package:medical/src/widgets/network_image_widget.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -62,6 +63,7 @@ class _AddBloodPressureControllerState
   BloodPressureModel? model;
   TimeFrameModel? selectedTimeFrame;
   List<String?> removeIDs = [];
+  int clickTime = 0;
   String? textValidate = '';
   ShortGuiModel? des;
   List<int> rangeValueSystolic = [0, 90, 130, 140, 160, 180]; // init value
@@ -111,6 +113,14 @@ class _AddBloodPressureControllerState
     initData();
   }
 
+  showGuide(BuildContext context) async {
+    Description.showTooltip(context,
+        data: des!, title: R.string.blood_pressure_for_diabetes.tr());
+    clickTime = clickTime + 1;
+    await AppSettings.setValueOfClickShortGuideIndex(
+        ScreenList.BLOOD_PRESSURE.index, clickTime);
+  }
+
   void initData() async {
     BotToast.showLoading();
     try {
@@ -118,6 +128,9 @@ class _AddBloodPressureControllerState
       rangeValueSystolic = ranges['systolic']!;
       rangeValueDiastolic = ranges['diastolic']!;
       isLoading = false;
+      List<int> valueOfClickTime =
+          await AppSettings.getValueOfClickShortGuide();
+      clickTime = valueOfClickTime[ScreenList.BLOOD_PRESSURE.index];
       BotToast.closeAllLoading();
     } catch (e) {
       // Handle errors
@@ -224,10 +237,15 @@ class _AddBloodPressureControllerState
                       }),
                   actions: [
                     GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          isClicked = !isClicked;
-                        });
+                      onTap: () async {
+                        if (clickTime >= 2) {
+                          await showGuide(context);
+                        } else {
+                          setState(() {
+                            isClicked = !isClicked;
+                            clickTime = clickTime + 1;
+                          });
+                        }
                       },
                       child: Padding(
                         padding: const EdgeInsets.only(left: 16, right: 16),
@@ -250,9 +268,10 @@ class _AddBloodPressureControllerState
                           Padding(
                               padding: const EdgeInsets.only(
                                   left: 16, right: 16, bottom: 16),
-                              child: isClicked
+                              child: isClicked && clickTime < 2
                                   ? Description(
                                       input: true,
+                                      isCreateData: true,
                                       data: des,
                                       titleDetail: R
                                           .string.blood_pressure_for_diabetes
