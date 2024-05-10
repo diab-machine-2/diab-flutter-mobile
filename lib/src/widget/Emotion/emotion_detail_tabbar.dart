@@ -239,7 +239,11 @@ class CustomTabbarImageState extends State<CustomTabbarImage> {
 
     await AppSettings.setValueOfClickShortGuideIndex(
         ScreenList.EMOTION.index, clickTime);
-
+    if (clickTime > 2 && widget.data != null) {
+      Description.showTooltip(context,
+          data: widget.data!,
+          title: R.string.kiem_soat_cam_xuc_benh_tieu_duong.tr());
+    }
     showDes = !showDes;
     setState(() {});
   }

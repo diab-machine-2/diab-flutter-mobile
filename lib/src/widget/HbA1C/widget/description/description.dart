@@ -10,11 +10,13 @@ class Description extends StatelessWidget {
   final ShortGuiModel? data;
   final String titleDetail;
   final int? clickTime;
+  final bool? isCreateData;
   Description(
       {required this.input,
       required this.data,
       required this.titleDetail,
-      this.clickTime});
+      this.clickTime,
+      this.isCreateData});
 
   static showTooltip(
     context, {
@@ -37,17 +39,17 @@ class Description extends StatelessWidget {
   Widget build(BuildContext context) {
     // final height = (MediaQuery.of(context).size.width - 32) * 153 / 343 - 54;
     final width = MediaQuery.of(context).size.width - 32;
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (clickTime != null && clickTime! > 2 && data != null) {
-        showDialog(
-          barrierColor: R.color.color0xff003F38.withOpacity(0.8),
-          useSafeArea: false,
-          context: context,
-          builder: (_) =>
-              DetailDescription(input: input, data: data, title: titleDetail),
-        );
-      }
-    });
+    // WidgetsBinding.instance.addPostFrameCallback((_) {
+    //   if (clickTime != null && clickTime! > 2 && data != null) {
+    //     showDialog(
+    //       barrierColor: R.color.color0xff003F38.withOpacity(0.8),
+    //       useSafeArea: false,
+    //       context: context,
+    //       builder: (_) =>
+    //           DetailDescription(input: input, data: data, title: titleDetail),
+    //     );
+    //   }
+    // });
     return GestureDetector(
         onTap: () {
           data == null
@@ -62,7 +64,8 @@ class Description extends StatelessWidget {
         },
         child: Row(
           children: [
-            if (clickTime != null && clickTime! < 2 && data != null)
+            if ((clickTime != null && clickTime! < 2 && data != null) ||
+                (isCreateData != null && isCreateData!))
               Padding(
                 padding: EdgeInsets.only(bottom: 8),
                 child: Container(

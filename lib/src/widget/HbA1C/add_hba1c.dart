@@ -18,6 +18,7 @@ import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
+import 'package:medical/src/widget/home/fliter_enum.dart';
 import 'package:medical/src/widgets/btn_add_photo.dart';
 import 'package:medical/src/widgets/spacing_row.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -52,14 +53,24 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
   bool isLoading = true;
   ShortGuiModel? des;
 
+  int clickTime = 0;
   void initState() {
     initData();
     super.initState();
     if (widget.type == 'update') {
       loadDetail();
     }
+
     loadDescription();
     firebaseSetup();
+  }
+
+  showGuide(BuildContext context) async {
+    Description.showTooltip(context,
+        data: des!, title: R.string.chi_so_hba1c_doi_voi_benh_tieu_duong.tr());
+    clickTime = clickTime + 1;
+    await AppSettings.setValueOfClickShortGuideIndex(
+        ScreenList.HBA1C.index, clickTime);
   }
 
   Future firebaseSetup() async {
@@ -83,6 +94,8 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
     List<double> values = await HbA1CClient().fetchRange();
     rangeValue = values.map((value) => (value * 10).toInt()).toList();
     isLoading = false;
+    List<int> valueOfClickTime = await AppSettings.getValueOfClickShortGuide();
+    clickTime = valueOfClickTime[ScreenList.HBA1C.index];
     setState(() {});
     BotToast.closeAllLoading();
   }
@@ -150,10 +163,15 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
                       }),
                   actions: [
                     GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          isClicked = !isClicked;
-                        });
+                      onTap: () async {
+                        if (clickTime >= 2) {
+                          await showGuide(context);
+                        } else {
+                          setState(() {
+                            isClicked = !isClicked;
+                            clickTime = clickTime + 1;
+                          });
+                        }
                       },
                       child: Padding(
                         padding: const EdgeInsets.only(left: 16, right: 16),
@@ -177,9 +195,10 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
                         Padding(
                             padding: const EdgeInsets.only(
                                 bottom: 16, left: 16, right: 16),
-                            child: isClicked
+                            child: isClicked && clickTime < 2
                                 ? Description(
                                     input: true,
+                                    isCreateData: true,
                                     data: des,
                                     titleDetail: R.string
                                         .chi_so_hba1c_doi_voi_benh_tieu_duong
