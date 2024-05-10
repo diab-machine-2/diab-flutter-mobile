@@ -8,6 +8,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_observer/Observable.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/modal/HbA1C/short_gui.dart';
 import 'package:medical/src/modal/error/error_model.dart';
 import 'package:medical/src/modal/food/food_input_model.dart';
@@ -25,10 +26,10 @@ import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
+import 'package:medical/src/widget/home/fliter_enum.dart';
 import 'package:medical/src/widgets/btn_add_photo.dart';
 import 'package:medical/src/widgets/network_image_widget.dart';
 import 'package:permission_handler/permission_handler.dart';
-
 
 class AddFoodController extends StatefulWidget {
   final String type;
@@ -60,14 +61,30 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
 
   bool addTotalCalo = false;
 
+  int clickTime = 0;
+
   void initState() {
     super.initState();
+    initData();
     if (widget.type == 'update') {
       loadDetail();
     } else {
       loadTimeFrame();
     }
     loadDescription();
+  }
+
+  void initData() async {
+    List<int> valueOfClickTime = await AppSettings.getValueOfClickShortGuide();
+    clickTime = valueOfClickTime[ScreenList.FOOD.index];
+  }
+
+  showGuide(BuildContext context) async {
+    Description.showTooltip(context,
+        data: des!, title: R.string.che_do_dinh_duong_benh_tieu_duong.tr());
+    clickTime = clickTime + 1;
+    await AppSettings.setValueOfClickShortGuideIndex(
+        ScreenList.FOOD.index, clickTime);
   }
 
   void dispose() {
@@ -154,10 +171,15 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
                       }),
                   actions: [
                     GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          isClicked = !isClicked;
-                        });
+                      onTap: () async {
+                        if (clickTime >= 2) {
+                          await showGuide(context);
+                        } else {
+                          setState(() {
+                            isClicked = !isClicked;
+                            clickTime = clickTime + 1;
+                          });
+                        }
                       },
                       child: Padding(
                         padding: const EdgeInsets.only(left: 16, right: 16),
@@ -179,10 +201,11 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
                         Padding(
                             padding: const EdgeInsets.only(
                                 bottom: 16, left: 16, right: 16),
-                            child: isClicked
+                            child: isClicked && clickTime < 2
                                 ? Description(
                                     input: true,
                                     data: des,
+                                    isCreateData: true,
                                     titleDetail: R.string
                                         .che_do_dinh_duong_benh_tieu_duong)
                                 : SizedBox()),
