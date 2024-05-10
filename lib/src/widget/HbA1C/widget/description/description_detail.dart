@@ -13,7 +13,11 @@ class DetailDescription extends StatelessWidget {
   final double titleFontSize;
 
   DetailDescription(
-      {required this.input, required this.data, required this.title, this.isShowTitle = true, this.titleFontSize = 20});
+      {required this.input,
+      required this.data,
+      required this.title,
+      this.isShowTitle = true,
+      this.titleFontSize = 20});
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -59,11 +63,16 @@ class DetailDescription extends StatelessWidget {
                               padding: EdgeInsets.only(bottom: 16),
                               child: ListView(children: [
                                 Html(
-                                  data: (input ? data?.content2 : data?.content4) ?? "",
-                                  onLinkTap: (String? url, RenderContext context, Map<String, String> attributes, dom.Element? element) async {
-                                    await Utils.launchURL(url ?? "");
-                                  }  
-                                )
+                                    data: (input
+                                            ? data?.content2
+                                            : data?.content4) ??
+                                        "",
+                                    onLinkTap: (String? url,
+                                        RenderContext context,
+                                        Map<String, String> attributes,
+                                        dom.Element? element) async {
+                                      await Utils.launchURL(url ?? "");
+                                    })
                               ]),
                             ),
                           ),
@@ -83,7 +92,7 @@ class DetailDescription extends StatelessWidget {
                             borderRadius: BorderRadius.circular(30)),
                         child: IconButton(
                             icon: Icon(Icons.close, color: R.color.white),
-                            onPressed: () {
+                            onPressed: () async {
                               Navigator.pop(context);
                             }),
                       ),

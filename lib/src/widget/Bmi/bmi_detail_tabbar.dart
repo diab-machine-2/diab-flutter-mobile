@@ -306,6 +306,10 @@ class CustomTabbarImageState extends State<CustomTabbarImage> {
     clickTime += 1;
     await AppSettings.setValueOfClickShortGuideIndex(
         ScreenList.WEIGHT.index, clickTime);
+    if (clickTime > 2 && widget.data != null) {
+      Description.showTooltip(context,
+          data: widget.data!, title: R.string.diabetes_weight_control.tr());
+    }
     showDes = !showDes;
     setState(() {});
   }

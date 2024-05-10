@@ -28,6 +28,15 @@ class AddBmiCubit extends Cubit<CubitBaseState> {
   final String? type;
   final String? id;
   final String? goalId;
+  bool? isCloseShortGuide;
+
+  void setIsCloseShortGuide(bool isClose) {
+    this.isCloseShortGuide = isClose;
+  }
+
+  bool getIsCloseShortGuidle() {
+    return this.isCloseShortGuide ?? false;
+  }
 
   AddBmiCubit({this.type, this.id, this.goalId}) : super(InitialState()) {
     if (AppSettings.userInfo!.height != 0 &&
@@ -67,6 +76,8 @@ class AddBmiCubit extends Cubit<CubitBaseState> {
   bool isPregnancy = false;
   List<WeightRangeModel>? weightRanges;
   List<double> rangeValue = [];
+
+  int clickedTime = 0;
 
   ShortGuiModel? des;
   final AppRepository repository = AppRepository();
