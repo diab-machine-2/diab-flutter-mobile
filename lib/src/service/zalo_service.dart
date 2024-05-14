@@ -15,14 +15,20 @@ class ZaloService {
     );
     try {
       if (data != null && data['isSuccess'] == true) {
-        if (data['isSuccess'] == true) {
-          return ZaloLoginResult.fromJson(data["data"]);
-        } else if (data['data'] != null) {
-          throw ZaloLoginException(data['data']['message']?.toString() ?? 'Login failed');
+        final accessToken = data['data']['access_token'];
+        final profile =
+            await ZaloFlutter.getUserProfile(accessToken: accessToken);
+        if (profile != null && profile["data"] != null) {
+          return ZaloLoginResult.fromJson(data['data'], profile["data"]);
         }
+      } else if (data != null && data['data'] != null) {
+        throw ZaloLoginException(
+            data['data']['message']?.toString() ?? 'Login failed');
+      } else {
+        throw ZaloLoginException('Login failed');
       }
     } catch (e) {
-      // TODO: Track error to firebase
+      // TODO: Track error to Firebase
       print("login: $e");
     }
     throw ZaloLoginException('Login failed');
@@ -34,23 +40,31 @@ class ZaloLoginResult {
   String refreshToken;
   int? expiresIn;
   int? refreshTokenExpiresIn;
+  String id;
+  String name;
 
   ZaloLoginResult({
     required this.accessToken,
     required this.refreshToken,
     this.expiresIn,
     this.refreshTokenExpiresIn,
+    required this.id,
+    required this.name,
   });
 
-  factory ZaloLoginResult.fromJson(Map<dynamic, dynamic> json) {
+  factory ZaloLoginResult.fromJson(
+      Map<dynamic, dynamic> json, Map<dynamic, dynamic> profile) {
     return ZaloLoginResult(
-      accessToken: json['access_token'] ?? json['accessToken'],
-      refreshToken: json['refresh_token'] ?? json['refreshToken'],
-      expiresIn: json['expires_in'] != null ? int.tryParse(json['expires_in'].toString()) : null,
-      refreshTokenExpiresIn: json['refresh_token_expires_in'] != null
-          ? int.tryParse(json['refresh_token_expires_in'].toString())
-          : null,
-    );
+        accessToken: json['access_token'] ?? json['accessToken'],
+        refreshToken: json['refresh_token'] ?? json['refreshToken'],
+        expiresIn: json['expires_in'] != null
+            ? int.tryParse(json['expires_in'].toString())
+            : null,
+        refreshTokenExpiresIn: json['refresh_token_expires_in'] != null
+            ? int.tryParse(json['refresh_token_expires_in'].toString())
+            : null,
+        id: profile['id'],
+        name: profile['name']);
   }
 }
 

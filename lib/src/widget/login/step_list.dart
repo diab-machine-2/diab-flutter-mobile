@@ -1,8 +1,10 @@
 import 'dart:async';
 
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_observer/Observable.dart';
 import 'package:flutter_observer/Observer.dart';
@@ -12,9 +14,14 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/app_setting/deep_link_config.dart';
 import 'package:medical/src/app_setting/dynamic_link_config.dart';
+import 'package:medical/src/repo/login/login_client.dart';
+import 'package:medical/src/modal/error/error_model.dart';
+import 'package:medical/src/repo/user/user_client.dart';
+import 'package:medical/src/service/zalo_service.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/utils/utils.dart';
+import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widgets/button_language_picker.dart';
 import 'package:medical/src/widgets/dismissKeyboard_widget.dart';
@@ -279,13 +286,16 @@ class _StepListControllerState extends State<StepListController> with Observer {
                                   ),
                                   borderRadius: BorderRadius.circular(200),
                                 ),
-                                child: Row(
-                                  children: [
-                                    Expanded(
-                                      child: Center(
+                                child: Center(
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      GestureDetector(
+                                        onTap: () => loginZalo(),
                                         child: AutoSizeText(
                                           'Đăng nhập qua Zalo',
                                           maxLines: 1,
+                                          textAlign: TextAlign.center,
                                           style: TextStyle(
                                             color: R.color.white,
                                             fontSize: 16,
@@ -293,8 +303,8 @@ class _StepListControllerState extends State<StepListController> with Observer {
                                           ),
                                         ),
                                       ),
-                                    ),
-                                  ],
+                                    ],
+                                  ),
                                 ),
                               ),
                               // Expanded(
@@ -443,6 +453,76 @@ class _StepListControllerState extends State<StepListController> with Observer {
         ),
       ),
     );
+  }
+
+  registerAccount(
+    String? providerKey,
+    String? externalToken,
+    String provider,
+    String userName,
+    bool update, {
+    ZaloLoginResult? zaloAccount,
+  }) async {
+    try {
+      Navigator.pushReplacementNamed(context, NavigatorName.update_info,
+          arguments: {
+            'type': provider.toLowerCase(),
+            'googleAccount': null,
+            'appleAccount': null,
+            'zaloAccount': zaloAccount
+          });
+      BotToast.closeAllLoading();
+    } catch (error) {
+      BotToast.closeAllLoading();
+      Message.showToastMessage(context, error.toString());
+    }
+  }
+
+  loginZalo() async {
+    BotToast.showLoading();
+    ZaloLoginResult account = await ZaloService().login();
+    try {
+      await LoginClient().login({
+        "client_id": Const.CLIENT_ID,
+        "client_secret": Const.CLIENT_SECRET,
+        "grant_type": "external",
+        "external_token": account!.accessToken, // Ensure account is not null
+        "provider": 'Zalo'
+      });
+      final user = await UserClient().fetchUser();
+      if (user == null) {
+        registerAccount(
+          account.id, // Ensure account is not null
+          account.accessToken, // Ensure account is not null
+          'Zalo',
+          account.name,
+          true,
+          zaloAccount: account,
+        );
+      } else {
+        Navigator.popUntil(context, (route) => route.isFirst);
+        Navigator.pushReplacementNamed(context, NavigatorName.tabbar);
+      }
+    } catch (error) {
+      if (error is Error && error.code == '5' && account != null) {
+        registerAccount(
+          account.id, // Ensure account is not null
+          account.accessToken, // Ensure account is not null
+          'Zalo',
+          account.name,
+          false,
+          zaloAccount: account,
+        );
+      } else if (error is PlatformException && error.code == 'network_error') {
+        Message.showToastMessage(
+          context,
+          R.string.error_can_not_connect_to_server.tr(),
+        );
+      } else {
+        BotToast.closeAllLoading();
+        Message.showToastMessage(context, error.toString());
+      }
+    }
   }
 
   Widget imageItem(

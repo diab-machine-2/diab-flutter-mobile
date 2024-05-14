@@ -204,6 +204,7 @@ class _AppState extends State<App> {
                         UpdateInfoController(
                           type: data?['type'],
                           phone: data?['phone'],
+                          zaloAccount: data?['zaloAccount'],
                           googleAccount: data?['googleAccount'],
                           facebookAccount: data?['facebookAccount'],
                           appleAccount: data?['appleAccount'],
