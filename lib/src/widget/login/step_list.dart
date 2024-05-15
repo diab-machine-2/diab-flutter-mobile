@@ -469,7 +469,7 @@ class _StepListControllerState extends State<StepListController> with Observer {
             'type': provider.toLowerCase(),
             'googleAccount': null,
             'appleAccount': null,
-            'zaloAccount': zaloAccount
+            'zaloAccount': zaloAccount,
           });
       BotToast.closeAllLoading();
     } catch (error) {
@@ -479,14 +479,15 @@ class _StepListControllerState extends State<StepListController> with Observer {
   }
 
   loginZalo() async {
-    BotToast.showLoading();
-    ZaloLoginResult account = await ZaloService().login();
+    ZaloLoginResult? account;
     try {
+      account = await ZaloService().login();
+      BotToast.showLoading();
       await LoginClient().login({
         "client_id": Const.CLIENT_ID,
         "client_secret": Const.CLIENT_SECRET,
         "grant_type": "external",
-        "external_token": account!.accessToken, // Ensure account is not null
+        "external_token": account.accessToken, // Ensure account is not null
         "provider": 'Zalo'
       });
       final user = await UserClient().fetchUser();
@@ -500,6 +501,7 @@ class _StepListControllerState extends State<StepListController> with Observer {
           zaloAccount: account,
         );
       } else {
+        BotToast.closeAllLoading();
         Navigator.popUntil(context, (route) => route.isFirst);
         Navigator.pushReplacementNamed(context, NavigatorName.tabbar);
       }

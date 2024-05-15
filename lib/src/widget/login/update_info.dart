@@ -68,15 +68,18 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
 
   void initState() {
     super.initState();
-    nameController.text = widget.type == 'phone'
-        ? ''
-        : (widget.type == 'google'
-            ? (widget.googleAccount?.displayName ?? '')
-            : widget.type == 'facebook'
-                ? widget.userInfo['name']
-                : widget.type == 'apple'
-                    ? '${widget.appleAccount?.familyName ?? ''} ${widget.appleAccount?.givenName ?? ''}'
-                    : '');
+    if (widget.type == 'phone') {
+      nameController.text = '';
+    } else if (widget.type == 'google') {
+      nameController.text = widget.googleAccount?.displayName ?? '';
+    } else if (widget.type == 'facebook') {
+      nameController.text = widget.userInfo['name'] ?? '';
+    } else if (widget.type == 'apple') {
+      nameController.text =
+          '${widget.appleAccount?.familyName ?? ''} ${widget.appleAccount?.givenName ?? ''}';
+    } else if (widget.type == 'zalo') {
+      nameController.text = widget.zaloAccount?.name ?? '';
+    }
     check();
     firebaseSetup();
   }
