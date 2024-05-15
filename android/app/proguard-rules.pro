@@ -12,3 +12,8 @@
 -keep class  us.google.protobuf.**{*;}
 -keep class  com.google.crypto.tink.**{*;}
 -keep class  androidx.security.crypto.**{*;}
+
+# for zalo
+-keep class com.zing.zalo.**{ *; }
+-keep enum com.zing.zalo.**{ *; }
+-keep interface com.zing.zalo.**{ *; }

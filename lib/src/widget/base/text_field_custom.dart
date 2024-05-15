@@ -9,6 +9,7 @@ class TextFieldCustom extends StatefulWidget {
   final double hintTextSize;
   final bool isPassword;
   final bool isSharedCode;
+  final bool? readOnly;
   final bool autoFocus;
   final bool showStar;
   final int maxLength;
@@ -33,6 +34,7 @@ class TextFieldCustom extends StatefulWidget {
     this.onRightWidgetClick,
     this.onChanged,
     this.focusNode,
+    this.readOnly,
   }) : super(key: key);
 
   @override
@@ -57,6 +59,7 @@ class TextFieldCustomState extends State<TextFieldCustom> {
 
   @override
   void initState() {
+    print('phone: ${widget.initText}');
     super.initState();
     if (widget.isSharedCode) {
       icon = R.drawable.ic_share;
@@ -92,7 +95,9 @@ class TextFieldCustomState extends State<TextFieldCustom> {
             height: 54,
             padding: const EdgeInsets.only(left: 16, right: 8),
             decoration: BoxDecoration(
-              color: R.color.white,
+              color: widget.readOnly == true
+                  ? R.color.notActiveGreen.withOpacity(0.2)
+                  : R.color.white,
               borderRadius: BorderRadius.circular(12),
               border: Border.all(
                   width: 2,
@@ -115,10 +120,9 @@ class TextFieldCustomState extends State<TextFieldCustom> {
                       height: 25,
                       width: width - 167,
                       child: Center(
-                        child: TextField(
+                        child: TextFormField(
                             focusNode: widget.focusNode,
                             controller: textEditingController,
-                            //keyboardType: TextInputType,
                             inputFormatters: [
                               LengthLimitingTextInputFormatter(
                                   widget.maxLength),
@@ -179,7 +183,7 @@ class TextFieldCustomState extends State<TextFieldCustom> {
                           height: 25,
                           width: width - 217,
                           child: Center(
-                            child: TextField(
+                            child: TextFormField(
                                 focusNode: widget.focusNode,
                                 keyboardType: TextInputType.number,
                                 autofocus: widget.autoFocus,
@@ -188,23 +192,26 @@ class TextFieldCustomState extends State<TextFieldCustom> {
                                       widget.maxLength),
                                 ],
                                 maxLength: widget.maxLength,
+                                initialValue: widget.initText,
+                                readOnly: widget.readOnly ?? false,
                                 style: TextStyle(
                                     fontFamily: 'Viga',
                                     color: R.color.textDark,
                                     fontSize: 18,
                                     fontWeight: FontWeight.w500),
                                 decoration: InputDecoration(
-                                    border: InputBorder.none,
-                                    contentPadding:
-                                        const EdgeInsets.only(top: -22),
-                                    hintText: widget.placeholder,
-                                    counterText: "",
-                                    hintStyle: TextStyle(
-                                        fontFamily: 'roboto',
-                                        color: R.color.textDark,
-                                        fontSize: widget.hintTextSize,
-                                        fontWeight: FontWeight.w300),
-                                    fillColor: R.color.textDark),
+                                  border: InputBorder.none,
+                                  contentPadding:
+                                      const EdgeInsets.only(top: -22),
+                                  hintText: widget.placeholder,
+                                  counterText: "",
+                                  hintStyle: TextStyle(
+                                      fontFamily: 'roboto',
+                                      color: R.color.textDark,
+                                      fontSize: widget.hintTextSize,
+                                      fontWeight: FontWeight.w300),
+                                  fillColor: R.color.textDark,
+                                ),
                                 onChanged: (value) {
                                   const String pattern =
                                       r'(^(?:[+0]9)?[0-9]{9}|\d{10}$)';

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/widgets/spacing_row.dart';
 
 class CustomCheckboxWidget extends StatelessWidget {
   const CustomCheckboxWidget({
@@ -7,16 +8,19 @@ class CustomCheckboxWidget extends StatelessWidget {
     this.title,
     this.titleStyle,
     required this.onTap,
+    this.child,
   });
 
   final bool isChecked;
   final String? title;
+  final Widget? child;
   final TextStyle? titleStyle;
   final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
-    return Row(
+    return SpacingRow(
+      spacing: 25,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         InkWell(
@@ -41,7 +45,7 @@ class CustomCheckboxWidget extends StatelessWidget {
                 : const SizedBox(),
           ),
         ),
-        if (title != null) const SizedBox(width: 16),
+        if (child != null) child!,
         if (title != null)
           Text(
             title!,
