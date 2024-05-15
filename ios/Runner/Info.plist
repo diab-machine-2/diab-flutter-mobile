@@ -39,6 +39,23 @@
 				<string>com.googleusercontent.apps.116899682757-kt4c6299sdkumlbosa9sv6jjcra3jb23</string>
 			</array>
 		</dict>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLName</key>
+			<string>zalo</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>zalo-3372616423345602339</string>
+			</array>
+		</dict>
+	</array>
+	<key>ZaloAppID</key>
+	<string>3372616423345602339</string>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>zalosdk</string>
+		<string>zaloshareext</string>
 	</array>
 	<key>CFBundleVersion</key>
 	<string>$(CURRENT_PROJECT_VERSION)</string>

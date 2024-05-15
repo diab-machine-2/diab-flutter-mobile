@@ -8,12 +8,13 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
+import 'package:medical/src/app_setting/firebase_tracking/firebase_tracking.dart';
 import 'package:medical/src/modal/base/referral_code_temp.dart';
 import 'package:medical/src/modal/error/error_model.dart';
 import 'package:medical/src/modal/user/category_item_user_model.dart';
 import 'package:medical/src/repo/login/login_client.dart';
+import 'package:medical/src/service/zalo_service.dart';
 import 'package:medical/src/utils/app_storages.dart';
-import 'package:medical/src/app_setting/firebase_tracking/firebase_tracking.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/length_limit_text_field.dart';
 import 'package:medical/src/utils/navigator_name.dart';
@@ -22,8 +23,6 @@ import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/login/rules.dart';
-import 'package:medical/src/widget/profile/widgets/diabetes_status_picker.dart';
-import 'package:medical/src/widget/profile/widgets/gender_picker.dart';
 import 'package:medical/src/widgets/custom_checkbox_widget.dart';
 import 'package:medical/src/widgets/radio_custom.dart';
 import 'package:medical/src/widgets/spacing_row.dart';
@@ -31,12 +30,12 @@ import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 import '../../repo/user/user_client.dart';
 import '../../widgets/CalendarPicker/custom_date_picker2.dart';
-import '../../widgets/CalendarPicker/custom_year_picker.dart';
 
 class UpdateInfoController extends StatefulWidget {
   final String? type;
   final GoogleSignInAccount? googleAccount;
   final FacebookLoginResult? facebookAccount;
+  final ZaloLoginResult? zaloAccount;
   final AuthorizationCredentialAppleID? appleAccount;
   final dynamic userInfo;
   final String? referalCode;
@@ -51,7 +50,8 @@ class UpdateInfoController extends StatefulWidget {
       this.userInfo,
       this.referalCode,
       this.phone,
-      this.diabeteStates});
+      this.diabeteStates,
+      this.zaloAccount});
   @override
   _UpdateInfoControllerState createState() => _UpdateInfoControllerState();
 }
@@ -68,15 +68,18 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
 
   void initState() {
     super.initState();
-    nameController.text = widget.type == 'phone'
-        ? ''
-        : (widget.type == 'google'
-            ? (widget.googleAccount?.displayName ?? '')
-            : widget.type == 'facebook'
-                ? widget.userInfo['name']
-                : widget.type == 'apple'
-                    ? '${widget.appleAccount?.familyName ?? ''} ${widget.appleAccount?.givenName ?? ''}'
-                    : '');
+    if (widget.type == 'phone') {
+      nameController.text = '';
+    } else if (widget.type == 'google') {
+      nameController.text = widget.googleAccount?.displayName ?? '';
+    } else if (widget.type == 'facebook') {
+      nameController.text = widget.userInfo['name'] ?? '';
+    } else if (widget.type == 'apple') {
+      nameController.text =
+          '${widget.appleAccount?.familyName ?? ''} ${widget.appleAccount?.givenName ?? ''}';
+    } else if (widget.type == 'zalo') {
+      nameController.text = widget.zaloAccount?.name ?? '';
+    }
     check();
     firebaseSetup();
   }
@@ -511,7 +514,21 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
         params['referalCode'] = referralCodeData.referralCode;
       }
 
-      if (widget.type == 'google') {
+      if (widget.type == 'zalo') {
+        params['username'] = widget.zaloAccount?.id;
+        await LoginClient().registerWithSocial({
+          'providerName': 'Zalo',
+          'providerKey': widget.zaloAccount?.id,
+          'IsHasPatient': false
+        });
+        await LoginClient().login({
+          "client_id": Const.CLIENT_ID,
+          "client_secret": Const.CLIENT_SECRET,
+          "grant_type": "external",
+          "external_token": widget.zaloAccount?.accessToken,
+          "provider": 'Zalo'
+        });
+      } else if (widget.type == 'google') {
         params['username'] = widget.googleAccount!.id;
         if (widget.googleAccount?.email != null) {
           params['email'] = widget.googleAccount!.email;

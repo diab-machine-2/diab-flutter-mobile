@@ -153,12 +153,30 @@
                 <data android:path="callback" />
             </intent-filter>
         </activity>
+        <!-- ZaloFlutter start -->
+        <meta-data
+            android:name="com.zing.zalo.zalosdk.appID"
+            android:value="@string/zalo_flutter_app_id" />
+        <activity
+            android:name="com.zing.zalo.zalosdk.oauth.BrowserLoginActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+                <data android:scheme="@string/zalo_flutter_app_id_protocol"/>
+            </intent-filter>
+        </activity>
+        <!-- ZaloFlutter end -->
     </application>
     <queries>
         <intent>
-        <action android:name="android.intent.action.VIEW" />
-            <category android:name="android.intent.category.BROWSABLE" />
+            <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.BROWSABLE" />
             <data android:scheme="https" />
         </intent>
+        <!-- ZaloFlutter start -->
+        <package android:name="com.zing.zalo" />
+        <!-- ZaloFlutter end -->
     </queries>
 </manifest>
