@@ -266,6 +266,7 @@ class _RegisterControllerState extends State<RegisterController> {
                             const SizedBox(height: 20),
                             TextFieldCustom(
                                 key: referralCodeKey,
+                                focusNode: referralCodeFocusNode,
                                 initText: referralCode,
                                 maxLength: 6,
                                 title: R.string.references_code.tr(),
