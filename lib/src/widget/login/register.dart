@@ -53,6 +53,7 @@ class _RegisterControllerState extends State<RegisterController> {
   String password = '';
   String confirmPassword = '';
   late String referralCode;
+  late bool isReferralCodeExist = DynamicLinkConfig.instance.referalCode != null;
 
   bool checked = false;
 
@@ -150,36 +151,38 @@ class _RegisterControllerState extends State<RegisterController> {
         );
       }
     });
-    referralCodeFocusNode.addListener(() async {
-      if (passwordFocusNode.hasFocus) {
-        await TrackingManager.analytics.logEvent(
-          name: 'text_field_focus',
-          parameters: {
-            "screen_name": 'sign_up',
-            'text_field_name': 'text_field_sign_up_referral',
-            'object_value': referralCode
-          },
-        );
-      } else {
-        String validateState = 'pass';
-        String errorMessage = 'none';
-        bool isValid = valideReferralCode(referralCode);
-        if (!isValid) {
-          errorMessage = R.string.data_input_not_valid.tr();
-          validateState = 'fail';
+    if (!isReferralCodeExist) {
+      referralCodeFocusNode.addListener(() async {
+        if (passwordFocusNode.hasFocus) {
+          await TrackingManager.analytics.logEvent(
+            name: 'text_field_focus',
+            parameters: {
+              "screen_name": 'sign_up',
+              'text_field_name': 'text_field_sign_up_referral',
+              'object_value': referralCode
+            },
+          );
+        } else {
+          String validateState = 'pass';
+          String errorMessage = 'none';
+          bool isValid = valideReferralCode(referralCode);
+          if (!isValid) {
+            errorMessage = R.string.data_input_not_valid.tr();
+            validateState = 'fail';
+          }
+          await TrackingManager.analytics.logEvent(
+            name: 'text_field_input',
+            parameters: {
+              "screen_name": 'sign_up',
+              'text_field_name': 'text_field_sign_up_referral',
+              'object_value': referralCode,
+              'validate_state': validateState,
+              'error_message': errorMessage
+            },
+          );
         }
-        await TrackingManager.analytics.logEvent(
-          name: 'text_field_input',
-          parameters: {
-            "screen_name": 'sign_up',
-            'text_field_name': 'text_field_sign_up_referral',
-            'object_value': referralCode,
-            'validate_state': validateState,
-            'error_message': errorMessage
-          },
-        );
-      }
-    });
+      });
+    }
   }
 
   @override
@@ -259,47 +262,49 @@ class _RegisterControllerState extends State<RegisterController> {
                               onChanged: (value) {
                                 confirmPassword = value;
                               }),
-                          const SizedBox(height: 20),
-                          TextFieldCustom(
-                              key: referralCodeKey,
-                              initText: referralCode,
-                              maxLength: 6,
-                              title: R.string.references_code.tr(),
-                              placeholder: R.string.input_references_code.tr(),
-                              hintTextSize: 15,
-                              isSharedCode: true,
-                              rightIcon: R.drawable.ic_qr_scan,
-                              onRightWidgetClick: () async {
-                                await TrackingManager.analytics.logEvent(
-                                  name: 'component_clicked',
-                                  parameters: {
-                                    "screen_name": 'sign_up',
-                                    'component_name': 'icon_sign_up_scan',
-                                  },
-                                );
-                                final dynamic scanResult =
-                                    await NavigationUtil.navigatePage(
-                                        context, const QRScanWidget());
-                                if (scanResult is String) {
-                                  referralCode = scanResult;
-                                  referralCodeKey
-                                      .currentState
-                                      ?.textEditingController
-                                      .text = referralCode;
-                                  referralCodeKey.currentState
-                                      ?.valideReferralCode(referralCode);
+                          if (!isReferralCodeExist) ...<Widget>[
+                            const SizedBox(height: 20),
+                            TextFieldCustom(
+                                key: referralCodeKey,
+                                initText: referralCode,
+                                maxLength: 6,
+                                title: R.string.references_code.tr(),
+                                placeholder: R.string.input_references_code.tr(),
+                                hintTextSize: 15,
+                                isSharedCode: true,
+                                rightIcon: R.drawable.ic_qr_scan,
+                                onRightWidgetClick: () async {
                                   await TrackingManager.analytics.logEvent(
-                                    name: 'scan_qr_success',
+                                    name: 'component_clicked',
                                     parameters: {
                                       "screen_name": 'sign_up',
-                                      'object_title': scanResult,
+                                      'component_name': 'icon_sign_up_scan',
                                     },
                                   );
-                                }
-                              },
-                              onChanged: (value) {
-                                referralCode = value.trim();
-                              }),
+                                  final dynamic scanResult =
+                                      await NavigationUtil.navigatePage(
+                                          context, const QRScanWidget());
+                                  if (scanResult is String) {
+                                    referralCode = scanResult;
+                                    referralCodeKey
+                                        .currentState
+                                        ?.textEditingController
+                                        .text = referralCode;
+                                    referralCodeKey.currentState
+                                        ?.valideReferralCode(referralCode);
+                                    await TrackingManager.analytics.logEvent(
+                                      name: 'scan_qr_success',
+                                      parameters: {
+                                        "screen_name": 'sign_up',
+                                        'object_title': scanResult,
+                                      },
+                                    );
+                                  }
+                                },
+                                onChanged: (value) {
+                                  referralCode = value.trim();
+                                }),
+                          ],
                           const SizedBox(height: 32),
                           GestureDetector(
                             onTap: () {
