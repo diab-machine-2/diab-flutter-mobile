@@ -476,4 +476,8 @@ class Drawables {
   String get ic_zoom_sound => "lib/res/drawables/ic_zoom_sound.png";
   String get ic_zoom_video_on => "lib/res/drawables/ic_zoom_video_on.png";
   String get ic_zoom_video_off => "lib/res/drawables/ic_zoom_video_off.png";
+  String get ic_zoom_wait_camera_on => "lib/res/drawables/ic_zoom_wait_camera_on.png";
+  String get ic_zoom_wait_camera_off => "lib/res/drawables/ic_zoom_wait_camera_off.png";
+  String get ic_zoom_wait_mic_on => "lib/res/drawables/ic_zoom_wait_mic_on.png";
+  String get ic_zoom_wait_mic_off => "lib/res/drawables/ic_zoom_wait_mic_off.png";
 }
