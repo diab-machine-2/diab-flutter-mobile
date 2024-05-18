@@ -1,4 +1,5 @@
 import 'package:camera/camera.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
@@ -19,6 +20,7 @@ class _MeetingWaitRoomPageState extends State<MeetingWaitRoomPage> {
   bool _isMicOn = true;
   bool _isCameraOn = true;
   bool _isCameraInitializedFailed = false;
+  bool _isMicInitializedFailed = false;
   CameraController? _controller;
 
   @override
@@ -27,8 +29,19 @@ class _MeetingWaitRoomPageState extends State<MeetingWaitRoomPage> {
     _initStateAsync();
   }
 
+  @override
+  void dispose() {
+    _controller?.dispose();
+    super.dispose();
+  }
+
   void _initStateAsync() async {
     try {
+      bool isMicGranted = await ZoomService().grantPermission();
+      if (!isMicGranted) {
+        _isMicInitializedFailed = true;
+        _isMicOn = false;
+      }
       List<CameraDescription> cameras = await availableCameras();
       // find the front camera
       for (CameraDescription camera in cameras) {
@@ -110,7 +123,7 @@ class _MeetingWaitRoomPageState extends State<MeetingWaitRoomPage> {
                           assetPath: _isCameraOn
                               ? R.drawable.ic_zoom_wait_camera_on
                               : R.drawable.ic_zoom_wait_camera_off,
-                          labelText: !_isCameraOn ? 'Bật camera' : 'Tắt camera',
+                          labelText: (!_isCameraOn ? 'camera_turnon' : 'camera_turnon').tr(),
                           labelColor: R.color.primaryGreyColor,
                           onPressed: _toggleCamera,
                         ),
@@ -122,7 +135,7 @@ class _MeetingWaitRoomPageState extends State<MeetingWaitRoomPage> {
                           assetPath: _isMicOn
                               ? R.drawable.ic_zoom_wait_mic_on
                               : R.drawable.ic_zoom_wait_mic_off,
-                          labelText: !_isMicOn ? 'Bật âm' : 'Tắt âm',
+                          labelText: (!_isMicOn ? 'mic_turnon' : 'mic_turnoff').tr(),
                           labelColor: R.color.primaryGreyColor,
                           onPressed: _toggleMic,
                         ),
@@ -139,7 +152,7 @@ class _MeetingWaitRoomPageState extends State<MeetingWaitRoomPage> {
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: PrimaryRoundedButton(
-                  title: 'Bắt đầu',
+                  title: R.string.start.tr(),
                   height: 48.0,
                   onPressed: _startMeeting,
                 ),
@@ -205,7 +218,9 @@ class _MeetingWaitRoomPageState extends State<MeetingWaitRoomPage> {
   }
 
   void _toggleMic() async {
-    await ZoomService().grantPermission();
+    if (_isMicInitializedFailed) {
+      return;
+    }
     _isMicOn = !_isMicOn;
 
     setState(() {});
