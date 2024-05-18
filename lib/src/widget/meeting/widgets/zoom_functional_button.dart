@@ -23,7 +23,9 @@ class ZoomFunctionalButton extends StatelessWidget {
       onTap: onPressed,
       child: Column(
         mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
+          const SizedBox(height: 3.0),
           // Icon
           SizedBox(
             width: iconSize,

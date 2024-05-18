@@ -1,10 +1,10 @@
+import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_zoom_videosdk/native/zoom_videosdk.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/service/zoom_service.dart';
-import 'package:medical/src/widget/base/custom_appbar.dart';
-import 'package:medical/src/widget/meeting/widgets/video_view.dart';
 import 'package:medical/src/widget/meeting/widgets/zoom_functional_button.dart';
+import 'package:medical/src/widgets/background_page.dart';
 import 'package:medical/src/widgets/button/primary_rounded_button.dart';
 
 class MeetingWaitRoomPage extends StatefulWidget {
@@ -16,7 +16,10 @@ class MeetingWaitRoomPage extends StatefulWidget {
 }
 
 class _MeetingWaitRoomPageState extends State<MeetingWaitRoomPage> {
-  final ZoomVideoSdk _zoom = ZoomVideoSdk();
+  bool _isMicOn = true;
+  bool _isCameraOn = true;
+  bool _isCameraInitializedFailed = false;
+  CameraController? _controller;
 
   @override
   void initState() {
@@ -25,43 +28,72 @@ class _MeetingWaitRoomPageState extends State<MeetingWaitRoomPage> {
   }
 
   void _initStateAsync() async {
-    // _zoom.joinSession();
+    try {
+      List<CameraDescription> cameras = await availableCameras();
+      // find the front camera
+      for (CameraDescription camera in cameras) {
+        if (camera.lensDirection == CameraLensDirection.front) {
+          _controller = CameraController(camera, ResolutionPreset.veryHigh);
+          break;
+        }
+      }
+      if (_controller == null) {
+        _controller = CameraController(cameras[0], ResolutionPreset.veryHigh);
+        return;
+      }
+      if (_isCameraOn) {
+        await _controller!.initialize();
+      }
+    } catch (e) {
+      _isCameraInitializedFailed = true;
+      _isCameraOn = false;
+    }
+    if (mounted) {
+      setState(() {});
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: CustomAppBar(
-        backgroundColor: R.color.transparent,
-        title: Text(widget.args.sessionName, style: R.style.appBarTitle),
-        centerTitle: true,
-      ),
-      body: Column(
-        children: <Widget>[
-          Expanded(
-            child: Center(
+    return BackgroundPage(
+      background: R.drawable.bg_welcome,
+      child: Scaffold(
+        appBar: AppBar(
+          backgroundColor: R.color.transparent,
+          title: Text(widget.args.sessionName, style: R.style.appBarTitle),
+          centerTitle: true,
+          leading: IconButton(
+            highlightColor: R.color.transparent,
+            icon: Icon(Icons.arrow_back, color: R.color.textDark),
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          ),
+        ),
+        backgroundColor: Colors.transparent,
+        body: Column(
+          children: <Widget>[
+            Expanded(
               child: Column(
                 children: <Widget>[
+                  // spacing
+                  Expanded(flex: 1, child: SizedBox()),
+
                   // Preview
-                  DecoratedBox(
+                  Container(
+                    width: 180.0,
+                    height: 320.0,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(8.0),
                     ),
-                    child: ConstrainedBox(
-                      constraints: BoxConstraints(
-                        maxWidth: 180.0,
-                        maxHeight: 320.0,
-                        minWidth: 180.0,
-                        minHeight: 240.0,
-                      ),
-                      child: VideoView(
-                        preview: true,
-                        avatarUrl: null,
-                        user: null,
-                        fullScreen: true,
-                        resolution: VideoResolution.Resolution360,
-                      ),
-                    ),
+                    clipBehavior: Clip.antiAlias,
+                    child: _isCameraOn && (_controller?.value.isInitialized ?? false)
+                        ? CameraPreview(_controller!)
+                        : Container(
+                            color: R.color.textDark,
+                            alignment: Alignment.center,
+                            child: _buildUserAvatar(),
+                          ),
                   ),
 
                   // spacing
@@ -72,43 +104,110 @@ class _MeetingWaitRoomPageState extends State<MeetingWaitRoomPage> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
                       // Camera
-                      ZoomFunctionalButton(
-                        assetPath: R.drawable.ic_zoom_wait_camera_off,
-                        labelText: 'Tắt camera',
-                        labelColor: R.color.primaryGreyColor,
-                        onPressed: _toggleCamera,
+                      Container(
+                        width: 90.0,
+                        child: ZoomFunctionalButton(
+                          assetPath: _isCameraOn
+                              ? R.drawable.ic_zoom_wait_camera_on
+                              : R.drawable.ic_zoom_wait_camera_off,
+                          labelText: !_isCameraOn ? 'Bật camera' : 'Tắt camera',
+                          labelColor: R.color.primaryGreyColor,
+                          onPressed: _toggleCamera,
+                        ),
                       ),
                       // Mic
-                      ZoomFunctionalButton(
-                        assetPath: R.drawable.ic_zoom_wait_mic_off,
-                        labelText: 'Tắt mic',
-                        labelColor: R.color.primaryGreyColor,
-                        onPressed: _toggleMic,
+                      SizedBox(
+                        width: 90.0,
+                        child: ZoomFunctionalButton(
+                          assetPath: _isMicOn
+                              ? R.drawable.ic_zoom_wait_mic_on
+                              : R.drawable.ic_zoom_wait_mic_off,
+                          labelText: !_isMicOn ? 'Bật âm' : 'Tắt âm',
+                          labelColor: R.color.primaryGreyColor,
+                          onPressed: _toggleMic,
+                        ),
                       ),
                     ],
                   ),
+
+                  // spacing
+                  Expanded(flex: 2, child: SizedBox()),
                 ],
               ),
             ),
-          ),
-          SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: PrimaryRoundedButton(
-                title: 'Bắt đầu',
-                height: 48.0,
-                onPressed: _startMeeting,
+            SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: PrimaryRoundedButton(
+                  title: 'Bắt đầu',
+                  height: 48.0,
+                  onPressed: _startMeeting,
+                ),
               ),
-            ),
-          )
-        ],
+            )
+          ],
+        ),
       ),
+    );
+  }
+
+  Widget _buildUserAvatar() {
+    final user = AppSettings.userInfo;
+    final defaultAvatarWidget = Padding(
+      padding: const EdgeInsets.all(12.0),
+      child: Icon(Icons.person, size: 72.0, color: R.color.white),
+    );
+    double expectSized = 96.0;
+    return Container(
+      clipBehavior: Clip.hardEdge,
+      width: expectSized,
+      height: expectSized,
+      decoration: BoxDecoration(
+        color: R.color.mainColor,
+        borderRadius: BorderRadius.circular(expectSized / 2),
+      ),
+      child: user?.imageUrl?.url == null
+          ? defaultAvatarWidget
+          : Image.network(
+              user!.imageUrl!.url!,
+              width: expectSized,
+              height: expectSized,
+              fit: BoxFit.cover,
+              errorBuilder: (_, __, ___) {
+                return defaultAvatarWidget;
+              },
+            ),
     );
   }
 
   void _startMeeting() {}
 
-  void _toggleCamera() {}
+  void _toggleCamera() async {
+    if (_controller == null || _isCameraInitializedFailed) {
+      return;
+    }
+    try {
+      if (!_controller!.value.isInitialized) {
+        await _controller!.initialize();
+      }
+    } catch (e) {
+      _isCameraInitializedFailed = true;
+      return;
+    }
+    if (_isCameraOn) {
+      await _controller!.pausePreview();
+    } else {
+      await _controller!.resumePreview();
+    }
+    _isCameraOn = !_isCameraOn;
 
-  void _toggleMic() {}
+    setState(() {});
+  }
+
+  void _toggleMic() async {
+    await ZoomService().grantPermission();
+    _isMicOn = !_isMicOn;
+
+    setState(() {});
+  }
 }

@@ -23,7 +23,7 @@ class PrimaryRoundedButton extends StatelessWidget {
         alignment: Alignment.center,
         height: height,
         decoration: BoxDecoration(
-          color: Theme.of(context).primaryColor,
+          color: R.color.mainColor,
           borderRadius: borderRadius,
         ),
         child: Text(
