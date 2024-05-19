@@ -177,6 +177,7 @@ flutter:
     - lib/res/
     - lib/res/fonts/
     - lib/res/drawables/
+    - lib/res/drawables/zoom/
     - lib/res/translations/
     - lib/res/generated/
     - lib/res/icons/

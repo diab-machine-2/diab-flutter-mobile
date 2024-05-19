@@ -1,4 +1,5 @@
 import 'package:bot_toast/bot_toast.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -10,12 +11,13 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/service/zoom_service.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/meeting/meeting_page_pip.dart';
-import 'package:medical/src/widget/meeting/widgets/video_view.dart';
+import 'package:medical/src/widgets/background_page.dart';
 
 import 'widgets/chat_view.dart';
-import 'widgets/top_bottom_control_autohide_widget.dart';
 import 'meeting_cubit.dart';
 import 'meeting_state.dart';
+import 'widgets/video_view_v2.dart';
+import 'widgets/zoom_functional_button.dart';
 
 class MeetingPage extends StatefulWidget {
   final MeetingArguments? args;
@@ -99,6 +101,7 @@ class _MeetingPageState extends State<MeetingPage> with TickerProviderStateMixin
       },
       child: Scaffold(
         resizeToAvoidBottomInset: false,
+        backgroundColor: Colors.black,
         body: BlocProvider.value(
           value: _cubit,
           child: BlocListener<MeetingCubit, MeetingState>(
@@ -138,7 +141,6 @@ class _MeetingPageState extends State<MeetingPage> with TickerProviderStateMixin
 
   Widget _buildJoining() {
     return Container(
-      color: Colors.black,
       width: double.infinity,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -167,297 +169,11 @@ class _MeetingPageState extends State<MeetingPage> with TickerProviderStateMixin
   }
 
   Widget _buildJoinedState(MeetingJoined state) {
-    bool isLandScape = MediaQuery.of(context).orientation == Orientation.landscape;
-    Widget previewView = const SizedBox();
-
-    if (!isLandScape && state.remoteUsers.isNotEmpty && state.previewUser != null) {
-      previewView = VideoView(
-        avatarUrl: null,
-        user: state.previewUser,
-        fullScreen: false,
-        resolution: VideoResolution.Resolution360,
-      );
-    }
-    Widget fullScreenView = VideoView(
-      avatarUrl: null,
-      user: state.fullscreenUser,
-      fullScreen: true,
-      isPiPView: true,
-      sharing: state.fullscreenUser.isSharing,
-      resolution: VideoResolution.Resolution360,
-    );
-
-    final media = MediaQuery.of(context);
-
-    final double sizeComponentWidth = 100.0;
-    final double sizeComponentHeight = 45.0;
-    Widget headerWidget = Container(
-      padding: EdgeInsets.only(top: media.padding.top),
-      height: sizeComponentHeight + media.padding.top,
-      color: Colors.black.withOpacity(0.5),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          // Switch camera
-          Container(
-            width: sizeComponentWidth,
-            height: sizeComponentHeight,
-            alignment: Alignment.centerLeft,
-            padding: EdgeInsets.only(left: 8.0),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                IconButton(
-                  onPressed: () {
-                    _pipMode(media.size);
-                    Navigator.pop(context);
-                  },
-                  icon: Icon(
-                    Icons.keyboard_arrow_down,
-                    color: Colors.white,
-                    size: 24.0,
-                  ),
-                ),
-                const SizedBox(width: 8.0),
-                ValueListenableBuilder(
-                  valueListenable: _cubit.haveMultipleCamera,
-                  builder: (context, value, child) {
-                    if (!value) {
-                      return const SizedBox();
-                    }
-                    return IconButton(
-                      onPressed: () => _cubit.switchCamera(),
-                      icon: Image.asset(
-                        R.drawable.ic_zoom_camera_switch,
-                      ),
-                    );
-                  },
-                ),
-              ],
-            ),
-          ),
-          // Session name
-          Expanded(
-            child: Center(
-              child: FutureBuilder<String?>(
-                  future: _cubit.sessionName,
-                  builder: (context, snapshot) {
-                    return Text(
-                      snapshot.data ?? '',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 18.0,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    );
-                  }),
-            ),
-          ),
-          // Speaker
-          Container(
-            width: sizeComponentWidth,
-            height: sizeComponentHeight,
-            alignment: Alignment.centerRight,
-            padding: EdgeInsets.only(right: 8.0),
-            child: ValueListenableBuilder(
-              valueListenable: _cubit.currentSpeaker,
-              builder: (context, value, _) {
-                final icon = value == SpeakerMode.speaker
-                    ? Icons.volume_up
-                    : value == SpeakerMode.telephony
-                        ? Icons.phone
-                        : Icons.volume_off;
-                return IconButton(
-                  onPressed: () => _switchSpeaker(context),
-                  icon: Icon(
-                    icon,
-                    color: Colors.white,
-                    size: 24.0,
-                  ),
-                );
-              },
-            ),
-          ),
-        ],
-      ),
-    );
-    Widget floatingWidget = Align(
-      alignment: Alignment.topRight,
-      child: Padding(
-        padding: const EdgeInsets.only(top: 12.0, right: 12.0),
-        child: previewView,
-      ),
-    );
-    Widget controlsWidget = _buildControls();
     return Stack(
       children: [
-        Positioned.fill(child: fullScreenView),
-        Positioned.fill(
-          child: TopBottomControlAutohideWidget(
-            key: isLandScape ? UniqueKey() : null,
-            topWidget: headerWidget,
-            topWidgetHeight: sizeComponentHeight,
-            bottomWidget: controlsWidget,
-            bottomWidgetHeight: 100.0,
-            floatingRightWidget: floatingWidget,
-          ),
-        ),
+        Positioned.fill(child: _buildBackgroundView()),
+        Positioned.fill(child: _buildForegroundView()),
       ],
-    );
-  }
-
-  // build controls
-  Widget _buildControls() {
-    return Container(
-      color: Colors.black.withOpacity(0.5),
-      padding: const EdgeInsets.symmetric(horizontal: 4.0),
-      child: Builder(
-        builder: (context) {
-          final media = MediaQuery.of(context);
-          Widget listActions = Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              // Chat
-              ValueListenableBuilder(
-                valueListenable: _cubit.haveNewChat,
-                child: _buttonIconWithTextBelow(
-                  R.drawable.ic_zoom_chat,
-                  'Trò chuyện',
-                  _showChat,
-                  isOff: false,
-                ),
-                builder: (__, value, child) {
-                  return Stack(
-                    children: [
-                      child!,
-                      if (value)
-                        Positioned(
-                          top: 12.0,
-                          right: 12.0,
-                          child: Container(
-                            width: 12.0,
-                            height: 12.0,
-                            decoration: BoxDecoration(
-                              color: Colors.red,
-                              shape: BoxShape.circle,
-                            ),
-                          ),
-                        ),
-                    ],
-                  );
-                },
-              ),
-
-              // Camera
-              FutureBuilder(
-                future: _cubit.user?.videoStatus?.isOn(),
-                builder: (context, snapshot) {
-                  bool isVideoOn = snapshot.data ?? false;
-                  return _buttonIconWithTextBelow(
-                    isVideoOn ? R.drawable.ic_zoom_video_on : R.drawable.ic_zoom_video_off,
-                    isVideoOn ? 'Tắt camera' : 'Bật camera',
-                    _cubit.toggleVideo,
-                    isOff: !isVideoOn,
-                  );
-                },
-              ),
-
-              // Audio
-              FutureBuilder(
-                future: _cubit.user?.audioStatus?.isMuted(),
-                builder: (context, snapshot) {
-                  bool isMuted = snapshot.data ?? false;
-                  return _buttonIconWithTextBelow(
-                    isMuted ? R.drawable.ic_zoom_audio_off : R.drawable.ic_zoom_audio_on,
-                    isMuted ? 'Bật âm' : 'Tắt âm',
-                    _cubit.toggleAudio,
-                    isOff: isMuted,
-                  );
-                },
-              ),
-
-              // More
-              // _buttonIconWithTextBelow(
-              //   R.drawable.ic_zoom_more,
-              //   'Xem thêm',
-              //   _moreAction,
-              //   isOff: false,
-              // ),
-
-              // Leave
-              _buttonIconWithTextBelow(
-                R.drawable.ic_zoom_end,
-                'Kết thúc',
-                () => _confirmAndQuitSession(context),
-                isOff: true,
-                backgroundColor: Color(0xFFD85140),
-              ),
-            ],
-          );
-          listActions = Padding(
-            padding: EdgeInsets.only(bottom: media.padding.bottom + 8.0, top: 8.0),
-            child: listActions,
-          );
-          if (media.size.width > 368.0) {
-            return Align(
-              alignment: Alignment.center,
-              child: Container(
-                width: 368.0,
-                child: listActions,
-              ),
-            );
-          }
-          return listActions;
-        },
-      ),
-    );
-  }
-
-  Widget _buttonIconWithTextBelow(
-    String iconPath,
-    String text,
-    void Function()? onPressed, {
-    bool isOff = false,
-    double size = 28.0,
-    Color? backgroundColor,
-  }) {
-    var color = Colors.white.withAlpha(200);
-    return SizedBox(
-      width: 68.0,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          InkWell(
-            onTap: onPressed,
-            child: Container(
-              width: 56.0,
-              height: 56.0,
-              alignment: Alignment.center,
-              clipBehavior: Clip.antiAlias,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: backgroundColor ?? (isOff ? Colors.white : Color(0xFF3D4043)),
-              ),
-              child: Image.asset(
-                iconPath,
-                width: size,
-                height: size,
-              ),
-            ),
-          ),
-          const SizedBox(height: 6.0),
-          Text(
-            text,
-            overflow: TextOverflow.ellipsis,
-            style: TextStyle(
-              color: color,
-              fontSize: 12.0,
-            ),
-          ),
-        ],
-      ),
     );
   }
 
@@ -568,43 +284,312 @@ class _MeetingPageState extends State<MeetingPage> with TickerProviderStateMixin
     );
   }
 
-  // void _moreAction() {
-  //   // show bottom sheet with 3 options
-  //   showModalBottomSheet(
-  //     context: context,
-  //     shape: RoundedRectangleBorder(
-  //       borderRadius: BorderRadius.only(
-  //         topLeft: Radius.circular(12.0),
-  //         topRight: Radius.circular(12.0),
-  //       ),
-  //     ),
-  //     builder: (context) {
-  //       final media = MediaQuery.of(context);
-  //       return Column(
-  //         mainAxisSize: MainAxisSize.min,
-  //         children: [
-  //           SizedBox(height: 20.0),
-  //           ListTile(
-  //             leading: Icon(Icons.person),
-  //             title: Text('Danh sách người tham gia'),
-  //             onTap: () {},
-  //           ),
-  //           ListTile(
-  //             leading: Icon(Icons.settings),
-  //             title: Text('Cài đặt'),
-  //             onTap: () {},
-  //           ),
-  //           ListTile(
-  //             leading: Icon(Icons.info),
-  //             title: Text('Thông tin'),
-  //             onTap: () {},
-  //           ),
-  //           Padding(padding: media.padding),
-  //         ],
-  //       );
-  //     },
-  //   );
-  // }
+  Widget _buildBackgroundView() {
+    // this can be:
+    // - host not join yet graphic
+    // - host video view
+    // - host avatar
+    // ALL inside a Stack view
+    bool isHostJoined = _cubit.isHostJoined;
+    bool isHostVideoOn = _cubit.isHostCameraOn;
+    if (isHostJoined) {
+      final state = _cubit.state as MeetingJoined;
+      if (isHostVideoOn || state.fullscreenUser!.isSharing) {
+        return VideoViewV2(
+          avatarUrl: null,
+          user: state.fullscreenUser,
+          fullScreen: true,
+          isPiPView: true,
+          sharing: state.fullscreenUser!.isSharing,
+          resolution: VideoResolution.Resolution360,
+        );
+      }
+      double expectSized = 120.0;
+      final avatarWidget = Container(
+        clipBehavior: Clip.antiAlias,
+        width: expectSized,
+        height: expectSized,
+        decoration: BoxDecoration(
+          color: R.color.mainColor,
+          borderRadius: BorderRadius.circular(expectSized / 2),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(12.0),
+          child: Icon(Icons.person, size: 72.0, color: R.color.white),
+        ),
+      );
+      return BackgroundPage(
+        background: R.drawable.im_zoom_host_bg,
+        child: Center(child: avatarWidget),
+      );
+    } else {
+      return Container(
+        color: Colors.black,
+        alignment: Alignment.center,
+        child: Column(
+          mainAxisSize: MainAxisSize.max,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[
+            Expanded(flex: 3, child: const SizedBox()),
+            Image.asset(
+              R.drawable.im_zoom_host_empty,
+              width: 175.0,
+              height: 163.0,
+            ),
+            const SizedBox(height: 55.0),
+            Text(
+              'host_not_joined_yet'.tr(),
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 15.0,
+                height: 24.0 / 15.0,
+              ),
+            ),
+            Expanded(flex: 2, child: const SizedBox()),
+          ],
+        ),
+      );
+    }
+  }
+
+  Widget _buildForegroundView() {
+    // this include
+    // - app bar (with title, back button, switch camera)
+    // - preview video view (or avatar)
+    // - spacing
+    // - host camera/mic status
+    // - control buttons
+    bool isLandscape = MediaQuery.of(context).orientation == Orientation.landscape;
+
+    return Column(
+      children: <Widget>[
+        AppBar(
+          actionsIconTheme: IconThemeData(size: 40.0),
+          title: Text(_cubit.args.sessionName),
+          backgroundColor: Colors.transparent,
+          leading: IconButton(
+            icon: Image.asset(R.drawable.ic_zoom_back, width: 40.0, height: 40.0),
+            onPressed: () {
+              _pipMode(MediaQuery.of(context).size);
+              Navigator.pop(context);
+            },
+          ),
+          actions: [
+            ValueListenableBuilder(
+                valueListenable: _cubit.haveMultipleCamera,
+                builder: (context, value, child) {
+                  return IconButton(
+                    icon: Image.asset(R.drawable.ic_zoom_switch_camera),
+                    onPressed: () => _cubit.switchCamera(),
+                  );
+                }),
+          ],
+        ),
+
+        const SizedBox(height: 8.0),
+
+        // preview
+        if (!isLandscape)
+          Align(
+            alignment: Alignment.centerRight,
+            child: Padding(
+              padding: const EdgeInsets.only(right: 16.0),
+              child: _buildPreview(),
+            ),
+          ),
+
+        // spacing
+        Expanded(child: SizedBox()),
+
+        // host camera/mic status
+        if (_cubit.isHostJoined && _cubit.isHostMicOn == false)
+          Padding(
+            padding: const EdgeInsets.only(bottom: 8.0),
+            child: Center(
+              child: Container(
+                height: 28.0,
+                padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(14.0),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Image.asset(R.drawable.ic_zoom_host_off_mic, width: 20.0, height: 20.0),
+                    const SizedBox(width: 4.0),
+                    Text(
+                      'zoom_host_off_mic'.tr(),
+                      style: TextStyle(
+                        color: R.color.textDark,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14.0,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        if (_cubit.isHostJoined && _cubit.isHostCameraOn == false)
+          Padding(
+            padding: const EdgeInsets.only(bottom: 8.0),
+            child: Center(
+              child: Container(
+                height: 28.0,
+                padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(14.0),
+                ),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Image.asset(R.drawable.ic_zoom_host_off_camera, width: 20.0, height: 20.0),
+                    const SizedBox(width: 4.0),
+                    Text(
+                      'zoom_host_off_camera'.tr(),
+                      style: TextStyle(
+                        color: R.color.textDark,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14.0,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+
+        const SizedBox(height: 8.0),
+
+        // control buttons
+        Builder(builder: (context) {
+          final media = MediaQuery.of(context);
+          Color labelColor = Colors.white;
+          double expectSized = 70.0;
+          double expectPadding = 4.0;
+          double finalWidth = 5 * expectSized + 4 * expectPadding;
+          // check if 5 buttons with "expectSized", can fit in the screen, else loop to reduce 2 each time
+          while (finalWidth > media.size.width) {
+            expectSized -= 2.0;
+            expectPadding -= 1.0;
+            finalWidth = 5 * expectSized + 4 * expectPadding;
+          }
+          finalWidth = finalWidth.roundToDouble();
+
+          Widget listActions = Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              // Chat
+              ZoomFunctionalButton(
+                assetPath: R.drawable.ic_zoom_chat,
+                labelText: 'zoom_chat'.tr(),
+                labelColor: labelColor,
+                onPressed: _showChat,
+              ).wrapWidth(expectSized),
+
+              // Camera
+              FutureBuilder(
+                  future: _cubit.user?.videoStatus?.isOn(),
+                  builder: (context, snapshot) {
+                    bool isMyCameraOn = snapshot.data ?? false;
+                    return ZoomFunctionalButton(
+                      assetPath: isMyCameraOn
+                          ? R.drawable.ic_zoom_camera_on
+                          : R.drawable.ic_zoom_camera_off,
+                      labelText: (!isMyCameraOn ? 'camera_turnon' : 'camera_turnon').tr(),
+                      labelColor: labelColor,
+                      onPressed: _cubit.toggleVideo,
+                    ).wrapWidth(expectSized);
+                  }),
+
+              // Mic
+              FutureBuilder(
+                  future: _cubit.user?.audioStatus?.isMuted(),
+                  builder: (context, snapshot) {
+                    bool isMyMicOn = !(snapshot.data ?? true);
+                    return ZoomFunctionalButton(
+                      assetPath: isMyMicOn ? R.drawable.ic_zoom_mic_on : R.drawable.ic_zoom_mic_off,
+                      labelText: (!isMyMicOn ? 'mic_turnon' : 'mic_turnoff').tr(),
+                      labelColor: labelColor,
+                      onPressed: _cubit.toggleAudio,
+                    ).wrapWidth(expectSized);
+                  }),
+
+              // Speaker
+              ValueListenableBuilder(
+                  valueListenable: _cubit.currentSpeaker,
+                  builder: (context, value, _) {
+                    // TODO: missing icons
+                    bool isSpeakerOn =
+                        value == SpeakerMode.speaker || value == SpeakerMode.telephony;
+                    return ZoomFunctionalButton(
+                      assetPath: isSpeakerOn
+                          ? R.drawable.ic_zoom_speaker_off
+                          : R.drawable.ic_zoom_speaker_off,
+                      labelText: (!isSpeakerOn ? 'zoom_speaker_on' : 'zoom_speaker_off').tr(),
+                      labelColor: labelColor,
+                      onPressed: () => _switchSpeaker(context),
+                    ).wrapWidth(expectSized);
+                  }),
+
+              // End call
+              ZoomFunctionalButton(
+                assetPath: R.drawable.ic_zoom_end,
+                labelText: 'zoom_endcall'.tr(),
+                labelColor: labelColor,
+                onPressed: () => _confirmAndQuitSession(context),
+              ).wrapWidth(expectSized),
+            ],
+          );
+          if (media.size.width > finalWidth) {
+            return Align(
+              alignment: Alignment.center,
+              child: Container(
+                width: finalWidth,
+                child: listActions,
+              ),
+            );
+          }
+          listActions = Padding(
+            padding: EdgeInsets.only(bottom: media.padding.bottom + 12.0),
+            child: listActions,
+          );
+          return Center(child: listActions);
+        }),
+      ],
+    );
+  }
+
+  Widget _buildPreview() {
+    final state = _cubit.state as MeetingJoined;
+
+    // wrap max size to render is 90.0 x 160.0
+    final media = MediaQuery.of(context);
+    return MediaQuery(
+      data: media.copyWith(size: Size(90.0, 160.0)),
+      child: Container(
+        width: 90.0,
+        height: 160.0,
+        decoration: BoxDecoration(
+          color: Color(0xFF494949),
+          // borderRadius: BorderRadius.circular(12.0),
+          border: Border.all(color: Colors.white.withOpacity(0.5), width: 1.0),
+        ),
+        clipBehavior: Clip.antiAlias,
+        child: VideoViewV2(
+          avatarUrl: null,
+          user: state.previewUser,
+          fullScreen: false,
+          resolution: VideoResolution.Resolution360,
+        ),
+      ),
+    );
+  }
 
   void _popupSessionEnded(BuildContext context) {
     if (context.mounted == false) return;
@@ -640,5 +625,11 @@ class _MeetingPageState extends State<MeetingPage> with TickerProviderStateMixin
         ],
       ),
     );
+  }
+}
+
+extension on Widget {
+  Widget wrapWidth(double width) {
+    return SizedBox(width: width, child: this);
   }
 }

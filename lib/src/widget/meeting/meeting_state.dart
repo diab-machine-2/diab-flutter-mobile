@@ -16,7 +16,7 @@ class MeetingJoining extends MeetingState {
 class MeetingJoined extends MeetingState {
   final ZoomVideoSdkUser? thisUser;
   final ZoomVideoSdkUser? previewUser;
-  final ZoomVideoSdkUser fullscreenUser;
+  final ZoomVideoSdkUser? fullscreenUser;
   final List<ZoomVideoSdkUser> remoteUsers;
 
   MeetingJoined({
@@ -47,7 +47,7 @@ class MeetingJoined extends MeetingState {
   List<Object> get props => [
         if (thisUser != null) thisUser!,
         if (previewUser != null) previewUser!,
-        fullscreenUser,
+        if (fullscreenUser != null) fullscreenUser!,
         remoteUsers,
       ];
 }

@@ -35,6 +35,34 @@ class MeetingCubit extends Cubit<MeetingState> with WidgetsBindingObserver {
   Future<String?> get sessionName => Future.value('Cuộc họp');
   bool _isRejoining = false;
 
+  // Meeting info
+  List<ZoomVideoSdkUser> _remoteUsers = [];
+  List<ZoomVideoSdkUser> get orderedRemoteUsers {
+    final hostUsers = _remoteUsers.where((user) => user.isHost ?? false).toList();
+    final managerUsers = _remoteUsers.where((user) => user.isManager ?? false).toList();
+    final otherUsers = _remoteUsers
+        .where((user) => !(user.isHost ?? false) && !(user.isManager ?? false))
+        .toList();
+    return [...hostUsers, ...managerUsers, ...otherUsers];
+  }
+
+  ZoomVideoSdkUser? get hostUser {
+    final users = orderedRemoteUsers;
+    if (users.isNotEmpty && users.any((e) => e.isHost ?? false)) {
+      return users.firstWhere((e) => e.isHost ?? e.isManager ?? false);
+    }
+    return null;
+  }
+
+  bool get isHostJoined {
+    return hostUser != null;
+  }
+
+  bool _isHostMicOn = false;
+  bool get isHostMicOn => _isHostMicOn;
+  bool _isHostCameraOn = false;
+  bool get isHostCameraOn => _isHostCameraOn;
+
   // Cached
   ZoomVideoSdkUser? _mySelf;
   ZoomVideoSdkUser? get user => _mySelf;
@@ -49,7 +77,6 @@ class MeetingCubit extends Cubit<MeetingState> with WidgetsBindingObserver {
   // Sharing
   bool _isSharing = false;
   String _sharingUserId = '';
-  List<ZoomVideoSdkUser> _remoteUsers = [];
 
   // Audio
   bool _audioAttached = false;
@@ -372,53 +399,16 @@ class MeetingCubit extends Cubit<MeetingState> with WidgetsBindingObserver {
     final userVideoStatusChangedListener =
         emitter.on(EventType.onUserVideoStatusChanged, (data) async {
       data = data as Map;
-      ZoomVideoSdkUser? mySelf = await _zoom.session.getMySelf();
-      if (mySelf != null) {
-        var userListJson = jsonDecode(data['changedUsers']) as List;
-        List<ZoomVideoSdkUser> userList =
-            userListJson.map((userJson) => ZoomVideoSdkUser.fromJson(userJson)).toList();
-        // Change if mySelf is in the list
-        if (userList.any((e) => e.userId == mySelf.userId)) {
-          _mySelf = mySelf;
-          if (state is MeetingJoined) {
-            FutureFunc action = () async => await _sendJoinedState(
-                  thisUser: mySelf,
-                  remoteUsers: _remoteUsers,
-                );
-            _actionQueue.enqueue(action);
-          }
-        } else {
-          _remoteUsers = (await _zoom.session.getRemoteUsers()) ?? [];
-          FutureFunc action = () async => await _sendJoinedState(
-                thisUser: mySelf,
-                remoteUsers: _remoteUsers,
-              );
-          _actionQueue.enqueue(action);
-        }
-        return;
-      }
+      FutureFunc action = () async => await _sendJoinedState();
+      _actionQueue.enqueue(action);
     });
     meetingEvents.add(userVideoStatusChangedListener);
 
     // * Audio status of a user changed
     final userAudioStatusChangedListener =
         emitter.on(EventType.onUserAudioStatusChanged, (data) async {
-      data = data as Map;
-      ZoomVideoSdkUser? mySelf = await _zoom.session.getMySelf();
-      if (mySelf != null) {
-        var userListJson = jsonDecode(data['changedUsers']) as List;
-        List<ZoomVideoSdkUser> userList =
-            userListJson.map((userJson) => ZoomVideoSdkUser.fromJson(userJson)).toList();
-        // Change if mySelf is in the list
-        if (userList.any((e) => e.userId == mySelf.userId)) {
-          _mySelf = mySelf;
-          if (state is MeetingJoined) {
-            MeetingJoined newState = (state as MeetingJoined).copyWith(thisUser: mySelf);
-            emit(newState);
-          }
-        }
-        return;
-      }
+      FutureFunc action = () async => await _sendJoinedState();
+      _actionQueue.enqueue(action);
     });
     meetingEvents.add(userAudioStatusChangedListener);
 
@@ -432,24 +422,12 @@ class MeetingCubit extends Cubit<MeetingState> with WidgetsBindingObserver {
             : ZoomVideoSdkUser.fromJson(jsonDecode(data['user'].toString()));
         _isSharing = true;
         _sharingUserId = shareUser?.userId ?? '';
-        _remoteUsers = (await _zoom.session.getRemoteUsers()) ?? [];
-        ZoomVideoSdkUser? mySelf = await _zoom.session.getMySelf();
-        if (mySelf != null) {
-          FutureFunc action = () async => await _sendJoinedState(
-                thisUser: mySelf,
-                remoteUsers: _remoteUsers,
-              );
-          _actionQueue.enqueue(action);
-        }
       } else {
         _isSharing = false;
         _sharingUserId = '';
-        FutureFunc action = () async => await _sendJoinedState(
-              thisUser: _mySelf!,
-              remoteUsers: await _zoom.session.getRemoteUsers() ?? [],
-            );
-        _actionQueue.enqueue(action);
       }
+      FutureFunc action = () async => await _sendJoinedState();
+      _actionQueue.enqueue(action);
     });
     meetingEvents.add(userShareStatusChangeListener);
 
@@ -469,12 +447,7 @@ class MeetingCubit extends Cubit<MeetingState> with WidgetsBindingObserver {
     // * Other user joined the session
     final userJoinListener = emitter.on(EventType.onUserJoin, (data) async {
       data = data as Map;
-      var userListJson = jsonDecode(data['remoteUsers']) as List;
-      List<ZoomVideoSdkUser> remoteUsers =
-          userListJson.map((userJson) => ZoomVideoSdkUser.fromJson(userJson)).toList();
-      _remoteUsers = remoteUsers;
-      FutureFunc action =
-          () async => await _sendJoinedState(thisUser: _mySelf!, remoteUsers: _remoteUsers);
+      FutureFunc action = () async => await _sendJoinedState();
       _actionQueue.enqueue(action);
     });
     meetingEvents.add(userJoinListener);
@@ -482,15 +455,8 @@ class MeetingCubit extends Cubit<MeetingState> with WidgetsBindingObserver {
     // * Other user left the session
     final userLeaveListener = emitter.on(EventType.onUserLeave, (data) async {
       data = data as Map;
-      var userListJson = jsonDecode(data['remoteUsers']) as List;
-      List<ZoomVideoSdkUser> remoteUsers =
-          userListJson.map((userJson) => ZoomVideoSdkUser.fromJson(userJson)).toList();
-      _remoteUsers = remoteUsers;
-      if (_mySelf != null) {
-        FutureFunc action =
-            () async => await _sendJoinedState(thisUser: _mySelf!, remoteUsers: _remoteUsers);
-        _actionQueue.enqueue(action);
-      }
+      FutureFunc action = () async => await _sendJoinedState();
+      _actionQueue.enqueue(action);
     });
     meetingEvents.add(userLeaveListener);
 
@@ -538,18 +504,13 @@ class MeetingCubit extends Cubit<MeetingState> with WidgetsBindingObserver {
       }
       _latestSessionId = value;
     });
-    ZoomVideoSdkUser mySelf = ZoomVideoSdkUser.fromJson(jsonDecode(sessionUser.toString()));
-    _mySelf = mySelf;
-    List<ZoomVideoSdkUser>? otherUsers = await _zoom.session.getRemoteUsers();
-    _remoteUsers = otherUsers ?? [];
     // Prepare audio
     bool isTelephonySupport = await _zoom.audioHelper.canSwitchSpeaker();
     if (!isTelephonySupport) {
       _speakerModes.remove(SpeakerMode.telephony);
     }
 
-    FutureFunc action =
-        () async => await _sendJoinedState(thisUser: mySelf, remoteUsers: _remoteUsers);
+    FutureFunc action = () async => await _sendJoinedState();
     _actionQueue.enqueue(action);
   }
 
@@ -566,24 +527,31 @@ class MeetingCubit extends Cubit<MeetingState> with WidgetsBindingObserver {
     emit(MeetingLeaving());
   }
 
-  Future<void> _sendJoinedState({
-    required ZoomVideoSdkUser thisUser,
-    List<ZoomVideoSdkUser> remoteUsers = const [],
-  }) async {
+  Future<void> _sendJoinedState() async {
+    if (_actionQueue.isNotEmpty) {
+      return;
+    }
+    final thisUser = await _zoom.session.getMySelf();
+    if (thisUser == null) {
+      return;
+    }
+    _mySelf = thisUser;
+    _remoteUsers = (await _zoom.session.getRemoteUsers()) ?? [];
     // Just this user in the session
-    if (remoteUsers.isEmpty) {
+    if (_remoteUsers.isEmpty) {
       final newState = MeetingJoined(
         thisUser: thisUser,
-        previewUser: null,
+        previewUser: thisUser,
         fullscreenUser: thisUser,
-        remoteUsers: remoteUsers,
+        remoteUsers: _remoteUsers,
       );
       emit(newState);
     } else {
       // Someone is sharing screen
+      final users = orderedRemoteUsers;
       ZoomVideoSdkUser? sharingUser;
       if (_isSharing) {
-        for (var user in remoteUsers) {
+        for (var user in users) {
           if (user.userId == _sharingUserId) {
             user.isSharing = true;
             sharingUser = user;
@@ -592,21 +560,15 @@ class MeetingCubit extends Cubit<MeetingState> with WidgetsBindingObserver {
         }
       }
 
-      // Priority: Host > Manager > Attendee (any with video on)
+      // Priority: Host > Manager
       ZoomVideoSdkUser? hostUser = null;
 
-      final hostUsers = remoteUsers.where((user) => user.isHost ?? false).toList();
-      final managerUsers = remoteUsers.where((user) => user.isManager ?? false).toList();
-      final otherUsers = remoteUsers
-          .where((user) => !(user.isHost ?? false) && !(user.isManager ?? false))
-          .toList();
-      final orderedUsers = [...hostUsers, ...managerUsers, ...otherUsers];
-
       ZoomVideoSdkUser? hostSharingAndVideoOn;
-      for (var user in orderedUsers) {
+      for (var user in users) {
         bool isVideoOn = await user.videoStatus?.isOn() ?? false;
         if ((user.isHost ?? false) && isVideoOn) {
           hostUser = user;
+          _isHostCameraOn = true;
           if (_isSharing) {
             hostSharingAndVideoOn = user;
           }
@@ -614,18 +576,25 @@ class MeetingCubit extends Cubit<MeetingState> with WidgetsBindingObserver {
         }
         if ((user.isManager ?? false) && isVideoOn) {
           hostUser = user;
+          _isHostCameraOn = true;
           if (_isSharing) {
             hostSharingAndVideoOn = user;
           }
           break;
         }
-        if (isVideoOn) {
-          hostUser = user;
-          break;
+      }
+
+      if (hostUser == null) {
+        _isHostCameraOn = false;
+        if (users.isNotEmpty && (users.first.isHost ?? users.first.isManager ?? false)) {
+          hostUser = users.first;
         }
       }
-      if (hostUser == null) {
-        hostUser = orderedUsers.first;
+
+      // have camera/sharing
+      if (hostUser != null) {
+        // check mic status
+        _isHostMicOn = !(await hostUser.audioStatus?.isMuted() ?? true);
       }
 
       if (sharingUser != null) {
@@ -637,7 +606,7 @@ class MeetingCubit extends Cubit<MeetingState> with WidgetsBindingObserver {
               thisUser: thisUser,
               previewUser: hostSharingAndVideoOn ?? thisUser,
               fullscreenUser: thisUser,
-              remoteUsers: orderedUsers,
+              remoteUsers: users,
             );
             emit(newState);
           } else {
@@ -645,7 +614,7 @@ class MeetingCubit extends Cubit<MeetingState> with WidgetsBindingObserver {
               thisUser: thisUser,
               previewUser: hostSharingAndVideoOn ?? thisUser,
               fullscreenUser: thisUser,
-              remoteUsers: orderedUsers,
+              remoteUsers: users,
             );
             emit(newState);
           }
@@ -657,7 +626,7 @@ class MeetingCubit extends Cubit<MeetingState> with WidgetsBindingObserver {
               thisUser: thisUser,
               previewUser: hostSharingAndVideoOn ?? thisUser,
               fullscreenUser: sharingUser,
-              remoteUsers: orderedUsers,
+              remoteUsers: users,
             );
             emit(newState);
           } else {
@@ -665,7 +634,7 @@ class MeetingCubit extends Cubit<MeetingState> with WidgetsBindingObserver {
               thisUser: thisUser,
               previewUser: hostSharingAndVideoOn ?? thisUser,
               fullscreenUser: sharingUser,
-              remoteUsers: orderedUsers,
+              remoteUsers: users,
             );
             emit(newState);
           }
@@ -678,7 +647,7 @@ class MeetingCubit extends Cubit<MeetingState> with WidgetsBindingObserver {
             thisUser: thisUser,
             previewUser: thisUser,
             fullscreenUser: hostUser,
-            remoteUsers: orderedUsers,
+            remoteUsers: users,
           );
           emit(newState);
         } else {
@@ -686,7 +655,7 @@ class MeetingCubit extends Cubit<MeetingState> with WidgetsBindingObserver {
             thisUser: thisUser,
             previewUser: thisUser,
             fullscreenUser: hostUser,
-            remoteUsers: orderedUsers,
+            remoteUsers: users,
           );
           emit(newState);
         }
