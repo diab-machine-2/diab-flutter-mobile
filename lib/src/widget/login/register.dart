@@ -40,20 +40,20 @@ class _RegisterControllerState extends State<RegisterController> {
   FocusNode phoneFocusNode = FocusNode();
   FocusNode passwordFocusNode = FocusNode();
   FocusNode confirmPasswordFocusNode = FocusNode();
-  FocusNode referralCodeFocusNode = FocusNode();
+  FocusNode? referralCodeFocusNode;
 
   final AppRepository _appRepository = AppRepository();
 
   final GlobalKey<TextFieldCustomState> phoneKey = GlobalKey();
   final GlobalKey<TextFieldCustomState> passwordKey = GlobalKey();
   final GlobalKey<TextFieldCustomState> confirmPasswordKey = GlobalKey();
-  final GlobalKey<TextFieldCustomState> referralCodeKey = GlobalKey();
+  GlobalKey<TextFieldCustomState>? referralCodeKey;
 
   String phone = '';
   String password = '';
   String confirmPassword = '';
   late String referralCode;
-  late bool isReferralCodeExist = DynamicLinkConfig.instance.referalCode != null;
+  bool isReferralCodeExist = false;
 
   bool checked = false;
 
@@ -62,6 +62,11 @@ class _RegisterControllerState extends State<RegisterController> {
     super.initState();
     final String? referalCode = DynamicLinkConfig.instance.referalCode;
     referralCode = referalCode ?? "";
+    isReferralCodeExist = referralCode.isNotEmpty;
+    if (!isReferralCodeExist) {
+      referralCodeFocusNode = FocusNode();
+      referralCodeKey = GlobalKey();
+    }
     firebaseSetup();
   }
 
@@ -152,7 +157,7 @@ class _RegisterControllerState extends State<RegisterController> {
       }
     });
     if (!isReferralCodeExist) {
-      referralCodeFocusNode.addListener(() async {
+      referralCodeFocusNode?.addListener(() async {
         if (passwordFocusNode.hasFocus) {
           await TrackingManager.analytics.logEvent(
             name: 'text_field_focus',
@@ -288,10 +293,10 @@ class _RegisterControllerState extends State<RegisterController> {
                                   if (scanResult is String) {
                                     referralCode = scanResult;
                                     referralCodeKey
-                                        .currentState
+                                        ?.currentState
                                         ?.textEditingController
                                         .text = referralCode;
-                                    referralCodeKey.currentState
+                                    referralCodeKey?.currentState
                                         ?.valideReferralCode(referralCode);
                                     await TrackingManager.analytics.logEvent(
                                       name: 'scan_qr_success',
@@ -511,7 +516,7 @@ class _RegisterControllerState extends State<RegisterController> {
     }
 
     if (referralCode.isNotEmpty) {
-      if (!referralCodeKey.currentState!.isCorrect) {
+      if (referralCodeKey != null && !referralCodeKey!.currentState!.isCorrect) {
         return;
       }
     }
