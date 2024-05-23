@@ -487,4 +487,5 @@ class Drawables {
   String get ic_zoom_end => "lib/res/drawables/zoom/ic_zoom_end.png";
   String get ic_zoom_host_off_mic => "lib/res/drawables/zoom/ic_zoom_host_off_mic.png";
   String get ic_zoom_host_off_camera => "lib/res/drawables/zoom/ic_zoom_host_off_camera.png";
+  String get ic_zoom_send_chat => "lib/res/drawables/zoom/ic_zoom_send_chat.png";
 }

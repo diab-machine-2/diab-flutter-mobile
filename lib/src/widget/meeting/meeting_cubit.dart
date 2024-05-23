@@ -439,8 +439,9 @@ class MeetingCubit extends Cubit<MeetingState> with WidgetsBindingObserver {
         _haveNewChatNotifier.value = true;
       }
       final transformedMessage = MeetingMessage.fromZoomVideoSdkChatMessage(message);
-      _chatMessagesNotifier.value = [transformedMessage, ..._chatMessagesNotifier.value];
-      _latestChatMessages = _chatMessagesNotifier.value;
+      final List<MeetingMessage> messages = _addNewMessageAndCheckMetadata(transformedMessage, _chatMessagesNotifier.value);
+      _chatMessagesNotifier.value = messages;
+      _latestChatMessages = messages;
     });
     meetingEvents.add(chatMessageReceivedListener);
 
@@ -525,6 +526,27 @@ class MeetingCubit extends Cubit<MeetingState> with WidgetsBindingObserver {
     });
 
     emit(MeetingLeaving());
+  }
+
+// 
+  List<MeetingMessage> _addNewMessageAndCheckMetadata(MeetingMessage newMessage, List<MeetingMessage> messages) {
+    // check isFirstMessage and isEndOfGroup
+    if (messages.isEmpty) {
+      newMessage.isFirstMessage = true;
+      newMessage.isEndOfGroup = true;
+    } else {
+      final lastMessage = messages.first;
+      if (lastMessage.senderUser.userId != newMessage.senderUser.userId) {
+        newMessage.isFirstMessage = true;
+        newMessage.isEndOfGroup = true;
+      } else {
+        // same sender
+        lastMessage.isEndOfGroup = false;
+        newMessage.isFirstMessage = false;
+        newMessage.isEndOfGroup = true;
+      }
+    }
+    return [newMessage, ...messages];
   }
 
   Future<void> _sendJoinedState() async {

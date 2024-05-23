@@ -226,6 +226,7 @@ class _MeetingPageState extends State<MeetingPage> with TickerProviderStateMixin
           expand: false,
           builder: (context, scrollController) {
             return ChatView(
+              thisUserId: _cubit.user?.userId ?? '--',
               messagesValueNotifier: _cubit.chatMessages,
               onSendMessage: _cubit.sendChatToAll,
               textEditingController: chatController,
