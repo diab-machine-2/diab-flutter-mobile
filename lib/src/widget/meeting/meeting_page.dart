@@ -296,9 +296,8 @@ class _MeetingPageState extends State<MeetingPage> with TickerProviderStateMixin
   }
 
   void _switchSpeaker() {
-    SpeakerMode nextMode = _cubit.currentSpeaker.value == SpeakerMode.speaker
-        ? SpeakerMode.off
-        : SpeakerMode.speaker;
+    SpeakerMode nextMode =
+        _cubit.currentSpeaker.value == SpeakerMode.speaker ? SpeakerMode.off : SpeakerMode.speaker;
     _cubit.switchSpeaker(nextMode);
   }
 
@@ -648,17 +647,11 @@ class _MeetingPageState extends State<MeetingPage> with TickerProviderStateMixin
     if (context.mounted == false) return;
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text('Cuộc họp đã kết thúc'),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.popUntil(context, _rootPredicate);
-            },
-            child: Text('Đóng'),
-          ),
-        ],
-      ),
+      builder: (context) => _buildDialogInfoThenQuit('zoom_meeting_ended'.tr(), () {
+        _confirmQuit = true;
+        _cubit.leaveSession();
+        Navigator.popUntil(context, _rootPredicate);
+      }),
     );
   }
 
@@ -666,16 +659,54 @@ class _MeetingPageState extends State<MeetingPage> with TickerProviderStateMixin
     if (context.mounted == false) return;
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text('Đã có lỗi xảy ra'),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.popUntil(context, _rootPredicate);
-            },
-            child: Text('Đóng'),
-          ),
-        ],
+      builder: (context) => _buildDialogInfoThenQuit('error_unexpected_error'.tr(), () {
+        _confirmQuit = true;
+        _cubit.leaveSession();
+        Navigator.popUntil(context, _rootPredicate);
+      }),
+    );
+  }
+
+  Widget _buildDialogInfoThenQuit(String title, VoidCallback onQuit) {
+    return AlertDialog(
+      contentPadding: EdgeInsets.zero,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12.0),
+      ),
+      clipBehavior: Clip.antiAliasWithSaveLayer,
+      content: Container(
+        width: 343.0,
+        decoration: BoxDecoration(
+          color: Colors.white,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            const SizedBox(height: 22.0),
+            Text(
+              title,
+              style: R.style.alertContent,
+            ),
+            const SizedBox(height: 40.0),
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const SizedBox(width: 16.0),
+                const Expanded(child: SizedBox()),
+                const SizedBox(width: 16.0),
+                Expanded(
+                  child: PrimaryRoundedButton(
+                    title: 'close'.tr(),
+                    onPressed: onQuit,
+                  ),
+                ),
+                const SizedBox(width: 16.0),
+              ],
+            ),
+            const SizedBox(height: 16.0),
+          ],
+        ),
       ),
     );
   }
