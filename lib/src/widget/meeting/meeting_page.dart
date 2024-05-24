@@ -12,6 +12,8 @@ import 'package:medical/src/service/zoom_service.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/meeting/meeting_page_pip.dart';
 import 'package:medical/src/widgets/background_page.dart';
+import 'package:medical/src/widgets/button/primary_rounded_button.dart';
+import 'package:medical/src/widgets/button/secondary_rounded_button.dart';
 
 import 'widgets/chat_view.dart';
 import 'meeting_cubit.dart';
@@ -182,28 +184,81 @@ class _MeetingPageState extends State<MeetingPage> with TickerProviderStateMixin
   }
 
   void _confirmAndQuitSession(BuildContext context) {
+    double width = 343.0;
+
+    // show dialog
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text('Bạn có chắc chắn muốn rời khỏi cuộc họp?'),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-            },
-            child: Text('Hủy'),
+      builder: (context) {
+        return AlertDialog(
+          contentPadding: EdgeInsets.zero,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12.0),
           ),
-          TextButton(
-            onPressed: () async {
-              _confirmQuit = true;
-              _cubit.leaveSession();
-              Observable.instance.notifyObservers([], notifyName: "mark_completed_calendar");
-              Navigator.popUntil(context, _rootPredicate);
-            },
-            child: Text('Đồng ý'),
+          clipBehavior: Clip.antiAliasWithSaveLayer,
+          content: Container(
+            width: width,
+            decoration: BoxDecoration(
+              color: Colors.white,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: IconButton(
+                    icon: Icon(Icons.close),
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                  ),
+                ),
+                const SizedBox(height: 22.0),
+                Text(
+                  'zoom_leave_title'.tr(),
+                  style: R.style.alertTitle,
+                ),
+                const SizedBox(height: 16.0),
+                Text(
+                  'zoom_leave_content'.tr(),
+                  style: R.style.alertContent,
+                ),
+                const SizedBox(height: 46.0),
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const SizedBox(width: 16.0),
+                    Expanded(
+                      child: SecondaryRoundedButton(
+                        title: 'alert_leave_cancel'.tr(),
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                      ),
+                    ),
+                    const SizedBox(width: 16.0),
+                    Expanded(
+                      child: PrimaryRoundedButton(
+                        title: 'alert_leave_agree'.tr(),
+                        onPressed: () async {
+                          _confirmQuit = true;
+                          _cubit.leaveSession();
+                          Observable.instance
+                              .notifyObservers([], notifyName: "mark_completed_calendar");
+                          Navigator.popUntil(context, _rootPredicate);
+                        },
+                      ),
+                    ),
+                    const SizedBox(width: 16.0),
+                  ],
+                ),
+                const SizedBox(height: 16.0),
+              ],
+            ),
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 
@@ -470,7 +525,7 @@ class _MeetingPageState extends State<MeetingPage> with TickerProviderStateMixin
         Builder(builder: (context) {
           final media = MediaQuery.of(context);
           Color labelColor = Colors.white;
-          double expectSized = 70.0;
+          double expectSized = 72.0;
           double expectPadding = 4.0;
           double finalWidth = 5 * expectSized + 4 * expectPadding;
           // check if 5 buttons with "expectSized", can fit in the screen, else loop to reduce 2 each time
@@ -486,11 +541,46 @@ class _MeetingPageState extends State<MeetingPage> with TickerProviderStateMixin
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               // Chat
-              ZoomFunctionalButton(
-                assetPath: R.drawable.ic_zoom_chat,
-                labelText: 'zoom_chat'.tr(),
-                labelColor: labelColor,
-                onPressed: _showChat,
+              ValueListenableBuilder(
+                child: ZoomFunctionalButton(
+                  assetPath: R.drawable.ic_zoom_chat,
+                  labelText: 'zoom_chat'.tr(),
+                  labelColor: labelColor,
+                  onPressed: _showChat,
+                ),
+                valueListenable: _cubit.countNewChat,
+                builder: (context, value, child) {
+                  bool haveNewMessage = value > 0;
+                  if (haveNewMessage) {
+                    String text = value > 9 ? '9+' : " ${value.toString()} ";
+                    return Stack(
+                      children: [
+                        child!,
+                        Positioned(
+                          top: 2.0,
+                          right: 12.0,
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: Color(0xFFE90101),
+                              borderRadius: BorderRadius.circular(10.0),
+                            ),
+                            clipBehavior: Clip.antiAlias,
+                            padding: const EdgeInsets.symmetric(horizontal: 6.0, vertical: 2.0),
+                            child: Text(
+                              text,
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 14.0,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    );
+                  }
+                  return child!;
+                },
               ).wrapWidth(expectSized),
 
               // Camera
@@ -547,6 +637,10 @@ class _MeetingPageState extends State<MeetingPage> with TickerProviderStateMixin
               ).wrapWidth(expectSized),
             ],
           );
+          listActions = Padding(
+            padding: EdgeInsets.only(bottom: media.padding.bottom / 2 + 8.0),
+            child: listActions,
+          );
           if (media.size.width > finalWidth) {
             return Align(
               alignment: Alignment.center,
@@ -556,10 +650,6 @@ class _MeetingPageState extends State<MeetingPage> with TickerProviderStateMixin
               ),
             );
           }
-          listActions = Padding(
-            padding: EdgeInsets.only(bottom: media.padding.bottom + 12.0),
-            child: listActions,
-          );
           return Center(child: listActions);
         }),
       ],

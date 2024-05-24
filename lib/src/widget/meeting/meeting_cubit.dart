@@ -68,9 +68,9 @@ class MeetingCubit extends Cubit<MeetingState> with WidgetsBindingObserver {
   ZoomVideoSdkUser? get user => _mySelf;
 
   // Chat
-  final ValueNotifier<bool> _haveNewChatNotifier = ValueNotifier(false);
+  final ValueNotifier<int> _countNewChatNotifier = ValueNotifier(0);
+  ValueNotifier<int> get countNewChat => _countNewChatNotifier;
   final ValueNotifier<List<MeetingMessage>> _chatMessagesNotifier = ValueNotifier([]);
-  ValueNotifier<bool> get haveNewChat => _haveNewChatNotifier;
   ValueNotifier<List<MeetingMessage>> get chatMessages => _chatMessagesNotifier;
   bool _chatSheetPresented = false;
 
@@ -328,12 +328,12 @@ class MeetingCubit extends Cubit<MeetingState> with WidgetsBindingObserver {
 
   void startChat() {
     _chatSheetPresented = true;
-    _haveNewChatNotifier.value = false;
+    _countNewChatNotifier.value = 0;
   }
 
   void endChat() {
     _chatSheetPresented = false;
-    _haveNewChatNotifier.value = false;
+    _countNewChatNotifier.value = 0;
   }
 
   Future<void> sendChatToAll(String message) async {
@@ -436,7 +436,7 @@ class MeetingCubit extends Cubit<MeetingState> with WidgetsBindingObserver {
       ZoomVideoSdkChatMessage message =
           ZoomVideoSdkChatMessage.fromJson(jsonDecode(data.toString()));
       if (_mySelf != null && !_chatSheetPresented && message.senderUser.userId != _mySelf!.userId) {
-        _haveNewChatNotifier.value = true;
+        _countNewChatNotifier.value = _countNewChatNotifier.value + 1;
       }
       final transformedMessage = MeetingMessage.fromZoomVideoSdkChatMessage(message);
       final List<MeetingMessage> messages = _addNewMessageAndCheckMetadata(transformedMessage, _chatMessagesNotifier.value);

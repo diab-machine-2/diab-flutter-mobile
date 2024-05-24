@@ -17,4 +17,19 @@ class AppStyle {
         fontWeight: FontWeight.w700,
         color: Colors.white,
       );
+  TextStyle get secondaryButtonText => TextStyle(
+        fontSize: 16,
+        fontWeight: FontWeight.w700,
+        color: R.color.greenGradientBottom,
+      );
+  TextStyle get alertTitle => TextStyle(
+        fontSize: 20,
+        fontWeight: FontWeight.bold,
+        color: R.color.textDark,
+      );
+  TextStyle get alertContent => TextStyle(
+        fontSize: 16,
+        fontWeight: FontWeight.normal,
+        color: R.color.textDark,
+      );
 }
