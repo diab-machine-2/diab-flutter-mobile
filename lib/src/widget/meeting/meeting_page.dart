@@ -295,49 +295,11 @@ class _MeetingPageState extends State<MeetingPage> with TickerProviderStateMixin
     _cubit.endChat();
   }
 
-  void _switchSpeaker(BuildContext context) {
-    // show bottom sheet _cubit.speakerModes + Huỷ
-    showModalBottomSheet(
-      context: context,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(12.0),
-          topRight: Radius.circular(12.0),
-        ),
-      ),
-      builder: (context) {
-        return SafeArea(
-          bottom: true,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              for (var mode in _cubit.speakerModes)
-                ListTile(
-                  leading: Icon(
-                    mode == SpeakerMode.speaker
-                        ? Icons.volume_up
-                        : mode == SpeakerMode.telephony
-                            ? Icons.phone
-                            : Icons.volume_off,
-                  ),
-                  title: Text(mode.name),
-                  onTap: () {
-                    _cubit.switchSpeaker(mode);
-                    Navigator.pop(context);
-                  },
-                ),
-              ListTile(
-                leading: Icon(Icons.close),
-                title: Text('Huỷ'),
-                onTap: () {
-                  Navigator.pop(context);
-                },
-              ),
-            ],
-          ),
-        );
-      },
-    );
+  void _switchSpeaker() {
+    SpeakerMode nextMode = _cubit.currentSpeaker.value == SpeakerMode.speaker
+        ? SpeakerMode.off
+        : SpeakerMode.speaker;
+    _cubit.switchSpeaker(nextMode);
   }
 
   Widget _buildBackgroundView() {
@@ -434,6 +396,7 @@ class _MeetingPageState extends State<MeetingPage> with TickerProviderStateMixin
             ValueListenableBuilder(
                 valueListenable: _cubit.haveMultipleCamera,
                 builder: (context, value, child) {
+                  if (value == false) return const SizedBox();
                   return IconButton(
                     icon: Image.asset(R.drawable.ic_zoom_switch_camera),
                     onPressed: () => _cubit.switchCamera(),
@@ -615,16 +578,15 @@ class _MeetingPageState extends State<MeetingPage> with TickerProviderStateMixin
               ValueListenableBuilder(
                   valueListenable: _cubit.currentSpeaker,
                   builder: (context, value, _) {
-                    // TODO: missing icons
                     bool isSpeakerOn =
                         value == SpeakerMode.speaker || value == SpeakerMode.telephony;
                     return ZoomFunctionalButton(
                       assetPath: isSpeakerOn
-                          ? R.drawable.ic_zoom_speaker_off
+                          ? R.drawable.ic_zoom_speaker_on
                           : R.drawable.ic_zoom_speaker_off,
                       labelText: (!isSpeakerOn ? 'zoom_speaker_on' : 'zoom_speaker_off').tr(),
                       labelColor: labelColor,
-                      onPressed: () => _switchSpeaker(context),
+                      onPressed: () => _switchSpeaker(),
                     ).wrapWidth(expectSized);
                   }),
 

@@ -83,7 +83,7 @@ class MeetingCubit extends Cubit<MeetingState> with WidgetsBindingObserver {
   bool _mutedBeforeOffSpeaker = false;
   final ValueNotifier<SpeakerMode> _currentSpeaker = ValueNotifier(SpeakerMode.speaker);
   ValueNotifier<SpeakerMode> get currentSpeaker => _currentSpeaker;
-  List<SpeakerMode> _speakerModes = [SpeakerMode.speaker, SpeakerMode.telephony, SpeakerMode.off];
+  List<SpeakerMode> _speakerModes = [SpeakerMode.speaker, SpeakerMode.off];
   List<SpeakerMode> get speakerModes => _speakerModes;
 
   // Camera
@@ -507,7 +507,7 @@ class MeetingCubit extends Cubit<MeetingState> with WidgetsBindingObserver {
     });
     // Prepare audio
     bool isTelephonySupport = await _zoom.audioHelper.canSwitchSpeaker();
-    if (!isTelephonySupport) {
+    if (!isTelephonySupport && _speakerModes.contains(SpeakerMode.telephony)) {
       _speakerModes.remove(SpeakerMode.telephony);
     }
 
