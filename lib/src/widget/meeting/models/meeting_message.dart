@@ -31,7 +31,7 @@ class MeetingMessage {
             ? null
             : MeetingUser.fromZoomVideoSdkUser(message.receiverUser!),
         senderUser = MeetingUser.fromZoomVideoSdkUser(message.senderUser),
-        timestamp = message.timestamp.toInt() + 7 * 60 * 60 * 1000,
+        timestamp = message.timestamp.toInt() * 1000,
         isSelfSend = message.isSelfSend,
         isChatToAll = message.isChatToAll,
         messageID = message.messageID {

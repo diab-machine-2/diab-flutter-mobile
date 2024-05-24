@@ -106,11 +106,11 @@ class ChatView extends StatelessWidget {
                         children: isThisUser
                             ? [
                                 const SizedBox(width: 66.0),
-                                Expanded(child: _buildItemOfThisUser(message)),
+                                Flexible(child: _buildItemOfThisUser(message)),
                               ]
                             : [
-                                Expanded(child: _buildItemOfOtherUser(message)),
-                                const SizedBox(width: 66.0),
+                                Flexible(child: _buildItemOfOtherUser(message)),
+                                const SizedBox(width: 66.0)
                               ],
                       ),
                     );
@@ -295,7 +295,7 @@ class ChatView extends StatelessWidget {
         border: Border.all(color: R.color.color0xffE5E5E5, width: 1.0),
       ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.end,
         mainAxisSize: MainAxisSize.min,
         children: [
           _buildContentWidget(message),

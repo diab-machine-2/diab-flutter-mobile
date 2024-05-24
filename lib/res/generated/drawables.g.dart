@@ -478,6 +478,7 @@ class Drawables {
   String get ic_zoom_back => "lib/res/drawables/zoom/ic_zoom_back.png";
   String get ic_zoom_switch_camera => "lib/res/drawables/zoom/ic_zoom_switch_camera.png";
   String get im_zoom_host_bg => "lib/res/drawables/zoom/im_zoom_host_bg.png";
+  String get im_zoom_host_bg_landscape => "lib/res/drawables/zoom/im_zoom_host_bg_landscape.png";
   String get ic_zoom_chat => "lib/res/drawables/zoom/ic_zoom_chat.png";
   String get ic_zoom_camera_on => "lib/res/drawables/zoom/ic_zoom_camera_on.png";
   String get ic_zoom_camera_off => "lib/res/drawables/zoom/ic_zoom_camera_off.png";

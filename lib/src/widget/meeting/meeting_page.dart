@@ -307,6 +307,7 @@ class _MeetingPageState extends State<MeetingPage> with TickerProviderStateMixin
     // - host video view
     // - host avatar
     // ALL inside a Stack view
+    bool isLandscape = MediaQuery.of(context).orientation == Orientation.landscape;
     bool isHostJoined = _cubit.isHostJoined;
     bool isHostVideoOn = _cubit.isHostCameraOn;
     if (isHostJoined) {
@@ -335,11 +336,26 @@ class _MeetingPageState extends State<MeetingPage> with TickerProviderStateMixin
           child: Icon(Icons.person, size: 72.0, color: R.color.white),
         ),
       );
+      if (isLandscape) {
+        return BackgroundPage(
+          background: R.drawable.im_zoom_host_bg_landscape,
+          child: Column(
+            children: [
+              const Expanded(flex: 1, child: SizedBox()),
+              Center(child: avatarWidget),
+              const Expanded(flex: 4, child: SizedBox()),
+            ],
+          ),
+          fit: BoxFit.cover,
+        );
+      }
       return BackgroundPage(
         background: R.drawable.im_zoom_host_bg,
         child: Center(child: avatarWidget),
       );
     } else {
+      int flexTop = isLandscape ? 3 : 3;
+      int flexBottom = isLandscape ? 5 : 2;
       return Container(
         color: Colors.black,
         alignment: Alignment.center,
@@ -347,13 +363,13 @@ class _MeetingPageState extends State<MeetingPage> with TickerProviderStateMixin
           mainAxisSize: MainAxisSize.max,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
-            Expanded(flex: 3, child: const SizedBox()),
+            Expanded(flex: flexTop, child: const SizedBox()),
             Image.asset(
               R.drawable.im_zoom_host_empty,
               width: 175.0,
               height: 163.0,
             ),
-            const SizedBox(height: 55.0),
+            SizedBox(height: isLandscape ? 20.0 : 55.0),
             Text(
               'host_not_joined_yet'.tr(),
               style: TextStyle(
@@ -362,7 +378,7 @@ class _MeetingPageState extends State<MeetingPage> with TickerProviderStateMixin
                 height: 24.0 / 15.0,
               ),
             ),
-            Expanded(flex: 2, child: const SizedBox()),
+            Expanded(flex: flexBottom, child: const SizedBox()),
           ],
         ),
       );
@@ -376,7 +392,72 @@ class _MeetingPageState extends State<MeetingPage> with TickerProviderStateMixin
     // - spacing
     // - host camera/mic status
     // - control buttons
-    bool isLandscape = MediaQuery.of(context).orientation == Orientation.landscape;
+    final media = MediaQuery.of(context);
+    bool isLandscape = media.orientation == Orientation.landscape;
+
+    List<Widget> micCamStatusWidgets = [
+      // host camera/mic status
+      if (_cubit.isHostJoined && _cubit.isHostMicOn == false)
+        Padding(
+          padding: const EdgeInsets.only(bottom: 8.0),
+          child: Center(
+            child: Container(
+              height: 28.0,
+              padding: const EdgeInsets.symmetric(horizontal: 12.0),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(14.0),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Image.asset(R.drawable.ic_zoom_host_off_mic, width: 20.0, height: 20.0),
+                  const SizedBox(width: 4.0),
+                  Text(
+                    'zoom_host_off_mic'.tr(),
+                    style: TextStyle(
+                      color: R.color.textDark,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14.0,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      if (_cubit.isHostJoined && _cubit.isHostCameraOn == false)
+        Padding(
+          padding: const EdgeInsets.only(bottom: 8.0),
+          child: Center(
+            child: Container(
+              height: 28.0,
+              padding: const EdgeInsets.symmetric(horizontal: 12.0),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(14.0),
+              ),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Image.asset(R.drawable.ic_zoom_host_off_camera, width: 20.0, height: 20.0),
+                  const SizedBox(width: 4.0),
+                  Text(
+                    'zoom_host_off_camera'.tr(),
+                    style: TextStyle(
+                      color: R.color.textDark,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14.0,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+    ];
 
     return Column(
       children: <Widget>[
@@ -415,71 +496,33 @@ class _MeetingPageState extends State<MeetingPage> with TickerProviderStateMixin
               child: _buildPreview(),
             ),
           ),
+        if (isLandscape)
+          Padding(
+            padding: EdgeInsets.only(
+              right: 8.0 + media.padding.right,
+              left: 8.0 + media.padding.left,
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              mainAxisSize: MainAxisSize.max,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: micCamStatusWidgets,
+                  ),
+                ),
+                _buildPreview(),
+              ],
+            ),
+          ),
 
         // spacing
         Expanded(child: SizedBox()),
 
         // host camera/mic status
-        if (_cubit.isHostJoined && _cubit.isHostMicOn == false)
-          Padding(
-            padding: const EdgeInsets.only(bottom: 8.0),
-            child: Center(
-              child: Container(
-                height: 28.0,
-                padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(14.0),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Image.asset(R.drawable.ic_zoom_host_off_mic, width: 20.0, height: 20.0),
-                    const SizedBox(width: 4.0),
-                    Text(
-                      'zoom_host_off_mic'.tr(),
-                      style: TextStyle(
-                        color: R.color.textDark,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 14.0,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        if (_cubit.isHostJoined && _cubit.isHostCameraOn == false)
-          Padding(
-            padding: const EdgeInsets.only(bottom: 8.0),
-            child: Center(
-              child: Container(
-                height: 28.0,
-                padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(14.0),
-                ),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Image.asset(R.drawable.ic_zoom_host_off_camera, width: 20.0, height: 20.0),
-                    const SizedBox(width: 4.0),
-                    Text(
-                      'zoom_host_off_camera'.tr(),
-                      style: TextStyle(
-                        color: R.color.textDark,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 14.0,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
+        if (!isLandscape) ...micCamStatusWidgets,
 
         const SizedBox(height: 8.0),
 
@@ -618,15 +661,17 @@ class _MeetingPageState extends State<MeetingPage> with TickerProviderStateMixin
   }
 
   Widget _buildPreview() {
+    final media = MediaQuery.of(context);
+    bool isLandscape = media.orientation == Orientation.landscape;
     final state = _cubit.state as MeetingJoined;
 
     // wrap max size to render is 90.0 x 160.0
-    final media = MediaQuery.of(context);
+    final thisMedia = media.copyWith(size: isLandscape ? Size(160.0, 90.0) : Size(90.0, 160.0));
     return MediaQuery(
-      data: media.copyWith(size: Size(90.0, 160.0)),
+      data: thisMedia,
       child: Container(
-        width: 90.0,
-        height: 160.0,
+        width: thisMedia.size.width,
+        height: thisMedia.size.height,
         decoration: BoxDecoration(
           color: Color(0xFF494949),
           // borderRadius: BorderRadius.circular(12.0),
@@ -683,12 +728,12 @@ class _MeetingPageState extends State<MeetingPage> with TickerProviderStateMixin
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            const SizedBox(height: 22.0),
+            const SizedBox(height: 24.0),
             Text(
               title,
               style: R.style.alertContent,
             ),
-            const SizedBox(height: 40.0),
+            const SizedBox(height: 24.0),
             Row(
               mainAxisSize: MainAxisSize.min,
               children: [
