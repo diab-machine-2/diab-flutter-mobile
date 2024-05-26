@@ -27,7 +27,7 @@ class ZoomService {
 
     Navigator.pushNamed(
       context,
-      NavigatorName.meeting,
+      NavigatorName.meeting_wait_room,
       arguments: args,
     );
   }
@@ -95,6 +95,11 @@ class MeetingArguments {
   final String displayName;
   final String sessionPassword;
   final String sessionIdleTimeoutMins;
+
+  bool isCameraOn = false;
+  bool isCameraInitializedFailed = false;
+  bool isMicOn = false;
+  bool isMicInitializedFailed = false;
 
   MeetingArguments({
     required this.token,

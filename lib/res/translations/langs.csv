@@ -1103,6 +1103,6 @@ zoom_host_off_mic,"Bác sĩ đang tắt âm thanh","The doctor has turned off th
 zoom_chat_hint,Tin nhắn,Message,
 zoom_leave_title,Rời khỏi phòng học,Leave room,
 zoom_leave_content,Bạn có chắc muốn rời khỏi phòng học?,Are you sure you want to leave the room?,
-zoom_meeting_ended,'Cuộc họp đã kết thúc',Meeting ended,
+zoom_meeting_ended,Cuộc họp đã kết thúc,Meeting ended,
 alert_leave_cancel,Hủy,Cancel,
 alert_leave_agree,Đồng ý,Yes,

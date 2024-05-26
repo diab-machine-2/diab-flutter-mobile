@@ -87,7 +87,8 @@ class MeetingCubit extends Cubit<MeetingState> with WidgetsBindingObserver {
   List<SpeakerMode> get speakerModes => _speakerModes;
 
   // Camera
-  bool _initVideoOn = false;
+  late bool _initVideoOn = args.isCameraOn;
+  late bool _initAudioOn = args.isMicOn;
   bool _videoStatisticChecked = false;
   final ValueNotifier<bool> _haveMultipleCamera = ValueNotifier(false);
   ValueNotifier<bool> get haveMultipleCamera => _haveMultipleCamera;
@@ -186,6 +187,9 @@ class MeetingCubit extends Cubit<MeetingState> with WidgetsBindingObserver {
   }
 
   void toggleAudio() async {
+    if (args.isMicInitializedFailed) {
+      return;
+    }
     if (_currentSpeaker.value == SpeakerMode.off) {
       return;
     }
@@ -212,6 +216,9 @@ class MeetingCubit extends Cubit<MeetingState> with WidgetsBindingObserver {
   }
 
   void toggleVideo() async {
+    if (args.isCameraInitializedFailed) {
+      return;
+    }
     ZoomVideoSdkUser? mySelf = await _zoom.session.getMySelf();
     if (mySelf != null) {
       final videoStatus = mySelf.videoStatus;
@@ -268,6 +275,9 @@ class MeetingCubit extends Cubit<MeetingState> with WidgetsBindingObserver {
 
   bool _lastVideoStatus = false;
   void _turnoffVideoPreviewIfNeeded() async {
+    if (state is! MeetingJoined || args.isCameraInitializedFailed) {
+      return;
+    }
     ZoomVideoSdkUser? mySelf = await _zoom.session.getMySelf();
     if (mySelf != null) {
       final videoStatus = mySelf.videoStatus;
@@ -282,6 +292,9 @@ class MeetingCubit extends Cubit<MeetingState> with WidgetsBindingObserver {
   }
 
   void _turnonVideoPreviewIfNeeded() async {
+    if (state is! MeetingJoined || args.isCameraInitializedFailed) {
+      return;
+    }
     if (!_lastVideoStatus) {
       return;
     }
@@ -297,6 +310,9 @@ class MeetingCubit extends Cubit<MeetingState> with WidgetsBindingObserver {
 
   bool _lastAudioStatus = false;
   void _turnoffAudioIfNeeded() async {
+    if (state is! MeetingJoined || args.isMicInitializedFailed) {
+      return;
+    }
     ZoomVideoSdkUser? mySelf = await _zoom.session.getMySelf();
     if (mySelf != null) {
       final audioStatus = mySelf.audioStatus;
@@ -311,6 +327,9 @@ class MeetingCubit extends Cubit<MeetingState> with WidgetsBindingObserver {
   }
 
   void _turnonAudioIfNeeded() async {
+    if (state is! MeetingJoined || args.isMicInitializedFailed) {
+      return;
+    }
     if (!_lastAudioStatus) {
       return;
     }
@@ -360,7 +379,7 @@ class MeetingCubit extends Cubit<MeetingState> with WidgetsBindingObserver {
     try {
       Map<String, bool> audioOptions = {
         "connect": true,
-        "mute": true,
+        "mute": !_initAudioOn,
         "autoAdjustSpeakerVolume": false
       };
       Map<String, bool> videoOptions = {

@@ -95,7 +95,7 @@ class _MeetingPreparePageState extends State<MeetingPreparePage> {
 
     Navigator.pushNamed(
       context,
-      NavigatorName.meeting,
+      NavigatorName.meeting_wait_room,
       arguments: args,
     );
   }

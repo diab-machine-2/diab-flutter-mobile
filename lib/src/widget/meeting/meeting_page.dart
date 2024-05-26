@@ -218,11 +218,16 @@ class _MeetingPageState extends State<MeetingPage> with TickerProviderStateMixin
                 Text(
                   'zoom_leave_title'.tr(),
                   style: R.style.alertTitle,
+                  textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 16.0),
-                Text(
-                  'zoom_leave_content'.tr(),
-                  style: R.style.alertContent,
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: Text(
+                    'zoom_leave_content'.tr(),
+                    style: R.style.alertContent,
+                    textAlign: TextAlign.center,
+                  ),
                 ),
                 const SizedBox(height: 46.0),
                 Row(
@@ -505,6 +510,7 @@ class _MeetingPageState extends State<MeetingPage> with TickerProviderStateMixin
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               mainAxisSize: MainAxisSize.max,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Padding(
                   padding: const EdgeInsets.all(8.0),
@@ -729,9 +735,13 @@ class _MeetingPageState extends State<MeetingPage> with TickerProviderStateMixin
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             const SizedBox(height: 24.0),
-            Text(
-              title,
-              style: R.style.alertContent,
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Text(
+                title,
+                style: R.style.alertContent,
+                textAlign: TextAlign.center,
+              ),
             ),
             const SizedBox(height: 24.0),
             Row(

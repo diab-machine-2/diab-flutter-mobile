@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/service/zoom_service.dart';
+import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/meeting/widgets/zoom_functional_button.dart';
 import 'package:medical/src/widgets/background_page.dart';
 import 'package:medical/src/widgets/button/primary_rounded_button.dart';
@@ -123,7 +124,7 @@ class _MeetingWaitRoomPageState extends State<MeetingWaitRoomPage> {
                           assetPath: _isCameraOn
                               ? R.drawable.ic_zoom_wait_camera_on
                               : R.drawable.ic_zoom_wait_camera_off,
-                          labelText: (!_isCameraOn ? 'camera_turnon' : 'camera_turnon').tr(),
+                          labelText: (_isCameraOn ? 'camera_turnoff' : 'camera_turnon').tr(),
                           labelColor: R.color.primaryGreyColor,
                           onPressed: _toggleCamera,
                         ),
@@ -193,7 +194,14 @@ class _MeetingWaitRoomPageState extends State<MeetingWaitRoomPage> {
     );
   }
 
-  void _startMeeting() {}
+  void _startMeeting() {
+    final args = widget.args;
+    args.isCameraOn = _isCameraOn;
+    args.isCameraInitializedFailed = _isCameraInitializedFailed;
+    args.isMicOn = _isMicOn;
+    args.isMicInitializedFailed = _isMicInitializedFailed;
+    Navigator.pushReplacementNamed(context, NavigatorName.meeting, arguments: args);
+  }
 
   void _toggleCamera() async {
     if (_controller == null || _isCameraInitializedFailed) {
