@@ -222,24 +222,16 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                                     mainAxisAlignment: MainAxisAlignment.start,
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
-                                      Image.network(
-                                        AppSettings
-                                                .userInfo!.ownPackage!.logo ??
-                                            "",
-                                        color: R.color.greenPackage,
-                                        height: 20,
-                                      ),
                                       SizedBox(width: 2),
-                                      Text(
+                                      Image.network(
+                                        height: 40,
                                         AppSettings.userInfo?.ownPackage
-                                                ?.sponsor ??
-                                            "Tài trợ bởi Manulife - Mega",
-                                        textAlign: TextAlign.center,
-                                        overflow: TextOverflow.ellipsis,
-                                        style: TextStyle(
-                                          color: R.color.primaryGreyColor,
-                                          fontWeight: FontWeight.w700,
-                                        ),
+                                                ?.graphic ??
+                                            "",
+                                        errorBuilder:
+                                            (context, error, stackTrace) {
+                                          return SizedBox();
+                                        },
                                       ),
                                     ],
                                   ),
@@ -465,9 +457,11 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                           child: Container(
                             child: Opacity(
                               opacity: 0.15,
-                              child: Image.network(
-                                AppSettings.userInfo!.ownPackage!.logo ?? "",
-                                color: R.color.accentColor,
+                              child: Transform.scale(
+                                scale: 2.5,
+                                child: Image.network(
+                                  AppSettings.userInfo!.ownPackage!.logo ?? "",
+                                ),
                               ),
                             ),
                           ),
