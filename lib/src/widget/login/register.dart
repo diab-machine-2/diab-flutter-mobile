@@ -42,14 +42,14 @@ class RegisterController extends StatefulWidget {
 class _RegisterControllerState extends State<RegisterController> {
   // FocusNode phoneFocusNode = FocusNode();
   FocusNode passwordFocusNode = FocusNode();
-  // FocusNode confirmPasswordFocusNode = FocusNode();
+  FocusNode confirmPasswordFocusNode = FocusNode();
   // FocusNode referralCodeFocusNode = FocusNode();
 
   final AppRepository _appRepository = AppRepository();
 
   final GlobalKey<TextFieldCustomState> phoneKey = GlobalKey();
   final GlobalKey<TextFieldCustomState> passwordKey = GlobalKey();
-  // final GlobalKey<TextFieldCustomState> confirmPasswordKey = GlobalKey();
+  final GlobalKey<TextFieldCustomState> confirmPasswordKey = GlobalKey();
   // final GlobalKey<TextFieldCustomState> referralCodeKey = GlobalKey();
 
   String phone = '';
@@ -126,39 +126,39 @@ class _RegisterControllerState extends State<RegisterController> {
     //     );
     //   }
     // });
-    // confirmPasswordFocusNode.addListener(() async {
-    //   if (passwordFocusNode.hasFocus) {
-    //     await TrackingManager.analytics.logEvent(
-    //       name: 'text_field_focus',
-    //       parameters: {
-    //         "screen_name": 'sign_up',
-    //         'text_field_name': 'text_field_sign_up_confirm',
-    //         'object_value': confirmPassword
-    //       },
-    //     );
-    //   } else {
-    //     String validateState = 'pass';
-    //     String errorMessage = 'none';
-    //     if (confirmPassword.isEmpty) {
-    //       errorMessage = R.string.ban_chua_nhap_lai_mat_khau.tr();
-    //       validateState = 'fail';
-    //     }
-    //     if (confirmPassword != password) {
-    //       errorMessage = R.string.nhap_lai_mat_khau_khong_chinh_xac.tr();
-    //       validateState = 'fail';
-    //     }
-    //     await TrackingManager.analytics.logEvent(
-    //       name: 'text_field_input',
-    //       parameters: {
-    //         "screen_name": 'sign_up',
-    //         'text_field_name': 'text_field_sign_up_confirm',
-    //         'object_value': confirmPassword.length,
-    //         'validate_state': validateState,
-    //         'error_message': errorMessage
-    //       },
-    //     );
-    //   }
-    // });
+    confirmPasswordFocusNode.addListener(() async {
+      if (passwordFocusNode.hasFocus) {
+        await TrackingManager.analytics.logEvent(
+          name: 'text_field_focus',
+          parameters: {
+            "screen_name": 'sign_up',
+            'text_field_name': 'text_field_sign_up_confirm',
+            'object_value': confirmPassword
+          },
+        );
+      } else {
+        String validateState = 'pass';
+        String errorMessage = 'none';
+        if (confirmPassword.isEmpty) {
+          errorMessage = R.string.ban_chua_nhap_lai_mat_khau.tr();
+          validateState = 'fail';
+        }
+        if (confirmPassword != password) {
+          errorMessage = R.string.nhap_lai_mat_khau_khong_chinh_xac.tr();
+          validateState = 'fail';
+        }
+        await TrackingManager.analytics.logEvent(
+          name: 'text_field_input',
+          parameters: {
+            "screen_name": 'sign_up',
+            'text_field_name': 'text_field_sign_up_confirm',
+            'object_value': confirmPassword.length,
+            'validate_state': validateState,
+            'error_message': errorMessage
+          },
+        );
+      }
+    });
     // referralCodeFocusNode.addListener(() async {
     //   if (passwordFocusNode.hasFocus) {
     //     await TrackingManager.analytics.logEvent(
@@ -263,6 +263,16 @@ class _RegisterControllerState extends State<RegisterController> {
                                 password = value;
                               }),
                           const SizedBox(height: 20),
+                          TextFieldCustom(
+                              focusNode: confirmPasswordFocusNode,
+                              key: confirmPasswordKey,
+                              title: R.string.xac_nhan_mat_khau.tr(),
+                              placeholder: R.string.nhap_lai_mat_khau.tr(),
+                              isPassword: true,
+                              onChanged: (value) {
+                                confirmPassword = value;
+                              }),
+                          const SizedBox(height: 20),
                           GestureDetector(
                             onTap: () => submitUpdatePassword(),
                             child: Container(
@@ -323,6 +333,16 @@ class _RegisterControllerState extends State<RegisterController> {
     if (password.contains(' ')) {
       passwordKey.currentState!
           .validate(R.string.mat_khau_khong_chua_khoang_trang.tr());
+      return;
+    }
+    if (confirmPassword.isEmpty) {
+      confirmPasswordKey.currentState!
+          .validate(R.string.ban_chua_nhap_lai_mat_khau.tr());
+      return;
+    }
+    if (confirmPassword != password) {
+      confirmPasswordKey.currentState!
+          .validate(R.string.nhap_lai_mat_khau_khong_chinh_xac.tr());
       return;
     }
     if (password.length < 6) {
@@ -417,16 +437,16 @@ class _RegisterControllerState extends State<RegisterController> {
           .validate(R.string.password_least_character.tr());
       return;
     }
-    // if (confirmPassword.isEmpty) {
-    //   confirmPasswordKey.currentState!
-    //       .validate(R.string.ban_chua_nhap_lai_mat_khau.tr());
-    //   return;
-    // }
-    // if (confirmPassword != password) {
-    //   confirmPasswordKey.currentState!
-    //       .validate(R.string.nhap_lai_mat_khau_khong_chinh_xac.tr());
-    //   return;
-    // }
+    if (confirmPassword.isEmpty) {
+      confirmPasswordKey.currentState!
+          .validate(R.string.ban_chua_nhap_lai_mat_khau.tr());
+      return;
+    }
+    if (confirmPassword != password) {
+      confirmPasswordKey.currentState!
+          .validate(R.string.nhap_lai_mat_khau_khong_chinh_xac.tr());
+      return;
+    }
 
     // if (referralCode.isNotEmpty) {
     //   if (!referralCodeKey.currentState!.isCorrect) {

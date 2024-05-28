@@ -218,6 +218,7 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
                                           height: 30,
                                           child: TextField(
                                             focusNode: nameFocusNode,
+                                            autofocus: true,
                                             maxLength: 50,
                                             inputFormatters: [
                                               LengthLimitingTextFieldFormatterFixed(
@@ -233,9 +234,6 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
                                               hintText:
                                                   R.string.nhap_ho_ten.tr(),
                                               counterText: '',
-                                              hintStyle: TextStyle(
-                                                color: R.color.textDark,
-                                              ),
                                             ),
                                           ),
                                         ),
@@ -526,7 +524,8 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
           "client_secret": Const.CLIENT_SECRET,
           "grant_type": "external",
           "external_token": widget.zaloAccount?.accessToken,
-          "provider": 'Zalo'
+          "provider": 'Zalo',
+          "zalo_id": widget.zaloAccount?.id
         });
       } else if (widget.type == 'google') {
         params['username'] = widget.googleAccount!.id;

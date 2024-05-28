@@ -286,26 +286,29 @@ class _StepListControllerState extends State<StepListController> with Observer {
                                   ),
                                   borderRadius: BorderRadius.circular(200),
                                 ),
-                                child: Center(
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      GestureDetector(
-                                        onTap: () => loginZalo(),
-                                        child: AutoSizeText(
-                                          'Đăng nhập qua Zalo',
-                                          maxLines: 1,
-                                          textAlign: TextAlign.center,
-                                          style: TextStyle(
-                                            color: R.color.white,
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.w700,
-                                          ),
+                                child: GestureDetector(
+                                    onTap: () => loginZalo(),
+                                    child: Row(
+                                      children: [
+                                        SvgPicture.asset(
+                                          width: 24,
+                                          height: 24,
+                                          R.icons.ic_zalo,
                                         ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
+                                        Expanded(
+                                          child: AutoSizeText(
+                                            'Đăng nhập qua Zalo',
+                                            maxLines: 1,
+                                            textAlign: TextAlign.center,
+                                            style: TextStyle(
+                                              color: R.color.white,
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w700,
+                                            ),
+                                          ),
+                                        )
+                                      ],
+                                    )),
                               ),
                               // Expanded(
                               //   child: GestureDetector(
@@ -488,7 +491,8 @@ class _StepListControllerState extends State<StepListController> with Observer {
         "client_secret": Const.CLIENT_SECRET,
         "grant_type": "external",
         "external_token": account.accessToken, // Ensure account is not null
-        "provider": 'Zalo'
+        "provider": 'Zalo',
+        "zalo_id": account.id
       });
       final user = await UserClient().fetchUser();
       if (user == null) {

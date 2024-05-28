@@ -15,7 +15,8 @@ class ZaloService {
     );
     try {
       if (data != null && data['isSuccess'] == true) {
-        final accessToken = data['data']['access_token'] ?? data['data']['accessToken'];
+        final accessToken =
+            data['data']['access_token'] ?? data['data']['accessToken'];
         final profile =
             await ZaloFlutter.getUserProfile(accessToken: accessToken);
         if (profile != null && profile["data"] != null) {
