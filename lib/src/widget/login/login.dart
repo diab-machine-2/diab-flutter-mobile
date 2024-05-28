@@ -159,29 +159,24 @@ class _LoginControllerState extends State<LoginController> {
                     TextFieldCustom(
                       key: phoneKey,
                       focusNode: phoneFocusNode,
+                      autoFocus: true,
                       title: R.string.so_dien_thoai.tr(),
                       placeholder: R.string.nhap_so_dien_thoai.tr(),
                       onChanged: (value) {
                         phone = value;
                       },
                     ),
-                    Opacity(
-                      opacity: isLogin ? 1 : 0,
-                      child: IgnorePointer(
-                        ignoring: !isLogin,
-                        child: TextFieldCustom(
-                          key: passwordKey,
-                          focusNode: passwordFocusNode,
-                          title: R.string.password.tr(),
-                          placeholder: R.string.nhap_mat_khau.tr(),
-                          isPassword: true,
-                          onChanged: (value) {
-                            password = value;
-                          },
-                        ),
+                    if (isLogin) ...[
+                      TextFieldCustom(
+                        key: passwordKey,
+                        focusNode: passwordFocusNode,
+                        title: R.string.password.tr(),
+                        placeholder: R.string.nhap_mat_khau.tr(),
+                        isPassword: true,
+                        onChanged: (value) {
+                          password = value;
+                        },
                       ),
-                    ),
-                    if (isLogin)
                       Container(
                         height: 48,
                         alignment: Alignment.centerRight,
@@ -198,13 +193,17 @@ class _LoginControllerState extends State<LoginController> {
                             Navigator.pushNamed(
                                 context, NavigatorName.forgot_password);
                           },
-                          child: Text(R.string.forgot_password.tr(),
-                              style: TextStyle(
-                                  color: R.color.mainColor,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600)),
+                          child: Text(
+                            R.string.forgot_password.tr(),
+                            style: TextStyle(
+                              color: R.color.mainColor,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
                         ),
                       ),
+                    ],
                     GestureDetector(
                       onTap: () {
                         if (isLogin) {
