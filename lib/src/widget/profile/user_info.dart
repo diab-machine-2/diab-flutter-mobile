@@ -1,4 +1,3 @@
-
 import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
@@ -794,14 +793,22 @@ class _ProfileInfoControllerState extends State<ProfileInfoController>
                           children: [
                             _buildItemProfile(
                               image: R.drawable.ic_phone_info,
-                              title: user.phoneNumber!,
+                              title: user.phoneNumber == null ||
+                                      user.phoneNumber!.isEmpty
+                                  ? R.string.not_updated_yet.tr()
+                                  : user.phoneNumber!,
                               subTitle: R.string.phone_number_1.tr(),
                               isTitleFromSelectedCategory: false,
-                              subIcon: Image.asset(R.drawable.ic_ok,
-                                  width: 24, height: 24),
-                              // callback: (selectedIndexList) {
-                              //   _showDialogUpdatePhone(isPhoneNumber2: false);
-                              // },
+                              subIcon: user.phoneNumber != null &&
+                                      user.phoneNumber != ""
+                                  ? Image.asset(R.drawable.ic_ok,
+                                      width: 24, height: 24)
+                                  : null,
+                              callback: (selectedIndexList) {
+                                if (user.phoneNumber == null ||
+                                    user.phoneNumber == "")
+                                  _showDialogUpdatePhone();
+                              },
                             ),
                             _buildItemProfile(
                               image: R.drawable.ic_phone_info,
