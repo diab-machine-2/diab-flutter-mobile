@@ -47,6 +47,7 @@ import android.widget.RadioButton;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
+import com.zing.zalo.zalosdk.oauth.ZaloSDK;
 
 import com.isens.standard.ble.IBLE_Callback;
 import com.isens.standard.ble.IBLE_Const;
@@ -87,6 +88,12 @@ public class MainActivity extends FlutterActivity {
     protected void onDestroy() {
         IBLE_Manager.getInstance().DestroySDK();
         super.onDestroy();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        ZaloSDK.Instance.onActivityResult(this, requestCode, resultCode, data);
     }
 
     @Override

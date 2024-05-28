@@ -14,6 +14,7 @@ class Icons {
   String get ic_chevron_left => "lib/res/icons/ic_chevron_left.svg";
   String get ic_bluetooth => "lib/res/icons/ic_bluetooth.svg";
   String get ic_device => "lib/res/icons/ic_device.svg";
+  String get ic_zalo => "lib/res/icons/ic_zalo.svg";
   String get ic_docs => "lib/res/icons/ic_docs.svg";
   String get ic_close => "lib/res/icons/ic_close.svg";
   String get ic_tap => "lib/res/icons/ic_tap.svg";

@@ -1,7 +1,9 @@
+import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_in_app_pip/flutter_in_app_pip.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
+import 'package:medical/src/service/zalo_service.dart';
 import 'package:medical/src/service/zoom_service.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 
@@ -26,6 +28,24 @@ class _MeetingPreparePageState extends State<MeetingPreparePage> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Meeting Prepare'),
+        actions: [
+          IconButton(
+            onPressed: () async {
+              try {
+                ZaloLoginResult result = await ZaloService().login();
+                print('ZaloLoginResult: $result');
+                print('ZaloLoginResult: ${result.accessToken}');
+                BotToast.showText(text: 'Logged in successfully');
+              } on ZaloLoginException catch (e) {
+                print('ZaloLoginException: ${e.message}');
+                BotToast.showText(text: e.message);
+              } catch (e) {
+                BotToast.showText(text: 'Login failed - Unknown error');
+              }
+            },
+            icon: Icon(Icons.join_full),
+          ),
+        ],
       ),
       body: Center(
         child: Column(

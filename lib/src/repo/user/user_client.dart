@@ -19,6 +19,7 @@ import 'package:medical/src/modal/user/secure.dart';
 import 'package:medical/src/modal/user/update_profile_request.dart';
 import 'package:medical/src/modal/user/user_model.dart';
 import 'package:medical/src/model/response/app_version_response.dart';
+import 'package:medical/src/utils/app_log.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/helper/http_helper.dart';
@@ -55,6 +56,7 @@ class UserClient extends FetchClient {
     try {
       final Response response =
           await super.fetchData(url: '/App/Patient/mobile/CurrentToken');
+      Console.log('fetchUser', response.data);
       if (response.statusCode == 200) {
         if (response.data['data'] == null) {
           return null;
@@ -230,11 +232,12 @@ class UserClient extends FetchClient {
 
   Future<AppVersionResponse?> getAppVersion(BuildContext context) async {
     AppVersionResponse? appVersionResponse;
-    try {
-      var localVersion = await getVersion(context);
-      final ApiResult<List<AppVersionResponse>> apiResult =
-          await repository.getAppVersion();
-      apiResult.when(success: (List<AppVersionResponse> response) {
+    // try {
+    var localVersion = await getVersion(context);
+    final ApiResult<List<AppVersionResponse>> apiResult =
+        await repository.getAppVersion();
+    apiResult.when(
+      success: (List<AppVersionResponse> response) {
         if (response.isNotEmpty) {
           for (var appVersion in response) {
             if (localVersion == appVersion.version) {
@@ -242,12 +245,14 @@ class UserClient extends FetchClient {
             }
           }
         }
-      }, failure: (NetworkExceptions error) {
+      },
+      failure: (NetworkExceptions error) {
         return appVersionResponse;
-      });
-    } catch (error) {
-      return appVersionResponse;
-    }
+      },
+    );
+    // } catch (error) {
+    //   return appVersionResponse;
+    // }
     return appVersionResponse;
   }
 
@@ -375,7 +380,7 @@ class UserClient extends FetchClient {
         'weight': userInfo.weight == null ? 0 : userInfo.weight,
         'email': userInfo.email ?? '',
         'secondPhoneNumber': userInfo.secondPhoneNumber ?? '',
-        //    'phoneNumber': userInfo.phoneNumber ?? ''
+        'phoneNumber': userInfo.phoneNumber ?? null
       };
       AccountRule? accountRule;
       if (isUpdateDiabetes) {

@@ -38,7 +38,7 @@ class FetchClient {
   Future<Options> options() async {
     await checkNetwork();
     final token = await AppSettings.getToken();
-    
+
     // final userAgent = await userAgent();
 
     final Options option = Options(
@@ -107,15 +107,15 @@ class FetchClient {
     return option;
   }
 
-  Future<Response> fetchData(
-      {bool baseIdentify = false,
-      required String url,
-      Map<String, String?>? params}) async {
+  Future<Response> fetchData({
+    bool baseIdentify = false,
+    required String url,
+    Map<String, String?>? params,
+  }) async {
     final option = await options();
     final domain = baseIdentify ? identifyBaseURL : baseURL;
     final Dio dio = Dio();
     logRequest(dio);
-
 
     Uri uri = Uri.https(domain, url, params);
 
@@ -174,11 +174,12 @@ class FetchClient {
     return response;
   }
 
-  Future<Response> postUri(
-      {bool baseIdentify = false,
-      bool baseOption = false,
-      required String url,
-      Map<String, dynamic>? params}) async {
+  Future<Response> postUri({
+    bool baseIdentify = false,
+    bool baseOption = false,
+    required String url,
+    Map<String, dynamic>? params,
+  }) async {
     final Options option = baseOption ? await options() : await options1();
     final domain = baseIdentify ? identifyBaseURL : baseURL;
     final Dio dio = Dio();
