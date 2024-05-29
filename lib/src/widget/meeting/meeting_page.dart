@@ -603,7 +603,7 @@ class _MeetingPageState extends State<MeetingPage> with TickerProviderStateMixin
                       assetPath: isMyCameraOn
                           ? R.drawable.ic_zoom_camera_on
                           : R.drawable.ic_zoom_camera_off,
-                      labelText: (!isMyCameraOn ? 'camera_turnon' : 'camera_turnon').tr(),
+                      labelText: (!isMyCameraOn ? 'camera_turnon' : 'camera_turnoff').tr(),
                       labelColor: labelColor,
                       onPressed: _cubit.toggleVideo,
                     ).wrapWidth(expectSized);
