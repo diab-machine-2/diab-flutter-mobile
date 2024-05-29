@@ -58,6 +58,10 @@ class MeetingLeaving extends MeetingState {
 }
 
 class MeetingJoinError extends MeetingState {
+  const MeetingJoinError({message = 'error_unexpected_error'}) : message = message;
+
+  final String message;
+
   @override
-  String toString() => 'MeetingJoinError';
+  String toString() => message;
 }

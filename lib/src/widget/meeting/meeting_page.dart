@@ -113,7 +113,7 @@ class _MeetingPageState extends State<MeetingPage> with TickerProviderStateMixin
                 _popupSessionEnded(context);
                 return;
               } else if (state is MeetingJoinError) {
-                _popupUnknowError(context);
+                _popupError(context, state);
                 return;
               }
             },
@@ -706,11 +706,11 @@ class _MeetingPageState extends State<MeetingPage> with TickerProviderStateMixin
     );
   }
 
-  void _popupUnknowError(BuildContext context) {
+  void _popupError(BuildContext context, MeetingJoinError state) {
     if (context.mounted == false) return;
     showDialog(
       context: context,
-      builder: (context) => _buildDialogInfoThenQuit('error_unexpected_error'.tr(), () {
+      builder: (context) => _buildDialogInfoThenQuit(state.message.tr(), () {
         _confirmQuit = true;
         _cubit.leaveSession();
         Navigator.popUntil(context, _rootPredicate);

@@ -458,7 +458,8 @@ class MeetingCubit extends Cubit<MeetingState> with WidgetsBindingObserver {
         _countNewChatNotifier.value = _countNewChatNotifier.value + 1;
       }
       final transformedMessage = MeetingMessage.fromZoomVideoSdkChatMessage(message);
-      final List<MeetingMessage> messages = _addNewMessageAndCheckMetadata(transformedMessage, _chatMessagesNotifier.value);
+      final List<MeetingMessage> messages =
+          _addNewMessageAndCheckMetadata(transformedMessage, _chatMessagesNotifier.value);
       _chatMessagesNotifier.value = messages;
       _latestChatMessages = messages;
     });
@@ -547,8 +548,9 @@ class MeetingCubit extends Cubit<MeetingState> with WidgetsBindingObserver {
     emit(MeetingLeaving());
   }
 
-// 
-  List<MeetingMessage> _addNewMessageAndCheckMetadata(MeetingMessage newMessage, List<MeetingMessage> messages) {
+//
+  List<MeetingMessage> _addNewMessageAndCheckMetadata(
+      MeetingMessage newMessage, List<MeetingMessage> messages) {
     // check isFirstMessage and isEndOfGroup
     if (messages.isEmpty) {
       newMessage.isFirstMessage = true;
@@ -578,6 +580,13 @@ class MeetingCubit extends Cubit<MeetingState> with WidgetsBindingObserver {
     }
     _mySelf = thisUser;
     _remoteUsers = (await _zoom.session.getRemoteUsers()) ?? [];
+
+    // check host not joined yet
+    if (!_remoteUsers.any((e) => e.isHost ?? false)) {
+      emit(MeetingJoinError(message: 'host_not_joined_yet'));
+      return;
+    }
+
     // Just this user in the session
     if (_remoteUsers.isEmpty) {
       final newState = MeetingJoined(
