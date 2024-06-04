@@ -135,7 +135,6 @@ class _TabbarControllerState extends State<TabbarController>
         zoomId,
         AppSettings.userInfo?.fullName ?? 'Người dùng',
         context,
-        userId: AppSettings.userInfo?.id,
       );
     }
   }

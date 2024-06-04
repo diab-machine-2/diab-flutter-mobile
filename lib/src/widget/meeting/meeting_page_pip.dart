@@ -6,8 +6,7 @@ import 'package:medical/src/app.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/meeting/meeting_cubit.dart';
 import 'package:medical/src/widget/meeting/meeting_state.dart';
-
-import 'widgets/video_view.dart';
+import 'widgets/video_view_v2.dart';
 
 class MeetingPagePip extends StatelessWidget {
   final MeetingCubit cubit;
@@ -44,16 +43,16 @@ class MeetingPagePip extends StatelessWidget {
         child: BlocBuilder<MeetingCubit, MeetingState>(
           builder: (context, state) {
             MeetingJoined meetingJoined = state as MeetingJoined;
-            final key = Key('userId: ${meetingJoined.fullscreenUser.userId}, sharing: ${meetingJoined.fullscreenUser.isSharing}');
+            final key = Key('userId: ${meetingJoined.fullscreenUser?.userId}, sharing: ${meetingJoined.fullscreenUser?.isSharing}');
             return Stack(
               children: [
-                VideoView(
+                VideoViewV2(
                   key: key,
                   avatarUrl: null,
                   user: meetingJoined.fullscreenUser,
                   fullScreen: true,
                   isPiPView: true,
-                  sharing: meetingJoined.fullscreenUser.isSharing,
+                  sharing: meetingJoined.fullscreenUser?.isSharing ?? false,
                   resolution: VideoResolution.Resolution180,
                   isPiPMode: true,
                 ),
