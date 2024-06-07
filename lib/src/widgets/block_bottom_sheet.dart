@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/utils/app_media_query.dart';
 import 'package:medical/src/widgets/spacing_row.dart';
 import 'package:sticky_headers/sticky_headers.dart';
 
@@ -26,7 +27,6 @@ class BlockBottomSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     late Widget contentWidget = SingleChildScrollView(
-      physics: ClampingScrollPhysics(parent: NeverScrollableScrollPhysics()),
       child: Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
@@ -97,7 +97,7 @@ class BlockBottomSheet extends StatelessWidget {
     );
     return Container(
       padding: EdgeInsets.only(
-        top: MediaQuery.of(context).padding.top,
+        top: AppMediaQuery.deviceSafeAreaTop,
         left: 6,
         right: 6,
         bottom: 15,

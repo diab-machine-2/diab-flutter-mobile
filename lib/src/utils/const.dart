@@ -2,11 +2,11 @@ class Const {
   static const String ENVIRONMENT_DEFAULT = "staging"; //product or staging
 
   static const String IS_DOMAIN = "is.diab.com.vn";
-  static const String IS_DOMAIN_STAGING = "is-diab.atds.com.vn";
+  static const String IS_DOMAIN_STAGING = "is-diab.atds.com.vn"; //"is.staging.diab.com.vn"
 
   // static const String DOMAIN = "api.preprod.diab.com.vn";
   static const String DOMAIN = "api.diab.com.vn";
-  static const String DOMAIN_STAGING = "api-diab.atds.com.vn";
+  static const String DOMAIN_STAGING =  "api-diab.atds.com.vn"; // "api.staging.diab.com.vn";
 
   static const String HOST_URL = "https://$DOMAIN/";
   static const String HOST_URL_STAGING = "https://$DOMAIN_STAGING/";

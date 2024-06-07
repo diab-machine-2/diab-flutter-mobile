@@ -26,6 +26,7 @@ import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
+import 'package:medical/src/widget/home/fliter_enum.dart';
 import 'package:medical/src/widget/my_plan_screens/activity_tab/activity_tab/models/schedule_type.dart';
 import 'package:medical/src/widgets/btn_add_photo.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -66,7 +67,7 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController>
   final AppRepository repository = AppRepository();
 
   ShortGuiModel? des;
-
+  int clickTime = 0;
   late AnimationController _animtionController;
   late Animation _animation;
   FocusNode _focusNode = FocusNode();
@@ -79,8 +80,23 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController>
     } else {
       loadTimeFrame();
     }
+    initData();
     loadDescription();
     firebaseSetup();
+  }
+
+  void initData() async {
+    List<int> valueOfClickTime = await AppSettings.getValueOfClickShortGuide();
+    clickTime = valueOfClickTime[ScreenList.EXERCISE.index];
+  }
+
+  showGuide(BuildContext context) async {
+    Description.showTooltip(context,
+        data: des!,
+        title: R.string.che_do_tap_luyen_doi_voi_benh_tieu_duong.tr());
+    clickTime = clickTime + 1;
+    await AppSettings.setValueOfClickShortGuideIndex(
+        ScreenList.EXERCISE.index, clickTime);
   }
 
   animationFocus() {
@@ -203,10 +219,15 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController>
                       }),
                   actions: [
                     GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          isClicked = !isClicked;
-                        });
+                      onTap: () async {
+                        if (clickTime >= 2) {
+                          await showGuide(context);
+                        } else {
+                          setState(() {
+                            isClicked = !isClicked;
+                            clickTime = clickTime + 1;
+                          });
+                        }
                       },
                       child: Padding(
                         padding: const EdgeInsets.only(left: 16, right: 16),
@@ -224,10 +245,11 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController>
                     Padding(
                         padding: const EdgeInsets.only(
                             left: 16, right: 16, bottom: 16),
-                        child: isClicked
+                        child: isClicked && clickTime < 2
                             ? Description(
                                 input: false,
                                 data: des,
+                                isCreateData: true,
                                 titleDetail: R.string
                                     .che_do_tap_luyen_doi_voi_benh_tieu_duong
                                     .tr())

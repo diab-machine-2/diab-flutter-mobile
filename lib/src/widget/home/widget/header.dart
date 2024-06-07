@@ -277,19 +277,6 @@ class _HomeHeaderState extends State<HomeHeader> with Observer {
                                 height: 24),
                           ),
                         ),
-                        const SizedBox(width: 10),
-                        InkWell(
-                          onTap: () async {
-                            Navigator.pushNamed(
-                                context, NavigatorName.test_ocr);
-                          },
-                          child: Container(
-                            padding: const EdgeInsets.all(4),
-                            color: R.color.transparent,
-                            child: Image.asset(R.drawable.ic_connect_apple,
-                                width: 24, height: 24),
-                          ),
-                        ),
                       ],
                     )
                   ],

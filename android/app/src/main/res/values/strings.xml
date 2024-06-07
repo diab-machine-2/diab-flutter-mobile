@@ -10,4 +10,8 @@
       **NOTE**: The scheme needs to start with `fb` and then your ID.
     -->
     <string name="fb_login_protocol_scheme">fb154356806592189</string>
+
+    <!-- Zalo -->
+    <string name="zalo_flutter_app_id">3372616423345602339</string>
+    <string name="zalo_flutter_app_id_protocol">zalo-3372616423345602339</string>
 </resources>

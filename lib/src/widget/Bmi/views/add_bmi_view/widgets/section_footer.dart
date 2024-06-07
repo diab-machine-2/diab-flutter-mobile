@@ -45,18 +45,18 @@ class SectionFooter extends StatelessWidget with AddBmiMixin {
               child: SpacingRow(
                 spacing: 15,
                 children: [
-                  IgnorePointer(
-                    child: CustomCheckboxWidget(
-                      isChecked: false,
-                      onTap: () {},
-                    ),
-                  ),
-                  Text(
-                    cubit.isPregnancy
-                        ? R.string.no_longer_pregnant.tr()
-                        : R.string.in_longer_pregnant.tr(),
-                    style: TextStyle(fontSize: 16),
-                  )
+                  // IgnorePointer(
+                  //   child: CustomCheckboxWidget(
+                  //     isChecked: false,
+                  //     onTap: () {},
+                  //   ),
+                  // ),
+                  // Text(
+                  //   cubit.isPregnancy
+                  //       ? R.string.no_longer_pregnant.tr()
+                  //       : R.string.in_longer_pregnant.tr(),
+                  //   style: TextStyle(fontSize: 16),
+                  // )
                 ],
               ),
             ),

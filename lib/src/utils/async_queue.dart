@@ -6,6 +6,8 @@ typedef FutureFunc = Future<void> Function();
 class AsyncActionQueue {
   final Queue<FutureFunc> _actions = Queue<FutureFunc>();
   bool _isProcessing = false;
+  
+  bool get isNotEmpty => _actions.isNotEmpty;
 
   Future<void> enqueue(FutureFunc action) {
     _actions.add(action);

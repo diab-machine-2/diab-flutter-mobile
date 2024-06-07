@@ -221,7 +221,6 @@ class DynamicLinkConfig {
           roomId,
           AppSettings.userInfo?.fullName ?? 'Người dùng',
           navigatorKey.currentState!.context,
-          userId: AppSettings.userInfo?.id,
         );
       }
       return;

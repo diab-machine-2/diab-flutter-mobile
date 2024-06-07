@@ -11,10 +11,12 @@ class CustomAppBar extends StatefulWidget implements PreferredSizeWidget {
   final Color? backgroundColor;
   final bool? showRightCloseButton;
   final bool? hideAllBackButton;
+  final bool centerTitle;
 
   CustomAppBar({
     Key? key,
     required this.title,
+    this.centerTitle = false,
     this.leadingIcon,
     this.actions,
     this.bottom,
@@ -44,7 +46,7 @@ class _CustomAppBarState extends State<CustomAppBar> {
           : Transform(
               transform: Matrix4.translationValues(-20.0, 0.0, 0.0),
               child: widget.title),
-      centerTitle: false,
+      centerTitle: widget.centerTitle,
       automaticallyImplyLeading: false,
       actions: widget.actions,
       leading: widget.showRightCloseButton == true ||

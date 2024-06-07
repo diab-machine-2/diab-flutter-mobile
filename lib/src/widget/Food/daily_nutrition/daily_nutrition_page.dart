@@ -21,6 +21,7 @@ import 'package:medical/src/widget/food_menu_screens/change_menu/change_menu.dar
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
+import 'package:medical/src/widget/home/fliter_enum.dart';
 import 'package:medical/src/widgets/common_page.dart';
 import 'package:medical/src/widgets/network_image_widget.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -51,7 +52,7 @@ class _DailyNutritionPageState extends State<DailyNutritionPage>
   late AnimationController _animtionController;
   late Animation _animation;
   FocusNode _focusNode = FocusNode();
-
+  int clickTime = 0;
   @override
   void initState() {
     final AppRepository appRepository = AppRepository();
@@ -60,6 +61,12 @@ class _DailyNutritionPageState extends State<DailyNutritionPage>
     super.initState();
     firebaseSetup();
     animationFocus();
+    initData();
+  }
+
+  void initData() async {
+    List<int> valueOfClickTime = await AppSettings.getValueOfClickShortGuide();
+    clickTime = valueOfClickTime[ScreenList.FOOD.index];
   }
 
   animationFocus() {
@@ -94,6 +101,15 @@ class _DailyNutritionPageState extends State<DailyNutritionPage>
       },
     );
     AppSettings.currentScreenName = 'kpi_add_begin';
+  }
+
+  showGuide(BuildContext context) async {
+    Description.showTooltip(context,
+        data: _cubit.des!,
+        title: R.string.che_do_dinh_duong_benh_tieu_duong.tr());
+    clickTime = clickTime + 1;
+    await AppSettings.setValueOfClickShortGuideIndex(
+        ScreenList.FOOD.index, clickTime);
   }
 
   @override
@@ -134,8 +150,15 @@ class _DailyNutritionPageState extends State<DailyNutritionPage>
                   background: R.drawable.bg_splash,
                   onTapBack: _showDialogSave,
                   appBarAction: GestureDetector(
-                    onTap: () {
-                      _cubit.showDetailToggle();
+                    onTap: () async {
+                      if (clickTime >= 2) {
+                        await showGuide(context);
+                      } else {
+                        setState(() {
+                          _cubit.showDetailToggle();
+                          clickTime = clickTime + 1;
+                        });
+                      }
                     },
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -154,9 +177,10 @@ class _DailyNutritionPageState extends State<DailyNutritionPage>
                           children: [
                             const SizedBox(height: 16),
                             Visibility(
-                              visible: _cubit.showDetail,
+                              visible: _cubit.showDetail && clickTime < 2,
                               child: Description(
                                   input: true,
+                                  isCreateData: true,
                                   data: _cubit.des,
                                   titleDetail: R
                                       .string.che_do_dinh_duong_benh_tieu_duong
@@ -439,7 +463,7 @@ class _DailyNutritionPageState extends State<DailyNutritionPage>
                                                         child: Padding(
                                                           padding:
                                                               const EdgeInsets
-                                                                      .symmetric(
+                                                                  .symmetric(
                                                                   horizontal:
                                                                       8),
                                                           child: Column(

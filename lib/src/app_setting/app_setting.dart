@@ -40,6 +40,43 @@ class AppSettings {
 
   static bool isOwnPackage = false;
 
+  static Future<bool> setValueOfClickShortGuideIndex(
+      int screenIndex, int value) async {
+    List<int> valueOfClickShortGuideList = await getValueOfClickShortGuide();
+    valueOfClickShortGuideList[screenIndex] = value;
+    String valueOfClickShortGuide = valueOfClickShortGuideList.join(' ');
+    appPreference.setData("valueOfClickShortGuide", valueOfClickShortGuide);
+    return true;
+  }
+
+  static Future<List<int>> getValueOfClickShortGuide() async {
+    String valueString = appPreference.getData("valueOfClickShortGuide") ??
+        "0 0 0 0 0 0 0"; // length always is 7
+    List<int> valueList =
+        valueString.split(' ').map((string) => int.parse(string)).toList();
+    return valueList;
+  }
+
+  static Future<bool> setIsRetryFetchFirebaseRemoteConfig(
+      bool isRetryFetchFirebaseRemoteConfig) async {
+    appPreference.setData(
+        "isRetryFetchFirebaseRemoteConfig", isRetryFetchFirebaseRemoteConfig);
+    return isRetryFetchFirebaseRemoteConfig;
+  }
+
+  static Future<bool> getIsRetryFetchFirebaseRemoteConfig() async {
+    return appPreference.getBoolData("isRetryFetchFirebaseRemoteConfig");
+  }
+
+  static Future<String> setFirebaseRemoteSettings(String settings) async {
+    appPreference.setData("firebaseRemoteSettings", settings);
+    return settings;
+  }
+
+  static Future<String> getFirebaseRemoteSettings() async {
+    return appPreference.getData("firebaseRemoteSettings") ?? "";
+  }
+
   static Future<bool> setIsSyncing(bool isSyncing) async {
     appPreference.setData("isSyncing", isSyncing);
     return isSyncing;
@@ -252,6 +289,7 @@ class AppSettings {
       await clearToken();
       await clearRefreshToken();
       await clearIsSyncing();
+      // appPreference.setData("valueOfClickShortGuide", "0 0 0 0 0 0 0");
       appPreference.removeData("hasNewReports");
       appPreference.removeData("reports");
       appPreference.removeData("user");

@@ -150,13 +150,13 @@ class _EmotionDetailTabbarControllerState
                     CustomActionDescription(
                       key: customActionDesKey,
                       callback: (value) {
-                        Description.showTooltip(
-                          context,
-                          data: des!,
-                          title:
-                              R.string.kiem_soat_cam_xuc_benh_tieu_duong.tr(),
-                        );
-                        // customTabbarKey.currentState!.showDescription();
+                        // Description.showTooltip(
+                        //   context,
+                        //   data: des!,
+                        //   title:
+                        //       R.string.kiem_soat_cam_xuc_benh_tieu_duong.tr(),
+                        // );
+                        customTabbarKey.currentState!.showDescription();
                       },
                     ),
                   IconButton(
@@ -230,8 +230,20 @@ class CustomTabbarImage extends StatefulWidget {
 class CustomTabbarImageState extends State<CustomTabbarImage> {
   bool showDes = false;
 
-  showDescription() {
-    print(showDes);
+  int clickTime = 0;
+
+  showDescription() async {
+    List<int> valueOfClickTime = await AppSettings.getValueOfClickShortGuide();
+    clickTime = valueOfClickTime[ScreenList.EMOTION.index];
+    clickTime += 1;
+
+    await AppSettings.setValueOfClickShortGuideIndex(
+        ScreenList.EMOTION.index, clickTime);
+    if (clickTime > 2 && widget.data != null) {
+      Description.showTooltip(context,
+          data: widget.data!,
+          title: R.string.kiem_soat_cam_xuc_benh_tieu_duong.tr());
+    }
     showDes = !showDes;
     setState(() {});
   }
@@ -242,14 +254,16 @@ class CustomTabbarImageState extends State<CustomTabbarImage> {
       color: R.color.white,
       child: Column(
         children: [
-          showDes
+          showDes || clickTime >= 2
               ? Padding(
                   padding: EdgeInsets.only(left: 16, right: 16),
                   child: Description(
-                      input: false,
-                      data: widget.data,
-                      titleDetail:
-                          R.string.kiem_soat_cam_xuc_benh_tieu_duong.tr()),
+                    input: false,
+                    data: widget.data,
+                    titleDetail:
+                        R.string.kiem_soat_cam_xuc_benh_tieu_duong.tr(),
+                    clickTime: clickTime,
+                  ),
                 )
               : SizedBox(),
           Row(
