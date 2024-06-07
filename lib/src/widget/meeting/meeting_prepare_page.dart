@@ -1,7 +1,6 @@
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_in_app_pip/flutter_in_app_pip.dart';
-import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/service/zalo_service.dart';
 import 'package:medical/src/service/zoom_service.dart';
@@ -65,8 +64,7 @@ class _MeetingPreparePageState extends State<MeetingPreparePage> {
               padding: const EdgeInsets.all(20),
               child: ElevatedButton(
                 child: Text('OCR'),
-                onPressed: () =>
-                    Navigator.pushNamed(context, NavigatorName.test_ocr),
+                onPressed: () => Navigator.pushNamed(context, NavigatorName.test_ocr),
               ),
             ),
           ],
@@ -106,12 +104,17 @@ class _MeetingPreparePageState extends State<MeetingPreparePage> {
     );
     String topic = _textController.text;
     var user = AppSettings.userInfo;
-    final args = zoomServiceHelper.generateMeetingArgument(
-        topic, user?.fullName ?? "Test Meeting", user?.id);
+    final args =
+        await zoomServiceHelper.generateMeetingArgument(topic, user?.fullName ?? "Test Meeting");
+
+    if (args == null) {
+      BotToast.showText(text: "Lỗi kết nối");
+      return;
+    }
 
     Navigator.pushNamed(
       context,
-      NavigatorName.meeting,
+      NavigatorName.meeting_wait_room,
       arguments: args,
     );
   }
