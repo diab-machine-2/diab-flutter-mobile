@@ -155,7 +155,8 @@ class Const {
   static const String NAVIGATE_TO_PROFILE_TAB = 'Navigate_to_profile_tab';
   static const String NAVIGATE_TO_LESSON_DETAIL = 'Navigate_to_lesson_detail';
   static const String NAVIGATE_TO_REGISTER = 'Navigate_to_register';
-  static const String NAVIGATE_TO_ACTIVITY_DETAIL = 'Navigate_to_activity_detail';
+  static const String NAVIGATE_TO_ACTIVITY_DETAIL =
+      'Navigate_to_activity_detail';
   static const String LANGUAGE_CHANGED = 'language_changed';
 
   static const List<int> hourList = [

@@ -77,8 +77,8 @@ class _BottomTabbar extends State<BottomTabbar> with Observer {
                           : R.drawable.ic_plan,
                       Const.PLAN_SCREEN,
                       isFromNetwork: user.ownPackage != null &&
-                              user.ownPackage?.logo != null &&
-                              user.ownPackage?.logo != ""),
+                          user.ownPackage?.logo != null &&
+                          user.ownPackage?.logo != ""),
                   Expanded(flex: 1, child: Container()),
                   tabWidget(R.string.qa_title.tr(), R.drawable.ic_qa,
                       Const.COURSE_SCREEN),
@@ -101,11 +101,13 @@ class _BottomTabbar extends State<BottomTabbar> with Observer {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 isFromNetwork
-                    ? Image.network(image,
+                    ? Image.network(
+                        image,
                         height: 20,
-                        color: currentTab == screenIndex
-                            ? R.color.accentColor
-                            : R.color.gray)
+                        errorBuilder: (context, error, stackTrace) {
+                          return SizedBox();
+                        },
+                      )
                     : Image.asset(image,
                         height: 20,
                         color: currentTab == screenIndex

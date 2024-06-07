@@ -120,11 +120,14 @@ class _HomeHeaderState extends State<HomeHeader> with Observer {
                           color: R.color.transparent,
                           child: Row(children: [
                             Stack(
+                                clipBehavior: Clip.none,
                                 alignment: AlignmentDirectional.bottomEnd,
                                 children: [
                                   Padding(
-                                    padding: const EdgeInsets.only(
-                                        right: 4, bottom: 4),
+                                    padding: AppSettings.isOwnPackage
+                                        ? const EdgeInsets.all(0)
+                                        : const EdgeInsets.only(
+                                            right: 4, bottom: 4),
                                     child: Container(
                                         clipBehavior: Clip.hardEdge,
                                         decoration: BoxDecoration(
@@ -149,23 +152,38 @@ class _HomeHeaderState extends State<HomeHeader> with Observer {
                                                 },
                                               )),
                                   ),
-                                  Container(
-                                    width: 20,
-                                    height: 20,
-                                    padding: const EdgeInsets.all(4),
-                                    alignment: Alignment.center,
-                                    decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      color: R.color.white,
-                                    ),
-                                    child: AppSettings.isOwnPackage
-                                        ? Image.network(
-                                            user?.ownPackage?.logo ?? "",
-                                            color: R.color.accentColor,
-                                          )
-                                        : Image.asset(
-                                            R.drawable.ic_crown_green),
-                                  )
+                                  if (AppSettings.isOwnPackage)
+                                    Positioned(
+                                      bottom: -8,
+                                      child: Container(
+                                        width: 40,
+                                        height: 40,
+                                        alignment: Alignment.bottomCenter,
+                                        child: Image.network(
+                                          user?.ownPackage?.logo ?? "",
+                                        ),
+                                      ),
+                                    )
+                                  // Container(
+                                  //     width: 40,
+                                  //     height: 40,
+                                  //     alignment: Alignment.bottomCenter,
+                                  //     child: Image.network(
+                                  //       user?.ownPackage?.logo ?? "",
+                                  //     ))
+                                  else
+                                    Container(
+                                      width: 20,
+                                      height: 20,
+                                      padding: const EdgeInsets.all(4),
+                                      alignment: Alignment.center,
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        color: R.color.white,
+                                      ),
+                                      child: Image.asset(
+                                          R.drawable.ic_crown_green),
+                                    )
                                 ]),
                             const SizedBox(width: 8),
                             Expanded(

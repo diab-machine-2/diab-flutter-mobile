@@ -208,7 +208,10 @@ class _ProfileControllerState extends State<ProfileController> with Observer {
                                       ? Image.network(
                                           AppSettings
                                               .userInfo!.ownPackage!.logo!,
-                                          color: R.color.accentColor,
+                                          errorBuilder:
+                                              (context, error, stackTrace) {
+                                            return SizedBox();
+                                          },
                                         )
                                       : Image.asset(
                                           isPro

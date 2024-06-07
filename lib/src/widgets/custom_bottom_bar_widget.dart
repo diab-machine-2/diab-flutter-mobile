@@ -32,7 +32,7 @@ class CustomBottomBarWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: AppSettings.isOwnPackage ? R.color.greenPackage : R.color.white,
+      color: R.color.white,
       padding: EdgeInsets.fromLTRB(
         16,
         14,
@@ -50,44 +50,67 @@ class CustomBottomBarWidget extends StatelessWidget {
               _buildPreviousButton(),
               SizedBox(width: 4),
               // Center button
-              _buildCenterButton(),
+              // _buildCenterButton(),
+              // Expanded(
+              //     child: Image.network(
+              //         "https://res.cloudinary.com/dzgugrqxz/image/upload/v1716280100/xpripzukgihaokrhntzj.png")),
+              if (AppSettings.isOwnPackage)
+                _buildCenter()
+              else
+                _buildCenterButton(),
               SizedBox(width: 4),
               // Next button
               _buildNextButton(),
             ],
           ),
-          if (AppSettings.isOwnPackage)
-            Column(
-              children: [
-                SizedBox(height: 12), // Move the SizedBox inside the Column
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    // Add some space between the rows
-                    Image.network(
-                      AppSettings.userInfo!.ownPackage!.logo ?? "",
-                      color: R.color.white,
-                      height: 20,
-                    ),
-                    SizedBox(
-                        width: 4), // Add some space between the image and text
-                    Flexible(
-                      child: Text(
-                        AppSettings.userInfo?.ownPackage?.sponsor ??
-                            "Tài trợ bởi Manulife - Mega",
-                        textAlign: TextAlign.center,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          color: R.color.white,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                SizedBox(height: 12), // Add some space between the rows
-              ],
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCenter() {
+    int target = 0;
+    try {
+      target = int.parse(currentPositionTitle.split('/')[0]) - 1;
+    } catch (e) {}
+
+    return InkWell(
+      onTap: onTapCenter,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Image.network(
+            height: 50,
+            AppSettings.userInfo?.ownPackage?.logo ?? "",
+            errorBuilder: (context, error, stackTrace) {
+              return SizedBox();
+            },
+          ),
+          SizedBox(height: 10),
+          Container(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: List.generate(
+                  int.parse(currentPositionTitle.split('/')[1]), (index) {
+                bool isTarget = index == target;
+                return AnimatedContainer(
+                  duration: Duration(milliseconds: 300),
+                  margin: EdgeInsets.symmetric(horizontal: 2),
+                  width: isTarget ? 16 : 8,
+                  height: 8,
+                  decoration: BoxDecoration(
+                    borderRadius: isTarget
+                        ? BorderRadius.all(Radius.circular(10))
+                        : BorderRadius.circular(8),
+                    color: isTarget
+                        ? Colors.green
+                        : Colors
+                            .grey, // Replace Colors.green with your custom color if needed
+                  ),
+                );
+              }),
             ),
+          ),
         ],
       ),
     );
