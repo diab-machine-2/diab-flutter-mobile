@@ -204,7 +204,7 @@ class MeetingCubit extends Cubit<MeetingState> with WidgetsBindingObserver {
               _videoStatisticChecked = true;
             }
           } catch (e, s) {
-            TrackingManager.recordError(e, s, reason: 'zoom check video statistic');
+            TrackingManager.recordError(e, s);
           }
         }
       }
@@ -325,7 +325,7 @@ class MeetingCubit extends Cubit<MeetingState> with WidgetsBindingObserver {
     try {
       await _zoom.leaveSession(false);
     } catch (e, s) {
-      TrackingManager.recordError(e, s, reason: 'zoom leave session');
+      TrackingManager.recordError(e, s);
     }
   }
 
@@ -352,7 +352,7 @@ class MeetingCubit extends Cubit<MeetingState> with WidgetsBindingObserver {
       // TODO: Check why camera is mirrored
       // _zoom.videoHelper.mirrorMyVideo(false).then((_) => null);
     } catch (e, s) {
-      TrackingManager.recordError(e, s, reason: 'zoom join session');
+      TrackingManager.recordError(e, s);
       emit(MeetingJoinError());
     }
   }
@@ -513,13 +513,14 @@ class MeetingCubit extends Cubit<MeetingState> with WidgetsBindingObserver {
         username = AppSettings.userInfo!.userName ?? '';
         id = AppSettings.userInfo!.id ?? '';
       }
+      final error = """
+        User: $username ($id),
+        Session: ${args.sessionName}
+        ${data.toString()}
+        """;
       await TrackingManager.recordError(
-        data,
+        error,
         null,
-        information: [
-          'User: $username ($id)',
-          'Session: ${args.sessionName}',
-        ],
       );
     });
     meetingEvents.add(sessionErrorListener);
@@ -560,7 +561,7 @@ class MeetingCubit extends Cubit<MeetingState> with WidgetsBindingObserver {
     }
     _isJoined = false;
     _zoom.audioHelper.cleanAudioSession().catchError((e, s) {
-      TrackingManager.recordError(e, s, reason: 'zoom clean audio');
+      TrackingManager.recordError(e, s);
     });
 
     emit(MeetingLeaving());
