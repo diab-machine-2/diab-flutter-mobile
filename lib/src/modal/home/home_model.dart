@@ -3,6 +3,7 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/modal/base/images.dart';
 import 'package:medical/src/modal/home/package_account_home_model.dart';
+import 'package:medical/src/widget/home/schema/measurement_schema.dart';
 
 
 class HomeModel {
@@ -16,6 +17,13 @@ class HomeModel {
   final EnergyExerciseCardModel? energyExerciseCard;
   final ProcessCardModel? processCard;
   final PackageAccountHomeModel? packageAccount;
+
+  List<HomeMeasurementInlineData>? inlineMeasurements;
+  List<HomeMeasurementData>? measurements;
+  List<HomeActivityData>? activities;
+  List<HomeReminderData>? reminders;
+  List<HomeUtilityData>? utilities;
+  List<HomeLessonData>? lessons;
 
   HomeModel({
     required this.glucoseIndex,

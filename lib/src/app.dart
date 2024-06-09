@@ -6,6 +6,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/app_routes.dart';
 import 'package:medical/src/service/zoom_service.dart';
 import 'package:medical/src/theme/app_theme.dart';
 import 'package:medical/src/utils/app_log.dart';
@@ -145,6 +146,10 @@ class _AppState extends State<App> {
               useInheritedMediaQuery: true,
               onGenerateRoute: (settings) {
                 Console.log('settings.name', settings.name);
+                final newRoute = AppRoutes.tryGenerateNewRoutes(settings);
+                if (newRoute != null) {
+                  return newRoute;
+                }
                 switch (settings.name) {
                   case NavigatorName.tabbar:
                     String sharedCode = '';

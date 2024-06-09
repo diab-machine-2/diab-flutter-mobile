@@ -453,6 +453,23 @@ class Drawables {
   String get voucher_reward => "lib/res/drawables/voucher_reward.jpg";
   String get share_app_detail => "lib/res/drawables/share_app_detail.jpg";
 
+  String get ic_lesson_category => "lib/res/drawables/ic_lesson_category.png";
+  String get ic_lesson_like => "lib/res/drawables/ic_lesson_like.png";
+  String get ic_lesson_comment => "lib/res/drawables/ic_lesson_comment.png";
+  String get ic_lesson_share => "lib/res/drawables/ic_lesson_share.png";
+
+  String get ic_home_weight => "lib/res/drawables/home/ic_home_weight.png";
+  String get ic_home_activity => "lib/res/drawables/home/ic_home_activity.png";
+  String get ic_home_health_profile => "lib/res/drawables/home/ic_home_health_profile.png";
+  String get ic_home_measurement => "lib/res/drawables/home/ic_home_measurement.png";
+  String get ic_home_utility => "lib/res/drawables/home/ic_home_utility.png";
+
+  String get ic_tab_program => "lib/res/drawables/tab/ic_tab_program.png";
+  String get ic_tab_library => "lib/res/drawables/tab/ic_tab_library.png";
+  String get ic_tab_faq => "lib/res/drawables/tab/ic_tab_faq.png";
+  String get ic_tab_store => "lib/res/drawables/tab/ic_tab_store.png";
+
+
   String get share_app_detail_default =>
       "lib/res/drawables/share_app_detail_default.png";
   String get ic_voucher => "lib/res/drawables/ic_voucher.png";

@@ -1,0 +1,241 @@
+import 'package:flutter/material.dart';
+import 'package:medical/res/R.dart';
+import 'package:medical/src/widget/home/schema/measurement_schema.dart';
+
+class MeasurementSummary extends StatelessWidget {
+  const MeasurementSummary({
+    super.key,
+    required this.inlineMeasurements,
+    required this.measurements,
+    required this.onAddMeasurement,
+    required this.onHealthProfile,
+  });
+
+  final List<HomeMeasurementInlineData> inlineMeasurements;
+  final List<HomeMeasurementData> measurements;
+
+  final VoidCallback onAddMeasurement;
+  final VoidCallback onHealthProfile;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(16.0),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.only(
+          bottomLeft: Radius.circular(16.0),
+          bottomRight: Radius.circular(16.0),
+        ),
+        color: Colors.white,
+      ),
+      child: Column(
+        children: [
+          // Inline measurements
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisSize: MainAxisSize.max,
+            children: inlineMeasurements.map((e) => _buildInlineMeasurementWidget(e)).toList(),
+          ),
+
+          const SizedBox(height: 20.0),
+
+          // Measurements
+          SizedBox(
+            height: 88.0,
+            child: ListView.separated(
+              itemBuilder: (_, index) => _buildMeasurementWidget(measurements[index]),
+              separatorBuilder: (_, index) => const SizedBox(width: 8.0),
+              itemCount: measurements.length,
+              scrollDirection: Axis.horizontal,
+            ),
+          ),
+
+          const SizedBox(height: 20.0),
+
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              _buildHealthProfileButton(),
+              _buildAddMeasurementButton(),
+            ],
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget _buildInlineMeasurementWidget(HomeMeasurementInlineData data) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        if (data.icon != null)
+          Image.asset(
+            data.icon!,
+            width: 16.0,
+            height: 16.0,
+          ),
+        if (data.icon == null && data.title != null)
+          Text(
+            data.title!,
+            style: TextStyle(
+              color: R.color.greenGradientBottom,
+              fontWeight: FontWeight.bold,
+              fontSize: 14.0,
+            ),
+          ),
+        const SizedBox(width: 4.0),
+        Text(
+          data.value,
+          style: TextStyle(
+            color: Color(data.color),
+            fontWeight: FontWeight.bold,
+            fontSize: 14.0,
+          ),
+        ),
+        const SizedBox(width: 2.0),
+        Text(
+          "(${data.unit})",
+          style: TextStyle(
+            color: R.color.color0xff666666,
+            fontWeight: FontWeight.normal,
+            fontSize: 12.0,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildMeasurementWidget(HomeMeasurementData data) {
+    Widget valueWidget;
+    double height = 16.0 / 12.0;
+    if (data.value2 != null && data.value2!.isNotEmpty) {
+      // build textspan with different style data.color
+      valueWidget = RichText(
+        text: TextSpan(
+          children: [
+            TextSpan(
+              text: data.value1,
+              style: TextStyle(
+                  color: Color(data.value1Color),
+                  fontWeight: FontWeight.bold,
+                  fontSize: 12.0,
+                  height: height),
+            ),
+            TextSpan(
+              text: " / ",
+              style: TextStyle(
+                  color: R.color.color0xff666666,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 12.0,
+                  height: height),
+            ),
+            TextSpan(
+              text: data.value2,
+              style: TextStyle(
+                  color: Color(data.value2Color!),
+                  fontWeight: FontWeight.bold,
+                  fontSize: 12.0,
+                  height: height),
+            ),
+          ],
+        ),
+      );
+    } else {
+      valueWidget = Text(
+        data.value1 ?? "--",
+        style: TextStyle(
+            color: Color(data.value1Color),
+            fontWeight: FontWeight.bold,
+            fontSize: 12.0,
+            height: height),
+      );
+    }
+    return Container(
+      width: 88.0,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Image.asset(
+            data.icon,
+            width: 32.0,
+            height: 32.0,
+          ),
+          const SizedBox(height: 8.0),
+          Text(
+            data.title,
+            style: TextStyle(
+              color: R.color.color0xff666666,
+              fontWeight: FontWeight.w600,
+              fontSize: 12.0,
+              height: 16.0 / 12.0,
+            ),
+          ),
+          valueWidget,
+          Text(
+            "(${data.unit})",
+            style: TextStyle(
+              color: R.color.color0xff666666,
+              fontWeight: FontWeight.normal,
+              fontSize: 12.0,
+              height: 16.0 / 12.0,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildHealthProfileButton() {
+    return InkWell(
+      onTap: onHealthProfile,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          // TODO: Replace with icon
+          Image.asset(
+            R.drawable.ic_home_health_profile,
+            width: 20.0,
+            height: 20.0,
+          
+          ),
+          const SizedBox(width: 6.0),
+          Text(
+            "Hồ sơ sức khoẻ",
+            style: TextStyle(
+              color: R.color.greenGradientBottom,
+              fontWeight: FontWeight.bold,
+              fontSize: 14.0,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAddMeasurementButton() {
+    return InkWell(
+      onTap: onAddMeasurement,
+      borderRadius: BorderRadius.circular(16.0),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(16.0),
+          color: R.color.greenGradientBottom,
+        ),
+        child: Text(
+          "Thêm chỉ số",
+          style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+            fontSize: 13.0,
+            height: 16.0 / 13.0,
+          ),
+        ),
+      ),
+    );
+  }
+}

@@ -2,11 +2,13 @@ class Const {
   static const String ENVIRONMENT_DEFAULT = "staging"; //product or staging
 
   static const String IS_DOMAIN = "is.diab.com.vn";
-  static const String IS_DOMAIN_STAGING = "is-diab.atds.com.vn"; //"is.staging.diab.com.vn"
+  // static const String IS_DOMAIN_STAGING = "is-diab.atds.com.vn"; //"is.staging.diab.com.vn"
+  static const String IS_DOMAIN_STAGING = "is.staging.diab.com.vn";
 
   // static const String DOMAIN = "api.preprod.diab.com.vn";
   static const String DOMAIN = "api.diab.com.vn";
-  static const String DOMAIN_STAGING =  "api-diab.atds.com.vn"; // "api.staging.diab.com.vn";
+  // static const String DOMAIN_STAGING = "api-diab.atds.com.vn"; // "api.staging.diab.com.vn";
+  static const String DOMAIN_STAGING =  "api.staging.diab.com.vn";
 
   static const String HOST_URL = "https://$DOMAIN/";
   static const String HOST_URL_STAGING = "https://$DOMAIN_STAGING/";
@@ -16,15 +18,13 @@ class Const {
 
   static double mmollToMgdlFactor = 18.018;
 
-  static const String HOST_GOOGLE_MAP_URL =
-      "https://maps.googleapis.com/maps/api/";
+  static const String HOST_GOOGLE_MAP_URL = "https://maps.googleapis.com/maps/api/";
   static const String ANDROID_KEY = "AIzaSyAVRrZKBfIphjlPiua9y5Pk4CJ3oaddGp0";
   static const String IOS_KEY = "AIzaSyB6P1Tq9lnnZPjkUJmAlTjUE1uqMVfTLFA";
   static const String PLACE_KEY = "AIzaSyC7tPpmwviNXdX0_krWw5QdxOVGOJgdFmo";
 
   static const String CLIENT_ID = "4A293E78-4513-4DAF-958E-A04F93978332";
-  static const String CLIENT_SECRET =
-      "oTxBinRm9NpNen3rs++jN9sWXvOkya60nuffhv6x304=";
+  static const String CLIENT_SECRET = "oTxBinRm9NpNen3rs++jN9sWXvOkya60nuffhv6x304=";
 
   static const String ID = "ID";
   static const String CODE = "Code";
