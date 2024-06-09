@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:bot_toast/bot_toast.dart';
-import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/cupertino.dart';
@@ -34,6 +33,7 @@ import 'package:medical/src/widget/my_plan_screens/my_plan/my_plan_page.dart';
 import 'package:medical/src/widget/question_answer/question_answer_page.dart';
 import 'package:medical/src/widget/tabbar/tabbar_v2_data.dart';
 import 'package:medical/src/widget/voucher/presentation/widgets/webview_store.dart';
+import 'package:medical/curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:package_info/package_info.dart';
 import 'package:store_redirect/store_redirect.dart';
 
@@ -95,7 +95,7 @@ class _TabbarControllerState extends State<TabbarController>
     _checkExistZoomId();
   }
 
-  void _onBottomNavigationBarTap(index) {
+  void _onBottomNavigationBarTap(int index) {
     // TODO: More check
     if (index == MainTabEnum.store.index) {
       BotToast.showLoading();
@@ -108,7 +108,6 @@ class _TabbarControllerState extends State<TabbarController>
           },
         );
       });
-      // TODO: check why need to delay
       Navigator.push(
           context,
           MaterialPageRoute(
@@ -118,7 +117,7 @@ class _TabbarControllerState extends State<TabbarController>
     } else if (index == -1) {
       // _showMaterialDialog();
     } else {
-      // jumpTo(index);
+      jumpTo(index);
     }
   }
 
@@ -218,7 +217,6 @@ class _TabbarControllerState extends State<TabbarController>
   }
 
   void jumpTo(int index) {
-    _bottomNavigationKey.currentState?.setPage(index);
     pageController!.jumpToPage(index);
   }
 
@@ -236,15 +234,20 @@ class _TabbarControllerState extends State<TabbarController>
         key: _bottomNavigationKey,
         backgroundColor: Color(0xFFEAF4F4),
         color: Colors.white,
-        buttonBackgroundColor: Colors.white,
+        buttonBackgroundColor: R.color.mainColor,
+        normalButtonColor: R.color.mainColor,
+        activeButtonColor: Colors.white,
         height: 75.0,
-        items: [
+        assetPaths: [
           R.drawable.ic_home,
           R.drawable.ic_tab_program,
           R.drawable.ic_tab_library,
           R.drawable.ic_tab_faq,
           R.drawable.ic_tab_store
-        ].map((e) => Image.asset(e, width: 24, height: 24, color: R.color.mainColor)).toList(),
+        ],
+        letIndexChange: (index) {
+          return index != MainTabEnum.store.index;
+        },
         onTap: _onBottomNavigationBarTap,
       ),
     );
