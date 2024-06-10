@@ -1,5 +1,7 @@
+import 'dart:convert';
 import 'dart:io';
 
+import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:zalo_flutter/zalo_flutter.dart';
 
 class ZaloService {
@@ -23,12 +25,14 @@ class ZaloService {
           return ZaloLoginResult.fromJson(data['data'], profile["data"]);
         }
       } else if (data != null && data['data'] != null) {
+        TrackingManager.recordError(new Exception(jsonEncode(data)), null);
         throw ZaloLoginException(
             data['data']['message']?.toString() ?? 'Login failed');
       } else {
         throw ZaloLoginException('Login failed');
       }
-    } catch (e) {
+    } catch (e, s) {
+      TrackingManager.recordError(e, s);
       // TODO: Track error to Firebase
       print("login: $e");
     }
