@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:zalo_flutter/zalo_flutter.dart';
@@ -7,16 +6,16 @@ import 'package:zalo_flutter/zalo_flutter.dart';
 class ZaloService {
   Future<ZaloLoginResult> login() async {
     // TODO: Just take the key, remove after GOTTEN
-    if (Platform.isAndroid) {
-      final String? hashKey = await ZaloFlutter.getHashKeyAndroid();
-      print('HashKey: $hashKey');
-    }
+    // if (Platform.isAndroid) {
+    //   final String? hashKey = await ZaloFlutter.getHashKeyAndroid();
+    //   print('HashKey: $hashKey');
+    // }
     final Map<dynamic, dynamic>? data = await ZaloFlutter.login(
       refreshToken: null,
       // externalInfo: {},
     );
     try {
-      if (data != null && data['isSuccess'] == true) {
+      if (data != null && (data['isSuccess'] == true || data['is_success'] == true)) {
         final accessToken =
             data['data']['access_token'] ?? data['data']['accessToken'];
         final profile =
@@ -32,9 +31,8 @@ class ZaloService {
         throw ZaloLoginException('Login failed');
       }
     } catch (e, s) {
-      TrackingManager.recordError(e, s);
-      // TODO: Track error to Firebase
-      print("login: $e");
+      final whatReceived = data != null ? jsonEncode(data) : "null";
+      TrackingManager.recordError(new Exception("Zalo login failed, $whatReceived"), s);
     }
     throw ZaloLoginException('Login failed');
   }
