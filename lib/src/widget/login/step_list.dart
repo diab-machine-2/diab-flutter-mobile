@@ -5,6 +5,7 @@ import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_branch_sdk/flutter_branch_sdk.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_observer/Observable.dart';
 import 'package:flutter_observer/Observer.dart';
@@ -28,6 +29,7 @@ import 'package:medical/src/widgets/dismissKeyboard_widget.dart';
 import 'package:medical/src/widgets/spacing_row.dart';
 import 'package:package_info/package_info.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
+import 'package:http/http.dart' as http;
 
 import 'widgets/social_login_section.dart';
 
@@ -82,16 +84,34 @@ class _StepListControllerState extends State<StepListController> with Observer {
   ];
 
   Timer? _timer;
+  late StreamSubscription<Map> streamSubscriptionDeepLink;
 
   String version = '';
   String buildNumber = '';
   String sharedCode = '';
   //SecureModel? secureModel;
+  void listenDynamicLinks() async {
+    FlutterBranchSdk.validateSDKIntegration();
+    streamSubscriptionDeepLink =
+        FlutterBranchSdk.initSession().listen((data) async {
+      print('listenDynamicLinks - DeepLink Data: $data');
+      if (data.containsKey('+clicked_branch_link') &&
+          data['+clicked_branch_link'] == true) {
+        print("Clicked brand");
+      }
+    }, onError: (error) {
+      PlatformException platformException = error as PlatformException;
+      print(
+          'InitSession error: ${platformException.code} - ${platformException.message}');
+    });
+    print(streamSubscriptionDeepLink);
+  }
 
   @override
   void initState() {
     super.initState();
     Observable.instance.addObserver(this);
+    listenDynamicLinks();
     // DynamicLinkConfig.instance.getLongLink();
     // DynamicLinkConfig.instance.setUpHandleDeepLink();
     // if (widget.sharedCode != "") {
@@ -260,7 +280,7 @@ class _StepListControllerState extends State<StepListController> with Observer {
                         data[currentPage]['name']!,
                         data[currentPage]['text']!,
                       ),
-                      SizedBox(height: 20),
+                      // SizedBox(height: 20),
                     ],
                   ),
                   Column(
@@ -269,87 +289,9 @@ class _StepListControllerState extends State<StepListController> with Observer {
                         padding: const EdgeInsets.only(left: 16, right: 16),
                         margin: EdgeInsets.only(bottom: 16),
                         child: SpacingColumn(
-                            spacing: 15,
+                            // spacing: 15,
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Container(
-                                height: 52,
-                                padding: EdgeInsets.symmetric(horizontal: 20),
-                                decoration: BoxDecoration(
-                                  gradient: LinearGradient(
-                                    begin: Alignment.topCenter,
-                                    end: Alignment.bottomCenter,
-                                    colors: [
-                                      R.color.greenGradientTop,
-                                      R.color.greenGradientBottom
-                                    ],
-                                  ),
-                                  borderRadius: BorderRadius.circular(200),
-                                ),
-                                child: GestureDetector(
-                                    onTap: () => loginZalo(),
-                                    child: Row(
-                                      children: [
-                                        SvgPicture.asset(
-                                          width: 24,
-                                          height: 24,
-                                          R.icons.ic_zalo,
-                                        ),
-                                        Expanded(
-                                          child: AutoSizeText(
-                                            'Đăng nhập qua Zalo',
-                                            maxLines: 1,
-                                            textAlign: TextAlign.center,
-                                            style: TextStyle(
-                                              color: R.color.white,
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.w700,
-                                            ),
-                                          ),
-                                        )
-                                      ],
-                                    )),
-                              ),
-                              // Expanded(
-                              //   child: GestureDetector(
-                              //     onTap: () async {
-                              //       await TrackingManager.analytics.logEvent(
-                              //         name: 'cta_button_clicked',
-                              //         parameters: {
-                              //           "screen_name": 'welcome',
-                              //           'cta_button_name':
-                              //               'cta_welcome_sign_up',
-                              //         },
-                              //       );
-                              //       Navigator.pushNamed(
-                              //         context,
-                              //         NavigatorName.register,
-                              //         arguments: sharedCode,
-                              //       );
-                              //     },
-                              //     child: Container(
-                              //         height: 48,
-                              //         decoration: BoxDecoration(
-                              //             color: R.color.mainColor,
-                              //             borderRadius:
-                              //                 BorderRadius.circular(200),
-                              //             gradient: LinearGradient(
-                              //                 begin: Alignment.topLeft,
-                              //                 end: Alignment.centerRight,
-                              //                 colors: [
-                              //                   R.color.greenGradientTop,
-                              //                   R.color.greenGradientBottom
-                              //                 ])),
-                              //         child: Center(
-                              //           child: Text(R.string.tao_tai_khoan.tr(),
-                              //               style: TextStyle(
-                              //                   color: R.color.white,
-                              //                   fontSize: 16,
-                              //                   fontWeight: FontWeight.w600)),
-                              //         )),
-                              //   ),
-                              // ),
-                              // SizedBox(width: 16),
                               GestureDetector(
                                 onTap: () async {
                                   // Navigator.pushReplacementNamed(
@@ -406,7 +348,7 @@ class _StepListControllerState extends State<StepListController> with Observer {
                             ]),
                       ),
                       SizedBox(
-                        height: 12,
+                        height: 50,
                       ),
                       SocialLoginSection(),
                       // GestureDetector(
