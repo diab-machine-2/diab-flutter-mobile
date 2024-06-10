@@ -329,6 +329,15 @@ PODS:
     - Flutter
   - wakelock (0.0.1):
     - Flutter
+  - zalo_flutter (0.0.1):
+    - Flutter
+    - ZaloSDK
+  - ZaloSDK (4.1.0120):
+    - ZaloSDK/Core (= 4.1.0120)
+    - ZaloSDK/Main (= 4.1.0120)
+  - ZaloSDK/Core (4.1.0120)
+  - ZaloSDK/Main (4.1.0120):
+    - ZaloSDK/Core
   - ZoomVideoSDK/CptShare (1.10.11)
   - ZoomVideoSDK/zoomcml (1.10.11)
   - ZoomVideoSDK/ZoomVideoSDK (1.10.11)
@@ -375,6 +384,7 @@ DEPENDENCIES:
   - uni_links (from `.symlinks/plugins/uni_links/ios`)
   - url_launcher_ios (from `.symlinks/plugins/url_launcher_ios/ios`)
   - wakelock (from `.symlinks/plugins/wakelock/ios`)
+  - zalo_flutter (from `.symlinks/plugins/zalo_flutter/ios`)
   - ZoomVideoSDK/CptShare (= 1.10.11)
   - ZoomVideoSDK/zoomcml (= 1.10.11)
   - ZoomVideoSDK/ZoomVideoSDK (= 1.10.11)
@@ -420,6 +430,7 @@ SPEC REPOS:
     - SDWebImageWebPCoder
     - Toast
     - TOCropViewController
+    - ZaloSDK
     - ZoomVideoSDK
 
 EXTERNAL SOURCES:
@@ -505,6 +516,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/url_launcher_ios/ios"
   wakelock:
     :path: ".symlinks/plugins/wakelock/ios"
+  zalo_flutter:
+    :path: ".symlinks/plugins/zalo_flutter/ios"
 
 SPEC CHECKSUMS:
   app_settings: d103828c9f5d515c4df9ee754dabd443f7cedcf3
@@ -587,6 +600,8 @@ SPEC CHECKSUMS:
   uni_links: d97da20c7701486ba192624d99bffaaffcfc298a
   url_launcher_ios: bbd758c6e7f9fd7b5b1d4cde34d2b95fcce5e812
   wakelock: d0fc7c864128eac40eba1617cb5264d9c940b46f
+  zalo_flutter: 0fe7092dc50f3f4baf26ed980cedc9b4ed66c5b2
+  ZaloSDK: 233c5cb5247bd6891f4a7d2d9505f6a2b9aa38c6
   ZoomVideoSDK: 51087fd802fe61cf7d0c2ae539555170417829e7
 
 PODFILE CHECKSUM: cca2cf16c95577a2beb08bc3c381fec6587d3ede
