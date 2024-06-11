@@ -5,6 +5,14 @@
         <intent>
             <action android:name="androidx.health.ACTION_SHOW_PERMISSIONS_RATIONALE" />
         </intent>
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.BROWSABLE" />
+            <data android:scheme="https" />
+        </intent>
+        <!-- ZaloFlutter start -->
+        <package android:name="com.zing.zalo" />
+        <!-- ZaloFlutter end -->
     </queries>
     <!-- io.flutter.app.FlutterApplication is an android.app.Application that
          calls FlutterMain.startInitialization(this); in its onCreate method.
@@ -166,14 +174,4 @@
         </activity>
         <!-- ZaloFlutter end -->
     </application>
-    <queries>
-        <intent>
-            <action android:name="android.intent.action.VIEW" />
-                <category android:name="android.intent.category.BROWSABLE" />
-            <data android:scheme="https" />
-        </intent>
-        <!-- ZaloFlutter start -->
-        <package android:name="com.zing.zalo" />
-        <!-- ZaloFlutter end -->
-    </queries>
 </manifest>
