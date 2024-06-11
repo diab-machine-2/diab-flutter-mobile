@@ -172,8 +172,10 @@
                 <category android:name="android.intent.category.BROWSABLE" />
             <data android:scheme="https" />
         </intent>
-        <!-- ZaloFlutter start -->
-        <package android:name="com.zing.zalo" />
-        <!-- ZaloFlutter end -->
     </queries>
+    <!-- ZaloFlutter end -->
+    <queries>
+        <package android:name="com.zing.zalo" />
+    </queries>
+    <!-- ZaloFlutter start -->
 </manifest>
