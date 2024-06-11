@@ -10,6 +10,7 @@ class ZaloService {
     //   final String? hashKey = await ZaloFlutter.getHashKeyAndroid();
     //   print('HashKey: $hashKey');
     // }
+    ZaloFlutter.setTimeout(Duration(hours: 2));
     final Map<dynamic, dynamic>? data = await ZaloFlutter.login(
       refreshToken: null,
       // externalInfo: {},
