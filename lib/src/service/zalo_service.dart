@@ -21,7 +21,7 @@ class ZaloService {
 
     // handle login result >> nothing received
     if (data == null) {
-      throw ZaloLoginEmptyException('Login failed with no data');
+      throw ZaloLoginBackException();
     }
 
     if (data['isSuccess'] == true || data['is_success'] == true) {
@@ -96,4 +96,8 @@ class ZaloLoginException implements Exception {
 
 class ZaloLoginEmptyException extends ZaloLoginException {
   ZaloLoginEmptyException(String message) : super(message);
+}
+
+class ZaloLoginBackException extends ZaloLoginException {
+  ZaloLoginBackException() : super("");
 }

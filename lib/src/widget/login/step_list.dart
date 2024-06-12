@@ -29,7 +29,8 @@ import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 import 'widgets/social_login_section.dart';
 
-// ignore: must_be_immutable
+enum _LoginZaloProgress { none, inprogress, gottoken }
+
 class StepListController extends StatefulWidget {
   const StepListController(this.sharedCode);
   final String sharedCode;
@@ -37,11 +38,13 @@ class StepListController extends StatefulWidget {
   _StepListControllerState createState() => _StepListControllerState();
 }
 
-class _StepListControllerState extends State<StepListController> with Observer {
+class _StepListControllerState extends State<StepListController>
+    with Observer, WidgetsBindingObserver {
   final PageController pageController = PageController();
 
   var currentPage = 0;
   int _retry = 0;
+  _LoginZaloProgress _loginZaloProgress = _LoginZaloProgress.none;
 
   String name = '';
 
@@ -86,9 +89,33 @@ class _StepListControllerState extends State<StepListController> with Observer {
   //SecureModel? secureModel;
 
   @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+    switch (state) {
+      case AppLifecycleState.resumed:
+        Future.delayed(Duration(milliseconds: 500), () async {
+          if (!mounted) return;
+          if (_loginZaloProgress == _LoginZaloProgress.inprogress) {
+            // _retry start from 0
+            _retry++;
+            if (_retry == 1) {
+              _showRetryPopup();
+            } else {
+              Message.showToastMessage(context, "zalo_second_failed_message".tr());
+            }
+          }
+        });
+        break;
+      default:
+        break;
+    }
+  }
+
+  @override
   void initState() {
     super.initState();
     Observable.instance.addObserver(this);
+    WidgetsBinding.instance.addObserver(this);
     // DynamicLinkConfig.instance.getLongLink();
     // DynamicLinkConfig.instance.setUpHandleDeepLink();
     // if (widget.sharedCode != "") {
@@ -199,6 +226,7 @@ class _StepListControllerState extends State<StepListController> with Observer {
     _timer = null;
     // DynamicLinkConfig.instance.dispose();
     Observable.instance.removeObserver(this);
+    WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
 
@@ -354,7 +382,7 @@ class _StepListControllerState extends State<StepListController> with Observer {
                                     'cta_button_name': 'cta_welcome_login',
                                   },
                                 );
-    
+
                                 Navigator.pushNamed(
                                   context,
                                   NavigatorName.login,
@@ -476,7 +504,9 @@ class _StepListControllerState extends State<StepListController> with Observer {
     // }
     ZaloLoginResult? account;
     try {
+      _loginZaloProgress = _LoginZaloProgress.inprogress;
       account = await ZaloService().login();
+      _loginZaloProgress = _LoginZaloProgress.gottoken;
       BotToast.showLoading();
       await LoginClient().login({
         "client_id": Const.CLIENT_ID,
@@ -501,19 +531,14 @@ class _StepListControllerState extends State<StepListController> with Observer {
         Navigator.popUntil(context, (route) => route.isFirst);
         Navigator.pushReplacementNamed(context, NavigatorName.tabbar);
       }
+    } on ZaloLoginBackException catch (_) {
+      _loginZaloProgress = _LoginZaloProgress.none;
+      BotToast.closeAllLoading();
     } on ZaloLoginException catch (e, s) {
+      _loginZaloProgress = _LoginZaloProgress.none;
       TrackingManager.recordError(e, s);
       BotToast.closeAllLoading();
-      // _retry start from 0
-      _retry++;
-      if (_retry == 1) {
-        // Show popup for first failed
-        _showRetryPopup();
-      } else {
-        // Show toast for the rest
-        Message.showToastMessage(context, "zalo_second_failed_message".tr());
-      }
-      // Message.showToastMessage(context, error.toString());
+      Message.showToastMessage(context, "zalo_first_failed_message".tr());
     } catch (error) {
       if (error is Error && error.code == '5' && account != null) {
         registerAccount(
