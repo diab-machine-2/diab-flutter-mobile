@@ -20,11 +20,9 @@ import 'package:medical/src/repo/user/user_client.dart';
 import 'package:medical/src/service/zalo_service.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigator_name.dart';
-import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widgets/button_language_picker.dart';
-import 'package:medical/src/widgets/dismissKeyboard_widget.dart';
 import 'package:medical/src/widgets/spacing_row.dart';
 import 'package:package_info/package_info.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
@@ -43,6 +41,7 @@ class _StepListControllerState extends State<StepListController> with Observer {
   final PageController pageController = PageController();
 
   var currentPage = 0;
+  int _retry = 0;
 
   String name = '';
 
@@ -70,14 +69,12 @@ class _StepListControllerState extends State<StepListController> with Observer {
     {
       'name': 'Nhật ký sức khoẻ',
       'image': R.drawable.img_step2,
-      'text':
-          'Theo dõi, quản lý và chia sẻ các chỉ số sức khỏe cho bác sĩ, chuyên gia',
+      'text': 'Theo dõi, quản lý và chia sẻ các chỉ số sức khỏe cho bác sĩ, chuyên gia',
     },
     {
       'name': 'Hỏi đáp cùng bác sĩ',
       'image': R.drawable.img_step3,
-      'text':
-          'Nhận sự tư vấn, hỗ trợ trực tiếp từ đội ngũ bác sĩ và Chuyên gia giàu kinh nghiệm',
+      'text': 'Nhận sự tư vấn, hỗ trợ trực tiếp từ đội ngũ bác sĩ và Chuyên gia giàu kinh nghiệm',
     }
   ];
 
@@ -132,14 +129,13 @@ class _StepListControllerState extends State<StepListController> with Observer {
   }
 
   Future firebaseSetup() async {
-    await TrackingManager.analytics.logScreenView(
-        screenName: "welcome", screenClass: "StepListController");
+    await TrackingManager.analytics
+        .logScreenView(screenName: "welcome", screenClass: "StepListController");
     AppSettings.currentScreenName = 'welcome';
   }
 
   @override
-  void update(
-      Observable observable, String? notifyName, Map<dynamic, dynamic>? map) {
+  void update(Observable observable, String? notifyName, Map<dynamic, dynamic>? map) {
     if (notifyName == Const.NAVIGATE_TO_PROFILE_TAB) {
       setState(() {});
     }
@@ -208,251 +204,244 @@ class _StepListControllerState extends State<StepListController> with Observer {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () => FocusScope.of(context).requestFocus(FocusNode()),
-      child: Scaffold(
-        body: SafeArea(
-          child: Stack(
-            children: [
-              Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  SpacingColumn(
-                    spacing: 25.h,
-                    children: [
-                      SizedBox(height: 20.h),
-                      SizedBox(
-                        height: 290.h,
-                        child: PageView.builder(
-                            onPageChanged: (index) async {
-                              final name = data[index]['name']!;
-                              await TrackingManager.analytics.logEvent(
-                                  name: 'component_clicked',
-                                  parameters: {
-                                    "screen_name": 'welcome',
-                                    'object_index': index,
-                                    'object_title': name,
-                                    'component_name': 'slider_welcome',
-                                  });
-                              setState(() {
-                                currentPage = index;
-                              });
-                            },
-                            controller: pageController,
-                            itemCount: data.length,
-                            itemBuilder: (BuildContext context, int index) {
-                              final name = data[index]['name']!;
-                              final image = data[index]['image']!;
-                              final text = data[index]['text']!;
-                              return imageItem(context, name, image, text);
-                            }),
-                      ),
-                      SmoothPageIndicator(
-                        controller: pageController,
-                        count: 3,
-                        effect: ExpandingDotsEffect(
-                            dotWidth: 5,
-                            dotHeight: 5,
-                            dotColor: Color(0xFFD3D3D3),
-                            activeDotColor: R.color.mainColor),
-                      ),
-                      builtItemText(
-                        data[currentPage]['name']!,
-                        data[currentPage]['text']!,
-                      ),
-                      SizedBox(height: 20),
-                    ],
-                  ),
-                  Column(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.only(left: 16, right: 16),
-                        margin: EdgeInsets.only(bottom: 16),
-                        child: SpacingColumn(
-                            spacing: 15,
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Container(
-                                height: 52,
-                                padding: EdgeInsets.symmetric(horizontal: 20),
-                                decoration: BoxDecoration(
-                                  gradient: LinearGradient(
-                                    begin: Alignment.topCenter,
-                                    end: Alignment.bottomCenter,
-                                    colors: [
-                                      R.color.greenGradientTop,
-                                      R.color.greenGradientBottom
-                                    ],
-                                  ),
-                                  borderRadius: BorderRadius.circular(200),
+    return Scaffold(
+      body: SafeArea(
+        child: Stack(
+          children: [
+            Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                SpacingColumn(
+                  spacing: 25.h,
+                  children: [
+                    SizedBox(height: 20.h),
+                    SizedBox(
+                      height: 290.h,
+                      child: PageView.builder(
+                          onPageChanged: (index) async {
+                            final name = data[index]['name']!;
+                            await TrackingManager.analytics
+                                .logEvent(name: 'component_clicked', parameters: {
+                              "screen_name": 'welcome',
+                              'object_index': index,
+                              'object_title': name,
+                              'component_name': 'slider_welcome',
+                            });
+                            setState(() {
+                              currentPage = index;
+                            });
+                          },
+                          controller: pageController,
+                          itemCount: data.length,
+                          itemBuilder: (BuildContext context, int index) {
+                            final name = data[index]['name']!;
+                            final image = data[index]['image']!;
+                            final text = data[index]['text']!;
+                            return imageItem(context, name, image, text);
+                          }),
+                    ),
+                    SmoothPageIndicator(
+                      controller: pageController,
+                      count: 3,
+                      effect: ExpandingDotsEffect(
+                          dotWidth: 5,
+                          dotHeight: 5,
+                          dotColor: Color(0xFFD3D3D3),
+                          activeDotColor: R.color.mainColor),
+                    ),
+                    builtItemText(
+                      data[currentPage]['name']!,
+                      data[currentPage]['text']!,
+                    ),
+                    SizedBox(height: 20),
+                  ],
+                ),
+                Column(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.only(left: 16, right: 16),
+                      margin: EdgeInsets.only(bottom: 16),
+                      child: SpacingColumn(
+                          spacing: 15,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Container(
+                              height: 52,
+                              padding: EdgeInsets.symmetric(horizontal: 20),
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  begin: Alignment.topCenter,
+                                  end: Alignment.bottomCenter,
+                                  colors: [R.color.greenGradientTop, R.color.greenGradientBottom],
                                 ),
-                                child: GestureDetector(
-                                    onTap: () => loginZalo(),
-                                    child: Row(
-                                      children: [
-                                        SvgPicture.asset(
-                                          width: 24,
-                                          height: 24,
-                                          R.icons.ic_zalo,
-                                        ),
-                                        Expanded(
-                                          child: AutoSizeText(
-                                            'Đăng nhập qua Zalo',
-                                            maxLines: 1,
-                                            textAlign: TextAlign.center,
-                                            style: TextStyle(
-                                              color: R.color.white,
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.w700,
-                                            ),
-                                          ),
-                                        )
-                                      ],
-                                    )),
+                                borderRadius: BorderRadius.circular(200),
                               ),
-                              // Expanded(
-                              //   child: GestureDetector(
-                              //     onTap: () async {
-                              //       await TrackingManager.analytics.logEvent(
-                              //         name: 'cta_button_clicked',
-                              //         parameters: {
-                              //           "screen_name": 'welcome',
-                              //           'cta_button_name':
-                              //               'cta_welcome_sign_up',
-                              //         },
-                              //       );
-                              //       Navigator.pushNamed(
-                              //         context,
-                              //         NavigatorName.register,
-                              //         arguments: sharedCode,
-                              //       );
-                              //     },
-                              //     child: Container(
-                              //         height: 48,
-                              //         decoration: BoxDecoration(
-                              //             color: R.color.mainColor,
-                              //             borderRadius:
-                              //                 BorderRadius.circular(200),
-                              //             gradient: LinearGradient(
-                              //                 begin: Alignment.topLeft,
-                              //                 end: Alignment.centerRight,
-                              //                 colors: [
-                              //                   R.color.greenGradientTop,
-                              //                   R.color.greenGradientBottom
-                              //                 ])),
-                              //         child: Center(
-                              //           child: Text(R.string.tao_tai_khoan.tr(),
-                              //               style: TextStyle(
-                              //                   color: R.color.white,
-                              //                   fontSize: 16,
-                              //                   fontWeight: FontWeight.w600)),
-                              //         )),
-                              //   ),
-                              // ),
-                              // SizedBox(width: 16),
-                              GestureDetector(
-                                onTap: () async {
-                                  // Navigator.pushReplacementNamed(
-                                  //     context, NavigatorName.register,
-                                  //     arguments: {
-                                  //       'phone': '0909202394',
-                                  //     });
-                                  await TrackingManager.analytics.logEvent(
-                                    name: 'cta_button_clicked',
-                                    parameters: {
-                                      "screen_name": 'welcome',
-                                      'cta_button_name': 'cta_welcome_login',
-                                    },
-                                  );
-
-                                  Navigator.pushNamed(
-                                    context,
-                                    NavigatorName.login,
-                                    arguments: sharedCode,
-                                  );
-                                },
-                                child: Container(
-                                  height: 52,
-                                  padding: EdgeInsets.symmetric(horizontal: 20),
-                                  decoration: BoxDecoration(
-                                    color: Color(0xFFE8F9F7),
-                                    borderRadius: BorderRadius.circular(200),
-                                  ),
+                              child: GestureDetector(
+                                  onTap: () => loginZalo(),
                                   child: Row(
                                     children: [
                                       SvgPicture.asset(
                                         width: 24,
                                         height: 24,
-                                        R.icons.ic_device,
-                                        color: R.color.mainColor,
+                                        R.icons.ic_zalo,
                                       ),
                                       Expanded(
-                                        child: Center(
-                                          child: AutoSizeText(
-                                            'Đăng nhập qua số điện thoại',
-                                            maxLines: 1,
-                                            style: TextStyle(
-                                              color: R.color.mainColor,
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.w700,
-                                            ),
+                                        child: AutoSizeText(
+                                          'Đăng nhập qua Zalo',
+                                          maxLines: 1,
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(
+                                            color: R.color.white,
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w700,
+                                          ),
+                                        ),
+                                      )
+                                    ],
+                                  )),
+                            ),
+                            // Expanded(
+                            //   child: GestureDetector(
+                            //     onTap: () async {
+                            //       await TrackingManager.analytics.logEvent(
+                            //         name: 'cta_button_clicked',
+                            //         parameters: {
+                            //           "screen_name": 'welcome',
+                            //           'cta_button_name':
+                            //               'cta_welcome_sign_up',
+                            //         },
+                            //       );
+                            //       Navigator.pushNamed(
+                            //         context,
+                            //         NavigatorName.register,
+                            //         arguments: sharedCode,
+                            //       );
+                            //     },
+                            //     child: Container(
+                            //         height: 48,
+                            //         decoration: BoxDecoration(
+                            //             color: R.color.mainColor,
+                            //             borderRadius:
+                            //                 BorderRadius.circular(200),
+                            //             gradient: LinearGradient(
+                            //                 begin: Alignment.topLeft,
+                            //                 end: Alignment.centerRight,
+                            //                 colors: [
+                            //                   R.color.greenGradientTop,
+                            //                   R.color.greenGradientBottom
+                            //                 ])),
+                            //         child: Center(
+                            //           child: Text(R.string.tao_tai_khoan.tr(),
+                            //               style: TextStyle(
+                            //                   color: R.color.white,
+                            //                   fontSize: 16,
+                            //                   fontWeight: FontWeight.w600)),
+                            //         )),
+                            //   ),
+                            // ),
+                            // SizedBox(width: 16),
+                            GestureDetector(
+                              onTap: () async {
+                                // Navigator.pushReplacementNamed(
+                                //     context, NavigatorName.register,
+                                //     arguments: {
+                                //       'phone': '0909202394',
+                                //     });
+                                await TrackingManager.analytics.logEvent(
+                                  name: 'cta_button_clicked',
+                                  parameters: {
+                                    "screen_name": 'welcome',
+                                    'cta_button_name': 'cta_welcome_login',
+                                  },
+                                );
+    
+                                Navigator.pushNamed(
+                                  context,
+                                  NavigatorName.login,
+                                  arguments: sharedCode,
+                                );
+                              },
+                              child: Container(
+                                height: 52,
+                                padding: EdgeInsets.symmetric(horizontal: 20),
+                                decoration: BoxDecoration(
+                                  color: Color(0xFFE8F9F7),
+                                  borderRadius: BorderRadius.circular(200),
+                                ),
+                                child: Row(
+                                  children: [
+                                    SvgPicture.asset(
+                                      width: 24,
+                                      height: 24,
+                                      R.icons.ic_device,
+                                      color: R.color.mainColor,
+                                    ),
+                                    Expanded(
+                                      child: Center(
+                                        child: AutoSizeText(
+                                          'Đăng nhập qua số điện thoại',
+                                          maxLines: 1,
+                                          style: TextStyle(
+                                            color: R.color.mainColor,
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w700,
                                           ),
                                         ),
                                       ),
-                                    ],
-                                  ),
+                                    ),
+                                  ],
                                 ),
                               ),
-                            ]),
-                      ),
-                      SizedBox(
-                        height: 12,
-                      ),
-                      SocialLoginSection(),
-                      // GestureDetector(
-                      //   onTap: () async {
-                      //     await TrackingManager.analytics.logEvent(
-                      //       name: 'cta_button_clicked',
-                      //       parameters: {
-                      //         "screen_name": 'welcome',
-                      //         'cta_button_name': 'cta_welcome_support',
-                      //       },
-                      //     );
-                      //     if (AppSettings.secureModel != null) {
-                      //       Navigator.pushNamed(context, NavigatorName.contact,
-                      //           arguments: {'contact': AppSettings.secureModel});
-                      //     }
-                      //   },
-                      //   child: Row(
-                      //     mainAxisAlignment: MainAxisAlignment.center,
-                      //     children: [
-                      //       Image.asset(
-                      //         R.drawable.ic_contact,
-                      //         width: 19,
-                      //         height: 19,
-                      //       ),
-                      //       SizedBox(
-                      //         width: 8,
-                      //       ),
-                      //       Text(R.string.contact_diab_info.tr(),
-                      //           style: TextStyle(
-                      //               fontSize: 15,
-                      //               color: R.color.captionColorGray)),
-                      //     ],
-                      //   ),
-                      // ),
-                      // SizedBox(height: 12)
-                    ],
-                  ),
-                ],
-              ),
-              Positioned(
-                top: 5,
-                right: 5,
-                child: ButtonLanguagePicker(screenName: 'welcome'),
-              ),
-            ],
-          ),
+                            ),
+                          ]),
+                    ),
+                    SizedBox(
+                      height: 12,
+                    ),
+                    SocialLoginSection(),
+                    // GestureDetector(
+                    //   onTap: () async {
+                    //     await TrackingManager.analytics.logEvent(
+                    //       name: 'cta_button_clicked',
+                    //       parameters: {
+                    //         "screen_name": 'welcome',
+                    //         'cta_button_name': 'cta_welcome_support',
+                    //       },
+                    //     );
+                    //     if (AppSettings.secureModel != null) {
+                    //       Navigator.pushNamed(context, NavigatorName.contact,
+                    //           arguments: {'contact': AppSettings.secureModel});
+                    //     }
+                    //   },
+                    //   child: Row(
+                    //     mainAxisAlignment: MainAxisAlignment.center,
+                    //     children: [
+                    //       Image.asset(
+                    //         R.drawable.ic_contact,
+                    //         width: 19,
+                    //         height: 19,
+                    //       ),
+                    //       SizedBox(
+                    //         width: 8,
+                    //       ),
+                    //       Text(R.string.contact_diab_info.tr(),
+                    //           style: TextStyle(
+                    //               fontSize: 15,
+                    //               color: R.color.captionColorGray)),
+                    //     ],
+                    //   ),
+                    // ),
+                    // SizedBox(height: 12)
+                  ],
+                ),
+              ],
+            ),
+            Positioned(
+              top: 5,
+              right: 5,
+              child: ButtonLanguagePicker(screenName: 'welcome'),
+            ),
+          ],
         ),
       ),
     );
@@ -467,13 +456,12 @@ class _StepListControllerState extends State<StepListController> with Observer {
     ZaloLoginResult? zaloAccount,
   }) async {
     try {
-      Navigator.pushReplacementNamed(context, NavigatorName.update_info,
-          arguments: {
-            'type': provider.toLowerCase(),
-            'googleAccount': null,
-            'appleAccount': null,
-            'zaloAccount': zaloAccount,
-          });
+      Navigator.pushReplacementNamed(context, NavigatorName.update_info, arguments: {
+        'type': provider.toLowerCase(),
+        'googleAccount': null,
+        'appleAccount': null,
+        'zaloAccount': zaloAccount,
+      });
       BotToast.closeAllLoading();
     } catch (error) {
       BotToast.closeAllLoading();
@@ -481,7 +469,11 @@ class _StepListControllerState extends State<StepListController> with Observer {
     }
   }
 
-  loginZalo() async {
+  void loginZalo() async {
+    // if (_retry > 3) {
+    //   Message.showToastMessage(context, R.string.error_can_not_connect_to_server.tr());
+    //   return;
+    // }
     ZaloLoginResult? account;
     try {
       account = await ZaloService().login();
@@ -509,6 +501,19 @@ class _StepListControllerState extends State<StepListController> with Observer {
         Navigator.popUntil(context, (route) => route.isFirst);
         Navigator.pushReplacementNamed(context, NavigatorName.tabbar);
       }
+    } on ZaloLoginException catch (e, s) {
+      TrackingManager.recordError(e, s);
+      BotToast.closeAllLoading();
+      // _retry start from 0
+      _retry++;
+      if (_retry == 1) {
+        // Show popup for first failed
+        _showRetryPopup();
+      } else {
+        // Show toast for the rest
+        Message.showToastMessage(context, "zalo_second_failed_message".tr());
+      }
+      // Message.showToastMessage(context, error.toString());
     } catch (error) {
       if (error is Error && error.code == '5' && account != null) {
         registerAccount(
@@ -531,8 +536,7 @@ class _StepListControllerState extends State<StepListController> with Observer {
     }
   }
 
-  Widget imageItem(
-      BuildContext context, String name, String image, String text) {
+  Widget imageItem(BuildContext context, String name, String image, String text) {
     return Image.asset(image);
   }
 
@@ -541,10 +545,7 @@ class _StepListControllerState extends State<StepListController> with Observer {
       children: [
         Text(
           name,
-          style: TextStyle(
-              color: R.color.textDark,
-              fontSize: 24,
-              fontWeight: FontWeight.w700),
+          style: TextStyle(color: R.color.textDark, fontSize: 24, fontWeight: FontWeight.w700),
           textAlign: TextAlign.center,
         ).tr(),
         SizedBox(
@@ -563,6 +564,37 @@ class _StepListControllerState extends State<StepListController> with Observer {
           ).tr(),
         ),
       ],
+    );
+  }
+
+  void _showRetryPopup() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text("zalo_first_failed_message".tr()),
+        actions: [
+          TextButton(
+            onPressed: () {
+              // close the dialog
+              Navigator.pop(context);
+            },
+            child: Text("action_cancel".tr()),
+          ),
+          TextButton(
+            onPressed: () {
+              // close the dialog
+              Navigator.pop(context);
+
+              // retry login
+              loginZalo();
+            },
+            child: Text(
+              "action_try_again".tr(),
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
