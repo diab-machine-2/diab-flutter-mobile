@@ -91,7 +91,7 @@ class _StepListControllerState extends State<StepListController> with Observer {
   String sharedCode = '';
   //SecureModel? secureModel;
   void listenDynamicLinks() async {
-    FlutterBranchSdk.validateSDKIntegration();
+    //FlutterBranchSdk.validateSDKIntegration();
     streamSubscriptionDeepLink =
         FlutterBranchSdk.initSession().listen((data) async {
       print('listenDynamicLinks - DeepLink Data: $data');
