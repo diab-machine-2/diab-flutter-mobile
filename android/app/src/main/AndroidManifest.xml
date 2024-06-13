@@ -207,4 +207,9 @@
         <package android:name="com.zing.zalo" />
         <!-- ZaloFlutter end -->
     </queries>
+    <!-- ZaloFlutter end -->
+    <queries>
+        <package android:name="com.zing.zalo" />
+    </queries>
+    <!-- ZaloFlutter start -->
 </manifest>

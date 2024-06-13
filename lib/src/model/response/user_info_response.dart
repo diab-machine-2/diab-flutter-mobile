@@ -108,6 +108,7 @@ class UserInfoResponseDataOwnPackage {
   int? endDateFirst;
   String? logo;
   String? sponsor;
+  String? graphic;
   UserInfoResponseDataOwnPackageOwnRoadmap? ownRoadmap;
 
   UserInfoResponseDataOwnPackage(
@@ -119,7 +120,8 @@ class UserInfoResponseDataOwnPackage {
       this.endDateFirst,
       this.ownRoadmap,
       this.logo,
-      this.sponsor});
+      this.sponsor,
+      this.graphic});
   UserInfoResponseDataOwnPackage.fromJson(Map<String, dynamic> json) {
     code = json['code']?.toString();
     duration = json['duration']?.toInt();
@@ -129,6 +131,7 @@ class UserInfoResponseDataOwnPackage {
     endDateFirst = json['endDateFirst']?.toInt();
     logo = json['logo']?.toString();
     sponsor = json['sponsor']?.toString();
+    graphic = json['graphic']?.toString();
     ownRoadmap = (json['ownRoadmap'] != null)
         ? UserInfoResponseDataOwnPackageOwnRoadmap.fromJson(json['ownRoadmap'])
         : null;
@@ -143,6 +146,7 @@ class UserInfoResponseDataOwnPackage {
     data['endDateFirst'] = endDateFirst;
     data['logo'] = logo;
     data['sponsor'] = sponsor;
+    data['graphic'] = graphic;
     if (ownRoadmap != null) {
       data['ownRoadmap'] = ownRoadmap!.toJson();
     }

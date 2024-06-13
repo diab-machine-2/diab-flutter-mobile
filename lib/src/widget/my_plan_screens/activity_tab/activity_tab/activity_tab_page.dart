@@ -118,8 +118,8 @@ class _ActivityTabPageState extends State<ActivityTabPage>
     if (activityId != null) {
       SmartGoalList smartGoal = SmartGoalList(surveyId: activityId, state: 0);
       await Future.delayed(Duration(milliseconds: 500));
-      NavigationUtil.navigatePage(
-          navigatorKey.currentState!.context, IntroduceSurveyPage(survey: smartGoal));
+      NavigationUtil.navigatePage(navigatorKey.currentState!.context,
+          IntroduceSurveyPage(survey: smartGoal));
       Future.delayed(Duration(seconds: 1), () {
         DynamicLinkConfig.instance.removeActivityId();
       });
@@ -196,34 +196,36 @@ class _ActivityTabPageState extends State<ActivityTabPage>
                           child: Row(
                             // mainAxisSize: MainAxisSize.min,
                             // mainAxisAlignment: MainAxisAlignment.end,
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
                               if (AppSettings.userInfo!.packageName != null)
-                                Expanded(
-                                  child: Text(
-                                    AppSettings.userInfo!.packageName!,
-                                    textAlign: TextAlign.left,
+                                Image.network(
+                                  height: 40,
+                                  AppSettings.userInfo?.ownPackage?.graphic ??
+                                      "",
+                                  errorBuilder: (context, error, stackTrace) {
+                                    return SizedBox();
+                                  },
+                                ),
+                              Row(
+                                children: [
+                                  Text(
+                                    R.string.statistical.tr(),
                                     style: TextStyle(
                                       color: R.color.greenGradientBottom,
                                       fontSize: 16,
                                       fontWeight: FontWeight.w700,
                                     ),
                                   ),
-                                ),
-                              Text(
-                                R.string.statistical.tr(),
-                                style: TextStyle(
-                                  color: R.color.greenGradientBottom,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w700,
-                                ),
-                              ),
-                              const SizedBox(width: 4),
-                              Image.asset(
-                                R.drawable.ic_save,
-                                width: 16,
-                                height: 16,
-                              ),
+                                  const SizedBox(width: 4),
+                                  Image.asset(
+                                    R.drawable.ic_save,
+                                    width: 16,
+                                    height: 16,
+                                  ),
+                                ],
+                              )
                             ],
                           ),
                         ),
