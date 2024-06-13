@@ -8,11 +8,17 @@ import io.flutter.plugins.firebase.messaging.FlutterFirebaseMessagingBackgroundS
 import io.flutter.plugins.firebase.messaging.FlutterFirebaseMessagingPlugin;
 import com.zing.zalo.zalosdk.oauth.ZaloSDKApplication;
 
+import io.branch.referral.Branch;
+
 public class Application extends FlutterApplication implements PluginRegistrantCallback {
   @Override
   public void onCreate() {
     super.onCreate();
-    ZaloSDKApplication.wrap(this);
+      // Branch logging for debugging
+      Branch.enableLogging();
+      // Branch object initialization
+      Branch.getAutoInstance(this);
+      ZaloSDKApplication.wrap(this);
  //   FlutterFirebaseMessagingBackgroundService.setPluginRegistrant(this);
   }
 
