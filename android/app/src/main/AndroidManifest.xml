@@ -203,9 +203,6 @@
 			<action android:name="android.intent.action.SEND" />
 			<data android:mimeType="text/plain" />
 		</intent>
-        <!-- ZaloFlutter start -->
-        <package android:name="com.zing.zalo" />
-        <!-- ZaloFlutter end -->
     </queries>
     <!-- ZaloFlutter end -->
     <queries>
