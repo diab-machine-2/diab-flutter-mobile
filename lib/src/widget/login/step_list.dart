@@ -475,6 +475,20 @@ class _StepListControllerState extends State<StepListController>
     );
   }
 
+  loginSuccess(String loginFrom) async {
+    try {
+      await TrackingManager.analytics.logEvent(
+        name: 'login',
+        parameters: {
+          "screen_name": 'login',
+          'method': loginFrom.toLowerCase(),
+        },
+      );
+    } catch (e) {
+      print(e);
+    }
+  }
+
   registerAccount(
     String? providerKey,
     String? externalToken,
@@ -484,12 +498,13 @@ class _StepListControllerState extends State<StepListController>
     ZaloLoginResult? zaloAccount,
   }) async {
     try {
-      Navigator.pushReplacementNamed(context, NavigatorName.update_info, arguments: {
-        'type': provider.toLowerCase(),
-        'googleAccount': null,
-        'appleAccount': null,
-        'zaloAccount': zaloAccount,
-      });
+      Navigator.pushReplacementNamed(context, NavigatorName.update_info,
+          arguments: {
+            'type': provider.toLowerCase(),
+            'googleAccount': null,
+            'appleAccount': null,
+            'zaloAccount': zaloAccount,
+          });
       BotToast.closeAllLoading();
     } catch (error) {
       BotToast.closeAllLoading();
@@ -527,6 +542,7 @@ class _StepListControllerState extends State<StepListController>
           zaloAccount: account,
         );
       } else {
+        loginSuccess("Zalo");
         BotToast.closeAllLoading();
         Navigator.popUntil(context, (route) => route.isFirst);
         Navigator.pushReplacementNamed(context, NavigatorName.tabbar);
