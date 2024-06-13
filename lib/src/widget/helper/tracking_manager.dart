@@ -46,12 +46,16 @@ class TrackingManager {
     Function? originalOnError = FlutterError.onError;
     FlutterError.onError = (FlutterErrorDetails errorDetails) async {
       await FirebaseCrashlytics.instance.recordFlutterError(errorDetails);
+      // log error to console
+      FlutterError.dumpErrorToConsole(errorDetails);
       // Forward to original handler.
       if (originalOnError != null) originalOnError(errorDetails);
     };
 
     // Pass all uncaught asynchronous errors that aren't handled by the Flutter framework to Crashlytics
     PlatformDispatcher.instance.onError = (error, stack) {
+      // log error to console
+      debugPrint('PlatformDispatcher.instance.onError: $error');
       FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
       return true;
     };
@@ -73,18 +77,12 @@ class TrackingManager {
     return FirebaseCrashlytics.instance.log(message);
   }
 
-  static Future<void> recordError(dynamic exception, StackTrace? stack,
-      {dynamic reason,
-      Iterable<Object> information = const [],
-      bool? printDetails,
-      bool fatal = false}) async {
+  static Future<void> recordError(Object exception, StackTrace? stack, {bool fatal = false}) async {
     await _guardUserInfoWritten();
-    return FirebaseCrashlytics.instance.recordError(
-      exception,
-      stack,
-      reason: reason,
-      information: information,
-      fatal: fatal,
+    final error = FlutterErrorDetails(
+      exception: exception,
+      stack: stack,
     );
+    return FirebaseCrashlytics.instance.recordFlutterError(error, fatal: fatal);
   }
 }

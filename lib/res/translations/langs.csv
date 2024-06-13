@@ -1107,3 +1107,7 @@ zoom_meeting_ended,Cuộc họp đã kết thúc,Meeting ended,
 alert_leave_cancel,Hủy,Cancel,
 alert_leave_agree,Đồng ý,Yes,
 host_not_joined_yet,"Bác sĩ chưa đến, bạn vui lòng đợi xíu nhé!","The doctor has not arrived yet, please wait a moment!",
+zalo_first_failed_message,"Đồng bộ thông tin tài khoản Zalo không thành công. Vui lòng thử lại.","Synchronization of Zalo account information failed. Please try again."
+zalo_second_failed_message,"Đăng nhập Zalo không thành công. Vui lòng chọn phương thức đăng nhập khác.","Login to Zalo failed. Please choose another login method."
+action_try_again,"Thử lại","Try again"
+action_cancel,"Thoát","Cancel"
