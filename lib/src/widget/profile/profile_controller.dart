@@ -445,7 +445,8 @@ class _ProfileControllerState extends State<ProfileController> with Observer {
         if (index == 0) {
           final String phoneNumber = AppSettings.userInfo?.phoneNumber ?? '';
           if (phoneNumber.isEmpty || phoneNumber.contains('User')) {
-            showPopupUpdatePhone();
+            // showPopupUpdatePhone();
+            Navigator.pushNamed(context, NavigatorName.profile_info);
           } else {
             Navigator.pushNamed(context, NavigatorName.profile_info);
           }

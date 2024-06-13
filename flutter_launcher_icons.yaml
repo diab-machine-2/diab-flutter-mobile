@@ -1,0 +1,6 @@
+flutter_launcher_icons:
+  android: 'ic_launcher' # name of icon in device android
+  ios: true
+  image_path: 'assets/images/img_logo1.png' # path of icon like assets/images/img_logo1.png
+  remove_alpha_ios: true
+# then run terminal flutter pub run flutter_launcher_icons
