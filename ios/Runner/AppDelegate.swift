@@ -4,6 +4,7 @@ import Foundation
 import CoreBluetooth
 import ibtFramework
 import ZaloSDK
+import BranchSDK
 
 @UIApplicationMain
 @objc class AppDelegate: FlutterAppDelegate {
@@ -20,7 +21,11 @@ import ZaloSDK
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
         
-        
+        //Branch.setUseTestBranchKey(true)        
+        Branch.getInstance().initSession(launchOptions: launchOptions) { (params, error) in
+            print(params as? [String: AnyObject] ?? {})
+            // Access and use Branch Deep Link data here (nav to page, display content, etc.)
+        }
         let controller : FlutterViewController = window?.rootViewController as! FlutterViewController
         let iBleMethodChannel = FlutterMethodChannel(name: "iBleSdk",
                                                      binaryMessenger: controller.binaryMessenger)

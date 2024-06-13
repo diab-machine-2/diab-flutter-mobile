@@ -96,7 +96,7 @@ class _FlashScreenControllerState extends State<FlashScreenController> {
     try {
       await FirebaseRemoteSetting.instance.init();
     } catch (e, s) {
-      TrackingManager.recordError(e, s, reason: 'Splash get remote config');
+      TrackingManager.recordError(e, s);
     }
     try {
       final token = await AppSettings.getToken();
@@ -139,7 +139,7 @@ class _FlashScreenControllerState extends State<FlashScreenController> {
         );
       }
     } catch (e, s) {
-      TrackingManager.recordError(e, s, reason: 'FlashScreenController.getData');
+      TrackingManager.recordError(e, s);
       UserModel? userInfo = AppSettings.userInfo;
       Map<String, dynamic> errorData = {
         'phone': userInfo?.phoneNumber,

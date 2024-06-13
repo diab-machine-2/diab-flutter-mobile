@@ -53,6 +53,8 @@ import 'package:medical/src/model/response/upgrade_account_response.dart';
 import 'package:medical/src/model/response/user_info_referral_code_response.dart';
 import 'package:medical/src/model/response/user_info_response.dart';
 import 'package:medical/src/model/response/week_states_response.dart';
+import 'package:medical/src/model/request/zoom_token_request.dart';
+import 'package:medical/src/model/response/zoom_token_response.dart';
 import 'package:medical/src/model/service/api_result.dart';
 import 'package:medical/src/model/service/network_exceptions.dart';
 
@@ -277,6 +279,22 @@ class AppRepository {
       } else
         return ApiResult.failure(
             error: NetworkExceptions.defaultError(response.message ?? ''));
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
+  /// Zoom
+  // get zoom token
+  Future<ApiResult<ZoomTokenResponse>> getZoomToken(
+      {required String roomId, required String displayName}) async {
+    try {
+      ZoomTokenRequest request = ZoomTokenRequest(
+        roomId: roomId,
+        displayName: displayName,
+      );
+      final ZoomTokenResponse response = await appClient.getZoomToken(request);
+      return ApiResult.success(data: response);
     } catch (e) {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));
     }

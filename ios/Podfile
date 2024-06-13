@@ -36,6 +36,7 @@ target 'Runner' do
   pod 'ZoomVideoSDK/zoomcml', '1.10.11'
   pod 'ZoomVideoSDK/CptShare', '1.10.11'
   # pod 'ZoomVideoSDK/zm_annoter_dynamic', '1.10.11'
+  pod 'BranchSDK'
 end
 
 pre_install do |installer|

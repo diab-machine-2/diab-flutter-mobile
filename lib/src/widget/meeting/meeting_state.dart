@@ -16,7 +16,7 @@ class MeetingJoining extends MeetingState {
 class MeetingJoined extends MeetingState {
   final ZoomVideoSdkUser? thisUser;
   final ZoomVideoSdkUser? previewUser;
-  final ZoomVideoSdkUser fullscreenUser;
+  final ZoomVideoSdkUser? fullscreenUser;
   final List<ZoomVideoSdkUser> remoteUsers;
 
   MeetingJoined({
@@ -47,7 +47,7 @@ class MeetingJoined extends MeetingState {
   List<Object> get props => [
         if (thisUser != null) thisUser!,
         if (previewUser != null) previewUser!,
-        fullscreenUser,
+        if (fullscreenUser != null) fullscreenUser!,
         remoteUsers,
       ];
 }
@@ -58,6 +58,10 @@ class MeetingLeaving extends MeetingState {
 }
 
 class MeetingJoinError extends MeetingState {
+  const MeetingJoinError({message = 'error_unexpected_error'}) : message = message;
+
+  final String message;
+
   @override
-  String toString() => 'MeetingJoinError';
+  String toString() => message;
 }

@@ -61,6 +61,8 @@ import 'response/upgrade_account_response.dart';
 import 'response/user_info_referral_code_response.dart';
 import 'response/user_info_response.dart';
 import 'response/week_states_response.dart';
+import 'request/zoom_token_request.dart';
+import 'response/zoom_token_response.dart';
 
 part 'app_api.g.dart';
 
@@ -323,6 +325,12 @@ abstract class AppApi {
   @DELETE("App/Target/{id}")
   Future<DeleteSmartGoalReponse> deleteSmartGoal(
     @Path('id') String id,
+  );
+
+  // Zoom Token
+  @POST("App/Zoom/sdk-key")
+  Future<ZoomTokenResponse> getZoomToken(
+    @Body() ZoomTokenRequest request,
   );
 
   // Quiz

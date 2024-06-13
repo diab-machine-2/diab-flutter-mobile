@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/services.dart' show PlatformException;
+import 'package:medical/src/app_setting/dynamic_link_config.dart';
 import 'package:uni_links/uni_links.dart';
 
 class DeepLinkConfig {
@@ -11,9 +12,10 @@ class DeepLinkConfig {
 
   String? sharedCode;
 
-  static void setUpHandleDeepLink(
-      {required Function(String? code) onHaveLink}) {
+  static void setUpHandleDeepLink({required Function(String? code) onHaveLink}) {
     linkStream.listen((link) {
+      bool haveMeetLink = _tryCaptureMeetLink(link);
+      if (haveMeetLink) return;
       if (link != null &&
           !link.contains("click.diab.com.vn") &&
           !link.contains("referralCode") &&
@@ -38,6 +40,8 @@ class DeepLinkConfig {
   Future<String?> getInitLink() async {
     try {
       final String? initialLink = await getInitialLink();
+      bool haveMeetLink = _tryCaptureMeetLink(initialLink);
+      if (haveMeetLink) return null;
       if (initialLink != null &&
           !initialLink.contains("click.diab.com.vn") &&
           !initialLink.contains("referralCode") &&
@@ -52,13 +56,29 @@ class DeepLinkConfig {
     return null;
   }
 
-  Future<void> handleDeepLink() async {
-    _subLink = linkStream.listen((String? link) {
-    }, onError: (err) {});
-
-    _subUni = uriLinkStream.listen((Uri? uri) {
-    }, onError: (err) {});
+  static bool _tryCaptureMeetLink(String? link) {
+    if (link != null && link.contains('meet.diab.com.vn')) {
+      // for e.g: https://meet.diab.com.vn/room001?p=1222
+      final match = RegExp(r'meet.diab.com.vn/(\w+)').firstMatch(link);
+      if (match != null) {
+        final roomId = match.group(1);
+        // create dummy link to process same as dynamic link
+        final dynamicLink = "https://click.diab.com.vn/?calendar=$roomId";
+        final uri = Uri.parse(dynamicLink);
+        DynamicLinkConfig.instance.progressDynamicLink(uri);
+        return true;
+      }
+    }
+    return false;
   }
+
+  // Future<void> handleDeepLink() async {
+  //   _subLink = linkStream.listen((String? link) {
+  //   }, onError: (err) {});
+
+  //   _subUni = uriLinkStream.listen((Uri? uri) {
+  //   }, onError: (err) {});
+  // }
 
   void dispose() {
     _subLink.cancel();
