@@ -5,8 +5,11 @@ class IncomingFeature extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Text('Incoming feature'),
+    return Scaffold(
+      backgroundColor: Color(0xFFE8F3F3),
+      body: Center(
+        child: Text('Incoming feature'),
+      ),
     );
   }
 }

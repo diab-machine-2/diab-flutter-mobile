@@ -55,6 +55,14 @@ class _TabbarControllerState extends State<TabbarController>
   bool isNavigateToStepList = false;
   // final _checker = AppVersionChecker();
 
+  final List<TabBarType> _bottomTabs = [
+    TabBarType.home,
+    TabBarType.program,
+    TabBarType.library,
+    TabBarType.faq,
+    TabBarType.store,
+  ];
+
   @override
   void initState() {
     initData();
@@ -97,7 +105,7 @@ class _TabbarControllerState extends State<TabbarController>
 
   void _onBottomNavigationBarTap(int index) {
     // TODO: More check
-    if (index == MainTabEnum.store.index) {
+    if (index == TabBarType.store.index) {
       BotToast.showLoading();
       Future.delayed(Duration(seconds: 1), () async {
         FirebaseAnalytics.instance.logEvent(
@@ -179,7 +187,7 @@ class _TabbarControllerState extends State<TabbarController>
         position = map['position'] ?? 0;
       }
       NavigationUtil.popToFirst(context);
-      jumpTo(MainTabEnum.library.index);
+      jumpTo(TabBarType.library.index);
       await Future.delayed(
         const Duration(milliseconds: 10),
       );
@@ -193,7 +201,7 @@ class _TabbarControllerState extends State<TabbarController>
       }
     }
     if (notifyName == Const.NAVIGATE_TO_PROFILE_TAB) {
-      jumpTo(MainTabEnum.home.index);
+      jumpTo(TabBarType.home.index);
     }
     if (notifyName == Const.NAVIGATE_TO_LESSON_DETAIL ||
         notifyName == Const.NAVIGATE_TO_ACTIVITY_DETAIL) {
@@ -201,7 +209,7 @@ class _TabbarControllerState extends State<TabbarController>
     }
     if (notifyName == Const.NAVIGATE_TO_LESSON_TAB ||
         notifyName == Const.NAVIGATE_TO_ACTIVITY_TAB) {
-      jumpTo(MainTabEnum.library.index);
+      jumpTo(TabBarType.library.index);
     }
     if (notifyName == Const.LANGUAGE_CHANGED) {
       setState(() {
@@ -224,7 +232,7 @@ class _TabbarControllerState extends State<TabbarController>
   Widget build(BuildContext context) {
     return Scaffold(
       extendBody: false,
-      backgroundColor: R.color.white,
+      backgroundColor: const Color(0xFFE8F3F3),
       body: PageView(
         physics: const NeverScrollableScrollPhysics(),
         controller: pageController,
@@ -232,21 +240,20 @@ class _TabbarControllerState extends State<TabbarController>
       ),
       bottomNavigationBar: CurvedNavigationBar(
         key: _bottomNavigationKey,
-        backgroundColor: Color(0xFFEAF4F4),
+        backgroundColor: Colors.transparent,
         color: Colors.white,
-        buttonBackgroundColor: R.color.mainColor,
-        normalButtonColor: R.color.mainColor,
+        buttonBackgroundColor: const Color(0xFF008479),
+        normalButtonColor: const Color(0xFF9C9C9C),
         activeButtonColor: Colors.white,
-        height: 75.0,
-        assetPaths: [
-          R.drawable.ic_home,
-          R.drawable.ic_tab_program,
-          R.drawable.ic_tab_library,
-          R.drawable.ic_tab_faq,
-          R.drawable.ic_tab_store
-        ],
+        activeButtonBorderColor: const Color(0xFFE1FAF8),
+        height: 56.0,
+        assetPaths: _bottomTabs.map((e) => e.iconPath).toList(),
+        tabTitles: _bottomTabs.map((e) => e.title).toList(),
         letIndexChange: (index) {
-          return index != MainTabEnum.store.index;
+          return index != TabBarType.store.index;
+        },
+        activeIconReplacement: (path) {
+          return path.replaceAll(".png", "_active.png");
         },
         onTap: _onBottomNavigationBarTap,
       ),

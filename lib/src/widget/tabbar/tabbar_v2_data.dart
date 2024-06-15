@@ -1,4 +1,4 @@
-enum MainTabEnum {
+enum TabBarType {
   home,
   program,
   library,
@@ -6,49 +6,49 @@ enum MainTabEnum {
   store,
 }
 
-extension MainTabEnum_ on MainTabEnum {
+extension TabBarTypeExt on TabBarType {
   String get title {
     switch (this) {
       // TODO: localize
-      case MainTabEnum.home:
+      case TabBarType.home:
         return 'Trang chủ';
-      case MainTabEnum.program:
+      case TabBarType.program:
         return 'Chương trình';
-      case MainTabEnum.library:
+      case TabBarType.library:
         return 'Thư viện';
-      case MainTabEnum.faq:
+      case TabBarType.faq:
         return 'Hỏi đáp';
-      case MainTabEnum.store:
+      case TabBarType.store:
         return 'Cửa hàng';
     }
   }
 
-  String get icon {
+  String get iconPath {
     switch (this) {
-      case MainTabEnum.home:
-        return 'ic_home';
-      case MainTabEnum.program:
-        return 'ic_plan';
-      case MainTabEnum.library:
-        return 'ic_qa';
-      case MainTabEnum.faq:
-        return 'ic_home_store';
-      case MainTabEnum.store:
-        return 'ic_home_store';
+      case TabBarType.home:
+        return 'lib/res/drawables/tab/ic_tab_home.png';
+      case TabBarType.program:
+        return 'lib/res/drawables/tab/ic_tab_program.png';
+      case TabBarType.library:
+        return 'lib/res/drawables/tab/ic_tab_library.png';
+      case TabBarType.faq:
+        return 'lib/res/drawables/tab/ic_tab_faq.png';
+      case TabBarType.store:
+        return 'lib/res/drawables/tab/ic_tab_store.png';
     }
   }
 
   int get index {
     switch (this) {
-      case MainTabEnum.home:
+      case TabBarType.home:
         return 0;
-      case MainTabEnum.program:
+      case TabBarType.program:
         return 1;
-      case MainTabEnum.library:
+      case TabBarType.library:
         return 2;
-      case MainTabEnum.faq:
+      case TabBarType.faq:
         return 3;
-      case MainTabEnum.store:
+      case TabBarType.store:
         return 4;
     }
   }

@@ -7,16 +7,19 @@ import 'src/nav_button.dart';
 import 'src/nav_custom_painter.dart';
 
 typedef _LetIndexPage = bool Function(int value);
+typedef StringCallback = String Function(String);
 
 class CurvedNavigationBar extends StatefulWidget {
   final List<Widget> items;
   final List<String> assetPaths;
+  final List<String> tabTitles;
   final double iconSize;
   final int index;
   final Color color;
   final Color? buttonBackgroundColor;
   final Color backgroundColor;
   final Color activeButtonColor;
+  final Color activeButtonBorderColor;
   final Color normalButtonColor;
   final ValueChanged<int>? onTap;
   final _LetIndexPage letIndexChange;
@@ -24,16 +27,20 @@ class CurvedNavigationBar extends StatefulWidget {
   final Duration animationDuration;
   final double height;
   final double? maxWidth;
+  final StringCallback activeIconReplacement;
 
   CurvedNavigationBar({
     Key? key,
     required this.assetPaths,
+    required this.tabTitles,
+    required this.activeIconReplacement,
     this.iconSize = 24.0,
     this.index = 0,
     this.color = Colors.white,
     this.buttonBackgroundColor,
     this.backgroundColor = Colors.blueAccent,
     required this.activeButtonColor,
+    required this.activeButtonBorderColor,
     required this.normalButtonColor,
     this.onTap,
     _LetIndexPage? letIndexChange,
@@ -114,8 +121,10 @@ class CurvedNavigationBarState extends State<CurvedNavigationBar>
         builder: (context, constraints) {
           final maxWidth = min(constraints.maxWidth, widget.maxWidth ?? constraints.maxWidth);
           if (widget.items.indexOf(_icon) > -1) {
+            final iconPath = widget.assetPaths[widget.items.indexOf(_icon)];
+            final activeIconPath = widget.activeIconReplacement(iconPath);
             _icon = Image.asset(
-              widget.assetPaths[widget.items.indexOf(_icon)],
+              activeIconPath,
               width: widget.iconSize,
               height: widget.iconSize,
               color: widget.activeButtonColor,
@@ -135,8 +144,9 @@ class CurvedNavigationBarState extends State<CurvedNavigationBar>
                   clipBehavior: Clip.none,
                   alignment: Alignment.bottomCenter,
                   children: <Widget>[
+                    // Active
                     Positioned(
-                      bottom: -44 - (75.0 - widget.height),
+                      bottom: -34 - (75.0 - widget.height),
                       left: textDirection == TextDirection.rtl ? null : _pos * maxWidth,
                       right: textDirection == TextDirection.rtl ? _pos * maxWidth : null,
                       width: maxWidth / _length,
@@ -146,21 +156,29 @@ class CurvedNavigationBarState extends State<CurvedNavigationBar>
                             0,
                             -(1 - _buttonHide) * 80,
                           ),
-                          child: Material(
-                            color: widget.buttonBackgroundColor ?? widget.color,
-                            type: MaterialType.circle,
-                            child: Padding(
-                              padding: const EdgeInsets.all(16.0),
-                              child: _icon,
+                          child: Container(
+                            width: 52.0,
+                            height: 52.0,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: widget.buttonBackgroundColor ?? widget.color,
+                              border: Border.all(
+                                color: widget.activeButtonBorderColor,
+                                width: 4.0,
+                              ),
                             ),
+                            alignment: Alignment.center,
+                            child: _icon,
                           ),
                         ),
                       ),
                     ),
+
+                    // Clip path
                     Positioned(
                       left: 0,
                       right: 0,
-                      bottom: 0 - (75.0 - widget.height),
+                      bottom: 12 - (75.0 - widget.height),
                       child: CustomPaint(
                         painter: NavCustomPainter(_pos, _length, widget.color, textDirection),
                         child: Container(
@@ -168,20 +186,42 @@ class CurvedNavigationBarState extends State<CurvedNavigationBar>
                         ),
                       ),
                     ),
+
+                    // Buttons
                     Positioned(
                       left: 0,
                       right: 0,
                       bottom: 0 - (75.0 - widget.height),
                       child: SizedBox(
-                          height: 100.0,
+                          height: 75.0,
                           child: Row(
                               children: widget.items.map((item) {
+                            final index = widget.items.indexOf(item);
                             return NavButton(
                               onTap: _buttonTap,
                               position: _pos,
                               length: _length,
-                              index: widget.items.indexOf(item),
-                              child: Center(child: item),
+                              index: index,
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  const SizedBox(height: 4.0),
+                                  item,
+                                  const SizedBox(height: 4.0),
+                                  Text(
+                                    widget.tabTitles[index],
+                                    style: TextStyle(
+                                      color: index == _endingIndex
+                                          ? widget.activeButtonColor
+                                          : widget.normalButtonColor,
+                                      fontSize: 11.0,
+                                      height: 16.0 / 11.0,
+                                    ),
+                                  ),
+                                ],
+                              ),
                             );
                           }).toList())),
                     ),
