@@ -224,94 +224,100 @@ class _HomeControllerState extends State<HomeController> with Observer {
           return RefreshIndicator(
             onRefresh: _pullToRefresh,
             child: Scaffold(
-              body: Container(
-                decoration: BoxDecoration(
-                    image: DecorationImage(
-                  image: AssetImage(R.drawable.bg_home),
-                  fit: BoxFit.fill,
-                )),
-                child: Column(
-                  children: [
-                    HomeHeader(sharedCode: widget.sharedCode),
-                    // TODO: UI here
-                    Expanded(
-                      child: SingleChildScrollView(
-                        child: Column(
-                          children: [
-                            // Summary
-                            MeasurementSummary(
-                              inlineMeasurements: model?.inlineMeasurements ?? [],
-                              measurements: model?.measurements ?? [],
-                              onAddMeasurement: () {},
-                              onHealthProfile: () {},
-                            ),
-
-                            const SizedBox(height: 16.0),
-
-                            // Activities
-                            Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                              child: HomeActivity(
-                                activities: model?.activities ?? [],
-                                expanded: _isActivityExpanded,
-                                onViewMore: () {
-                                  setState(() {
-                                    _isActivityExpanded = true;
-                                  });
-                                },
-                                onViewLess: () {
-                                  setState(() {
-                                    _isActivityExpanded = false;
-                                  });
-                                },
-                              ),
-                            ),
-
-                            const SizedBox(height: 16.0),
-
-                            // Activities
-                            Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                              child: HomeReminder(
-                                reminders: model?.reminders ?? [],
-                                onAdd: () {},
-                              ),
-                            ),
-
-                            const SizedBox(height: 16.0),
-
-                            // Utilities
-                            Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                              child: HomeUtilities(
-                                utilities: model?.utilities ?? [],
-                                onNavigate: (routeName) {
-                                  // Navigator.pushNamed(context, routeName);
-                                },
-                              ),
-                            ),
-
-                            const SizedBox(height: 16.0),
-
-                            // Utilities
-                            Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                              child: HomeLesson(
-                                lessons: model?.lessons ?? [],
-                                onLessonTap: (lesson) {},
-                                onLike: (lesson) {},
-                                onComment: (lesson) {},
-                                onShare: (lesson) {},
-                              ),
-                            ),
-
-                            const SizedBox(height: 32.0),
-                          ],
-                        ),
+              backgroundColor: const Color(0xFFE8F3F3),
+              body: Column(
+                children: [
+                  DecoratedBox(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment(0.0, 2.0),
+                        colors: [
+                          Color(0xFF008479),
+                          Color(0xFF4BB2AB),
+                          Colors.white,
+                        ],
                       ),
                     ),
-                  ],
-                ),
+                    child: HomeHeader(sharedCode: widget.sharedCode),
+                  ),
+                  Expanded(
+                    child: SingleChildScrollView(
+                      child: Column(
+                        children: [
+                          // Summary
+                          MeasurementSummary(
+                            inlineMeasurements: model?.inlineMeasurements ?? [],
+                            measurements: model?.measurements ?? [],
+                            onAddMeasurement: () {},
+                            onHealthProfile: () {},
+                          ),
+
+                          const SizedBox(height: 16.0),
+
+                          // Activities
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                            child: HomeActivity(
+                              activities: model?.activities ?? [],
+                              expanded: _isActivityExpanded,
+                              onViewMore: () {
+                                setState(() {
+                                  _isActivityExpanded = true;
+                                });
+                              },
+                              onViewLess: () {
+                                setState(() {
+                                  _isActivityExpanded = false;
+                                });
+                              },
+                            ),
+                          ),
+
+                          const SizedBox(height: 16.0),
+
+                          // Activities
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                            child: HomeReminder(
+                              reminders: model?.reminders ?? [],
+                              onAdd: () {},
+                            ),
+                          ),
+
+                          const SizedBox(height: 16.0),
+
+                          // Utilities
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                            child: HomeUtilities(
+                              utilities: model?.utilities ?? [],
+                              onNavigate: (routeName) {
+                                // Navigator.pushNamed(context, routeName);
+                              },
+                            ),
+                          ),
+
+                          const SizedBox(height: 16.0),
+
+                          // Utilities
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                            child: HomeLesson(
+                              lessons: model?.lessons ?? [],
+                              onLessonTap: (lesson) {},
+                              onLike: (lesson) {},
+                              onComment: (lesson) {},
+                              onShare: (lesson) {},
+                            ),
+                          ),
+
+                          const SizedBox(height: 32.0),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
           );

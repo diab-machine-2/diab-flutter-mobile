@@ -144,35 +144,6 @@ class CurvedNavigationBarState extends State<CurvedNavigationBar>
                   clipBehavior: Clip.none,
                   alignment: Alignment.bottomCenter,
                   children: <Widget>[
-                    // Active
-                    Positioned(
-                      bottom: -34 - (75.0 - widget.height),
-                      left: textDirection == TextDirection.rtl ? null : _pos * maxWidth,
-                      right: textDirection == TextDirection.rtl ? _pos * maxWidth : null,
-                      width: maxWidth / _length,
-                      child: Center(
-                        child: Transform.translate(
-                          offset: Offset(
-                            0,
-                            -(1 - _buttonHide) * 80,
-                          ),
-                          child: Container(
-                            width: 52.0,
-                            height: 52.0,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: widget.buttonBackgroundColor ?? widget.color,
-                              border: Border.all(
-                                color: widget.activeButtonBorderColor,
-                                width: 4.0,
-                              ),
-                            ),
-                            alignment: Alignment.center,
-                            child: _icon,
-                          ),
-                        ),
-                      ),
-                    ),
 
                     // Clip path
                     Positioned(
@@ -183,6 +154,60 @@ class CurvedNavigationBarState extends State<CurvedNavigationBar>
                         painter: NavCustomPainter(_pos, _length, widget.color, textDirection),
                         child: Container(
                           height: 75.0,
+                        ),
+                      ),
+                    ),
+
+                    // Active
+                    Positioned(
+                      bottom: -34 - 20 - (75.0 - widget.height),
+                      left: textDirection == TextDirection.rtl ? null : _pos * maxWidth,
+                      right: textDirection == TextDirection.rtl ? _pos * maxWidth : null,
+                      width: maxWidth / _length,
+                      child: Center(
+                        child: Transform.translate(
+                          offset: Offset(
+                            0,
+                            -(1 - _buttonHide) * 80,
+                          ),
+                          child: SizedBox(
+                            width: maxWidth / _length,
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                // icon
+                                Container(
+                                  width: 52.0,
+                                  height: 52.0,
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color: widget.buttonBackgroundColor ?? widget.color,
+                                    border: Border.all(
+                                      color: widget.activeButtonBorderColor,
+                                      width: 4.0,
+                                    ),
+                                  ),
+                                  alignment: Alignment.center,
+                                  child: _icon,
+                                ),
+                            
+                                const SizedBox(height: 4.0),
+                            
+                                // title
+                                if (_endingIndex >= 0)
+                                  Text(
+                                    widget.tabTitles[_endingIndex],
+                                    style: TextStyle(
+                                      color: widget.buttonBackgroundColor,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 11.0,
+                                      height: 16.0 / 11.0,
+                                    ),
+                                  ),
+                              ],
+                            ),
+                          ),
                         ),
                       ),
                     ),
@@ -213,9 +238,7 @@ class CurvedNavigationBarState extends State<CurvedNavigationBar>
                                   Text(
                                     widget.tabTitles[index],
                                     style: TextStyle(
-                                      color: index == _endingIndex
-                                          ? widget.activeButtonColor
-                                          : widget.normalButtonColor,
+                                      color: widget.normalButtonColor,
                                       fontSize: 11.0,
                                       height: 16.0 / 11.0,
                                     ),

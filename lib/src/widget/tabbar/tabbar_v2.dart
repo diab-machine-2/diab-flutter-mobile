@@ -47,10 +47,9 @@ class TabbarController extends StatefulWidget {
 }
 
 class _TabbarControllerState extends State<TabbarController>
-    with SingleTickerProviderStateMixin, Observer {
+    with Observer {
   PageController? pageController;
   // BottomTabbar? _bottomTabbar;
-  GlobalKey<CurvedNavigationBarState> _bottomNavigationKey = GlobalKey<CurvedNavigationBarState>();
   late List<Widget> tabs;
   bool isNavigateToStepList = false;
   // final _checker = AppVersionChecker();
@@ -146,7 +145,7 @@ class _TabbarControllerState extends State<TabbarController>
     final String? lessonId = DynamicLinkConfig.instance.lessonId;
     final String? activityId = DynamicLinkConfig.instance.activityId;
     if (lessonId != null || activityId != null) {
-      jumpTo(1);
+      jumpTo(TabBarType.library.index);
     }
   }
 
@@ -239,7 +238,6 @@ class _TabbarControllerState extends State<TabbarController>
         children: tabs,
       ),
       bottomNavigationBar: CurvedNavigationBar(
-        key: _bottomNavigationKey,
         backgroundColor: Colors.transparent,
         color: Colors.white,
         buttonBackgroundColor: const Color(0xFF008479),
