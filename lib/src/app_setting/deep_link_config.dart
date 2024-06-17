@@ -59,15 +59,8 @@ class DeepLinkConfig {
   static bool _tryCaptureMeetLink(String? link) {
     if (link != null && link.contains('meet.diab.com.vn')) {
       // for e.g: https://meet.diab.com.vn/room001?p=1222
-      final match = RegExp(r'meet.diab.com.vn/(\w+)').firstMatch(link);
-      if (match != null) {
-        final roomId = match.group(1);
-        // create dummy link to process same as dynamic link
-        final dynamicLink = "https://click.diab.com.vn/?calendar=$roomId";
-        final uri = Uri.parse(dynamicLink);
-        DynamicLinkConfig.instance.progressDynamicLink(uri);
-        return true;
-      }
+      DynamicLinkConfig.instance.progressDynamicLink(Uri.parse(link));
+      return true;
     }
     return false;
   }
