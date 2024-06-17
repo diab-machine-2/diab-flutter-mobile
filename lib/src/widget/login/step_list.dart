@@ -134,6 +134,7 @@ class _StepListControllerState extends State<StepListController>
   void initState() {
     super.initState();
     Observable.instance.addObserver(this);
+    WidgetsBinding.instance.addObserver(this);
     listenDynamicLinks();
     // DynamicLinkConfig.instance.getLongLink();
     // DynamicLinkConfig.instance.setUpHandleDeepLink();
