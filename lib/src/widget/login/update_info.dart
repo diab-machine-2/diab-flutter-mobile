@@ -8,6 +8,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
+import 'package:medical/src/app_setting/dynamic_link_config.dart';
 import 'package:medical/src/app_setting/firebase_tracking/firebase_tracking.dart';
 import 'package:medical/src/modal/base/referral_code_temp.dart';
 import 'package:medical/src/modal/error/error_model.dart';
@@ -506,7 +507,10 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
             ? '0'
             : (selectedDate!.millisecondsSinceEpoch ~/ 1000).toString(),
         'gender': _choosenGender.toString(),
+        'referalCode': widget.referalCode ??
+            DynamicLinkConfig.instance.referalCode // initialize
       };
+
       ReferralCodeTemp? referralCodeData = await AppStorages.getReferralCode();
       if (referralCodeData != null) {
         params['referalCode'] = referralCodeData.referralCode;
