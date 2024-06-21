@@ -12,8 +12,7 @@ import '../model/response/lesson_section_list_response.dart';
 
 class DynamicLinkConfig {
   DynamicLinkConfig._privateConstructor();
-  static final DynamicLinkConfig instance =
-      DynamicLinkConfig._privateConstructor();
+  static final DynamicLinkConfig instance = DynamicLinkConfig._privateConstructor();
   static String _androidApplicationId = "com.vbhc.diab";
   static String _iosBundleId = "com.cactusoftware.diab";
   static String _appStoreId = "1569353448";
@@ -38,8 +37,7 @@ class DynamicLinkConfig {
   String? get shareLink => _shareLink;
 
   Future<void> setUpHandleDeepLink() async {
-    final PendingDynamicLinkData? data =
-        await FirebaseDynamicLinks.instance.getInitialLink();
+    final PendingDynamicLinkData? data = await FirebaseDynamicLinks.instance.getInitialLink();
     final Uri? deepLink = data?.link;
 
     if (deepLink != null) {
@@ -59,8 +57,7 @@ class DynamicLinkConfig {
     final dynamicLink = FirebaseDynamicLinks.instance;
     String domain = "https://click.diab.com.vn/referralCode";
     String longDynamicLink = "https://click.diab.com.vn/referralCode";
-    longDynamicLink +=
-        "?link=https://diab.com.vn/referralCode=${user.shareRefCode}";
+    longDynamicLink += "?link=https://diab.com.vn/referralCode=${user.shareRefCode}";
     longDynamicLink += "&ofl=https://diab.com.vn/giai-phap";
     longDynamicLink += "&apn=com.vbhc.diab";
     longDynamicLink += "&ibi=com.cactusoftware.diab";
@@ -68,8 +65,7 @@ class DynamicLinkConfig {
     longDynamicLink += "&st=Tải ngay ứng dụng diaB";
     longDynamicLink +=
         "&sd=Ứng dụng hoàn toàn miễn phí giúp kiểm soát bệnh đái tháo đường và kết nối với chuyên gia.";
-    longDynamicLink +=
-        "&si=https://api.diab.com.vn/App/Image/a95ed12f-3880-4588-378f-08dbc2ecc277";
+    longDynamicLink += "&si=https://api.diab.com.vn/App/Image/a95ed12f-3880-4588-378f-08dbc2ecc277";
 
     final DynamicLinkParameters parameters = DynamicLinkParameters(
       uriPrefix: domain,
@@ -80,8 +76,7 @@ class DynamicLinkConfig {
         minimumVersion: 70,
         fallbackUrl: Uri.parse("https://diab.com.vn/giai-phap"),
       ),
-      navigationInfoParameters:
-          NavigationInfoParameters(forcedRedirectEnabled: true),
+      navigationInfoParameters: NavigationInfoParameters(forcedRedirectEnabled: true),
       iosParameters: IOSParameters(
         minimumVersion: '1.10.0',
         appStoreId: "1569353448",
@@ -92,14 +87,13 @@ class DynamicLinkConfig {
       socialMetaTagParameters: SocialMetaTagParameters(
         description:
             "DIAB là ứng dụng hướng dẫn chế độ dinh dưỡng, vận động và thư giãn giúp quản lý đường huyết hiệu quả.",
-        imageUrl: Uri.parse(
-            "https://diab.com.vn/wp-content/uploads/2022/02/hinh-1-banner-trang-chu.png"),
+        imageUrl:
+            Uri.parse("https://diab.com.vn/wp-content/uploads/2022/02/hinh-1-banner-trang-chu.png"),
         title: "Diab | Giải pháp toàn diện cho người Đái tháo đường",
       ),
     );
 
-    final ShortDynamicLink dynamicUrl =
-        await dynamicLink.buildShortLink(parameters);
+    final ShortDynamicLink dynamicUrl = await dynamicLink.buildShortLink(parameters);
     _shareLink = dynamicUrl.shortUrl.toString();
     _referalCode = null;
   }
@@ -137,8 +131,7 @@ class DynamicLinkConfig {
           'https://diab.com.vn/referralCode=${user.shareRefCode}?lessonId=${lesson.lessonId}'),
     );
 
-    final ShortDynamicLink dynamicUrl =
-        await dynamicLink.buildShortLink(parameters);
+    final ShortDynamicLink dynamicUrl = await dynamicLink.buildShortLink(parameters);
     return dynamicUrl.shortUrl.toString();
   }
 
@@ -158,8 +151,7 @@ class DynamicLinkConfig {
     _zoomId = zoomId;
   }
 
-  static Future<String?> createShareNewsLink(
-      LearningPostModel newsDetail) async {
+  static Future<String?> createShareNewsLink(LearningPostModel newsDetail) async {
     String _fallbackUrl = "https://diab.com.vn/cau-chuyen-thanh-cong";
     String _domainShareLink = "https://news.diab.com.vn/referralCode";
     String _link = "https://diab.com.vn/newsDetail=${newsDetail.id}";
@@ -190,14 +182,12 @@ class DynamicLinkConfig {
       link: Uri.parse(_link),
     );
 
-    final ShortDynamicLink dynamicUrl =
-        await dynamicLink.buildShortLink(parameters);
+    final ShortDynamicLink dynamicUrl = await dynamicLink.buildShortLink(parameters);
     return dynamicUrl.shortUrl.toString();
   }
 
   Future<String?> getInitLink() async {
-    final PendingDynamicLinkData? data =
-        await FirebaseDynamicLinks.instance.getInitialLink();
+    final PendingDynamicLinkData? data = await FirebaseDynamicLinks.instance.getInitialLink();
     final Uri? deepLink = data?.link;
 
     if (deepLink != null) {
@@ -210,10 +200,9 @@ class DynamicLinkConfig {
     String urlString = deepLink.toString();
 
     // Zoom handler
-    String meetingSignalPattern = "calendar=";
-    bool isMeetingLink = urlString.contains(meetingSignalPattern);
-    if (isMeetingLink) {
-      String roomId = urlString.split(meetingSignalPattern).last;
+    String? meetRoomId = _tryGetMeetRoomId(urlString);
+    if (meetRoomId != null) {
+      String roomId = meetRoomId;
       if (initializing || AppSettings.userInfo == null) {
         _zoomId = roomId;
       } else {
@@ -221,7 +210,6 @@ class DynamicLinkConfig {
           roomId,
           AppSettings.userInfo?.fullName ?? 'Người dùng',
           navigatorKey.currentState!.context,
-          userId: AppSettings.userInfo?.id,
         );
       }
       return;
@@ -234,7 +222,7 @@ class DynamicLinkConfig {
         case "referralCode":
           if (urlString.contains(functionName)) {
             _referalCode = separatedString[1].substring(0, 6);
-            Observable.instance.notifyObservers([], notifyName: Const.NAVIGATE_TO_REGISTER);
+            // Observable.instance.notifyObservers([], notifyName: Const.NAVIGATE_TO_REGISTER);
           }
           if (urlString.contains('lessonId')) {
             _lessonId = urlString.split('lessonId=').last;
@@ -254,6 +242,35 @@ class DynamicLinkConfig {
           break;
       }
     });
+  }
+
+  String? _tryGetMeetRoomId(String urlString) {
+    // case: https://diab.com.vn/?calendar=123456
+    String meetingSignalPattern1 = "calendar=";
+    String? meetRoomId;
+    if (urlString.contains(meetingSignalPattern1)) {
+      meetRoomId = urlString.split(meetingSignalPattern1).last;
+    }
+
+    // case: https://click.diab.com.vn/meet/123456
+    String meetingSignalPattern2 = "meet/";
+    if (urlString.contains(meetingSignalPattern2)) {
+      meetRoomId = urlString.split(meetingSignalPattern2).last;
+    }
+
+    // case: https://meet.diab.com.vn/123456
+    String meetingSignalPattern3 = "meet.diab.com.vn/";
+    if (urlString.contains(meetingSignalPattern3)) {
+      meetRoomId = urlString.split(meetingSignalPattern3).last;
+    }
+
+    // remove pattern after "?" <<< NOT a case for now
+    if (meetRoomId != null && meetRoomId.contains("?")) {
+      List<String> separatedString = meetRoomId.split("?");
+      meetRoomId = separatedString[0];
+    }
+
+    return meetRoomId;
   }
 
   void dispose() {

@@ -6,11 +6,14 @@ class MeetingMessage {
   final String content;
   final MeetingUser? receiverUser;
   final MeetingUser senderUser;
-  final num timestamp;
+  final int timestamp;
   final bool? isSelfSend;
   final bool? isChatToAll;
   final String messageID;
   late List<LinkifyElement>? elements;
+
+  bool isFirstMessage = false;
+  bool isEndOfGroup = false;
 
   bool get haveLink {
     if (elements == null) return false;
@@ -28,7 +31,7 @@ class MeetingMessage {
             ? null
             : MeetingUser.fromZoomVideoSdkUser(message.receiverUser!),
         senderUser = MeetingUser.fromZoomVideoSdkUser(message.senderUser),
-        timestamp = message.timestamp,
+        timestamp = message.timestamp.toInt() * 1000,
         isSelfSend = message.isSelfSend,
         isChatToAll = message.isChatToAll,
         messageID = message.messageID {
@@ -45,9 +48,12 @@ class MeetingUser {
   final String userId;
   final String userName;
 
-  MeetingUser(this.userId, this.userName);
+  bool isHost = false;
+
+  MeetingUser(this.userId, this.userName, [this.isHost = false]);
 
   MeetingUser.fromZoomVideoSdkUser(ZoomVideoSdkUser user)
       : userId = user.userId,
-        userName = user.userName;
+        userName = user.userName,
+        isHost = user.isHost ?? false;
 }

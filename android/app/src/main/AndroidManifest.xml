@@ -88,21 +88,45 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
                 <data android:scheme="http"/>
-                <data
-                android:scheme="https"
-                android:host="diab.com.vn" />
+                <data android:scheme="https" android:host="diab.com.vn"/>
             </intent-filter>
+            
+            <!-- Branch URI Scheme -->
+			<intent-filter>
+				<!-- If utilizing $deeplink_path please explicitly declare your hosts, or utilize a wildcard(*) -->
+				<!-- REPLACE `android:scheme` with your Android URI scheme -->
+				<action android:name="android.intent.action.VIEW" />
+				<category android:name="android.intent.category.DEFAULT" />
+				<category android:name="android.intent.category.BROWSABLE" />
+				<data android:scheme="branchdiab" />
+			</intent-filter>
 
             <!-- App Links -->
             <intent-filter android:autoVerify="true">
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                <data
-                android:scheme="https"
-                android:host="diab.com.vn" />
+                <data android:scheme="https" android:host="diab.com.vn" />
+                <data android:scheme="https" android:host="meet.diab.com.vn" />
             </intent-filter>
+
+            <!-- Branch App Links - Live App -->
+			<intent-filter android:autoVerify="true">
+				<action android:name="android.intent.action.VIEW" />
+				<category android:name="android.intent.category.DEFAULT" />
+				<category android:name="android.intent.category.BROWSABLE" />
+				<!-- REPLACE `android:host` with your `app.link` domain -->
+				<data android:scheme="https" android:host="diabvn.app.link" />
+				<!-- REPLACE `android:host` with your `-alternate` domain (required for proper functioning of App Links and Deepviews) -->
+				<data android:scheme="https" android:host="diabvn-alternate.app.link" />
+			</intent-filter>
+
         </activity>
+            <!-- Branch init -->
+            <!-- REPLACE `BranchKey` with the value from your Branch Dashboard -->
+            <meta-data android:name="io.branch.sdk.BranchKey" android:value="key_live_hrfMzKMuZcwu9nk6tnKjkoooztnbu76v" />
+            <!-- Set to `true` to use `BranchKey.test` -->
+            <meta-data android:name="io.branch.sdk.TestMode" android:value="false" />
         <activity
             android:name="com.yalantis.ucrop.UCropActivity"
             android:screenOrientation="portrait"
@@ -175,8 +199,14 @@
                 <category android:name="android.intent.category.BROWSABLE" />
             <data android:scheme="https" />
         </intent>
-        <!-- ZaloFlutter start -->
-        <package android:name="com.zing.zalo" />
-        <!-- ZaloFlutter end -->
+		<intent>
+			<action android:name="android.intent.action.SEND" />
+			<data android:mimeType="text/plain" />
+		</intent>
     </queries>
+    <!-- ZaloFlutter end -->
+    <queries>
+        <package android:name="com.zing.zalo" />
+    </queries>
+    <!-- ZaloFlutter start -->
 </manifest>

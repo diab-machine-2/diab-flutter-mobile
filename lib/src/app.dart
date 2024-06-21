@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
@@ -78,6 +76,7 @@ import 'package:flutter_in_app_pip/flutter_in_app_pip.dart';
 import 'utils/navigator_name.dart';
 import 'widget/BloodSugar/add_bloodSugar_new.dart';
 import 'widget/helper/photo_view.dart';
+import 'widget/meeting/meeting_wait_room_page.dart';
 import 'widget/news_detail/presentation/news_detail_view.dart';
 import 'widget/ocr/test_ocr_camera_page.dart';
 import 'widget/ocr/test_ocr_gallery_page.dart';
@@ -607,7 +606,11 @@ class _AppState extends State<App> {
                   //       return _buildRoute(
                   //           settings, ZoomIosView(calendarID: data?['id']));
                   //   }
-
+                  
+                  case NavigatorName.meeting_wait_room: {
+                    final args = settings.arguments as MeetingArguments;
+                    return _buildRoute(settings, MeetingWaitRoomPage(args: args));
+                  }
                   case NavigatorName.meeting_prepare:
                     return _buildRoute(settings, MeetingPreparePage());
                   case NavigatorName.meeting: {

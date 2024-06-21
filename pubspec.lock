@@ -17,14 +17,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.3.16"
-  adaptive_number:
-    dependency: transitive
-    description:
-      name: adaptive_number
-      sha256: "3a567544e9b5c9c803006f51140ad544aedc79604fd4f3f2c1380003f97c1d77"
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.0.0"
   analyzer:
     dependency: transitive
     description:
@@ -426,22 +418,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.6"
-  curved_navigation_bar:
-    dependency: "direct main"
-    description:
-      name: curved_navigation_bar
-      sha256: "342da2fd038bd7ec8bd0f5948d57c7fde22930b438edc2489e786c1770f68fbd"
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.0.5"
-  dart_jsonwebtoken:
-    dependency: "direct main"
-    description:
-      name: dart_jsonwebtoken
-      sha256: "063c20d3cee2b626d8a789ba9df0ad21f35012c4e9bd846ce50e921d77123df7"
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.12.2"
   dart_style:
     dependency: transitive
     description:
@@ -522,14 +498,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.0.2"
-  ed25519_edwards:
-    dependency: transitive
-    description:
-      name: ed25519_edwards
-      sha256: "6ce0112d131327ec6d42beede1e5dfd526069b18ad45dcf654f15074ad9276cd"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.3.1"
   equatable:
     dependency: "direct main"
     description:
@@ -775,6 +743,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.5.2"
+  flutter_branch_sdk:
+    dependency: "direct main"
+    description:
+      name: flutter_branch_sdk
+      sha256: "993a11e5fff9959155d99d45fce6ba6b22a25ce7168c55f7a238c465453f5063"
+      url: "https://pub.dev"
+    source: hosted
+    version: "6.9.0"
   flutter_cache_manager:
     dependency: transitive
     description:

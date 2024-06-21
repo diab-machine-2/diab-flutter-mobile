@@ -1,12 +1,12 @@
 name: medical
 description: DiaB mobile application
 
-publish_to: "none"
+publish_to: 'none'
 
-version: 1.5.0+4
+version: 1.6.0+143
 
 environment:
-  sdk: ">=2.18.0 <4.0.0"
+  sdk: '>=2.18.0 <4.0.0'
 
 dependencies:
   flutter:
@@ -94,7 +94,7 @@ dependencies:
   flutter_inapp_purchase: 5.1.2
   #video player
   # better_player: 0.0.83
-  better_player: 
+  better_player:
     git:
       url: https://github.com/tintran-dev/betterplayer
   # video_thumbnail: ^0.5.2
@@ -131,7 +131,6 @@ dependencies:
   # zoom video sdk
   flutter_zoom_videosdk:
     path: packages/zoom_video_sdk
-  dart_jsonwebtoken: ^2.4.2
   wakelock: ^0.6.2
   # Metadata detection
   linkify: ^5.0.0
@@ -145,6 +144,7 @@ dependencies:
 
   # Social login
   zalo_flutter: ^0.0.6
+  flutter_branch_sdk: ^6.9.0
 
   # UI
   curved_navigation_bar: ^1.0.5
@@ -182,6 +182,7 @@ flutter:
     - lib/res/drawables/
     - lib/res/drawables/home/
     - lib/res/drawables/tab/
+    - lib/res/drawables/zoom/
     - lib/res/translations/
     - lib/res/generated/
     - lib/res/icons/
