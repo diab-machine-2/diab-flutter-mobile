@@ -3,9 +3,14 @@ import 'package:bloc/bloc.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/modal/home/home_model.dart';
+import 'package:medical/src/model/repository/app_repository.dart';
+import 'package:medical/src/model/response/smart_goal_list_reponse.dart';
 import 'package:medical/src/repo/home/home_client.dart';
+import 'package:medical/src/repo/learning/learning_client.dart';
+import 'package:medical/src/repo/user/user_client.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/home/schema/measurement_schema.dart';
+import 'package:medical/src/widget/my_plan_screens/activity_tab/activity_tab/models/schedule_type.dart';
 import 'package:meta/meta.dart';
 import 'package:medical/src/modal/error/error_model.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -28,11 +33,12 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   }
 
   Stream<HomeState> _fetchHomes() async* {
+    final repository = AppRepository();
+    final client = HomeClient();
+
     int retry = 1;
     while (retry <= 10) {
       try {
-        final client = HomeClient();
-
         // Load cached home data
         final cachedHome = await AppSettings.getHome();
         if (cachedHome != null) {
@@ -41,7 +47,68 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         yield HomeLoading(model: cachedHome);
 
         // Load home data from server
-        yield HomeLoaded(model: await client.fetchHomes());
+        final home = await client.fetchHomes();
+        yield HomeLoaded(model: home);
+
+        // load today target
+        final currentDay = 0;
+        final currentWeek = 1;
+        final apiResult = await repository.getListSmartGoal(day: currentDay, week: currentWeek);
+        apiResult.when(
+          success: (SmartGoalListReponse response) {
+            if (response.data?.daily != null) {
+              final activities =
+                  response.data!.daily!.where((e) => e != null).map((e) => e!).map((e) {
+                final ScheduleType type = ScheduleTypeExtend.getTypeFromIndex(e.type);
+                // TODO: Map to icon
+                return HomeActivityData(
+                  icon: R.drawable.ic_home_activity,
+                  title: e.name ?? "-",
+                  description: e.description,
+                );
+              }).toList();
+              home.activities = activities;
+            }
+          },
+          failure: (error) {},
+        );
+        yield HomeLoaded(model: home);
+
+        final remindersResponse = await UserClient().fetchScheduleReminders();
+        if (remindersResponse.models.isNotEmpty) {
+          final reminders = remindersResponse.models.map((e) {
+            return HomeReminderData(
+              icon: R.drawable.ic_home_measurement_glucose_inactive,
+              title: e.name ?? "-",
+              time: "today",
+              // TODO: Map to navigator
+              navigatorName: "TODO",
+            );
+          }).toList();
+          home.reminders = reminders;
+        }
+        AppSettings.saveHome(home.toJson()).catchError((e) {
+          print(e);
+          return true;
+        });
+        yield HomeLoaded(model: home);
+
+        // Learning post
+        final lessonsResponse = await LearningClient().fetchLearningPost(null);
+        if (lessonsResponse.isNotEmpty) {
+          final lessons = lessonsResponse.map((e) {
+            return HomeLessonData(
+              id: e.id!,
+              icon: R.drawable.ic_lesson_category,
+              category: "Bài học",
+              title: e.title,
+              imageUrl: e.imageUrl.url,
+            );
+          }).toList();
+          home.lessons = lessons;
+        }
+        yield HomeLoaded(model: home);
+
         break; // Break the loop if successful
       } catch (e, _) {
         if (e is Error) {

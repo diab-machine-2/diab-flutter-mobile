@@ -92,7 +92,7 @@ class AddMeasurement extends StatelessWidget {
                       ),
                       const SizedBox(width: 12.0),
                       const Icon(
-                        Icons.arrow_forward_ios,
+                        Icons.chevron_right,
                         size: 24.0,
                         color: Color(0xFF008479),
                       ),

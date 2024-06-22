@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/widgets/network_image_widget.dart';
 
 import '../schema/measurement_schema.dart';
 
@@ -52,26 +53,6 @@ class HomeLesson extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            // Header + category
-            Row(
-              children: [
-                const SizedBox(width: 16.0),
-                Image.asset(
-                  lesson.icon,
-                  width: 24.0,
-                  height: 24.0,
-                ),
-                const SizedBox(width: 12.0),
-                Text(
-                  lesson.category,
-                  style: TextStyle(
-                    color: R.color.color0xff666666,
-                    fontSize: 12.0,
-                  ),
-                ),
-              ],
-            ),
-
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: Text(
@@ -85,13 +66,37 @@ class HomeLesson extends StatelessWidget {
               ),
             ),
 
+            const SizedBox(height: 4.0),
+
+            Row(
+              children: [
+                const SizedBox(width: 16.0),
+                Image.asset(
+                  lesson.icon,
+                  width: 16.0,
+                  height: 16.0,
+                ),
+                const SizedBox(width: 6.0),
+                Text(
+                  lesson.category,
+                  style: TextStyle(
+                    color: R.color.color0xff666666,
+                    fontSize: 12.0,
+                  ),
+                ),
+              ],
+            ),
+
             const SizedBox(height: 12.0),
 
             // Image
-            if (lesson.imageUrl != null && lesson.imageUrl!.isNotEmpty)
-              Image.network(lesson.imageUrl!, fit: BoxFit.cover, height: 174.0, width: double.infinity)
-            else
-              SizedBox(height: 174.0),
+            // https://picsum.photos/654/348
+            NetWorkImageWidget(
+              imageUrl: lesson.imageUrl,
+              fit: BoxFit.cover,
+              height: 174.0,
+              width: double.infinity,
+            ),
 
             const SizedBox(height: 12.0),
 

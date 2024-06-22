@@ -8,9 +8,10 @@ class HomeActivity extends StatelessWidget {
   const HomeActivity({
     super.key,
     required this.activities,
-    required this.onViewMore,
-    required this.onViewLess,
+    required this.onExpand,
+    required this.onCollapse,
     required this.onAddActivity,
+    required this.onViewMore,
     this.expanded = false,
   });
 
@@ -18,7 +19,8 @@ class HomeActivity extends StatelessWidget {
   final bool expanded;
 
   final VoidCallback onViewMore;
-  final VoidCallback onViewLess;
+  final VoidCallback onExpand;
+  final VoidCallback onCollapse;
   final VoidCallback onAddActivity;
 
   @override
@@ -152,7 +154,7 @@ class HomeActivity extends StatelessWidget {
               return Padding(
                 padding: const EdgeInsets.only(top: 4.0),
                 child: InkWell(
-                  onTap: expanded ? onViewLess : onViewMore,
+                  onTap: expanded ? onCollapse : onExpand,
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     mainAxisAlignment: MainAxisAlignment.center,

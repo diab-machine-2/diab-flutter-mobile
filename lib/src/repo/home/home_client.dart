@@ -21,16 +21,13 @@ class HomeClient extends FetchClient {
     try {
       final Response response = await super.fetchData(url: '/App/Home');
       if (response.statusCode == 200) {
-        await AppSettings.saveHome(response.data['data']);
+        // await AppSettings.saveHome(response.data['data']);
         final model = HomeModel.fromJson(response.data['data']);
-        // TODO:
+
         model.inlineMeasurements = _castInlineMeasurements(model);
         model.measurements = _castMeasurements(model);
-        model.activities = _seedActivities();
-        model.reminders = _seedReminders();
         model.utilities = getUtilities(full: false);
-        model.lessons = _seedLessons();
-        //
+
         return model;
       } else {
         final error = Error.fromJson(response);
@@ -201,49 +198,6 @@ class HomeClient extends FetchClient {
     ];
   }
 
-  List<HomeActivityData>? _seedActivities() {
-    return [
-      HomeActivityData(
-        icon: R.drawable.ic_home_activity,
-        title: "Nhập thông tin cá nhân",
-        description: "Số điện thoại, tình trạng sức khỏe",
-      ),
-      HomeActivityData(
-        icon: R.drawable.ic_home_activity,
-        title: "Nhập chỉ số Đường huyết",
-      ),
-      HomeActivityData(
-        icon: R.drawable.ic_home_activity,
-        title: "Xem bài học",
-      ),
-      HomeActivityData(
-        icon: R.drawable.ic_home_activity,
-        title: "Nhập chỉ số Đường huyết",
-      ),
-      HomeActivityData(
-        icon: R.drawable.ic_home_activity,
-        title: "Xem bài học",
-      ),
-    ];
-  }
-
-  List<HomeReminderData>? _seedReminders() {
-    return [
-      HomeReminderData(
-        icon: R.drawable.ic_home_measurement_glucose_inactive,
-        title: "Đo đường huyết",
-        time: "07:00 sáng",
-        navigatorName: NavigatorName.add_blood_sugar,
-      ),
-      HomeReminderData(
-        icon: R.drawable.ic_home_measurement_glucose_inactive,
-        title: "Uống thuốc",
-        time: "09:00 tối",
-        navigatorName: NavigatorName.add_blood_sugar,
-      ),
-    ];
-  }
-
   List<HomeUtilityData> getUtilities({bool full = false}) {
     return [
       HomeUtilityData(
@@ -293,39 +247,6 @@ class HomeClient extends FetchClient {
           title: "Xem thêm",
           navigatorName: NavigatorName.utilities,
         ),
-    ];
-  }
-
-  List<HomeLessonData>? _seedLessons() {
-    return [
-      HomeLessonData(
-        id: "1",
-        icon: R.drawable.ic_lesson_category,
-        category: "Bài học",
-        title: "Chế độ dinh dưỡng dành cho bệnh đái tháo đường bạn đã biết.",
-        imageUrl: "https://picsum.photos/654/348",
-      ),
-      HomeLessonData(
-        id: "2",
-        icon: R.drawable.ic_lesson_category,
-        category: "Bài học",
-        title: "Chế độ dinh dưỡng dành cho bệnh đái tháo đường bạn đã biết.",
-        imageUrl: "https://picsum.photos/654/348",
-      ),
-      HomeLessonData(
-        id: "3",
-        icon: R.drawable.ic_lesson_category,
-        category: "Bài học",
-        title: "Chế độ dinh dưỡng dành cho bệnh đái tháo đường bạn đã biết.",
-        imageUrl: "https://picsum.photos/654/348",
-      ),
-      HomeLessonData(
-        id: "4",
-        icon: R.drawable.ic_lesson_category,
-        category: "Bài học",
-        title: "Chế độ dinh dưỡng dành cho bệnh đái tháo đường bạn đã biết.",
-        imageUrl: "https://picsum.photos/654/348",
-      ),
     ];
   }
 }

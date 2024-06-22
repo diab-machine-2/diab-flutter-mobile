@@ -30,6 +30,30 @@ class HomeMeasurementInlineData {
     required this.titleColor,
     this.navigatorName,
   }) : assert(title != null || icon != null);
+
+  factory HomeMeasurementInlineData.fromJson(Map<String, dynamic> map) {
+    return HomeMeasurementInlineData(
+      title: map['title'],
+      icon: map['icon'],
+      value: map['value'],
+      unit: map['unit'],
+      color: map['color'],
+      titleColor: map['titleColor'],
+      navigatorName: map['navigatorName'],
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'title': title,
+      'icon': icon,
+      'value': value,
+      'unit': unit,
+      'color': color,
+      'titleColor': titleColor,
+      'navigatorName': navigatorName,
+    };
+  }
 }
 
 class HomeMeasurementData {
@@ -54,6 +78,34 @@ class HomeMeasurementData {
     required this.unit,
     this.navigatorName,
   });
+
+  factory HomeMeasurementData.fromJson(Map<String, dynamic> map) {
+    return HomeMeasurementData(
+      title: map['title'],
+      titleColor: map['titleColor'],
+      icon: map['icon'],
+      value1: map['value1'],
+      value1Color: map['value1Color'],
+      value2: map['value2'],
+      value2Color: map['value2Color'],
+      unit: map['unit'],
+      navigatorName: map['navigatorName'],
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'title': title,
+      'titleColor': titleColor,
+      'icon': icon,
+      'value1': value1,
+      'value1Color': value1Color,
+      'value2': value2,
+      'value2Color': value2Color,
+      'unit': unit,
+      'navigatorName': navigatorName,
+    };
+  }
 }
 
 class HomeActivityData {
@@ -66,6 +118,22 @@ class HomeActivityData {
     required this.title,
     this.description,
   });
+
+  factory HomeActivityData.fromJson(Map<String, dynamic> map) {
+    return HomeActivityData(
+      icon: map['icon'],
+      title: map['title'],
+      description: map['description'],
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'icon': icon,
+      'title': title,
+      'description': description,
+    };
+  }
 }
 
 class HomeReminderData {
@@ -80,6 +148,24 @@ class HomeReminderData {
     required this.time,
     this.navigatorName,
   });
+
+  factory HomeReminderData.fromJson(Map<String, dynamic> map) {
+    return HomeReminderData(
+      icon: map['icon'],
+      title: map['title'],
+      time: map['time'],
+      navigatorName: map['navigatorName'],
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'icon': icon,
+      'title': title,
+      'time': time,
+      'navigatorName': navigatorName,
+    };
+  }
 }
 
 class HomeUtilityData {

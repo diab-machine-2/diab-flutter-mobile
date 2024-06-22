@@ -53,6 +53,7 @@ class _TabbarControllerState extends State<TabbarController>
   late List<Widget> tabs;
   bool isNavigateToStepList = false;
   // final _checker = AppVersionChecker();
+  final GlobalKey<CurvedNavigationBarState> _bottomTabbarKey = GlobalKey();
 
   final List<TabBarType> _bottomTabs = [
     TabBarType.home,
@@ -186,6 +187,7 @@ class _TabbarControllerState extends State<TabbarController>
       }
       NavigationUtil.popToFirst(context);
       jumpTo(TabBarType.library.index);
+      _bottomTabbarKey.currentState?.setPage(TabBarType.library.index);
       await Future.delayed(
         const Duration(milliseconds: 10),
       );
@@ -237,6 +239,7 @@ class _TabbarControllerState extends State<TabbarController>
         children: tabs,
       ),
       bottomNavigationBar: CurvedNavigationBar(
+        key: _bottomTabbarKey,
         backgroundColor: Colors.transparent,
         color: Colors.white,
         buttonBackgroundColor: const Color(0xFF008479),

@@ -36,6 +36,10 @@ class HomeModel {
     required this.energyExerciseCard,
     required this.processCard,
     required this.packageAccount,
+    this.inlineMeasurements,
+    this.measurements,
+    this.activities,
+    this.reminders,
   });
 
   factory HomeModel.fromJson(Map<String, dynamic> json) {
@@ -54,7 +58,38 @@ class HomeModel {
             ),
       processCard: json['processCard'] == null ? null : ProcessCardModel.fromJson(json['processCard']),
       packageAccount: json['packageAccount'] == null ? null : PackageAccountHomeModel.fromJson(json['packageAccount']),
+      inlineMeasurements: json['inlineMeasurements'] == null
+          ? null
+          : (json['inlineMeasurements'] as List).map((item) => HomeMeasurementInlineData.fromJson(item as Map<String, dynamic>)).toList(),
+      measurements: json['measurements'] == null
+          ? null
+          : (json['measurements'] as List).map((item) => HomeMeasurementData.fromJson(item as Map<String, dynamic>)).toList(),
+      activities: json['activities'] == null
+          ? null
+          : (json['activities'] as List).map((item) => HomeActivityData.fromJson(item as Map<String, dynamic>)).toList(),
+      reminders: json['reminders'] == null
+          ? null
+          : (json['reminders'] as List).map((item) => HomeReminderData.fromJson(item as Map<String, dynamic>)).toList(),
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'glucoseIndex': glucoseIndex.toJson(),
+      'bloodPressureIndex': bloodPressureIndex.toJson(),
+      'exercise': exercise?.toJson(),
+      'hbA1CIndex': hbA1CIndex.toJson(),
+      'weightCard': weightCard?.toJson(),
+      'emotionCard': emotionCard?.toJson(),
+      'energyCard': energyCard?.toJson(),
+      'energyExerciseCard': energyExerciseCard?.toJson(),
+      'processCard': processCard?.toJson(),
+      'packageAccount': packageAccount?.toJson(),
+      'inlineMeasurements': inlineMeasurements?.map((e) => e.toJson()).toList(),
+      'measurements': measurements?.map((e) => e.toJson()).toList(),
+      'activities': activities?.map((e) => e.toJson()).toList(),
+      'reminders': reminders?.map((e) => e.toJson()).toList(),
+    };
   }
 
   static List<HomeModel> toList(List<dynamic> items) {
@@ -90,6 +125,17 @@ class GloucoseIndexModel {
     );
   }
 
+  Map<String, dynamic> toJson() {
+    return {
+      'index': index,
+      'indexChange': indexChange,
+      'unit': unit,
+      'createDateTime': createDateTime,
+      'color': color,
+      'icon': icon?.toJson(),
+    };
+  }
+
   static List<GloucoseIndexModel> toList(List<dynamic> items) {
     return items.map((item) => GloucoseIndexModel.fromJson(item)).toList();
   }
@@ -123,6 +169,18 @@ class BloodPressureIndexModel {
       icon: json['icon'] == null ? null : ImagesModel.fromJson(json['icon']),
       createDateTime: json['createDateTime'],
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'systolic': systolic,
+      'systolicChange': systolicChange,
+      'diastolic': diastolic,
+      'diastolicChange': diastolicChange,
+      'color': color,
+      'icon': icon?.toJson(),
+      'createDateTime': createDateTime,
+    };
   }
 
   static List<BloodPressureIndexModel> toList(List<dynamic> items) {
@@ -163,6 +221,19 @@ class ExerciseIndexModel {
     );
   }
 
+  Map<String, dynamic> toJson() {
+    return {
+      'index': index,
+      'indexChange': indexChange,
+      'facExercise': facExercise,
+      'targetExercise': targetExercise,
+      'unit': unit,
+      'createDateTime': createDateTime,
+      'color': color,
+      'icon': icon?.toJson(),
+    };
+  }
+
   static List<ExerciseIndexModel> toList(List<dynamic> items) {
     return items.map((item) => ExerciseIndexModel.fromJson(item)).toList();
   }
@@ -192,6 +263,16 @@ class HbA1CIndexModel {
     );
   }
 
+  Map<String, dynamic> toJson() {
+    return {
+      'index': index,
+      'indexChange': indexChange,
+      'createDateTime': createDateTime,
+      'color': color,
+      'icon': icon?.toJson(),
+    };
+  }
+
   static List<HbA1CIndexModel> toList(List<dynamic> items) {
     return items.map((item) => HbA1CIndexModel.fromJson(item)).toList();
   }
@@ -214,6 +295,15 @@ class WeightCardModel {
         weightColorCode: json['weightColorCode']);
   }
 
+  Map<String, dynamic> toJson() {
+    return {
+      'weight': weight,
+      'goalWeight': goalWeight,
+      'weightDateTime': weightDateTime,
+      'weightColorCode': weightColorCode,
+    };
+  }
+
   static List<WeightCardModel> toList(List<dynamic> items) {
     return items.map((item) => WeightCardModel.fromJson(item)).toList();
   }
@@ -232,6 +322,13 @@ class EmotionCardModel {
     );
   }
 
+  Map<String, dynamic> toJson() {
+    return {
+      'emotionDateTime': emotionDateTime,
+      'details': details?.map((e) => e.toJson()).toList(),
+    };
+  }
+
   static List<EmotionCardModel> toList(List<dynamic> items) {
     return items.map((item) => EmotionCardModel.fromJson(item)).toList();
   }
@@ -248,6 +345,13 @@ class EmotionCardItemModel {
       text: json['text'],
       icon: json['icon'] == null ? null : ImagesModel.fromJson(json['icon']),
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'text': text,
+      'icon': icon?.toJson(),
+    };
   }
 
   static List<EmotionCardItemModel> toList(List<dynamic> items) {
@@ -270,6 +374,14 @@ class EnergyCardModel {
     );
   }
 
+  Map<String, dynamic> toJson() {
+    return {
+      'consumedEnergyDateTime': consumedEnergyDateTime,
+      'consumedEnergy': consumedEnergy,
+      'energyIcon': energyIcon?.toJson(),
+    };
+  }
+
   static List<EnergyCardModel> toList(List<dynamic> items) {
     return items.map((item) => EnergyCardModel.fromJson(item)).toList();
   }
@@ -287,6 +399,15 @@ class EnergyExerciseCardModel {
   factory EnergyExerciseCardModel.fromJson(Map<String, dynamic> json) {
     return EnergyExerciseCardModel(
         value: json['value'], energyGoal: json['energyGoal'], text: json['text'], corlorCode: json['corlorCode']);
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'value': value,
+      'energyGoal': energyGoal,
+      'text': text,
+      'corlorCode': corlorCode,
+    };
   }
 
   static List<EnergyExerciseCardModel> toList(List<dynamic> items) {
@@ -329,6 +450,20 @@ class ProcessCardModel {
       color: json['color'] ?? '',
       icon: json['icon'] == null ? null : ImagesModel.fromJson(json['icon']),
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'target': target,
+      'targetCompeleted': targetCompeleted,
+      'exerciseCompeleted': exerciseCompeleted,
+      'exercise': exercise,
+      'lessonCompeleted': lessonCompeleted,
+      'userFree': userFree,
+      'createDateTime': createDateTime,
+      'color': color,
+      'icon': icon?.toJson(),
+    };
   }
 
   static List<ProcessCardModel> toList(List<dynamic> items) {

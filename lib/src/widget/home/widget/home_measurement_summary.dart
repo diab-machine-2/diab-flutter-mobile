@@ -184,15 +184,16 @@ class MeasurementSummary extends StatelessWidget {
               ),
             ),
             valueWidget,
-            Text(
-              "(${data.unit})",
-              style: TextStyle(
-                color: R.color.color0xff666666,
-                fontWeight: FontWeight.normal,
-                fontSize: 12.0,
-                height: 16.0 / 12.0,
+            if (data.unit.isNotEmpty)
+              Text(
+                "(${data.unit})",
+                style: TextStyle(
+                  color: R.color.color0xff666666,
+                  fontWeight: FontWeight.normal,
+                  fontSize: 12.0,
+                  height: 16.0 / 12.0,
+                ),
               ),
-            ),
           ],
         ),
       ),

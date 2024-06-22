@@ -30,7 +30,7 @@ import 'package:medical/src/widget/nipro/health_app/blocs/healthApp_bloc.dart';
 
 import 'widget/add_measurement.dart';
 import 'widget/home_activity.dart';
-import 'widget/measurement_summary.dart';
+import 'widget/home_measurement_summary.dart';
 
 class HomeController extends StatefulWidget {
   const HomeController({this.sharedCode});
@@ -256,20 +256,25 @@ class _HomeControllerState extends State<HomeController> with Observer {
                           Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 12.0),
                             child: HomeActivity(
-                              activities: model?.activities ?? [],
-                              expanded: _isActivityExpanded,
-                              onViewMore: () {
-                                setState(() {
-                                  _isActivityExpanded = true;
-                                });
-                              },
-                              onViewLess: () {
-                                setState(() {
-                                  _isActivityExpanded = false;
-                                });
-                              },
-                              onAddActivity: () {},
-                            ),
+                                activities: model?.activities ?? [],
+                                expanded: _isActivityExpanded,
+                                onExpand: () {
+                                  setState(() {
+                                    _isActivityExpanded = true;
+                                  });
+                                },
+                                onCollapse: () {
+                                  setState(() {
+                                    _isActivityExpanded = false;
+                                  });
+                                },
+                                onAddActivity: () {
+                                  Navigator.pushNamed(context, NavigatorName.goal_setting);
+                                },
+                                onViewMore: () {
+                                  Observable.instance.notifyObservers([],
+                                      notifyName: Const.NAVIGATE_TO_MY_PLAN_TAB);
+                                }),
                           ),
 
                           const SizedBox(height: 16.0),
@@ -279,7 +284,9 @@ class _HomeControllerState extends State<HomeController> with Observer {
                             padding: const EdgeInsets.symmetric(horizontal: 12.0),
                             child: HomeReminder(
                               reminders: model?.reminders ?? [],
-                              onAdd: () {},
+                              onAdd: () {
+                                Navigator.pushNamed(context, NavigatorName.add_reminder);
+                              },
                             ),
                           ),
 
