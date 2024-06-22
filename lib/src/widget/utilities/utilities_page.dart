@@ -5,7 +5,7 @@ import 'package:medical/src/app_setting/app_sharing.dart';
 import 'package:medical/src/app_setting/dynamic_link_config.dart';
 import 'package:medical/src/utils/app_log.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
-import 'package:medical/src/widget/home/schema/measurement_schema.dart';
+import 'package:medical/src/widget/home/schema/home_schema.dart';
 
 class UtilitiesPage extends StatelessWidget {
   const UtilitiesPage({super.key, required this.utilities});

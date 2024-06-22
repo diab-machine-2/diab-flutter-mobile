@@ -3,7 +3,8 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/modal/base/images.dart';
 import 'package:medical/src/modal/home/package_account_home_model.dart';
-import 'package:medical/src/widget/home/schema/measurement_schema.dart';
+import 'package:medical/src/modal/learning/learning_post_model.dart';
+import 'package:medical/src/widget/home/schema/home_schema.dart';
 
 
 class HomeModel {
@@ -23,7 +24,8 @@ class HomeModel {
   List<HomeActivityData>? activities;
   List<HomeReminderData>? reminders;
   List<HomeUtilityData>? utilities;
-  List<HomeLessonData>? lessons;
+  List<LearningPostModel>? lessons;
+  List<HomeNewsData>? news;
 
   HomeModel({
     required this.glucoseIndex,

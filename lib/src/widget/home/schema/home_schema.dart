@@ -20,6 +20,7 @@ class HomeMeasurementInlineData {
   final int titleColor;
   final int color;
   final String? navigatorName;
+  final dynamic args;
 
   HomeMeasurementInlineData({
     this.title,
@@ -29,6 +30,7 @@ class HomeMeasurementInlineData {
     required this.color,
     required this.titleColor,
     this.navigatorName,
+    this.args,
   }) : assert(title != null || icon != null);
 
   factory HomeMeasurementInlineData.fromJson(Map<String, dynamic> map) {
@@ -191,6 +193,27 @@ class HomeLessonData {
   final int commentCount;
 
   HomeLessonData({
+    required this.id,
+    required this.icon,
+    required this.category,
+    required this.title,
+    this.imageUrl,
+    this.likeCount = 0,
+    this.commentCount = 0,
+  });
+}
+
+class HomeNewsData {
+  final String id;
+  final String icon;
+  final String category;
+  final String title;
+  final String? imageUrl;
+
+  final int likeCount;
+  final int commentCount;
+
+  HomeNewsData({
     required this.id,
     required this.icon,
     required this.category,

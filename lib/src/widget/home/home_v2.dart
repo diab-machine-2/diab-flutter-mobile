@@ -25,12 +25,14 @@ import 'package:medical/src/widget/home/widget/home_reminder.dart';
 import 'package:medical/src/widget/home/widget/home_utilities.dart';
 import 'package:medical/src/widget/voucher/presentation/widgets/voucher_popup.dart';
 import 'package:medical/src/widgets/share_profile_popup.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'welcome_package_screen/welcome_package_screen.dart';
 import 'package:medical/src/widget/nipro/health_app/blocs/healthApp_bloc.dart';
 
 import 'widget/add_measurement.dart';
 import 'widget/home_activity.dart';
 import 'widget/home_measurement_summary.dart';
+import 'widget/home_news.dart';
 
 class HomeController extends StatefulWidget {
   const HomeController({this.sharedCode});
@@ -331,15 +333,40 @@ class _HomeControllerState extends State<HomeController> with Observer {
 
                           const SizedBox(height: 16.0),
 
-                          // Utilities
+                          // Lessons
                           Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 12.0),
                             child: HomeLesson(
                               lessons: model?.lessons ?? [],
-                              onLessonTap: (lesson) {},
+                              onLessonTap: (lesson) {
+                                if (lesson.enableLink) {
+                                  _launchInBrowser(lesson.link!);
+                                } else {
+                                  Navigator.pushNamed(
+                                    context,
+                                    NavigatorName.news_detail,
+                                    arguments: {'id': lesson.id},
+                                  );
+                                }
+                              },
                               onLike: (lesson) {},
                               onComment: (lesson) {},
                               onShare: (lesson) {},
+                            ),
+                          ),
+
+                          const SizedBox(height: 16.0),
+
+                          // Popular News
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                            child: HomeNews(
+                              items: model?.news ?? [],
+                              onViewMore: () {},
+                              onNewsTap: (news) {},
+                              onLike: (news) {},
+                              onComment: (news) {},
+                              onShare: (news) {},
                             ),
                           ),
 
@@ -394,5 +421,13 @@ class _HomeControllerState extends State<HomeController> with Observer {
         ),
       ),
     );
+  }
+
+  void _launchInBrowser(String url) async {
+    final uri = Uri.tryParse(url);
+    if (uri == null) return;
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri);
+    }
   }
 }

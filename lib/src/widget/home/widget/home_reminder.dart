@@ -2,7 +2,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
 
-import '../schema/measurement_schema.dart';
+import '../schema/home_schema.dart';
 
 class HomeReminder extends StatelessWidget {
   const HomeReminder({
@@ -22,6 +22,7 @@ class HomeReminder extends StatelessWidget {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.all(Radius.circular(16.0)),
         color: Colors.white,
+        border: Border.all(color: const Color(0xFFE4E4E7), width: 1.0),
       ),
       child: Column(
         children: [

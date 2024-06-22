@@ -35,6 +35,7 @@ class NavigatorName {
   static const String add_symbo = '/add_symbo';
   static const String add_work = '/add_work';
   static const String add_insight = '/add_insight';
+  static const String add_food = '/add_food';
   static const String detail_food = '/detail_food';
   static const String detail_emotion = '/detail_emotion';
   static const String emotion_table = '/emotion_table';

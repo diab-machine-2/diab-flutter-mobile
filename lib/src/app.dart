@@ -453,14 +453,6 @@ class _AppState extends State<App> {
                     return _buildRoute(
                         settings, EmotionDetailTabbarController(),
                         isPresent: true);
-                  case '/add_food':
-                    final data = settings.arguments as Map<String, dynamic>?;
-                    return _buildRoute(
-                        settings,
-                        AddFoodController(
-                          type: data?['type'],
-                          id: data?['id'],
-                        ));
                   case NavigatorName.profile:
                     return _buildRoute(settings, const ProfileController());
                   case NavigatorName.profile_info:
@@ -479,7 +471,7 @@ class _AppState extends State<App> {
                   case NavigatorName.detail_food:
                     return _buildRoute(settings, FoodDetailTabbarController(),
                         isPresent: true);
-                  case '/add_food':
+                  case NavigatorName.add_food:
                     final data = settings.arguments as Map<String, dynamic>?;
                     return _buildRoute(
                         settings,

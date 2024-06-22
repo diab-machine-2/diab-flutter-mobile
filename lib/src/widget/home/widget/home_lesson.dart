@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/modal/learning/learning_post_model.dart';
 import 'package:medical/src/widgets/network_image_widget.dart';
-
-import '../schema/measurement_schema.dart';
 
 class HomeLesson extends StatelessWidget {
   const HomeLesson({
@@ -14,17 +13,17 @@ class HomeLesson extends StatelessWidget {
     required this.onShare,
   });
 
-  final List<HomeLessonData> lessons;
+  final List<LearningPostModel> lessons;
 
-  final Function(HomeLessonData) onLessonTap;
-  final Function(HomeLessonData) onLike;
-  final Function(HomeLessonData) onComment;
-  final Function(HomeLessonData) onShare;
+  final Function(LearningPostModel) onLessonTap;
+  final Function(LearningPostModel) onLike;
+  final Function(LearningPostModel) onComment;
+  final Function(LearningPostModel) onShare;
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 328.0,
+      height: 320.0,
       child: ListView.separated(
         itemCount: lessons.length,
         scrollDirection: Axis.horizontal,
@@ -39,16 +38,18 @@ class HomeLesson extends StatelessWidget {
     );
   }
 
-  Widget _buildLessonItem(HomeLessonData lesson) {
+  Widget _buildLessonItem(LearningPostModel lesson) {
     return InkWell(
       onTap: () => onLessonTap(lesson),
+      borderRadius: BorderRadius.circular(12.0),
       child: Container(
-        height: 328.0,
+        height: 320.0,
         width: 338.0,
         padding: const EdgeInsets.symmetric(vertical: 16.0),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(12.0),
           color: Colors.white,
+          border: Border.all(color: const Color(0xFFE4E4E7), width: 1.0),
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -68,17 +69,19 @@ class HomeLesson extends StatelessWidget {
 
             const SizedBox(height: 4.0),
 
+            // TODO: Need map
+            // Category
             Row(
               children: [
                 const SizedBox(width: 16.0),
                 Image.asset(
-                  lesson.icon,
+                  R.drawable.ic_lesson_category,
                   width: 16.0,
                   height: 16.0,
                 ),
                 const SizedBox(width: 6.0),
                 Text(
-                  lesson.category,
+                  "Bài học",
                   style: TextStyle(
                     color: R.color.color0xff666666,
                     fontSize: 12.0,
@@ -92,7 +95,7 @@ class HomeLesson extends StatelessWidget {
             // Image
             // https://picsum.photos/654/348
             NetWorkImageWidget(
-              imageUrl: lesson.imageUrl,
+              imageUrl: lesson.imageUrl.url,
               fit: BoxFit.cover,
               height: 174.0,
               width: double.infinity,
@@ -116,7 +119,8 @@ class HomeLesson extends StatelessWidget {
                       Image.asset(R.drawable.ic_lesson_like, width: 20.0, height: 20.0),
                       const SizedBox(width: 8.0),
                       Text(
-                        "${lesson.likeCount}",
+                        "56",
+                        // "${lesson.likeCount}",
                         style: TextStyle(color: R.color.textDark, fontSize: 15.0),
                       ),
                     ],
@@ -135,7 +139,8 @@ class HomeLesson extends StatelessWidget {
                       Image.asset(R.drawable.ic_lesson_comment, width: 20.0, height: 20.0),
                       const SizedBox(width: 8.0),
                       Text(
-                        "${lesson.commentCount}",
+                        "28",
+                        // "${lesson.commentCount}",
                         style: TextStyle(color: R.color.textDark, fontSize: 15.0),
                       ),
                     ],

@@ -2,7 +2,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
 
-import '../schema/measurement_schema.dart';
+import '../schema/home_schema.dart';
 
 class HomeActivity extends StatelessWidget {
   const HomeActivity({
@@ -31,10 +31,11 @@ class HomeActivity extends StatelessWidget {
       duration: const Duration(milliseconds: 300),
       alignment: Alignment.topCenter,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 20.0),
+        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.all(Radius.circular(16.0)),
           color: Colors.white,
+          border: Border.all(color: const Color(0xFFE4E4E7), width: 1.0),
         ),
         child: Column(
           children: [

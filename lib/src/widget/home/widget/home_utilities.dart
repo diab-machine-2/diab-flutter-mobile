@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
 
-import '../schema/measurement_schema.dart';
+import '../schema/home_schema.dart';
 
 class HomeUtilities extends StatelessWidget {
   const HomeUtilities({
@@ -20,6 +20,7 @@ class HomeUtilities extends StatelessWidget {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.all(Radius.circular(16.0)),
         color: Colors.white,
+        border: Border.all(color: const Color(0xFFE4E4E7), width: 1.0),
       ),
       child: Column(
         children: [

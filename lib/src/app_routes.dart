@@ -4,7 +4,7 @@ import 'package:medical/src/widget/utilities/utilities_page.dart';
 import 'utils/navigator_name.dart';
 import 'widget/Food/daily_nutrition/daily_nutrition.dart';
 import 'widget/food_menu_screens/food_menu/food_menu.dart';
-import 'widget/home/schema/measurement_schema.dart';
+import 'widget/home/schema/home_schema.dart';
 import 'widget/tabbar/tabbar_v2.dart';
 
 class AppRoutes {
