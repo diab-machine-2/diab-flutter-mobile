@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
 
@@ -55,24 +56,71 @@ class HomeReminder extends StatelessWidget {
               ),
             ],
           ),
-    
+
           const SizedBox(height: 16.0),
-    
+
           if (reminders.isEmpty)
             SizedBox(
-              height: 100.0,
+              height: 164.0,
               child: Center(
-                child: Text(
-                  "Không có hoạt động nào",
-                  style: TextStyle(
-                    fontSize: 14.0,
-                    color: R.color.grey,
-                    height: 20.0 / 14.0,
-                  ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text(
+                      "empty_reminder".tr(),
+                      style: TextStyle(
+                        fontSize: 14.0,
+                        height: 20.0 / 14.0,
+                        color: R.color.primaryGreyColor,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+
+                    const SizedBox(height: 24.0),
+
+                    // button
+                    SizedBox(
+                      width: 188.0,
+                      child: InkWell(
+                        onTap: onAdd,
+                        borderRadius: BorderRadius.circular(16.0),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(16.0),
+                            color: R.color.greenGradientBottom,
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Image.asset(
+                                R.drawable.ic_home_plus,
+                                width: 16.0,
+                                height: 16.0,
+                              ),
+                              const SizedBox(width: 6.0),
+                              Text(
+                                "Thêm nhắc nhở",
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 13.0,
+                                  height: 16.0 / 13.0,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
-    
+
           for (var reminder in reminders) _buildActivityItem(reminder),
         ],
       ),

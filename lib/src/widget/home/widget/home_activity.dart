@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
 
@@ -9,6 +10,7 @@ class HomeActivity extends StatelessWidget {
     required this.activities,
     required this.onViewMore,
     required this.onViewLess,
+    required this.onAddActivity,
     this.expanded = false,
   });
 
@@ -17,6 +19,7 @@ class HomeActivity extends StatelessWidget {
 
   final VoidCallback onViewMore;
   final VoidCallback onViewLess;
+  final VoidCallback onAddActivity;
 
   @override
   Widget build(BuildContext context) {
@@ -64,15 +67,62 @@ class HomeActivity extends StatelessWidget {
 
             if (isEmpty)
               SizedBox(
-                height: 100.0,
+                height: 164.0,
                 child: Center(
-                  child: Text(
-                    "Không có hoạt động nào",
-                    style: TextStyle(
-                      fontSize: 14.0,
-                      color: R.color.grey,
-                      height: 20.0 / 14.0,
-                    ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text(
+                        "empty_activity".tr(),
+                        style: TextStyle(
+                          fontSize: 14.0,
+                          height: 20.0 / 14.0,
+                          color: R.color.primaryGreyColor,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+
+                      const SizedBox(height: 24.0),
+
+                      // button
+                      SizedBox(
+                        width: 188.0,
+                        child: InkWell(
+                          onTap: onAddActivity,
+                          borderRadius: BorderRadius.circular(16.0),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(16.0),
+                              color: R.color.greenGradientBottom,
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Image.asset(
+                                  R.drawable.ic_home_plus,
+                                  width: 16.0,
+                                  height: 16.0,
+                                ),
+                              const SizedBox(width: 6.0),
+                                Text(
+                                  "Thiết lập mục tiêu",
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 13.0,
+                                    height: 16.0 / 13.0,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),
@@ -154,29 +204,33 @@ class HomeActivity extends StatelessWidget {
 
           // Content
           Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  activity.title,
-                  style: TextStyle(
-                    fontSize: 15.0,
-                    fontWeight: FontWeight.w600,
-                    color: R.color.greenGradientBottom,
-                    height: 24.0 / 15.0,
-                  ),
-                  maxLines: 1,
-                ),
-                if (activity.description != null)
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
                   Text(
-                    activity.description!,
+                    activity.title,
                     style: TextStyle(
-                      fontSize: 13.0,
+                      fontSize: 15.0,
+                      fontWeight: FontWeight.w600,
                       color: R.color.greenGradientBottom,
-                      height: 16.0 / 13.0,
+                      height: activity.description != null ? 24.0 / 15.0 : 1.0,
                     ),
+                    maxLines: 1,
                   ),
-              ],
+                  if (activity.description != null)
+                    Text(
+                      activity.description!,
+                      style: TextStyle(
+                        fontSize: 13.0,
+                        color: R.color.greenGradientBottom,
+                        height: 16.0 / 13.0,
+                      ),
+                    ),
+                ],
+              ),
             ),
           ),
 

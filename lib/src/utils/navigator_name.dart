@@ -68,6 +68,11 @@ class NavigatorName {
   static const String meeting_wait_room = '/meeting-wait-room';
   static const String meeting = '/meeting';
 
+  // NEW UI
+  static const String utilities = '/utilities';
+  static const String food_menu = '/food-menu';
+  static const String add_nutrition = '/add-nutrition';
+
   // Test OCR ZONE
   static const String test_ocr = '/test_ocr';
   static const String test_ocr_camera = '/test_ocr_camera';

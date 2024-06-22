@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:medical/src/widget/utilities/utilities_page.dart';
 
 import 'utils/navigator_name.dart';
+import 'widget/Food/daily_nutrition/daily_nutrition.dart';
+import 'widget/food_menu_screens/food_menu/food_menu.dart';
+import 'widget/home/schema/measurement_schema.dart';
 import 'widget/tabbar/tabbar_v2.dart';
 
 class AppRoutes {
@@ -24,6 +28,23 @@ class AppRoutes {
             sharedCode: sharedCode,
             isRedirectFromNotification: isRedirectFromNotification,
           );
+          break;
+        }
+      case NavigatorName.food_menu:
+        {
+          // empty goal
+          page = FoodMenuPage();
+          break;
+        }
+      case NavigatorName.utilities:
+        {
+          final utilities = settings.arguments as List<HomeUtilityData>;
+          page = UtilitiesPage(utilities: utilities);
+          break;
+        }
+      case NavigatorName.add_nutrition:
+        {
+          page = DailyNutritionPage(type: "input", id: null);
           break;
         }
       default:

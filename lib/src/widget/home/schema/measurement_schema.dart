@@ -1,9 +1,25 @@
+class HomeMeasurementIndex {
+  final String title;
+  final String icon;
+  final String navigatorName;
+  final dynamic args;
+
+  HomeMeasurementIndex({
+    required this.title,
+    required this.icon,
+    required this.navigatorName,
+    this.args,
+  });
+}
+
 class HomeMeasurementInlineData {
   final String? title;
   final String? icon;
   final String value;
   final String unit;
+  final int titleColor;
   final int color;
+  final String? navigatorName;
 
   HomeMeasurementInlineData({
     this.title,
@@ -11,26 +27,32 @@ class HomeMeasurementInlineData {
     required this.value,
     required this.unit,
     required this.color,
+    required this.titleColor,
+    this.navigatorName,
   }) : assert(title != null || icon != null);
 }
 
 class HomeMeasurementData {
   final String title;
+  final int titleColor;
   final String icon;
   final String? value1;
   final int value1Color;
   final String? value2;
   final int? value2Color;
   final String unit;
+  final String? navigatorName;
 
   HomeMeasurementData({
     required this.title,
+    required this.titleColor,
     required this.icon,
     required this.value1,
     required this.value1Color,
     this.value2,
     this.value2Color,
     required this.unit,
+    this.navigatorName,
   });
 }
 

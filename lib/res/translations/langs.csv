@@ -1111,3 +1111,5 @@ zalo_first_failed_message,"Đồng bộ thông tin tài khoản Zalo không thà
 zalo_second_failed_message,"Đăng nhập Zalo không thành công. Vui lòng chọn phương thức đăng nhập khác.","Login to Zalo failed. Please choose another login method."
 action_try_again,"Thử lại","Try again"
 action_cancel,"Thoát","Cancel"
+empty_activity,"Bạn chưa có hoạt động nào hôm nay.\nThiết lập mục tiêu ngay để nâng cao hiệu quả luyện tập.","You have no activities today.\nSet goals now to improve exercise efficiency."
+empty_reminder,"Bạn chưa có lịch nhắc nhở nào hôm nay.\nHãy thêm nhắc nhở để chúng tôi giúp bạn duy trì sức khỏe tốt nhé!",You have no reminders today.\nAdd reminders to help us keep you healthy!"

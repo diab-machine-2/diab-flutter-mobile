@@ -146,9 +146,6 @@ dependencies:
   zalo_flutter: ^0.0.6
   flutter_branch_sdk: ^6.9.0
 
-  # UI
-  curved_navigation_bar: ^1.0.5
-
 dev_dependencies:
   flutter_test:
     sdk: flutter

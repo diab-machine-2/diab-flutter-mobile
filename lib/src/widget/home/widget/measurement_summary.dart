@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/widget/home/schema/measurement_schema.dart';
 
+typedef MeasurementCallback = void Function(String? routeName);
+
 class MeasurementSummary extends StatelessWidget {
   const MeasurementSummary({
     super.key,
@@ -9,6 +11,7 @@ class MeasurementSummary extends StatelessWidget {
     required this.measurements,
     required this.onAddMeasurement,
     required this.onHealthProfile,
+    required this.onMeasurement,
   });
 
   final List<HomeMeasurementInlineData> inlineMeasurements;
@@ -16,6 +19,7 @@ class MeasurementSummary extends StatelessWidget {
 
   final VoidCallback onAddMeasurement;
   final VoidCallback onHealthProfile;
+  final MeasurementCallback onMeasurement;
 
   @override
   Widget build(BuildContext context) {
@@ -66,44 +70,48 @@ class MeasurementSummary extends StatelessWidget {
   }
 
   Widget _buildInlineMeasurementWidget(HomeMeasurementInlineData data) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        if (data.icon != null)
-          Image.asset(
-            data.icon!,
-            width: 16.0,
-            height: 16.0,
-          ),
-        if (data.icon == null && data.title != null)
+    return InkWell(
+      onTap: () => onMeasurement(data.navigatorName),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          if (data.icon != null)
+            Image.asset(
+              data.icon!,
+              width: 16.0,
+              height: 16.0,
+              color: Color(data.titleColor),
+            ),
+          if (data.icon == null && data.title != null)
+            Text(
+              data.title!,
+              style: TextStyle(
+                color: Color(data.titleColor),
+                fontWeight: FontWeight.bold,
+                fontSize: 14.0,
+              ),
+            ),
+          const SizedBox(width: 4.0),
           Text(
-            data.title!,
+            data.value,
             style: TextStyle(
-              color: R.color.greenGradientBottom,
+              color: Color(data.color),
               fontWeight: FontWeight.bold,
               fontSize: 14.0,
             ),
           ),
-        const SizedBox(width: 4.0),
-        Text(
-          data.value,
-          style: TextStyle(
-            color: Color(data.color),
-            fontWeight: FontWeight.bold,
-            fontSize: 14.0,
+          const SizedBox(width: 2.0),
+          Text(
+            "(${data.unit})",
+            style: TextStyle(
+              color: R.color.color0xff666666,
+              fontWeight: FontWeight.normal,
+              fontSize: 12.0,
+            ),
           ),
-        ),
-        const SizedBox(width: 2.0),
-        Text(
-          "(${data.unit})",
-          style: TextStyle(
-            color: R.color.color0xff666666,
-            fontWeight: FontWeight.normal,
-            fontSize: 12.0,
-          ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
@@ -152,38 +160,41 @@ class MeasurementSummary extends StatelessWidget {
             height: height),
       );
     }
-    return Container(
-      width: 88.0,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Image.asset(
-            data.icon,
-            width: 32.0,
-            height: 32.0,
-          ),
-          const SizedBox(height: 8.0),
-          Text(
-            data.title,
-            style: TextStyle(
-              color: R.color.color0xff666666,
-              fontWeight: FontWeight.w600,
-              fontSize: 12.0,
-              height: 16.0 / 12.0,
+    return InkWell(
+      onTap: () => onMeasurement(data.navigatorName),
+      child: Container(
+        width: 88.0,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Image.asset(
+              data.icon,
+              width: 32.0,
+              height: 32.0,
             ),
-          ),
-          valueWidget,
-          Text(
-            "(${data.unit})",
-            style: TextStyle(
-              color: R.color.color0xff666666,
-              fontWeight: FontWeight.normal,
-              fontSize: 12.0,
-              height: 16.0 / 12.0,
+            const SizedBox(height: 8.0),
+            Text(
+              data.title,
+              style: TextStyle(
+                color: R.color.color0xff666666,
+                fontWeight: FontWeight.w600,
+                fontSize: 12.0,
+                height: 16.0 / 12.0,
+              ),
             ),
-          ),
-        ],
+            valueWidget,
+            Text(
+              "(${data.unit})",
+              style: TextStyle(
+                color: R.color.color0xff666666,
+                fontWeight: FontWeight.normal,
+                fontSize: 12.0,
+                height: 16.0 / 12.0,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -200,7 +211,6 @@ class MeasurementSummary extends StatelessWidget {
             R.drawable.ic_home_health_profile,
             width: 20.0,
             height: 20.0,
-          
           ),
           const SizedBox(width: 6.0),
           Text(
@@ -226,14 +236,25 @@ class MeasurementSummary extends StatelessWidget {
           borderRadius: BorderRadius.circular(16.0),
           color: R.color.greenGradientBottom,
         ),
-        child: Text(
-          "Thêm chỉ số",
-          style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-            fontSize: 13.0,
-            height: 16.0 / 13.0,
-          ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Image.asset(
+              R.drawable.ic_home_plus,
+              width: 16.0,
+              height: 16.0,
+            ),
+            Text(
+              "Thêm chỉ số",
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 13.0,
+                height: 16.0 / 13.0,
+              ),
+            ),
+          ],
         ),
       ),
     );

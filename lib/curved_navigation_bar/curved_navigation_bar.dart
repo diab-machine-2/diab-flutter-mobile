@@ -188,6 +188,7 @@ class CurvedNavigationBarState extends State<CurvedNavigationBar>
                                       width: 4.0,
                                     ),
                                   ),
+                                  clipBehavior: Clip.antiAlias,
                                   alignment: Alignment.center,
                                   child: _icon,
                                 ),

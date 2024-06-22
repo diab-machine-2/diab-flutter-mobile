@@ -92,7 +92,7 @@ class _TabbarControllerState extends State<TabbarController>
     pageController = PageController(initialPage: initialPage);
 
     if (Const.ENVIRONMENT_DEFAULT == 'product') {
-      await getNewVersion();
+      await _getNewVersion();
     }
 
     Future.delayed(Duration(seconds: 1), () async {
@@ -136,7 +136,6 @@ class _TabbarControllerState extends State<TabbarController>
         zoomId,
         AppSettings.userInfo?.fullName ?? 'Người dùng',
         context,
-        userId: AppSettings.userInfo?.id,
       );
     }
   }
@@ -278,7 +277,7 @@ class _TabbarControllerState extends State<TabbarController>
     return versionInt;
   }
 
-  Future<void> getNewVersion() async {
+  Future<void> _getNewVersion() async {
     PackageInfo packageInfo = await PackageInfo.fromPlatform();
     final _currentVersion = packageInfo.version;
     late String storeVersion;
@@ -312,7 +311,7 @@ class _TabbarControllerState extends State<TabbarController>
   }
 }
 
-void showPopupWeight() {
+void _showPopupWeight() {
   showDialog(
     barrierColor: R.color.color0xff003F38.withOpacity(0.5),
     context: navigatorKey.currentContext!,
