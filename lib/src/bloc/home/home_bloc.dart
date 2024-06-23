@@ -18,6 +18,8 @@ import 'package:easy_localization/easy_localization.dart';
 part 'home_bloc_event.dart';
 part 'home_bloc_state.dart';
 
+HomeModel? _cached;
+
 class HomeBloc extends Bloc<HomeEvent, HomeState> {
   HomeBloc() : super(HomeInitial());
   final timeToRetry = 10;
@@ -40,11 +42,15 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     while (retry <= 10) {
       try {
         // Load cached home data
-        final cachedHome = await AppSettings.getHome();
-        if (cachedHome != null) {
-          cachedHome.utilities = this.getAllUtilities(full: false);
+        if (_cached == null) {
+          // shared preference
+          _cached = await AppSettings.getHome();
+          if (_cached != null) {
+            _cached?.utilities = this.getAllUtilities(full: false);
+          }
         }
-        yield HomeLoading(model: cachedHome);
+        // other is mem cache
+        yield HomeLoading(model: _cached);
 
         // Load measurements
         final home = await client.fetchHomes();
@@ -114,6 +120,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
           }).toList();
           home.news = news;
         }
+
+        _cached = home;
         yield HomeLoaded(model: home);
 
         break; // Break the loop if successful

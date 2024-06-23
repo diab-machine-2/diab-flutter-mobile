@@ -23,7 +23,7 @@ class HomeLesson extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 320.0,
+      height: 321.0,
       child: ListView.separated(
         itemCount: lessons.length,
         scrollDirection: Axis.horizontal,
@@ -43,7 +43,7 @@ class HomeLesson extends StatelessWidget {
       onTap: () => onLessonTap(lesson),
       borderRadius: BorderRadius.circular(12.0),
       child: Container(
-        height: 320.0,
+        height: 321.0,
         width: 338.0,
         padding: const EdgeInsets.symmetric(vertical: 16.0),
         decoration: BoxDecoration(
@@ -53,41 +53,51 @@ class HomeLesson extends StatelessWidget {
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: Text(
-                lesson.title,
-                maxLines: 2,
-                style: TextStyle(
-                  color: R.color.textDark,
-                  fontSize: 15.0,
-                  height: 24.0 / 15.0,
-                ),
-              ),
-            ),
-
-            const SizedBox(height: 4.0),
-
-            // TODO: Need map
-            // Category
-            Row(
-              children: [
-                const SizedBox(width: 16.0),
-                Image.asset(
-                  R.drawable.ic_lesson_category,
-                  width: 16.0,
-                  height: 16.0,
-                ),
-                const SizedBox(width: 6.0),
-                Text(
-                  "Bài học",
-                  style: TextStyle(
-                    color: R.color.color0xff666666,
-                    fontSize: 12.0,
+            Expanded(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: Text(
+                      lesson.title,
+                      maxLines: 2,
+                      style: TextStyle(
+                        color: R.color.textDark,
+                        fontSize: 15.0,
+                        height: 24.0 / 15.0,
+                      ),
+                    ),
                   ),
-                ),
-              ],
+
+                  const SizedBox(height: 4.0),
+
+                  // TODO: Need map
+                  // Category
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const SizedBox(width: 16.0),
+                      Image.asset(
+                        R.drawable.ic_lesson_category,
+                        width: 16.0,
+                        height: 16.0,
+                      ),
+                      const SizedBox(width: 6.0),
+                      Text(
+                        "Bài học",
+                        style: TextStyle(
+                          color: R.color.color0xff666666,
+                          fontSize: 12.0,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
 
             const SizedBox(height: 12.0),
