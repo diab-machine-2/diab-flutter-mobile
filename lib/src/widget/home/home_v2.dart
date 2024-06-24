@@ -17,12 +17,14 @@ import 'package:medical/src/utils/app_storages.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/navigator_name.dart';
+import 'package:medical/src/widget/Food/daily_nutrition/daily_nutrition.dart';
 import 'package:medical/src/widget/HbA1C/widget/course_suggest.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/home/widget/header.dart';
 import 'package:medical/src/widget/home/widget/home_lesson.dart';
 import 'package:medical/src/widget/home/widget/home_reminder.dart';
 import 'package:medical/src/widget/home/widget/home_utilities.dart';
+import 'package:medical/src/widget/my_plan_screens/activity_tab/activity_tab/models/schedule_type.dart';
 import 'package:medical/src/widget/voucher/presentation/widgets/voucher_popup.dart';
 import 'package:medical/src/widgets/share_profile_popup.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -245,9 +247,9 @@ class _HomeControllerState extends State<HomeController> with Observer {
                             measurements: model?.measurements ?? [],
                             onAddMeasurement: () => _showAddMeasurement(context),
                             onHealthProfile: () {},
-                            onMeasurement: (routeName) {
+                            onMeasurement: (routeName, args) {
                               if (routeName != null) {
-                                Navigator.pushNamed(context, routeName);
+                                Navigator.pushNamed(context, routeName, arguments: args);
                               }
                             },
                           ),
@@ -258,25 +260,27 @@ class _HomeControllerState extends State<HomeController> with Observer {
                           Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 12.0),
                             child: HomeActivity(
-                                activities: model?.activities ?? [],
-                                expanded: _isActivityExpanded,
-                                onExpand: () {
-                                  setState(() {
-                                    _isActivityExpanded = true;
-                                  });
-                                },
-                                onCollapse: () {
-                                  setState(() {
-                                    _isActivityExpanded = false;
-                                  });
-                                },
-                                onAddActivity: () {
-                                  Navigator.pushNamed(context, NavigatorName.goal_setting);
-                                },
-                                onViewMore: () {
-                                  Observable.instance.notifyObservers([],
-                                      notifyName: Const.NAVIGATE_TO_MY_PLAN_TAB);
-                                }),
+                              activities: model?.activities ?? [],
+                              expanded: _isActivityExpanded,
+                              onExpand: () {
+                                setState(() {
+                                  _isActivityExpanded = true;
+                                });
+                              },
+                              onCollapse: () {
+                                setState(() {
+                                  _isActivityExpanded = false;
+                                });
+                              },
+                              onAddActivity: () {
+                                Navigator.pushNamed(context, NavigatorName.goal_setting);
+                              },
+                              onViewMore: () {
+                                Observable.instance
+                                    .notifyObservers([], notifyName: Const.NAVIGATE_TO_MY_PLAN_TAB);
+                              },
+                              onActivityTap: (activity) => _onSelectActivity(activity.type, activity.id),
+                            ),
                           ),
 
                           const SizedBox(height: 16.0),
@@ -302,8 +306,8 @@ class _HomeControllerState extends State<HomeController> with Observer {
                               onNavigate: (routeName) {
                                 // case show all utilities
                                 if (routeName == NavigatorName.utilities) {
-                                  final utilities =
-                                      BlocProvider.of<HomeBloc>(context).getAllUtilities();
+                                  final utilities = BlocProvider.of<HomeBloc>(context)
+                                      .getAllUtilities(full: true);
                                   Navigator.pushNamed(context, routeName, arguments: utilities);
                                   return;
                                 }
@@ -337,7 +341,7 @@ class _HomeControllerState extends State<HomeController> with Observer {
                           Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 12.0),
                             child: HomeLesson(
-                              lessons: model?.lessons ?? [],
+                              lessons: model?.news ?? [],
                               onLessonTap: (lesson) {
                                 if (lesson.enableLink) {
                                   _launchInBrowser(lesson.link!);
@@ -361,7 +365,7 @@ class _HomeControllerState extends State<HomeController> with Observer {
                           Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 12.0),
                             child: HomeNews(
-                              items: model?.news ?? [],
+                              items: model?.lessons ?? [],
                               onViewMore: () {},
                               onNewsTap: (news) {},
                               onLike: (news) {},
@@ -428,6 +432,115 @@ class _HomeControllerState extends State<HomeController> with Observer {
     if (uri == null) return;
     if (await canLaunchUrl(uri)) {
       await launchUrl(uri);
+    }
+  }
+
+  // TODO: More check
+  // Copy from lib\src\widget\my_plan_screens\activity_tab\activity_tab\activity_tab_page.dart
+  void _onSelectActivity(ScheduleType type, String id) async {
+    Observable.instance.notifyObservers([], notifyName: Const.HIDE_OVERLAY_KEY);
+    switch (type) {
+      case ScheduleType.blood_sugar:
+        await Navigator.pushNamed(context, NavigatorName.add_blood_sugar_new,
+            arguments: {'type': 'input', 'goalId': id});
+        // _cubit.refreshData(isRefresh: true);
+        break;
+      case ScheduleType.blood_pressure:
+        await Navigator.pushNamed(context, NavigatorName.add_blood_pressure,
+            arguments: {'type': 'input', 'goalId': id});
+        // _cubit.refreshData(isRefresh: true);
+        break;
+      case ScheduleType.weight:
+        await Navigator.pushNamed(context, NavigatorName.add_bmi,
+            arguments: {'type': 'input', 'goalId': id});
+        // _cubit.refreshData(isRefresh: true);
+        break;
+      case ScheduleType.emotion:
+        await Navigator.pushNamed(context, NavigatorName.add_emo,
+            arguments: {'type': 'input', 'goalId': id});
+        //    _cubit.refreshData(isRefresh: true);
+        break;
+      case ScheduleType.food:
+        await NavigationUtil.navigatePage(
+          context,
+          DailyNutritionPage(type: 'input', id: null, goalId: id),
+        );
+      //   // _cubit.refreshData(isRefresh: true);
+        break;
+      case ScheduleType.exercise:
+        await Navigator.pushNamed(context, NavigatorName.add_exercrises,
+            arguments: {'type': 'input', 'goalId': id});
+        // _cubit.refreshData(isRefresh: true);
+        break;
+      // TODO: Check
+      // case ScheduleType.exercise_movement:
+      //   if (smartGoal?.exerciseData == null) break;
+      //   if (smartGoal?.exerciseData?.exerciseMovementStates == null ||
+      //       smartGoal?.state == Const.LESSON_LOCKED) {
+      //     _showLockedDialog(
+      //       title: R.string.exercise_lesson_locked.tr(),
+      //       description: R.string.exercise_lesson_locked_warning.tr(),
+      //     );
+      //     break;
+      //   }
+      //   await NavigationUtil.navigatePage(
+      //       context, ExerciseDetail(exerciseData: smartGoal?.exerciseData));
+      //   _cubit.refreshData(isRefresh: true);
+      //   Observable.instance
+      //       .notifyObservers([], notifyName: "refresh_exercise_tab");
+      //   Observable.instance.notifyObservers([], notifyName: "refresh_home");
+      //   break;
+      // case ScheduleType.custom:
+      //   _showCustomGoalPopup(
+      //     smartGoal: smartGoal,
+      //   );
+      //   break;
+      // case ScheduleType.book_1_1:
+      //   _showCoachingPopup(smartGoal);
+      //   break;
+      // case ScheduleType.book_1_n:
+      //   _showCoachingPopup(smartGoal);
+      //   break;
+      // case ScheduleType.survey:
+      //   //_showCoachingPopup();
+      //   _showSurveyPopup(survey: smartGoal);
+      //   break;
+      // case ScheduleType.lesson:
+      //   final LessonSectionListResponseData? lessonDetail =
+      //       smartGoal?.lessonData;
+      //   if (smartGoal?.state == Const.LESSON_LOCKED) {
+      //     // if (lessonDetail?.learningStatus == null || lessonDetail?.learningStatus == Const.LESSON_LOCKED) {
+      //     _showLockedDialog(
+      //         title: R.string.lesson_locked.tr(),
+      //         description: R.string.lesson_locked_warning.tr());
+      //     return;
+      //   }
+      //   await NavigationUtil.navigatePage(
+      //       context,
+      //       LessonDetailPage(
+      //         lessonType: lessonDetail?.type,
+      //         lessonId: lessonDetail?.id ?? '',
+      //         onComplete: (String, int) {},
+      //       ));
+      //   _cubit.refreshData(isRefresh: true);
+      //   Observable.instance
+      //       .notifyObservers([], notifyName: "refresh_lesson_tab");
+      //   Observable.instance.notifyObservers([], notifyName: "refresh_home");
+      //   break;
+      // case ScheduleType.io_evaluate:
+      //   _showCoachingPopup(smartGoal);
+      //   break;
+      // case ScheduleType.update_profile:
+      //   await Navigator.pushNamed(context, NavigatorName.profile_info,
+      //       arguments: {
+      //         'id': smartGoal?.state != 1 ? smartGoal?.id : null,
+      //       });
+      //   break;
+      // case ScheduleType.output_assessment:
+      //   _showCoachingPopup(smartGoal);
+      //   break;
+      default:
+        break;
     }
   }
 }

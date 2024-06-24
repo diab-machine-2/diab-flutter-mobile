@@ -3,12 +3,14 @@ import 'package:bloc/bloc.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/modal/home/home_model.dart';
+import 'package:medical/src/modal/learning/learning_post_model.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/response/smart_goal_list_reponse.dart';
 import 'package:medical/src/repo/home/home_client.dart';
 import 'package:medical/src/repo/learning/learning_client.dart';
 import 'package:medical/src/repo/user/user_client.dart';
 import 'package:medical/src/utils/navigator_name.dart';
+import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/home/schema/home_schema.dart';
 import 'package:medical/src/widget/my_plan_screens/activity_tab/activity_tab/models/schedule_type.dart';
 import 'package:meta/meta.dart';
@@ -44,7 +46,10 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         // Load cached home data
         if (_cached == null) {
           // shared preference
-          _cached = await AppSettings.getHome();
+          try {
+            // if any, just ignore the error
+            _cached = await AppSettings.getHome();
+          } catch (e) {}
           if (_cached != null) {
             _cached?.utilities = this.getAllUtilities(full: false);
           }
@@ -60,8 +65,9 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         yield HomeLoaded(model: home);
 
         // load today target
-        final currentDay = 0;
-        final currentWeek = 1;
+        final now = DateTime.now();
+        final currentDay = DateTime(now.year, now.month, now.day).millisecondsSinceEpoch ~/ 1000;
+        final currentWeek = 0;
         final apiResult = await repository.getListSmartGoal(day: currentDay, week: currentWeek);
         apiResult.when(
           success: (SmartGoalListReponse response) {
@@ -69,12 +75,14 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
               final activities =
                   response.data!.daily!.where((e) => e != null).map((e) => e!).map((e) {
                 final ScheduleType type = ScheduleTypeExtend.getTypeFromIndex(e.type);
-                // TODO: Map to icon
-                return HomeActivityData(
+                final activity = HomeActivityData(
+                  id: e.id!,
                   icon: R.drawable.ic_home_activity,
-                  title: e.name ?? "-",
+                  title: e.name ?? type.title,
                   description: e.description,
                 );
+                activity.type = type;
+                return activity;
               }).toList();
               home.activities = activities;
             }
@@ -103,23 +111,28 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         });
         yield HomeLoaded(model: home);
 
-        // load learning post
-        final lessonsResponse = await LearningClient().fetchLearningPost(null);
-        if (lessonsResponse.isNotEmpty) {
-          final lessons = lessonsResponse;
-          home.lessons = lessons;
-          // TODO: replace
-          final news = lessonsResponse.map((e) {
-            return HomeNewsData(
-              id: e.id!,
-              icon: R.drawable.ic_lesson_category,
-              category: "Bài học",
-              title: e.title,
-              imageUrl: e.imageUrl.url,
-            );
-          }).toList();
-          home.news = news;
+        // load news (learning post)
+        final learningClient = LearningClient();
+        final newsResponse = await learningClient.fetchLearningPost(null);
+        if (newsResponse.isNotEmpty) {
+          home.news = newsResponse;
         }
+
+        // load lessons
+        final lessonsResponse = await learningClient.fetchLesson().catchError((e, s) {
+          TrackingManager.recordError(e, s);
+          return <LessonModel>[];
+        }, test: (error) => true);
+        final lessons = lessonsResponse.map((e) {
+          return HomeNewsData(
+            id: e.id,
+            icon: R.drawable.ic_lesson_category,
+            category: "Bài học",
+            title: e.name,
+            imageUrl: e.image?.url,
+          );
+        }).toList();
+        home.lessons = lessons;
 
         _cached = home;
         yield HomeLoaded(model: home);
@@ -140,6 +153,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       yield HomeError(message: "Maximum retry limit reached");
     }
   }
+
+  // Stream<HomeState> _syncHealthApp() async* {}
 
   List<HomeUtilityData> getAllUtilities({bool full = false}) {
     return [
@@ -252,15 +267,15 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     // Hb1Ac
     final haveHba1c = model.hbA1CIndex.index != null && model.hbA1CIndex.index! > 0;
     final hba1c = HomeMeasurementInlineData(
-      title: "HbA1C",
-      titleColor: haveHba1c ? _haveValueTitleColor : _noValueTitleColor,
-      value: haveHba1c ? model.hbA1CIndex.index!.toString() : "--",
-      color: model.hbA1CIndex.color != null
-          ? _convertHexStringToInt(model.hbA1CIndex.color!)
-          : _noValueColor,
-      unit: "%",
-      navigatorName: haveHba1c ? NavigatorName.detail_hba1c : NavigatorName.add_hba1c,
-    );
+        title: "HbA1C",
+        titleColor: haveHba1c ? _haveValueTitleColor : _noValueTitleColor,
+        value: haveHba1c ? model.hbA1CIndex.index!.toString() : "--",
+        color: model.hbA1CIndex.color != null
+            ? _convertHexStringToInt(model.hbA1CIndex.color!)
+            : _noValueColor,
+        unit: "%",
+        navigatorName: haveHba1c ? NavigatorName.detail_hba1c : NavigatorName.add_hba1c,
+        args: haveHba1c ? null : {'type': 'input'});
 
     // Weight
     final haveWeight = model.weightCard?.weight != null && model.weightCard!.weight! > 0;
@@ -276,15 +291,17 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       navigatorName: haveWeight ? NavigatorName.detail_bmi : NavigatorName.add_bmi,
     );
 
-    // TODO: Check please
     // BMI
-    final haveBmi = false;
+    final haveBmi = model.bmiCard != null && model.bmiCard!.bmi > 0;
     final bmi = HomeMeasurementInlineData(
       title: "BMI",
       titleColor: haveBmi ? _haveValueTitleColor : _noValueTitleColor,
-      value: "--",
+      value: haveBmi ? model.bmiCard!.bmi.toString() : "--",
       unit: "Kg/m²",
-      color: _noValueColor,
+      color: model.bmiCard?.color != null
+          ? _convertHexStringToInt(model.bmiCard!.color)
+          : _noValueColor,
+      navigatorName: haveWeight ? NavigatorName.detail_bmi : NavigatorName.add_bmi,
     );
 
     return [
@@ -312,7 +329,6 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
           haveGlucose ? NavigatorName.detail_blood_sugar : NavigatorName.add_blood_sugar_new,
     );
 
-    // TODO: Check please
     // Blood Pressure
     final haveBloodPressure = model.bloodPressureIndex.systolic != null &&
         model.bloodPressureIndex.diastolic != null &&
@@ -325,12 +341,12 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
           ? R.drawable.ic_home_measurement_blood
           : R.drawable.ic_home_measurement_blood_inactive,
       value1: haveBloodPressure ? model.bloodPressureIndex.systolic!.toString() : "--",
-      value1Color: model.bloodPressureIndex.color != null
-          ? _convertHexStringToInt(model.bloodPressureIndex.color!)
+      value1Color: model.bloodPressureIndex.systolicColor != null
+          ? _convertHexStringToInt(model.bloodPressureIndex.systolicColor!)
           : _noValueColor,
       value2: haveBloodPressure ? model.bloodPressureIndex.diastolic!.toString() : "--",
-      value2Color: model.bloodPressureIndex.color != null
-          ? _convertHexStringToInt(model.bloodPressureIndex.color!)
+      value2Color: model.bloodPressureIndex.diastolicColor != null
+          ? _convertHexStringToInt(model.bloodPressureIndex.diastolicColor!)
           : _noValueColor,
       unit: "mmHg",
       navigatorName: haveBloodPressure
@@ -352,6 +368,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       value2Color: null,
       unit: model.exercise?.unit ?? "--",
       navigatorName: haveExercise ? NavigatorName.detail_exercrises : NavigatorName.add_exercrises,
+      args: haveExercise ? null : {'type': 'input'},
     );
 
     // Nutrition (Food)
@@ -386,6 +403,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       value2Color: null,
       unit: "",
       navigatorName: haveEmotion ? NavigatorName.detail_emotion : NavigatorName.add_emo,
+      args: haveEmotion ? null : {'type': 'input'},
     );
 
     // Compose
@@ -397,6 +415,4 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       emotion,
     ];
   }
-
-  // Stream<HomeState> _syncHealthApp() async* {}
 }

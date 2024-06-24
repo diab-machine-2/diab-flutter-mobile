@@ -50,12 +50,10 @@ class LearningPostModel {
       createDatetime: json['createDatetime'],
       learningPostTagMappings: _learningPostTagMappings,
       imageUrl: ImagesModel.fromJson(json['imageUrl']),
-      imagePartnerUrl: json['imagePartnerUrl'] != null
-          ? ImagesModel.fromJson(json['imagePartnerUrl'])
-          : null,
-      imageBannerUrl: json['imageBannerUrl'] != null
-          ? ImagesModel.fromJson(json['imageBannerUrl'])
-          : null,
+      imagePartnerUrl:
+          json['imagePartnerUrl'] != null ? ImagesModel.fromJson(json['imagePartnerUrl']) : null,
+      imageBannerUrl:
+          json['imageBannerUrl'] != null ? ImagesModel.fromJson(json['imageBannerUrl']) : null,
     );
   }
 
@@ -77,5 +75,74 @@ class LearningPostTagMappings {
     id = json['id'];
     name = json['name'];
     type = json['type'];
+  }
+}
+
+class LessonModel {
+  final String id;
+  final String name;
+  final int status;
+  final int type;
+  final String level;
+  final String module;
+  final int learningStatus;
+  final int percentComplete;
+  final int order;
+  final int levelOrder;
+  final bool isNew;
+  final int activeDateTime;
+  final String? description;
+  // final dynamic lessonTagMappings;
+  final ImagesModel? image;
+  // final int lessonLevelOrder;
+  // final dynamic lessonSections;
+  // final dynamic lessonQuizAccounts;
+
+  LessonModel({
+    required this.id,
+    required this.name,
+    required this.status,
+    required this.type,
+    required this.level,
+    required this.module,
+    required this.learningStatus,
+    required this.percentComplete,
+    required this.order,
+    required this.levelOrder,
+    required this.isNew,
+    required this.activeDateTime,
+    this.description,
+    // required this.lessonTagMappings,
+    required this.image,
+    // required this.lessonLevelOrder,
+    // required this.lessonSections,
+    // required this.lessonQuizAccounts,
+  });
+
+  factory LessonModel.fromJson(Map<String, dynamic> json) {
+    return LessonModel(
+      id: json['id'],
+      name: json['name'],
+      status: json['status'],
+      type: json['type'],
+      level: json['level'],
+      module: json['module'],
+      learningStatus: json['learningStatus'],
+      percentComplete: json['percentComplete'],
+      order: json['order'],
+      levelOrder: json['levelOrder'],
+      isNew: json['isNew'],
+      activeDateTime: json['activeDateTime'],
+      description: json['description'],
+      // lessonTagMappings: json['lessonTagMappings'],
+      image: json['image'] != null ? ImagesModel.fromJson(json['image']) : null,
+      // lessonLevelOrder: json['lessonLevelOrder'],
+      // lessonSections: json['lessonSections'],
+      // lessonQuizAccounts: json['lessonQuizAccounts'],
+    );
+  }
+
+  static List<LessonModel> toList(List<dynamic> items) {
+    return items.map((item) => LessonModel.fromJson(item)).toList();
   }
 }

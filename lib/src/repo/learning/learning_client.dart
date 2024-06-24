@@ -29,4 +29,18 @@ class LearningClient extends FetchClient {
       throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
     }
   }
+
+  // /App/Lesson/MyLessonsOptimizedAndCacheLessonPercent
+  // Type 1: Bắt buộc, Type 2: Tùy chọn, Type 3: Quiz cấp độ
+  Future<List<LessonModel>> fetchLesson([int type = 1]) async {
+    final Response response = await super.postUri(
+      url: '/App/Lesson/MyLessonsOptimizedAndCacheLessonPercent',
+      baseOption: true,
+      params: {'type': type, 'isNotCompleted': false, "week": 0, "page": 1, "size": 10},
+    );
+    if (response.statusCode == 200) {
+      return LessonModel.toList(response.data['data']);
+    }
+    return [];
+  }
 }

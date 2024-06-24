@@ -129,7 +129,7 @@ class HomeLesson extends StatelessWidget {
                       Image.asset(R.drawable.ic_lesson_like, width: 20.0, height: 20.0),
                       const SizedBox(width: 8.0),
                       Text(
-                        "56",
+                        "0",
                         // "${lesson.likeCount}",
                         style: TextStyle(color: R.color.textDark, fontSize: 15.0),
                       ),
@@ -149,7 +149,7 @@ class HomeLesson extends StatelessWidget {
                       Image.asset(R.drawable.ic_lesson_comment, width: 20.0, height: 20.0),
                       const SizedBox(width: 8.0),
                       Text(
-                        "28",
+                        "0",
                         // "${lesson.commentCount}",
                         style: TextStyle(color: R.color.textDark, fontSize: 15.0),
                       ),

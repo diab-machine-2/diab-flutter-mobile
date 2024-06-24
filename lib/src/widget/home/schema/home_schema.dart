@@ -1,3 +1,5 @@
+import 'package:medical/src/widget/my_plan_screens/activity_tab/activity_tab/models/schedule_type.dart';
+
 class HomeMeasurementIndex {
   final String title;
   final String icon;
@@ -68,6 +70,7 @@ class HomeMeasurementData {
   final int? value2Color;
   final String unit;
   final String? navigatorName;
+  final dynamic args;
 
   HomeMeasurementData({
     required this.title,
@@ -79,6 +82,7 @@ class HomeMeasurementData {
     this.value2Color,
     required this.unit,
     this.navigatorName,
+    this.args,
   });
 
   factory HomeMeasurementData.fromJson(Map<String, dynamic> map) {
@@ -111,11 +115,16 @@ class HomeMeasurementData {
 }
 
 class HomeActivityData {
+  final String id;
   final String icon;
   final String title;
   final String? description;
 
+  // Getter/Setter
+  late ScheduleType type;
+
   HomeActivityData({
+    required this.id,
     required this.icon,
     required this.title,
     this.description,
@@ -123,6 +132,7 @@ class HomeActivityData {
 
   factory HomeActivityData.fromJson(Map<String, dynamic> map) {
     return HomeActivityData(
+      id: map['id'],
       icon: map['icon'],
       title: map['title'],
       description: map['description'],

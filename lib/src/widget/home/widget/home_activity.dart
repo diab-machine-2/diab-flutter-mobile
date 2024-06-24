@@ -4,6 +4,8 @@ import 'package:medical/res/R.dart';
 
 import '../schema/home_schema.dart';
 
+typedef OnActivityTap = void Function(HomeActivityData activity);
+
 class HomeActivity extends StatelessWidget {
   const HomeActivity({
     super.key,
@@ -12,6 +14,7 @@ class HomeActivity extends StatelessWidget {
     required this.onCollapse,
     required this.onAddActivity,
     required this.onViewMore,
+    required this.onActivityTap,
     this.expanded = false,
   });
 
@@ -22,6 +25,7 @@ class HomeActivity extends StatelessWidget {
   final VoidCallback onExpand;
   final VoidCallback onCollapse;
   final VoidCallback onAddActivity;
+  final OnActivityTap onActivityTap;
 
   @override
   Widget build(BuildContext context) {
@@ -186,64 +190,68 @@ class HomeActivity extends StatelessWidget {
   }
 
   Widget _buildActivityItem(HomeActivityData activity) {
-    return Container(
-      height: 64.0,
-      padding: const EdgeInsets.all(12.0),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12.0),
-        color: Color(0xFFE1FAF8),
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          // Icon
-          Image.asset(
-            activity.icon,
-            width: 32.0,
-            height: 32.0,
-          ),
-
-          const SizedBox(width: 12.0),
-
-          // Content
-          Expanded(
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    activity.title,
-                    style: TextStyle(
-                      fontSize: 15.0,
-                      fontWeight: FontWeight.w600,
-                      color: R.color.greenGradientBottom,
-                      height: activity.description != null ? 24.0 / 15.0 : 1.0,
-                    ),
-                    maxLines: 1,
-                  ),
-                  if (activity.description != null)
+    return InkWell(
+      onTap: () => onActivityTap(activity),
+      borderRadius: BorderRadius.circular(12.0),
+      child: Container(
+        height: 64.0,
+        padding: const EdgeInsets.all(12.0),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12.0),
+          color: Color(0xFFE1FAF8),
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            // Icon
+            Image.asset(
+              activity.icon,
+              width: 32.0,
+              height: 32.0,
+            ),
+      
+            const SizedBox(width: 12.0),
+      
+            // Content
+            Expanded(
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
                     Text(
-                      activity.description!,
+                      activity.title,
                       style: TextStyle(
-                        fontSize: 13.0,
+                        fontSize: 15.0,
+                        fontWeight: FontWeight.w600,
                         color: R.color.greenGradientBottom,
-                        height: 16.0 / 13.0,
+                        height: activity.description != null ? 24.0 / 15.0 : 1.0,
                       ),
+                      maxLines: 1,
                     ),
-                ],
+                    if (activity.description != null)
+                      Text(
+                        activity.description!,
+                        style: TextStyle(
+                          fontSize: 13.0,
+                          color: R.color.greenGradientBottom,
+                          height: 16.0 / 13.0,
+                        ),
+                      ),
+                  ],
+                ),
               ),
             ),
-          ),
-
-          // Arrow
-          Icon(
-            Icons.chevron_right,
-            color: R.color.greenGradientBottom,
-            size: 24.0,
-          )
-        ],
+      
+            // Arrow
+            Icon(
+              Icons.chevron_right,
+              color: R.color.greenGradientBottom,
+              size: 24.0,
+            )
+          ],
+        ),
       ),
     );
   }

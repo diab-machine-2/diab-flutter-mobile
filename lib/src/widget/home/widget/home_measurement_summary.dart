@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/widget/home/schema/home_schema.dart';
 
-typedef MeasurementCallback = void Function(String? routeName);
+typedef MeasurementCallback = void Function(String? routeName, dynamic args);
 
 class MeasurementSummary extends StatelessWidget {
   const MeasurementSummary({
@@ -71,7 +71,7 @@ class MeasurementSummary extends StatelessWidget {
 
   Widget _buildInlineMeasurementWidget(HomeMeasurementInlineData data) {
     return InkWell(
-      onTap: () => onMeasurement(data.navigatorName),
+      onTap: () => onMeasurement(data.navigatorName, data.args),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.center,
@@ -117,7 +117,9 @@ class MeasurementSummary extends StatelessWidget {
 
   Widget _buildMeasurementWidget(HomeMeasurementData data) {
     Widget valueWidget;
-    double height = 16.0 / 12.0;
+    final withUnit = data.unit.isNotEmpty;
+    double valueFontSize = withUnit ? 12.0 : 16.0;
+    double height = (valueFontSize + 4.0) / valueFontSize;
     if (data.value2 != null && data.value2!.isNotEmpty) {
       // build textspan with different style data.color
       valueWidget = RichText(
@@ -128,7 +130,7 @@ class MeasurementSummary extends StatelessWidget {
               style: TextStyle(
                   color: Color(data.value1Color),
                   fontWeight: FontWeight.bold,
-                  fontSize: 12.0,
+                  fontSize: valueFontSize,
                   height: height),
             ),
             TextSpan(
@@ -136,7 +138,7 @@ class MeasurementSummary extends StatelessWidget {
               style: TextStyle(
                   color: R.color.color0xff666666,
                   fontWeight: FontWeight.bold,
-                  fontSize: 12.0,
+                  fontSize: valueFontSize,
                   height: height),
             ),
             TextSpan(
@@ -144,7 +146,7 @@ class MeasurementSummary extends StatelessWidget {
               style: TextStyle(
                   color: Color(data.value2Color!),
                   fontWeight: FontWeight.bold,
-                  fontSize: 12.0,
+                  fontSize: valueFontSize,
                   height: height),
             ),
           ],
@@ -156,12 +158,12 @@ class MeasurementSummary extends StatelessWidget {
         style: TextStyle(
             color: Color(data.value1Color),
             fontWeight: FontWeight.bold,
-            fontSize: 12.0,
+            fontSize: valueFontSize,
             height: height),
       );
     }
     return InkWell(
-      onTap: () => onMeasurement(data.navigatorName),
+      onTap: () => onMeasurement(data.navigatorName, data.args),
       child: Container(
         width: 88.0,
         child: Column(
@@ -184,7 +186,7 @@ class MeasurementSummary extends StatelessWidget {
               ),
             ),
             valueWidget,
-            if (data.unit.isNotEmpty)
+            if (withUnit)
               Text(
                 "(${data.unit})",
                 style: TextStyle(
