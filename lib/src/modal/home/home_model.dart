@@ -3,7 +3,6 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/modal/base/images.dart';
 import 'package:medical/src/modal/home/package_account_home_model.dart';
-import 'package:medical/src/modal/learning/learning_post_model.dart';
 import 'package:medical/src/widget/home/schema/home_schema.dart';
 
 class HomeModel {
@@ -21,11 +20,6 @@ class HomeModel {
 
   List<HomeMeasurementInlineData>? inlineMeasurements;
   List<HomeMeasurementData>? measurements;
-  List<HomeActivityData>? activities;
-  List<HomeReminderData>? reminders;
-  List<HomeUtilityData>? utilities;
-  List<LearningPostModel>? news;
-  List<HomeNewsData>? lessons;
 
   HomeModel({
     required this.glucoseIndex,
@@ -41,8 +35,6 @@ class HomeModel {
     required this.bmiCard,
     this.inlineMeasurements,
     this.measurements,
-    this.activities,
-    this.reminders,
   });
 
   factory HomeModel.fromJson(Map<String, dynamic> json) {
@@ -76,16 +68,6 @@ class HomeModel {
           : (json['measurements'] as List)
               .map((item) => HomeMeasurementData.fromJson(item as Map<String, dynamic>))
               .toList(),
-      activities: json['activities'] == null
-          ? null
-          : (json['activities'] as List)
-              .map((item) => HomeActivityData.fromJson(item as Map<String, dynamic>))
-              .toList(),
-      reminders: json['reminders'] == null
-          ? null
-          : (json['reminders'] as List)
-              .map((item) => HomeReminderData.fromJson(item as Map<String, dynamic>))
-              .toList(),
     );
   }
 
@@ -104,8 +86,6 @@ class HomeModel {
       'bmiCard': bmiCard?.toJson(),
       'inlineMeasurements': inlineMeasurements?.map((e) => e.toJson()).toList(),
       'measurements': measurements?.map((e) => e.toJson()).toList(),
-      'activities': activities?.map((e) => e.toJson()).toList(),
-      'reminders': reminders?.map((e) => e.toJson()).toList(),
     };
   }
 

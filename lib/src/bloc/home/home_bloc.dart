@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
+import 'package:equatable/equatable.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/modal/home/home_model.dart';
@@ -20,7 +21,7 @@ import 'package:easy_localization/easy_localization.dart';
 part 'home_bloc_event.dart';
 part 'home_bloc_state.dart';
 
-HomeModel? _cached;
+HomeLoaded? _cached;
 
 class HomeBloc extends Bloc<HomeEvent, HomeState> {
   HomeBloc() : super(HomeInitial());
@@ -43,26 +44,25 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     int retry = 1;
     while (retry <= 10) {
       try {
+        HomeModel? model;
         // Load cached home data
         if (_cached == null) {
           // shared preference
           try {
             // if any, just ignore the error
-            _cached = await AppSettings.getHome();
+            model = await AppSettings.getHome();
           } catch (e) {}
-          if (_cached != null) {
-            _cached?.utilities = this.getAllUtilities(full: false);
-          }
         }
         // other is mem cache
-        yield HomeLoading(model: _cached);
+        yield _cached?.copyWith(model: model) ?? HomeLoading(model: model);
 
         // Load measurements
         final home = await client.fetchHomes();
         home.inlineMeasurements = _castInlineMeasurements(home);
         home.measurements = _castMeasurements(home);
-        home.utilities = getAllUtilities(full: false);
-        yield HomeLoaded(model: home);
+        HomeLoaded currentState = _cached?.copyWith(model: home) ??
+            HomeLoaded(model: home, utilities: this.getAllUtilities(full: false));
+        yield currentState;
 
         // load today target
         final now = DateTime.now();
@@ -84,12 +84,12 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
                 activity.type = type;
                 return activity;
               }).toList();
-              home.activities = activities;
+              currentState = currentState.copyWith(activities: activities);
             }
           },
           failure: (error) {},
         );
-        yield HomeLoaded(model: home);
+        yield currentState;
 
         // load reminders
         final remindersResponse = await UserClient().fetchScheduleReminders();
@@ -98,24 +98,24 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
             return HomeReminderData(
               icon: R.drawable.ic_home_measurement_glucose_inactive,
               title: e.name ?? "-",
-              time: "today",
+              time: "hôm nay",
               // TODO: Map to navigator
               navigatorName: "TODO",
             );
           }).toList();
-          home.reminders = reminders;
+          currentState = currentState.copyWith(reminders: reminders);
         }
         AppSettings.saveHome(home.toJson()).catchError((e) {
           print(e);
           return true;
         });
-        yield HomeLoaded(model: home);
+        yield currentState;
 
         // load news (learning post)
         final learningClient = LearningClient();
         final newsResponse = await learningClient.fetchLearningPost(null);
         if (newsResponse.isNotEmpty) {
-          home.news = newsResponse;
+          currentState = currentState.copyWith(news: newsResponse);
         }
 
         // load lessons
@@ -132,10 +132,10 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
             imageUrl: e.image?.url,
           );
         }).toList();
-        home.lessons = lessons;
+        currentState = currentState.copyWith(lessons: lessons);
 
-        _cached = home;
-        yield HomeLoaded(model: home);
+        _cached = currentState;
+        yield currentState;
 
         break; // Break the loop if successful
       } catch (e, _) {

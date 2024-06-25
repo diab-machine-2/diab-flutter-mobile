@@ -206,8 +206,10 @@ class _HomeControllerState extends State<HomeController> with Observer {
           if (state is HomeLoading) {
             model = state.model;
           }
+          HomeLoaded? stateLoaded;
           if (state is HomeLoaded) {
             model = state.model;
+            stateLoaded = state;
             if (false == model?.packageAccount?.isDisplayedWelcome) {
               if (AppSettings.isDisplayedWelcome == false) {
                 Future.delayed(Duration.zero, () async {
@@ -260,7 +262,7 @@ class _HomeControllerState extends State<HomeController> with Observer {
                           Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 12.0),
                             child: HomeActivity(
-                              activities: model?.activities ?? [],
+                              activities: stateLoaded?.activities ?? [],
                               expanded: _isActivityExpanded,
                               onExpand: () {
                                 setState(() {
@@ -279,7 +281,8 @@ class _HomeControllerState extends State<HomeController> with Observer {
                                 Observable.instance
                                     .notifyObservers([], notifyName: Const.NAVIGATE_TO_MY_PLAN_TAB);
                               },
-                              onActivityTap: (activity) => _onSelectActivity(activity.type, activity.id),
+                              onActivityTap: (activity) =>
+                                  _onSelectActivity(activity.type, activity.id),
                             ),
                           ),
 
@@ -289,9 +292,10 @@ class _HomeControllerState extends State<HomeController> with Observer {
                           Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 12.0),
                             child: HomeReminder(
-                              reminders: model?.reminders ?? [],
+                              reminders: stateLoaded?.reminders ?? [],
                               onAdd: () {
-                                Navigator.pushNamed(context, NavigatorName.add_reminder);
+                                Navigator.pushNamed(context, NavigatorName.add_reminder,
+                                    arguments: {'type': 'input'});
                               },
                             ),
                           ),
@@ -302,7 +306,7 @@ class _HomeControllerState extends State<HomeController> with Observer {
                           Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 12.0),
                             child: HomeUtilities(
-                              utilities: model?.utilities ?? [],
+                              utilities: stateLoaded?.utilities ?? [],
                               onNavigate: (routeName) {
                                 // case show all utilities
                                 if (routeName == NavigatorName.utilities) {
@@ -341,7 +345,7 @@ class _HomeControllerState extends State<HomeController> with Observer {
                           Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 12.0),
                             child: HomeLesson(
-                              lessons: model?.news ?? [],
+                              lessons: stateLoaded?.news ?? [],
                               onLessonTap: (lesson) {
                                 if (lesson.enableLink) {
                                   _launchInBrowser(lesson.link!);
@@ -365,7 +369,7 @@ class _HomeControllerState extends State<HomeController> with Observer {
                           Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 12.0),
                             child: HomeNews(
-                              items: model?.lessons ?? [],
+                              items: stateLoaded?.lessons ?? [],
                               onViewMore: () {},
                               onNewsTap: (news) {},
                               onLike: (news) {},
@@ -465,7 +469,7 @@ class _HomeControllerState extends State<HomeController> with Observer {
           context,
           DailyNutritionPage(type: 'input', id: null, goalId: id),
         );
-      //   // _cubit.refreshData(isRefresh: true);
+        //   // _cubit.refreshData(isRefresh: true);
         break;
       case ScheduleType.exercise:
         await Navigator.pushNamed(context, NavigatorName.add_exercrises,
