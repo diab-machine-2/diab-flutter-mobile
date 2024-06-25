@@ -310,6 +310,11 @@ class _HomeControllerState extends State<HomeController> with Observer {
                                 Navigator.pushNamed(context, NavigatorName.add_reminder,
                                     arguments: {'type': 'input'});
                               },
+                              onItemTap: (reminder) {
+                                Navigator.pushNamed(context, NavigatorName.add_reminder,
+                                    arguments: {'type': 'update', 'id': reminder.id});
+                              },
+                              
                             ),
                           ),
 

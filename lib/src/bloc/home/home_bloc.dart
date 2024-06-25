@@ -97,10 +97,10 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         if (remindersResponse.models.isNotEmpty) {
           final reminders = remindersResponse.models.map((e) {
             return HomeReminderData(
+              id: e.id,
               icon: R.drawable.ic_home_measurement_glucose_inactive,
               title: e.name ?? "-",
               time: "hôm nay",
-              // TODO: Map to navigator
               navigatorName: "TODO",
             );
           }).toList();

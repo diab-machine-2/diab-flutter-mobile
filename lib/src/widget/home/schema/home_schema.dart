@@ -135,12 +135,14 @@ class HomeActivityData {
 }
 
 class HomeReminderData {
+  final String? id;
   final String icon;
   final String title;
   final String time;
   final String? navigatorName;
 
   HomeReminderData({
+    this.id,
     required this.icon,
     required this.title,
     required this.time,

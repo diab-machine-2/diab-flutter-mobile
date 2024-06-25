@@ -4,16 +4,20 @@ import 'package:medical/res/R.dart';
 
 import '../schema/home_schema.dart';
 
+typedef ReminderCallback = void Function(HomeReminderData reminder);
+
 class HomeReminder extends StatelessWidget {
   const HomeReminder({
     super.key,
     required this.reminders,
     required this.onAdd,
+    required this.onItemTap,
   });
 
   final List<HomeReminderData> reminders;
 
   final VoidCallback onAdd;
+  final ReminderCallback onItemTap;
 
   @override
   Widget build(BuildContext context) {
@@ -129,35 +133,38 @@ class HomeReminder extends StatelessWidget {
   }
 
   Widget _buildActivityItem(HomeReminderData reminder) {
-    return Padding(
-      padding: const EdgeInsets.all(12.0),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Image.asset(
-            reminder.icon,
-            width: 32.0,
-            height: 32.0,
-          ),
-          const SizedBox(width: 12.0),
-          Expanded(
-            child: Text(
-              reminder.title,
-              style: TextStyle(
-                fontSize: 15.0,
-                color: R.color.textDark,
+    return InkWell(
+      onTap: () => onItemTap(reminder),
+      child: Padding(
+        padding: const EdgeInsets.all(12.0),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Image.asset(
+              reminder.icon,
+              width: 32.0,
+              height: 32.0,
+            ),
+            const SizedBox(width: 12.0),
+            Expanded(
+              child: Text(
+                reminder.title,
+                style: TextStyle(
+                  fontSize: 15.0,
+                  color: R.color.textDark,
+                ),
               ),
             ),
-          ),
-          const SizedBox(width: 12.0),
-          Text(
-            reminder.time,
-            style: TextStyle(
-              fontSize: 13.0,
-              color: R.color.color0xff666666,
+            const SizedBox(width: 12.0),
+            Text(
+              reminder.time,
+              style: TextStyle(
+                fontSize: 13.0,
+                color: R.color.color0xff666666,
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
