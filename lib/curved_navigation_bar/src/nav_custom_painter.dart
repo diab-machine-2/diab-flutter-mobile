@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 
 class NavCustomPainter extends CustomPainter {
@@ -5,9 +7,15 @@ class NavCustomPainter extends CustomPainter {
   late double s;
   Color color;
   TextDirection textDirection;
+  final double iconSize;
 
   NavCustomPainter(
-      double startingLoc, int itemsLength, this.color, this.textDirection) {
+    double startingLoc,
+    int itemsLength,
+    this.color,
+    this.textDirection, {
+    required this.iconSize,
+  }) {
     final span = 1.0 / itemsLength;
     s = 0.2;
     double l = startingLoc + (span - s) / 2;
@@ -20,24 +28,24 @@ class NavCustomPainter extends CustomPainter {
       ..color = color
       ..style = PaintingStyle.fill;
 
+    const padding = 6.0;
+    final totalActiveIconSpace = (padding * 2 + iconSize).roundToDouble();
+    final double hafActiveIconSpace = (totalActiveIconSpace / 2).roundToDouble();
+
+    double middlePoint = (loc + s * 0.5) * size.width;
+
     final path = Path()
       ..moveTo(0, 0)
-      ..lineTo((loc) * size.width, 0)
-      ..cubicTo(
-        (loc + s * 0.20) * size.width,
-        size.height * 0.05,
-        loc * size.width,
-        size.height * 0.60,
-        (loc + s * 0.50) * size.width,
-        size.height * 0.60,
+      ..lineTo(middlePoint - hafActiveIconSpace, 0)
+      ..arcToPoint(
+        Offset(middlePoint, hafActiveIconSpace),
+        radius: Radius.circular(hafActiveIconSpace),
+        clockwise: false,
       )
-      ..cubicTo(
-        (loc + s) * size.width,
-        size.height * 0.60,
-        (loc + s - s * 0.20) * size.width,
-        size.height * 0.05,
-        (loc + s) * size.width,
-        0,
+      ..arcToPoint(
+        Offset(middlePoint + hafActiveIconSpace, 0),
+        radius: Radius.circular(hafActiveIconSpace),
+        clockwise: false,
       )
       ..lineTo(size.width, 0)
       ..lineTo(size.width, size.height)

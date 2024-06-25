@@ -115,6 +115,9 @@ class CurvedNavigationBarState extends State<CurvedNavigationBar>
   @override
   Widget build(BuildContext context) {
     final textDirection = Directionality.of(context);
+    final media = MediaQuery.of(context);
+    final extraBottomPadding = media.padding.bottom / 2;
+    final double iconSize = 52.0;
     return SizedBox(
       height: widget.height,
       child: LayoutBuilder(
@@ -144,14 +147,13 @@ class CurvedNavigationBarState extends State<CurvedNavigationBar>
                   clipBehavior: Clip.none,
                   alignment: Alignment.bottomCenter,
                   children: <Widget>[
-
                     // Clip path
                     Positioned(
                       left: 0,
                       right: 0,
-                      bottom: 12 - (75.0 - widget.height),
+                      bottom: 0, // 12 - (75.0 - widget.height) + extraBottomPadding,
                       child: CustomPaint(
-                        painter: NavCustomPainter(_pos, _length, widget.color, textDirection),
+                        painter: NavCustomPainter(_pos, _length, widget.color, textDirection, iconSize: iconSize,),
                         child: Container(
                           height: 75.0,
                         ),
@@ -160,7 +162,7 @@ class CurvedNavigationBarState extends State<CurvedNavigationBar>
 
                     // Active
                     Positioned(
-                      bottom: -34 - 20 - (75.0 - widget.height),
+                      bottom: -32 - 20 - (75.0 - widget.height) + extraBottomPadding,
                       left: textDirection == TextDirection.rtl ? null : _pos * maxWidth,
                       right: textDirection == TextDirection.rtl ? _pos * maxWidth : null,
                       width: maxWidth / _length,
@@ -178,8 +180,8 @@ class CurvedNavigationBarState extends State<CurvedNavigationBar>
                               children: [
                                 // icon
                                 Container(
-                                  width: 52.0,
-                                  height: 52.0,
+                                  width: iconSize,
+                                  height: iconSize,
                                   decoration: BoxDecoration(
                                     shape: BoxShape.circle,
                                     color: widget.buttonBackgroundColor ?? widget.color,
@@ -192,18 +194,26 @@ class CurvedNavigationBarState extends State<CurvedNavigationBar>
                                   alignment: Alignment.center,
                                   child: _icon,
                                 ),
-                            
+
                                 const SizedBox(height: 4.0),
-                            
+
                                 // title
                                 if (_endingIndex >= 0)
-                                  Text(
-                                    widget.tabTitles[_endingIndex],
-                                    style: TextStyle(
-                                      color: widget.buttonBackgroundColor,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 11.0,
-                                      height: 16.0 / 11.0,
+                                  // no scale factor
+                                  MediaQuery(
+                                    data: media.copyWith(
+                                      textScaler: media.textScaler
+                                          .clamp(minScaleFactor: 1.0, maxScaleFactor: 1.1),
+                                    ),
+                                    child: Text(
+                                      widget.tabTitles[_endingIndex],
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        color: widget.buttonBackgroundColor,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 11.0,
+                                        height: 16.0 / 11.0,
+                                      ),
                                     ),
                                   ),
                               ],
@@ -217,7 +227,7 @@ class CurvedNavigationBarState extends State<CurvedNavigationBar>
                     Positioned(
                       left: 0,
                       right: 0,
-                      bottom: 0 - (75.0 - widget.height),
+                      bottom: 0 - (75.0 - widget.height) + extraBottomPadding,
                       child: SizedBox(
                           height: 75.0,
                           child: Row(
