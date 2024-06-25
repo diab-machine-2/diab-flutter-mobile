@@ -25,7 +25,7 @@ class MeasurementSummary extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final textScaleFactor =  max(1.0, MediaQuery.of(context).textScaleFactor);
+    final textScaleFactor = max(1.0, MediaQuery.of(context).textScaleFactor);
     return Container(
       padding: const EdgeInsets.all(16.0),
       decoration: BoxDecoration(
@@ -50,7 +50,8 @@ class MeasurementSummary extends StatelessWidget {
           SizedBox(
             height: 88.0 * textScaleFactor,
             child: ListView.separated(
-              itemBuilder: (_, index) => _buildMeasurementWidget(measurements[index], textScaleFactor),
+              itemBuilder: (_, index) =>
+                  _buildMeasurementWidget(measurements[index], textScaleFactor),
               separatorBuilder: (_, index) => const SizedBox(width: 8.0),
               itemCount: measurements.length,
               scrollDirection: Axis.horizontal,
@@ -126,33 +127,28 @@ class MeasurementSummary extends StatelessWidget {
     if (data.value2 != null && data.value2!.isNotEmpty) {
       // build textspan with different style data.color
       valueWidget = RichText(
+        textScaleFactor: textScaleFactor,
         text: TextSpan(
           children: [
             TextSpan(
               text: data.value1,
-              style: TextStyle(
-                  color: Color(data.value1Color),
-                  fontWeight: FontWeight.bold,
-                  fontSize: valueFontSize,
-                  height: height),
+              style: TextStyle(color: Color(data.value1Color)),
             ),
             TextSpan(
               text: " / ",
-              style: TextStyle(
-                  color: R.color.color0xff666666,
-                  fontWeight: FontWeight.bold,
-                  fontSize: valueFontSize,
-                  height: height),
+              style: TextStyle(color: R.color.color0xff666666),
             ),
             TextSpan(
               text: data.value2,
-              style: TextStyle(
-                  color: Color(data.value2Color!),
-                  fontWeight: FontWeight.bold,
-                  fontSize: valueFontSize,
-                  height: height),
+              style: TextStyle(color: Color(data.value2Color!)),
             ),
           ],
+          style: TextStyle(
+            color: Color(data.value1Color),
+            fontWeight: FontWeight.bold,
+            fontSize: valueFontSize,
+            height: height,
+          ),
         ),
       );
     } else {
