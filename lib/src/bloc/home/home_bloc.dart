@@ -79,9 +79,10 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
                   id: e.id!,
                   icon: R.drawable.ic_home_activity,
                   title: e.name ?? type.title,
+                  type: type,
+                  smartGoal: e,
                   description: e.description,
                 );
-                activity.type = type;
                 return activity;
               }).toList();
               currentState = currentState.copyWith(activities: activities);
@@ -341,12 +342,12 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
           ? R.drawable.ic_home_measurement_blood
           : R.drawable.ic_home_measurement_blood_inactive,
       value1: haveBloodPressure ? model.bloodPressureIndex.systolic!.toString() : "--",
-      value1Color: model.bloodPressureIndex.systolicColor != null
-          ? _convertHexStringToInt(model.bloodPressureIndex.systolicColor!)
+      value1Color: model.bloodPressureIndex.colorSystolic != null
+          ? _convertHexStringToInt(model.bloodPressureIndex.colorSystolic!)
           : _noValueColor,
       value2: haveBloodPressure ? model.bloodPressureIndex.diastolic!.toString() : "--",
-      value2Color: model.bloodPressureIndex.diastolicColor != null
-          ? _convertHexStringToInt(model.bloodPressureIndex.diastolicColor!)
+      value2Color: model.bloodPressureIndex.colorDiastolic != null
+          ? _convertHexStringToInt(model.bloodPressureIndex.colorDiastolic!)
           : _noValueColor,
       unit: "mmHg",
       navigatorName: haveBloodPressure

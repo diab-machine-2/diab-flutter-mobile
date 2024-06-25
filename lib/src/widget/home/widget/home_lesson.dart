@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/learning/learning_post_model.dart';
@@ -22,14 +24,16 @@ class HomeLesson extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final textScaleFactor =  max(1.0, MediaQuery.of(context).textScaleFactor);
+    final extraTitleHeight = (textScaleFactor - 1) * 60.0;
     return SizedBox(
-      height: 321.0,
+      height: 320.0 + extraTitleHeight,
       child: ListView.separated(
         itemCount: lessons.length,
         scrollDirection: Axis.horizontal,
         itemBuilder: (context, index) {
           final lesson = lessons[index];
-          return _buildLessonItem(lesson);
+          return _buildLessonItem(lesson, textScaleFactor);
         },
         separatorBuilder: (context, index) {
           return SizedBox(width: 12.0);
@@ -38,12 +42,12 @@ class HomeLesson extends StatelessWidget {
     );
   }
 
-  Widget _buildLessonItem(LearningPostModel lesson) {
+  Widget _buildLessonItem(LearningPostModel lesson, double extraTitleHeight) {
     return InkWell(
       onTap: () => onLessonTap(lesson),
       borderRadius: BorderRadius.circular(12.0),
       child: Container(
-        height: 321.0,
+        height: 320.0 + extraTitleHeight,
         width: 338.0,
         padding: const EdgeInsets.symmetric(vertical: 16.0),
         decoration: BoxDecoration(

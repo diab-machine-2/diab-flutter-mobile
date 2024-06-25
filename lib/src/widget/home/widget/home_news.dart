@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/widgets/network_image_widget.dart';
@@ -25,6 +27,8 @@ class HomeNews extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final textScaleFactor =  max(1.0, MediaQuery.of(context).textScaleFactor);
+    final extraTitleHeight = (textScaleFactor - 1) * 38.0;
     return DecoratedBox(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(16.0),
@@ -68,14 +72,14 @@ class HomeNews extends StatelessWidget {
 
           // News
           SizedBox(
-            height: 320.0,
+            height: 320.0 + extraTitleHeight,
             child: ListView.separated(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               itemCount: items.length,
               scrollDirection: Axis.horizontal,
               itemBuilder: (context, index) {
                 final lesson = items[index];
-                return _buildNewsItem(lesson);
+                return _buildNewsItem(lesson, extraTitleHeight);
               },
               separatorBuilder: (context, index) {
                 return SizedBox(width: 12.0);
@@ -89,12 +93,12 @@ class HomeNews extends StatelessWidget {
     );
   }
 
-  Widget _buildNewsItem(HomeNewsData news) {
+  Widget _buildNewsItem(HomeNewsData news, double extraTitleHeight) {
     return InkWell(
       onTap: () => onNewsTap(news),
       borderRadius: BorderRadius.circular(12.0),
       child: Container(
-        height: 320.0,
+        height: 320.0 + extraTitleHeight,
         width: 338.0,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(12.0),

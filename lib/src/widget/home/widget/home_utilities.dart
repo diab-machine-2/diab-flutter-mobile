@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
 
@@ -15,6 +17,14 @@ class HomeUtilities extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final textScaleFactor =  max(1.0, MediaQuery.of(context).textScaleFactor);
+    final isLargeFont = textScaleFactor > 1.25;
+
+    List<HomeUtilityData> renderingUtilities = utilities;
+    if (isLargeFont) {
+      renderingUtilities = utilities.take(5).toList()..add(utilities[utilities.length - 1]);
+    }
+    
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 20.0),
       decoration: BoxDecoration(
@@ -59,17 +69,18 @@ class HomeUtilities extends StatelessWidget {
             ),
 
           GridView.builder(
+            padding: EdgeInsets.symmetric(vertical: 12.0),
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 4,
+              crossAxisCount: isLargeFont ? 3 : 4,
               crossAxisSpacing: 0.0,
               mainAxisSpacing: 16.0,
               childAspectRatio: 84.0 / 92.0,
             ),
             shrinkWrap: true,
             physics: NeverScrollableScrollPhysics(),
-            itemCount: utilities.length,
+            itemCount: renderingUtilities.length,
             itemBuilder: (context, index) {
-              return _buildActivityItem(utilities[index]);
+              return _buildActivityItem(renderingUtilities[index]);
             },
           ),
         ],
@@ -92,6 +103,7 @@ class HomeUtilities extends StatelessWidget {
           Text(
             utility.title,
             textAlign: TextAlign.center,
+            maxLines: 2,
             style: TextStyle(
               fontSize: 15.0,
               color: R.color.textDark,

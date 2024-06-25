@@ -1,3 +1,4 @@
+import 'package:medical/src/model/response/smart_goal_list_reponse.dart';
 import 'package:medical/src/widget/my_plan_screens/activity_tab/activity_tab/models/schedule_type.dart';
 
 class HomeMeasurementIndex {
@@ -120,32 +121,17 @@ class HomeActivityData {
   final String title;
   final String? description;
 
-  // Getter/Setter
-  late ScheduleType type;
+  final ScheduleType type;
+  final SmartGoalList smartGoal;
 
   HomeActivityData({
     required this.id,
     required this.icon,
     required this.title,
+    required this.type,
+    required this.smartGoal,
     this.description,
   });
-
-  factory HomeActivityData.fromJson(Map<String, dynamic> map) {
-    return HomeActivityData(
-      id: map['id'],
-      icon: map['icon'],
-      title: map['title'],
-      description: map['description'],
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'icon': icon,
-      'title': title,
-      'description': description,
-    };
-  }
 }
 
 class HomeReminderData {
@@ -160,24 +146,6 @@ class HomeReminderData {
     required this.time,
     this.navigatorName,
   });
-
-  factory HomeReminderData.fromJson(Map<String, dynamic> map) {
-    return HomeReminderData(
-      icon: map['icon'],
-      title: map['title'],
-      time: map['time'],
-      navigatorName: map['navigatorName'],
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'icon': icon,
-      'title': title,
-      'time': time,
-      'navigatorName': navigatorName,
-    };
-  }
 }
 
 class HomeUtilityData {

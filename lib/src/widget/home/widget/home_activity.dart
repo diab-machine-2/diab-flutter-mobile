@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
@@ -29,6 +31,7 @@ class HomeActivity extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final textScaleFactor =  max(1.0, MediaQuery.of(context).textScaleFactor);
     bool isEmpty = activities.isEmpty;
     bool isHaveMore = activities.length > 3;
     return AnimatedSize(
@@ -93,8 +96,7 @@ class HomeActivity extends StatelessWidget {
                       const SizedBox(height: 24.0),
 
                       // button
-                      SizedBox(
-                        width: 188.0,
+                      Center(
                         child: InkWell(
                           onTap: onAddActivity,
                           borderRadius: BorderRadius.circular(16.0),
@@ -138,19 +140,19 @@ class HomeActivity extends StatelessWidget {
               for (var activity in activities)
                 Padding(
                   padding: const EdgeInsets.only(bottom: 12.0),
-                  child: _buildActivityItem(activity),
+                  child: _buildActivityItem(activity, textScaleFactor),
                 ),
             if (!isEmpty && isHaveMore && !expanded)
               for (var activity in activities.take(3))
                 Padding(
                   padding: const EdgeInsets.only(bottom: 12.0),
-                  child: _buildActivityItem(activity),
+                  child: _buildActivityItem(activity, textScaleFactor),
                 ),
             if (!isEmpty && isHaveMore && expanded)
               for (var activity in activities)
                 Padding(
                   padding: const EdgeInsets.only(bottom: 12.0),
-                  child: _buildActivityItem(activity),
+                  child: _buildActivityItem(activity, textScaleFactor),
                 ),
 
             // button more
@@ -189,12 +191,12 @@ class HomeActivity extends StatelessWidget {
     );
   }
 
-  Widget _buildActivityItem(HomeActivityData activity) {
+  Widget _buildActivityItem(HomeActivityData activity, double textScaleFactor) {
     return InkWell(
       onTap: () => onActivityTap(activity),
       borderRadius: BorderRadius.circular(12.0),
       child: Container(
-        height: 64.0,
+        height: 64.0 * textScaleFactor,
         padding: const EdgeInsets.all(12.0),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(12.0),

@@ -142,10 +142,10 @@ class GloucoseIndexModel {
 
 class BloodPressureIndexModel {
   final double? systolic;
-  final String? systolicColor;
+  final String? colorSystolic;
   final double? systolicChange;
   final double? diastolic;
-  final String? diastolicColor;
+  final String? colorDiastolic;
   final double? diastolicChange;
   final String? color;
   final ImagesModel? icon;
@@ -153,10 +153,10 @@ class BloodPressureIndexModel {
 
   BloodPressureIndexModel({
     required this.systolic,
-    required this.systolicColor,
+    required this.colorSystolic,
     required this.systolicChange,
     required this.diastolic,
-    required this.diastolicColor,
+    required this.colorDiastolic,
     required this.diastolicChange,
     required this.color,
     required this.icon,
@@ -166,10 +166,10 @@ class BloodPressureIndexModel {
   factory BloodPressureIndexModel.fromJson(Map<String, dynamic> json) {
     return BloodPressureIndexModel(
       systolic: json['systolic'],
-      systolicColor: json['systolicColor'],
+      colorSystolic: json['colorSystolic'],
       systolicChange: json['systolicChange'],
       diastolic: json['diastolic'],
-      diastolicColor: json['diastolicColor'],
+      colorDiastolic: json['colorDiastolic'],
       diastolicChange: json['diastolicChange'],
       color: json['color'],
       icon: json['icon'] == null ? null : ImagesModel.fromJson(json['icon']),
@@ -181,7 +181,9 @@ class BloodPressureIndexModel {
     return {
       'systolic': systolic,
       'systolicChange': systolicChange,
+      'colorSystolic': colorSystolic,
       'diastolic': diastolic,
+      'colorDiastolic': colorDiastolic,
       'diastolicChange': diastolicChange,
       'color': color,
       'icon': icon?.toJson(),

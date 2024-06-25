@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/widget/home/schema/home_schema.dart';
@@ -23,6 +25,7 @@ class MeasurementSummary extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final textScaleFactor =  max(1.0, MediaQuery.of(context).textScaleFactor);
     return Container(
       padding: const EdgeInsets.all(16.0),
       decoration: BoxDecoration(
@@ -45,9 +48,9 @@ class MeasurementSummary extends StatelessWidget {
 
           // Measurements
           SizedBox(
-            height: 88.0,
+            height: 88.0 * textScaleFactor,
             child: ListView.separated(
-              itemBuilder: (_, index) => _buildMeasurementWidget(measurements[index]),
+              itemBuilder: (_, index) => _buildMeasurementWidget(measurements[index], textScaleFactor),
               separatorBuilder: (_, index) => const SizedBox(width: 8.0),
               itemCount: measurements.length,
               scrollDirection: Axis.horizontal,
@@ -115,7 +118,7 @@ class MeasurementSummary extends StatelessWidget {
     );
   }
 
-  Widget _buildMeasurementWidget(HomeMeasurementData data) {
+  Widget _buildMeasurementWidget(HomeMeasurementData data, double textScaleFactor) {
     Widget valueWidget;
     final withUnit = data.unit.isNotEmpty;
     double valueFontSize = withUnit ? 12.0 : 16.0;
@@ -165,7 +168,7 @@ class MeasurementSummary extends StatelessWidget {
     return InkWell(
       onTap: () => onMeasurement(data.navigatorName, data.args),
       child: Container(
-        width: 88.0,
+        width: 88.0 * textScaleFactor,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisSize: MainAxisSize.min,
