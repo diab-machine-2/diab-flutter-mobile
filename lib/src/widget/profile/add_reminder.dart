@@ -52,6 +52,13 @@ class _AddReminderControllerState extends BaseState<AddReminderController> {
     firebaseSetup();
   }
 
+  @override
+  void dispose() {
+    titleController.dispose();
+    descriptionController.dispose();
+    super.dispose();
+  }
+
   Future firebaseSetup() async {
     await TrackingManager.analytics.logScreenView(
         screenName: "add_remind", screenClass: "ReminderController");
@@ -571,7 +578,7 @@ class _AddReminderControllerState extends BaseState<AddReminderController> {
             }));
   }
 
-  submit() async {
+  void submit() async {
     final title = titleController.text;
     final des = descriptionController.text;
     if (title.isEmpty) {
@@ -597,7 +604,7 @@ class _AddReminderControllerState extends BaseState<AddReminderController> {
     }
   }
 
-  edit() async {
+  void edit() async {
     final title = titleController.text;
     if (title.isEmpty) {
       Message.showToastMessage(context, R.string.mes_reminder_name_empty.tr());

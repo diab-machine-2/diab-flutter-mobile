@@ -112,6 +112,10 @@ class _HomeControllerState extends State<HomeController> with Observer {
 
   @override
   void update(Observable observable, String? notifyName, Map<dynamic, dynamic>? map) async {
+    if (notifyName == 'schedule_change' || notifyName == 'refresh_home') {
+      _refresh();
+      return;
+    }
     if (notifyName == 'BloodPressure_change_data') {
       _refresh();
       _checkScreen(NavigatorName.detail_blood_pressure);
@@ -314,7 +318,6 @@ class _HomeControllerState extends State<HomeController> with Observer {
                                 Navigator.pushNamed(context, NavigatorName.add_reminder,
                                     arguments: {'type': 'update', 'id': reminder.id});
                               },
-                              
                             ),
                           ),
 

@@ -122,7 +122,7 @@ class MeasurementSummary extends StatelessWidget {
   Widget _buildMeasurementWidget(HomeMeasurementData data, double textScaleFactor) {
     Widget valueWidget;
     final withUnit = data.unit.isNotEmpty;
-    double valueFontSize = withUnit ? 12.0 : 16.0;
+    double valueFontSize = withUnit ? 12.0 : 14.0;
     double height = (valueFontSize + 4.0) / valueFontSize;
     if (data.value2 != null && data.value2!.isNotEmpty) {
       // build textspan with different style data.color

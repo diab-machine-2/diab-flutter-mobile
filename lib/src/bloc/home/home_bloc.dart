@@ -21,11 +21,11 @@ import 'package:easy_localization/easy_localization.dart';
 part 'home_bloc_event.dart';
 part 'home_bloc_state.dart';
 
-HomeLoaded? _cached;
-
 class HomeBloc extends Bloc<HomeEvent, HomeState> {
   HomeBloc() : super(HomeInitial());
   final timeToRetry = 10;
+
+  HomeLoaded? _cached;
 
   @override
   Stream<HomeState> mapEventToState(HomeEvent event) async* {
@@ -77,7 +77,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
                 final ScheduleType type = ScheduleTypeExtend.getTypeFromIndex(e.type);
                 final activity = HomeActivityData(
                   id: e.id!,
-                  icon: R.drawable.ic_home_activity,
+                  icon: type.icon,
                   title: e.name ?? type.title,
                   type: type,
                   smartGoal: e,
@@ -413,7 +413,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       bloodPressure,
       exercise,
       nutrition,
-      emotion,
+      if (haveEmotion)
+        emotion,
     ];
   }
 }
