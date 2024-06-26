@@ -178,6 +178,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
             child: Column(
               children: [
                 AppBarBottom(
+                  activeShadow: false,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
@@ -1103,7 +1104,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
           await _showReportBottomSheet();
           break;
         case StatisticalAction.chatting:
-          final result = await NavigationUtil.navigatePage(
+          await NavigationUtil.navigatePage(
               context, const ExpertCommentPage());
           break;
         default:

@@ -1,7 +1,7 @@
 import 'package:medical/res/R.dart';
 
 enum PlanType {
-  goal,
+  // goal,
   lesson,
   activity,
 }
@@ -9,8 +9,8 @@ enum PlanType {
 extension PlanTypeDetail on PlanType {
   String get title {
     switch (this) {
-      case PlanType.goal:
-        return R.string.title_activity;
+      // case PlanType.goal:
+      //   return R.string.title_activity;
       case PlanType.lesson:
         return R.string.title_lesson;
       case PlanType.activity:
@@ -19,12 +19,12 @@ extension PlanTypeDetail on PlanType {
   }
   int get planTypeIndex {
     switch (this) {
-      case PlanType.goal:
-        return 0;
+      // case PlanType.goal:
+      //   return 0;
       case PlanType.lesson:
-        return 1;
+        return 0;
       case PlanType.activity:
-        return 2;
+        return 1;
     }
   }
 }

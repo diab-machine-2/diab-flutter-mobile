@@ -5,35 +5,32 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_observer/Observable.dart';
 import 'package:flutter_observer/Observer.dart';
 import 'package:medical/res/R.dart';
-import 'package:medical/src/app.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/app_setting/dynamic_link_config.dart';
 import 'package:medical/src/app_setting/firebase_remote_config.dart';
 import 'package:medical/src/modal/base/referral_code_temp.dart';
-import 'package:medical/src/modal/error/error_model.dart';
-import 'package:medical/src/modal/user/user_model.dart';
-import 'package:medical/src/repo/user/user_client.dart';
+import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/service/zoom_service.dart';
 import 'package:medical/src/utils/app_storages.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigation_util.dart';
-import 'package:medical/src/utils/navigator_name.dart';
-import 'package:medical/src/widget/Bmi/views/add_bmi_view/widgets/custom_height_picker.dart';
 import 'package:medical/src/widget/components/HomeButton/main.dart';
 import 'package:medical/src/widget/helper/notification_manager.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/home/home_v2.dart';
-import 'package:medical/src/widget/incoming_feature/incoming_feature.dart';
-import 'package:medical/src/widget/my_plan_screens/my_plan/my_plan_page.dart';
+import 'package:medical/src/widget/my_plan_screens/activity_tab/activity_tab/activity_tab.dart';
+import 'package:medical/src/widget/my_plan_screens/my_plan/my_plan.dart';
 import 'package:medical/src/widget/question_answer/question_answer_page.dart';
 import 'package:medical/src/widget/tabbar/tabbar_v2_data.dart';
 import 'package:medical/src/widget/voucher/presentation/widgets/webview_store.dart';
 import 'package:medical/curved_navigation_bar/curved_navigation_bar.dart';
+import 'package:medical/src/widgets/common_page.dart';
 import 'package:package_info/package_info.dart';
 import 'package:store_redirect/store_redirect.dart';
 
@@ -46,8 +43,7 @@ class TabbarController extends StatefulWidget {
   State<TabbarController> createState() => _TabbarControllerState();
 }
 
-class _TabbarControllerState extends State<TabbarController>
-    with Observer {
+class _TabbarControllerState extends State<TabbarController> with Observer {
   PageController? pageController;
   // BottomTabbar? _bottomTabbar;
   late List<Widget> tabs;
@@ -63,6 +59,8 @@ class _TabbarControllerState extends State<TabbarController>
     TabBarType.store,
   ];
 
+  int _initialPage = 0;
+
   @override
   void initState() {
     initData();
@@ -72,7 +70,7 @@ class _TabbarControllerState extends State<TabbarController>
   void initData() async {
     tabs = [
       HomeController(sharedCode: widget.sharedCode),
-      IncomingFeature(),
+      _buildProgramTab(),
       MyPlanPage(index: 0),
       QuestionAnswerPage(),
       SizedBox(), // <<= this store page
@@ -83,14 +81,12 @@ class _TabbarControllerState extends State<TabbarController>
     final String? lessonId = DynamicLinkConfig.instance.lessonId;
     final String? zoomId = DynamicLinkConfig.instance.zoomId;
 
-    int initialPage = 0;
-    if (lessonId != null ||
-        activityId != null ||
-        widget.isRedirectFromNotification ||
-        zoomId != null) {
-      initialPage = 1;
+    if (activityId != null || zoomId != null) {
+      _initialPage = TabBarType.program.index;
+    } else if (lessonId != null || widget.isRedirectFromNotification) {
+      _initialPage = TabBarType.library.index;
     }
-    pageController = PageController(initialPage: initialPage);
+    pageController = PageController(initialPage: _initialPage);
 
     if (Const.ENVIRONMENT_DEFAULT == 'product') {
       await _getNewVersion();
@@ -186,18 +182,21 @@ class _TabbarControllerState extends State<TabbarController>
         position = map['position'] ?? 0;
       }
       NavigationUtil.popToFirst(context);
-      jumpTo(TabBarType.library.index);
-      _bottomTabbarKey.currentState?.setPage(TabBarType.library.index);
-      await Future.delayed(
-        const Duration(milliseconds: 10),
-      );
-
       if (position == 0) {
-        Observable.instance.notifyObservers([], notifyName: Const.NAVIGATE_TO_ACTIVITY_TAB);
-      } else if (position == 1) {
-        Observable.instance.notifyObservers([], notifyName: Const.NAVIGATE_TO_LESSON_TAB);
-      } else if (position == 2) {
-        Observable.instance.notifyObservers([], notifyName: Const.NAVIGATE_TO_EXERCISE_TAB);
+        jumpTo(TabBarType.program.index);
+        _bottomTabbarKey.currentState?.setPage(TabBarType.program.index);
+      } else {
+        jumpTo(TabBarType.library.index);
+        _bottomTabbarKey.currentState?.setPage(TabBarType.library.index);
+        await Future.delayed(
+          const Duration(milliseconds: 10),
+        );
+
+        if (position == 1) {
+          Observable.instance.notifyObservers([], notifyName: Const.NAVIGATE_TO_LESSON_TAB);
+        } else if (position == 2) {
+          Observable.instance.notifyObservers([], notifyName: Const.NAVIGATE_TO_EXERCISE_TAB);
+        }
       }
     }
     if (notifyName == Const.NAVIGATE_TO_PROFILE_TAB) {
@@ -207,15 +206,15 @@ class _TabbarControllerState extends State<TabbarController>
         notifyName == Const.NAVIGATE_TO_ACTIVITY_DETAIL) {
       _checkExistLessonId();
     }
-    if (notifyName == Const.NAVIGATE_TO_LESSON_TAB ||
-        notifyName == Const.NAVIGATE_TO_ACTIVITY_TAB) {
+    if (notifyName == Const.NAVIGATE_TO_LESSON_TAB) {
       jumpTo(TabBarType.library.index);
+      _bottomTabbarKey.currentState?.setPage(TabBarType.library.index);
     }
     if (notifyName == Const.LANGUAGE_CHANGED) {
       setState(() {
         tabs = [
           HomeController(sharedCode: widget.sharedCode),
-          IncomingFeature(),
+          _buildProgramTab(),
           MyPlanPage(index: 0),
           QuestionAnswerPage(),
           SizedBox(), // <<= this store page
@@ -240,6 +239,7 @@ class _TabbarControllerState extends State<TabbarController>
       ),
       bottomNavigationBar: CurvedNavigationBar(
         key: _bottomTabbarKey,
+        index: _initialPage,
         backgroundColor: Colors.transparent,
         color: Colors.white,
         buttonBackgroundColor: const Color(0xFF008479),
@@ -280,6 +280,23 @@ class _TabbarControllerState extends State<TabbarController>
     return versionInt;
   }
 
+  Widget _buildProgramTab() {
+    return BlocProvider(
+      create: (context) => MyPlanCubit(AppRepository(), 0),
+      child: BlocBuilder<MyPlanCubit, MyPlanState>(
+        builder: (context, state) {
+          return CommonPage(
+            title: R.string.title_activity.tr(),
+            background: R.drawable.bg_welcome,
+            appbarColor: R.color.white,
+            hideAllBackButton: true,
+            child: ActivityTabPage(),
+          );
+        },
+      ),
+    );
+  }
+
   Future<void> _getNewVersion() async {
     PackageInfo packageInfo = await PackageInfo.fromPlatform();
     final _currentVersion = packageInfo.version;
@@ -312,37 +329,4 @@ class _TabbarControllerState extends State<TabbarController>
       );
     }
   }
-}
-
-void _showPopupWeight() {
-  showDialog(
-    barrierColor: R.color.color0xff003F38.withOpacity(0.5),
-    context: navigatorKey.currentContext!,
-    builder: (_) => CustomNumPicker(
-      callback: (number) async {
-        try {
-          BotToast.showLoading();
-          UserModel userInfo = AppSettings.userInfo!;
-          userInfo = userInfo.copyWith(height: number?.toDouble());
-          await UserClient().updateUserInfo(AppSettings.userInfo!.id, userInfo);
-          await UserClient().fetchUser();
-          Navigator.pushNamed(navigatorKey.currentContext!, NavigatorName.add_exercrises,
-              arguments: {'type': 'input'});
-          BotToast.closeAllLoading();
-        } catch (e, _) {
-          BotToast.closeAllLoading();
-          if (e is Error) {
-            Message.showToastMessage(navigatorKey.currentContext!, e.message);
-          } else {
-            Message.showToastMessage(navigatorKey.currentContext!, e.toString());
-          }
-        }
-      },
-      title: R.string.update_weight.tr(),
-      subTitle: R.string.update_weight_description.tr(),
-      max: 200,
-      numberDefault: 50,
-      unit: R.string.kg.tr(),
-    ),
-  );
 }
