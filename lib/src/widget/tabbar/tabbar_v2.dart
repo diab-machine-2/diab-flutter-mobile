@@ -73,7 +73,7 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
       _buildProgramTab(),
       MyPlanPage(index: 0),
       QuestionAnswerPage(),
-      SizedBox(), // <<= this store page
+      _buildStoreTab(),
     ];
     Observable.instance.addObserver(this);
     NotificationManager.instance.requestFirebaseToken(context);
@@ -100,7 +100,6 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
   }
 
   void _onBottomNavigationBarTap(int index) {
-    // TODO: More check
     if (index == TabBarType.store.index) {
       BotToast.showLoading();
       Future.delayed(Duration(seconds: 1), () async {
@@ -112,12 +111,7 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
           },
         );
       });
-      Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) =>
-                WebviewStore(urlStore: FirebaseRemoteSetting.instance.storeNavigationUrl),
-          ));
+      jumpTo(index);
     } else if (index == -1) {
       // _showMaterialDialog();
     } else {
@@ -217,7 +211,7 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
           _buildProgramTab(),
           MyPlanPage(index: 0),
           QuestionAnswerPage(),
-          SizedBox(), // <<= this store page
+          _buildStoreTab(),
         ];
       });
     }
@@ -249,9 +243,6 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
         height: 56.0,
         assetPaths: _bottomTabs.map((e) => e.iconPath).toList(),
         tabTitles: _bottomTabs.map((e) => e.title).toList(),
-        letIndexChange: (index) {
-          return index != TabBarType.store.index;
-        },
         activeIconReplacement: (path) {
           return path.replaceAll(".png", "_active.png");
         },
@@ -295,6 +286,15 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
         },
       ),
     );
+  }
+
+  Widget _buildStoreTab() {
+    if (FirebaseRemoteSetting.instance.storeNavigationUrl.isNotEmpty) {
+      return WebviewStore(
+          urlStore: FirebaseRemoteSetting.instance.storeNavigationUrl, rootPage: true);
+    } else {
+      return SizedBox();
+    }
   }
 
   Future<void> _getNewVersion() async {
