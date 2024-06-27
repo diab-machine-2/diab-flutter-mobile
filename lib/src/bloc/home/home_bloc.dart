@@ -250,7 +250,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         title: R.string.can_nang.tr(),
         icon: R.drawable.ic_home_measurement_weight,
         navigatorName: NavigatorName.add_bmi,
-        args: {'type': 'input', 'id': null},
+        args: {'type': 'input'},
       ),
     ];
   }
@@ -268,15 +268,16 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     // Hb1Ac
     final haveHba1c = model.hbA1CIndex.index != null && model.hbA1CIndex.index! > 0;
     final hba1c = HomeMeasurementInlineData(
-        title: "HbA1C",
-        titleColor: haveHba1c ? _haveValueTitleColor : _noValueTitleColor,
-        value: haveHba1c ? model.hbA1CIndex.index!.toString() : "--",
-        color: model.hbA1CIndex.color != null
-            ? _convertHexStringToInt(model.hbA1CIndex.color!)
-            : _noValueColor,
-        unit: "%",
-        navigatorName: haveHba1c ? NavigatorName.detail_hba1c : NavigatorName.add_hba1c,
-        args: haveHba1c ? null : {'type': 'input'});
+      title: "HbA1C",
+      titleColor: haveHba1c ? _haveValueTitleColor : _noValueTitleColor,
+      value: haveHba1c ? model.hbA1CIndex.index!.toString() : "--",
+      color: model.hbA1CIndex.color != null
+          ? _convertHexStringToInt(model.hbA1CIndex.color!)
+          : _noValueColor,
+      unit: "%",
+      navigatorName: haveHba1c ? NavigatorName.detail_hba1c : NavigatorName.add_hba1c,
+      args: haveHba1c ? null : {'type': 'input'},
+    );
 
     // Weight
     final haveWeight = model.weightCard?.weight != null && model.weightCard!.weight! > 0;
@@ -290,6 +291,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
           : _noValueColor,
       unit: "Kg",
       navigatorName: haveWeight ? NavigatorName.detail_bmi : NavigatorName.add_bmi,
+      args: haveWeight ? null : {'type': 'input'},
     );
 
     // BMI
@@ -303,6 +305,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
           ? _convertHexStringToInt(model.bmiCard!.color)
           : _noValueColor,
       navigatorName: haveWeight ? NavigatorName.detail_bmi : NavigatorName.add_bmi,
+      args: haveBmi ? null : {'type': 'input'},
     );
 
     return [
@@ -328,6 +331,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       unit: model.glucoseIndex.unit,
       navigatorName:
           haveGlucose ? NavigatorName.detail_blood_sugar : NavigatorName.add_blood_sugar_new,
+      args: haveGlucose ? null : {'type': 'input'},
     );
 
     // Blood Pressure
@@ -353,6 +357,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       navigatorName: haveBloodPressure
           ? NavigatorName.detail_blood_pressure
           : NavigatorName.add_blood_pressure,
+      args: haveBloodPressure ? null : {'type': 'input'},
     );
 
     // Exercise
@@ -413,8 +418,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       bloodPressure,
       exercise,
       nutrition,
-      if (haveEmotion)
-        emotion,
+      if (haveEmotion) emotion,
     ];
   }
 }
