@@ -132,6 +132,7 @@ class _HomeControllerState extends State<HomeController> with Observer {
       _refresh();
       _checkScreen(NavigatorName.detail_emotion);
     }
+    // After add exercise
     if (notifyName == 'active_change_data') {
       _refresh();
       _checkScreen(NavigatorName.detail_exercrises);
@@ -292,7 +293,7 @@ class _HomeControllerState extends State<HomeController> with Observer {
                                 });
                               },
                               onAddActivity: () {
-                                Navigator.pushNamed(context, NavigatorName.goal_setting);
+                                Navigator.pushNamed(context, NavigatorName.add_goal);
                               },
                               onViewMore: () {
                                 Observable.instance

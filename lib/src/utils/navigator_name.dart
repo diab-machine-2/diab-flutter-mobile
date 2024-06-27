@@ -73,6 +73,7 @@ class NavigatorName {
   static const String utilities = '/utilities';
   static const String food_menu = '/food-menu';
   static const String add_nutrition = '/add-nutrition';
+  static const String add_goal = '/add-goal';
 
   // Test OCR ZONE
   static const String test_ocr = '/test_ocr';

@@ -33,8 +33,8 @@ import 'package:permission_handler/permission_handler.dart';
 
 class AddFoodController extends StatefulWidget {
   final String type;
-  final String id;
-  AddFoodController({required this.type, required this.id});
+  final String? id;
+  AddFoodController({required this.type, this.id});
 
   @override
   _AddFoodControllerState createState() => _AddFoodControllerState();
@@ -67,11 +67,11 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
     super.initState();
     initData();
     if (widget.type == 'update') {
-      loadDetail();
+      _loadDetail();
     } else {
-      loadTimeFrame();
+      _loadTimeFrame();
     }
-    loadDescription();
+    _loadDescription();
   }
 
   void initData() async {
@@ -79,7 +79,7 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
     clickTime = valueOfClickTime[ScreenList.FOOD.index];
   }
 
-  showGuide(BuildContext context) async {
+  Future<void> _showGuide(BuildContext context) async {
     Description.showTooltip(context,
         data: des!, title: R.string.che_do_dinh_duong_benh_tieu_duong.tr());
     clickTime = clickTime + 1;
@@ -87,12 +87,13 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
         ScreenList.FOOD.index, clickTime);
   }
 
+  @override
   void dispose() {
     _controllerNote.dispose();
     super.dispose();
   }
 
-  loadDetail() async {
+  void _loadDetail() async {
     BotToast.showLoading();
     model = await FoodClient().fetchDetailInput(widget.id);
     BotToast.closeAllLoading();
@@ -118,7 +119,7 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
     setState(() {});
   }
 
-  loadTimeFrame() async {
+  _loadTimeFrame() async {
     BotToast.showLoading();
     final timeFrames = await FoodClient()
         .fetchFoodTimeFrame(time: selectedDate.millisecondsSinceEpoch ~/ 1000);
@@ -127,7 +128,7 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
     setState(() {});
   }
 
-  loadDescription() async {
+  void _loadDescription() async {
     des = await HbA1CClient().fetchShortGuide(4);
     setState(() {});
   }
@@ -156,8 +157,8 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
                   backgroundColor: Colors.transparent,
                   title: Text(
                       widget.type == 'update'
-                          ? R.string.cap_nhat_chi_so_dinh_duong
-                          : R.string.nhap_chi_so_dinh_duong,
+                          ? R.string.cap_nhat_chi_so_dinh_duong.tr()
+                          : R.string.nhap_chi_so_dinh_duong.tr(),
                       style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.w600,
@@ -173,7 +174,7 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
                     GestureDetector(
                       onTap: () async {
                         if (clickTime >= 2) {
-                          await showGuide(context);
+                          await _showGuide(context);
                         } else {
                           setState(() {
                             isClicked = !isClicked;
@@ -207,7 +208,7 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
                                     data: des,
                                     isCreateData: true,
                                     titleDetail: R.string
-                                        .che_do_dinh_duong_benh_tieu_duong)
+                                        .che_do_dinh_duong_benh_tieu_duong.tr())
                                 : SizedBox()),
                         Padding(
                             padding: const EdgeInsets.only(
@@ -233,7 +234,7 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
                                           CrossAxisAlignment.start,
                                       children: [
                                         Text(
-                                            '${R.string.luong_calo_ban_da_nap}:'),
+                                            '${R.string.luong_calo_ban_da_nap.tr()}:'),
                                         SizedBox(height: 8),
                                         Row(
                                           crossAxisAlignment:
@@ -280,7 +281,7 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
                                           setState(() {
                                             selectedDate = date;
                                           });
-                                        loadTimeFrame();
+                                        _loadTimeFrame();
                                       },
                                     ),
                                   );
@@ -417,7 +418,7 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
                                                       height: 24,
                                                     ),
                                                     SizedBox(width: 4),
-                                                    Text(R.string.them_mon_an,
+                                                    Text(R.string.them_mon_an.tr(),
                                                         style: TextStyle(
                                                             color: R.color
                                                                 .mainColor,
@@ -502,8 +503,8 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
                                                                     Text(
                                                                         selectedFoods[index].code ==
                                                                                 'OtherUneditable'
-                                                                            ? '${R.string.da_an} ${formatNumber((selectedFoods[index].quantity ?? 0) * (selectedFoods[index].calorie ?? 0))} kcal'
-                                                                            : '${R.string.da_an} ${roundAsFixed((selectedFoods[index].portion ?? 0) * (selectedFoods[index].quantity ?? 0))} ${selectedFoods[index].unit}, ${formatNumber((selectedFoods[index].quantity ?? 0) * (selectedFoods[index].calorie ?? 0))} kcal',
+                                                                            ? '${R.string.da_an.tr()} ${formatNumber((selectedFoods[index].quantity ?? 0) * (selectedFoods[index].calorie ?? 0))} kcal'
+                                                                            : '${R.string.da_an.tr()} ${roundAsFixed((selectedFoods[index].portion ?? 0) * (selectedFoods[index].quantity ?? 0))} ${selectedFoods[index].unit}, ${formatNumber((selectedFoods[index].quantity ?? 0) * (selectedFoods[index].calorie ?? 0))} kcal',
                                                                         style: TextStyle(
                                                                             color:
                                                                                 R.color.textDark,
@@ -560,7 +561,7 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
                                       children: [
-                                        Text(R.string.luong_calo_ban_da_nap,
+                                        Text(R.string.luong_calo_ban_da_nap.tr(),
                                             style: TextStyle(
                                                 fontSize: 16,
                                                 fontWeight: FontWeight.w600)),
@@ -580,7 +581,7 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
                                                 fontWeight: FontWeight.w400),
                                             decoration: InputDecoration(
                                                 hintText: R.string
-                                                    .luong_calo_ban_da_nap,
+                                                    .luong_calo_ban_da_nap.tr(),
                                                 contentPadding:
                                                     EdgeInsets.only(bottom: 8),
                                                 border: InputBorder.none,
@@ -617,7 +618,7 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
                                     Image.asset(R.drawable.ic_note_text,
                                         width: 24, height: 24),
                                     SizedBox(width: 8),
-                                    Text(R.string.note,
+                                    Text(R.string.note.tr(),
                                         style: TextStyle(
                                             fontSize: 16,
                                             fontWeight: FontWeight.w600))
@@ -743,7 +744,7 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
                                         R.color.greenGradientBottom
                                       ])),
                               child: Center(
-                                  child: Text(R.string.save,
+                                  child: Text(R.string.save.tr(),
                                       style: TextStyle(
                                           color: Colors.white,
                                           fontWeight: FontWeight.w600,
@@ -771,7 +772,7 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
                                             border: Border.all(
                                                 color: R.color.red, width: 2)),
                                         child: Center(
-                                          child: Text(R.string.xoa_du_lieu,
+                                          child: Text(R.string.xoa_du_lieu.tr(),
                                               style: TextStyle(
                                                   color: Colors.red,
                                                   fontSize: 16,
@@ -797,7 +798,7 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
                                                 R.color.greenGradientBottom
                                               ])),
                                       child: Center(
-                                        child: Text(R.string.save,
+                                        child: Text(R.string.save.tr(),
                                             style: TextStyle(
                                                 color: Colors.white,
                                                 fontSize: 16,
@@ -862,7 +863,7 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
       BotToast.showLoading();
       final result = await FoodClient().deleteInputFood(widget.id);
       if (result == true) {
-        Message.showToastMessage(context, R.string.xoa_thanh_cong);
+        Message.showToastMessage(context, R.string.xoa_thanh_cong.tr());
         Observable.instance.notifyObservers([], notifyName: "food_change_data");
         // DartNotificationCenter.post(channel: 'food_change_data');
         Navigator.pop(context);
@@ -885,11 +886,11 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
     final note = _controllerNote.text;
 
     if (selectedDate == null) {
-      Message.showToastMessage(context, R.string.ban_chua_nhap_thoi_gian);
+      Message.showToastMessage(context, R.string.ban_chua_nhap_thoi_gian.tr());
       return;
     }
     if (selectedTimeFrame == null) {
-      Message.showToastMessage(context, R.string.ban_chua_chon_khung_gio);
+      Message.showToastMessage(context, R.string.ban_chua_chon_khung_gio.tr());
       return;
     }
     if (addTotalCalo) {
@@ -902,12 +903,12 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
         return;
       }
       if (note.isEmpty) {
-        Message.showToastMessage(context, R.string.ban_chua_nhap_ghi_chu);
+        Message.showToastMessage(context, R.string.ban_chua_nhap_ghi_chu.tr());
         return;
       }
     } else {
       if (selectedFoods.length == 0) {
-        Message.showToastMessage(context, R.string.ban_chua_chon_mon_an);
+        Message.showToastMessage(context, R.string.ban_chua_chon_mon_an.tr());
         return;
       }
     }
@@ -952,7 +953,7 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
     final note = _controllerNote.text;
 
     if (selectedDate == null) {
-      Message.showToastMessage(context, R.string.ban_chua_nhap_thoi_gian);
+      Message.showToastMessage(context, R.string.ban_chua_nhap_thoi_gian.tr());
       return;
     }
     if (selectedTimeFrame == null) {
@@ -974,7 +975,7 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
       }
     } else {
       if (selectedFoods.length == 0) {
-        Message.showToastMessage(context, R.string.ban_chua_chon_mon_an);
+        Message.showToastMessage(context, R.string.ban_chua_chon_mon_an.tr());
         return;
       }
     }
@@ -1035,7 +1036,7 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
                       Image.asset(R.drawable.ic_earse, width: 64, height: 64),
                       Padding(
                         padding: const EdgeInsets.only(top: 16.0),
-                        child: Text(R.string.ban_muon_xoa_du_lieu,
+                        child: Text(R.string.ban_muon_xoa_du_lieu.tr(),
                             textAlign: TextAlign.center,
                             style: TextStyle(
                                 color: R.color.textDark,
@@ -1044,7 +1045,7 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
                       ),
                       Padding(
                         padding: const EdgeInsets.only(top: 16.0),
-                        child: Text(R.string.confirm_to_remove_data,
+                        child: Text(R.string.confirm_to_remove_data.tr(),
                             textAlign: TextAlign.center,
                             style: R.style.normalTextStyle),
                       ),
@@ -1065,7 +1066,7 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
                                               BorderRadius.circular(200),
                                           color: R.color.grayBorder),
                                       child: Center(
-                                        child: Text(R.string.back,
+                                        child: Text(R.string.back.tr(),
                                             style: TextStyle(
                                                 color: R.color.textDark,
                                                 fontSize: 16,
@@ -1087,7 +1088,7 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
                                       borderRadius: BorderRadius.circular(200),
                                     ),
                                     child: Center(
-                                      child: Text(R.string.delete,
+                                      child: Text(R.string.delete.tr(),
                                           style: TextStyle(
                                               color: Colors.white,
                                               fontSize: 16,
@@ -1152,7 +1153,7 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
                           width: 64, height: 64),
                       Padding(
                         padding: const EdgeInsets.only(top: 16.0),
-                        child: Text(R.string.ban_muon_quay_lai,
+                        child: Text(R.string.ban_muon_quay_lai.tr(),
                             textAlign: TextAlign.center,
                             style: TextStyle(
                                 color: R.color.textDark,
@@ -1161,7 +1162,7 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
                       ),
                       Padding(
                         padding: const EdgeInsets.only(top: 16.0),
-                        child: Text(R.string.confirm_to_back,
+                        child: Text(R.string.confirm_to_back.tr(),
                             textAlign: TextAlign.center,
                             style: R.style.normalTextStyle),
                       ),
@@ -1181,7 +1182,7 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
                                               BorderRadius.circular(200),
                                           color: R.color.grayBorder),
                                       child: Center(
-                                        child: Text(R.string.van_o_lai,
+                                        child: Text(R.string.van_o_lai.tr(),
                                             style: TextStyle(
                                                 color: R.color.textDark,
                                                 fontSize: 16,
@@ -1209,7 +1210,7 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
                                               R.color.greenGradientBottom
                                             ])),
                                     child: Center(
-                                      child: Text(R.string.exit,
+                                      child: Text(R.string.exit.tr(),
                                           style: TextStyle(
                                               color: Colors.white,
                                               fontSize: 16,
@@ -1295,7 +1296,7 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
           )
         ],
         cancelButton: CupertinoActionSheetAction(
-          child: Text(R.string.cancel,
+          child: Text(R.string.cancel.tr(),
               style: TextStyle(color: Color(0xff333333), fontSize: 14)),
           onPressed: () {
             Navigator.pop(context);
@@ -1304,7 +1305,7 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
       );
       showCupertinoModalPopup(context: context, builder: (context) => action);
     } else {
-      //Message.showToastMessage(context, R.string.max_image_select);
+      //Message.showToastMessage(context, R.string.max_image_select.tr());
     }
   }
 
@@ -1343,13 +1344,13 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
 
   showAlertDialog(BuildContext context) {
     Widget cancelButton = TextButton(
-      child: Text(R.string.cancel),
+      child: Text(R.string.cancel.tr()),
       onPressed: () {
         Navigator.pop(context);
       },
     );
     Widget continueButton = TextButton(
-      child: Text(R.string.allowed),
+      child: Text(R.string.allowed.tr()),
       onPressed: () {
         Navigator.pop(context);
         openAppSettings();
@@ -1357,8 +1358,8 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
     );
 
     AlertDialog alert = AlertDialog(
-      title: Text(R.string.tab_notification),
-      content: Text(R.string.ask_for_permission),
+      title: Text(R.string.tab_notification.tr()),
+      content: Text(R.string.ask_for_permission.tr()),
       actions: [
         cancelButton,
         continueButton,

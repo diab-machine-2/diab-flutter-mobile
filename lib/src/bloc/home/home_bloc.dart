@@ -392,6 +392,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       value2Color: null,
       unit: "kCal",
       navigatorName: haveNutrition ? NavigatorName.detail_food : NavigatorName.add_food,
+      args: haveNutrition ? null : {'type': 'input'},
     );
 
     // Emotion

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:medical/src/app_setting/app_setting.dart';
+import 'package:medical/src/widget/my_plan_screens/activity_tab/create_goal/create_goal.dart';
 import 'package:medical/src/widget/utilities/utilities_page.dart';
 
 import 'utils/navigator_name.dart';
@@ -45,6 +47,11 @@ class AppRoutes {
       case NavigatorName.add_nutrition:
         {
           page = DailyNutritionPage(type: "input", id: null);
+          break;
+        }
+      case NavigatorName.add_goal:
+        {
+          page = CreateGoalPage(AppSettings.smartGoalDayList);
           break;
         }
       default:
