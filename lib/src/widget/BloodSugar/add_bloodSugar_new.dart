@@ -73,18 +73,16 @@ class _AddBloodSugarControllerNewState
   bool isPregnancy = false;
   int clickTime = 0;
 
-  late AnimationController _animtionController;
-  late Animation _animation;
   FocusNode _focusNode = FocusNode();
   FocusNode _focusNodeKPI = FocusNode();
 
+  @override
   void initState() {
-    initData();
+    _initData();
     super.initState();
   }
 
-  initData() async {
-    animationFocus();
+  void _initData() async {
     isPregnancy = Utils.isGestationalDiabetes();
     if (widget.type == 'update') {
       loadDetail();
@@ -96,24 +94,6 @@ class _AddBloodSugarControllerNewState
     clickTime = valueOfClickTime[ScreenList.BLOOD_SUGAR.index];
     loadDescription();
     firebaseSetup();
-  }
-
-  animationFocus() {
-    _animtionController =
-        AnimationController(vsync: this, duration: Duration(milliseconds: 300));
-    _animation = Tween(begin: 10.0, end: AppMediaQuery.deviceHeight / 3)
-        .animate(_animtionController)
-      ..addListener(() {
-        setState(() {});
-      });
-
-    _focusNode.addListener(() {
-      if (_focusNode.hasFocus) {
-        _animtionController.forward();
-      } else {
-        _animtionController.reverse();
-      }
-    });
   }
 
   Future firebaseSetup() async {
@@ -131,9 +111,9 @@ class _AddBloodSugarControllerNewState
     );
   }
 
+  @override
   void dispose() {
     _controller.dispose();
-    _animtionController.dispose();
     _focusNode.dispose();
     _controllerNote.dispose();
     super.dispose();
@@ -247,7 +227,6 @@ class _AddBloodSugarControllerNewState
                     ]),
                   ),
                 ),
-                SizedBox(height: _animation.value),
                 widget.type == 'input'
                     ? Container(
                         width: double.infinity,
