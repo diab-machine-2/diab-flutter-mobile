@@ -124,16 +124,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
           TrackingManager.recordError(e, s);
           return <LessonModel>[];
         }, test: (error) => true);
-        final lessons = lessonsResponse.map((e) {
-          return HomeNewsData(
-            id: e.id,
-            icon: R.drawable.ic_lesson_category,
-            category: "Bài học",
-            title: e.name,
-            imageUrl: e.image?.url,
-          );
-        }).toList();
-        currentState = currentState.copyWith(lessons: lessons);
+        currentState = currentState.copyWith(lessons: lessonsResponse);
 
         _cached = currentState;
         yield currentState;

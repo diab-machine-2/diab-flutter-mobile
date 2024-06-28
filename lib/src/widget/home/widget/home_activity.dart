@@ -38,7 +38,7 @@ class HomeActivity extends StatelessWidget {
       duration: const Duration(milliseconds: 300),
       alignment: Alignment.topCenter,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+        padding: const EdgeInsets.fromLTRB(16, 20, 16, 16),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.all(Radius.circular(16.0)),
           color: Colors.white,
@@ -58,17 +58,20 @@ class HomeActivity extends StatelessWidget {
                     color: R.color.color0xff27272A,
                   ),
                 ),
-                TextButton(
-                  style: TextButton.styleFrom(
-                    padding: EdgeInsets.zero,
-                    textStyle: TextStyle(
-                      fontSize: 14.0,
-                      fontWeight: FontWeight.bold,
-                      color: R.color.greenGradientBottom,
+                SizedBox(
+                  height: 24.0,
+                  child: TextButton(
+                    style: TextButton.styleFrom(
+                      padding: EdgeInsets.zero,
+                      textStyle: TextStyle(
+                        fontSize: 14.0,
+                        fontWeight: FontWeight.bold,
+                        color: R.color.greenGradientBottom,
+                      ),
                     ),
+                    onPressed: onViewMore,
+                    child: Text("Xem thêm"),
                   ),
-                  onPressed: onViewMore,
-                  child: Text("Xem thêm"),
                 ),
               ],
             ),

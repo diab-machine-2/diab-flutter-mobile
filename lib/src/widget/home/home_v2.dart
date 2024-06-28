@@ -367,17 +367,17 @@ class _HomeControllerState extends State<HomeController> with Observer {
                           Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 12.0),
                             child: HomeLesson(
-                              lessons: stateLoaded?.news ?? [],
+                              lessons: stateLoaded?.lessons ?? [],
                               onLessonTap: (lesson) {
-                                if (lesson.enableLink) {
-                                  _launchInBrowser(lesson.link!);
-                                } else {
-                                  Navigator.pushNamed(
-                                    context,
-                                    NavigatorName.news_detail,
-                                    arguments: {'id': lesson.id},
-                                  );
-                                }
+                                // if (lesson.enableLink) {
+                                //   _launchInBrowser(lesson.link!);
+                                // } else {
+                                //   Navigator.pushNamed(
+                                //     context,
+                                //     NavigatorName.news_detail,
+                                //     arguments: {'id': lesson.id},
+                                //   );
+                                // }
                               },
                               onLike: (lesson) {},
                               onComment: (lesson) {},
@@ -391,9 +391,19 @@ class _HomeControllerState extends State<HomeController> with Observer {
                           Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 12.0),
                             child: HomeNews(
-                              items: stateLoaded?.lessons ?? [],
+                              items: stateLoaded?.news ?? [],
                               onViewMore: () {},
-                              onNewsTap: (news) {},
+                              onNewsTap: (news) {
+                                if (news.enableLink) {
+                                  _launchInBrowser(news.link!);
+                                } else {
+                                  Navigator.pushNamed(
+                                    context,
+                                    NavigatorName.news_detail,
+                                    arguments: {'id': news.id},
+                                  );
+                                }
+                              },
                               onLike: (news) {},
                               onComment: (news) {},
                               onShare: (news) {},

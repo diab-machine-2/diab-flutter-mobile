@@ -2,9 +2,10 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/modal/learning/learning_post_model.dart';
 import 'package:medical/src/widgets/network_image_widget.dart';
 
-import '../schema/home_schema.dart';
+typedef OnNewsTap = void Function(LearningPostModel news);
 
 class HomeNews extends StatelessWidget {
   const HomeNews({
@@ -17,13 +18,13 @@ class HomeNews extends StatelessWidget {
     required this.onShare,
   });
 
-  final List<HomeNewsData> items;
+  final List<LearningPostModel> items;
 
   final VoidCallback onViewMore;
-  final Function(HomeNewsData) onNewsTap;
-  final Function(HomeNewsData) onLike;
-  final Function(HomeNewsData) onComment;
-  final Function(HomeNewsData) onShare;
+  final OnNewsTap onNewsTap;
+  final OnNewsTap onLike;
+  final OnNewsTap onComment;
+  final OnNewsTap onShare;
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +39,7 @@ class HomeNews extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const SizedBox(height: 4.0),
+          const SizedBox(height: 20.0),
           // Header
           Row(
             children: [
@@ -52,23 +53,26 @@ class HomeNews extends StatelessWidget {
                 ),
               ),
               const Spacer(),
-              TextButton(
-                style: TextButton.styleFrom(
-                  padding: EdgeInsets.zero,
-                  textStyle: TextStyle(
-                    fontSize: 14.0,
-                    fontWeight: FontWeight.bold,
-                    color: R.color.greenGradientBottom,
+              SizedBox(
+                height: 24.0,
+                child: TextButton(
+                  style: TextButton.styleFrom(
+                    padding: EdgeInsets.zero,
+                    textStyle: TextStyle(
+                      fontSize: 14.0,
+                      fontWeight: FontWeight.bold,
+                      color: R.color.greenGradientBottom,
+                    ),
                   ),
+                  onPressed: onViewMore,
+                  child: Text("Xem thêm"),
                 ),
-                onPressed: onViewMore,
-                child: Text("Xem thêm"),
               ),
               const SizedBox(width: 16.0),
             ],
           ),
 
-          const SizedBox(height: 6.0),
+          const SizedBox(height: 16.0),
 
           // News
           SizedBox(
@@ -93,7 +97,7 @@ class HomeNews extends StatelessWidget {
     );
   }
 
-  Widget _buildNewsItem(HomeNewsData news, double extraTitleHeight) {
+  Widget _buildNewsItem(LearningPostModel news, double extraTitleHeight) {
     return InkWell(
       onTap: () => onNewsTap(news),
       borderRadius: BorderRadius.circular(12.0),
@@ -117,7 +121,7 @@ class HomeNews extends StatelessWidget {
                 topRight: Radius.circular(12.0),
               ),
               child: NetWorkImageWidget(
-                imageUrl: news.imageUrl,
+                imageUrl: news.imageUrl.url,
                 fit: BoxFit.cover,
                 height: 174.0,
                 width: double.infinity,
@@ -146,13 +150,13 @@ class HomeNews extends StatelessWidget {
                     Row(
                       children: [
                         Image.asset(
-                          news.icon,
+                          R.drawable.ic_lesson_category,
                           width: 16.0,
                           height: 16.0,
                         ),
                         const SizedBox(width: 6.0),
                         Text(
-                          news.category,
+                          "Bài học",
                           style: TextStyle(
                             color: R.color.color0xff666666,
                             fontSize: 12.0,

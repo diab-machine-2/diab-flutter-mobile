@@ -31,7 +31,7 @@ class HomeLoaded extends HomeState {
   final List<HomeReminderData>? reminders;
   final List<HomeUtilityData>? utilities;
   final List<LearningPostModel>? news;
-  final List<HomeNewsData>? lessons;
+  final List<LessonModel>? lessons;
 
   HomeLoaded({
     required this.model,
@@ -59,7 +59,7 @@ class HomeLoaded extends HomeState {
     List<HomeReminderData>? reminders,
     List<HomeUtilityData>? utilities,
     List<LearningPostModel>? news,
-    List<HomeNewsData>? lessons,
+    List<LessonModel>? lessons,
   }) {
     return HomeLoaded(
       model: model ?? this.model,

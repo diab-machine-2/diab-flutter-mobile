@@ -22,7 +22,7 @@ class HomeReminder extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 20.0),
+      padding: const EdgeInsets.fromLTRB(16, 20, 16, 16),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.all(Radius.circular(16.0)),
         color: Colors.white,
@@ -42,21 +42,24 @@ class HomeReminder extends StatelessWidget {
                   color: R.color.color0xff27272A,
                 ),
               ),
-              InkWell(
-                onTap: onAdd,
-                child: Row(
-                  children: [
-                    Icon(Icons.add, color: R.color.greenGradientBottom, size: 20.0),
-                    const SizedBox(width: 6.0),
-                    Text(
-                      "Thêm",
-                      style: TextStyle(
-                        fontSize: 14.0,
-                        fontWeight: FontWeight.bold,
-                        color: R.color.greenGradientBottom,
+              SizedBox(
+                height: 24.0,
+                child: InkWell(
+                  onTap: onAdd,
+                  child: Row(
+                    children: [
+                      Icon(Icons.add, color: R.color.greenGradientBottom, size: 20.0),
+                      const SizedBox(width: 6.0),
+                      Text(
+                        "Thêm",
+                        style: TextStyle(
+                          fontSize: 14.0,
+                          fontWeight: FontWeight.bold,
+                          color: R.color.greenGradientBottom,
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ],

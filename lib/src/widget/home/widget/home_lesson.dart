@@ -5,6 +5,8 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/learning/learning_post_model.dart';
 import 'package:medical/src/widgets/network_image_widget.dart';
 
+typedef OnLessonTap = void Function(LessonModel lesson);
+
 class HomeLesson extends StatelessWidget {
   const HomeLesson({
     super.key,
@@ -15,12 +17,12 @@ class HomeLesson extends StatelessWidget {
     required this.onShare,
   });
 
-  final List<LearningPostModel> lessons;
+  final List<LessonModel> lessons;
 
-  final Function(LearningPostModel) onLessonTap;
-  final Function(LearningPostModel) onLike;
-  final Function(LearningPostModel) onComment;
-  final Function(LearningPostModel) onShare;
+  final OnLessonTap onLessonTap;
+  final OnLessonTap onLike;
+  final OnLessonTap onComment;
+  final OnLessonTap onShare;
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +44,7 @@ class HomeLesson extends StatelessWidget {
     );
   }
 
-  Widget _buildLessonItem(LearningPostModel lesson, double extraTitleHeight) {
+  Widget _buildLessonItem(LessonModel lesson, double extraTitleHeight) {
     return InkWell(
       onTap: () => onLessonTap(lesson),
       borderRadius: BorderRadius.circular(12.0),
@@ -67,7 +69,7 @@ class HomeLesson extends StatelessWidget {
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16.0),
                     child: Text(
-                      lesson.title,
+                      lesson.name,
                       maxLines: 2,
                       style: TextStyle(
                         color: R.color.textDark,
@@ -109,7 +111,7 @@ class HomeLesson extends StatelessWidget {
             // Image
             // https://picsum.photos/654/348
             NetWorkImageWidget(
-              imageUrl: lesson.imageUrl.url,
+              imageUrl: lesson.image?.url,
               fit: BoxFit.cover,
               height: 174.0,
               width: double.infinity,
