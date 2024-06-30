@@ -50,7 +50,8 @@ import 'widgets/smart_goal_item.dart';
 import 'widgets/statistical_popup.dart';
 
 class ActivityTabPage extends StatefulWidget {
-  const ActivityTabPage();
+  const ActivityTabPage({this.extendTabbar = false});
+  final bool extendTabbar;
 
   @override
   _ActivityTabPageState createState() => _ActivityTabPageState();
@@ -237,6 +238,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
                 Expanded(
                   child: SmartRefresher(
                     controller: _controller,
+                    physics: ClampingScrollPhysics(),
                     onRefresh: () async {
                       await _cubit.refreshData(isRefresh: true);
                     },
@@ -299,7 +301,9 @@ class _ActivityTabPageState extends State<ActivityTabPage>
                                       );
                                     }
                                   }),
-                            )
+                            ),
+
+                            if (widget.extendTabbar) SizedBox(height: 56.0),
                           ],
                         ),
                       ),

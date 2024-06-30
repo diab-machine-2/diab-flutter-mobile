@@ -34,60 +34,64 @@ class _WebviewStoreState extends State<WebviewStore> {
   @override
   Widget build(BuildContext context) {
     final scaffold = Scaffold(
+      backgroundColor: Colors.transparent,
       appBar: AppBarWidget(
         title: 'Cửa hàng',
         hasBackIcon: !widget.rootPage,
       ),
       body: Stack(
         children: [
-          InAppWebView(
-            initialUrlRequest: URLRequest(url: Uri.parse(widget.urlStore)),
-            initialOptions: InAppWebViewGroupOptions(
-              android: AndroidInAppWebViewOptions(
-                mixedContentMode: AndroidMixedContentMode.MIXED_CONTENT_ALWAYS_ALLOW,
+          Positioned.fill(
+            child: InAppWebView(
+              initialUrlRequest: URLRequest(url: Uri.parse(widget.urlStore)),
+              initialOptions: InAppWebViewGroupOptions(
+                android: AndroidInAppWebViewOptions(
+                  mixedContentMode: AndroidMixedContentMode.MIXED_CONTENT_ALWAYS_ALLOW,
+                ),
               ),
-            ),
-            onWebViewCreated: (InAppWebViewController webViewController) {
-              BotToast.closeAllLoading();
-              controller = webViewController;
-            },
-            onLoadStart: (InAppWebViewController controller, Uri? url) async {
-              setState(() {
-                isLoading = true;
-              });
-              try {
-                if (url != null && url.scheme.contains('zalo')) {
-                  await launch(url.toString());
-                  refreshView();
+              onWebViewCreated: (InAppWebViewController webViewController) {
+                BotToast.closeAllLoading();
+                controller = webViewController;
+              },
+              onLoadStart: (InAppWebViewController controller, Uri? url) async {
+                setState(() {
+                  isLoading = true;
+                });
+                try {
+                  if (url != null && url.scheme.contains('zalo')) {
+                    await launch(url.toString());
+                    refreshView();
+                  }
+                  if (url != null && url.scheme.contains('tel')) {
+                    await launch(url.toString());
+                    refreshView();
+                  }
+                  if (url != null && url.scheme.contains('fb')) {
+                    await launch(url.toString());
+                    refreshView();
+                  }
+                  if (url != null && url.scheme.contains('mailto')) {
+                    await launch(url.toString());
+                    refreshView();
+                  }
+                  if (url != null && url.path.contains('referralCode')) {
+                    await launch('https://click.diab.com.vn/referralCode/VdoJZzKZDN9rHSu88');
+                    refreshView();
+                  }
+                } catch (e) {
+                  setState(() {
+                    isLoading = false;
+                  });
+                  Message.showToastMessage(context, 'DiaB đang xử lý bạn chờ chút nhé.');
                 }
-                if (url != null && url.scheme.contains('tel')) {
-                  await launch(url.toString());
-                  refreshView();
-                }
-                if (url != null && url.scheme.contains('fb')) {
-                  await launch(url.toString());
-                  refreshView();
-                }
-                if (url != null && url.scheme.contains('mailto')) {
-                  await launch(url.toString());
-                  refreshView();
-                }
-                if (url != null && url.path.contains('referralCode')) {
-                  await launch('https://click.diab.com.vn/referralCode/VdoJZzKZDN9rHSu88');
-                  refreshView();
-                }
-              } catch (e) {
+              },
+              onLoadStop: (InAppWebViewController controller, Uri? url) async {
                 setState(() {
                   isLoading = false;
                 });
-                Message.showToastMessage(context, 'DiaB đang xử lý bạn chờ chút nhé.');
-              }
-            },
-            onLoadStop: (InAppWebViewController controller, Uri? url) async {
-              setState(() {
-                isLoading = false;
-              });
-            },
+              },
+            ),
+            bottom: widget.rootPage ? 56.0 : 0,
           ),
           if (isLoading) Center(child: CircularProgressIndicator()),
         ],

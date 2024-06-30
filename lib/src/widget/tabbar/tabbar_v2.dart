@@ -224,7 +224,7 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      extendBody: false,
+      extendBody: true,
       backgroundColor: const Color(0xFFE8F3F3),
       body: PageView(
         physics: const NeverScrollableScrollPhysics(),
@@ -281,7 +281,7 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
             background: R.drawable.bg_welcome,
             appbarColor: R.color.white,
             hideAllBackButton: true,
-            child: ActivityTabPage(),
+            child: ActivityTabPage(extendTabbar: true),
           );
         },
       ),

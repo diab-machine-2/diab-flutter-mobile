@@ -411,6 +411,9 @@ class _HomeControllerState extends State<HomeController> with Observer {
                           ),
 
                           const SizedBox(height: 32.0),
+
+                          // Extend tabbar
+                          const SizedBox(height: 56.0),
                         ],
                       ),
                     ),
