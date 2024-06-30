@@ -12,7 +12,10 @@ class HomeReminder extends StatelessWidget {
     required this.reminders,
     required this.onAdd,
     required this.onItemTap,
+    this.loading = false,
   });
+
+  final bool loading;
 
   final List<HomeReminderData> reminders;
 
@@ -21,7 +24,9 @@ class HomeReminder extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 300),
+      alignment: Alignment.topCenter,
       padding: const EdgeInsets.fromLTRB(16, 20, 16, 16),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.all(Radius.circular(16.0)),
@@ -44,23 +49,35 @@ class HomeReminder extends StatelessWidget {
               ),
               SizedBox(
                 height: 24.0,
-                child: InkWell(
-                  onTap: onAdd,
-                  child: Row(
-                    children: [
-                      Icon(Icons.add, color: R.color.greenGradientBottom, size: 20.0),
-                      const SizedBox(width: 6.0),
-                      Text(
-                        "Thêm",
-                        style: TextStyle(
-                          fontSize: 14.0,
-                          fontWeight: FontWeight.bold,
-                          color: R.color.greenGradientBottom,
+                child: loading
+                    ? Align(
+                        alignment: Alignment.centerRight,
+                        child: Padding(
+                          padding: const EdgeInsets.only(right: 4.0),
+                          child: SizedBox(
+                            child: CircularProgressIndicator(strokeWidth: 2.0),
+                            width: 16.0,
+                            height: 16.0,
+                          ),
+                        ),
+                      )
+                    : InkWell(
+                        onTap: onAdd,
+                        child: Row(
+                          children: [
+                            Icon(Icons.add, color: R.color.greenGradientBottom, size: 20.0),
+                            const SizedBox(width: 6.0),
+                            Text(
+                              "Thêm",
+                              style: TextStyle(
+                                fontSize: 14.0,
+                                fontWeight: FontWeight.bold,
+                                color: R.color.greenGradientBottom,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                    ],
-                  ),
-                ),
               ),
             ],
           ),
@@ -69,8 +86,8 @@ class HomeReminder extends StatelessWidget {
 
           if (reminders.isEmpty)
             SizedBox(
-              height: 164.0,
-              child: Center(
+              height: loading ? 56.0 : 164.0,
+              child: loading ? null : Center(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.center,

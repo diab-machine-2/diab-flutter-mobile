@@ -18,7 +18,10 @@ class HomeActivity extends StatelessWidget {
     required this.onViewMore,
     required this.onActivityTap,
     this.expanded = false,
+    this.loading = false,
   });
+
+  final bool loading;
 
   final List<HomeActivityData> activities;
   final bool expanded;
@@ -31,7 +34,7 @@ class HomeActivity extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final textScaleFactor =  max(1.0, MediaQuery.of(context).textScaleFactor);
+    final textScaleFactor = max(1.0, MediaQuery.of(context).textScaleFactor);
     bool isEmpty = activities.isEmpty;
     bool isHaveMore = activities.length > 3;
     return AnimatedSize(
@@ -60,18 +63,30 @@ class HomeActivity extends StatelessWidget {
                 ),
                 SizedBox(
                   height: 24.0,
-                  child: TextButton(
-                    style: TextButton.styleFrom(
-                      padding: EdgeInsets.zero,
-                      textStyle: TextStyle(
-                        fontSize: 14.0,
-                        fontWeight: FontWeight.bold,
-                        color: R.color.greenGradientBottom,
-                      ),
-                    ),
-                    onPressed: onViewMore,
-                    child: Text("Xem thêm"),
-                  ),
+                  child: loading
+                      ? Align(
+                          alignment: Alignment.centerRight,
+                          child: Padding(
+                            padding: const EdgeInsets.only(right: 4.0),
+                            child: SizedBox(
+                              child: CircularProgressIndicator(strokeWidth: 2.0),
+                              width: 16.0,
+                              height: 16.0,
+                            ),
+                          ),
+                        )
+                      : TextButton(
+                          style: TextButton.styleFrom(
+                            padding: EdgeInsets.zero,
+                            textStyle: TextStyle(
+                              fontSize: 14.0,
+                              fontWeight: FontWeight.bold,
+                              color: R.color.greenGradientBottom,
+                            ),
+                          ),
+                          onPressed: onViewMore,
+                          child: Text("Xem thêm"),
+                        ),
                 ),
               ],
             ),
@@ -80,8 +95,8 @@ class HomeActivity extends StatelessWidget {
 
             if (isEmpty)
               SizedBox(
-                height: 164.0,
-                child: Center(
+                height: loading ? 64.0 : 164.0,
+                child: loading ? null : Center(
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.center,
@@ -119,7 +134,7 @@ class HomeActivity extends StatelessWidget {
                                   width: 16.0,
                                   height: 16.0,
                                 ),
-                              const SizedBox(width: 6.0),
+                                const SizedBox(width: 6.0),
                                 Text(
                                   "Thiết lập mục tiêu",
                                   style: TextStyle(
@@ -214,9 +229,9 @@ class HomeActivity extends StatelessWidget {
               width: 32.0,
               height: 32.0,
             ),
-      
+
             const SizedBox(width: 12.0),
-      
+
             // Content
             Expanded(
               child: Align(
@@ -248,7 +263,7 @@ class HomeActivity extends StatelessWidget {
                 ),
               ),
             ),
-      
+
             // Arrow
             Icon(
               Icons.chevron_right,

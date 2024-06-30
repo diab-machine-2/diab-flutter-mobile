@@ -75,6 +75,15 @@ class _ActivityTabPageState extends State<ActivityTabPage>
     _cubit.initData();
   }
 
+  @override
+  void dispose() {
+    Observable.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  bool get wantKeepAlive => true;
+
   void _checkExistZoomId() async {
     String? calendarId = DynamicLinkConfig.instance.zoomId;
     if (calendarId != null) {
@@ -125,12 +134,6 @@ class _ActivityTabPageState extends State<ActivityTabPage>
         DynamicLinkConfig.instance.removeActivityId();
       });
     }
-  }
-
-  @override
-  void dispose() {
-    Observable.instance.removeObserver(this);
-    super.dispose();
   }
 
   @override
@@ -1300,7 +1303,4 @@ class _ActivityTabPageState extends State<ActivityTabPage>
       },
     );
   }
-
-  @override
-  bool get wantKeepAlive => true;
 }

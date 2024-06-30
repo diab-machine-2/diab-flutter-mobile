@@ -33,6 +33,11 @@ class HomeLoaded extends HomeState {
   final List<LearningPostModel>? news;
   final List<LessonModel>? lessons;
 
+  // Control loading state
+  final bool measurementLoading;
+  final bool activityLoading;
+  final bool reminderLoading;
+
   HomeLoaded({
     required this.model,
     this.activities,
@@ -40,10 +45,16 @@ class HomeLoaded extends HomeState {
     this.utilities,
     this.news,
     this.lessons,
+    this.measurementLoading = true,
+    this.activityLoading = true,
+    this.reminderLoading = true,
   });
 
   @override
   List<Object> get props => [
+        measurementLoading,
+        activityLoading,
+        reminderLoading,
         model,
         if (activities != null) activities!,
         if (reminders != null) reminders!,
@@ -55,11 +66,16 @@ class HomeLoaded extends HomeState {
   // copyWith method to create a new instance of HomeLoaded
   HomeLoaded copyWith({
     HomeModel? model,
+    List<HomeMeasurementInlineData>? inlineMeasurements,
+    List<HomeMeasurementData>? measurements,
     List<HomeActivityData>? activities,
     List<HomeReminderData>? reminders,
     List<HomeUtilityData>? utilities,
     List<LearningPostModel>? news,
     List<LessonModel>? lessons,
+    bool? measurementLoading,
+    bool? activityLoading,
+    bool? reminderLoading,
   }) {
     return HomeLoaded(
       model: model ?? this.model,
@@ -68,6 +84,9 @@ class HomeLoaded extends HomeState {
       utilities: utilities ?? this.utilities,
       news: news ?? this.news,
       lessons: lessons ?? this.lessons,
+      measurementLoading: measurementLoading ?? this.measurementLoading,
+      activityLoading: activityLoading ?? this.activityLoading,
+      reminderLoading: reminderLoading ?? this.reminderLoading,
     );
   }
 }

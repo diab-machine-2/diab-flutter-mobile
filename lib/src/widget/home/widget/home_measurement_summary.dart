@@ -14,7 +14,10 @@ class MeasurementSummary extends StatelessWidget {
     required this.onAddMeasurement,
     required this.onHealthProfile,
     required this.onMeasurement,
+    this.loading = false,
   });
+
+  final bool loading;
 
   final List<HomeMeasurementInlineData> inlineMeasurements;
   final List<HomeMeasurementData> measurements;

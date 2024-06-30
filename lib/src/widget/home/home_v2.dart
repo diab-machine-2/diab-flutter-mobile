@@ -50,17 +50,17 @@ import 'widget/home_measurement_summary.dart';
 import 'widget/home_news.dart';
 
 class HomeController extends StatefulWidget {
-  const HomeController({this.sharedCode});
+  const HomeController({super.key, this.sharedCode});
   final String? sharedCode;
 
   @override
   _HomeControllerState createState() => _HomeControllerState();
 }
 
-class _HomeControllerState extends State<HomeController> with Observer {
+class _HomeControllerState extends State<HomeController>
+    with Observer, AutomaticKeepAliveClientMixin<HomeController> {
   final GlobalKey<CourseSuggestState> _courseSuggestKey = GlobalKey();
-
-  late BuildContext currentContext;
+  final HomeBloc _homeBloc = HomeBloc();
 
   int page = 1;
   bool isLoading = false;
@@ -73,6 +73,9 @@ class _HomeControllerState extends State<HomeController> with Observer {
   bool _isActivityExpanded = false;
 
   @override
+  bool get wantKeepAlive => true;
+
+  @override
   void initState() {
     super.initState();
     Observable.instance.addObserver(this);
@@ -83,6 +86,12 @@ class _HomeControllerState extends State<HomeController> with Observer {
     }
     _firebaseSetup();
     _initHealthApp();
+  }
+
+  @override
+  void dispose() {
+    Observable.instance.removeObserver(this);
+    super.dispose();
   }
 
   void _initHealthApp() async {
@@ -112,7 +121,11 @@ class _HomeControllerState extends State<HomeController> with Observer {
 
   @override
   void update(Observable observable, String? notifyName, Map<dynamic, dynamic>? map) async {
-    if (notifyName == 'schedule_change' || notifyName == 'refresh_home') {
+    if (notifyName == 'schedule_change') {
+      _homeBloc.add(HomeFetchReminderEvent());
+      return;
+    }
+    if (notifyName == 'refresh_home') {
       _refresh();
       return;
     }
@@ -159,13 +172,6 @@ class _HomeControllerState extends State<HomeController> with Observer {
     }
   }
 
-  @override
-  void dispose() {
-    Observable.instance.removeObserver(this);
-
-    super.dispose();
-  }
-
   Future<String> _chooseUrl() async {
     try {
       var id = await UserClient().fetchPopupImage();
@@ -198,14 +204,14 @@ class _HomeControllerState extends State<HomeController> with Observer {
 
   Future<bool> _refresh() async {
     page = 1;
-    BlocProvider.of<HomeBloc>(currentContext).add(FetchHome());
+    _homeBloc.add(FetchHome());
     return true;
   }
 
   Future<bool> _pullToRefresh() async {
     _courseSuggestKey.currentState?.loadData();
     page = 1;
-    BlocProvider.of<HomeBloc>(currentContext).add(FetchHome());
+    _homeBloc.add(FetchHome());
     user = await UserClient().fetchUser();
     AppSettings.isReloadCurrentUserInfo = true;
     return true;
@@ -213,11 +219,10 @@ class _HomeControllerState extends State<HomeController> with Observer {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<HomeBloc>(
-        create: (context) => HomeBloc(),
+    super.build(context);
+    return BlocProvider<HomeBloc>.value(
+        value: _homeBloc,
         child: BlocBuilder<HomeBloc, HomeState>(builder: (BuildContext context, HomeState state) {
-          currentContext = context;
-
           if (state is HomeInitial) {
             BlocProvider.of<HomeBloc>(context).add(FetchHome());
           }
@@ -272,6 +277,7 @@ class _HomeControllerState extends State<HomeController> with Observer {
                                 Navigator.pushNamed(context, routeName, arguments: args);
                               }
                             },
+                            loading: stateLoaded?.measurementLoading ?? true,
                           ),
 
                           const SizedBox(height: 16.0),
@@ -282,6 +288,7 @@ class _HomeControllerState extends State<HomeController> with Observer {
                             child: HomeActivity(
                               activities: stateLoaded?.activities ?? [],
                               expanded: _isActivityExpanded,
+                              loading: stateLoaded?.activityLoading ?? true,
                               onExpand: () {
                                 setState(() {
                                   _isActivityExpanded = true;
@@ -311,6 +318,7 @@ class _HomeControllerState extends State<HomeController> with Observer {
                             padding: const EdgeInsets.symmetric(horizontal: 12.0),
                             child: HomeReminder(
                               reminders: stateLoaded?.reminders ?? [],
+                              loading: stateLoaded?.reminderLoading ?? true,
                               onAdd: () {
                                 Navigator.pushNamed(context, NavigatorName.add_reminder,
                                     arguments: {'type': 'input'});

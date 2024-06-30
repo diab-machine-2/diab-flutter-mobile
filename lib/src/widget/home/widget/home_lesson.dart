@@ -29,7 +29,7 @@ class HomeLesson extends StatelessWidget {
     final textScaleFactor =  max(1.0, MediaQuery.of(context).textScaleFactor);
     final extraTitleHeight = (textScaleFactor - 1) * 60.0;
     return SizedBox(
-      height: 275.0 + extraTitleHeight,
+      height: 320.0 + extraTitleHeight,
       child: ListView.separated(
         itemCount: lessons.length,
         scrollDirection: Axis.horizontal,
@@ -49,7 +49,7 @@ class HomeLesson extends StatelessWidget {
       onTap: () => onLessonTap(lesson),
       borderRadius: BorderRadius.circular(12.0),
       child: Container(
-        height: 275.0 + extraTitleHeight,
+        height: 320.0 + extraTitleHeight,
         width: 338.0,
         padding: const EdgeInsets.only(top: 16.0),
         decoration: BoxDecoration(
@@ -117,74 +117,76 @@ class HomeLesson extends StatelessWidget {
               width: double.infinity,
             ),
 
-            // const SizedBox(height: 12.0),
+            const SizedBox(height: 12.0),
 
             // Actions
-            // Row(
-            //   mainAxisSize: MainAxisSize.max,
-            //   children: [
-            //     const SizedBox(width: 16.0),
+            Row(
+              mainAxisSize: MainAxisSize.max,
+              children: [
+                const SizedBox(width: 16.0),
 
-            //     // Like
-            //     InkWell(
-            //       onTap: () => onLike(lesson),
-            //       child: Row(
-            //         crossAxisAlignment: CrossAxisAlignment.center,
-            //         mainAxisSize: MainAxisSize.min,
-            //         children: [
-            //           Image.asset(R.drawable.ic_lesson_like, width: 20.0, height: 20.0),
-            //           const SizedBox(width: 8.0),
-            //           Text(
-            //             "0",
-            //             // "${lesson.likeCount}",
-            //             style: TextStyle(color: R.color.textDark, fontSize: 15.0),
-            //           ),
-            //         ],
-            //       ),
-            //     ),
+                // Like
+                // InkWell(
+                //   onTap: () => onLike(lesson),
+                //   child: Row(
+                //     crossAxisAlignment: CrossAxisAlignment.center,
+                //     mainAxisSize: MainAxisSize.min,
+                //     children: [
+                //       Image.asset(R.drawable.ic_lesson_like, width: 20.0, height: 20.0),
+                //       const SizedBox(width: 8.0),
+                //       Text(
+                //         "0",
+                //         // "${lesson.likeCount}",
+                //         style: TextStyle(color: R.color.textDark, fontSize: 15.0),
+                //       ),
+                //     ],
+                //   ),
+                // ),
 
-            //     const SizedBox(width: 16.0),
+                // const SizedBox(width: 16.0),
 
-            //     // Comment
-            //     InkWell(
-            //       onTap: () => onComment(lesson),
-            //       child: Row(
-            //         crossAxisAlignment: CrossAxisAlignment.center,
-            //         mainAxisSize: MainAxisSize.min,
-            //         children: [
-            //           Image.asset(R.drawable.ic_lesson_comment, width: 20.0, height: 20.0),
-            //           const SizedBox(width: 8.0),
-            //           Text(
-            //             "0",
-            //             // "${lesson.commentCount}",
-            //             style: TextStyle(color: R.color.textDark, fontSize: 15.0),
-            //           ),
-            //         ],
-            //       ),
-            //     ),
+                // Comment
+                // InkWell(
+                //   onTap: () => onComment(lesson),
+                //   child: Row(
+                //     crossAxisAlignment: CrossAxisAlignment.center,
+                //     mainAxisSize: MainAxisSize.min,
+                //     children: [
+                //       Image.asset(R.drawable.ic_lesson_comment, width: 20.0, height: 20.0),
+                //       const SizedBox(width: 8.0),
+                //       Text(
+                //         "0",
+                //         // "${lesson.commentCount}",
+                //         style: TextStyle(color: R.color.textDark, fontSize: 15.0),
+                //       ),
+                //     ],
+                //   ),
+                // ),
 
-            //     const Spacer(),
+                const Spacer(),
 
-            //     // Share
-            //     InkWell(
-            //       onTap: () => onShare(lesson),
-            //       child: Row(
-            //         crossAxisAlignment: CrossAxisAlignment.end,
-            //         mainAxisSize: MainAxisSize.min,
-            //         children: [
-            //           Image.asset(R.drawable.ic_lesson_share, width: 20.0, height: 20.0),
-            //           const SizedBox(width: 8.0),
-            //           Text(
-            //             "Chia sẻ",
-            //             style: TextStyle(color: R.color.textDark, fontSize: 15.0),
-            //           ),
-            //         ],
-            //       ),
-            //     ),
+                // Share
+                InkWell(
+                  onTap: () => onShare(lesson),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Image.asset(R.drawable.ic_lesson_share, width: 20.0, height: 20.0),
+                      const SizedBox(width: 8.0),
+                      Text(
+                        "Chia sẻ",
+                        style: TextStyle(color: R.color.textDark, fontSize: 15.0),
+                      ),
+                    ],
+                  ),
+                ),
 
-            //     const SizedBox(width: 16.0),
-            //   ],
-            // ),
+                const SizedBox(width: 16.0),
+              ],
+            ),
+            
+            const SizedBox(height: 16.0),
           ],
         ),
       ),
