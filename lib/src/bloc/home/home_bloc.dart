@@ -139,9 +139,14 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
             return activity;
           }).toList();
           currentState = currentState.copyWith(activities: activities, activityLoading: false);
+        } else {
+          currentState = currentState.copyWith(activityLoading: false);
         }
       },
-      failure: (error) {},
+      failure: (error) {
+        TrackingManager.recordError(error, null);
+        currentState = currentState.copyWith(activityLoading: false);
+      },
     );
     yield currentState;
   }
@@ -160,6 +165,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         );
       }).toList();
       currentState = currentState.copyWith(reminders: reminders, reminderLoading: false);
+    } else {
+      currentState = currentState.copyWith(reminderLoading: false);
     }
     yield currentState;
   }
