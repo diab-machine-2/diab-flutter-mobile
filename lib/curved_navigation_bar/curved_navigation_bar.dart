@@ -46,7 +46,7 @@ class CurvedNavigationBar extends StatefulWidget {
     _LetIndexPage? letIndexChange,
     this.animationCurve = Curves.easeOut,
     this.animationDuration = const Duration(milliseconds: 600),
-    this.height = 75.0,
+    this.height = 56.0,
     this.maxWidth,
   })  : items = assetPaths
             .map((path) =>
@@ -64,7 +64,7 @@ class CurvedNavigationBarState extends State<CurvedNavigationBar>
   late double _startingPos;
   late int _endingIndex;
   late double _pos;
-  double _buttonHide = 0;
+  // double _buttonHide = 0;
   late Widget _icon;
   late AnimationController _animationController;
   late int _length;
@@ -82,11 +82,11 @@ class CurvedNavigationBarState extends State<CurvedNavigationBar>
       setState(() {
         _pos = _animationController.value;
         final endingPos = _endingIndex / widget.items.length;
-        final middle = (endingPos + _startingPos) / 2;
+        // final middle = (endingPos + _startingPos) / 2;
         if ((endingPos - _pos).abs() < (_startingPos - _pos).abs()) {
           _icon = widget.items[_endingIndex];
         }
-        _buttonHide = (1 - ((middle - _pos) / (_startingPos - middle)).abs()).abs();
+        // _buttonHide = (1 - ((middle - _pos) / (_startingPos - middle)).abs()).abs();
       });
     });
   }
@@ -116,10 +116,13 @@ class CurvedNavigationBarState extends State<CurvedNavigationBar>
   Widget build(BuildContext context) {
     final textDirection = Directionality.of(context);
     final media = MediaQuery.of(context);
-    final extraBottomPadding = media.padding.bottom / 2;
-    final double iconSize = 52.0;
+    final double fullPaddingBottom = media.padding.bottom;
+    final double extraBottomPadding = (fullPaddingBottom / 2).roundToDouble();
+    final double fullHeight = widget.height + fullPaddingBottom;
+    final double activeIconSize = 52.0;
+    final double activeTabPaddingTitle = 6.0;
     return SizedBox(
-      height: widget.height,
+      height: fullHeight,
       child: LayoutBuilder(
         builder: (context, constraints) {
           final maxWidth = min(constraints.maxWidth, widget.maxWidth ?? constraints.maxWidth);
@@ -151,73 +154,74 @@ class CurvedNavigationBarState extends State<CurvedNavigationBar>
                     Positioned(
                       left: 0,
                       right: 0,
-                      bottom: 0, // 12 - (75.0 - widget.height) + extraBottomPadding,
+                      bottom: extraBottomPadding,
                       child: CustomPaint(
-                        painter: NavCustomPainter(_pos, _length, widget.color, textDirection, iconSize: iconSize,),
+                        painter: NavCustomPainter(
+                          _pos,
+                          _length,
+                          widget.color,
+                          textDirection,
+                          iconSize: activeIconSize,
+                        ),
                         child: Container(
-                          height: 75.0,
+                          height: fullHeight,
                         ),
                       ),
                     ),
 
                     // Active
                     Positioned(
-                      bottom: -32 - 20 - (75.0 - widget.height) + extraBottomPadding,
+                      // active icon + padding + title
+                      bottom: fullHeight - (activeIconSize / 2) - activeTabPaddingTitle - 16.0,
                       left: textDirection == TextDirection.rtl ? null : _pos * maxWidth,
                       right: textDirection == TextDirection.rtl ? _pos * maxWidth : null,
                       width: maxWidth / _length,
                       child: Center(
-                        child: Transform.translate(
-                          offset: Offset(
-                            0,
-                            -(1 - _buttonHide) * 80,
-                          ),
-                          child: SizedBox(
-                            width: maxWidth / _length,
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                // icon
-                                Container(
-                                  width: iconSize,
-                                  height: iconSize,
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    color: widget.buttonBackgroundColor ?? widget.color,
-                                    border: Border.all(
-                                      color: widget.activeButtonBorderColor,
-                                      width: 4.0,
-                                    ),
+                        child: SizedBox(
+                          width: maxWidth / _length,
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              // icon
+                              Container(
+                                width: activeIconSize,
+                                height: activeIconSize,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: widget.buttonBackgroundColor ?? widget.color,
+                                  border: Border.all(
+                                    color: widget.activeButtonBorderColor,
+                                    width: 4.0,
                                   ),
-                                  clipBehavior: Clip.antiAlias,
-                                  alignment: Alignment.center,
-                                  child: _icon,
                                 ),
+                                clipBehavior: Clip.antiAlias,
+                                alignment: Alignment.center,
+                                child: _icon,
+                              ),
 
-                                const SizedBox(height: 4.0),
+                              SizedBox(height: activeTabPaddingTitle),
 
-                                // title
-                                if (_endingIndex >= 0)
-                                  // no scale factor
-                                  MediaQuery(
-                                    data: media.copyWith(
-                                      textScaler: media.textScaler
-                                          .clamp(minScaleFactor: 1.0, maxScaleFactor: 1.1),
-                                    ),
-                                    child: Text(
-                                      widget.tabTitles[_endingIndex],
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(
-                                        color: widget.buttonBackgroundColor,
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 11.0,
-                                        height: 16.0 / 11.0,
-                                      ),
+                              // title
+                              if (_endingIndex >= 0)
+                                // no scale factor
+                                MediaQuery(
+                                  data: media.copyWith(
+                                    textScaler: media.textScaler
+                                        .clamp(minScaleFactor: 1.0, maxScaleFactor: 1.1),
+                                  ),
+                                  child: Text(
+                                    widget.tabTitles[_endingIndex],
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      color: widget.buttonBackgroundColor,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 11.0,
+                                      height: 16.0 / 11.0,
                                     ),
                                   ),
-                              ],
-                            ),
+                                ),
+                            ],
                           ),
                         ),
                       ),
@@ -227,9 +231,9 @@ class CurvedNavigationBarState extends State<CurvedNavigationBar>
                     Positioned(
                       left: 0,
                       right: 0,
-                      bottom: 0 - (75.0 - widget.height) + extraBottomPadding,
+                      bottom: extraBottomPadding,
                       child: SizedBox(
-                          height: 75.0,
+                          height: fullHeight,
                           child: Row(
                               children: widget.items.map((item) {
                             final index = widget.items.indexOf(item);
