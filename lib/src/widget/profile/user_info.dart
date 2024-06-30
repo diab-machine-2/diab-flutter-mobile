@@ -1548,6 +1548,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController>
                             Expanded(
                               child: GestureDetector(
                                 onTap: () {
+                                  Observable.instance.notifyObservers([], notifyName: "logout");
                                   AppSettings.logout();
                                 },
                                 child: Container(

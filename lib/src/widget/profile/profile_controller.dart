@@ -79,6 +79,9 @@ class _ProfileControllerState extends State<ProfileController> with Observer {
       Observable observable, String? notifyName, Map<dynamic, dynamic>? map) {
     if (notifyName == 'user_info_change') {
       if (!_isDisposing) setState(() {});
+    } else if (notifyName == 'logout') {
+      // This line of code prevent the dispose method from NOT being called
+      _logoutSignal = true;
     }
   }
 
@@ -111,8 +114,15 @@ class _ProfileControllerState extends State<ProfileController> with Observer {
   }
 
   static bool _isDisposing = false;
+  bool _logoutSignal = false;
   @override
   void dispose() async {
+    // check logout case
+    Observable.instance.removeObserver(this);
+    if (_logoutSignal) {
+      super.dispose();
+      return;
+    }
     if (_isDisposing) {
       return; // Already disposing, do nothing
     }
