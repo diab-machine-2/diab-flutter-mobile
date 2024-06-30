@@ -117,8 +117,7 @@ class CurvedNavigationBarState extends State<CurvedNavigationBar>
     final textDirection = Directionality.of(context);
     final media = MediaQuery.of(context);
     final double fullPaddingBottom = media.padding.bottom;
-    final double extraBottomPadding = (fullPaddingBottom / 2).roundToDouble();
-    final double fullHeight = widget.height + fullPaddingBottom;
+    final double fullHeight = widget.height + (fullPaddingBottom / 2).roundToDouble();
     final double activeIconSize = 52.0;
     final double activeTabPaddingTitle = 6.0;
     return SizedBox(
@@ -154,7 +153,7 @@ class CurvedNavigationBarState extends State<CurvedNavigationBar>
                     Positioned(
                       left: 0,
                       right: 0,
-                      bottom: extraBottomPadding,
+                      bottom: 0,
                       child: CustomPaint(
                         painter: NavCustomPainter(
                           _pos,
@@ -231,7 +230,7 @@ class CurvedNavigationBarState extends State<CurvedNavigationBar>
                     Positioned(
                       left: 0,
                       right: 0,
-                      bottom: extraBottomPadding,
+                      bottom: 0,
                       child: SizedBox(
                           height: fullHeight,
                           child: Row(
