@@ -111,6 +111,14 @@ class _ActivityTabPageState extends State<ActivityTabPage>
         }
       });
     }
+    if (notifyName == 'activity_tab_reload') {
+      // full reload
+      Future.delayed(Duration(milliseconds: 1000), () {
+        if (isVisible) {
+          _cubit.initData();
+        }
+      });
+    }
     if (notifyName == 'active_change_data' ||
         notifyName == 'glucose_change_data' ||
         notifyName == 'BloodPressure_change_data' ||

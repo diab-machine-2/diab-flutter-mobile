@@ -53,21 +53,21 @@ class HomeNews extends StatelessWidget {
                 ),
               ),
               const Spacer(),
-              SizedBox(
-                height: 24.0,
-                child: TextButton(
-                  style: TextButton.styleFrom(
-                    padding: EdgeInsets.zero,
-                    textStyle: TextStyle(
-                      fontSize: 14.0,
-                      fontWeight: FontWeight.bold,
-                      color: R.color.greenGradientBottom,
-                    ),
-                  ),
-                  onPressed: onViewMore,
-                  child: Text("Xem thêm"),
-                ),
-              ),
+              // SizedBox(
+              //   height: 24.0,
+              //   child: TextButton(
+              //     style: TextButton.styleFrom(
+              //       padding: EdgeInsets.zero,
+              //       textStyle: TextStyle(
+              //         fontSize: 14.0,
+              //         fontWeight: FontWeight.bold,
+              //         color: R.color.greenGradientBottom,
+              //       ),
+              //     ),
+              //     onPressed: onViewMore,
+              //     child: Text("Xem thêm"),
+              //   ),
+              // ),
               const SizedBox(width: 16.0),
             ],
           ),
@@ -76,7 +76,7 @@ class HomeNews extends StatelessWidget {
 
           // News
           SizedBox(
-            height: 320.0 + extraTitleHeight,
+            height: 300.0 + extraTitleHeight,
             child: ListView.separated(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               itemCount: items.length,
@@ -102,7 +102,7 @@ class HomeNews extends StatelessWidget {
       onTap: () => onNewsTap(news),
       borderRadius: BorderRadius.circular(12.0),
       child: Container(
-        height: 320.0 + extraTitleHeight,
+        height: 300.0 + extraTitleHeight,
         width: 338.0,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(12.0),
@@ -146,24 +146,24 @@ class HomeNews extends StatelessWidget {
                         height: 24.0 / 15.0,
                       ),
                     ),
-                    const SizedBox(height: 4.0),
-                    Row(
-                      children: [
-                        Image.asset(
-                          R.drawable.ic_lesson_category,
-                          width: 16.0,
-                          height: 16.0,
-                        ),
-                        const SizedBox(width: 6.0),
-                        Text(
-                          "Bài học",
-                          style: TextStyle(
-                            color: R.color.color0xff666666,
-                            fontSize: 12.0,
-                          ),
-                        ),
-                      ],
-                    ),
+                    // const SizedBox(height: 4.0),
+                    // Row(
+                    //   children: [
+                    //     Image.asset(
+                    //       R.drawable.ic_lesson_category,
+                    //       width: 16.0,
+                    //       height: 16.0,
+                    //     ),
+                    //     const SizedBox(width: 6.0),
+                    //     Text(
+                    //       "Bài học",
+                    //       style: TextStyle(
+                    //         color: R.color.color0xff666666,
+                    //         fontSize: 12.0,
+                    //       ),
+                    //     ),
+                    //   ],
+                    // ),
                   ],
                 ),
               ),

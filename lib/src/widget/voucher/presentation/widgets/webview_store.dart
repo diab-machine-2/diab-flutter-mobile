@@ -38,6 +38,7 @@ class _WebviewStoreState extends State<WebviewStore> {
       appBar: AppBarWidget(
         title: 'Cửa hàng',
         hasBackIcon: !widget.rootPage,
+        centerTitle: widget.rootPage ? false : null,
       ),
       body: Stack(
         children: [

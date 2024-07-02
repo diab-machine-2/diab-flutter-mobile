@@ -208,32 +208,31 @@ class MeasurementSummary extends StatelessWidget {
     );
   }
 
-  Widget _buildHealthProfileButton() {
-    return InkWell(
-      onTap: onHealthProfile,
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.end,
-        children: [
-          // TODO: Replace with icon
-          Image.asset(
-            R.drawable.ic_home_health_profile,
-            width: 20.0,
-            height: 20.0,
-          ),
-          const SizedBox(width: 6.0),
-          Text(
-            "Hồ sơ sức khoẻ",
-            style: TextStyle(
-              color: R.color.greenGradientBottom,
-              fontWeight: FontWeight.bold,
-              fontSize: 14.0,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+  // Widget _buildHealthProfileButton() {
+  //   return InkWell(
+  //     onTap: onHealthProfile,
+  //     child: Row(
+  //       mainAxisSize: MainAxisSize.min,
+  //       crossAxisAlignment: CrossAxisAlignment.end,
+  //       children: [
+  //         Image.asset(
+  //           R.drawable.ic_home_health_profile,
+  //           width: 20.0,
+  //           height: 20.0,
+  //         ),
+  //         const SizedBox(width: 6.0),
+  //         Text(
+  //           "Hồ sơ sức khoẻ",
+  //           style: TextStyle(
+  //             color: R.color.greenGradientBottom,
+  //             fontWeight: FontWeight.bold,
+  //             fontSize: 14.0,
+  //           ),
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
 
   Widget _buildAddMeasurementButton() {
     return InkWell(

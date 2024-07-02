@@ -148,6 +148,7 @@ class BloodPressureIndexModel {
   final String? colorDiastolic;
   final double? diastolicChange;
   final String? color;
+  final String? unit;
   final ImagesModel? icon;
   final int? createDateTime;
 
@@ -160,6 +161,7 @@ class BloodPressureIndexModel {
     required this.diastolicChange,
     required this.color,
     required this.icon,
+    this.unit,
     required this.createDateTime,
   });
 
@@ -172,6 +174,7 @@ class BloodPressureIndexModel {
       colorDiastolic: json['colorDiastolic'],
       diastolicChange: json['diastolicChange'],
       color: json['color'],
+      unit: json['unit'],
       icon: json['icon'] == null ? null : ImagesModel.fromJson(json['icon']),
       createDateTime: json['createDateTime'],
     );
@@ -186,6 +189,7 @@ class BloodPressureIndexModel {
       'colorDiastolic': colorDiastolic,
       'diastolicChange': diastolicChange,
       'color': color,
+      'unit': unit,
       'icon': icon?.toJson(),
       'createDateTime': createDateTime,
     };
@@ -252,6 +256,7 @@ class HbA1CIndexModel {
   double? indexChange;
   final int? createDateTime;
   final String? color;
+  final String? unit;
   final ImagesModel? icon;
 
   HbA1CIndexModel(
@@ -259,6 +264,7 @@ class HbA1CIndexModel {
       required this.indexChange,
       required this.createDateTime,
       required this.color,
+      this.unit,
       required this.icon});
 
   factory HbA1CIndexModel.fromJson(Map<String, dynamic> json) {
@@ -267,6 +273,7 @@ class HbA1CIndexModel {
       indexChange: json['indexChange'],
       createDateTime: json['createDateTime'],
       color: json['color'],
+      unit: json['unit'],
       icon: json['icon'] == null ? null : ImagesModel.fromJson(json['icon']),
     );
   }
@@ -277,6 +284,7 @@ class HbA1CIndexModel {
       'indexChange': indexChange,
       'createDateTime': createDateTime,
       'color': color,
+      'unit': unit,
       'icon': icon?.toJson(),
     };
   }
@@ -291,11 +299,13 @@ class WeightCardModel {
   final double? goalWeight;
   final int? weightDateTime;
   final String? weightColorCode;
+  final String? unit;
 
   WeightCardModel(
       {required this.weight,
       required this.goalWeight,
       required this.weightDateTime,
+      this.unit,
       required this.weightColorCode});
 
   factory WeightCardModel.fromJson(Map<String, dynamic> json) {
@@ -303,6 +313,7 @@ class WeightCardModel {
         weight: json['weight'],
         goalWeight: json['goalWeight'],
         weightDateTime: json['weightDateTime'],
+        unit: json['unit'],
         weightColorCode: json['weightColorCode']);
   }
 
@@ -312,6 +323,7 @@ class WeightCardModel {
       'goalWeight': goalWeight,
       'weightDateTime': weightDateTime,
       'weightColorCode': weightColorCode,
+      'unit': unit,
     };
   }
 
@@ -373,17 +385,20 @@ class EmotionCardItemModel {
 class EnergyCardModel {
   final int? consumedEnergyDateTime;
   final double? consumedEnergy;
+  final String? unit;
   final ImagesModel? energyIcon;
 
   EnergyCardModel(
       {required this.consumedEnergyDateTime,
       required this.consumedEnergy,
+      this.unit,
       required this.energyIcon});
 
   factory EnergyCardModel.fromJson(Map<String, dynamic> json) {
     return EnergyCardModel(
       consumedEnergyDateTime: json['consumedEnergyDateTime'],
       consumedEnergy: json['consumedEnergy'],
+      unit: json['unit'],
       energyIcon: json['energyIcon'] == null ? null : ImagesModel.fromJson(json['energyIcon']),
     );
   }
@@ -392,6 +407,7 @@ class EnergyCardModel {
     return {
       'consumedEnergyDateTime': consumedEnergyDateTime,
       'consumedEnergy': consumedEnergy,
+      'unit': unit,
       'energyIcon': energyIcon?.toJson(),
     };
   }
@@ -494,13 +510,15 @@ class ProcessCardModel {
 class BmiCardModel {
   final double bmi;
   final String color;
+  final String? unit;
 
-  BmiCardModel({required this.bmi, required this.color});
+  BmiCardModel({required this.bmi, required this.color, this.unit});
 
   factory BmiCardModel.fromJson(Map<String, dynamic> json) {
     return BmiCardModel(
       bmi: json['bmi'] ?? 0,
       color: json['color'],
+      unit: json['unit'],
     );
   }
 
@@ -508,6 +526,7 @@ class BmiCardModel {
     return {
       'bmi': bmi,
       'color': color,
+      'unit': unit,
     };
   }
 

@@ -81,7 +81,6 @@ class HomeLesson extends StatelessWidget {
 
                   const SizedBox(height: 4.0),
 
-                  // TODO: Need map
                   // Category
                   Row(
                     mainAxisSize: MainAxisSize.min,
@@ -94,7 +93,7 @@ class HomeLesson extends StatelessWidget {
                       ),
                       const SizedBox(width: 6.0),
                       Text(
-                        "Bài học",
+                        lesson.module,
                         style: TextStyle(
                           color: R.color.color0xff666666,
                           fontSize: 12.0,

@@ -126,7 +126,10 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     apiResult.when(
       success: (SmartGoalListReponse response) {
         if (response.data?.daily != null) {
-          final activities = response.data!.daily!.where((e) => e != null).map((e) => e!).map((e) {
+          final activities = response.data!.daily!
+          .where((e) => e != null && e.state != 1)
+          .map((e) => e!)
+          .map((e) {
             final ScheduleType type = ScheduleTypeExtend.getTypeFromIndex(e.type);
             final activity = HomeActivityData(
               id: e.id!,
@@ -309,7 +312,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       color: model?.hbA1CIndex.color != null
           ? _convertHexStringToInt(model!.hbA1CIndex.color!)
           : _noValueColor,
-      unit: "%",
+      unit: model?.hbA1CIndex.unit ?? "%",
       navigatorName: haveHba1c ? NavigatorName.detail_hba1c : NavigatorName.add_hba1c,
       args: haveHba1c ? null : {'type': 'input'},
     );
@@ -324,7 +327,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       color: model?.weightCard?.weightColorCode != null
           ? _convertHexStringToInt(model!.weightCard!.weightColorCode!)
           : _noValueColor,
-      unit: "Kg",
+      unit: model?.weightCard?.unit ?? "kg",
       navigatorName: haveWeight ? NavigatorName.detail_bmi : NavigatorName.add_bmi,
       args: haveWeight ? null : {'type': 'input'},
     );
@@ -335,7 +338,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       title: "BMI",
       titleColor: haveBmi ? _haveValueTitleColor : _noValueTitleColor,
       value: haveBmi ? model.bmiCard!.bmi.toString() : "--",
-      unit: "Kg/m²",
+      unit: model?.bmiCard?.unit ?? "kg/m²",
       color: model?.bmiCard?.color != null
           ? _convertHexStringToInt(model!.bmiCard!.color)
           : _noValueColor,
@@ -359,11 +362,11 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       icon: haveGlucose
           ? R.drawable.ic_home_measurement_glucose
           : R.drawable.ic_home_measurement_glucose_inactive,
-      value1: haveGlucose ? model?.glucoseIndex.index!.toString() : "--",
-      value1Color: haveGlucose ? _convertHexStringToInt(model!.glucoseIndex.color!) : _noValueColor,
+      value1: haveGlucose ? model.glucoseIndex.index!.toString() : "--",
+      value1Color: haveGlucose ? _convertHexStringToInt(model.glucoseIndex.color!) : _noValueColor,
       value2: null,
       value2Color: null,
-      unit: model?.glucoseIndex.unit ?? 'mmol/L',
+      unit: model?.glucoseIndex.unit ?? 'mmol/l',
       navigatorName:
           haveGlucose ? NavigatorName.detail_blood_sugar : NavigatorName.add_blood_sugar_new,
       args: haveGlucose ? null : {'type': 'input'},
@@ -388,7 +391,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       value2Color: model?.bloodPressureIndex.colorDiastolic != null
           ? _convertHexStringToInt(model!.bloodPressureIndex.colorDiastolic!)
           : _noValueColor,
-      unit: "mmHg",
+      unit: model?.bloodPressureIndex.unit ?? "mmHg",
       navigatorName: haveBloodPressure
           ? NavigatorName.detail_blood_pressure
           : NavigatorName.add_blood_pressure,
@@ -398,7 +401,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     // Exercise
     final haveExercise = model?.exercise?.index != null && model!.exercise!.index! > 0;
     final exercise = HomeMeasurementData(
-      title: "Vận động",
+      title: "Vận Động",
       titleColor: haveExercise ? _haveValueTitleColor : _noValueTitleColor,
       icon: haveExercise
           ? R.drawable.ic_home_measurement_exercise
@@ -425,7 +428,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       value1Color: haveNutrition ? _haveValueTitleColor : _noValueColor,
       value2: null,
       value2Color: null,
-      unit: "kCal",
+      unit: model?.energyCard?.unit ?? "kcal",
       navigatorName: haveNutrition ? NavigatorName.detail_food : NavigatorName.add_food,
       args: haveNutrition ? null : {'type': 'input'},
     );

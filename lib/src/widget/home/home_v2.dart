@@ -9,6 +9,7 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/app_setting/app_sharing.dart';
 import 'package:medical/src/app_setting/dynamic_link_config.dart';
+import 'package:medical/src/app_setting/firebase_tracking/activity_list_tracking.dart';
 import 'package:medical/src/bloc/home/home_bloc.dart';
 import 'package:medical/src/modal/home/home_model.dart';
 import 'package:medical/src/modal/home/package_account_home_model.dart';
@@ -305,6 +306,8 @@ class _HomeControllerState extends State<HomeController>
                               onViewMore: () {
                                 Observable.instance
                                     .notifyObservers([], notifyName: Const.NAVIGATE_TO_MY_PLAN_TAB);
+                                Observable.instance
+                                    .notifyObservers([], notifyName: "activity_tab_reload");
                               },
                               onActivityTap: (activity) =>
                                   _onSelectGoal(activity.type, smartGoal: activity.smartGoal),
@@ -376,16 +379,22 @@ class _HomeControllerState extends State<HomeController>
                             padding: const EdgeInsets.symmetric(horizontal: 12.0),
                             child: HomeLesson(
                               lessons: stateLoaded?.lessons ?? [],
-                              onLessonTap: (lesson) {
-                                // if (lesson.enableLink) {
-                                //   _launchInBrowser(lesson.link!);
-                                // } else {
-                                //   Navigator.pushNamed(
-                                //     context,
-                                //     NavigatorName.news_detail,
-                                //     arguments: {'id': lesson.id},
-                                //   );
-                                // }
+                              onLessonTap: (lesson) async {
+                                ActivityListTracking.clickLessonItem(
+                                  objectId: lesson.id,
+                                  objectIndex: stateLoaded!.lessons!.indexOf(lesson),
+                                  objectTitle: lesson.name,
+                                );
+
+                                await NavigationUtil.navigatePage(
+                                  context,
+                                  LessonDetailPage(
+                                    lessonType: lesson.type,
+                                    lessonId: lesson.id,
+                                    onComplete: (_, __) {
+                                    },
+                                  ),
+                                );
                               },
                               onLike: (lesson) {},
                               onComment: (lesson) {},
