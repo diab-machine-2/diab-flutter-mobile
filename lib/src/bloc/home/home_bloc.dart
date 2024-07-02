@@ -410,7 +410,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       value1Color: haveExercise ? _haveValueTitleColor : _noValueColor,
       value2: null,
       value2Color: null,
-      unit: model?.exercise?.unit ?? "--",
+      unit: model?.exercise?.unit ?? "kcal",
       navigatorName: haveExercise ? NavigatorName.detail_exercrises : NavigatorName.add_exercrises,
       args: haveExercise ? null : {'type': 'input'},
     );
