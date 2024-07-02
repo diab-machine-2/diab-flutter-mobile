@@ -10,6 +10,7 @@ import 'package:medical/src/model/response/smart_goal_list_reponse.dart';
 import 'package:medical/src/repo/home/home_client.dart';
 import 'package:medical/src/repo/learning/learning_client.dart';
 import 'package:medical/src/repo/user/user_client.dart';
+import 'package:medical/src/utils/date_utils.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/home/schema/home_schema.dart';
@@ -24,6 +25,7 @@ part 'home_bloc_state.dart';
 class HomeBloc extends Bloc<HomeEvent, HomeState> {
   HomeBloc() : super(HomeInitial());
   final timeToRetry = 10;
+  final DateFormat _reminderFormatter = DateFormat("h:mm");
 
   HomeLoaded? _cached;
 
@@ -62,9 +64,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
           } catch (e) {}
         }
         // other is mem cache
-        yield _cached?.copyWith(
-                model: model) ??
-            HomeLoading(model: model);
+        yield _cached?.copyWith(model: model) ?? HomeLoading(model: model);
 
         // Load measurements
         final home = await client.fetchHomes();
@@ -126,10 +126,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     apiResult.when(
       success: (SmartGoalListReponse response) {
         if (response.data?.daily != null) {
-          final activities = response.data!.daily!
-          .where((e) => e != null && e.state != 1)
-          .map((e) => e!)
-          .map((e) {
+          final activities =
+              response.data!.daily!.where((e) => e != null && e.state != 1).map((e) => e!).map((e) {
             final ScheduleType type = ScheduleTypeExtend.getTypeFromIndex(e.type);
             final activity = HomeActivityData(
               id: e.id!,
@@ -156,14 +154,17 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
 
   Stream<HomeState> _fetchReminders() async* {
     var currentState = state as HomeLoaded;
-    final remindersResponse = await UserClient().fetchScheduleReminders();
-    if (remindersResponse.models.isNotEmpty) {
-      final reminders = remindersResponse.models.map((e) {
+    final remindersResponse = await UserClient().fetchScheduleRemindersForHomePage();
+    if (remindersResponse.isNotEmpty) {
+      final reminders = remindersResponse.map((e) {
+        final time = DateUtil.parseTimespanToDateTime(e.time);
+        final timeString = _reminderFormatter.format(time);
+
         return HomeReminderData(
           id: e.id,
           icon: R.drawable.ic_home_measurement_glucose_inactive,
-          title: e.name ?? "-",
-          time: "hôm nay",
+          title: e.name,
+          time: timeString + " " + (e.timeFrameName?.toLowerCase() ?? "hôm nay"),
           navigatorName: "TODO",
         );
       }).toList();
