@@ -12,6 +12,7 @@ class Drawables {
   String get banner_promotion15 => "lib/res/drawables/promotion15.jpg";
   String get banner_share_app => "lib/res/drawables/banner_share_app.jpg";
   String get bg_activity_empty => "lib/res/drawables/bg_activity_empty.png";
+  String get im_complete_activity => "lib/res/drawables/im_complete_activity.png";
   String get bg_apple_green => "lib/res/drawables/bg_apple_green.png";
   String get bg_apple_home => "lib/res/drawables/bg_apple_home.png";
   String get bg_apple_orange => "lib/res/drawables/bg_apple_orange.png";

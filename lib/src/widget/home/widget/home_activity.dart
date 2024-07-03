@@ -35,8 +35,11 @@ class HomeActivity extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textScaleFactor = max(1.0, MediaQuery.of(context).textScaleFactor);
-    bool isEmpty = activities.isEmpty;
-    bool isHaveMore = activities.length > 3;
+    List<HomeActivityData> renderingActivities =
+        activities.where((e) => e.smartGoal.state != 1).toList();
+    bool isFinishedAll = renderingActivities.isEmpty && activities.isNotEmpty;
+    bool isEmpty = renderingActivities.isEmpty;
+    bool isHaveMore = renderingActivities.length > 3;
     return AnimatedSize(
       duration: const Duration(milliseconds: 300),
       alignment: Alignment.topCenter,
@@ -93,81 +96,110 @@ class HomeActivity extends StatelessWidget {
 
             const SizedBox(height: 16.0),
 
-            if (isEmpty)
-              SizedBox(
-                height: loading ? 64.0 : 164.0,
-                child: loading ? null : Center(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Text(
-                        "empty_activity".tr(),
+            if (isFinishedAll)
+              Center(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Image.asset(
+                      R.drawable.im_complete_activity,
+                      width: 168.0,
+                      height: 168.0,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      child: Text(
+                        "complete_activity".tr(),
+                        textAlign: TextAlign.center,
                         style: TextStyle(
                           fontSize: 14.0,
                           height: 20.0 / 14.0,
                           color: R.color.primaryGreyColor,
                         ),
-                        textAlign: TextAlign.center,
                       ),
-
-                      const SizedBox(height: 24.0),
-
-                      // button
-                      Center(
-                        child: InkWell(
-                          onTap: onAddActivity,
-                          borderRadius: BorderRadius.circular(16.0),
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(16.0),
-                              color: R.color.greenGradientBottom,
+                    ),
+                    const SizedBox(height: 8.0),
+                  ],
+                ),
+              )
+            else if (isEmpty)
+              SizedBox(
+                height: loading ? 64.0 : 164.0,
+                child: loading
+                    ? null
+                    : Center(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Text(
+                              "empty_activity".tr(),
+                              style: TextStyle(
+                                fontSize: 14.0,
+                                height: 20.0 / 14.0,
+                                color: R.color.primaryGreyColor,
+                              ),
+                              textAlign: TextAlign.center,
                             ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Image.asset(
-                                  R.drawable.ic_home_plus,
-                                  width: 16.0,
-                                  height: 16.0,
-                                ),
-                                const SizedBox(width: 6.0),
-                                Text(
-                                  "Thiết lập mục tiêu",
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 13.0,
-                                    height: 16.0 / 13.0,
+
+                            const SizedBox(height: 24.0),
+
+                            // button
+                            Center(
+                              child: InkWell(
+                                onTap: onAddActivity,
+                                borderRadius: BorderRadius.circular(16.0),
+                                child: Container(
+                                  padding:
+                                      const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(16.0),
+                                    color: R.color.greenGradientBottom,
+                                  ),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    children: [
+                                      Image.asset(
+                                        R.drawable.ic_home_plus,
+                                        width: 16.0,
+                                        height: 16.0,
+                                      ),
+                                      const SizedBox(width: 6.0),
+                                      Text(
+                                        "Thiết lập mục tiêu",
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 13.0,
+                                          height: 16.0 / 13.0,
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ),
-                              ],
+                              ),
                             ),
-                          ),
+                          ],
                         ),
                       ),
-                    ],
-                  ),
-                ),
               ),
 
             if (!isEmpty && !isHaveMore)
-              for (var activity in activities)
+              for (var activity in renderingActivities)
                 Padding(
                   padding: const EdgeInsets.only(bottom: 12.0),
                   child: _buildActivityItem(activity, textScaleFactor),
                 ),
             if (!isEmpty && isHaveMore && !expanded)
-              for (var activity in activities.take(3))
+              for (var activity in renderingActivities.take(3))
                 Padding(
                   padding: const EdgeInsets.only(bottom: 12.0),
                   child: _buildActivityItem(activity, textScaleFactor),
                 ),
             if (!isEmpty && isHaveMore && expanded)
-              for (var activity in activities)
+              for (var activity in renderingActivities)
                 Padding(
                   padding: const EdgeInsets.only(bottom: 12.0),
                   child: _buildActivityItem(activity, textScaleFactor),

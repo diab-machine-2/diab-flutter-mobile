@@ -133,7 +133,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       success: (SmartGoalListReponse response) {
         if (response.data?.daily != null) {
           final activities =
-              response.data!.daily!.where((e) => e != null && e.state != 1).map((e) => e!).map((e) {
+              response.data!.daily!.where((e) => e != null).map((e) => e!).map((e) {
             final ScheduleType type = ScheduleTypeExtend.getTypeFromIndex(e.type);
             final activity = HomeActivityData(
               id: e.id!,
