@@ -13,7 +13,7 @@ import 'package:medical/src/widget/components/HomeButton/widget/circular_menu.da
 import 'package:medical/src/widget/components/HomeButton/widget/circular_menu_item.dart';
 import 'package:medical/src/widget/components/HomeButton/widget/horizontal_menu.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
-import 'package:medical/src/widget/tabbar/tabbar.dart';
+import 'package:medical/src/widget/tabbar/tabbar_v2.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class FunkyOverlay extends StatefulWidget {

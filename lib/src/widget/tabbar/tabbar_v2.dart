@@ -10,15 +10,21 @@ import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_observer/Observable.dart';
 import 'package:flutter_observer/Observer.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/app.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/app_setting/dynamic_link_config.dart';
 import 'package:medical/src/app_setting/firebase_remote_config.dart';
 import 'package:medical/src/modal/base/referral_code_temp.dart';
+import 'package:medical/src/modal/error/error_model.dart';
+import 'package:medical/src/modal/user/user_model.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
+import 'package:medical/src/repo/user/user_client.dart';
 import 'package:medical/src/service/zoom_service.dart';
 import 'package:medical/src/utils/app_storages.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigation_util.dart';
+import 'package:medical/src/utils/navigator_name.dart';
+import 'package:medical/src/widget/Bmi/widget/add_bmi.dart';
 import 'package:medical/src/widget/components/HomeButton/main.dart';
 import 'package:medical/src/widget/helper/notification_manager.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
@@ -329,4 +335,39 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
       );
     }
   }
+}
+
+showPopupWeight() {
+  showDialog(
+    barrierColor: R.color.color0xff003F38.withOpacity(0.5),
+    context: navigatorKey.currentContext!,
+    builder: (_) => CustomNumPicker(
+        callback: (number) async {
+          try {
+            BotToast.showLoading();
+            UserModel userInfo = AppSettings.userInfo!;
+            userInfo = userInfo.copyWith(height: number?.toDouble());
+            await UserClient()
+                .updateUserInfo(AppSettings.userInfo!.id, userInfo);
+            await UserClient().fetchUser();
+            Navigator.pushNamed(
+                navigatorKey.currentContext!, NavigatorName.add_exercrises,
+                arguments: {'type': 'input'});
+            BotToast.closeAllLoading();
+          } catch (e, _) {
+            BotToast.closeAllLoading();
+            if (e is Error) {
+              Message.showToastMessage(navigatorKey.currentContext!, e.message);
+            } else {
+              Message.showToastMessage(
+                  navigatorKey.currentContext!, e.toString());
+            }
+          }
+        },
+        title: R.string.update_weight.tr(),
+        subTitle: R.string.update_weight_description.tr(),
+        max: 200,
+        numberDefault: 50,
+        unit: R.string.kg.tr()),
+  );
 }

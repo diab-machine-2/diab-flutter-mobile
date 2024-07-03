@@ -20,7 +20,7 @@ import 'package:medical/src/widget/home/fliter_enum.dart';
 import 'package:medical/src/widget/nipro/health_app/widgets/request_health_connect.dart';
 import 'package:medical/src/widget/tabbar/action_list_panel.dart';
 import 'package:medical/src/widget/tabbar/fillter_bloodSugar_panel.dart';
-import 'package:medical/src/widget/tabbar/tabbar.dart';
+import 'package:medical/src/widget/tabbar/tabbar_v2.dart';
 import 'package:medical/src/widgets/button_widget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 

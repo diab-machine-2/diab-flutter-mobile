@@ -76,7 +76,7 @@ class HomeNews extends StatelessWidget {
 
           // News
           SizedBox(
-            height: 300.0 + extraTitleHeight,
+            height: 252.0 + extraTitleHeight,
             child: ListView.separated(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               itemCount: items.length,
@@ -102,13 +102,14 @@ class HomeNews extends StatelessWidget {
       onTap: () => onNewsTap(news),
       borderRadius: BorderRadius.circular(12.0),
       child: Container(
-        height: 300.0 + extraTitleHeight,
+        height: 252.0 + extraTitleHeight,
         width: 338.0,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(12.0),
           color: Colors.white,
           border: Border.all(color: const Color(0xFFE4E4E7), width: 1.0),
         ),
+        clipBehavior: Clip.antiAliasWithSaveLayer,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -169,74 +170,74 @@ class HomeNews extends StatelessWidget {
               ),
             ),
 
-            const SizedBox(height: 12.0),
+            // const SizedBox(height: 12.0),
 
             // Actions
-            Row(
-              mainAxisSize: MainAxisSize.max,
-              children: [
-                const SizedBox(width: 16.0),
+            // Row(
+            //   mainAxisSize: MainAxisSize.max,
+            //   children: [
+            //     const SizedBox(width: 16.0),
 
-                // Like
-                // InkWell(
-                //   onTap: () => onLike(news),
-                //   child: Row(
-                //     crossAxisAlignment: CrossAxisAlignment.center,
-                //     mainAxisSize: MainAxisSize.min,
-                //     children: [
-                //       Image.asset(R.drawable.ic_lesson_like, width: 20.0, height: 20.0),
-                //       const SizedBox(width: 8.0),
-                //       Text(
-                //         "${news.likeCount}",
-                //         style: TextStyle(color: R.color.textDark, fontSize: 15.0),
-                //       ),
-                //     ],
-                //   ),
-                // ),
+            //     // Like
+            //     InkWell(
+            //       onTap: () => onLike(news),
+            //       child: Row(
+            //         crossAxisAlignment: CrossAxisAlignment.center,
+            //         mainAxisSize: MainAxisSize.min,
+            //         children: [
+            //           Image.asset(R.drawable.ic_lesson_like, width: 20.0, height: 20.0),
+            //           const SizedBox(width: 8.0),
+            //           Text(
+            //             "${news.likeCount}",
+            //             style: TextStyle(color: R.color.textDark, fontSize: 15.0),
+            //           ),
+            //         ],
+            //       ),
+            //     ),
 
-                // const SizedBox(width: 16.0),
+            //     const SizedBox(width: 16.0),
 
-                // Comment
-                // InkWell(
-                //   onTap: () => onComment(news),
-                //   child: Row(
-                //     crossAxisAlignment: CrossAxisAlignment.center,
-                //     mainAxisSize: MainAxisSize.min,
-                //     children: [
-                //       Image.asset(R.drawable.ic_lesson_comment, width: 20.0, height: 20.0),
-                //       const SizedBox(width: 8.0),
-                //       Text(
-                //         "${news.commentCount}",
-                //         style: TextStyle(color: R.color.textDark, fontSize: 15.0),
-                //       ),
-                //     ],
-                //   ),
-                // ),
+            //     // Comment
+            //     InkWell(
+            //       onTap: () => onComment(news),
+            //       child: Row(
+            //         crossAxisAlignment: CrossAxisAlignment.center,
+            //         mainAxisSize: MainAxisSize.min,
+            //         children: [
+            //           Image.asset(R.drawable.ic_lesson_comment, width: 20.0, height: 20.0),
+            //           const SizedBox(width: 8.0),
+            //           Text(
+            //             "${news.commentCount}",
+            //             style: TextStyle(color: R.color.textDark, fontSize: 15.0),
+            //           ),
+            //         ],
+            //       ),
+            //     ),
 
-                const Spacer(),
+            //     const Spacer(),
 
-                // Share
-                InkWell(
-                  onTap: () => onShare(news),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Image.asset(R.drawable.ic_lesson_share, width: 20.0, height: 20.0),
-                      const SizedBox(width: 8.0),
-                      Text(
-                        "Chia sẻ",
-                        style: TextStyle(color: R.color.textDark, fontSize: 15.0),
-                      ),
-                    ],
-                  ),
-                ),
+            //     // Share
+            //     InkWell(
+            //       onTap: () => onShare(news),
+            //       child: Row(
+            //         crossAxisAlignment: CrossAxisAlignment.end,
+            //         mainAxisSize: MainAxisSize.min,
+            //         children: [
+            //           Image.asset(R.drawable.ic_lesson_share, width: 20.0, height: 20.0),
+            //           const SizedBox(width: 8.0),
+            //           Text(
+            //             "Chia sẻ",
+            //             style: TextStyle(color: R.color.textDark, fontSize: 15.0),
+            //           ),
+            //         ],
+            //       ),
+            //     ),
 
-                const SizedBox(width: 16.0),
-              ],
-            ),
+            //     const SizedBox(width: 16.0),
+            //   ],
+            // ),
 
-            const SizedBox(height: 16.0),
+            // const SizedBox(height: 16.0),
           ],
         ),
       ),

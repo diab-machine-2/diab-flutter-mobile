@@ -36,6 +36,7 @@ import 'package:medical/src/widget/my_plan_screens/activity_tab/activity_tab/mod
 import 'package:medical/src/widget/my_plan_screens/exercise_tab/exercise_detail/exercise_detail_page.dart';
 import 'package:medical/src/widget/my_plan_screens/lesson_tab/lesson_detail/lesson_detail.dart';
 import 'package:medical/src/widget/survey_screens/introduce_survey/introduce_survey.dart';
+import 'package:medical/src/widget/tabbar/tabbar_v2.dart';
 import 'package:medical/src/widget/voucher/presentation/widgets/voucher_popup.dart';
 import 'package:medical/src/widgets/button_widget.dart';
 import 'package:medical/src/widgets/network_image_widget.dart';
@@ -274,6 +275,9 @@ class _HomeControllerState extends State<HomeController>
                             onAddMeasurement: () => _showAddMeasurement(context),
                             onHealthProfile: () {},
                             onMeasurement: (routeName, args) {
+                              if (_checkWeightInputDialog(routeName) == false) {
+                                return;
+                              }
                               if (routeName != null) {
                                 Navigator.pushNamed(context, routeName, arguments: args);
                               }
@@ -391,14 +395,15 @@ class _HomeControllerState extends State<HomeController>
                                   LessonDetailPage(
                                     lessonType: lesson.type,
                                     lessonId: lesson.id,
-                                    onComplete: (_, __) {
-                                    },
+                                    onComplete: (_, __) {},
                                   ),
                                 );
                               },
                               onLike: (lesson) {},
                               onComment: (lesson) {},
-                              onShare: (lesson) {},
+                              onShare: (lesson) {
+                                _homeBloc.shareLesson(lesson.id, context);
+                              },
                             ),
                           ),
 
@@ -465,6 +470,9 @@ class _HomeControllerState extends State<HomeController>
       measurements: measurementIndexes,
       onItemTap: (item) {
         Navigator.pop(context);
+        if (_checkWeightInputDialog(item.navigatorName) == false) {
+          return;
+        }
         Navigator.pushNamed(context, item.navigatorName, arguments: item.args);
       },
     );
@@ -481,6 +489,16 @@ class _HomeControllerState extends State<HomeController>
         ),
       ),
     );
+  }
+
+  bool _checkWeightInputDialog(String? routeName) {
+    if (routeName == NavigatorName.add_exercrises || routeName == NavigatorName.add_food) {
+      if (AppSettings.userInfo?.weight == null || AppSettings.userInfo!.weight == 0) {
+        showPopupWeight();
+        return false;
+      }
+    }
+    return true;
   }
 
   void _launchInBrowser(String url) async {

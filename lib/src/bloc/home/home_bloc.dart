@@ -1,12 +1,18 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
+import 'package:bot_toast/bot_toast.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter/widgets.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
+import 'package:medical/src/app_setting/app_sharing.dart';
+import 'package:medical/src/app_setting/dynamic_link_config.dart';
 import 'package:medical/src/modal/home/home_model.dart';
 import 'package:medical/src/modal/learning/learning_post_model.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
+import 'package:medical/src/model/response/lesson_section_list_response.dart';
 import 'package:medical/src/model/response/smart_goal_list_reponse.dart';
+import 'package:medical/src/model/service/api_result.dart';
 import 'package:medical/src/repo/home/home_client.dart';
 import 'package:medical/src/repo/learning/learning_client.dart';
 import 'package:medical/src/repo/user/user_client.dart';
@@ -194,6 +200,39 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     yield currentState.copyWith(lessons: lessonsResponse);
   }
 
+  Future<void> shareLesson(String lessonId, BuildContext context) async {
+    try {
+      BotToast.showLoading();
+      final ApiResult<LessonSectionListResponse> apiResult =
+          await AppRepository().getListLessonSection(lessonId);
+      List<LessonSectionItem>? lessonSections;
+      String? featureImage;
+      String? lessonDescription;
+      apiResult.when(success: (LessonSectionListResponse response) {
+        lessonSections =
+            response.data?.lessonSections?.where((e) => e != null).map((e) => e!).toList();
+        lessonDescription = response.data?.description;
+        featureImage = response.data?.image?.url;
+      }, failure: (error) {
+        TrackingManager.recordError(error, null);
+      });
+      final lessons = lessonSections ?? [];
+      if (lessons.isNotEmpty) {
+        // Do share
+        final lesson = lessons.first;
+        String shareLink = await DynamicLinkConfig.instance.createShareLessonLink(
+            lesson: lesson, featureImage: featureImage, lessonDescription: lessonDescription);
+        AppShare.instance.lessonDetail(context, shareLink, lesson.name ?? "");
+      }
+    } catch (e, s) {
+      TrackingManager.recordError(e, s);
+    } finally {
+      BotToast.closeAllLoading();
+    }
+
+    return;
+  }
+
   // Stream<HomeState> _syncHealthApp() async* {}
 
   List<HomeUtilityData> getAllUtilities({bool full = false}) {
@@ -271,7 +310,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       HomeMeasurementIndex(
         title: R.string.dinh_duong.tr(),
         icon: R.drawable.ic_home_measurement_nutrition,
-        navigatorName: NavigatorName.add_nutrition,
+        navigatorName: NavigatorName.add_food,
+        args: {'type': 'input'},
       ),
       HomeMeasurementIndex(
         title: R.string.cam_xuc.tr(),
