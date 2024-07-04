@@ -121,8 +121,9 @@ class HomeLesson extends StatelessWidget {
             // Actions
             Row(
               mainAxisSize: MainAxisSize.max,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const SizedBox(width: 16.0),
+                // const SizedBox(width: 16.0),
 
                 // Like
                 // InkWell(
@@ -162,7 +163,7 @@ class HomeLesson extends StatelessWidget {
                 //   ),
                 // ),
 
-                const Spacer(),
+                // const Spacer(),
 
                 // Share
                 InkWell(
@@ -181,7 +182,7 @@ class HomeLesson extends StatelessWidget {
                   ),
                 ),
 
-                const SizedBox(width: 16.0),
+                // const SizedBox(width: 16.0),
               ],
             ),
             

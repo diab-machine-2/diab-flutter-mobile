@@ -73,6 +73,7 @@ class _HomeControllerState extends State<HomeController>
   String _urlPopup = '';
 
   bool _isActivityExpanded = false;
+  bool _isReminderExpanded = false;
 
   @override
   bool get wantKeepAlive => true;
@@ -333,6 +334,17 @@ class _HomeControllerState extends State<HomeController>
                               onItemTap: (reminder) {
                                 Navigator.pushNamed(context, NavigatorName.add_reminder,
                                     arguments: {'type': 'update', 'id': reminder.id});
+                              },
+                              expanded: _isReminderExpanded,
+                              onExpand: () {
+                                setState(() {
+                                  _isReminderExpanded = true;
+                                });
+                              },
+                              onCollapse: () {
+                                setState(() {
+                                  _isReminderExpanded = false;
+                                });
                               },
                             ),
                           ),

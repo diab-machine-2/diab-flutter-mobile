@@ -118,7 +118,13 @@ class HomeActivity extends StatelessWidget {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 8.0),
+
+                    const SizedBox(height: 24.0),
+
+                    // button set goal
+                    Center(child: _buttonSetNewGoal()),
+                  
+                    const SizedBox(height: 16.0),
                   ],
                 ),
               )
@@ -144,43 +150,8 @@ class HomeActivity extends StatelessWidget {
 
                             const SizedBox(height: 24.0),
 
-                            // button
-                            Center(
-                              child: InkWell(
-                                onTap: onAddActivity,
-                                borderRadius: BorderRadius.circular(16.0),
-                                child: Container(
-                                  padding:
-                                      const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(16.0),
-                                    color: R.color.greenGradientBottom,
-                                  ),
-                                  child: Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    crossAxisAlignment: CrossAxisAlignment.center,
-                                    children: [
-                                      Image.asset(
-                                        R.drawable.ic_home_plus,
-                                        width: 16.0,
-                                        height: 16.0,
-                                      ),
-                                      const SizedBox(width: 6.0),
-                                      Text(
-                                        "Thiết lập mục tiêu",
-                                        style: TextStyle(
-                                          color: Colors.white,
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 13.0,
-                                          height: 16.0 / 13.0,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ),
+                            // button set goal
+                            Center(child: _buttonSetNewGoal()),
                           ],
                         ),
                       ),
@@ -302,6 +273,42 @@ class HomeActivity extends StatelessWidget {
               color: R.color.greenGradientBottom,
               size: 24.0,
             )
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buttonSetNewGoal() {
+    return InkWell(
+      onTap: onAddActivity,
+      borderRadius: BorderRadius.circular(16.0),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(16.0),
+          color: R.color.greenGradientBottom,
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Image.asset(
+              R.drawable.ic_home_plus,
+              width: 16.0,
+              height: 16.0,
+            ),
+            const SizedBox(width: 6.0),
+            Text(
+              "Thiết lập mục tiêu",
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 13.0,
+                height: 16.0 / 13.0,
+              ),
+            ),
           ],
         ),
       ),

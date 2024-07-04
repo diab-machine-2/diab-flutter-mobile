@@ -183,7 +183,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
 
   Stream<HomeState> _fetchNews() async* {
     final learningClient = LearningClient();
-    final newsResponse = await learningClient.fetchLearningPost(null);
+    final newsResponse = await learningClient.fetchLearningPost(1);
     if (newsResponse.isNotEmpty) {
       final currentState = state as HomeLoaded;
       yield currentState.copyWith(news: newsResponse);

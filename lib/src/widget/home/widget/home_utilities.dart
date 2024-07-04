@@ -17,14 +17,14 @@ class HomeUtilities extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final textScaleFactor =  max(1.0, MediaQuery.of(context).textScaleFactor);
+    final textScaleFactor = max(1.0, MediaQuery.of(context).textScaleFactor);
     final isLargeFont = textScaleFactor > 1.25;
 
     List<HomeUtilityData> renderingUtilities = utilities;
     if (isLargeFont) {
       renderingUtilities = utilities.take(5).toList()..add(utilities[utilities.length - 1]);
     }
-    
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 20.0),
       decoration: BoxDecoration(
@@ -51,37 +51,21 @@ class HomeUtilities extends StatelessWidget {
             ],
           ),
 
-          const SizedBox(height: 4.0),
+          const SizedBox(height: 16.0),
 
-          if (utilities.isEmpty)
-            SizedBox(
-              height: 100.0,
-              child: Center(
-                child: Text(
-                  "Không có tiện ích nào",
-                  style: TextStyle(
-                    fontSize: 14.0,
-                    color: R.color.grey,
-                    height: 20.0 / 14.0,
-                  ),
-                ),
-              ),
-            ),
-
-          GridView.builder(
-            padding: EdgeInsets.symmetric(vertical: 12.0),
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: isLargeFont ? 3 : 4,
-              crossAxisSpacing: 0.0,
-              mainAxisSpacing: 16.0,
-              childAspectRatio: 84.0 / 92.0,
-            ),
-            shrinkWrap: true,
-            physics: NeverScrollableScrollPhysics(),
-            itemCount: renderingUtilities.length,
-            itemBuilder: (context, index) {
-              return _buildActivityItem(renderingUtilities[index]);
-            },
+          // use two rows to keep fixed height
+          Row(
+            children: renderingUtilities
+                .getRange(0, renderingUtilities.length ~/ 2)
+                .map((utility) => Expanded(child: _buildActivityItem(utility)))
+                .toList(),
+          ),
+          const SizedBox(height: 16.0),
+          Row(
+            children: renderingUtilities
+                .getRange(renderingUtilities.length ~/ 2, renderingUtilities.length)
+                .map((utility) => Expanded(child: _buildActivityItem(utility)))
+                .toList(),
           ),
         ],
       ),

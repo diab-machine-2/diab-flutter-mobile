@@ -22,13 +22,13 @@ class PopupReminder extends StatefulWidget {
 class _PopupReminderState extends State<PopupReminder> {
   final data = [R.string.every_day_except_sunday.tr(), 'Hàng tuần'];
   final weeks = [
-    R.string.day_in_week_monday,
-    R.string.day_in_week_tuesday,
-    R.string.day_in_week_wednesday,
-    R.string.day_in_week_thursday,
-    R.string.day_in_week_friday,
-    R.string.day_in_week_saturday,
-    R.string.day_in_week_sunday
+    R.string.day_in_week_monday.tr(),
+    R.string.day_in_week_tuesday.tr(),
+    R.string.day_in_week_wednesday.tr(),
+    R.string.day_in_week_thursday.tr(),
+    R.string.day_in_week_friday.tr(),
+    R.string.day_in_week_saturday.tr(),
+    R.string.day_in_week_sunday.tr()
   ];
 
   int selectedIndex = 0;
