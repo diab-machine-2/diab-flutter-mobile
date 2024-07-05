@@ -1,15 +1,18 @@
 import 'package:dio/dio.dart';
 import 'package:medical/src/model/request/SelectRoadmapRequest.dart';
+import 'package:medical/src/model/request/create_calendar_request.dart';
 import 'package:medical/src/model/request/make_comment_request.dart';
 import 'package:medical/src/model/request/make_question_request.dart';
 import 'package:medical/src/model/request/mark_completed_target_request.dart';
 import 'package:medical/src/model/response/app_version_response.dart';
 import 'package:medical/src/model/response/calendar_training_response.dart';
 import 'package:medical/src/model/response/content_welcome_response.dart';
+import 'package:medical/src/model/response/create_calendar_response.dart';
 import 'package:medical/src/model/response/expert_comment_list_response.dart';
 import 'package:medical/src/model/response/lesson_module_response.dart';
 import 'package:medical/src/model/response/question_answer_response.dart';
 import 'package:medical/src/model/response/report_response.dart';
+import 'package:medical/src/widget/calendar/calendar_model.dart';
 import 'package:retrofit/http.dart';
 import 'package:retrofit/retrofit.dart';
 
@@ -377,4 +380,13 @@ abstract class AppApi {
   Future<UserInfoReferralCodeResponse> getUserFromReferralCode(
     @Path('referalCode') String referalCode,
   );
+
+  //  Calendar
+  @POST("/App/Calendar/v1")
+  Future<CreateCalendarResponse> createCalendar(
+      @Body() CreateCalendarRequest request);
+
+  @POST("/App/Calendar/v1/{id}")
+  Future<Map<String, dynamic>?> deleteCalendar(
+      @Body() Map<String, String> request);
 }

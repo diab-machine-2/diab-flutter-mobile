@@ -1,6 +1,7 @@
 import 'package:medical/src/modal/exercrises/exercises_intensity.dart';
 import 'package:medical/src/model/request/complete_exercise_request.dart';
 import 'package:medical/src/model/request/complete_smart_goal_request.dart';
+import 'package:medical/src/model/request/create_calendar_request.dart';
 import 'package:medical/src/model/request/create_menu_request.dart';
 import 'package:medical/src/model/request/create_smart_goal_request.dart';
 import 'package:medical/src/model/request/exercise_feedback_request.dart';
@@ -15,10 +16,12 @@ import 'package:medical/src/model/request/post_survey_request.dart';
 import 'package:medical/src/model/request/send_feedback_course_request.dart';
 import 'package:medical/src/model/request/send_interest_request.dart';
 import 'package:medical/src/model/request/update_lesson_section_request.dart';
-import 'package:medical/src/model/request/update_shared_profile_request.dart';
 import 'package:medical/src/model/request/update_quiz_lesson_request.dart';
+import 'package:medical/src/model/request/update_shared_profile_request.dart';
+import 'package:medical/src/model/request/zoom_token_request.dart';
 import 'package:medical/src/model/response/blood_sugar_template_response.dart';
 import 'package:medical/src/model/response/common_response.dart';
+import 'package:medical/src/model/response/create_calendar_response.dart';
 import 'package:medical/src/model/response/create_menu_response.dart';
 import 'package:medical/src/model/response/create_smart_goal_response.dart';
 import 'package:medical/src/model/response/delete_smart_goal_reponse.dart';
@@ -39,8 +42,8 @@ import 'package:medical/src/model/response/list_transaction_response.dart';
 import 'package:medical/src/model/response/menu_response.dart';
 import 'package:medical/src/model/response/my_lesson_response.dart';
 import 'package:medical/src/model/response/my_progress_response.dart';
-import 'package:medical/src/model/response/question_answer_response.dart';
 import 'package:medical/src/model/response/patient_info_response.dart';
+import 'package:medical/src/model/response/question_answer_response.dart';
 import 'package:medical/src/model/response/report_response.dart';
 import 'package:medical/src/model/response/save_survey_result_response.dart';
 import 'package:medical/src/model/response/smart_goal_detail_response.dart';
@@ -53,7 +56,6 @@ import 'package:medical/src/model/response/upgrade_account_response.dart';
 import 'package:medical/src/model/response/user_info_referral_code_response.dart';
 import 'package:medical/src/model/response/user_info_response.dart';
 import 'package:medical/src/model/response/week_states_response.dart';
-import 'package:medical/src/model/request/zoom_token_request.dart';
 import 'package:medical/src/model/response/zoom_token_response.dart';
 import 'package:medical/src/model/service/api_result.dart';
 import 'package:medical/src/model/service/network_exceptions.dart';
@@ -820,6 +822,29 @@ class AppRepository {
     try {
       final UserInfoReferralCodeResponse response =
           await appClient.getUserFromReferralCode(referalCode);
+      return ApiResult.success(data: response);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
+  // Calendar
+  Future<ApiResult<CreateCalendarResponse>> createCalendar(
+      CreateCalendarRequest request) async {
+    try {
+      final CreateCalendarResponse response =
+          await appClient.createCalendar(request);
+      return ApiResult.success(data: response);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
+  Future<ApiResult<Map<String, dynamic>?>> deleteCalendar(
+      Map<String, String> request) async {
+    try {
+      final Map<String, dynamic>? response =
+          await appClient.deleteCalendar(request);
       return ApiResult.success(data: response);
     } catch (e) {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));

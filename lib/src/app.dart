@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/model/response/create_calendar_response.dart';
 import 'package:medical/src/service/zoom_service.dart';
 import 'package:medical/src/theme/app_theme.dart';
 import 'package:medical/src/utils/app_log.dart';
@@ -33,6 +34,10 @@ import 'package:medical/src/widget/HbA1C/add_hba1c.dart';
 import 'package:medical/src/widget/HbA1C/hba1c_detail_tabbar.dart';
 import 'package:medical/src/widget/HbA1C/hba1c_tabble.dart';
 import 'package:medical/src/widget/base/base_state.dart';
+import 'package:medical/src/widget/calendar/calendar_booking_page.dart';
+import 'package:medical/src/widget/calendar/calendar_model.dart';
+import 'package:medical/src/widget/calendar/calendar_page.dart';
+import 'package:medical/src/widget/calendar/interview_success.dart';
 import 'package:medical/src/widget/flash_screen/flash_screen.dart';
 import 'package:medical/src/widget/login/change_password.dart';
 import 'package:medical/src/widget/login/create_new_password.dart';
@@ -601,21 +606,38 @@ class _AppState extends State<App> {
                   //       return _buildRoute(
                   //           settings, ZoomIosView(calendarID: data?['id']));
                   //   }
-                  
-                  case NavigatorName.meeting_wait_room: {
-                    final args = settings.arguments as MeetingArguments;
-                    return _buildRoute(settings, MeetingWaitRoomPage(args: args));
-                  }
+
+                  case NavigatorName.meeting_wait_room:
+                    {
+                      final args = settings.arguments as MeetingArguments;
+                      return _buildRoute(
+                          settings, MeetingWaitRoomPage(args: args));
+                    }
                   case NavigatorName.meeting_prepare:
                     return _buildRoute(settings, MeetingPreparePage());
-                  case NavigatorName.meeting: {
-                    if (settings.arguments is MeetingCubit) {
-                      final cubit = settings.arguments as MeetingCubit;
-                      return _buildRoute(settings, MeetingPage(null, cubit));
+                  case NavigatorName.calendar_booking:
+                    {
+                      return _buildRoute(settings, CalendarBookingController());
                     }
-                    final args = settings.arguments as MeetingArguments;
-                    return _buildRoute(settings, MeetingPage(args, null));
-                  }
+                  case NavigatorName.calendar:
+                    {
+                      Map<String, dynamic>? args =
+                          settings.arguments as Map<String, dynamic>?;
+                      return _buildRoute(
+                          settings, CalendarController(args!["pickSlot"]));
+                    }
+
+                  case NavigatorName.interview_success:
+                    return _buildRoute(settings, InterviewSuccessController());
+                  case NavigatorName.meeting:
+                    {
+                      if (settings.arguments is MeetingCubit) {
+                        final cubit = settings.arguments as MeetingCubit;
+                        return _buildRoute(settings, MeetingPage(null, cubit));
+                      }
+                      final args = settings.arguments as MeetingArguments;
+                      return _buildRoute(settings, MeetingPage(args, null));
+                    }
                   // test ocr
                   case NavigatorName.test_ocr:
                     return _buildRoute(settings, TestOcrPage());

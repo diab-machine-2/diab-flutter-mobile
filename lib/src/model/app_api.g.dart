@@ -397,7 +397,8 @@ class _AppApi implements AppApi {
     final _result = await _dio.fetch<Map<String, dynamic>>(
         _setStreamType<MyLessonResponse>(
             Options(method: 'POST', headers: _headers, extra: _extra)
-                .compose(_dio.options, 'App/Lesson/MyLessonsOptimizedAndCacheLessonPercent',
+                .compose(_dio.options,
+                    'App/Lesson/MyLessonsOptimizedAndCacheLessonPercent',
                     queryParameters: queryParameters, data: _data)
                 .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
     final value = MyLessonResponse.fromJson(_result.data!);
@@ -515,8 +516,7 @@ class _AppApi implements AppApi {
     final _result = await _dio.fetch<Map<String, dynamic>>(
         _setStreamType<ExerciseMovementResponse>(
             Options(method: 'GET', headers: _headers, extra: _extra)
-                .compose(_dio.options, 'App/ExerciseMovement/All',
-                     data: _data)
+                .compose(_dio.options, 'App/ExerciseMovement/All', data: _data)
                 .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
     final value = ExerciseMovementResponse.fromJson(_result.data!);
     return value;
@@ -1126,5 +1126,43 @@ class _AppApi implements AppApi {
       }
     }
     return requestOptions;
+  }
+
+  @override
+  Future<CreateCalendarResponse> createCalendar(request) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    _data.addAll(request.toJson());
+    final _result = await _dio.fetch<Map<String, dynamic>>(
+        Options(method: 'POST', headers: _headers, extra: _extra)
+            .compose(_dio.options, 'App/Calendar/v1',
+                queryParameters: queryParameters, data: _data)
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl));
+    CalendarCoachModel calendarCoach =
+        CalendarCoachModel.fromJson(_result.data!['CalendarBooked']);
+    final value = CreateCalendarResponse.fromJson(
+        _result.data!['Calendar'],
+        _result.data!['CoachName'] ?? "Coach chưa có tên",
+        _result.data!['CoachAvatar'] ??
+            "https://img.freepik.com/free-photo/beautiful-young-female-doctor-looking-camera-office_1301-7807.jpg",
+        calendarCoach);
+    return value;
+  }
+
+  @override
+  Future<Map<String, dynamic>?> deleteCalendar(
+      Map<String, String> request) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    final calendarId = request['id'];
+    final _result = await _dio.fetch<Map<String, dynamic>>(
+        Options(method: 'DELETE', headers: _headers, extra: _extra)
+            .compose(_dio.options, 'App/Calendar/v1/' + calendarId!,
+                queryParameters: queryParameters, data: request)
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl));
+    return _result.data;
   }
 }

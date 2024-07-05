@@ -22,6 +22,7 @@ import 'package:medical/src/model/response/app_version_response.dart';
 import 'package:medical/src/utils/app_log.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/utils.dart';
+import 'package:medical/src/widget/calendar/calendar_model.dart';
 import 'package:medical/src/widget/helper/http_helper.dart';
 import 'package:medical/src/modal/error/error_model.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -77,6 +78,31 @@ class UserClient extends FetchClient {
         }
       } else {
         final error = Error.fromJson(response);
+        throw error;
+      }
+    } catch (e) {
+      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+    }
+  }
+
+  Future<List<CalendarCoachModel>?> fetchCalendarCoach() async {
+    try {
+      final Response response =
+          await super.fetchData(url: '/App/CalendarCoach/', params: {
+        "courseId": "71546da0-3a83-11ef-956b-3713adbaa661",
+      });
+      if (response.statusCode == 200) {
+        final data = response.data['data'];
+        if (data == null) {
+          return null;
+        } else {
+          List<CalendarCoachModel> calendarCoaches = (data as List)
+              .map((json) => CalendarCoachModel.fromJson(json))
+              .toList();
+          return calendarCoaches;
+        }
+      } else {
+        final error = Error.fromJson(response.data);
         throw error;
       }
     } catch (e) {

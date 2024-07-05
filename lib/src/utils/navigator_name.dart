@@ -65,6 +65,9 @@ class NavigatorName {
   static const String lesson_detail = '/lesson_detail';
   static const String zoom = '/zoom';
   static const String meeting_prepare = '/prepare-meeting';
+  static const String calendar = '/calendar';
+  static const String interview_success = '/interview-success';
+  static const String calendar_booking = '/calendar-booking';
   static const String meeting_wait_room = '/meeting-wait-room';
   static const String meeting = '/meeting';
 

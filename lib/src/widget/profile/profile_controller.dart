@@ -175,6 +175,15 @@ class _ProfileControllerState extends State<ProfileController> with Observer {
                                 },
                               )),
                     const SizedBox(width: 16),
+                    GestureDetector(
+                      onTap: () {
+                        // Handle the tap event here
+                        print('Icon pressed!');
+                        Navigator.pushNamed(
+                            context, NavigatorName.calendar_booking);
+                      },
+                      child: Icon(Icons.calendar_view_day, size: 104),
+                    ),
                     Expanded(
                       child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
