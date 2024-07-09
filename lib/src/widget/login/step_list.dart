@@ -552,6 +552,7 @@ class _StepListControllerState extends State<StepListController>
         "zalo_id": account.id
       });
       final user = await UserClient().fetchUser();
+      await AppSettings.setZaloId(account.id);
       if (user == null) {
         registerAccount(
           account.id, // Ensure account is not null

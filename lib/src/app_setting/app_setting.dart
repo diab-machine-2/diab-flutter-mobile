@@ -32,6 +32,7 @@ class AppSettings {
   static String currentScreenName = '';
   static String? version;
   static String? buildNumber;
+  static String? zaloId;
 
   static bool showed50Message = false;
   static bool showed90Message = false;
@@ -39,6 +40,18 @@ class AppSettings {
   static bool isReloadCurrentUserInfo = false;
 
   static bool isOwnPackage = false;
+
+  static bool isFirstTimeLoginZalo = false;
+
+  static bool isSyncSuccess = false;
+
+  static Future<void> setZaloId(String id) async {
+    appPreference.setData("zaloId", id);
+  }
+
+  static Future<String?> getZaloId() async {
+    return appPreference.getData("zaloId") ?? null;
+  }
 
   static Future<bool> setValueOfClickShortGuideIndex(
       int screenIndex, int value) async {
@@ -293,7 +306,9 @@ class AppSettings {
       appPreference.removeData("hasNewReports");
       appPreference.removeData("reports");
       appPreference.removeData("user");
+      appPreference.removeData("zaloId");
       isOwnPackage = false;
+      isFirstTimeLoginZalo = false;
       final GoogleSignIn _googleSignIn = GoogleSignIn();
       _googleSignIn.signOut();
       final facebookLogin = FacebookLogin();

@@ -123,6 +123,11 @@ class Strings {
   String get help_center => 'help_center';
   String get blogs => 'blogs';
   String get app_reviews => 'app_reviews';
+  String get first_login_zalo => 'first_login_zalo';
+  String get not_yet => 'not_yet';
+  String get used_to => 'used_to';
+  String get question_sync_zalo => 'question_sync_zalo';
+  String get input_for_sync => 'input_for_sync';
   String get profile => 'profile';
   String get save => 'save';
   String get name => 'name';
