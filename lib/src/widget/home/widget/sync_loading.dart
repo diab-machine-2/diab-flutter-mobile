@@ -1,7 +1,6 @@
 import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_observer/Observable.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/repo/login/login_client.dart';
@@ -53,23 +52,25 @@ class _SyncLoadingControllerState extends State<SyncLoadingController> {
   }
 
   Future<void> handle() async {
-    await LoginClient().syncAccount(
-        widget.phoneNumber, widget.providerKey, widget.providerName);
-    await AppSettings.logout(isNavigateToStepListScreen: false);
-    await loginZalo();
-    await AppSettings.setIsFirstTimeLoginZalo(false);
-    AppSettings.isSyncSuccess = true;
+    try {
+      await LoginClient().syncAccount(
+          widget.phoneNumber, widget.providerName, widget.providerKey);
+      await AppSettings.logout(isNavigateToStepListScreen: false);
+      await loginZalo();
+      AppSettings.isSyncSuccess = true;
+      await AppSettings.setIsFirstTimeLoginZalo(false);
+    } catch (e) {
+      Navigator.pushReplacementNamed(context, NavigatorName.tabbar);
+      Message.showToastMessage(context, "Quá trình sync data thất bại");
+    }
   }
 
   Future<void> loginZalo() async {
-    // if (_retry > 3) {
-    //   Message.showToastMessage(context, R.string.error_can_not_connect_to_server.tr());
-    //   return;
-    // }
     ZaloLoginResult? account;
     try {
       _loginZaloProgress = _LoginZaloProgress.inprogress;
       account = await ZaloService().login();
+      await AppSettings.setZaloId(account.id);
       _loginZaloProgress = _LoginZaloProgress.gottoken;
       BotToast.showLoading();
       await LoginClient().login({

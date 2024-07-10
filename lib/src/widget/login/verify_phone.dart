@@ -496,8 +496,8 @@ class _VerifyPhoneControllerState extends State<VerifyPhoneController> {
 
       Navigator.pushNamed(context, NavigatorName.sync_loading, arguments: {
         'phoneNumber': widget.phone!,
-        'providerKey': 'Zalo',
-        'providerName': zaloId,
+        'providerKey': zaloId,
+        'providerName': 'Zalo',
       });
       print('handle sync account');
     } catch (e) {
