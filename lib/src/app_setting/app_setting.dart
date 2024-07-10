@@ -53,6 +53,16 @@ class AppSettings {
     return appPreference.getData("zaloId") ?? null;
   }
 
+  static Future<void> setIsFirstTimeLoginZalo(bool value) async {
+    isFirstTimeLoginZalo = value;
+    appPreference.setData("isFirstTimeLoginZalo", value);
+  }
+
+  static Future<bool> getIsFirstTimeLoginZalo() async {
+    bool result = await appPreference.getBoolData("isFirstTimeLoginZalo");
+    return result;
+  }
+
   static Future<bool> setValueOfClickShortGuideIndex(
       int screenIndex, int value) async {
     List<int> valueOfClickShortGuideList = await getValueOfClickShortGuide();
@@ -307,8 +317,8 @@ class AppSettings {
       appPreference.removeData("reports");
       appPreference.removeData("user");
       appPreference.removeData("zaloId");
+      appPreference.removeData("isFirstTimeLoginZalo");
       isOwnPackage = false;
-      isFirstTimeLoginZalo = false;
       final GoogleSignIn _googleSignIn = GoogleSignIn();
       _googleSignIn.signOut();
       final facebookLogin = FacebookLogin();

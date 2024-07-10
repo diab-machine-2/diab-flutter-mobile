@@ -132,6 +132,7 @@ class _HomeControllerState extends State<HomeController> with Observer {
     Future.delayed(Duration.zero, () async {
       if (AppSettings.isFirstTimeLoginZalo) {
         _showModalSyncAccount(context);
+        await AppSettings.setIsFirstTimeLoginZalo(false);
       }
       if (AppSettings.isSyncSuccess) {
         _showDialogWarning();

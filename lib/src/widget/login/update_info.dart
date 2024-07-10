@@ -591,7 +591,7 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
         await UserClient().fetchUser();
         Navigator.popUntil(context, (route) => route.isFirst);
         if (widget.type == 'zalo') {
-          AppSettings.isFirstTimeLoginZalo = true; // use Observable
+          await AppSettings.setIsFirstTimeLoginZalo(true);
         }
         Navigator.pushReplacementNamed(context, NavigatorName.tabbar);
       }

@@ -57,8 +57,8 @@ class _SyncLoadingControllerState extends State<SyncLoadingController> {
         widget.phoneNumber, widget.providerKey, widget.providerName);
     await AppSettings.logout(isNavigateToStepListScreen: false);
     await loginZalo();
+    await AppSettings.setIsFirstTimeLoginZalo(false);
     AppSettings.isSyncSuccess = true;
-    AppSettings.isFirstTimeLoginZalo = false;
   }
 
   Future<void> loginZalo() async {
@@ -82,7 +82,6 @@ class _SyncLoadingControllerState extends State<SyncLoadingController> {
       });
       await UserClient().fetchUser();
       loginSuccess("Zalo");
-      AppSettings.isFirstTimeLoginZalo = false;
       Navigator.popUntil(context, (route) => route.isFirst);
       Navigator.pushReplacementNamed(context, NavigatorName.tabbar);
     } on ZaloLoginBackException catch (_) {
