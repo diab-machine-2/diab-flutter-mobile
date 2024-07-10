@@ -35,6 +35,14 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
 
   HomeLoaded? _cached;
 
+  int get _currentWeek {
+    if (AppSettings.userInfo?.ownPackage?.ownRoadmap?.currentWeek != null) {
+      int week = AppSettings.userInfo!.ownPackage!.ownRoadmap!.currentWeek!;
+      return week < 0 ? 0 : week;
+    }
+    return 0;
+  }
+
   @override
   Stream<HomeState> mapEventToState(HomeEvent event) async* {
     if (event is HomeFetchActivityEvent) {
@@ -124,16 +132,15 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   Stream<HomeState> _fetchActivities() async* {
     // load today target
     final repository = AppRepository();
-    final now = DateTime.now();
-    final currentDay = DateTime(now.year, now.month, now.day).millisecondsSinceEpoch ~/ 1000;
-    final currentWeek = 0;
-    final apiResult = await repository.getListSmartGoal(day: currentDay, week: currentWeek);
+    final currentDay = DateUtil.getCurrentDayInMillis();
+    final apiResult = await repository.getListSmartGoal(day: currentDay, week: _currentWeek);
     var currentState = state as HomeLoaded;
     apiResult.when(
       success: (SmartGoalListReponse response) {
-        if (response.data?.daily != null) {
-          final activities =
-              response.data!.daily!.where((e) => e != null).map((e) => e!).map((e) {
+        List<HomeActivityData> combinedActivities = [];
+        if (response.data?.daily != null || response.data?.weekly != null) {
+          final dailyActivities =
+              (response.data?.daily ?? []).where((e) => e != null).map((e) => e!).map((e) {
             final ScheduleType type = ScheduleTypeExtend.getTypeFromIndex(e.type);
             final activity = HomeActivityData(
               id: e.id!,
@@ -145,7 +152,22 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
             );
             return activity;
           }).toList();
-          currentState = currentState.copyWith(activities: activities, activityLoading: false);
+          combinedActivities.addAll(dailyActivities);
+          final weeklyActivities =
+              (response.data?.weekly ?? []).where((e) => e != null).map((e) => e!).map((e) {
+            final ScheduleType type = ScheduleTypeExtend.getTypeFromIndex(e.type);
+            final activity = HomeActivityData(
+              id: e.id!,
+              icon: type.icon,
+              title: type.title,
+              type: type,
+              smartGoal: e,
+              description: e.description,
+            );
+            return activity;
+          }).toList();
+          combinedActivities.addAll(weeklyActivities);
+          currentState = currentState.copyWith(activities: combinedActivities, activityLoading: false);
         } else {
           currentState = currentState.copyWith(activityLoading: false);
         }
@@ -192,7 +214,9 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
 
   Stream<HomeState> _fetchLessons() async* {
     final learningClient = LearningClient();
-    final lessonsResponse = await learningClient.fetchLesson().catchError((e, s) {
+    final lessonsResponse = await learningClient.fetchLesson(
+      week: _currentWeek,
+    ).catchError((e, s) {
       TrackingManager.recordError(e, s);
       return <LessonModel>[];
     }, test: (error) => true);

@@ -391,35 +391,36 @@ class _HomeControllerState extends State<HomeController>
                           const SizedBox(height: 16.0),
 
                           // Lessons
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                            child: HomeLesson(
-                              lessons: stateLoaded?.lessons ?? [],
-                              onLessonTap: (lesson) async {
-                                ActivityListTracking.clickLessonItem(
-                                  objectId: lesson.id,
-                                  objectIndex: stateLoaded!.lessons!.indexOf(lesson),
-                                  objectTitle: lesson.name,
-                                );
+                          if (stateLoaded?.lessons != null && stateLoaded!.lessons!.isNotEmpty) ...[
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                              child: HomeLesson(
+                                lessons: stateLoaded.lessons!,
+                                onLessonTap: (lesson) async {
+                                  ActivityListTracking.clickLessonItem(
+                                    objectId: lesson.id,
+                                    objectIndex: stateLoaded!.lessons!.indexOf(lesson),
+                                    objectTitle: lesson.name,
+                                  );
 
-                                await NavigationUtil.navigatePage(
-                                  context,
-                                  LessonDetailPage(
-                                    lessonType: lesson.type,
-                                    lessonId: lesson.id,
-                                    onComplete: (_, __) {},
-                                  ),
-                                );
-                              },
-                              onLike: (lesson) {},
-                              onComment: (lesson) {},
-                              onShare: (lesson) {
-                                _homeBloc.shareLesson(lesson.id, context);
-                              },
+                                  await NavigationUtil.navigatePage(
+                                    context,
+                                    LessonDetailPage(
+                                      lessonType: lesson.type,
+                                      lessonId: lesson.id,
+                                      onComplete: (_, __) {},
+                                    ),
+                                  );
+                                },
+                                onLike: (lesson) {},
+                                onComment: (lesson) {},
+                                onShare: (lesson) {
+                                  _homeBloc.shareLesson(lesson.id, context);
+                                },
+                              ),
                             ),
-                          ),
-
-                          const SizedBox(height: 16.0),
+                            const SizedBox(height: 16.0),
+                          ],
 
                           // Popular News
                           Padding(

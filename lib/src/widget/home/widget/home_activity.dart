@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
@@ -34,7 +32,6 @@ class HomeActivity extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final textScaleFactor = max(1.0, MediaQuery.of(context).textScaleFactor);
     List<HomeActivityData> renderingActivities =
         activities.where((e) => e.smartGoal.state != 1).toList();
     bool isFinishedAll = renderingActivities.isEmpty && activities.isNotEmpty;
@@ -161,19 +158,19 @@ class HomeActivity extends StatelessWidget {
               for (var activity in renderingActivities)
                 Padding(
                   padding: const EdgeInsets.only(bottom: 12.0),
-                  child: _buildActivityItem(activity, textScaleFactor),
+                  child: _buildActivityItem(activity),
                 ),
             if (!isEmpty && isHaveMore && !expanded)
               for (var activity in renderingActivities.take(3))
                 Padding(
                   padding: const EdgeInsets.only(bottom: 12.0),
-                  child: _buildActivityItem(activity, textScaleFactor),
+                  child: _buildActivityItem(activity),
                 ),
             if (!isEmpty && isHaveMore && expanded)
               for (var activity in renderingActivities)
                 Padding(
                   padding: const EdgeInsets.only(bottom: 12.0),
-                  child: _buildActivityItem(activity, textScaleFactor),
+                  child: _buildActivityItem(activity),
                 ),
 
             // button more
@@ -212,12 +209,11 @@ class HomeActivity extends StatelessWidget {
     );
   }
 
-  Widget _buildActivityItem(HomeActivityData activity, double textScaleFactor) {
+  Widget _buildActivityItem(HomeActivityData activity) {
     return InkWell(
       onTap: () => onActivityTap(activity),
       borderRadius: BorderRadius.circular(12.0),
       child: Container(
-        height: 64.0 * textScaleFactor,
         padding: const EdgeInsets.all(12.0),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(12.0),
