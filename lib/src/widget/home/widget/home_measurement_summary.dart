@@ -64,11 +64,10 @@ class MeasurementSummary extends StatelessWidget {
           const SizedBox(height: 20.0),
 
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               // Health Profile Button
-              const SizedBox(),
               // _buildHealthProfileButton(),
 
               // Add measurement
