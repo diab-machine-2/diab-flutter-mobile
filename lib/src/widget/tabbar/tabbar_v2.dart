@@ -337,7 +337,7 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
   }
 }
 
-showPopupWeight() {
+void showPopupWeight({String? nextRoute, dynamic args}) {
   showDialog(
     barrierColor: R.color.color0xff003F38.withOpacity(0.5),
     context: navigatorKey.currentContext!,
@@ -346,21 +346,19 @@ showPopupWeight() {
           try {
             BotToast.showLoading();
             UserModel userInfo = AppSettings.userInfo!;
-            userInfo = userInfo.copyWith(height: number?.toDouble());
-            await UserClient()
-                .updateUserInfo(AppSettings.userInfo!.id, userInfo);
+            userInfo = userInfo.copyWith(weight: number?.toDouble());
+            await UserClient().updateUserInfo(AppSettings.userInfo!.id, userInfo);
             await UserClient().fetchUser();
             Navigator.pushNamed(
-                navigatorKey.currentContext!, NavigatorName.add_exercrises,
-                arguments: {'type': 'input'});
+                navigatorKey.currentContext!, nextRoute ?? NavigatorName.add_exercrises,
+                arguments: args ?? {'type': 'input'});
             BotToast.closeAllLoading();
           } catch (e, _) {
             BotToast.closeAllLoading();
             if (e is Error) {
               Message.showToastMessage(navigatorKey.currentContext!, e.message);
             } else {
-              Message.showToastMessage(
-                  navigatorKey.currentContext!, e.toString());
+              Message.showToastMessage(navigatorKey.currentContext!, e.toString());
             }
           }
         },

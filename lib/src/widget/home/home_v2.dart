@@ -276,7 +276,7 @@ class _HomeControllerState extends State<HomeController>
                             onAddMeasurement: () => _showAddMeasurement(context),
                             onHealthProfile: () {},
                             onMeasurement: (routeName, args) {
-                              if (_checkWeightInputDialog(routeName) == false) {
+                              if (_checkWeightInputDialog(routeName, args: args) == false) {
                                 return;
                               }
                               if (routeName != null) {
@@ -483,7 +483,7 @@ class _HomeControllerState extends State<HomeController>
       measurements: measurementIndexes,
       onItemTap: (item) {
         Navigator.pop(context);
-        if (_checkWeightInputDialog(item.navigatorName) == false) {
+        if (_checkWeightInputDialog(item.navigatorName, args: item.args) == false) {
           return;
         }
         Navigator.pushNamed(context, item.navigatorName, arguments: item.args);
@@ -504,10 +504,10 @@ class _HomeControllerState extends State<HomeController>
     );
   }
 
-  bool _checkWeightInputDialog(String? routeName) {
+  bool _checkWeightInputDialog(String? routeName, {dynamic args}) {
     if (routeName == NavigatorName.add_exercrises || routeName == NavigatorName.add_food) {
       if (AppSettings.userInfo?.weight == null || AppSettings.userInfo!.weight == 0) {
-        showPopupWeight();
+        showPopupWeight(nextRoute: routeName, args: args);
         return false;
       }
     }
