@@ -418,7 +418,9 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
                                                       height: 24,
                                                     ),
                                                     SizedBox(width: 4),
-                                                    Text(R.string.them_mon_an.tr(),
+                                                    Text(
+                                                        R.string.them_mon_an
+                                                            .tr(),
                                                         style: TextStyle(
                                                             color: R.color
                                                                 .mainColor,
@@ -561,7 +563,8 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
                                       children: [
-                                        Text(R.string.luong_calo_ban_da_nap.tr(),
+                                        Text(
+                                            R.string.luong_calo_ban_da_nap.tr(),
                                             style: TextStyle(
                                                 fontSize: 16,
                                                 fontWeight: FontWeight.w600)),
@@ -581,7 +584,8 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
                                                 fontWeight: FontWeight.w400),
                                             decoration: InputDecoration(
                                                 hintText: R.string
-                                                    .luong_calo_ban_da_nap.tr(),
+                                                    .luong_calo_ban_da_nap
+                                                    .tr(),
                                                 contentPadding:
                                                     EdgeInsets.only(bottom: 8),
                                                 border: InputBorder.none,
@@ -992,7 +996,7 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
           selectedTimeFrame?.id,
           note,
           addTotalCalo
-              ? [FoodModel(id: otherFoodId, quantity: totalKcal)]
+              ? [FoodModel(id: otherFoodId, portion: totalKcal)]
               : selectedFoods,
           paths);
       if (result == true) {
