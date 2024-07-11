@@ -505,7 +505,7 @@ class _HomeControllerState extends State<HomeController>
   }
 
   bool _checkWeightInputDialog(String? routeName, {dynamic args}) {
-    if (routeName == NavigatorName.add_exercrises || routeName == NavigatorName.add_food) {
+    if (routeName == NavigatorName.add_exercrises) {
       if (AppSettings.userInfo?.weight == null || AppSettings.userInfo!.weight == 0) {
         showPopupWeight(nextRoute: routeName, args: args);
         return false;
