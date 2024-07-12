@@ -135,7 +135,7 @@ class _HomeControllerState extends State<HomeController> with Observer {
         await AppSettings.setIsFirstTimeLoginZalo(false);
       }
       if (AppSettings.isSyncSuccess) {
-        _showDialogWarning();
+        _showDialogSuccess();
         AppSettings.isSyncSuccess = false;
       }
     });
@@ -290,10 +290,108 @@ class _HomeControllerState extends State<HomeController> with Observer {
     return true;
   }
 
-  _showModalSyncAccount(BuildContext context) {
-    showModalBottomSheet(
+  void _showModalSyncAccount(BuildContext context) {
+    final deviceWidth = MediaQuery.of(context).size.width;
+
+    showDialog(
       context: context,
-      builder: (context) => SyncAccountModal(),
+      builder: (context) {
+        return Dialog(
+          insetPadding:
+              EdgeInsets.all(10), // Adjust padding to fit screen better
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20), // Adjust the radius here
+          ),
+          child: Container(
+            width: deviceWidth * 0.9,
+            padding: EdgeInsets.all(30),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Image.asset(R.drawable.sync_account_theme),
+                Padding(
+                  padding: const EdgeInsets.only(top: 16.0),
+                  child: Text(
+                    'Bạn đã từng dùng số điện thoại để đăng nhập DiaB chưa?',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: R.color.textDark,
+                      fontSize: 20,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 14.0),
+                  child: Text(
+                    'Cập nhật số điện thoại đã từng sử dụng để đồng bộ thông tin và bảo mật tài khoản tốt hơn',
+                    textAlign: TextAlign.center,
+                    style: R.style.normalTextStyle,
+                  ),
+                ),
+                SizedBox(height: 14),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.pop(context);
+                      },
+                      child: Container(
+                        width: deviceWidth * 0.35,
+                        height: 43,
+                        decoration: BoxDecoration(
+                          color: R.color.gray_btn,
+                          borderRadius: BorderRadius.circular(200),
+                        ),
+                        child: Center(
+                          child: Text(
+                            R.string.not_yet.tr(),
+                            style: TextStyle(
+                              color: R.color.dark,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w800,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.pushNamed(context, NavigatorName.sync_screen);
+                      },
+                      child: Container(
+                        height: 43,
+                        width: deviceWidth * 0.35,
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(999),
+                            gradient: LinearGradient(
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                                colors: [
+                                  Color(0xFF4BB2AB),
+                                  Color(0xFF01857A),
+                                  Color(0xFF008479)
+                                ])),
+                        child: Center(
+                          child: Text(
+                            R.string.used_to.tr(),
+                            style: TextStyle(
+                              color: R.color.white,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 
@@ -590,6 +688,11 @@ class _HomeControllerState extends State<HomeController> with Observer {
                                   _showModalSyncAccount(context);
                                 },
                                 child: Text("Click to show sync")),
+                            ElevatedButton(
+                                onPressed: () {
+                                  _showDialogSuccess();
+                                },
+                                child: Text("Click to show ")),
                           ],
                         ),
                       ),
@@ -1149,71 +1252,80 @@ class _HomeControllerState extends State<HomeController> with Observer {
     );
   }
 
-  _showDialogWarning() {
+  void _showDialogSuccess() {
     showDialog(
       context: context,
       builder: (context) {
-        return Container(
-          child: AlertDialog(
-              contentPadding: EdgeInsets.all(0),
-              content: Stack(children: [
-                Container(
-                  padding: EdgeInsets.all(30),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Image.asset(R.drawable.sync_success),
-                      Padding(
-                        padding: const EdgeInsets.only(top: 16.0),
-                        child: Text('Cập nhật thành công',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                                color: R.color.textDark,
-                                fontSize: 20,
-                                fontWeight: FontWeight.w700)),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(top: 14.0),
-                        child: Text(
-                            'Tài khoản của bạn đã được đồng bộ và bảo vệ',
-                            textAlign: TextAlign.center,
-                            style: R.style.normalTextStyle),
-                      ),
-                      SizedBox(height: 14),
-                      GestureDetector(
-                          onTap: () {
-                            Navigator.pop(context);
-                          },
-                          child: Container(
-                            height: 43,
-                            decoration: BoxDecoration(
-                                color: R.color.red,
-                                borderRadius: BorderRadius.circular(200),
-                                gradient: LinearGradient(colors: [
-                                  R.color.greenGradientBottom,
-                                  R.color.greenGradientBottom
-                                ])),
-                            child: Center(
-                              child: Text('Tôi đã hiểu',
-                                  style: TextStyle(
-                                      color: R.color.white,
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600)),
-                            ),
-                          )),
-                    ],
+        final deviceWidth = MediaQuery.of(context).size.width;
+
+        return Dialog(
+          insetPadding:
+              EdgeInsets.all(10), // Adjust padding to fit screen better
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20), // Adjust the radius here
+          ),
+          child: Container(
+            width: deviceWidth * 0.9,
+            padding: EdgeInsets.all(30),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Image.asset(
+                  R.drawable.sync_success,
+                  width: deviceWidth * 0.6,
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 16.0),
+                  child: Text(
+                    'Cập nhật thành công',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: R.color.textDark,
+                      fontSize: 20,
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
                 ),
-                Positioned(
-                  top: 0,
-                  right: 0,
-                  child: IconButton(
-                      icon: Icon(Icons.close, color: R.color.color0xffBEC0C8),
-                      onPressed: () {
-                        Navigator.pop(context);
-                      }),
-                )
-              ])),
+                Padding(
+                  padding: const EdgeInsets.only(top: 14.0),
+                  child: Text(
+                    'Tài khoản của bạn đã được đồng bộ và bảo vệ',
+                    textAlign: TextAlign.center,
+                    style: R.style.normalTextStyle,
+                  ),
+                ),
+                SizedBox(height: 14),
+                GestureDetector(
+                  onTap: () {
+                    Navigator.pop(context);
+                  },
+                  child: Container(
+                    height: 43,
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(999),
+                        gradient: LinearGradient(
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                            colors: [
+                              Color(0xFF4BB2AB),
+                              Color(0xFF01857A),
+                              Color(0xFF008479)
+                            ])),
+                    child: Center(
+                      child: Text(
+                        'Quay về trang chủ',
+                        style: TextStyle(
+                          color: R.color.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
         );
       },
     );

@@ -45,7 +45,10 @@ class AppSettings {
 
   static bool isSyncSuccess = false;
 
+  static String zaloExternalToken = "";
+
   static Future<void> setZaloId(String id) async {
+    zaloId = id;
     appPreference.setData("zaloId", id);
   }
 

@@ -66,32 +66,23 @@ class _SyncLoadingControllerState extends State<SyncLoadingController> {
   }
 
   Future<void> loginZalo() async {
-    ZaloLoginResult? account;
     try {
-      _loginZaloProgress = _LoginZaloProgress.inprogress;
-      account = await ZaloService().login();
-      await AppSettings.setZaloId(account.id);
-      _loginZaloProgress = _LoginZaloProgress.gottoken;
       BotToast.showLoading();
       await LoginClient().login({
         "client_id": Const.CLIENT_ID,
         "client_secret": Const.CLIENT_SECRET,
         "grant_type": "external",
-        "external_token": account.accessToken, // Ensure account is not null
+        "external_token":
+            AppSettings.zaloExternalToken, // Ensure account is not null
         "provider": 'Zalo',
-        "zalo_id": account.id
+        "zalo_id": AppSettings.zaloId
       });
       await UserClient().fetchUser();
       loginSuccess("Zalo");
       Navigator.popUntil(context, (route) => route.isFirst);
       Navigator.pushReplacementNamed(context, NavigatorName.tabbar);
-    } on ZaloLoginBackException catch (_) {
-      _loginZaloProgress = _LoginZaloProgress.none;
-    } on ZaloLoginException catch (e, s) {
-      _loginZaloProgress = _LoginZaloProgress.none;
-      TrackingManager.recordError(e, s);
-      Message.showToastMessage(context, "zalo_first_failed_message".tr());
-    } catch (error) {
+    } catch (e) {
+      throw e;
     } finally {
       BotToast.closeAllLoading();
     }

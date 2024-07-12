@@ -64,7 +64,7 @@ class _SyncScreenControllerState extends State<SyncScreenController> {
                         children: [
                           Icon(Icons.west, size: 24),
                           Text(
-                            "Cập nhật số điện thoại",
+                            "Đồng bộ số điện thoại",
                             style: TextStyle(
                                 color: R.color.textDark,
                                 fontSize: 16,
@@ -97,8 +97,9 @@ class _SyncScreenControllerState extends State<SyncScreenController> {
                             begin: Alignment.topLeft,
                             end: Alignment.centerRight,
                             colors: [
-                              R.color.greenGradientTop,
-                              R.color.greenGradientBottom
+                              Color(0xFF4BB2AB),
+                              Color(0xFF01857A),
+                              Color(0xFF008479)
                             ],
                           ),
                         ),
