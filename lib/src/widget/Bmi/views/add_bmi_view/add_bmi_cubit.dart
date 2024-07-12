@@ -1,3 +1,4 @@
+import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -102,37 +103,44 @@ class AddBmiCubit extends Cubit<CubitBaseState> {
   }
 
   submitData() async {
-    final note = controllerNote.text;
-    emit(LoadingState());
+    try {
+      final note = controllerNote.text;
+      emit(LoadingState());
 
-    List<String> paths = [];
-    for (var file in files) {
-      paths.add(file.path);
-    }
-    final result = await WeightClient().postWeightInput(
-        (selectedDate.millisecondsSinceEpoch ~/ 1000).toInt(),
-        paths,
-        selectedWeight.toString(),
-        selectedHip == 0 ? null : selectedHip.toString(),
-        selectedHeight.toString(),
-        note,
-        selectedTimeFrame!.id);
-    if (result == true) {
-      Observable.instance.notifyObservers([], notifyName: "Weight_change_data");
-      await TrackingManager.analytics.logEvent(
-        name: 'kpi_add_success',
-        parameters: {
-          "screen_name": 'kpi_body_weight_add',
-          'object_type': 'kpi_body_weight',
-          'object_title': 'Chỉ số cân nặng'
-        },
-      );
-      await HomeClient().completeSmartGoal(
-          selectedDate, goalId ?? '', 1, ScheduleType.weight.typeIndex);
-      if (AppSettings.userInfo!.height != selectedHeight) {
-        updateHeightProfile();
+      List<String> paths = [];
+      for (var file in files) {
+        paths.add(file.path);
       }
-      emit(DataLoadedState());
+      final result = await WeightClient().postWeightInput(
+          (selectedDate.millisecondsSinceEpoch ~/ 1000).toInt(),
+          paths,
+          selectedWeight.toString(),
+          selectedHip == 0 ? null : selectedHip.toString(),
+          selectedHeight.toString(),
+          note,
+          selectedTimeFrame!.id);
+      if (result == true) {
+        Observable.instance
+            .notifyObservers([], notifyName: "Weight_change_data");
+        await TrackingManager.analytics.logEvent(
+          name: 'kpi_add_success',
+          parameters: {
+            "screen_name": 'kpi_body_weight_add',
+            'object_type': 'kpi_body_weight',
+            'object_title': 'Chỉ số cân nặng'
+          },
+        );
+        await HomeClient().completeSmartGoal(
+            selectedDate, goalId ?? '', 1, ScheduleType.weight.typeIndex);
+        if (AppSettings.userInfo!.height != selectedHeight) {
+          updateHeightProfile();
+        }
+        emit(DataLoadedState());
+      }
+    } catch (e) {
+      BotToast.closeAllLoading();
+    } finally {
+      BotToast.closeAllLoading();
     }
   }
 
