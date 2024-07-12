@@ -683,16 +683,6 @@ class _HomeControllerState extends State<HomeController> with Observer {
                             BannerShareApp(),
                             CourseSuggest(key: courseSuggestKey, position: 1),
                             SizedBox(height: 25),
-                            ElevatedButton(
-                                onPressed: () {
-                                  _showModalSyncAccount(context);
-                                },
-                                child: Text("Click to show sync")),
-                            ElevatedButton(
-                                onPressed: () {
-                                  _showDialogSuccess();
-                                },
-                                child: Text("Click to show ")),
                           ],
                         ),
                       ),
