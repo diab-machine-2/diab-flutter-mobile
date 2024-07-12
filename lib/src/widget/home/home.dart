@@ -17,9 +17,11 @@ import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/Food/widget/energy_chart.dart';
 import 'package:medical/src/widget/HbA1C/widget/course_suggest.dart';
+import 'package:medical/src/widget/base/text_field_custom.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/home/widget/header.dart';
+import 'package:medical/src/widget/home/widget/sync_modal.dart';
 import 'package:medical/src/widget/list_service/list_service_page.dart';
 import 'package:medical/src/widget/my_plan_screens/activity_tab/create_goal/create_goal_page.dart';
 import 'package:medical/src/widget/nipro/health_app/widgets/request_health_connect.dart';
@@ -32,8 +34,9 @@ import 'welcome_package_screen/welcome_package_screen.dart';
 import 'package:medical/src/widget/nipro/health_app/blocs/healthApp_bloc.dart';
 
 class HomeController extends StatefulWidget {
-  const HomeController({this.sharedCode});
+  const HomeController({this.sharedCode, this.syncAccountAccess});
   final String? sharedCode;
+  final bool? syncAccountAccess;
 
   @override
   _HomeControllerState createState() => _HomeControllerState();
@@ -41,6 +44,10 @@ class HomeController extends StatefulWidget {
 
 class _HomeControllerState extends State<HomeController> with Observer {
   GlobalKey<CourseSuggestState> courseSuggestKey = GlobalKey();
+  final GlobalKey<TextFieldCustomState> phoneKey = GlobalKey();
+  FocusNode phoneFocusNode = FocusNode();
+  String phone = '';
+
   var data = [
     {
       'name': R.string.duong_huyet,
@@ -105,6 +112,9 @@ class _HomeControllerState extends State<HomeController> with Observer {
   var user = AppSettings.userInfo;
   var popupStore = PopupStore;
   HomeModel? model;
+
+  bool isSyncAccount = false;
+
   String _urlPopup = '';
 
   @override
@@ -118,6 +128,17 @@ class _HomeControllerState extends State<HomeController> with Observer {
     }
     firebaseSetup();
     initHealthApp();
+
+    Future.delayed(Duration.zero, () async {
+      if (AppSettings.isFirstTimeLoginZalo) {
+        _showModalSyncAccount(context);
+        await AppSettings.setIsFirstTimeLoginZalo(false);
+      }
+      if (AppSettings.isSyncSuccess) {
+        _showDialogWarning();
+        AppSettings.isSyncSuccess = false;
+      }
+    });
   }
 
   initHealthApp() async {
@@ -186,6 +207,7 @@ class _HomeControllerState extends State<HomeController> with Observer {
         HealthAppBloc()..add(SubmitSyncData(true));
       }
     }
+
     if (notifyName == Const.NAVIGATE_TO_PROFILE_TAB) {
       _refresh();
     }
@@ -268,6 +290,13 @@ class _HomeControllerState extends State<HomeController> with Observer {
     return true;
   }
 
+  _showModalSyncAccount(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) => SyncAccountModal(),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width - 32;
@@ -276,7 +305,6 @@ class _HomeControllerState extends State<HomeController> with Observer {
         child: BlocBuilder<HomeBloc, HomeState>(
             builder: (BuildContext context, HomeState state) {
           currentContext = context;
-
           if (state is HomeInitial) {
             BlocProvider.of<HomeBloc>(context).add(FetchHome());
           }
@@ -557,6 +585,11 @@ class _HomeControllerState extends State<HomeController> with Observer {
                             BannerShareApp(),
                             CourseSuggest(key: courseSuggestKey, position: 1),
                             SizedBox(height: 25),
+                            ElevatedButton(
+                                onPressed: () {
+                                  _showModalSyncAccount(context);
+                                },
+                                child: Text("Click to show sync")),
                           ],
                         ),
                       ),
@@ -1113,6 +1146,76 @@ class _HomeControllerState extends State<HomeController> with Observer {
           ),
         )
       ]),
+    );
+  }
+
+  _showDialogWarning() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return Container(
+          child: AlertDialog(
+              contentPadding: EdgeInsets.all(0),
+              content: Stack(children: [
+                Container(
+                  padding: EdgeInsets.all(30),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Image.asset(R.drawable.sync_success),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 16.0),
+                        child: Text('Cập nhật thành công',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                                color: R.color.textDark,
+                                fontSize: 20,
+                                fontWeight: FontWeight.w700)),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 14.0),
+                        child: Text(
+                            'Tài khoản của bạn đã được đồng bộ và bảo vệ',
+                            textAlign: TextAlign.center,
+                            style: R.style.normalTextStyle),
+                      ),
+                      SizedBox(height: 14),
+                      GestureDetector(
+                          onTap: () {
+                            Navigator.pop(context);
+                          },
+                          child: Container(
+                            height: 43,
+                            decoration: BoxDecoration(
+                                color: R.color.red,
+                                borderRadius: BorderRadius.circular(200),
+                                gradient: LinearGradient(colors: [
+                                  R.color.greenGradientBottom,
+                                  R.color.greenGradientBottom
+                                ])),
+                            child: Center(
+                              child: Text('Tôi đã hiểu',
+                                  style: TextStyle(
+                                      color: R.color.white,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600)),
+                            ),
+                          )),
+                    ],
+                  ),
+                ),
+                Positioned(
+                  top: 0,
+                  right: 0,
+                  child: IconButton(
+                      icon: Icon(Icons.close, color: R.color.color0xffBEC0C8),
+                      onPressed: () {
+                        Navigator.pop(context);
+                      }),
+                )
+              ])),
+        );
+      },
     );
   }
 
