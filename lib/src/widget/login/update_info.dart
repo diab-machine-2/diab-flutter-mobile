@@ -4,6 +4,8 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker_plus/flutter_datetime_picker_plus.dart';
 import 'package:flutter_facebook_login/flutter_facebook_login.dart';
+import 'package:flutter_observer/Observable.dart';
+import 'package:flutter_observer/Observer.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:medical/res/R.dart';
@@ -588,6 +590,9 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
       if (result == true) {
         await UserClient().fetchUser();
         Navigator.popUntil(context, (route) => route.isFirst);
+        if (widget.type == 'zalo') {
+          await AppSettings.setIsFirstTimeLoginZalo(true);
+        }
         Navigator.pushReplacementNamed(context, NavigatorName.tabbar);
       }
       BotToast.closeAllLoading();
