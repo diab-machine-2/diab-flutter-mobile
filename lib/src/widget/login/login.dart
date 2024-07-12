@@ -271,6 +271,8 @@ class _LoginControllerState extends State<LoginController> {
           isLogin = true;
         });
         FocusScope.of(context).requestFocus(passwordFocusNode);
+      } else if (isExistAccount && !isActive) {
+        phoneKey.currentState!.validate(R.string.tai_khoan_het_hieu_luc.tr());
       } else {
         sendOtpRegister(phone, phoneNumberConfirmed);
       }
