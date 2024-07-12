@@ -17,9 +17,11 @@ import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/Food/widget/energy_chart.dart';
 import 'package:medical/src/widget/HbA1C/widget/course_suggest.dart';
+import 'package:medical/src/widget/base/text_field_custom.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/home/widget/header.dart';
+import 'package:medical/src/widget/home/widget/sync_modal.dart';
 import 'package:medical/src/widget/list_service/list_service_page.dart';
 import 'package:medical/src/widget/my_plan_screens/activity_tab/create_goal/create_goal_page.dart';
 import 'package:medical/src/widget/nipro/health_app/widgets/request_health_connect.dart';
@@ -32,8 +34,9 @@ import 'welcome_package_screen/welcome_package_screen.dart';
 import 'package:medical/src/widget/nipro/health_app/blocs/healthApp_bloc.dart';
 
 class HomeController extends StatefulWidget {
-  const HomeController({this.sharedCode});
+  const HomeController({this.sharedCode, this.syncAccountAccess});
   final String? sharedCode;
+  final bool? syncAccountAccess;
 
   @override
   _HomeControllerState createState() => _HomeControllerState();
@@ -41,6 +44,10 @@ class HomeController extends StatefulWidget {
 
 class _HomeControllerState extends State<HomeController> with Observer {
   GlobalKey<CourseSuggestState> courseSuggestKey = GlobalKey();
+  final GlobalKey<TextFieldCustomState> phoneKey = GlobalKey();
+  FocusNode phoneFocusNode = FocusNode();
+  String phone = '';
+
   var data = [
     {
       'name': R.string.duong_huyet,
@@ -105,6 +112,9 @@ class _HomeControllerState extends State<HomeController> with Observer {
   var user = AppSettings.userInfo;
   var popupStore = PopupStore;
   HomeModel? model;
+
+  bool isSyncAccount = false;
+
   String _urlPopup = '';
 
   @override
@@ -118,6 +128,17 @@ class _HomeControllerState extends State<HomeController> with Observer {
     }
     firebaseSetup();
     initHealthApp();
+
+    Future.delayed(Duration.zero, () async {
+      if (AppSettings.isFirstTimeLoginZalo) {
+        _showModalSyncAccount(context);
+        await AppSettings.setIsFirstTimeLoginZalo(false);
+      }
+      if (AppSettings.isSyncSuccess) {
+        _showDialogSuccess();
+        AppSettings.isSyncSuccess = false;
+      }
+    });
   }
 
   initHealthApp() async {
@@ -186,6 +207,7 @@ class _HomeControllerState extends State<HomeController> with Observer {
         HealthAppBloc()..add(SubmitSyncData(true));
       }
     }
+
     if (notifyName == Const.NAVIGATE_TO_PROFILE_TAB) {
       _refresh();
     }
@@ -268,6 +290,111 @@ class _HomeControllerState extends State<HomeController> with Observer {
     return true;
   }
 
+  void _showModalSyncAccount(BuildContext context) {
+    final deviceWidth = MediaQuery.of(context).size.width;
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return Dialog(
+          insetPadding:
+              EdgeInsets.all(10), // Adjust padding to fit screen better
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20), // Adjust the radius here
+          ),
+          child: Container(
+            width: deviceWidth * 0.9,
+            padding: EdgeInsets.all(30),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Image.asset(R.drawable.sync_account_theme),
+                Padding(
+                  padding: const EdgeInsets.only(top: 16.0),
+                  child: Text(
+                    'Bạn đã từng dùng số điện thoại để đăng nhập DiaB chưa?',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: R.color.textDark,
+                      fontSize: 20,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 14.0),
+                  child: Text(
+                    'Cập nhật số điện thoại đã từng sử dụng để đồng bộ thông tin và bảo mật tài khoản tốt hơn',
+                    textAlign: TextAlign.center,
+                    style: R.style.normalTextStyle,
+                  ),
+                ),
+                SizedBox(height: 14),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.pop(context);
+                      },
+                      child: Container(
+                        width: deviceWidth * 0.35,
+                        height: 43,
+                        decoration: BoxDecoration(
+                          color: R.color.gray_btn,
+                          borderRadius: BorderRadius.circular(200),
+                        ),
+                        child: Center(
+                          child: Text(
+                            R.string.not_yet.tr(),
+                            style: TextStyle(
+                              color: R.color.dark,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w800,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.pushNamed(context, NavigatorName.sync_screen);
+                      },
+                      child: Container(
+                        height: 43,
+                        width: deviceWidth * 0.35,
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(999),
+                            gradient: LinearGradient(
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                                colors: [
+                                  Color(0xFF4BB2AB),
+                                  Color(0xFF01857A),
+                                  Color(0xFF008479)
+                                ])),
+                        child: Center(
+                          child: Text(
+                            R.string.used_to.tr(),
+                            style: TextStyle(
+                              color: R.color.white,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width - 32;
@@ -276,7 +403,6 @@ class _HomeControllerState extends State<HomeController> with Observer {
         child: BlocBuilder<HomeBloc, HomeState>(
             builder: (BuildContext context, HomeState state) {
           currentContext = context;
-
           if (state is HomeInitial) {
             BlocProvider.of<HomeBloc>(context).add(FetchHome());
           }
@@ -1113,6 +1239,85 @@ class _HomeControllerState extends State<HomeController> with Observer {
           ),
         )
       ]),
+    );
+  }
+
+  void _showDialogSuccess() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        final deviceWidth = MediaQuery.of(context).size.width;
+
+        return Dialog(
+          insetPadding:
+              EdgeInsets.all(10), // Adjust padding to fit screen better
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20), // Adjust the radius here
+          ),
+          child: Container(
+            width: deviceWidth * 0.9,
+            padding: EdgeInsets.all(30),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Image.asset(
+                  R.drawable.sync_success,
+                  width: deviceWidth * 0.6,
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 16.0),
+                  child: Text(
+                    'Cập nhật thành công',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: R.color.textDark,
+                      fontSize: 20,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 14.0),
+                  child: Text(
+                    'Tài khoản của bạn đã được đồng bộ và bảo vệ',
+                    textAlign: TextAlign.center,
+                    style: R.style.normalTextStyle,
+                  ),
+                ),
+                SizedBox(height: 14),
+                GestureDetector(
+                  onTap: () {
+                    Navigator.pop(context);
+                  },
+                  child: Container(
+                    height: 43,
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(999),
+                        gradient: LinearGradient(
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                            colors: [
+                              Color(0xFF4BB2AB),
+                              Color(0xFF01857A),
+                              Color(0xFF008479)
+                            ])),
+                    child: Center(
+                      child: Text(
+                        'Quay về trang chủ',
+                        style: TextStyle(
+                          color: R.color.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 

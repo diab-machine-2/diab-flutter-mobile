@@ -74,12 +74,14 @@ class _StepListControllerState extends State<StepListController>
     {
       'name': 'Nhật ký sức khoẻ',
       'image': R.drawable.img_step2,
-      'text': 'Theo dõi, quản lý và chia sẻ các chỉ số sức khỏe cho bác sĩ, chuyên gia',
+      'text':
+          'Theo dõi, quản lý và chia sẻ các chỉ số sức khỏe cho bác sĩ, chuyên gia',
     },
     {
       'name': 'Hỏi đáp cùng bác sĩ',
       'image': R.drawable.img_step3,
-      'text': 'Nhận sự tư vấn, hỗ trợ trực tiếp từ đội ngũ bác sĩ và Chuyên gia giàu kinh nghiệm',
+      'text':
+          'Nhận sự tư vấn, hỗ trợ trực tiếp từ đội ngũ bác sĩ và Chuyên gia giàu kinh nghiệm',
     }
   ];
 
@@ -120,7 +122,8 @@ class _StepListControllerState extends State<StepListController>
             if (_retry == 1) {
               _showRetryPopup();
             } else {
-              Message.showToastMessage(context, "zalo_second_failed_message".tr());
+              Message.showToastMessage(
+                  context, "zalo_second_failed_message".tr());
             }
           }
         });
@@ -176,13 +179,14 @@ class _StepListControllerState extends State<StepListController>
   }
 
   Future firebaseSetup() async {
-    await TrackingManager.analytics
-        .logScreenView(screenName: "welcome", screenClass: "StepListController");
+    await TrackingManager.analytics.logScreenView(
+        screenName: "welcome", screenClass: "StepListController");
     AppSettings.currentScreenName = 'welcome';
   }
 
   @override
-  void update(Observable observable, String? notifyName, Map<dynamic, dynamic>? map) {
+  void update(
+      Observable observable, String? notifyName, Map<dynamic, dynamic>? map) {
     if (notifyName == Const.NAVIGATE_TO_PROFILE_TAB) {
       setState(() {});
     }
@@ -268,13 +272,14 @@ class _StepListControllerState extends State<StepListController>
                       child: PageView.builder(
                           onPageChanged: (index) async {
                             final name = data[index]['name']!;
-                            await TrackingManager.analytics
-                                .logEvent(name: 'component_clicked', parameters: {
-                              "screen_name": 'welcome',
-                              'object_index': index,
-                              'object_title': name,
-                              'component_name': 'slider_welcome',
-                            });
+                            await TrackingManager.analytics.logEvent(
+                                name: 'component_clicked',
+                                parameters: {
+                                  "screen_name": 'welcome',
+                                  'object_index': index,
+                                  'object_title': name,
+                                  'component_name': 'slider_welcome',
+                                });
                             setState(() {
                               currentPage = index;
                             });
@@ -320,7 +325,10 @@ class _StepListControllerState extends State<StepListController>
                                 gradient: LinearGradient(
                                   begin: Alignment.topCenter,
                                   end: Alignment.bottomCenter,
-                                  colors: [R.color.greenGradientTop, R.color.greenGradientBottom],
+                                  colors: [
+                                    R.color.greenGradientTop,
+                                    R.color.greenGradientBottom
+                                  ],
                                 ),
                                 borderRadius: BorderRadius.circular(200),
                               ),
@@ -541,6 +549,8 @@ class _StepListControllerState extends State<StepListController>
     try {
       _loginZaloProgress = _LoginZaloProgress.inprogress;
       account = await ZaloService().login();
+      await AppSettings.setZaloId(account.id);
+      AppSettings.zaloExternalToken = account.accessToken;
       _loginZaloProgress = _LoginZaloProgress.gottoken;
       BotToast.showLoading();
       await LoginClient().login({
@@ -597,7 +607,8 @@ class _StepListControllerState extends State<StepListController>
     }
   }
 
-  Widget imageItem(BuildContext context, String name, String image, String text) {
+  Widget imageItem(
+      BuildContext context, String name, String image, String text) {
     return Image.asset(image);
   }
 
@@ -606,7 +617,10 @@ class _StepListControllerState extends State<StepListController>
       children: [
         Text(
           name,
-          style: TextStyle(color: R.color.textDark, fontSize: 24, fontWeight: FontWeight.w700),
+          style: TextStyle(
+              color: R.color.textDark,
+              fontSize: 24,
+              fontWeight: FontWeight.w700),
           textAlign: TextAlign.center,
         ).tr(),
         SizedBox(

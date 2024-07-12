@@ -469,25 +469,43 @@ class Drawables {
   String get ic_pregnancy => "lib/res/drawables/ic_pregnancy.jpg";
   String get ic_zoom_audio_off => "lib/res/drawables/ic_zoom_audio_off.png";
   String get ic_zoom_audio_on => "lib/res/drawables/ic_zoom_audio_on.png";
-  String get ic_zoom_camera_switch => "lib/res/drawables/ic_zoom_camera_switch.png";
-  String get ic_zoom_wait_camera_on => "lib/res/drawables/zoom/ic_zoom_wait_camera_on.png";
-  String get ic_zoom_wait_camera_off => "lib/res/drawables/zoom/ic_zoom_wait_camera_off.png";
-  String get ic_zoom_wait_mic_on => "lib/res/drawables/zoom/ic_zoom_wait_mic_on.png";
-  String get ic_zoom_wait_mic_off => "lib/res/drawables/zoom/ic_zoom_wait_mic_off.png";
-  String get im_zoom_host_empty  => "lib/res/drawables/zoom/im_zoom_host_empty.png";
+  String get ic_zoom_camera_switch =>
+      "lib/res/drawables/ic_zoom_camera_switch.png";
+  String get ic_zoom_wait_camera_on =>
+      "lib/res/drawables/zoom/ic_zoom_wait_camera_on.png";
+  String get ic_zoom_wait_camera_off =>
+      "lib/res/drawables/zoom/ic_zoom_wait_camera_off.png";
+  String get ic_zoom_wait_mic_on =>
+      "lib/res/drawables/zoom/ic_zoom_wait_mic_on.png";
+  String get ic_zoom_wait_mic_off =>
+      "lib/res/drawables/zoom/ic_zoom_wait_mic_off.png";
+  String get im_zoom_host_empty =>
+      "lib/res/drawables/zoom/im_zoom_host_empty.png";
   String get ic_zoom_back => "lib/res/drawables/zoom/ic_zoom_back.png";
-  String get ic_zoom_switch_camera => "lib/res/drawables/zoom/ic_zoom_switch_camera.png";
+  String get ic_zoom_switch_camera =>
+      "lib/res/drawables/zoom/ic_zoom_switch_camera.png";
   String get im_zoom_host_bg => "lib/res/drawables/zoom/im_zoom_host_bg.png";
-  String get im_zoom_host_bg_landscape => "lib/res/drawables/zoom/im_zoom_host_bg_landscape.png";
+  String get im_zoom_host_bg_landscape =>
+      "lib/res/drawables/zoom/im_zoom_host_bg_landscape.png";
   String get ic_zoom_chat => "lib/res/drawables/zoom/ic_zoom_chat.png";
-  String get ic_zoom_camera_on => "lib/res/drawables/zoom/ic_zoom_camera_on.png";
-  String get ic_zoom_camera_off => "lib/res/drawables/zoom/ic_zoom_camera_off.png";
+  String get ic_zoom_camera_on =>
+      "lib/res/drawables/zoom/ic_zoom_camera_on.png";
+  String get ic_zoom_camera_off =>
+      "lib/res/drawables/zoom/ic_zoom_camera_off.png";
   String get ic_zoom_mic_on => "lib/res/drawables/zoom/ic_zoom_mic_on.png";
   String get ic_zoom_mic_off => "lib/res/drawables/zoom/ic_zoom_mic_off.png";
-  String get ic_zoom_speaker_off => "lib/res/drawables/zoom/ic_zoom_speaker_off.png";
-  String get ic_zoom_speaker_on => "lib/res/drawables/zoom/ic_zoom_speaker_on.png";
+  String get ic_zoom_speaker_off =>
+      "lib/res/drawables/zoom/ic_zoom_speaker_off.png";
+  String get ic_zoom_speaker_on =>
+      "lib/res/drawables/zoom/ic_zoom_speaker_on.png";
   String get ic_zoom_end => "lib/res/drawables/zoom/ic_zoom_end.png";
-  String get ic_zoom_host_off_mic => "lib/res/drawables/zoom/ic_zoom_host_off_mic.png";
-  String get ic_zoom_host_off_camera => "lib/res/drawables/zoom/ic_zoom_host_off_camera.png";
-  String get ic_zoom_send_chat => "lib/res/drawables/zoom/ic_zoom_send_chat.png";
+  String get ic_zoom_host_off_mic =>
+      "lib/res/drawables/zoom/ic_zoom_host_off_mic.png";
+  String get ic_zoom_host_off_camera =>
+      "lib/res/drawables/zoom/ic_zoom_host_off_camera.png";
+  String get ic_zoom_send_chat =>
+      "lib/res/drawables/zoom/ic_zoom_send_chat.png";
+  String get sync_loading_theme => "lib/res/drawables/sync_loading_theme.png";
+  String get sync_success => "lib/res/drawables/sync_success.png";
+  String get sync_account_theme => "lib/res/drawables/sync_account_theme.png";
 }

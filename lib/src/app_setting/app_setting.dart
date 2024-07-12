@@ -32,6 +32,7 @@ class AppSettings {
   static String currentScreenName = '';
   static String? version;
   static String? buildNumber;
+  static String? zaloId;
 
   static bool showed50Message = false;
   static bool showed90Message = false;
@@ -39,6 +40,31 @@ class AppSettings {
   static bool isReloadCurrentUserInfo = false;
 
   static bool isOwnPackage = false;
+
+  static bool isFirstTimeLoginZalo = false;
+
+  static bool isSyncSuccess = false;
+
+  static String zaloExternalToken = "";
+
+  static Future<void> setZaloId(String id) async {
+    zaloId = id;
+    appPreference.setData("zaloId", id);
+  }
+
+  static Future<String?> getZaloId() async {
+    return appPreference.getData("zaloId") ?? null;
+  }
+
+  static Future<void> setIsFirstTimeLoginZalo(bool value) async {
+    isFirstTimeLoginZalo = value;
+    appPreference.setData("isFirstTimeLoginZalo", value);
+  }
+
+  static Future<bool> getIsFirstTimeLoginZalo() async {
+    bool result = await appPreference.getBoolData("isFirstTimeLoginZalo");
+    return result;
+  }
 
   static Future<bool> setValueOfClickShortGuideIndex(
       int screenIndex, int value) async {
@@ -293,6 +319,8 @@ class AppSettings {
       appPreference.removeData("hasNewReports");
       appPreference.removeData("reports");
       appPreference.removeData("user");
+      appPreference.removeData("zaloId");
+      appPreference.removeData("isFirstTimeLoginZalo");
       isOwnPackage = false;
       final GoogleSignIn _googleSignIn = GoogleSignIn();
       _googleSignIn.signOut();
