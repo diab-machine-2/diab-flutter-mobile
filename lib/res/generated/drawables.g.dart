@@ -506,5 +506,6 @@ class Drawables {
   String get ic_zoom_send_chat =>
       "lib/res/drawables/zoom/ic_zoom_send_chat.png";
   String get sync_loading_theme => "lib/res/drawables/sync_loading_theme.png";
-  String get sync_success => "lib/res/drawables/sync-success.png";
+  String get sync_success => "lib/res/drawables/sync_success.png";
+  String get sync_account_theme => "lib/res/drawables/sync_account_theme.png";
 }
