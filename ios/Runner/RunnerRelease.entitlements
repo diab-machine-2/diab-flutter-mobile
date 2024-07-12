@@ -14,7 +14,7 @@
 		<string>applinks:news.diab.com.vn</string>
 		<string>applinks:click.diab.com.vn</string>
 		<string>applinks:meet.diab.com.vn</string>
-		<string>diabvn.app.link</string>
+		<string>app.diab.com.vn</string>
 		<string>diabvn-alternate.app.link</string>
 	</array>
 	<key>com.apple.developer.healthkit</key>
