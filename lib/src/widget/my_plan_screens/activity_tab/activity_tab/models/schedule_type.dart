@@ -16,7 +16,24 @@ enum ScheduleType {
   lesson,
   io_evaluate,
   update_profile,
-  output_assessment
+  output_assessment,
+
+  // New Recommend
+  lesson_recommend,
+  blood_sugar_recommend, // Glucose
+  hba1c_recommend,
+  schedule_glucose_recommend,
+  food_menu,
+  goal_setting_recommend,
+  schedule_recommend,
+  blood_pressure_recommend,
+  height_recommend,
+  weight_recommend,
+  exercise_recommend,
+  food_recommend,
+  update_profile_recommend,
+  peripheral_recommend,
+  completed,
 }
 
 extension ScheduleTypeExtend on ScheduleType {
@@ -50,8 +67,40 @@ extension ScheduleTypeExtend on ScheduleType {
         return R.drawable.ic_schedule_io_evaluate;
       case ScheduleType.update_profile:
         return R.drawable.ic_schedule_update_profile;
-        case ScheduleType.output_assessment:
+      case ScheduleType.output_assessment:
         return R.drawable.ic_schedule_io_evaluate;
+
+      // New Recommend
+      case ScheduleType.lesson_recommend:
+        return R.drawable.ic_schedule_lesson;
+      case ScheduleType.blood_sugar_recommend:
+        return R.drawable.ic_home_measurement_glucose;
+      case ScheduleType.hba1c_recommend:
+        return R.drawable.ic_home_measurement_hb1ac;
+      case ScheduleType.schedule_glucose_recommend:
+        return R.drawable.ic_home_glucose_calendar;
+      case ScheduleType.food_menu:
+        return R.drawable.ic_home_sample_menu;
+      case ScheduleType.goal_setting_recommend:
+        return R.drawable.ic_home_goal;
+      case ScheduleType.schedule_recommend:
+        return R.drawable.ic_home_reminder;
+      case ScheduleType.blood_pressure_recommend:
+        return R.drawable.ic_home_measurement_blood;
+      case ScheduleType.height_recommend:
+        return R.drawable.ic_home_measurement_weight;
+      case ScheduleType.weight_recommend:
+        return R.drawable.ic_home_measurement_weight;
+      case ScheduleType.exercise_recommend:
+        return R.drawable.ic_home_measurement_exercise;
+      case ScheduleType.food_recommend:
+        return R.drawable.ic_home_measurement_nutrition;
+      case ScheduleType.update_profile_recommend:
+        return R.drawable.ic_schedule_update_profile;
+      case ScheduleType.peripheral_recommend:
+        return R.drawable.ic_home_peripheral;
+      case ScheduleType.completed:
+        return "";
     }
   }
 
@@ -87,6 +136,24 @@ extension ScheduleTypeExtend on ScheduleType {
         return R.string.update_profile_type.tr();
       case ScheduleType.output_assessment:
         return R.string.output_evaluate.tr();
+
+      // New Recommend : NOT USE
+      case ScheduleType.lesson_recommend:
+      case ScheduleType.blood_sugar_recommend:
+      case ScheduleType.hba1c_recommend:
+      case ScheduleType.schedule_glucose_recommend:
+      case ScheduleType.food_menu:
+      case ScheduleType.goal_setting_recommend:
+      case ScheduleType.schedule_recommend:
+      case ScheduleType.blood_pressure_recommend:
+      case ScheduleType.height_recommend:
+      case ScheduleType.weight_recommend:
+      case ScheduleType.exercise_recommend:
+      case ScheduleType.food_recommend:
+      case ScheduleType.update_profile_recommend:
+      case ScheduleType.peripheral_recommend:
+      case ScheduleType.completed:
+        return "";
     }
   }
 
@@ -121,6 +188,9 @@ extension ScheduleTypeExtend on ScheduleType {
       case ScheduleType.update_profile:
         return -1;
       case ScheduleType.output_assessment:
+        return -1;
+
+      default:
         return -1;
     }
   }
@@ -157,6 +227,37 @@ extension ScheduleTypeExtend on ScheduleType {
         return 13;
       case ScheduleType.output_assessment:
         return 14;
+      // New Recommend
+      case ScheduleType.lesson_recommend:
+        return 15;
+      case ScheduleType.blood_sugar_recommend:
+        return 16;
+      case ScheduleType.hba1c_recommend:
+        return 17;
+      case ScheduleType.schedule_glucose_recommend:
+        return 18;
+      case ScheduleType.food_menu:
+        return 19;
+      case ScheduleType.goal_setting_recommend:
+        return 20;
+      case ScheduleType.schedule_recommend:
+        return 21;
+      case ScheduleType.blood_pressure_recommend:
+        return 22;
+      case ScheduleType.height_recommend:
+        return 23;
+      case ScheduleType.weight_recommend:
+        return 24;
+      case ScheduleType.exercise_recommend:
+        return 25;
+      case ScheduleType.food_recommend:
+        return 26;
+      case ScheduleType.update_profile_recommend:
+        return 27;
+      case ScheduleType.peripheral_recommend:
+        return 28;
+      case ScheduleType.completed:
+        return 29;
     }
   }
 
@@ -192,27 +293,48 @@ extension ScheduleTypeExtend on ScheduleType {
         return false;
       case ScheduleType.output_assessment:
         return false;
+      default:
+        return false;
     }
   }
 
   static ScheduleType getTypeFromIndex(int? index) {
-    if (index == ScheduleType.blood_pressure.typeIndex)
-      return ScheduleType.blood_pressure;
-    if (index == ScheduleType.blood_sugar.typeIndex)
-      return ScheduleType.blood_sugar;
+    if (index == ScheduleType.blood_pressure.typeIndex) return ScheduleType.blood_pressure;
+    if (index == ScheduleType.blood_sugar.typeIndex) return ScheduleType.blood_sugar;
     if (index == ScheduleType.exercise.typeIndex) return ScheduleType.exercise;
     if (index == ScheduleType.weight.typeIndex) return ScheduleType.weight;
     if (index == ScheduleType.emotion.typeIndex) return ScheduleType.emotion;
     if (index == ScheduleType.food.typeIndex) return ScheduleType.food;
     if (index == ScheduleType.update_profile.typeIndex) return ScheduleType.update_profile;
-    if (index == ScheduleType.exercise_movement.typeIndex)
-      return ScheduleType.exercise_movement;
+    if (index == ScheduleType.exercise_movement.typeIndex) return ScheduleType.exercise_movement;
     if (index == ScheduleType.book_1_1.typeIndex) return ScheduleType.book_1_1;
     if (index == ScheduleType.book_1_n.typeIndex) return ScheduleType.book_1_n;
     if (index == ScheduleType.survey.typeIndex) return ScheduleType.survey;
     if (index == ScheduleType.lesson.typeIndex) return ScheduleType.lesson;
     if (index == ScheduleType.io_evaluate.typeIndex) return ScheduleType.io_evaluate;
     if (index == ScheduleType.output_assessment.typeIndex) return ScheduleType.output_assessment;
+
+    // NEW recommend target
+    if (index == ScheduleType.lesson_recommend.typeIndex) return ScheduleType.lesson_recommend;
+    if (index == ScheduleType.blood_sugar_recommend.typeIndex)
+      return ScheduleType.blood_sugar_recommend;
+    if (index == ScheduleType.hba1c_recommend.typeIndex) return ScheduleType.hba1c_recommend;
+    if (index == ScheduleType.schedule_glucose_recommend.typeIndex)
+      return ScheduleType.schedule_glucose_recommend;
+    if (index == ScheduleType.food_menu.typeIndex) return ScheduleType.food_menu;
+    if (index == ScheduleType.goal_setting_recommend.typeIndex) return ScheduleType.goal_setting_recommend;
+    if (index == ScheduleType.schedule_recommend.typeIndex) return ScheduleType.schedule_recommend;
+    if (index == ScheduleType.blood_pressure_recommend.typeIndex)
+      return ScheduleType.blood_pressure_recommend;
+    if (index == ScheduleType.height_recommend.typeIndex) return ScheduleType.height_recommend;
+    if (index == ScheduleType.weight_recommend.typeIndex) return ScheduleType.weight_recommend;
+    if (index == ScheduleType.exercise_recommend.typeIndex) return ScheduleType.exercise_recommend;
+    if (index == ScheduleType.food_recommend.typeIndex) return ScheduleType.food_recommend;
+    if (index == ScheduleType.update_profile_recommend.typeIndex) return ScheduleType.update_profile_recommend;
+    if (index == ScheduleType.peripheral_recommend.typeIndex)
+      return ScheduleType.peripheral_recommend;
+    if (index == ScheduleType.completed.typeIndex) return ScheduleType.completed;
+
     return ScheduleType.custom;
   }
 }

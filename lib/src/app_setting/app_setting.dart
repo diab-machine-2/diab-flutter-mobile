@@ -301,6 +301,21 @@ class AppSettings {
     return (preriod + 1).toString();
   }
 
+  static Future<int> numberOfOpenApp() async {
+    int? numberOfOpenApp = appPreference.getIntData("numberOfOpenApp");
+    if (numberOfOpenApp == null) {
+      numberOfOpenApp = 0;
+    }
+    return numberOfOpenApp;
+  }
+
+  static Future<int> increaseNumberOfOpenApp() async {
+    int numberOfOpenApp = await AppSettings.numberOfOpenApp();
+    numberOfOpenApp++;
+    appPreference.setData("numberOfOpenApp", numberOfOpenApp);
+    return numberOfOpenApp;
+  }
+
   static Future<bool> logout({bool isNavigateToStepListScreen = true}) async {
     try {
       if (isNavigateToStepListScreen) {

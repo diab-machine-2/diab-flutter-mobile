@@ -1145,7 +1145,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController>
           ));
 
       final path = imageFile!.path;
-      await uploadAvatar(path);
+      await _uploadAvatar(path);
     } catch (_) {
       BotToast.closeAllLoading();
     }
@@ -1182,7 +1182,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController>
     );
   }
 
-  uploadAvatar(String url) async {
+  Future<void> _uploadAvatar(String url) async {
     try {
       BotToast.showLoading();
       await UserClient().updateAvatar(AppSettings.userInfo!.id, url);
@@ -1548,6 +1548,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController>
                             Expanded(
                               child: GestureDetector(
                                 onTap: () {
+                                  Observable.instance.notifyObservers([], notifyName: "logout");
                                   AppSettings.logout();
                                 },
                                 child: Container(

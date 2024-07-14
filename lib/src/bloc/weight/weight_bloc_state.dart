@@ -28,7 +28,8 @@ class WeightTrendLoaded extends WeightState {
 
 class WeightTrendBMILoaded extends WeightState {
   final TrendBmiModel trendBMI;
-  WeightTrendBMILoaded({required this.trendBMI});
+  final List<int> colors;
+  WeightTrendBMILoaded({required this.trendBMI, required this.colors});
 }
 
 class WeightAllLoaded extends WeightState {

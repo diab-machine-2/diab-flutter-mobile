@@ -15,7 +15,6 @@ import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widgets/common_page.dart';
 import 'package:medical/src/widgets/widget_custom_multi_select_toggle.dart';
 
-import '../activity_tab/activity_tab/activity_tab.dart';
 import '../exercise_tab/exercise_tab/exercise_tab.dart';
 import '../lesson_tab/lesson_tab/lesson_tab.dart';
 import 'models/plan_type.dart';
@@ -39,12 +38,8 @@ class _MyPlanPageState extends State<MyPlanPage> with Observer {
   void initState() {
     super.initState();
     Observable.instance.addObserver(this);
-    final String? activityId = DynamicLinkConfig.instance.activityId;
     final String? lessonId = DynamicLinkConfig.instance.lessonId;
-    final String? zoomId = DynamicLinkConfig.instance.zoomId;
-    if (zoomId != null || activityId != null) {
-      index = PlanType.goal.index;
-    } else if (lessonId != null || user.isUserFree) {
+    if (lessonId != null || user.isUserFree) {
       index = PlanType.lesson.index;
     } else {
       index = widget.index;
@@ -57,23 +52,23 @@ class _MyPlanPageState extends State<MyPlanPage> with Observer {
   }
 
   @override
-  update(Observable observable, String? notifyName, Map? map) {
+  void update(Observable observable, String? notifyName, Map? map) {
     if (notifyName == 'mark_completed_calendar') {
       String? calendarId = DynamicLinkConfig.instance.zoomId;
       if (calendarId != null) {
         DynamicLinkConfig.instance.removeZoomId();
       }
-    } else if (notifyName == Const.NAVIGATE_TO_ACTIVITY_TAB) {
-      if (_cubit.currentPlanType != PlanType.goal) {
-        _cubit.changePlanType(0);
-      }
+    // } else if (notifyName == Const.NAVIGATE_TO_ACTIVITY_TAB) {
+    //   if (_cubit.currentPlanType != PlanType.goal) {
+    //     _cubit.changePlanType(0);
+    //   }
     } else if (notifyName == Const.NAVIGATE_TO_LESSON_TAB) {
       if (_cubit.currentPlanType != PlanType.lesson) {
-        _cubit.changePlanType(1);
+        _cubit.changePlanType(PlanType.lesson.index);
       }
     } else if (notifyName == Const.NAVIGATE_TO_EXERCISE_TAB) {
       if (_cubit.currentPlanType != PlanType.activity) {
-        _cubit.changePlanType(2);
+        _cubit.changePlanType(PlanType.activity.index);
       }
     }
   }
@@ -115,20 +110,21 @@ class _MyPlanPageState extends State<MyPlanPage> with Observer {
                     color: R.color.white,
                     padding: const EdgeInsets.fromLTRB(16, 0, 16, 20),
                     child: CustomMultiSelectToggle(
-                      toggleList:
-                          _cubit.planTypeList.map((e) => e.title).toList(),
+                      toggleList: _cubit.planTypeList.map((e) => e.title).toList(),
                       selectedIndex: _cubit.currentPlanTypeIndex,
                       onChange: (index) async {
                         late String screenName;
                         switch (index) {
+                          // case 0:
+                          //   screenName = 'activity';
+                          //   break;
                           case 0:
-                            screenName = 'activity';
-                            break;
-                          case 1:
                             screenName = 'lesson';
                             break;
-                          case 2:
+                          case 1:
                             screenName = 'motion';
+                            break;
+                          default:
                             break;
                         }
                         await TrackingManager.analytics
@@ -136,11 +132,9 @@ class _MyPlanPageState extends State<MyPlanPage> with Observer {
                           "screen_name": 'my_schedule',
                           'component_name': 'top_navigation_' + screenName,
                         });
-                        Observable.instance.notifyObservers([],
-                            notifyName: Const.HIDE_OVERLAY_KEY);
+                        Observable.instance.notifyObservers([], notifyName: Const.HIDE_OVERLAY_KEY);
                         if (index == 1) {
-                          Observable.instance.notifyObservers([],
-                              notifyName: "switch_lesson_tab");
+                          Observable.instance.notifyObservers([], notifyName: "switch_lesson_tab");
                         }
 
                         _cubit.changePlanType(index);
@@ -152,7 +146,7 @@ class _MyPlanPageState extends State<MyPlanPage> with Observer {
                       controller: _pageController,
                       physics: const NeverScrollableScrollPhysics(),
                       children: const [
-                        ActivityTabPage(),
+                        // ActivityTabPage(),
                         LessonTabPage(),
                         ExerciseTabPage(),
                       ],
