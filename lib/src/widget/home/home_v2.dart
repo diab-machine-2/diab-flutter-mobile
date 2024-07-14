@@ -528,16 +528,20 @@ class _HomeControllerState extends State<HomeController>
     Observable.instance.notifyObservers([], notifyName: Const.HIDE_OVERLAY_KEY);
     switch (type) {
       case ScheduleType.blood_sugar:
+      case ScheduleType.blood_sugar_recommend:
         await Navigator.pushNamed(context, NavigatorName.add_blood_sugar_new,
             arguments: {'type': 'input', 'goalId': smartGoal?.id});
         // _cubit.refreshData(isRefresh: true);
         break;
       case ScheduleType.blood_pressure:
+      case ScheduleType.blood_pressure_recommend:
         await Navigator.pushNamed(context, NavigatorName.add_blood_pressure,
             arguments: {'type': 'input', 'goalId': smartGoal?.id});
         // _cubit.refreshData(isRefresh: true);
         break;
       case ScheduleType.weight:
+      case ScheduleType.weight_recommend:
+      case ScheduleType.height_recommend:
         await Navigator.pushNamed(context, NavigatorName.add_bmi,
             arguments: {'type': 'input', 'goalId': smartGoal?.id});
         // _cubit.refreshData(isRefresh: true);
@@ -548,6 +552,7 @@ class _HomeControllerState extends State<HomeController>
         //    _cubit.refreshData(isRefresh: true);
         break;
       case ScheduleType.food:
+      case ScheduleType.food_recommend:
         await NavigationUtil.navigatePage(
           context,
           DailyNutritionPage(type: 'input', id: null, goalId: smartGoal?.id),
@@ -555,6 +560,7 @@ class _HomeControllerState extends State<HomeController>
         // _cubit.refreshData(isRefresh: true);
         break;
       case ScheduleType.exercise:
+      case ScheduleType.exercise_recommend:
         await Navigator.pushNamed(context, NavigatorName.add_exercrises,
             arguments: {'type': 'input', 'goalId': smartGoal?.id});
         // _cubit.refreshData(isRefresh: true);
@@ -591,6 +597,7 @@ class _HomeControllerState extends State<HomeController>
         _showSurveyPopup(survey: smartGoal);
         break;
       case ScheduleType.lesson:
+      case ScheduleType.lesson_recommend:
         final LessonSectionListResponseData? lessonDetail = smartGoal?.lessonData;
         if (smartGoal?.state == Const.LESSON_LOCKED) {
           // if (lessonDetail?.learningStatus == null || lessonDetail?.learningStatus == Const.LESSON_LOCKED) {
@@ -613,6 +620,7 @@ class _HomeControllerState extends State<HomeController>
         _showCoachingPopup(smartGoal);
         break;
       case ScheduleType.update_profile:
+      case ScheduleType.update_profile_recommend:
         await Navigator.pushNamed(context, NavigatorName.profile_info, arguments: {
           'id': smartGoal?.state != 1 ? smartGoal?.id : null,
         });
@@ -620,6 +628,30 @@ class _HomeControllerState extends State<HomeController>
       case ScheduleType.output_assessment:
         _showCoachingPopup(smartGoal);
         break;
+      
+      case ScheduleType.hba1c_recommend:
+        await Navigator.pushNamed(context, NavigatorName.add_hba1c,
+            arguments: {'type': 'input'});
+        break;
+      case ScheduleType.schedule_glucose_recommend:
+        await Navigator.pushNamed(context, NavigatorName.schedule_glucose);
+        break;
+      case ScheduleType.food_menu:
+        await Navigator.pushNamed(context, NavigatorName.food_menu);
+        break;
+      case ScheduleType.goal_setting_recommend:
+        await Navigator.pushNamed(context, NavigatorName.goal_setting);
+        break;
+      case ScheduleType.schedule_recommend:
+        await Navigator.pushNamed(context, NavigatorName.reminder);
+        break;
+      case ScheduleType.peripheral_recommend:
+        await Navigator.pushNamed(context, NavigatorName.connect_device_app);
+        break;
+      case ScheduleType.completed:
+        // Do nothing
+        break;
+
     }
   }
 

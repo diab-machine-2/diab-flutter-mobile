@@ -21,7 +21,6 @@ import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/home/schema/home_schema.dart';
 import 'package:medical/src/widget/my_plan_screens/activity_tab/activity_tab/models/schedule_type.dart';
-import 'package:meta/meta.dart';
 import 'package:medical/src/modal/error/error_model.dart';
 import 'package:easy_localization/easy_localization.dart';
 
@@ -167,7 +166,14 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
             return activity;
           }).toList();
           combinedActivities.addAll(weeklyActivities);
-          currentState = currentState.copyWith(activities: combinedActivities, activityLoading: false);
+          bool isCompletedAll = combinedActivities.isEmpty ||
+              combinedActivities.every((element) => element.smartGoal.state == 1);
+          bool stillLoading = isCompletedAll;
+          if (isCompletedAll) {
+            return;
+          }
+          currentState =
+              currentState.copyWith(activities: combinedActivities, activityLoading: stillLoading);
         } else {
           currentState = currentState.copyWith(activityLoading: false);
         }
@@ -177,6 +183,25 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         currentState = currentState.copyWith(activityLoading: false);
       },
     );
+
+    // do fetch target recommendation
+    if (currentState.activities == null || currentState.activities!.isEmpty) {
+      final targetRecommend = await HomeClient().fetchTargetRecommendation(week: _currentWeek);
+      if (targetRecommend != null) {
+        final ScheduleType type = ScheduleTypeExtend.getTypeFromIndex(targetRecommend.type);
+        final activity = HomeActivityData(
+          id: '####',
+          icon: type.icon,
+          title: targetRecommend.title,
+          type: type,
+          smartGoal:
+              SmartGoalList(state: targetRecommend.type == 29 ? 1 : 0, type: targetRecommend.type),
+        );
+        currentState = currentState.copyWith(activities: [activity], activityLoading: false);
+      } else {
+        currentState = currentState.copyWith(activityLoading: false);
+      }
+    }
     yield currentState;
   }
 
@@ -214,9 +239,11 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
 
   Stream<HomeState> _fetchLessons() async* {
     final learningClient = LearningClient();
-    final lessonsResponse = await learningClient.fetchLesson(
+    final lessonsResponse = await learningClient
+        .fetchLesson(
       week: _currentWeek,
-    ).catchError((e, s) {
+    )
+        .catchError((e, s) {
       TrackingManager.recordError(e, s);
       return <LessonModel>[];
     }, test: (error) => true);

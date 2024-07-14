@@ -13,6 +13,21 @@ class ListResponse<T> {
   }
 }
 
+class SingleResponse<T> {
+  final T data;
+  final Meta? meta;
+
+  SingleResponse({required this.data, this.meta});
+
+  factory SingleResponse.fromJson(
+      Map<String, dynamic> json, T Function(Map<String, dynamic>) fromJson) {
+    return SingleResponse<T>(
+      data: fromJson(json['data'] as Map<String, dynamic>),
+      meta: json['meta'] != null ? Meta.fromJson(json['meta']) : null,
+    );
+  }
+}
+
 class Meta {
   final bool success;
   Meta({required this.success});
