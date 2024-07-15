@@ -318,7 +318,7 @@ class BloodPressureDistributionChartState
                             (model.normal! / total * 100).round().toString() +
                                 '%',
                         text: R.string.normal.tr(),
-                        //textColor: toColor(model.normalFontColor),
+                        textColor: toColor(model.normalFontColor),
                         isSquare: true,
                       ),
                     ),
