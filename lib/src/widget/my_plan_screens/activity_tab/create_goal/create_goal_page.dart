@@ -310,7 +310,7 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
   List<Widget> _buildSmartGoalDetailType1() {
     return [
       _buildSingleResultDetail(
-        title: R.string.goal,
+        title: R.string.goal.tr(),
         description: _cubit.dataModel.type == ScheduleType.custom
             ? _cubit.dataModel.name
             : (_cubit.dataModel.type?.title ?? ''),
@@ -320,7 +320,7 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
               ? 'Thời lượng'
               : 'Số lần',
           description:
-              '${_cubit.dataModel.goalTimeOrFrequency} ${_cubit.dataModel.goalRecordType == GoalRecordType.time ? R.string.minute : 'lần'}'),
+              '${_cubit.dataModel.goalTimeOrFrequency} ${_cubit.dataModel.goalRecordType == GoalRecordType.time ? R.string.minute.tr() : 'lần'}'),
       if (_cubit.dataModel.isRepeat)
         _buildSingleResultDetail(
           title: 'Tần suất',
@@ -345,11 +345,11 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
   List<Widget> _buildSmartGoalDetailType2() {
     return [
       _buildSingleResultDetail(
-          title: R.string.goal, description: 'Vận động trong ngày'),
+          title: R.string.goal.tr(), description: 'Vận động trong ngày'),
       _buildSingleResultDetail(
           title: 'Thời lượng',
           description:
-              '${_cubit.dataModel.dailyTargetDurationNumber} ${R.string.minute}'),
+              '${_cubit.dataModel.dailyTargetDurationNumber} ${R.string.minute.tr()}'),
       _buildSingleResultDetail(
           title: 'Ngày bắt đầu',
           description: convertToUTC(
