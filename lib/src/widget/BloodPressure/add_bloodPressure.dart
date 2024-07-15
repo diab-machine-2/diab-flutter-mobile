@@ -79,12 +79,12 @@ class _AddBloodPressureControllerState
   ];
 
   List<Color> _colorList = [
-    Color(0xFFF48222),
-    Color(0xFF02635A),
-    Color(0xFF9CD9B8),
-    Color(0xFFFFCCD1),
-    Color.fromARGB(255, 244, 111, 117),
-    Color(0xFFE53935),
+    Color(0xFFF99D1A),
+    Color(0xFF21A567),
+    Color(0xFF008479),
+    Color(0xFFFF3C3C),
+    Color(0xFFC82221),
+    Color(0xFF880808),
   ];
   bool isLoading = true;
   late AnimationController _controller;
@@ -176,9 +176,24 @@ class _AddBloodPressureControllerState
 
   loadDataDetail() async {
     BotToast.showLoading();
-    model = await BloodPressureClient().fetchBloodPressureDetail(widget.id);
+    final result = await Future.wait([
+      BloodPressureClient().fetchBloodPressureDetail(widget.id),
+      BloodPressureClient().fetchColorConfig(),
+    ]);
+    if (result.length < 2) {
+      BotToast.closeAllLoading();
+      return;
+    }
+    model = result[0] as BloodPressureModel;
+    final colors = result[1] as List<BloodPressureColorConfig>?;
+    if (colors != null) {
+      _colorList = colors.map(((e) {
+        return Color(int.parse("0xFF" + e.background.substring(1)));
+      })).toList();
+      _rangeLabel = colors.map(((e) => e.name)).toList();
+    }
     BotToast.closeAllLoading();
-    print(model);
+
     if (model != null) {
       _controllerSystolic.text = model!.systolic?.toInt().toString() ?? '';
       _controllerDiastolic.text = model!.diastolic?.toInt().toString() ?? '';

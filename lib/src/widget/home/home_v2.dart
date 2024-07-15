@@ -124,8 +124,12 @@ class _HomeControllerState extends State<HomeController>
 
   @override
   void update(Observable observable, String? notifyName, Map<dynamic, dynamic>? map) async {
+    if (notifyName == 'refresh_home_activity') {
+      _homeBloc.add(HomeFetchActivityEvent());
+      return;
+    }
     if (notifyName == 'schedule_change') {
-      _homeBloc.add(HomeFetchReminderEvent());
+      _refresh();
       return;
     }
     if (notifyName == 'refresh_home') {
@@ -308,12 +312,7 @@ class _HomeControllerState extends State<HomeController>
                               onAddActivity: () {
                                 Navigator.pushNamed(context, NavigatorName.add_goal);
                               },
-                              onViewMore: () {
-                                Observable.instance
-                                    .notifyObservers([], notifyName: Const.NAVIGATE_TO_MY_PLAN_TAB);
-                                Observable.instance
-                                    .notifyObservers([], notifyName: "activity_tab_reload");
-                              },
+                              onViewMore: _viewMoreActivity,
                               onActivityTap: (activity) =>
                                   _onSelectGoal(activity.type, smartGoal: activity.smartGoal),
                             ),
@@ -596,8 +595,10 @@ class _HomeControllerState extends State<HomeController>
         //_showCoachingPopup();
         _showSurveyPopup(survey: smartGoal);
         break;
-      case ScheduleType.lesson:
       case ScheduleType.lesson_recommend:
+        _viewMoreActivity();
+        break;
+      case ScheduleType.lesson:
         final LessonSectionListResponseData? lessonDetail = smartGoal?.lessonData;
         if (smartGoal?.state == Const.LESSON_LOCKED) {
           // if (lessonDetail?.learningStatus == null || lessonDetail?.learningStatus == Const.LESSON_LOCKED) {
@@ -628,10 +629,8 @@ class _HomeControllerState extends State<HomeController>
       case ScheduleType.output_assessment:
         _showCoachingPopup(smartGoal);
         break;
-      
       case ScheduleType.hba1c_recommend:
-        await Navigator.pushNamed(context, NavigatorName.add_hba1c,
-            arguments: {'type': 'input'});
+        await Navigator.pushNamed(context, NavigatorName.add_hba1c, arguments: {'type': 'input'});
         break;
       case ScheduleType.schedule_glucose_recommend:
         await Navigator.pushNamed(context, NavigatorName.schedule_glucose);
@@ -651,8 +650,12 @@ class _HomeControllerState extends State<HomeController>
       case ScheduleType.completed:
         // Do nothing
         break;
-
     }
+  }
+
+  void _viewMoreActivity() {
+    Observable.instance.notifyObservers([], notifyName: Const.NAVIGATE_TO_MY_PLAN_TAB);
+    Observable.instance.notifyObservers([], notifyName: "activity_tab_reload");
   }
 
   void _showPopup({

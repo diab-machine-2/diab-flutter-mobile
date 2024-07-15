@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_observer/Observable.dart';
 import 'package:medical/src/modal/food/food_model.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/request/create_menu_request.dart';
@@ -95,6 +96,8 @@ class FoodMenuCubit extends Cubit<FoodMenuState> {
         await repository.changeFood(request);
     apiResult.when(success: (CommonResponse response) async {
       getTemplateDetail();
+      Observable.instance
+          .notifyObservers([], notifyName: "refresh_home_activity");
       emit(const FoodMenuSuccess());
     }, failure: (NetworkExceptions error) {
       emit(FoodMenuFailure(NetworkExceptions.getErrorMessage(error)));

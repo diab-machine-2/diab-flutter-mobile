@@ -84,13 +84,17 @@ class HomeUtilities extends StatelessWidget {
             height: 40.0,
           ),
           const SizedBox(height: 12.0),
-          Text(
-            utility.title,
-            textAlign: TextAlign.center,
-            maxLines: 2,
-            style: TextStyle(
-              fontSize: 15.0,
-              color: R.color.textDark,
+          Container(
+            alignment: Alignment.center,
+            width: double.infinity,
+            child: Text(
+              utility.title,
+              textAlign: TextAlign.center,
+              maxLines: 2,
+              style: TextStyle(
+                fontSize: 15.0,
+                color: R.color.textDark,
+              ),
             ),
           ),
         ],
