@@ -101,6 +101,8 @@ class _ReminderControllerState extends State<ReminderController> with Observer  
                       highlightColor: R.color.transparent,
                       icon: Icon(Icons.arrow_back, color: R.color.textDark),
                       onPressed: () {
+                        Observable.instance
+                            .notifyObservers([], notifyName: "refresh_home_activity");
                         Navigator.pop(context);
                       }),
                 ),
@@ -266,7 +268,7 @@ class _ReminderControllerState extends State<ReminderController> with Observer  
   String getTimeFrame(ScheduleReminderModel model) {
     List<String> names = [];
     if (model.isWakeUp == true) {
-      names.add(R.string.wake_up.toLowerCase());
+      names.add(R.string.wake_up.tr().toLowerCase());
     }
     if (model.isBreakfast == true) {
       names.add('ăn sáng');
