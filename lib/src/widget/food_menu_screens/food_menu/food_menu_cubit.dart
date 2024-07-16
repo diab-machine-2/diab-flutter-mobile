@@ -53,6 +53,8 @@ class FoodMenuCubit extends Cubit<FoodMenuState> {
         } else {
           currentDayInWeek = 0;
         }
+        Observable.instance
+          .notifyObservers([], notifyName: "refresh_home_activity");
         emit(const FoodMenuSuccess());
       }, failure: (NetworkExceptions error) {
         // emit(FoodMenuFailure(NetworkExceptions.getErrorMessage(error)));

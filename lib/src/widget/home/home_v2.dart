@@ -24,9 +24,12 @@ import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/date_utils.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/navigator_name.dart';
+import 'package:medical/src/widget/Bmi/views/add_bmi_view/widgets/custom_height_picker.dart';
+import 'package:medical/src/widget/Bmi/views/add_bmi_view/widgets/custome_weight_picker.dart';
 import 'package:medical/src/widget/Food/daily_nutrition/daily_nutrition.dart';
 import 'package:medical/src/widget/HbA1C/widget/course_suggest.dart';
 import 'package:medical/src/widget/helper/helper.dart';
+import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/home/widget/header.dart';
 import 'package:medical/src/widget/home/widget/home_lesson.dart';
@@ -35,6 +38,7 @@ import 'package:medical/src/widget/home/widget/home_utilities.dart';
 import 'package:medical/src/widget/my_plan_screens/activity_tab/activity_tab/models/schedule_type.dart';
 import 'package:medical/src/widget/my_plan_screens/exercise_tab/exercise_detail/exercise_detail_page.dart';
 import 'package:medical/src/widget/my_plan_screens/lesson_tab/lesson_detail/lesson_detail.dart';
+import 'package:medical/src/widget/profile/user_info.dart';
 import 'package:medical/src/widget/survey_screens/introduce_survey/introduce_survey.dart';
 import 'package:medical/src/widget/tabbar/tabbar_v2.dart';
 import 'package:medical/src/widget/voucher/presentation/widgets/voucher_popup.dart';
@@ -128,7 +132,7 @@ class _HomeControllerState extends State<HomeController>
       _homeBloc.add(HomeFetchActivityEvent());
       return;
     }
-    if (notifyName == 'schedule_change') {
+    if (notifyName == 'schedule_change' || notifyName == 'user_info_change') {
       _refresh();
       return;
     }
@@ -538,9 +542,13 @@ class _HomeControllerState extends State<HomeController>
             arguments: {'type': 'input', 'goalId': smartGoal?.id});
         // _cubit.refreshData(isRefresh: true);
         break;
-      case ScheduleType.weight:
       case ScheduleType.weight_recommend:
+        _showInputWeightDialog();
+        break;
       case ScheduleType.height_recommend:
+        _showInputHeightDialog();
+        break;
+      case ScheduleType.weight:
         await Navigator.pushNamed(context, NavigatorName.add_bmi,
             arguments: {'type': 'input', 'goalId': smartGoal?.id});
         // _cubit.refreshData(isRefresh: true);
@@ -596,7 +604,7 @@ class _HomeControllerState extends State<HomeController>
         _showSurveyPopup(survey: smartGoal);
         break;
       case ScheduleType.lesson_recommend:
-        _viewMoreActivity();
+        Observable.instance.notifyObservers([], notifyName: Const.NAVIGATE_TO_LESSON_TAB);
         break;
       case ScheduleType.lesson:
         final LessonSectionListResponseData? lessonDetail = smartGoal?.lessonData;
@@ -1072,5 +1080,62 @@ class _HomeControllerState extends State<HomeController>
     } finally {
       BotToast.closeAllLoading();
     }
+  }
+
+  void _showInputHeightDialog() {
+    showDialog(
+      //   barrierColor: R.color.color0xff003F38.withOpacity(0.5),
+      context: context,
+      barrierDismissible: true,
+      builder: (_) => CustomNumPicker(
+          callback: (data) {
+            if (data == null || data <= 0) {
+              Message.showToastMessage(context, R.string.mes_height_must_greater_than_zero.tr());
+              return;
+            }
+            final userInfo = AppSettings.userInfo!;
+            ProfileInfoController.updateUserInfo(
+              context,
+              userInfo.copyWith(
+                height: data.toDouble(),
+              ),
+            );
+          },
+          title: R.string.enter_height.tr(),
+          max: 250,
+          numberDefault: (AppSettings.userInfo!.height == null || AppSettings.userInfo!.height == 0
+                  ? 150
+                  : AppSettings.userInfo!.height)!
+              .toInt(),
+          unit: ''),
+    );
+  }
+
+  void _showInputWeightDialog() {
+    showDialog(
+      barrierDismissible: true,
+      context: context,
+      builder: (_) => CustomWeightPicker(
+          callback: (weight) {
+            if (weight <= 0) {
+              Message.showToastMessage(context, R.string.mes_weight_must_greater_than_zero.tr());
+              return;
+            }
+            final userInfo = AppSettings.userInfo!;
+            ProfileInfoController.updateUserInfo(
+              context,
+              userInfo.copyWith(
+                weight: weight.toDouble(),
+              ),
+            );
+          },
+          title: R.string.enter_weight.tr(),
+          max: 180,
+          numberDefault: (AppSettings.userInfo!.weight == null || AppSettings.userInfo!.weight == 0
+                  ? 50
+                  : AppSettings.userInfo!.weight)!
+              .toInt(),
+          unit: ''),
+    );
   }
 }
