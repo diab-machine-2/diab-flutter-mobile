@@ -596,7 +596,7 @@ class _HomeControllerState extends State<HomeController>
         _showSurveyPopup(survey: smartGoal);
         break;
       case ScheduleType.lesson_recommend:
-        _viewMoreActivity();
+        Observable.instance.notifyObservers([], notifyName: Const.NAVIGATE_TO_LESSON_TAB);
         break;
       case ScheduleType.lesson:
         final LessonSectionListResponseData? lessonDetail = smartGoal?.lessonData;
