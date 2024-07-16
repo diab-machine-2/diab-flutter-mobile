@@ -130,9 +130,16 @@ class _HomeControllerState extends State<HomeController> with Observer {
     initHealthApp();
 
     Future.delayed(Duration.zero, () async {
-      if (AppSettings.isFirstTimeLoginZalo) {
+      String? username = AppSettings.userInfo!.userName;
+      String? firstLinked = AppSettings.userInfo!.firstLinkedAccount;
+      bool isUserZaloSync = username != null &&
+          firstLinked != null &&
+          username.startsWith("+84") &&
+          AppSettings.zaloId != null;
+      bool isFirstDownload = await AppSettings.getIsFirstDownload();
+      if (!isUserZaloSync && isFirstDownload) {
         _showModalSyncAccount(context);
-        await AppSettings.setIsFirstTimeLoginZalo(false);
+        await AppSettings.setIsFirstDownload(false);
       }
       if (AppSettings.isSyncSuccess) {
         _showDialogSuccess();

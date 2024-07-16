@@ -41,7 +41,7 @@ class AppSettings {
 
   static bool isOwnPackage = false;
 
-  static bool isFirstTimeLoginZalo = false;
+  static bool isFirstDownload = true;
 
   static bool isSyncSuccess = false;
 
@@ -56,13 +56,14 @@ class AppSettings {
     return appPreference.getData("zaloId") ?? null;
   }
 
-  static Future<void> setIsFirstTimeLoginZalo(bool value) async {
-    isFirstTimeLoginZalo = value;
-    appPreference.setData("isFirstTimeLoginZalo", value);
+  static Future<void> setIsFirstDownload(bool value) async {
+    isFirstDownload = value;
+    appPreference.setData("isFirstDownload", value);
   }
 
-  static Future<bool> getIsFirstTimeLoginZalo() async {
-    bool result = await appPreference.getBoolData("isFirstTimeLoginZalo");
+  static Future<bool> getIsFirstDownload() async {
+    bool result =
+        appPreference.getBoolData("isFirstDownload", defaultValue: true);
     return result;
   }
 
@@ -320,7 +321,7 @@ class AppSettings {
       appPreference.removeData("reports");
       appPreference.removeData("user");
       appPreference.removeData("zaloId");
-      appPreference.removeData("isFirstTimeLoginZalo");
+      appPreference.removeData("isFirstDownload");
       isOwnPackage = false;
       final GoogleSignIn _googleSignIn = GoogleSignIn();
       _googleSignIn.signOut();

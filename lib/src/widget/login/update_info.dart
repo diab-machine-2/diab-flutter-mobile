@@ -590,9 +590,6 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
       if (result == true) {
         await UserClient().fetchUser();
         Navigator.popUntil(context, (route) => route.isFirst);
-        if (widget.type == 'zalo') {
-          await AppSettings.setIsFirstTimeLoginZalo(true);
-        }
         Navigator.pushReplacementNamed(context, NavigatorName.tabbar);
       }
       BotToast.closeAllLoading();

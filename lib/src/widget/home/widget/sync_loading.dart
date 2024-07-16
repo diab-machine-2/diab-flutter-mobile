@@ -58,7 +58,7 @@ class _SyncLoadingControllerState extends State<SyncLoadingController> {
       await AppSettings.logout(isNavigateToStepListScreen: false);
       await loginZalo();
       AppSettings.isSyncSuccess = true;
-      await AppSettings.setIsFirstTimeLoginZalo(false);
+      await AppSettings.setIsFirstDownload(false);
     } catch (e) {
       Navigator.pushReplacementNamed(context, NavigatorName.tabbar);
       Message.showToastMessage(context, "Quá trình sync data thất bại");
