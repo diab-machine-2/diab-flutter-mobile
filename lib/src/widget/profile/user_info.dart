@@ -43,6 +43,23 @@ class ProfileInfoController extends StatefulWidget {
 
   ProfileInfoController({required this.id});
 
+  static void updateUserInfo(BuildContext context, UserModel user, {bool isUpdateDiabetes = false}) async {
+    try {
+      BotToast.showLoading();
+      await UserClient().updateUserInfo(AppSettings.userInfo!.id, user,
+          isUpdateDiabetes: isUpdateDiabetes);
+      await UserClient().fetchUser();
+      BotToast.closeAllLoading();
+    } catch (e, _) {
+      BotToast.closeAllLoading();
+      if (e is Error) {
+        Message.showToastMessage(context, e.message);
+      } else {
+        Message.showToastMessage(context, e.toString());
+      }
+    }
+  }
+
   @override
   _ProfileInfoControllerState createState() => _ProfileInfoControllerState();
 }
@@ -1198,21 +1215,8 @@ class _ProfileInfoControllerState extends State<ProfileInfoController>
     }
   }
 
-  updateUserInfo(UserModel user, {bool isUpdateDiabetes = false}) async {
-    try {
-      BotToast.showLoading();
-      await UserClient().updateUserInfo(AppSettings.userInfo!.id, user,
-          isUpdateDiabetes: isUpdateDiabetes);
-      await UserClient().fetchUser();
-      BotToast.closeAllLoading();
-    } catch (e, _) {
-      BotToast.closeAllLoading();
-      if (e is Error) {
-        Message.showToastMessage(context, e.message);
-      } else {
-        Message.showToastMessage(context, e.toString());
-      }
-    }
+  void updateUserInfo(UserModel user, {bool isUpdateDiabetes = false}) async {
+    ProfileInfoController.updateUserInfo(context, user, isUpdateDiabetes: isUpdateDiabetes);
   }
 
   updateCategoryUser(
