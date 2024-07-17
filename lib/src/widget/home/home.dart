@@ -139,7 +139,6 @@ class _HomeControllerState extends State<HomeController> with Observer {
       bool isFirstDownload = await AppSettings.getIsFirstDownload();
       if (!isUserZaloSync && isFirstDownload) {
         _showModalSyncAccount(context);
-        await AppSettings.setIsFirstDownload(false);
       }
       if (AppSettings.isSyncSuccess) {
         _showDialogSuccess();
@@ -341,8 +340,20 @@ class _HomeControllerState extends State<HomeController> with Observer {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     GestureDetector(
-                      onTap: () {
+                      onTap: () async {
                         Navigator.pop(context);
+                        await AppSettings.setIsFirstDownload(false);
+                        try {
+                          await TrackingManager.analytics.logEvent(
+                            name: 'zalo_select_sync',
+                            parameters: {
+                              "screen_name": 'Popup Sync Zalo',
+                              'cta_button_name': 'cta_zalo_sync_no',
+                            },
+                          );
+                        } catch (e) {
+                          print(e);
+                        }
                       },
                       child: Container(
                         width: deviceWidth * 0.35,
@@ -364,8 +375,15 @@ class _HomeControllerState extends State<HomeController> with Observer {
                       ),
                     ),
                     GestureDetector(
-                      onTap: () {
+                      onTap: () async {
                         Navigator.pushNamed(context, NavigatorName.sync_screen);
+                        await TrackingManager.analytics.logEvent(
+                          name: 'zalo_select_sync',
+                          parameters: {
+                            "screen_name": 'Popup Sync Zalo',
+                            'cta_button_name': 'cta_zalo_sync_yes',
+                          },
+                        );
                       },
                       child: Container(
                         height: 43,

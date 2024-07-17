@@ -59,6 +59,12 @@ class _SyncLoadingControllerState extends State<SyncLoadingController> {
       await loginZalo();
       AppSettings.isSyncSuccess = true;
       await AppSettings.setIsFirstDownload(false);
+      await TrackingManager.analytics.logEvent(
+        name: 'zalo_sync_completed',
+        parameters: {
+          "screen_name": "Zalo Sync Completed",
+        },
+      );
     } catch (e) {
       Navigator.pushReplacementNamed(context, NavigatorName.tabbar);
       Message.showToastMessage(context, "Quá trình sync data thất bại");

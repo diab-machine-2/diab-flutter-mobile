@@ -321,7 +321,6 @@ class AppSettings {
       appPreference.removeData("reports");
       appPreference.removeData("user");
       appPreference.removeData("zaloId");
-      appPreference.removeData("isFirstDownload");
       isOwnPackage = false;
       final GoogleSignIn _googleSignIn = GoogleSignIn();
       _googleSignIn.signOut();
