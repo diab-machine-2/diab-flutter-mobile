@@ -37,7 +37,7 @@ class HomeController extends StatefulWidget {
   const HomeController({this.sharedCode, this.syncAccountAccess});
   final String? sharedCode;
   final bool? syncAccountAccess;
-
+  final String screenName = "home";
   @override
   _HomeControllerState createState() => _HomeControllerState();
 }
@@ -132,13 +132,12 @@ class _HomeControllerState extends State<HomeController> with Observer {
     Future.delayed(Duration.zero, () async {
       String? username = AppSettings.userInfo!.userName;
       String? firstLinked = AppSettings.userInfo!.firstLinkedAccount;
-      bool isUserZaloSync = username != null &&
-          firstLinked != null &&
-          username.startsWith("+84") &&
-          AppSettings.zaloId != null;
+      bool isUserZaloSync =
+          username != null && firstLinked != null && username.startsWith("+84");
       bool isFirstDownload = await AppSettings.getIsFirstDownload();
-      if (!isUserZaloSync && isFirstDownload) {
-        _showModalSyncAccount(context);
+      String? zaloId = await AppSettings.getZaloId();
+      if (zaloId != null && !isUserZaloSync && isFirstDownload) {
+        _showModalSyncAccount();
       }
       if (AppSettings.isSyncSuccess) {
         _showDialogSuccess();
@@ -296,35 +295,39 @@ class _HomeControllerState extends State<HomeController> with Observer {
     return true;
   }
 
-  void _showModalSyncAccount(BuildContext context) {
-    SyncAccountModal.show(
-      context,
-      onTapSync: () async {
-        Navigator.pushNamed(context, NavigatorName.sync_screen);
-        await TrackingManager.analytics.logEvent(
-          name: 'zalo_select_sync',
-          parameters: {
-            "screen_name": 'Popup Sync Zalo',
-            'cta_button_name': 'cta_zalo_sync_yes',
-          },
-        );
-      },
-      onTapCancel: () async {
-        Navigator.pop(context);
-        await AppSettings.setIsFirstDownload(false);
-        try {
+  void _showModalSyncAccount() {
+    try {
+      SyncAccountModal.show(
+        context,
+        onTapSync: () async {
+          Navigator.pushNamed(context, NavigatorName.sync_screen);
           await TrackingManager.analytics.logEvent(
             name: 'zalo_select_sync',
             parameters: {
-              "screen_name": 'Popup Sync Zalo',
-              'cta_button_name': 'cta_zalo_sync_no',
+              "screen_name": widget.screenName,
+              'cta_button_name': 'cta_zalo_sync_yes',
             },
           );
-        } catch (e) {
-          print(e);
-        }
-      },
-    );
+        },
+        onTapCancel: () async {
+          Navigator.pop(context);
+          await AppSettings.setIsFirstDownload(false);
+          try {
+            await TrackingManager.analytics.logEvent(
+              name: 'zalo_select_sync',
+              parameters: {
+                "screen_name": widget.screenName,
+                'cta_button_name': 'cta_zalo_sync_no',
+              },
+            );
+          } catch (e) {
+            print(e);
+          }
+        },
+      );
+    } catch (e) {
+      print("key diab => " + e.toString());
+    }
   }
 
   @override

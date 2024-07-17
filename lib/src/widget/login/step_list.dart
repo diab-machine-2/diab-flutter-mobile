@@ -36,6 +36,7 @@ enum _LoginZaloProgress { none, inprogress, gottoken }
 class StepListController extends StatefulWidget {
   const StepListController(this.sharedCode);
   final String sharedCode;
+  final String screenName = "stepList";
   @override
   _StepListControllerState createState() => _StepListControllerState();
 }
@@ -625,7 +626,7 @@ class _StepListControllerState extends State<StepListController>
         await TrackingManager.analytics.logEvent(
           name: 'zalo_select_sync',
           parameters: {
-            "screen_name": 'Popup Sync Zalo',
+            "screen_name": widget.screenName,
             'cta_button_name': 'cta_zalo_sync_yes',
           },
         );
@@ -644,7 +645,7 @@ class _StepListControllerState extends State<StepListController>
           await TrackingManager.analytics.logEvent(
             name: 'zalo_select_sync',
             parameters: {
-              "screen_name": 'Popup Sync Zalo',
+              "screen_name": widget.screenName,
               'cta_button_name': 'cta_zalo_sync_no',
             },
           );

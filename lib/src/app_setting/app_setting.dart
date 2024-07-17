@@ -53,7 +53,12 @@ class AppSettings {
   }
 
   static Future<String?> getZaloId() async {
-    return appPreference.getData("zaloId") ?? null;
+    return appPreference.getData("zaloId");
+  }
+
+  static Future<void> clearZaloId() async {
+    zaloId = null;
+    appPreference.removeData("zaloId");
   }
 
   static Future<void> setIsFirstDownload(bool value) async {
@@ -309,7 +314,8 @@ class AppSettings {
         navigatorKey.currentState!
             .pushReplacementNamed(NavigatorName.step_list);
       }
-
+      userInfo = null;
+      await clearZaloId();
       await FetchClient().checkNetwork();
       await LoginClient().logout();
       await deleteHomeData();
@@ -317,11 +323,10 @@ class AppSettings {
       await clearRefreshToken();
       await clearIsSyncing();
       // appPreference.setData("valueOfClickShortGuide", "0 0 0 0 0 0 0");
+      isOwnPackage = false;
       appPreference.removeData("hasNewReports");
       appPreference.removeData("reports");
       appPreference.removeData("user");
-      appPreference.removeData("zaloId");
-      isOwnPackage = false;
       final GoogleSignIn _googleSignIn = GoogleSignIn();
       _googleSignIn.signOut();
       final facebookLogin = FacebookLogin();
