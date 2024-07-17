@@ -11,6 +11,7 @@ import 'package:medical/src/repo/user/user_client.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
+import 'package:medical/src/widget/login/routing.dart';
 import 'package:medical/src/widgets/spacing_row.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
@@ -146,8 +147,7 @@ class _SocialLoginSectionState extends State<SocialLoginSection> {
             googleAccount: null,
             appleCredential: credential);
       } else {
-        Navigator.popUntil(context, (route) => route.isFirst);
-        Navigator.pushReplacementNamed(context, NavigatorName.tabbar);
+       LoginRouting().navigateToHome(context);
       }
     } catch (error) {
       BotToast.closeAllLoading();
@@ -224,8 +224,7 @@ class _SocialLoginSectionState extends State<SocialLoginSection> {
         // Navigator.pushReplacementNamed(context, NavigatorName.update_info,
         //     arguments: {'type': 'google', 'googleAccount': account});
       } else {
-        Navigator.popUntil(context, (route) => route.isFirst);
-        Navigator.pushReplacementNamed(context, NavigatorName.tabbar);
+        LoginRouting().navigateToHome(context);
       }
     } catch (error) {
       if (error is Error && error.code == '5' && account != null) {

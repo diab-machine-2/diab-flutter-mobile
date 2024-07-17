@@ -88,7 +88,7 @@ extension ScheduleTypeExtend on ScheduleType {
       case ScheduleType.blood_pressure_recommend:
         return R.drawable.ic_home_measurement_blood;
       case ScheduleType.height_recommend:
-        return R.drawable.ic_home_measurement_weight;
+        return R.drawable.ic_home_target;
       case ScheduleType.weight_recommend:
         return R.drawable.ic_home_measurement_weight;
       case ScheduleType.exercise_recommend:
@@ -100,7 +100,7 @@ extension ScheduleTypeExtend on ScheduleType {
       case ScheduleType.peripheral_recommend:
         return R.drawable.ic_home_peripheral;
       case ScheduleType.completed:
-        return "";
+        return R.drawable.ic_home_target;
     }
   }
 

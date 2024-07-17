@@ -133,7 +133,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     final repository = AppRepository();
     final currentDay = DateUtil.getCurrentDayInMillis();
     final apiResult = await repository.getListSmartGoal(day: currentDay, week: _currentWeek);
-    var currentState = state as HomeLoaded;
+    HomeLoaded currentState = state as HomeLoaded;
     apiResult.when(
       success: (SmartGoalListReponse response) {
         List<HomeActivityData> combinedActivities = [];
@@ -206,7 +206,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   }
 
   Stream<HomeState> _fetchReminders() async* {
-    var currentState = state as HomeLoaded;
+    HomeLoaded currentState = state as HomeLoaded;
     final remindersResponse = await UserClient().fetchScheduleRemindersForHomePage();
     if (remindersResponse.isNotEmpty) {
       final reminders = remindersResponse.map((e) {
