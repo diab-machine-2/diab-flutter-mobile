@@ -66,6 +66,7 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
   ];
 
   int _initialPage = 0;
+  late int _lastIndex = _initialPage;
 
   @override
   void initState() {
@@ -117,11 +118,11 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
           },
         );
       });
-      jumpTo(index);
+      _jumpTo(index);
     } else if (index == -1) {
       // _showMaterialDialog();
     } else {
-      jumpTo(index);
+      _jumpTo(index);
     }
   }
 
@@ -141,7 +142,7 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
     final String? lessonId = DynamicLinkConfig.instance.lessonId;
     final String? activityId = DynamicLinkConfig.instance.activityId;
     if (lessonId != null || activityId != null) {
-      jumpTo(TabBarType.library.index);
+      _jumpTo(TabBarType.library.index);
     }
   }
 
@@ -183,10 +184,10 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
       }
       NavigationUtil.popToFirst(context);
       if (position == 0) {
-        jumpTo(TabBarType.program.index);
+        _jumpTo(TabBarType.program.index);
         _bottomTabbarKey.currentState?.setPage(TabBarType.program.index);
       } else {
-        jumpTo(TabBarType.library.index);
+        _jumpTo(TabBarType.library.index);
         _bottomTabbarKey.currentState?.setPage(TabBarType.library.index);
         await Future.delayed(
           const Duration(milliseconds: 10),
@@ -200,14 +201,14 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
       }
     }
     if (notifyName == Const.NAVIGATE_TO_PROFILE_TAB) {
-      jumpTo(TabBarType.home.index);
+      _jumpTo(TabBarType.home.index);
     }
     if (notifyName == Const.NAVIGATE_TO_LESSON_DETAIL ||
         notifyName == Const.NAVIGATE_TO_ACTIVITY_DETAIL) {
       _checkExistLessonId();
     }
     if (notifyName == Const.NAVIGATE_TO_LESSON_TAB) {
-      jumpTo(TabBarType.library.index);
+      _jumpTo(TabBarType.library.index);
       _bottomTabbarKey.currentState?.setPage(TabBarType.library.index);
     }
     if (notifyName == Const.LANGUAGE_CHANGED) {
@@ -223,7 +224,11 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
     }
   }
 
-  void jumpTo(int index) {
+  void _jumpTo(int index) {
+    if (_lastIndex != TabBarType.home.index && index == TabBarType.home.index) {
+      Observable.instance.notifyObservers([], notifyName: "refresh_home");
+    }
+    _lastIndex = index;
     pageController!.jumpToPage(index);
   }
 

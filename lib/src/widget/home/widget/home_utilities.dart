@@ -55,6 +55,7 @@ class HomeUtilities extends StatelessWidget {
 
           // use two rows to keep fixed height
           Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: renderingUtilities
                 .getRange(0, renderingUtilities.length ~/ 2)
                 .map((utility) => Expanded(child: _buildActivityItem(utility)))
@@ -62,6 +63,7 @@ class HomeUtilities extends StatelessWidget {
           ),
           const SizedBox(height: 16.0),
           Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: renderingUtilities
                 .getRange(renderingUtilities.length ~/ 2, renderingUtilities.length)
                 .map((utility) => Expanded(child: _buildActivityItem(utility)))

@@ -12,7 +12,9 @@ class Drawables {
   String get banner_promotion15 => "lib/res/drawables/promotion15.jpg";
   String get banner_share_app => "lib/res/drawables/banner_share_app.jpg";
   String get bg_activity_empty => "lib/res/drawables/bg_activity_empty.png";
-  String get im_complete_activity => "lib/res/drawables/im_complete_activity.png";
+  String get im_activity_complete => "lib/res/drawables/im_activity_complete.png";
+  String get im_activity_empty => "lib/res/drawables/im_activity_empty.png";
+  String get im_reminder_empty => "lib/res/drawables/im_reminder_empty.png";
   String get bg_apple_green => "lib/res/drawables/bg_apple_green.png";
   String get bg_apple_home => "lib/res/drawables/bg_apple_home.png";
   String get bg_apple_orange => "lib/res/drawables/bg_apple_orange.png";
@@ -466,6 +468,7 @@ class Drawables {
   String get ic_home_glucose_calendar => "lib/res/drawables/home/ic_home_glucose_calendar.png";
   String get ic_home_goal => "lib/res/drawables/home/ic_home_goal.png";
   String get ic_home_activity => "lib/res/drawables/home/ic_home_activity.png";
+  String get ic_home_target => "lib/res/drawables/home/ic_home_target.png";
   String get ic_home_health_profile => "lib/res/drawables/home/ic_home_health_profile.png";
   String get ic_home_measurement_glucose => "lib/res/drawables/home/ic_home_measurement_glucose.png";
   String get ic_home_measurement_blood => "lib/res/drawables/home/ic_home_measurement_blood.png";

@@ -235,7 +235,8 @@ class _HomeControllerState extends State<HomeController>
         value: _homeBloc,
         child: BlocBuilder<HomeBloc, HomeState>(builder: (BuildContext context, HomeState state) {
           if (state is HomeInitial) {
-            BlocProvider.of<HomeBloc>(context).add(FetchHome());
+            // Skip first load, just after user change info then load (Logged in state)
+            // BlocProvider.of<HomeBloc>(context).add(FetchHome());
           }
           if (state is HomeLoading) {
             model = state.model;

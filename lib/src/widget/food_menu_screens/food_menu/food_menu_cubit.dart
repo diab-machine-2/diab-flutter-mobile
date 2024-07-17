@@ -53,8 +53,6 @@ class FoodMenuCubit extends Cubit<FoodMenuState> {
         } else {
           currentDayInWeek = 0;
         }
-        Observable.instance
-          .notifyObservers([], notifyName: "refresh_home_activity");
         emit(const FoodMenuSuccess());
       }, failure: (NetworkExceptions error) {
         // emit(FoodMenuFailure(NetworkExceptions.getErrorMessage(error)));
@@ -62,7 +60,9 @@ class FoodMenuCubit extends Cubit<FoodMenuState> {
       emit(const FoodMenuInitial());
     }
     await getCurrentUserInfo();
-    getTemplateDetail();
+    await getTemplateDetail();
+    Observable.instance
+      .notifyObservers([], notifyName: "refresh_home_activity");
   }
 
   Future<void> getTemplateDetail({bool isRefresh = false}) async {
@@ -97,7 +97,7 @@ class FoodMenuCubit extends Cubit<FoodMenuState> {
     final ApiResult<CommonResponse> apiResult =
         await repository.changeFood(request);
     apiResult.when(success: (CommonResponse response) async {
-      getTemplateDetail();
+      await getTemplateDetail();
       Observable.instance
           .notifyObservers([], notifyName: "refresh_home_activity");
       emit(const FoodMenuSuccess());

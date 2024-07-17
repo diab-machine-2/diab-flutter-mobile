@@ -93,70 +93,76 @@ class HomeReminder extends StatelessWidget {
 
             const SizedBox(height: 16.0),
 
-            if (isEmpty)
-              SizedBox(
-                height: loading ? 56.0 : 164.0,
-                child: loading
-                    ? null
-                    : Center(
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Text(
-                              "empty_reminder".tr(),
-                              style: TextStyle(
-                                fontSize: 14.0,
-                                height: 20.0 / 14.0,
-                                color: R.color.primaryGreyColor,
-                              ),
-                              textAlign: TextAlign.center,
-                            ),
-
-                            const SizedBox(height: 24.0),
-
-                            // button
-                            SizedBox(
-                              width: 188.0,
-                              child: InkWell(
-                                onTap: onAdd,
-                                borderRadius: BorderRadius.circular(16.0),
-                                child: Container(
-                                  padding:
-                                      const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(16.0),
-                                    color: R.color.greenGradientBottom,
-                                  ),
-                                  child: Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    crossAxisAlignment: CrossAxisAlignment.center,
-                                    children: [
-                                      Image.asset(
-                                        R.drawable.ic_home_plus,
-                                        width: 16.0,
-                                        height: 16.0,
-                                      ),
-                                      const SizedBox(width: 6.0),
-                                      Text(
-                                        "Thêm nhắc nhở",
-                                        style: TextStyle(
-                                          color: Colors.white,
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 13.0,
-                                          height: 16.0 / 13.0,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
+            if (loading)
+              SizedBox(height: 56.0)
+            else if (isEmpty)
+              Center(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Image.asset(
+                      R.drawable.im_reminder_empty,
+                      width: 168.0,
+                      height: 168.0,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      child: Text(
+                        "empty_reminder".tr(),
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 14.0,
+                          height: 20.0 / 14.0,
+                          color: R.color.primaryGreyColor,
                         ),
                       ),
+                    ),
+
+                    const SizedBox(height: 24.0),
+
+                    // button set reminder
+                    SizedBox(
+                      width: 188.0,
+                      child: InkWell(
+                        onTap: onAdd,
+                        borderRadius: BorderRadius.circular(16.0),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(16.0),
+                            color: R.color.greenGradientBottom,
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Image.asset(
+                                R.drawable.ic_home_plus,
+                                width: 16.0,
+                                height: 16.0,
+                              ),
+                              const SizedBox(width: 6.0),
+                              Text(
+                                "Thêm nhắc nhở",
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 13.0,
+                                  height: 16.0 / 13.0,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+
+                    const SizedBox(height: 16.0),
+                  ],
+                ),
               ),
+
             if (!isEmpty && !isHaveMore)
               for (var reminder in reminders) _buildActivityItem(reminder),
 

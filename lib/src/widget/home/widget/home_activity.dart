@@ -93,20 +93,22 @@ class HomeActivity extends StatelessWidget {
 
             const SizedBox(height: 16.0),
 
-            if (isFinishedAll)
+            if (loading)
+              SizedBox(height: 64.0)
+            else if (isFinishedAll || isEmpty)
               Center(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Image.asset(
-                      R.drawable.im_complete_activity,
+                      isEmpty ? R.drawable.im_activity_empty : R.drawable.im_activity_complete,
                       width: 168.0,
                       height: 168.0,
                     ),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16.0),
                       child: Text(
-                        "complete_activity".tr(),
+                        (isEmpty ? "empty_activity" : "complete_activity").tr(),
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           fontSize: 14.0,
@@ -120,38 +122,10 @@ class HomeActivity extends StatelessWidget {
 
                     // button set goal
                     Center(child: _buttonSetNewGoal()),
-                  
+
                     const SizedBox(height: 16.0),
                   ],
                 ),
-              )
-            else if (isEmpty)
-              SizedBox(
-                height: loading ? 64.0 : 164.0,
-                child: loading
-                    ? null
-                    : Center(
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Text(
-                              "empty_activity".tr(),
-                              style: TextStyle(
-                                fontSize: 14.0,
-                                height: 20.0 / 14.0,
-                                color: R.color.primaryGreyColor,
-                              ),
-                              textAlign: TextAlign.center,
-                            ),
-
-                            const SizedBox(height: 24.0),
-
-                            // button set goal
-                            Center(child: _buttonSetNewGoal()),
-                          ],
-                        ),
-                      ),
               ),
 
             if (!isEmpty && !isHaveMore)
