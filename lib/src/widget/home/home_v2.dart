@@ -222,7 +222,7 @@ class _HomeControllerState extends State<HomeController>
   Future<bool> _pullToRefresh() async {
     _courseSuggestKey.currentState?.loadData();
     page = 1;
-    _homeBloc.add(FetchHome());
+    // _homeBloc.add(FetchHome());
     user = await UserClient().fetchUser();
     AppSettings.isReloadCurrentUserInfo = true;
     return true;
@@ -254,6 +254,66 @@ class _HomeControllerState extends State<HomeController>
             }
             isLoading = false;
           }
+
+          Widget reminderW = HomeReminder(
+            reminders: stateLoaded?.reminders ?? [],
+            loading: stateLoaded?.reminderLoading ?? true,
+            onAdd: () {
+              Navigator.pushNamed(context, NavigatorName.add_reminder,
+                  arguments: {'type': 'input'});
+            },
+            onItemTap: (reminder) {
+              Navigator.pushNamed(context, NavigatorName.add_reminder,
+                  arguments: {'type': 'update', 'id': reminder.id});
+            },
+            expanded: _isReminderExpanded,
+            onExpand: () {
+              setState(() {
+                _isReminderExpanded = true;
+              });
+            },
+            onCollapse: () {
+              setState(() {
+                _isReminderExpanded = false;
+              });
+            },
+          );
+
+          Widget utilitiesW = HomeUtilities(
+            utilities: stateLoaded?.utilities ?? [],
+            onNavigate: (routeName) {
+              // case show all utilities
+              if (routeName == NavigatorName.utilities) {
+                final utilities = BlocProvider.of<HomeBloc>(context).getAllUtilities(full: true);
+                Navigator.pushNamed(context, routeName, arguments: utilities);
+                return;
+              }
+
+              // other navigate case
+              if (routeName.startsWith("/")) {
+                Navigator.pushNamed(context, routeName);
+                return;
+              }
+
+              // special case for utilities
+              switch (routeName) {
+                case "share":
+                  String? shareLink = DynamicLinkConfig.instance.shareLink;
+                  if (shareLink != null) {
+                    AppShare.instance.userReferralCode(context, shareLink);
+                  }
+                  return;
+                default:
+                  break;
+              }
+              Console.log("missing handler for routeName: $routeName");
+              BotToast.showText(text: "Chức năng đang được phát triển");
+            },
+          );
+
+          bool needSwapReminderAndUtilities =
+              stateLoaded?.activityLoading == false && stateLoaded?.reminders?.isEmpty == true;
+
           return RefreshIndicator(
             onRefresh: _pullToRefresh,
             child: Scaffold(
@@ -325,71 +385,18 @@ class _HomeControllerState extends State<HomeController>
 
                           const SizedBox(height: 16.0),
 
-                          // Reminder
+                          // Reminder >< Utilities
                           Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                            child: HomeReminder(
-                              reminders: stateLoaded?.reminders ?? [],
-                              loading: stateLoaded?.reminderLoading ?? true,
-                              onAdd: () {
-                                Navigator.pushNamed(context, NavigatorName.add_reminder,
-                                    arguments: {'type': 'input'});
-                              },
-                              onItemTap: (reminder) {
-                                Navigator.pushNamed(context, NavigatorName.add_reminder,
-                                    arguments: {'type': 'update', 'id': reminder.id});
-                              },
-                              expanded: _isReminderExpanded,
-                              onExpand: () {
-                                setState(() {
-                                  _isReminderExpanded = true;
-                                });
-                              },
-                              onCollapse: () {
-                                setState(() {
-                                  _isReminderExpanded = false;
-                                });
-                              },
-                            ),
+                            child: needSwapReminderAndUtilities ? utilitiesW : reminderW,
                           ),
 
                           const SizedBox(height: 16.0),
 
-                          // Utilities
+                          // Utilities >< Reminder
                           Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                            child: HomeUtilities(
-                              utilities: stateLoaded?.utilities ?? [],
-                              onNavigate: (routeName) {
-                                // case show all utilities
-                                if (routeName == NavigatorName.utilities) {
-                                  final utilities = BlocProvider.of<HomeBloc>(context)
-                                      .getAllUtilities(full: true);
-                                  Navigator.pushNamed(context, routeName, arguments: utilities);
-                                  return;
-                                }
-
-                                // other navigate case
-                                if (routeName.startsWith("/")) {
-                                  Navigator.pushNamed(context, routeName);
-                                  return;
-                                }
-
-                                // special case for utilities
-                                switch (routeName) {
-                                  case "share":
-                                    String? shareLink = DynamicLinkConfig.instance.shareLink;
-                                    if (shareLink != null) {
-                                      AppShare.instance.userReferralCode(context, shareLink);
-                                    }
-                                    return;
-                                  default:
-                                    break;
-                                }
-                                Console.log("missing handler for routeName: $routeName");
-                                BotToast.showText(text: "Chức năng đang được phát triển");
-                              },
-                            ),
+                            child: needSwapReminderAndUtilities ? reminderW : utilitiesW,
                           ),
 
                           const SizedBox(height: 16.0),
