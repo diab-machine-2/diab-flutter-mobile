@@ -417,7 +417,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       titleColor: haveWeight ? _haveValueTitleColor : _noValueTitleColor,
       value: haveWeight ? model.weightCard!.weight!.toString() : "--",
       color: model?.weightCard?.weightColorCode != null
-          ? _convertHexStringToInt(model!.weightCard!.weightColorCode!)
+          ? 0xFF008479
           : _noValueColor,
       unit: model?.weightCard?.unit ?? "kg",
       navigatorName: haveWeight ? NavigatorName.detail_bmi : NavigatorName.add_bmi,
