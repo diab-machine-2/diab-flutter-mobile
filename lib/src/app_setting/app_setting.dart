@@ -307,6 +307,21 @@ class AppSettings {
     return (preriod + 1).toString();
   }
 
+  static Future<int> numberOfOpenHome() async {
+    int? numberOfOpenHome = appPreference.getIntData("numberOfOpenHome");
+    if (numberOfOpenHome == null) {
+      numberOfOpenHome = 0;
+    }
+    return numberOfOpenHome;
+  }
+
+  static Future<int> increaseNumberOfOpenHome() async {
+    int numberOfOpenHome = await AppSettings.numberOfOpenHome();
+    numberOfOpenHome++;
+    appPreference.setData("numberOfOpenHome", numberOfOpenHome);
+    return numberOfOpenHome;
+  }
+
   static Future<bool> logout({bool isNavigateToStepListScreen = true}) async {
     try {
       if (isNavigateToStepListScreen) {
