@@ -11,6 +11,7 @@ import 'package:medical/src/bloc/home/home_bloc.dart';
 import 'package:medical/src/modal/home/home_model.dart';
 import 'package:medical/src/modal/home/package_account_home_model.dart';
 import 'package:medical/src/modal/user/user_model.dart';
+import 'package:medical/src/service/rating_service.dart';
 import 'package:medical/src/utils/app_storages.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigation_util.dart';
@@ -128,6 +129,7 @@ class _HomeControllerState extends State<HomeController> with Observer {
     }
     firebaseSetup();
     initHealthApp();
+    _checkShowRating();
 
     Future.delayed(Duration.zero, () async {
       if (AppSettings.isFirstTimeLoginZalo) {
@@ -139,6 +141,13 @@ class _HomeControllerState extends State<HomeController> with Observer {
         AppSettings.isSyncSuccess = false;
       }
     });
+  }
+
+  Future<void> _checkShowRating() async {
+    int turn = await AppSettings.numberOfOpenHome();
+    if (turn > 2) return;
+    RatingService.showRating();
+    await AppSettings.increaseNumberOfOpenHome();
   }
 
   initHealthApp() async {
