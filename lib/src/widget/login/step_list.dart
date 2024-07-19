@@ -551,7 +551,7 @@ class _StepListControllerState extends State<StepListController>
       _loginZaloProgress = _LoginZaloProgress.inprogress;
       account = await ZaloService().login();
       await AppSettings.setZaloId(account.id);
-      AppSettings.zaloExternalToken = account.accessToken;
+      await AppSettings.setZaloExternalToken(account.accessToken);
       _loginZaloProgress = _LoginZaloProgress.gottoken;
       BotToast.showLoading();
       await LoginClient().login({
