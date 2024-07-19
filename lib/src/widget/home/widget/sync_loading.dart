@@ -55,10 +55,16 @@ class _SyncLoadingControllerState extends State<SyncLoadingController> {
     try {
       await LoginClient().syncAccount(
           widget.phoneNumber, widget.providerName, widget.providerKey);
-      await AppSettings.logout(isNavigateToStepListScreen: false);
+      await AppSettings.logout(isNavigateToStepListScreen: false, isSync: true);
       await loginZalo();
       AppSettings.isSyncSuccess = true;
-      await AppSettings.setIsFirstTimeLoginZalo(false);
+      await AppSettings.setIsFirstDownload(false);
+      await TrackingManager.analytics.logEvent(
+        name: 'zalo_sync_completed',
+        parameters: {
+          "screen_name": "Zalo Sync Completed",
+        },
+      );
     } catch (e) {
       Navigator.pushReplacementNamed(context, NavigatorName.tabbar);
       Message.showToastMessage(context, "Quá trình sync data thất bại");
@@ -66,16 +72,17 @@ class _SyncLoadingControllerState extends State<SyncLoadingController> {
   }
 
   Future<void> loginZalo() async {
+    String? externalToken = await AppSettings.getZaloExternalToken();
+    String? zaloId = await AppSettings.getZaloId();
     try {
       BotToast.showLoading();
       await LoginClient().login({
         "client_id": Const.CLIENT_ID,
         "client_secret": Const.CLIENT_SECRET,
         "grant_type": "external",
-        "external_token":
-            AppSettings.zaloExternalToken, // Ensure account is not null
+        "external_token": externalToken, // Ensure account is not null
         "provider": 'Zalo',
-        "zalo_id": AppSettings.zaloId
+        "zalo_id": zaloId
       });
       await UserClient().fetchUser();
       loginSuccess("Zalo");

@@ -54,8 +54,8 @@ class AppPreference {
     return _preference?.getInt(key);
   }
 
-  bool getBoolData(String key) {
-    return _preference?.getBool(key) ?? false;
+  bool getBoolData(String key, {bool defaultValue = false}) {
+    return _preference?.getBool(key) ?? defaultValue;
   }
 
   void setData(String key, Object? data) {
