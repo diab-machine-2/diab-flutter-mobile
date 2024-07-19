@@ -41,7 +41,7 @@ class AppSettings {
 
   static bool isOwnPackage = false;
 
-  static bool isFirstTimeLoginZalo = false;
+  static bool isFirstDownload = true;
 
   static bool isSyncSuccess = false;
 
@@ -53,16 +53,22 @@ class AppSettings {
   }
 
   static Future<String?> getZaloId() async {
-    return appPreference.getData("zaloId") ?? null;
+    return appPreference.getData("zaloId");
   }
 
-  static Future<void> setIsFirstTimeLoginZalo(bool value) async {
-    isFirstTimeLoginZalo = value;
-    appPreference.setData("isFirstTimeLoginZalo", value);
+  static Future<void> clearZaloId() async {
+    zaloId = null;
+    appPreference.removeData("zaloId");
   }
 
-  static Future<bool> getIsFirstTimeLoginZalo() async {
-    bool result = await appPreference.getBoolData("isFirstTimeLoginZalo");
+  static Future<void> setIsFirstDownload(bool value) async {
+    isFirstDownload = value;
+    appPreference.setData("isFirstDownload", value);
+  }
+
+  static Future<bool> getIsFirstDownload() async {
+    bool result =
+        appPreference.getBoolData("isFirstDownload", defaultValue: true);
     return result;
   }
 
@@ -308,7 +314,8 @@ class AppSettings {
         navigatorKey.currentState!
             .pushReplacementNamed(NavigatorName.step_list);
       }
-
+      userInfo = null;
+      await clearZaloId();
       await FetchClient().checkNetwork();
       await LoginClient().logout();
       await deleteHomeData();
@@ -316,12 +323,10 @@ class AppSettings {
       await clearRefreshToken();
       await clearIsSyncing();
       // appPreference.setData("valueOfClickShortGuide", "0 0 0 0 0 0 0");
+      isOwnPackage = false;
       appPreference.removeData("hasNewReports");
       appPreference.removeData("reports");
       appPreference.removeData("user");
-      appPreference.removeData("zaloId");
-      appPreference.removeData("isFirstTimeLoginZalo");
-      isOwnPackage = false;
       final GoogleSignIn _googleSignIn = GoogleSignIn();
       _googleSignIn.signOut();
       final facebookLogin = FacebookLogin();
