@@ -489,6 +489,8 @@ class _VerifyPhoneControllerState extends State<VerifyPhoneController> {
     try {
       BotToast.showLoading();
       String? zaloId = await AppSettings.getZaloId();
+      String? externalToken = await AppSettings.getZaloExternalToken();
+
       if (zaloId == null) {
         Message.showToastMessage(context, "Tài khoản zalo không hợp lệ");
         return;
@@ -504,7 +506,7 @@ class _VerifyPhoneControllerState extends State<VerifyPhoneController> {
           "client_id": Const.CLIENT_ID,
           "client_secret": Const.CLIENT_SECRET,
           "grant_type": "external",
-          "external_token": AppSettings.zaloExternalToken,
+          "external_token": externalToken,
           "provider": 'Zalo',
           "zalo_id": zaloId
         });

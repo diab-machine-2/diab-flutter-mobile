@@ -33,6 +33,7 @@ class AppSettings {
   static String? version;
   static String? buildNumber;
   static String? zaloId;
+  static String zaloExternalToken = "";
 
   static bool showed50Message = false;
   static bool showed90Message = false;
@@ -45,8 +46,6 @@ class AppSettings {
 
   static bool isSyncSuccess = false;
 
-  static String zaloExternalToken = "";
-
   static Future<void> setZaloId(String id) async {
     zaloId = id;
     appPreference.setData("zaloId", id);
@@ -56,9 +55,18 @@ class AppSettings {
     return appPreference.getData("zaloId");
   }
 
+  static Future<void> setZaloExternalToken(String id) async {
+    zaloExternalToken = id;
+    appPreference.setData("zaloExternalToken", id);
+  }
+
+  static Future<String?> getZaloExternalToken() async {
+    return appPreference.getData("zaloExternalToken");
+  }
+
   static Future<void> clearZaloId() async {
-    zaloId = null;
     appPreference.removeData("zaloId");
+    appPreference.removeData("zaloExternalToken");
   }
 
   static Future<void> setIsFirstDownload(bool value) async {
@@ -307,21 +315,21 @@ class AppSettings {
     return (preriod + 1).toString();
   }
 
-  static Future<bool> logout({bool isNavigateToStepListScreen = true}) async {
+  static Future<bool> logout(
+      {bool isNavigateToStepListScreen = true, bool isSync = false}) async {
     try {
       if (isNavigateToStepListScreen) {
         navigatorKey.currentState!.popUntil((route) => route.isFirst);
         navigatorKey.currentState!
             .pushReplacementNamed(NavigatorName.step_list);
       }
-      userInfo = null;
-      await clearZaloId();
       await FetchClient().checkNetwork();
       await LoginClient().logout();
       await deleteHomeData();
       await clearToken();
       await clearRefreshToken();
       await clearIsSyncing();
+      if (!isSync) await clearZaloId();
       // appPreference.setData("valueOfClickShortGuide", "0 0 0 0 0 0 0");
       isOwnPackage = false;
       appPreference.removeData("hasNewReports");
