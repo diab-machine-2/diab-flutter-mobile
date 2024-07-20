@@ -323,6 +323,7 @@ class AppSettings {
         navigatorKey.currentState!
             .pushReplacementNamed(NavigatorName.step_list);
       }
+      userInfo = null;
       await FetchClient().checkNetwork();
       await LoginClient().logout();
       await deleteHomeData();
