@@ -506,14 +506,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.5"
-  events_emitter:
-    dependency: transitive
-    description:
-      name: events_emitter
-      sha256: a075477bdf9c8c0c31bb7c7b7bdd357b4486c34f30163119f96de4e7f54abeff
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.5.2"
   external_app_launcher:
     dependency: "direct main"
     description:
@@ -976,13 +968,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.8.5+3"
-  flutter_zoom_videosdk:
-    dependency: "direct main"
-    description:
-      path: "packages/zoom_video_sdk"
-      relative: true
-    source: path
-    version: "1.9.0"
   fluttertoast:
     dependency: "direct main"
     description:
@@ -1199,6 +1184,22 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.2.1+1"
+  in_app_review:
+    dependency: "direct main"
+    description:
+      name: in_app_review
+      sha256: "99869244d09adc76af16bf8fd731dd13cef58ecafd5917847589c49f378cbb30"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.0.9"
+  in_app_review_platform_interface:
+    dependency: transitive
+    description:
+      name: in_app_review_platform_interface
+      sha256: fed2c755f2125caa9ae10495a3c163aa7fab5af3585a9c62ef4a6920c5b45f10
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.0.5"
   intl:
     dependency: transitive
     description:
@@ -2182,4 +2183,4 @@ packages:
     version: "0.0.6"
 sdks:
   dart: ">=3.2.0-194.0.dev <4.0.0"
-  flutter: ">=3.16.0"
+  flutter: ">=3.13.0"

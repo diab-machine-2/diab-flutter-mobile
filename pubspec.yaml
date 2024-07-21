@@ -129,8 +129,8 @@ dependencies:
   store_redirect: ^2.0.1
   youtube_player_flutter: ^8.1.2
   # zoom video sdk
-  flutter_zoom_videosdk:
-    path: packages/zoom_video_sdk
+  # flutter_zoom_videosdk:
+  #   path: packages/zoom_video_sdk
   wakelock: ^0.6.2
   # Metadata detection
   linkify: ^5.0.0
