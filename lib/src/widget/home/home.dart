@@ -150,7 +150,7 @@ class _HomeControllerState extends State<HomeController> with Observer {
 
   Future<void> _checkShowRating() async {
     int turn = await AppSettings.numberOfOpenHome();
-    if (turn > 2) return;
+    if (turn == 0 || turn >= 3) return;
     RatingService.showRating();
     await AppSettings.increaseNumberOfOpenHome();
   }
