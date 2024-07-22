@@ -625,6 +625,9 @@ class _AppState extends State<App> {
                             providerKey: args['providerKey'],
                           ));
                     }
+                  case NavigatorName.meeting_prepare: {
+                    return _buildRoute(settings, MeetingPreparePage());
+                  }
                   case NavigatorName.meeting:
                     {
                       // if (settings.arguments is MeetingCubit) {
