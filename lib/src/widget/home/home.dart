@@ -158,9 +158,15 @@ class _HomeControllerState extends State<HomeController> with Observer {
 
   Future<void> _checkShowRating() async {
     int turn = await AppSettings.numberOfOpenHome();
-    if (turn == 0 || turn >= 3) return;
-    RatingService.showRating();
+
+    if (turn > 3) return;
+    // Increment the number of opens.
     await AppSettings.increaseNumberOfOpenHome();
+
+    // Show rating if turn is between 1 and 3 (inclusive).
+    if (turn > 0 && turn <= 3) {
+      RatingService.showRating();
+    }
   }
 
   initHealthApp() async {
