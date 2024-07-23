@@ -134,11 +134,19 @@ class _HomeControllerState extends State<HomeController> with Observer {
     Future.delayed(Duration.zero, () async {
       String? username = AppSettings.userInfo!.userName;
       String? firstLinked = AppSettings.userInfo!.firstLinkedAccount;
-      bool isUserZaloSync =
-          username != null && firstLinked != null && username.startsWith("+84");
       bool isFirstDownload = await AppSettings.getIsFirstDownload();
-      String? zaloId = await AppSettings.getZaloId();
-      if (zaloId != null && !isUserZaloSync && isFirstDownload) {
+      bool isZaloAccountAndNotSynchronized = firstLinked != null &&
+          firstLinked.toLowerCase() == "zalo" &&
+          username != null &&
+          !username.startsWith("+84");
+
+      print("my home data username: $username");
+      print("my home data firstLinked: $firstLinked");
+      print("my home data isFirstDownload: $isFirstDownload");
+      print(
+          "my home data isZaloAccountAndNotSynchronized: $isZaloAccountAndNotSynchronized");
+
+      if (isZaloAccountAndNotSynchronized && isFirstDownload) {
         _showModalSyncAccount();
       }
       if (AppSettings.isSyncSuccess) {
