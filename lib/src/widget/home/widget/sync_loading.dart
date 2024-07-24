@@ -58,7 +58,6 @@ class _SyncLoadingControllerState extends State<SyncLoadingController> {
       if (externalToken != null && zaloId != null) {
         await loginByZalo(externalToken, zaloId);
       } else {
-        print("my home data widget.phoneNumber: ${widget.phoneNumber}");
         await loginByPhonenumber(widget.phoneNumber,
             "GQlLFRRkHKpvqzYlRBWvxXCMJZ5lsTvS97SCHp8gikqck8vl8i");
       }
