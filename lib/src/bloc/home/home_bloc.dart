@@ -137,7 +137,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     apiResult.when(
       success: (SmartGoalListReponse response) {
         List<HomeActivityData> combinedActivities = [];
-        if (response.data?.daily != null || response.data?.weekly != null) {
+        if (response.data?.daily?.isNotEmpty == true || response.data?.weekly?.isNotEmpty == true) {
           final dailyActivities =
               (response.data?.daily ?? []).where((e) => e != null).map((e) => e!).map((e) {
             final ScheduleType type = ScheduleTypeExtend.getTypeFromIndex(e.type);
@@ -169,13 +169,10 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
           bool isCompletedAll = combinedActivities.isEmpty ||
               combinedActivities.every((element) => element.smartGoal.state == 1);
           bool stillLoading = isCompletedAll;
-          if (isCompletedAll) {
-            return;
-          }
           currentState =
               currentState.copyWith(activities: combinedActivities, activityLoading: stillLoading);
         } else {
-          currentState = currentState.copyWith(activityLoading: false);
+          currentState = currentState.copyWith(activityLoading: false, activities: []);
         }
       },
       failure: (error) {
@@ -184,10 +181,16 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       },
     );
 
+    // check fetch target recommendation
+    bool needFetchRecommend = currentState.activities == null || currentState.activities!.isEmpty;
+    // or completed all
+    needFetchRecommend = needFetchRecommend || currentState.activities!.every((element) => element.smartGoal.state == 1);
+
     // do fetch target recommendation
-    if (currentState.activities == null || currentState.activities!.isEmpty) {
+    if (needFetchRecommend) {
       final targetRecommend = await HomeClient().fetchTargetRecommendation(week: _currentWeek);
       if (targetRecommend != null) {
+        // If have target recommendation => override
         final ScheduleType type = ScheduleTypeExtend.getTypeFromIndex(targetRecommend.type);
         final activity = HomeActivityData(
           id: '####',
@@ -199,6 +202,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         );
         currentState = currentState.copyWith(activities: [activity], activityLoading: false);
       } else {
+        // else, just keep the current state, stop loading
         currentState = currentState.copyWith(activityLoading: false);
       }
     }
