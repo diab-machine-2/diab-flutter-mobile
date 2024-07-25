@@ -117,7 +117,7 @@ class CurvedNavigationBarState extends State<CurvedNavigationBar>
     final textDirection = Directionality.of(context);
     final media = MediaQuery.of(context);
     final double fullPaddingBottom = media.padding.bottom;
-    final double fullHeight = widget.height + (fullPaddingBottom / 2).roundToDouble();
+    final double fullHeight = widget.height + fullPaddingBottom.roundToDouble();
     final double activeIconSize = 52.0;
     final double activeTabPaddingTitle = 6.0;
     return SizedBox(
