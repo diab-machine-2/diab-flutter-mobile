@@ -213,7 +213,12 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     HomeLoaded currentState = state as HomeLoaded;
     final remindersResponse = await UserClient().fetchScheduleRemindersForHomePage();
     if (remindersResponse.isNotEmpty) {
-      final reminders = remindersResponse.map((e) {
+      final reminders = remindersResponse
+      .where((e) {
+        final time = DateUtil.parseTimespanToDateTime(e.time);
+        return time.isAfter(DateTime.now());
+      })
+      .map((e) {
         final time = DateUtil.parseTimespanToDateTime(e.time);
         final timeString = _reminderFormatter.format(time);
 
