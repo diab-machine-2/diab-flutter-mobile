@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 
 class NavCustomPainter extends CustomPainter {
@@ -28,7 +26,7 @@ class NavCustomPainter extends CustomPainter {
       ..color = color
       ..style = PaintingStyle.fill;
 
-    const padding = 6.0;
+    const double padding = 4.0;
     final totalActiveIconSpace = (padding * 2 + iconSize).roundToDouble();
     final double hafActiveIconSpace = (totalActiveIconSpace / 2).roundToDouble();
 
