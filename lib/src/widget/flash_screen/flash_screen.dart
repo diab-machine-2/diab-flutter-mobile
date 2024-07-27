@@ -125,7 +125,6 @@ class _FlashScreenControllerState extends State<FlashScreenController> {
             isNavigateToStepList = true;
           }
         } else {
-          AppSettings.increaseNumberOfOpenApp();
           await Navigator.pushReplacementNamed(
             context,
             NavigatorName.tabbar,
