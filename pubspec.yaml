@@ -145,6 +145,7 @@ dependencies:
   # Social login
   zalo_flutter: ^0.0.6
   flutter_branch_sdk: ^6.9.0
+  in_app_review: ^2.0.9
 
 dev_dependencies:
   flutter_test:

@@ -116,6 +116,11 @@ blogs,Blogs,Blogs,
 app_reviews,Đánh giá ứng dụng,App reviews,
 profile,Thông tin tài khoản,Profile,
 save,Lưu,Save,
+first_login_zalo,Đăng nhập bằng tài khoản Zalo lần đầu tiên.,Log in with your Zalo account for the first time.
+question_sync_zalo,Trước đây bạn đã từng dùng số điện thoại để đăng nhập vào ứng dụng DiaB chưa?,Have you ever used your phone number to log into the DiaB app before?
+not_yet,Chưa từng,not yet
+used_to,Đã từng,used to
+input_for_sync,Nhập số điện thoại cũ để tiến hành đồng bộ,Enter your old phone number to synchronize
 name,Họ và tên,Name,
 date_of_birth,Ngày sinh,Vietnamese,
 change_password,Đổi mật khẩu,Change password,

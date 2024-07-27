@@ -20,6 +20,7 @@ class Colors {
   Color get orangeAccent => Color(0xFFFFAB40);
   Color get deepOrange => Color(0xFFFF5722);
   Color get deepOrangeAccent => Color(0xFFFF6E40);
+  Color get dark => Color(0xff27272A);
   Color get blue => Color(0xFF2196F3);
   Color get blueAccent => Color(0xFF448AFF);
   Color get lightBlueAccent => Color(0xFF40C4FF);
@@ -50,6 +51,7 @@ class Colors {
   Color get red => Color(0xffE53935);
   Color get greenbg => Color(0xffE6F6ED);
   Color get gray => Color(0xffA1A3A6);
+  Color get gray_btn => Color(0xffE4E4E7);
   Color get gray_1 => Color(0xff515356);
   Color get grayCaption => Color(0xff9C9C9C);
   Color get greenGradientTop => Color(0xff4BB2AB);

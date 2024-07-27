@@ -35,6 +35,7 @@ import 'package:medical/src/widget/HbA1C/hba1c_detail_tabbar.dart';
 import 'package:medical/src/widget/HbA1C/hba1c_tabble.dart';
 import 'package:medical/src/widget/base/base_state.dart';
 import 'package:medical/src/widget/flash_screen/flash_screen.dart';
+import 'package:medical/src/widget/home/widget/sync_loading.dart';
 import 'package:medical/src/widget/login/change_password.dart';
 import 'package:medical/src/widget/login/create_new_password.dart';
 import 'package:medical/src/widget/login/forgot_password.dart';
@@ -76,6 +77,7 @@ import 'package:flutter_in_app_pip/flutter_in_app_pip.dart';
 import 'utils/navigator_name.dart';
 import 'widget/BloodSugar/add_bloodSugar_new.dart';
 import 'widget/helper/photo_view.dart';
+import 'widget/home/widget/sync_screen.dart';
 import 'widget/meeting/meeting_wait_room_page.dart';
 import 'widget/news_detail/presentation/news_detail_view.dart';
 import 'widget/ocr/test_ocr_camera_page.dart';
@@ -598,21 +600,37 @@ class _AppState extends State<App> {
                   //       return _buildRoute(
                   //           settings, ZoomIosView(calendarID: data?['id']));
                   //   }
-                  
-                  case NavigatorName.meeting_wait_room: {
-                    final args = settings.arguments as MeetingArguments;
-                    return _buildRoute(settings, MeetingWaitRoomPage(args: args));
-                  }
-                  case NavigatorName.meeting_prepare:
-                    return _buildRoute(settings, MeetingPreparePage());
-                  case NavigatorName.meeting: {
-                    if (settings.arguments is MeetingCubit) {
-                      final cubit = settings.arguments as MeetingCubit;
-                      return _buildRoute(settings, MeetingPage(null, cubit));
+
+                  case NavigatorName.meeting_wait_room:
+                    {
+                      final args = settings.arguments as MeetingArguments;
+                      return _buildRoute(
+                          settings, MeetingWaitRoomPage(args: args));
                     }
-                    final args = settings.arguments as MeetingArguments;
-                    return _buildRoute(settings, MeetingPage(args, null));
-                  }
+                  case NavigatorName.sync_screen:
+                    return _buildRoute(settings, SyncScreenController());
+                  case NavigatorName.sync_screen:
+                    return _buildRoute(settings, SyncScreenController());
+                  case NavigatorName.sync_loading:
+                    {
+                      final args = settings.arguments as Map<String, dynamic>;
+                      return _buildRoute(
+                          settings,
+                          SyncLoadingController(
+                            phoneNumber: args['phoneNumber'],
+                            providerName: args['providerName'],
+                            providerKey: args['providerKey'],
+                          ));
+                    }
+                  case NavigatorName.meeting:
+                    {
+                      if (settings.arguments is MeetingCubit) {
+                        final cubit = settings.arguments as MeetingCubit;
+                        return _buildRoute(settings, MeetingPage(null, cubit));
+                      }
+                      final args = settings.arguments as MeetingArguments;
+                      return _buildRoute(settings, MeetingPage(args, null));
+                    }
                   // test ocr
                   case NavigatorName.test_ocr:
                     return _buildRoute(settings, TestOcrPage());

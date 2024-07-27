@@ -29,9 +29,10 @@ class Error {
   //   return Error(
   //       code: json['code'], message: json['message'], error: json['error']);
   // }
-  factory Error.fromJson(Response<dynamic> response) {
-    if (response.statusMessage == 'Unauthorized') {
-      Observable.instance.notifyObservers([], notifyName : "unauthorized");
+  factory Error.fromJson(Response<dynamic> response,
+      {bool isSyncAccount = false}) {
+    if (response.statusMessage == 'Unauthorized' && !isSyncAccount) {
+      Observable.instance.notifyObservers([], notifyName: "unauthorized");
       // DartNotificationCenter.post(channel: 'unauthorized');
     }
     final json = response.data['error'];
