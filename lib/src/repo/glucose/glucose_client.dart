@@ -11,6 +11,8 @@ import 'package:medical/src/modal/glucose/glucose_distribution.dart';
 import 'package:medical/src/modal/glucose/glucose_input.dart';
 import 'package:medical/src/modal/glucose/glucose_range_data.dart';
 import 'package:medical/src/modal/glucose/glucose_timeFrame.dart';
+import 'package:medical/src/model/response/base/response.dart';
+import 'package:medical/src/model/response/config/glucose_color_config.dart';
 import 'package:medical/src/utils/app_log.dart';
 import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/helper/http_helper.dart';
@@ -35,6 +37,19 @@ class GlucoseClient extends FetchClient {
     // } catch (e) {
     //   throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
     // }
+  }
+
+  Future<List<GlucoseColorConfig>?> fetchColorConfig() async {
+    final Response response = await super.fetchData(url: '/App/Glucose/Config/Status', params: {});
+
+    if (response.statusCode == 200) {
+      final listResponse = ListResponse.fromJson(
+        response.data as Map<String, dynamic>,
+        GlucoseColorConfig.fromJson,
+      );
+      return listResponse.data;
+    }
+    return null;
   }
 
 //============ lấy tần suất phân bổ =============/

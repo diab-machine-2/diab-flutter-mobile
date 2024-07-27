@@ -491,12 +491,8 @@ class _VerifyPhoneControllerState extends State<VerifyPhoneController> {
       String? zaloId = await AppSettings.getZaloId();
       String? externalToken = await AppSettings.getZaloExternalToken();
 
-      if (zaloId == null) {
-        Message.showToastMessage(context, "Tài khoản zalo không hợp lệ");
-        return;
-      }
       // Check is Exits Zalo account
-      if (AppSettings.userInfo == null) {
+      if (AppSettings.userInfo == null && zaloId != null) {
         await LoginClient().registerWithSocial({
           'providerName': 'Zalo',
           'providerKey': zaloId,
@@ -513,7 +509,7 @@ class _VerifyPhoneControllerState extends State<VerifyPhoneController> {
       }
       Navigator.pushNamed(context, NavigatorName.sync_loading, arguments: {
         'phoneNumber': widget.phone!,
-        'providerKey': zaloId,
+        'providerKey': zaloId ?? AppSettings.userInfo?.userName,
         'providerName': 'Zalo',
       });
       print('handle sync account');

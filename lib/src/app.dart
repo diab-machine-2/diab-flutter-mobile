@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/app_routes.dart';
 import 'package:medical/src/service/zoom_service.dart';
 import 'package:medical/src/theme/app_theme.dart';
 import 'package:medical/src/utils/app_log.dart';
@@ -146,6 +147,10 @@ class _AppState extends State<App> {
               useInheritedMediaQuery: true,
               onGenerateRoute: (settings) {
                 Console.log('settings.name', settings.name);
+                final newRoute = AppRoutes.tryGenerateNewRoutes(settings);
+                if (newRoute != null) {
+                  return newRoute;
+                }
                 switch (settings.name) {
                   case NavigatorName.tabbar:
                     String sharedCode = '';
@@ -450,14 +455,6 @@ class _AppState extends State<App> {
                     return _buildRoute(
                         settings, EmotionDetailTabbarController(),
                         isPresent: true);
-                  case '/add_food':
-                    final data = settings.arguments as Map<String, dynamic>?;
-                    return _buildRoute(
-                        settings,
-                        AddFoodController(
-                          type: data?['type'],
-                          id: data?['id'],
-                        ));
                   case NavigatorName.profile:
                     return _buildRoute(settings, const ProfileController());
                   case NavigatorName.profile_info:
@@ -476,7 +473,7 @@ class _AppState extends State<App> {
                   case NavigatorName.detail_food:
                     return _buildRoute(settings, FoodDetailTabbarController(),
                         isPresent: true);
-                  case '/add_food':
+                  case NavigatorName.add_food:
                     final data = settings.arguments as Map<String, dynamic>?;
                     return _buildRoute(
                         settings,

@@ -11,8 +11,6 @@ import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 
-enum _LoginZaloProgress { none, inprogress, gottoken }
-
 class SyncLoadingController extends StatefulWidget {
   final String phoneNumber;
   final String providerKey;
@@ -29,8 +27,6 @@ class SyncLoadingController extends StatefulWidget {
 }
 
 class _SyncLoadingControllerState extends State<SyncLoadingController> {
-  _LoginZaloProgress _loginZaloProgress = _LoginZaloProgress.none;
-
   @override
   void initState() {
     super.initState();
@@ -56,7 +52,15 @@ class _SyncLoadingControllerState extends State<SyncLoadingController> {
       await LoginClient().syncAccount(
           widget.phoneNumber, widget.providerName, widget.providerKey);
       await AppSettings.logout(isNavigateToStepListScreen: false, isSync: true);
-      await loginZalo();
+
+      String? externalToken = await AppSettings.getZaloExternalToken();
+      String? zaloId = await AppSettings.getZaloId();
+      if (externalToken != null && zaloId != null) {
+        await loginByZalo(externalToken, zaloId);
+      } else {
+        await loginByPhonenumber(widget.phoneNumber,
+            "GQlLFRRkHKpvqzYlRBWvxXCMJZ5lsTvS97SCHp8gikqck8vl8i");
+      }
       AppSettings.isSyncSuccess = true;
       await AppSettings.setIsFirstDownload(false);
       await TrackingManager.analytics.logEvent(
@@ -71,9 +75,7 @@ class _SyncLoadingControllerState extends State<SyncLoadingController> {
     }
   }
 
-  Future<void> loginZalo() async {
-    String? externalToken = await AppSettings.getZaloExternalToken();
-    String? zaloId = await AppSettings.getZaloId();
+  Future<void> loginByZalo(String externalToken, String zaloId) async {
     try {
       BotToast.showLoading();
       await LoginClient().login({
@@ -85,7 +87,26 @@ class _SyncLoadingControllerState extends State<SyncLoadingController> {
         "zalo_id": zaloId
       });
       await UserClient().fetchUser();
-      loginSuccess("Zalo");
+      Navigator.popUntil(context, (route) => route.isFirst);
+      Navigator.pushReplacementNamed(context, NavigatorName.tabbar);
+    } catch (e) {
+      throw e;
+    } finally {
+      BotToast.closeAllLoading();
+    }
+  }
+
+  Future<void> loginByPhonenumber(String phone, String password) async {
+    try {
+      BotToast.showLoading();
+      await LoginClient().login({
+        "client_id": Const.CLIENT_ID,
+        "client_secret": Const.CLIENT_SECRET,
+        "grant_type": "phone_number_password",
+        "password": password,
+        "phone_number": phone
+      });
+      await UserClient().fetchUser();
       Navigator.popUntil(context, (route) => route.isFirst);
       Navigator.pushReplacementNamed(context, NavigatorName.tabbar);
     } catch (e) {

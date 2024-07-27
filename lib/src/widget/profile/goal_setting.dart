@@ -291,7 +291,7 @@ class _GoalSettingControllerState extends State<GoalSettingController> {
           barrierColor: R.color.color0xff003F38.withOpacity(0.5),
           context: context,
           builder: (_) => NoticeChangePage(
-              description: R.string.consumption,
+              description: R.string.consumption.tr(),
               onClick: () {
                 Future.delayed(const Duration(milliseconds: 200), () {
                   _appRepository.createMenu(model!.createMenuRequest(

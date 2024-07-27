@@ -53,6 +53,7 @@ class _HomeHeaderState extends State<HomeHeader> with Observer {
   void update(
       Observable observable, String? notifyName, Map<dynamic, dynamic>? map) {
     if (notifyName == 'user_info_change') {
+      user = AppSettings.userInfo;
       setState(() {});
     }
     if (notifyName == 'reload_notification' ||

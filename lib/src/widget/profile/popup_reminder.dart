@@ -22,13 +22,13 @@ class PopupReminder extends StatefulWidget {
 class _PopupReminderState extends State<PopupReminder> {
   final data = [R.string.every_day_except_sunday.tr(), 'Hàng tuần'];
   final weeks = [
-    R.string.day_in_week_monday,
-    R.string.day_in_week_tuesday,
-    R.string.day_in_week_wednesday,
-    R.string.day_in_week_thursday,
-    R.string.day_in_week_friday,
-    R.string.day_in_week_saturday,
-    R.string.day_in_week_sunday
+    R.string.day_in_week_monday.tr(),
+    R.string.day_in_week_tuesday.tr(),
+    R.string.day_in_week_wednesday.tr(),
+    R.string.day_in_week_thursday.tr(),
+    R.string.day_in_week_friday.tr(),
+    R.string.day_in_week_saturday.tr(),
+    R.string.day_in_week_sunday.tr()
   ];
 
   int selectedIndex = 0;
@@ -122,7 +122,7 @@ class _PopupReminderState extends State<PopupReminder> {
                           colors: [R.color.greenGradientTop, R.color.greenGradientBottom]),
                       borderRadius: BorderRadius.circular(200)),
                   child: Center(
-                    child: Text(R.string.save,
+                    child: Text(R.string.save.tr(),
                         style: TextStyle(
                             color: Colors.white,
                             fontSize: 16,

@@ -1,11 +1,9 @@
-import 'dart:io';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_observer/Observable.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
-import 'package:medical/src/repo/user/user_client.dart';
 import 'package:medical/src/repo/weight/weight_client.dart';
 import 'package:medical/src/widget/BloodSugar/widget/action_list_trend.dart';
 import 'package:medical/src/widget/Bmi/views/add_bmi_view/widgets/section_input_note.dart';
@@ -177,7 +175,6 @@ class _AddBmiViewState extends State<AddBmiView> {
         builder: (context) => ActionListTrend(
             selected: _cubit.selectedTimeFrame,
             callback: (value) {
-              print(value);
               setState(() {
                 _cubit.selectedTimeFrame = value;
               });
@@ -190,6 +187,7 @@ class _AddBmiViewState extends State<AddBmiView> {
       final result = await WeightClient()
           .fetchCaculateBMI(_cubit.selectedWeight, _cubit.selectedHeight);
       _cubit.bmiNumber = result.bmi;
+      Observable.instance.notifyObservers([], notifyName: "refresh_home");
     }
     BotToast.closeAllLoading();
 

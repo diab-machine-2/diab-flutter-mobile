@@ -23,6 +23,7 @@ import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
+import 'package:medical/src/widget/login/routing.dart';
 import 'package:medical/src/widget/home/widget/sync_modal.dart';
 import 'package:medical/src/widgets/button_language_picker.dart';
 import 'package:medical/src/widgets/spacing_row.dart';
@@ -506,6 +507,9 @@ class _StepListControllerState extends State<StepListController>
 
   loginSuccess(String loginFrom) async {
     try {
+      Future.delayed(Duration(milliseconds: 300), () async {
+        Observable.instance.notifyObservers([], notifyName: "refresh_home");
+      });
       await TrackingManager.analytics.logEvent(
         name: 'login',
         parameters: {
@@ -575,8 +579,7 @@ class _StepListControllerState extends State<StepListController>
       } else {
         loginSuccess("Zalo");
         BotToast.closeAllLoading();
-        Navigator.popUntil(context, (route) => route.isFirst);
-        Navigator.pushReplacementNamed(context, NavigatorName.tabbar);
+        LoginRouting().navigateToHome(context);
       }
     } on ZaloLoginBackException catch (_) {
       _loginZaloProgress = _LoginZaloProgress.none;

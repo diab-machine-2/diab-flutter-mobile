@@ -6,15 +6,19 @@ import 'package:medical/src/modal/error/error_model.dart';
 import 'package:easy_localization/easy_localization.dart';
 
 class LearningClient extends FetchClient {
-  Future<List<LearningPostModel>> fetchLearningPost(int position) async {
+  Future<List<LearningPostModel>> fetchLearningPost(int? position) async {
+    final params = {
+      'page': '1',
+      'size': '1000',
+    };
+    if (position != null) {
+      params['position'] = position.toString();
+    }
     try {
       final Response response = await super.fetchData(
-          url: '/App/LearningPost',
-          params: {
-            'page': '1',
-            'size': '1000',
-            'position': position.toString()
-          });
+        url: '/App/LearningPost',
+        params: params,
+      );
       if (response.statusCode == 200) {
         return LearningPostModel.toList(response.data['data']);
       } else {
@@ -24,5 +28,19 @@ class LearningClient extends FetchClient {
     } catch (e) {
       throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
     }
+  }
+
+  // /App/Lesson/MyLessonsOptimizedAndCacheLessonPercent
+  // Type 1: Bắt buộc, Type 2: Tùy chọn, Type 3: Quiz cấp độ
+  Future<List<LessonModel>> fetchLesson({int type = 1, int week = 0}) async {
+    final Response response = await super.postUri(
+      url: '/App/Lesson/MyLessonsOptimizedAndCacheLessonPercent',
+      baseOption: true,
+      params: {'type': type, 'isNotCompleted': false, "week": week, "page": 1, "size": 10},
+    );
+    if (response.statusCode == 200) {
+      return LessonModel.toList(response.data['data']);
+    }
+    return [];
   }
 }

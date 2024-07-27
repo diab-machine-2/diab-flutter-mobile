@@ -134,11 +134,12 @@ class _HomeControllerState extends State<HomeController> with Observer {
     Future.delayed(Duration.zero, () async {
       String? username = AppSettings.userInfo!.userName;
       String? firstLinked = AppSettings.userInfo!.firstLinkedAccount;
-      bool isUserZaloSync =
-          username != null && firstLinked != null && username.startsWith("+84");
       bool isFirstDownload = await AppSettings.getIsFirstDownload();
-      String? zaloId = await AppSettings.getZaloId();
-      if (zaloId != null && !isUserZaloSync && isFirstDownload) {
+      bool isZaloAccountAndNotSynchronized = firstLinked != null &&
+          firstLinked.toLowerCase() == "zalo" &&
+          username != null &&
+          !username.startsWith("+84");
+      if (isZaloAccountAndNotSynchronized && isFirstDownload) {
         _showModalSyncAccount();
       }
       if (AppSettings.isSyncSuccess) {
@@ -150,8 +151,8 @@ class _HomeControllerState extends State<HomeController> with Observer {
 
   Future<void> _checkShowRating() async {
     int turn = await AppSettings.numberOfOpenHome();
-    if (turn > 2) return;
-    RatingService.showRating();
+    if (turn > 3) return;
+    if (turn > 0 && turn <= 3) RatingService.showRating();
     await AppSettings.increaseNumberOfOpenHome();
   }
 
