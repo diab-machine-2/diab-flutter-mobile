@@ -312,7 +312,7 @@ class _HomeControllerState extends State<HomeController>
           );
 
           bool needSwapReminderAndUtilities =
-              stateLoaded?.activityLoading == false && stateLoaded?.reminders?.isEmpty == true;
+              stateLoaded?.activityLoading == false && !(stateLoaded?.reminders?.isNotEmpty == true);
 
           return RefreshIndicator(
             onRefresh: _pullToRefresh,
