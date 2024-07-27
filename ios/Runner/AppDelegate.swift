@@ -84,6 +84,26 @@ import MobileRTC
         return ZDKApplicationDelegate.sharedInstance().application(app, open: url, options: options)
     }
     
+    override func applicationWillResignActive(_ application: UIApplication) {
+        super.applicationWillResignActive(application)
+        MobileRTC.shared().appWillResignActive()
+    }
+    
+    override func applicationDidBecomeActive(_ application: UIApplication) {
+        super.applicationDidBecomeActive(application)
+        MobileRTC.shared().appDidBecomeActive()
+    }
+    
+    override func applicationDidEnterBackground(_ application: UIApplication) {
+        super.applicationDidEnterBackground(application)
+        MobileRTC.shared().appDidEnterBackgroud()
+    }
+    
+    override func applicationWillTerminate(_ application: UIApplication) {
+        super.applicationWillTerminate(application)
+        MobileRTC.shared().appWillTerminate()
+    }
+    
     private func requestPermission(result: FlutterResult) {
         
         if #available(iOS 13.0, *) {
@@ -425,8 +445,17 @@ extension AppDelegate: MobileRTCAuthDelegate, MobileRTCMeetingServiceDelegate {
         if let meetingSetting = MobileRTC.shared().getMeetingSettings() {
             meetingSetting.setAutoConnectInternetAudio(true)
             meetingSetting.disableDriveMode(true)
+            meetingSetting.enableVideoCallPicture(inPicture: true)
+            
+            meetingSetting.meetingPasswordHidden = true
+            meetingSetting.meetingInviteHidden = true
+            meetingSetting.meetingInviteUrlHidden = true
             meetingSetting.meetingShareHidden = true
             meetingSetting.recordButtonHidden = true
+            
+            meetingSetting.setMuteAudioWhenJoinMeeting(true)
+            meetingSetting.disableMinimizeMeeting(false)
+            meetingSetting.disableCopyMeetingUrl(true)
         }
         
 
