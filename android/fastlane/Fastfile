@@ -22,10 +22,10 @@ end
 platform :android do
 
   desc "Submit a new Beta Build to Firebase App Distribution"
-  lane :beta do
-    build_android_app(
-      task: "bundleRelease"
-    )
+  lane :upload_beta do
+    # build_android_app(
+    #   task: "bundleRelease"
+    # )
     firebase_app_distribution(
       app: "1:116899682757:android:7c75d2f35137754ae013ac",
       android_artifact_type: "AAB",

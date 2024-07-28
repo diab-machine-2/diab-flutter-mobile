@@ -32,5 +32,6 @@ Runner/GeneratedPluginRegistrant.*
 !default.perspectivev3
 
 fastlane/report.xml
+fastlane/.env
 *.zip
 *.ipa

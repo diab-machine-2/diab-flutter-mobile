@@ -17,15 +17,18 @@ default_platform(:ios)
 
 platform :ios do
   desc "Push a new beta build to TestFlight"
-  lane :beta do
+  lane :upload_beta do
     build_app(
       scheme: "Stag.Release",
       xcargs: "-allowProvisioningUpdates FLUTTER_TARGET=lib/main.dart",
-      workspace: "Runner.xcworkspace"
+      workspace: "Runner.xcworkspace",
+      output_name: "Runner.ipa"
     )
     upload_to_testflight(
       skip_waiting_for_build_processing: true,
-      beta_app_description: "<CHANGE THIS>"
+      skip_submission: true,
+      beta_app_description: "<CHANGE THIS>",
+      ipa: "Runner.ipa"
     )
   end
 end

@@ -1,4 +1,7 @@
 #!/bin/bash
+# build android to generate correct version
+flutter build appbundle
+
 # upload to firebase app distribution
 cd android
-FIREBASE_TOKEN=$FIREBASE_TOKEN fastlane beta
+fastlane upload_beta

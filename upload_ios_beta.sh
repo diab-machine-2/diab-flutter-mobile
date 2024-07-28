@@ -5,4 +5,4 @@ flutter build ios --no-codesign --flavor=Stag.Release
 
 # upload to testflight
 cd ios
-APPLE_ID=$APPLE_ID fastlane beta
+fastlane upload_beta
