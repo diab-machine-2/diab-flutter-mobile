@@ -91,12 +91,11 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         home.inlineMeasurements = _castInlineMeasurements(home);
         home.measurements = _castMeasurements(home);
         // at this point, home will lost "activities" data
-        HomeLoaded currentState = _cached?.copyWith(model: home) ??
-            HomeLoaded(
-              model: home,
-              utilities: this.getAllUtilities(full: false),
-              measurementLoading: false,
-            );
+        HomeLoaded currentState =
+            (_cached?.copyWith(model: home) ?? HomeLoaded(model: home)).copyWith(
+          utilities: this.getAllUtilities(full: false),
+          measurementLoading: false,
+        );
         yield currentState;
 
         // load reminders
@@ -104,7 +103,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
 
         // load today target
         yield* _fetchActivities();
-        
+
         // set "activities" data
         if (state is HomeLoaded) {
           home.activities = (state as HomeLoaded).activities;
