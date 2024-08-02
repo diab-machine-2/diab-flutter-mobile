@@ -93,9 +93,7 @@ class HomeActivity extends StatelessWidget {
 
             const SizedBox(height: 16.0),
 
-            if (loading)
-              SizedBox(height: 64.0)
-            else if (isFinishedAll || isEmpty)
+            if (!loading && (isFinishedAll || isEmpty))
               Center(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -127,6 +125,9 @@ class HomeActivity extends StatelessWidget {
                   ],
                 ),
               ),
+
+            if (loading && isEmpty)
+              const SizedBox(height: 64.0),
 
             if (!isEmpty && !isHaveMore)
               for (var activity in renderingActivities)

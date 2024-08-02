@@ -74,15 +74,23 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
           try {
             // if any, just ignore the error
             model = await AppSettings.getHome();
+            if (model != null) {
+              _cached = HomeLoaded(model: model, activities: model.activities);
+              yield _cached!;
+            } else {
+              yield HomeLoading(model: model);
+            }
           } catch (e) {}
+        } else {
+          // other is mem cache
+          yield _cached!;
         }
-        // other is mem cache
-        yield _cached?.copyWith(model: model) ?? HomeLoading(model: model);
 
         // Load measurements
         final home = await client.fetchHomes();
         home.inlineMeasurements = _castInlineMeasurements(home);
         home.measurements = _castMeasurements(home);
+        // at this point, home will lost "activities" data
         HomeLoaded currentState = _cached?.copyWith(model: home) ??
             HomeLoaded(
               model: home,
@@ -91,17 +99,22 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
             );
         yield currentState;
 
-        // do cache
+        // load reminders
+        yield* _fetchReminders();
+
+        // load today target
+        yield* _fetchActivities();
+        
+        // set "activities" data
+        if (state is HomeLoaded) {
+          home.activities = (state as HomeLoaded).activities;
+        }
+        // +
+        // then do cache
         AppSettings.saveHome(home.toJson()).catchError((e) {
           print(e);
           return true;
         });
-
-        // load today target
-        yield* _fetchActivities();
-
-        // load reminders
-        yield* _fetchReminders();
 
         // load news (learning post)
         yield* _fetchNews();
@@ -109,7 +122,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         // load lessons
         yield* _fetchLessons();
 
-        _cached = currentState;
+        _cached = state is HomeLoaded ? state as HomeLoaded : null;
 
         break; // Break the loop if successful
       } catch (e, _) {
@@ -184,7 +197,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     // check fetch target recommendation
     bool needFetchRecommend = currentState.activities == null || currentState.activities!.isEmpty;
     // or completed all
-    needFetchRecommend = needFetchRecommend || currentState.activities!.every((element) => element.smartGoal.state == 1);
+    needFetchRecommend = needFetchRecommend ||
+        currentState.activities!.every((element) => element.smartGoal.state == 1);
 
     // do fetch target recommendation
     if (needFetchRecommend) {
@@ -214,11 +228,11 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     final remindersResponse = await UserClient().fetchScheduleRemindersForHomePage();
     if (remindersResponse.isNotEmpty) {
       final reminders = remindersResponse
-      // .where((e) {
-      //   final time = DateUtil.parseTimespanToDateTime(e.time);
-      //   return time.isAfter(DateTime.now());
-      // })
-      .map((e) {
+          // .where((e) {
+          //   final time = DateUtil.parseTimespanToDateTime(e.time);
+          //   return time.isAfter(DateTime.now());
+          // })
+          .map((e) {
         final time = DateUtil.parseTimespanToDateTime(e.time);
         final timeString = _reminderFormatter.format(time);
 
@@ -425,9 +439,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       icon: R.drawable.ic_home_weight,
       titleColor: haveWeight ? _haveValueTitleColor : _noValueTitleColor,
       value: haveWeight ? model.weightCard!.weight!.toString() : "--",
-      color: model?.weightCard?.weightColorCode != null
-          ? 0xFF008479
-          : _noValueColor,
+      color: model?.weightCard?.weightColorCode != null ? 0xFF008479 : _noValueColor,
       unit: model?.weightCard?.unit ?? "kg",
       navigatorName: haveWeight ? NavigatorName.detail_bmi : NavigatorName.add_bmi,
       args: haveWeight ? null : {'type': 'input'},

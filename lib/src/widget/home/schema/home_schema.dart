@@ -132,6 +132,29 @@ class HomeActivityData {
     required this.smartGoal,
     this.description,
   });
+
+  factory HomeActivityData.fromJson(Map<String, dynamic> map) {
+    return HomeActivityData(
+      id: map['id'],
+      icon: map['icon'],
+      title: map['title'],
+      description: map['description'],
+      type: ScheduleType.values
+          .firstWhere((e) => e.toString() == map['type'], orElse: () => ScheduleType.completed),
+      smartGoal: SmartGoalList.fromJson(map['smartGoal']),
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'icon': icon,
+      'title': title,
+      'description': description,
+      'type': type.toString(),
+      'smartGoal': smartGoal.toJson(),
+    };
+  }
 }
 
 class HomeReminderData {
