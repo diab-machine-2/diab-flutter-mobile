@@ -271,9 +271,7 @@ class _HomeHeaderState extends State<HomeHeader> with Observer {
                             padding: const EdgeInsets.all(4),
                             color: R.color.transparent,
                             child: Image.asset(
-                                notificationCount! > 0
-                                    ? R.drawable.ic_bell_dot
-                                    : R.drawable.ic_bell,
+                                R.drawable.ic_bell,
                                 width: 24,
                                 height: 24),
                           ),
