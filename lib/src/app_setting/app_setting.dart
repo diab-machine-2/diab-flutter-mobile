@@ -33,6 +33,7 @@ class AppSettings {
   static String? version;
   static String? buildNumber;
   static String? zaloId;
+  static String zaloExternalToken = "";
 
   static bool showed50Message = false;
   static bool showed90Message = false;
@@ -41,11 +42,9 @@ class AppSettings {
 
   static bool isOwnPackage = false;
 
-  static bool isFirstTimeLoginZalo = false;
+  static bool isFirstDownload = true;
 
   static bool isSyncSuccess = false;
-
-  static String zaloExternalToken = "";
 
   static Future<void> setZaloId(String id) async {
     zaloId = id;
@@ -53,16 +52,31 @@ class AppSettings {
   }
 
   static Future<String?> getZaloId() async {
-    return appPreference.getData("zaloId") ?? null;
+    return appPreference.getData("zaloId");
   }
 
-  static Future<void> setIsFirstTimeLoginZalo(bool value) async {
-    isFirstTimeLoginZalo = value;
-    appPreference.setData("isFirstTimeLoginZalo", value);
+  static Future<void> setZaloExternalToken(String id) async {
+    zaloExternalToken = id;
+    appPreference.setData("zaloExternalToken", id);
   }
 
-  static Future<bool> getIsFirstTimeLoginZalo() async {
-    bool result = await appPreference.getBoolData("isFirstTimeLoginZalo");
+  static Future<String?> getZaloExternalToken() async {
+    return appPreference.getData("zaloExternalToken");
+  }
+
+  static Future<void> clearZaloId() async {
+    appPreference.removeData("zaloId");
+    appPreference.removeData("zaloExternalToken");
+  }
+
+  static Future<void> setIsFirstDownload(bool value) async {
+    isFirstDownload = value;
+    appPreference.setData("isFirstDownload", value);
+  }
+
+  static Future<bool> getIsFirstDownload() async {
+    bool result =
+        appPreference.getBoolData("isFirstDownload", defaultValue: true);
     return result;
   }
 
@@ -301,27 +315,42 @@ class AppSettings {
     return (preriod + 1).toString();
   }
 
-  static Future<bool> logout({bool isNavigateToStepListScreen = true}) async {
+  static Future<int> numberOfOpenHome() async {
+    int? numberOfOpenHome = appPreference.getIntData("numberOfOpenHome");
+    if (numberOfOpenHome == null) {
+      numberOfOpenHome = 0;
+    }
+    return numberOfOpenHome;
+  }
+
+  static Future<int> increaseNumberOfOpenHome() async {
+    int numberOfOpenHome = await AppSettings.numberOfOpenHome();
+    numberOfOpenHome++;
+    appPreference.setData("numberOfOpenHome", numberOfOpenHome);
+    return numberOfOpenHome;
+  }
+
+  static Future<bool> logout(
+      {bool isNavigateToStepListScreen = true, bool isSync = false}) async {
     try {
       if (isNavigateToStepListScreen) {
         navigatorKey.currentState!.popUntil((route) => route.isFirst);
         navigatorKey.currentState!
             .pushReplacementNamed(NavigatorName.step_list);
       }
-
+      userInfo = null;
       await FetchClient().checkNetwork();
       await LoginClient().logout();
       await deleteHomeData();
       await clearToken();
       await clearRefreshToken();
       await clearIsSyncing();
+      if (!isSync) await clearZaloId();
       // appPreference.setData("valueOfClickShortGuide", "0 0 0 0 0 0 0");
+      isOwnPackage = false;
       appPreference.removeData("hasNewReports");
       appPreference.removeData("reports");
       appPreference.removeData("user");
-      appPreference.removeData("zaloId");
-      appPreference.removeData("isFirstTimeLoginZalo");
-      isOwnPackage = false;
       final GoogleSignIn _googleSignIn = GoogleSignIn();
       _googleSignIn.signOut();
       final facebookLogin = FacebookLogin();

@@ -147,38 +147,6 @@ class _SyncScreenControllerState extends State<SyncScreenController> {
       }
     }
   }
-  // verifyPhone() async {
-  //   BotToast.showLoading();
-  //   try {
-  //     final result = await LoginClient()
-  //         .requestOTP({"password": password, "phoneNumber": phone});
-  //     BotToast.closeAllLoading();
-  //     if (result.remainingRequestCount! <= 0) {
-  //       _showDialogError();
-  //       return;
-  //     }
-  //     Navigator.pushNamed(context, NavigatorName.verify, arguments: {
-  //       'type': 'register',
-  //       'otp': result.token,
-  //       'phone': phone,
-  //       'password': password,
-  //       'remainingRequestCount': result.remainingRequestCount,
-  //       'isCompleted': true,
-  //     });
-  //   } catch (e, _) {
-  //     BotToast.closeAllLoading();
-  //     if (e is Error) {
-  //       if (e.code == 'USER002') {
-  //         phoneKey.currentState!
-  //             .validate(R.string.so_dien_thoai_da_ton_tai.tr());
-  //       } else {
-  //         Message.showToastMessage(context, e.message);
-  //       }
-  //     } else {
-  //       Message.showToastMessage(context, e.toString());
-  //     }
-  //   }
-  // }
 
   _showDialogError() {
     showDialog(
@@ -224,57 +192,5 @@ class _SyncScreenControllerState extends State<SyncScreenController> {
         'method': loginFrom.toLowerCase(),
       },
     );
-  }
-
-  registerAccount(
-    String? providerKey,
-    String? externalToken,
-    String provider,
-    String userName,
-    bool update, {
-    GoogleSignInAccount? googleAccount,
-    AuthorizationCredentialAppleID? appleCredential,
-  }) async {
-    loginSuccess(provider);
-    try {
-      BotToast.showLoading();
-      // if (!update) {
-      //   await LoginClient().registerWithSocial({'providerName': provider, 'providerKey': providerKey});
-
-      //   await LoginClient().login({
-      //     "client_id": Const.CLIENT_ID,
-      //     "client_secret": Const.CLIENT_SECRET,
-      //     "grant_type": "external",
-      //     "external_token": externalToken,
-      //     "provider": provider
-      //   });
-      // }
-
-      final diabeteStates = await UserClient().fetchDiabeteStatesNoHeader();
-
-      // final result = await LoginClient().createPatient({
-      //   'fullName': userName,
-      //   'dateOfBirth': '0',
-      //   'gender': '1',
-      //   'diabetesStatus': diabeteStates?.isEmpty ?? true ? '1' : diabeteStates?.first.key.toString() ?? '1',
-      //   // 'diabetesStatus': '1',
-      //   'diabetesDate': (DateTime.now().millisecondsSinceEpoch ~/ 1000).toString()
-      // });
-      // if (result == true) {
-      // Navigator.pushReplacementNamed(context, NavigatorName.rules,
-      //     arguments: {'googleAccount': googleAccount, 'appleCredential': appleCredential});
-      //}
-      Navigator.pushReplacementNamed(context, NavigatorName.register_success,
-          arguments: {
-            'type': provider.toLowerCase(),
-            'googleAccount': googleAccount,
-            'appleAccount': appleCredential,
-            'diabeteStates': diabeteStates
-          });
-      BotToast.closeAllLoading();
-    } catch (error) {
-      BotToast.closeAllLoading();
-      Message.showToastMessage(context, error.toString());
-    }
   }
 }
