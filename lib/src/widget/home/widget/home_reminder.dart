@@ -93,9 +93,7 @@ class HomeReminder extends StatelessWidget {
 
             const SizedBox(height: 16.0),
 
-            if (loading)
-              SizedBox(height: 56.0)
-            else if (isEmpty)
+            if (isEmpty)
               Center(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -165,6 +163,9 @@ class HomeReminder extends StatelessWidget {
                   ],
                 ),
               ),
+
+            if (loading && isEmpty)
+              const SizedBox(height: 56.0),
 
             if (!isEmpty && !isHaveMore)
               for (var reminder in reminders) _buildActivityItem(reminder),

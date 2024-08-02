@@ -99,14 +99,14 @@ class HomeActivity extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Image.asset(
-                      isEmpty ? R.drawable.im_activity_empty : R.drawable.im_activity_complete,
+                      isFinishedAll ? R.drawable.im_activity_complete : R.drawable.im_activity_empty,
                       width: 168.0,
                       height: 168.0,
                     ),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16.0),
                       child: Text(
-                        (isEmpty ? "empty_activity" : "complete_activity").tr(),
+                        (isFinishedAll ? "complete_activity" : "empty_activity").tr(),
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           fontSize: 14.0,
