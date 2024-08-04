@@ -80,6 +80,9 @@ class _HomeControllerState extends State<HomeController>
   bool _isActivityExpanded = false;
   bool _isReminderExpanded = false;
 
+  // trigger reload when complete lesson
+  bool _isReloadLesson = false;
+
   @override
   bool get wantKeepAlive => true;
 
@@ -129,6 +132,12 @@ class _HomeControllerState extends State<HomeController>
 
   @override
   void update(Observable observable, String? notifyName, Map<dynamic, dynamic>? map) async {
+    // case back from lesson tab when complete recommend lesson
+    if (_isReloadLesson && notifyName == 'back_to_home') {
+      _homeBloc.add(HomeFetchActivityEvent());
+      _isReloadLesson = false;
+      return;
+    }
     if (notifyName == 'refresh_home_activity') {
       _homeBloc.add(HomeFetchActivityEvent());
       return;
@@ -562,6 +571,7 @@ class _HomeControllerState extends State<HomeController>
   // Copy from lib\src\widget\my_plan_screens\activity_tab\activity_tab\activity_tab_page.dart
   Future<void> _onSelectGoal(ScheduleType type, {SmartGoalList? smartGoal}) async {
     Observable.instance.notifyObservers([], notifyName: Const.HIDE_OVERLAY_KEY);
+    _isReloadLesson = type == ScheduleType.lesson_recommend;
     switch (type) {
       case ScheduleType.blood_sugar:
       case ScheduleType.blood_sugar_recommend:
