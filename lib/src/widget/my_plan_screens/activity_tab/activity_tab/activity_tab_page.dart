@@ -50,7 +50,8 @@ import 'widgets/smart_goal_item.dart';
 import 'widgets/statistical_popup.dart';
 
 class ActivityTabPage extends StatefulWidget {
-  const ActivityTabPage();
+  const ActivityTabPage({this.extendTabbar = false});
+  final bool extendTabbar;
 
   @override
   _ActivityTabPageState createState() => _ActivityTabPageState();
@@ -73,6 +74,15 @@ class _ActivityTabPageState extends State<ActivityTabPage>
     _cubit = ActivityTabCubit(appRepository, _myPlanCubit);
     _cubit.initData();
   }
+
+  @override
+  void dispose() {
+    Observable.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  bool get wantKeepAlive => true;
 
   void _checkExistZoomId() async {
     String? calendarId = DynamicLinkConfig.instance.zoomId;
@@ -101,6 +111,14 @@ class _ActivityTabPageState extends State<ActivityTabPage>
         }
       });
     }
+    if (notifyName == 'activity_tab_reload') {
+      // full reload
+      Future.delayed(Duration(milliseconds: 1000), () {
+        if (isVisible) {
+          _cubit.initData();
+        }
+      });
+    }
     if (notifyName == 'active_change_data' ||
         notifyName == 'glucose_change_data' ||
         notifyName == 'BloodPressure_change_data' ||
@@ -124,12 +142,6 @@ class _ActivityTabPageState extends State<ActivityTabPage>
         DynamicLinkConfig.instance.removeActivityId();
       });
     }
-  }
-
-  @override
-  void dispose() {
-    Observable.instance.removeObserver(this);
-    super.dispose();
   }
 
   @override
@@ -178,6 +190,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
             child: Column(
               children: [
                 AppBarBottom(
+                  activeShadow: false,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
@@ -236,6 +249,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
                 Expanded(
                   child: SmartRefresher(
                     controller: _controller,
+                    physics: ClampingScrollPhysics(),
                     onRefresh: () async {
                       await _cubit.refreshData(isRefresh: true);
                     },
@@ -298,7 +312,9 @@ class _ActivityTabPageState extends State<ActivityTabPage>
                                       );
                                     }
                                   }),
-                            )
+                            ),
+
+                            if (widget.extendTabbar) SizedBox(height: 56.0),
                           ],
                         ),
                       ),
@@ -1103,7 +1119,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
           await _showReportBottomSheet();
           break;
         case StatisticalAction.chatting:
-          final result = await NavigationUtil.navigatePage(
+          await NavigationUtil.navigatePage(
               context, const ExpertCommentPage());
           break;
         default:
@@ -1295,7 +1311,4 @@ class _ActivityTabPageState extends State<ActivityTabPage>
       },
     );
   }
-
-  @override
-  bool get wantKeepAlive => true;
 }

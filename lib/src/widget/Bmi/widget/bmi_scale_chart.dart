@@ -26,6 +26,14 @@ class BmiScaleChartState extends State<BmiScaleChart>
   int touchIndex = -1;
   String trendType = R.string.all.tr();
 
+  List<int> _colors = <int>[
+    0xFFF58220,
+    0xFF21A567,
+    0xFF008479,
+    0xFFFF3C3C,
+    0xFFC82221,
+  ];
+
   @override
   void initState() {
     periodFilterType = BmiDetailTabbarController.of(context)!.periodFilterType;
@@ -39,15 +47,14 @@ class BmiScaleChartState extends State<BmiScaleChart>
     super.dispose();
   }
 
-  reloadData(int periodFilter) {
+  void reloadData(int periodFilter) {
     periodFilterType = periodFilter;
     _refresh();
   }
 
   Future<bool> _refresh() async {
     BlocProvider.of<WeightBloc>(currentContext).add(FetchTrendBMI(
-      currentDateTime:
-          (DateTime.now().millisecondsSinceEpoch ~/ 1000).toString(),
+      currentDateTime: (DateTime.now().millisecondsSinceEpoch ~/ 1000).toString(),
       periodFilterType: periodFilterType.toString(),
     ));
 
@@ -68,8 +75,7 @@ class BmiScaleChartState extends State<BmiScaleChart>
           if (state is WeightInitial) {
             print(periodFilterType);
             BlocProvider.of<WeightBloc>(context).add(FetchTrendBMI(
-              currentDateTime:
-                  (DateTime.now().millisecondsSinceEpoch ~/ 1000).toString(),
+              currentDateTime: (DateTime.now().millisecondsSinceEpoch ~/ 1000).toString(),
               periodFilterType: periodFilterType.toString(),
             ));
           }
@@ -78,114 +84,98 @@ class BmiScaleChartState extends State<BmiScaleChart>
           }
           if (state is WeightTrendBMILoaded) {
             model = state.trendBMI;
+            _colors = state.colors;
           }
           return model == null
-              ? Container(
-                  height: 491.5,
-                  child: Center(child: CircularProgressIndicator()))
+              ? Container(height: 491.5, child: Center(child: CircularProgressIndicator()))
               : Container(
                   color: R.color.transparent,
                   padding: EdgeInsets.all(16),
-                  child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                  child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                    Text(R.string.bmi.tr(),
+                        style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700)),
+                    SizedBox(height: 10),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(R.string.bmi.tr(),
+                        Text(
+                            model.value == null || model.value == 0
+                                ? '--'
+                                : roundNumber(model.value!),
                             style: TextStyle(
-                                fontSize: 20, fontWeight: FontWeight.w700)),
-                        SizedBox(height: 10),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                                model.value == null || model.value == 0
-                                    ? '--'
-                                    : roundNumber(model.value!),
-                                style: TextStyle(
-                                    fontFamily: 'Viga',
-                                    fontSize: 40,
-                                    fontWeight: FontWeight.w400,
-                                    color: model.value == null ||
-                                            model.value == 0
-                                        ? R.color.black
-                                        : toColor(
-                                            model.currentLedend!.colorCode))),
-                            model.currentLedend == null
-                                ? SizedBox()
-                                : Container(
-                                    padding: EdgeInsets.only(
-                                        left: 16, right: 16, top: 8, bottom: 8),
-                                    decoration: BoxDecoration(
-                                        color: toColor(model.currentLedend!
-                                            .backgroundColorCode),
-                                        borderRadius: BorderRadius.only(
-                                            topLeft: Radius.circular(13),
-                                            topRight: Radius.circular(13),
-                                            bottomLeft: Radius.circular(13))),
-                                    child: Text('${model.currentLedend!.text}',
-                                        style: TextStyle(
-                                            color: toColor(model
-                                                .currentLedend!.textcolorCode),
-                                            fontSize: 15,
-                                            fontWeight: FontWeight.w700)),
-                                  ),
+                                fontFamily: 'Viga',
+                                fontSize: 40,
+                                fontWeight: FontWeight.w400,
+                                color: model.value == null || model.value == 0
+                                    ? R.color.black
+                                    : toColor(model.currentLedend!.colorCode))),
+                        model.currentLedend == null
+                            ? SizedBox()
+                            : Container(
+                                padding: EdgeInsets.only(left: 16, right: 16, top: 8, bottom: 8),
+                                decoration: BoxDecoration(
+                                    color: toColor(model.currentLedend!.backgroundColorCode),
+                                    borderRadius: BorderRadius.only(
+                                        topLeft: Radius.circular(13),
+                                        topRight: Radius.circular(13),
+                                        bottomLeft: Radius.circular(13))),
+                                child: Text('${model.currentLedend!.text}',
+                                    style: TextStyle(
+                                        color: toColor(model.currentLedend!.textcolorCode),
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.w700)),
+                              ),
+                      ],
+                    ),
+
+                    SizedBox(height: 20),
+                    Container(
+                        width: width,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(16),
+                          color: R.color.white,
+                          boxShadow: [
+                            BoxShadow(
+                              color: R.color.grey.withOpacity(0.5),
+                              spreadRadius: 1,
+                              blurRadius: 7,
+                              offset: Offset(0, 2), // changes position of shadow
+                            ),
                           ],
                         ),
-
-                        SizedBox(height: 20),
-                        Container(
-                            width: width,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(16),
-                              color: R.color.white,
-                              boxShadow: [
-                                BoxShadow(
-                                  color: R.color.grey.withOpacity(0.5),
-                                  spreadRadius: 1,
-                                  blurRadius: 7,
-                                  offset: Offset(
-                                      0, 2), // changes position of shadow
-                                ),
-                              ],
+                        child: Column(
+                          children: [
+                            Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(16),
+                                color: R.color.white,
+                              ),
+                              padding: EdgeInsets.only(top: 32, left: 16, right: 16, bottom: 16),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  model.value == null || model.value == 0
+                                      ? Image.asset(R.drawable.img_bmi_empty)
+                                      : buildChart(model, _colors),
+                                  SizedBox(height: 16),
+                                  Padding(
+                                    padding: EdgeInsets.all(16),
+                                    child: Text('${R.string.chu_thich.tr()}:'),
+                                  ),
+                                  model.legends.length == 0
+                                      ? SizedBox()
+                                      : buildDescription(model.legends.sublist(0, 3)),
+                                  model.legends.length == 0
+                                      ? SizedBox()
+                                      : buildDescription(model.legends.sublist(3, 5))
+                                ],
+                              ),
                             ),
-                            child: Column(
-                              children: [
-                                Container(
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(16),
-                                    color: R.color.white,
-                                  ),
-                                  padding: EdgeInsets.only(
-                                      top: 32, left: 16, right: 16, bottom: 16),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      model.value == null || model.value == 0
-                                          ? Image.asset(
-                                              R.drawable.img_bmi_empty)
-                                          : buildChart(model),
-                                      SizedBox(height: 16),
-                                      Padding(
-                                        padding: EdgeInsets.all(16),
-                                        child:
-                                            Text('${R.string.chu_thich.tr()}:'),
-                                      ),
-                                      model.legends.length == 0
-                                          ? SizedBox()
-                                          : buildDescription(
-                                              model.legends.sublist(0, 3)),
-                                      model.legends.length == 0
-                                          ? SizedBox()
-                                          : buildDescription(
-                                              model.legends.sublist(3, 5))
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            )),
-                        SizedBox(height: 16),
-                        // buildDescription(model)
-                      ]),
+                          ],
+                        )),
+                    SizedBox(height: 16),
+                    // buildDescription(model)
+                  ]),
                 );
         }));
   }
@@ -197,8 +187,7 @@ class BmiScaleChartState extends State<BmiScaleChart>
     });
     return Padding(
       padding: EdgeInsets.only(left: 16, right: 16, bottom: 16),
-      child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween, children: items),
+      child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: items),
     );
   }
 
@@ -207,16 +196,13 @@ class BmiScaleChartState extends State<BmiScaleChart>
     final String color = model.colorCode!;
     final String title = model.text!;
     return Row(children: [
-      Container(
-          width: 14,
-          height: 14,
-          color: Color(int.parse('0xff${color.split('#').join()}'))),
+      Container(width: 14, height: 14, color: Color(int.parse('0xff${color.split('#').join()}'))),
       SizedBox(width: 4),
       Text(title)
     ]);
   }
 
-  Widget buildChart(TrendBmiModel model) {
+  Widget buildChart(TrendBmiModel model, List<int> colors) {
     final bmi = model.value!;
     List<double> numbers = [0, 18.5, 23, 25, 30, 40];
     List<double> percents = [0, 20, 40, 60, 80, 100];
@@ -232,170 +218,160 @@ class BmiScaleChartState extends State<BmiScaleChart>
     } else if (bmi > 30) {
       index = 4;
     }
-    final percent =
-        (bmi - numbers[index]) / (numbers[index + 1] - numbers[index]) * 100;
+    final percent = (bmi - numbers[index]) / (numbers[index + 1] - numbers[index]) * 100;
 
     final bmiNumber = ((percents[index] + (percent * 0.2))) * (40 / 100);
     return Container(
         height: 170,
-        child: Stack(
-            alignment: Alignment.topCenter,
-            clipBehavior: Clip.none,
-            children: [
-              Positioned(
-                top: -180,
-                left: 8,
-                right: 8,
-                child: SfRadialGauge(
-                  axes: <RadialAxis>[
-                    RadialAxis(
-                        showAxisLine: false,
-                        showLabels: false,
-                        showTicks: false,
-                        startAngle: 180,
-                        endAngle: 360,
-                        minimum: 0,
-                        maximum: 40,
-                        centerY: 1,
-                        radiusFactor: 1,
-                        pointers: <GaugePointer>[
-                          NeedlePointer(
-                            needleStartWidth: 0,
-                            needleEndWidth: 0,
-                            knobStyle: KnobStyle(
-                                knobRadius: 0.07,
-                                color: R.color.color0xffEFEFEF),
-                          ),
-                          NeedlePointer(
-                            needleStartWidth: 0.1,
-                            lengthUnit: GaugeSizeUnit.factor,
-                            needleEndWidth: 5,
-                            needleLength: 0.65,
-                            needleColor: R.color.mainColor,
-                            value: bmiNumber,
-                            knobStyle: KnobStyle(knobRadius: 0),
-                          ),
-                          NeedlePointer(
-                            needleStartWidth: 0,
-                            needleEndWidth: 0,
-                            knobStyle: KnobStyle(
-                                knobRadius: 0.0275, color: R.color.mainColor),
-                          ),
-                          NeedlePointer(
-                            needleStartWidth: 0,
-                            needleEndWidth: 0,
-                            knobStyle: KnobStyle(
-                                knobRadius: 0.005, color: R.color.white),
-                          )
-                        ],
-                        ranges: <GaugeRange>[
-                          GaugeRange(
-                              startValue: 0,
-                              endValue: 7.8,
-                              startWidth: 0.2,
-                              endWidth: 0.2,
-                              sizeUnit: GaugeSizeUnit.factor,
-                              color: R.color.orange_1),
-                          GaugeRange(
-                              startValue: 8.2,
-                              endValue: 15.8,
-                              startWidth: 0.2,
-                              sizeUnit: GaugeSizeUnit.factor,
-                              endWidth: 0.2,
-                              color: R.color.color0xff50C087),
-                          GaugeRange(
-                              startValue: 16.2,
-                              endValue: 23.8,
-                              startWidth: 0.2,
-                              sizeUnit: GaugeSizeUnit.factor,
-                              endWidth: 0.2,
-                              color: R.color.color0xffFFE3E3),
-                          GaugeRange(
-                              startValue: 24.2,
-                              endValue: 31.8,
-                              startWidth: 0.2,
-                              sizeUnit: GaugeSizeUnit.factor,
-                              endWidth: 0.2,
-                              color: R.color.color0xffFF8E8E),
-                          GaugeRange(
-                              startValue: 32.2,
-                              endValue: 39.8,
-                              sizeUnit: GaugeSizeUnit.factor,
-                              startWidth: 0.2,
-                              endWidth: 0.2,
-                              color: R.color.red),
-                        ]),
-                    RadialAxis(
-                      minorTicksPerInterval: 8,
-                      tickOffset: 0,
-                      minorTickStyle: MinorTickStyle(
-                          color: R.color.grayComponentBorder, length: 2),
-                      majorTickStyle: MajorTickStyle(
-                          color: R.color.grayComponentBorder, length: 2),
-                      showAxisLine: false,
-                      showLabels: false,
-                      showTicks: true,
-                      startAngle: 180,
-                      endAngle: 360,
-                      minimum: 0,
-                      maximum: 40,
-                      radiusFactor: 0.75,
-                      centerY: 1,
-                      pointers: <GaugePointer>[
-                        MarkerPointer(
-                            markerType: MarkerType.text,
-                            value: 0,
-                            textStyle: GaugeTextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 12,
-                                color: R.color.primaryGreyColor),
-                            offsetUnit: GaugeSizeUnit.factor,
-                            markerOffset: -0.5),
-                        MarkerPointer(
-                            markerType: MarkerType.text,
-                            text: '18.5',
-                            value: 8,
-                            textStyle: GaugeTextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 12,
-                                color: R.color.primaryGreyColor),
-                            offsetUnit: GaugeSizeUnit.factor,
-                            markerOffset: -0.5),
-                        MarkerPointer(
-                            markerType: MarkerType.text,
-                            text: '23',
-                            value: 16,
-                            textStyle: GaugeTextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 12,
-                                color: R.color.primaryGreyColor),
-                            offsetUnit: GaugeSizeUnit.factor,
-                            markerOffset: -0.5),
-                        MarkerPointer(
-                            markerType: MarkerType.text,
-                            text: '25',
-                            value: 24,
-                            textStyle: GaugeTextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 12,
-                                color: R.color.primaryGreyColor),
-                            offsetUnit: GaugeSizeUnit.factor,
-                            markerOffset: -0.5),
-                        MarkerPointer(
-                            markerType: MarkerType.text,
-                            text: '30',
-                            value: 32,
-                            textStyle: GaugeTextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 12,
-                                color: R.color.primaryGreyColor),
-                            offsetUnit: GaugeSizeUnit.factor,
-                            markerOffset: -0.5)
-                      ],
-                    ),
+        child: Stack(alignment: Alignment.topCenter, clipBehavior: Clip.none, children: [
+          Positioned(
+            top: -180,
+            left: 8,
+            right: 8,
+            child: SfRadialGauge(
+              axes: <RadialAxis>[
+                RadialAxis(
+                    showAxisLine: false,
+                    showLabels: false,
+                    showTicks: false,
+                    startAngle: 180,
+                    endAngle: 360,
+                    minimum: 0,
+                    maximum: 40,
+                    centerY: 1,
+                    radiusFactor: 1,
+                    pointers: <GaugePointer>[
+                      NeedlePointer(
+                        needleStartWidth: 0,
+                        needleEndWidth: 0,
+                        knobStyle: KnobStyle(knobRadius: 0.07, color: R.color.color0xffEFEFEF),
+                      ),
+                      NeedlePointer(
+                        needleStartWidth: 0.1,
+                        lengthUnit: GaugeSizeUnit.factor,
+                        needleEndWidth: 5,
+                        needleLength: 0.65,
+                        needleColor: R.color.mainColor,
+                        value: bmiNumber,
+                        knobStyle: KnobStyle(knobRadius: 0),
+                      ),
+                      NeedlePointer(
+                        needleStartWidth: 0,
+                        needleEndWidth: 0,
+                        knobStyle: KnobStyle(knobRadius: 0.0275, color: R.color.mainColor),
+                      ),
+                      NeedlePointer(
+                        needleStartWidth: 0,
+                        needleEndWidth: 0,
+                        knobStyle: KnobStyle(knobRadius: 0.005, color: R.color.white),
+                      )
+                    ],
+                    ranges: <GaugeRange>[
+                      GaugeRange(
+                          startValue: 0,
+                          endValue: 7.8,
+                          startWidth: 0.2,
+                          endWidth: 0.2,
+                          sizeUnit: GaugeSizeUnit.factor,
+                          color: Color(colors[0])),
+                      GaugeRange(
+                          startValue: 8.2,
+                          endValue: 15.8,
+                          startWidth: 0.2,
+                          sizeUnit: GaugeSizeUnit.factor,
+                          endWidth: 0.2,
+                          color: Color(colors[1])),
+                      GaugeRange(
+                          startValue: 16.2,
+                          endValue: 23.8,
+                          startWidth: 0.2,
+                          sizeUnit: GaugeSizeUnit.factor,
+                          endWidth: 0.2,
+                          color: Color(colors[2])),
+                      GaugeRange(
+                          startValue: 24.2,
+                          endValue: 31.8,
+                          startWidth: 0.2,
+                          sizeUnit: GaugeSizeUnit.factor,
+                          endWidth: 0.2,
+                          color: Color(colors[3])),
+                      GaugeRange(
+                          startValue: 32.2,
+                          endValue: 39.8,
+                          sizeUnit: GaugeSizeUnit.factor,
+                          startWidth: 0.2,
+                          endWidth: 0.2,
+                          color: Color(colors[4])),
+                    ]),
+                RadialAxis(
+                  minorTicksPerInterval: 8,
+                  tickOffset: 0,
+                  minorTickStyle: MinorTickStyle(color: R.color.grayComponentBorder, length: 2),
+                  majorTickStyle: MajorTickStyle(color: R.color.grayComponentBorder, length: 2),
+                  showAxisLine: false,
+                  showLabels: false,
+                  showTicks: true,
+                  startAngle: 180,
+                  endAngle: 360,
+                  minimum: 0,
+                  maximum: 40,
+                  radiusFactor: 0.75,
+                  centerY: 1,
+                  pointers: <GaugePointer>[
+                    MarkerPointer(
+                        markerType: MarkerType.text,
+                        value: 0,
+                        textStyle: GaugeTextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 12,
+                            color: R.color.primaryGreyColor),
+                        offsetUnit: GaugeSizeUnit.factor,
+                        markerOffset: -0.5),
+                    MarkerPointer(
+                        markerType: MarkerType.text,
+                        text: '18.5',
+                        value: 8,
+                        textStyle: GaugeTextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 12,
+                            color: R.color.primaryGreyColor),
+                        offsetUnit: GaugeSizeUnit.factor,
+                        markerOffset: -0.5),
+                    MarkerPointer(
+                        markerType: MarkerType.text,
+                        text: '23',
+                        value: 16,
+                        textStyle: GaugeTextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 12,
+                            color: R.color.primaryGreyColor),
+                        offsetUnit: GaugeSizeUnit.factor,
+                        markerOffset: -0.5),
+                    MarkerPointer(
+                        markerType: MarkerType.text,
+                        text: '25',
+                        value: 24,
+                        textStyle: GaugeTextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 12,
+                            color: R.color.primaryGreyColor),
+                        offsetUnit: GaugeSizeUnit.factor,
+                        markerOffset: -0.5),
+                    MarkerPointer(
+                        markerType: MarkerType.text,
+                        text: '30',
+                        value: 32,
+                        textStyle: GaugeTextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 12,
+                            color: R.color.primaryGreyColor),
+                        offsetUnit: GaugeSizeUnit.factor,
+                        markerOffset: -0.5)
                   ],
                 ),
-              )
-            ]));
+              ],
+            ),
+          )
+        ]));
   }
 }

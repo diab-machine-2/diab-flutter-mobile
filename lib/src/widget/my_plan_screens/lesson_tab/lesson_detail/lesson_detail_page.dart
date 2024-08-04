@@ -1,4 +1,5 @@
 import 'package:bot_toast/bot_toast.dart';
+import 'package:flutter_observer/Observable.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
@@ -484,6 +485,8 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
   }
 
   _onTrackingVideoComplete() {
+    Observable.instance
+        .notifyObservers([], notifyName: "refresh_home_activity");
     if (_cubit.sectionList.length == 1 && _isShowModal == false) {
       BottomSheetShareLesson.showDialogShareLesson(
         context,

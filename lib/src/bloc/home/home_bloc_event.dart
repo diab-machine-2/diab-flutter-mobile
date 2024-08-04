@@ -7,6 +7,22 @@ class FetchHome extends HomeEvent {
   FetchHome();
 }
 
+class HomeFetchActivityEvent extends HomeEvent {
+  HomeFetchActivityEvent();
+}
+
+class HomeFetchReminderEvent extends HomeEvent {
+  HomeFetchReminderEvent();
+}
+
+class HomeFetchLessonEvent extends HomeEvent {
+  HomeFetchLessonEvent();
+}
+
+class HomeFetchNewsEvent extends HomeEvent {
+  HomeFetchNewsEvent();
+}
+
 // class SyncHealthApp extends HomeEvent {
 //   SyncHealthApp();
 // }

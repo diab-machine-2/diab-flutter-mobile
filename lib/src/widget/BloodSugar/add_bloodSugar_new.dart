@@ -9,6 +9,7 @@ import 'package:medical/src/modal/glucose/glucose_input.dart';
 import 'package:medical/src/modal/glucose/glucose_range_data.dart';
 import 'package:medical/src/modal/glucose/glucose_timeFrame.dart';
 import 'package:medical/src/modal/user/schedule_glucose_time.dart';
+import 'package:medical/src/model/response/config/glucose_color_config.dart';
 import 'package:medical/src/repo/HbA1C/HbA1C_client.dart';
 import 'package:medical/src/repo/glucose/glucose_client.dart';
 import 'package:medical/src/repo/home/home_client.dart';
@@ -61,8 +62,15 @@ class _AddBloodSugarControllerNewState
   TimeFrameModel? selectedTimeFrame;
   bool isFocus = false;
   bool isChangeStatus = false;
-  List<int> rangeValue = [0, 60, 70, 95, 180];
-  List<String> rangeLabel = ['Rất thấp', "Thấp", 'Tốt', 'Cao', "Rất cao"];
+  List<int> _rangeValue = [0, 60, 70, 95, 180];
+  List<String> _rangeLabel = ['Rất thấp', "Thấp", 'Tốt', 'Cao', "Rất cao"];
+  List<Color> _colorList = [
+      Color(0xFFF48222),
+      Color(0xFFF9B816),
+      Color(0xFF02635A),
+      Color(0xFFFE0201),
+      Color(0xFFB3020C),
+    ];
   double? number = 0;
   InputGlucoseModel? model;
   List<String?> removeIDs = [];
@@ -73,47 +81,27 @@ class _AddBloodSugarControllerNewState
   bool isPregnancy = false;
   int clickTime = 0;
 
-  late AnimationController _animtionController;
-  late Animation _animation;
   FocusNode _focusNode = FocusNode();
   FocusNode _focusNodeKPI = FocusNode();
 
+  @override
   void initState() {
-    initData();
+    _initData();
     super.initState();
   }
 
-  initData() async {
-    animationFocus();
+  void _initData() async {
     isPregnancy = Utils.isGestationalDiabetes();
     if (widget.type == 'update') {
       loadDetail();
     } else {
-      await loadTimeFrame();
+      await _loadConfig();
     }
     isMgPerDl = AppSettings.userInfo!.glucoseUnit == 1;
     List<int> valueOfClickTime = await AppSettings.getValueOfClickShortGuide();
     clickTime = valueOfClickTime[ScreenList.BLOOD_SUGAR.index];
     loadDescription();
     firebaseSetup();
-  }
-
-  animationFocus() {
-    _animtionController =
-        AnimationController(vsync: this, duration: Duration(milliseconds: 300));
-    _animation = Tween(begin: 10.0, end: AppMediaQuery.deviceHeight / 3)
-        .animate(_animtionController)
-      ..addListener(() {
-        setState(() {});
-      });
-
-    _focusNode.addListener(() {
-      if (_focusNode.hasFocus) {
-        _animtionController.forward();
-      } else {
-        _animtionController.reverse();
-      }
-    });
   }
 
   Future firebaseSetup() async {
@@ -131,9 +119,9 @@ class _AddBloodSugarControllerNewState
     );
   }
 
+  @override
   void dispose() {
     _controller.dispose();
-    _animtionController.dispose();
     _focusNode.dispose();
     _controllerNote.dispose();
     super.dispose();
@@ -144,7 +132,7 @@ class _AddBloodSugarControllerNewState
         thresholdType: isPregnancy ? 1 : 0,
         timeFrameCode: selectedTimeFrame.code!);
     if (result != null) {
-      rangeValue = []..addAll([
+      _rangeValue = []..addAll([
           0,
           result.veryLow!.value,
           result.low!.value,
@@ -181,13 +169,29 @@ class _AddBloodSugarControllerNewState
     }
   }
 
-  Future<void> loadTimeFrame() async {
+  Future<void> _loadConfig() async {
     BotToast.showLoading();
-    final timeFrames = await GlucoseClient().fetchFlucoseTimeFrame(
-        time: selectedDate.millisecondsSinceEpoch ~/ 1000);
-    selectedTimeFrame = timeFrames.length == 0 ? null : timeFrames.first;
-    if (selectedTimeFrame != null) {
-      await getGlucoseRange(selectedTimeFrame!);
+    // load concurrent 2 api
+    final result = await Future.wait([
+      GlucoseClient().fetchFlucoseTimeFrame(time: selectedDate.millisecondsSinceEpoch ~/ 1000),
+      GlucoseClient().fetchColorConfig(),
+    ]);
+
+    if (result.length > 1) {
+      final timeFrames = result[0] as List<TimeFrameModel>;
+      final colors = result[1] as List<GlucoseColorConfig>?;
+
+      if (colors != null) {
+        _colorList = colors.map(((e) {
+          return Color(int.parse("0xFF" + e.background.substring(1)));
+        })).toList();
+        _rangeLabel = colors.map(((e) => e.name)).toList();
+      }
+
+      selectedTimeFrame = timeFrames.length == 0 ? null : timeFrames.first;
+      if (selectedTimeFrame != null) {
+        await getGlucoseRange(selectedTimeFrame!);
+      }
     }
     // rangeValue = changeRange(selectedTimeFrame);
     BotToast.closeAllLoading();
@@ -247,7 +251,6 @@ class _AddBloodSugarControllerNewState
                     ]),
                   ),
                 ),
-                SizedBox(height: _animation.value),
                 widget.type == 'input'
                     ? Container(
                         width: double.infinity,
@@ -295,7 +298,7 @@ class _AddBloodSugarControllerNewState
                             GestureDetector(
                               onTap: () async {
                                 int indexRange =
-                                    findIndexInRanges(number, rangeValue);
+                                    findIndexInRanges(number, _rangeValue);
                                 if (isChangeStatus) {
                                   LevelOffDiabetesRulePicker.showModal(context,
                                       onSuccess: () {
@@ -1213,7 +1216,7 @@ class _AddBloodSugarControllerNewState
                   setState(() {
                     selectedDate = date ?? DateTime.now();
                   });
-                  loadTimeFrame();
+                  _loadConfig();
                 },
               ),
             );
@@ -1477,18 +1480,11 @@ class _AddBloodSugarControllerNewState
 
   Widget _bloodSugarRange() {
     double? _number = number;
-    List<Color> colorList = [
-      Color(0xFFF48222),
-      Color(0xFFF9B816),
-      Color(0xFF02635A),
-      Color(0xFFFE0201),
-      Color(0xFFB3020C),
-    ];
 
     bool glucoseUnit = AppSettings.userInfo!.glucoseUnit == 1;
     int index = -1;
-    int indexRange = findIndexInRanges(_number, rangeValue);
-    num widthRange = (AppMediaQuery.deviceWidth - 72) / (rangeValue.length);
+    int indexRange = findIndexInRanges(_number, _rangeValue);
+    num widthRange = (AppMediaQuery.deviceWidth - 72) / (_rangeValue.length);
     print('hihi widthRange: $widthRange');
     num width = _number == 0 ? 0 : widthRange * (indexRange);
 
@@ -1499,11 +1495,11 @@ class _AddBloodSugarControllerNewState
       if (!isMgPerDl) {
         _number = _number * mmollToMgdlFactor;
       }
-      num min = rangeValue[indexRange];
+      num min = _rangeValue[indexRange];
       print('hihi min: $min');
-      num max = indexRange + 1 >= rangeValue.length
-          ? rangeValue[indexRange] + min
-          : rangeValue[indexRange + 1];
+      num max = indexRange + 1 >= _rangeValue.length
+          ? _rangeValue[indexRange] + min
+          : _rangeValue[indexRange + 1];
       print('hihi max: $max');
       // giá trị từ 0 -> 55 sẽ nằm ở mức 0
 
@@ -1516,8 +1512,8 @@ class _AddBloodSugarControllerNewState
       print('hihi widthPlus: $widthPlus');
       width += widthPlus;
 
-      width = width > (widthRange * rangeValue.length)
-          ? widthRange * rangeValue.length
+      width = width > (widthRange * _rangeValue.length)
+          ? widthRange * _rangeValue.length
           : width;
 
       //   print('hihi number: $number');
@@ -1536,9 +1532,9 @@ class _AddBloodSugarControllerNewState
                   fontSize: 16),
               children: <TextSpan>[
                 TextSpan(
-                  text: '“${rangeLabel[indexRange]}”',
+                  text: '“${_rangeLabel[indexRange]}”',
                   style: TextStyle(
-                    color: colorList[indexRange],
+                    color: _colorList[indexRange],
                     fontWeight: FontWeight.w700,
                   ),
                 ),
@@ -1553,13 +1549,13 @@ class _AddBloodSugarControllerNewState
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(5),
                 child: Row(
-                  children: colorList.map(
+                  children: _colorList.map(
                     (e) {
                       index++;
                       return Container(
                         height: 8,
                         width: widthRange.toDouble(),
-                        color: colorList[index],
+                        color: _colorList[index],
                       );
                     },
                   ).toList(),
@@ -1577,7 +1573,7 @@ class _AddBloodSugarControllerNewState
               right: 0,
               bottom: 20,
               child: Row(
-                  children: rangeValue
+                  children: _rangeValue
                       .map(
                         (e) => Expanded(
                           child: Stack(
@@ -1600,7 +1596,7 @@ class _AddBloodSugarControllerNewState
               right: 0,
               bottom: 25,
               child: Row(
-                  children: rangeValue
+                  children: _rangeValue
                       .map(
                         (e) => Expanded(
                           child: Container(

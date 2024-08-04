@@ -28,6 +28,7 @@ import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/base/text_field_custom.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
+import 'package:medical/src/widget/login/routing.dart';
 import 'package:medical/src/widgets/qr_scan_widget.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
@@ -576,8 +577,7 @@ class _RegisterControllerState extends State<RegisterController> {
             //   'userInfo': profile
             // });
           } else {
-            Navigator.popUntil(context, (route) => route.isFirst);
-            Navigator.pushReplacementNamed(context, NavigatorName.tabbar);
+            LoginRouting().navigateToHome(context);
           }
         } catch (error) {
           BotToast.closeAllLoading();
@@ -642,8 +642,7 @@ class _RegisterControllerState extends State<RegisterController> {
         // Navigator.pushReplacementNamed(context, NavigatorName.update_info,
         //     arguments: {'type': 'google', 'googleAccount': account});
       } else {
-        Navigator.popUntil(context, (route) => route.isFirst);
-        Navigator.pushReplacementNamed(context, NavigatorName.tabbar);
+        LoginRouting().navigateToHome(context);
       }
     } catch (error) {
       if (error is Error && error.code == '5' && account != null) {
@@ -701,8 +700,7 @@ class _RegisterControllerState extends State<RegisterController> {
             googleAccount: null,
             appleCredential: credential);
       } else {
-        Navigator.popUntil(context, (route) => route.isFirst);
-        Navigator.pushReplacementNamed(context, NavigatorName.tabbar);
+        LoginRouting().navigateToHome(context);
       }
     } catch (error) {
       BotToast.closeAllLoading();

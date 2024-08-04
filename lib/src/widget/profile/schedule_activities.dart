@@ -1,5 +1,6 @@
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_observer/Observable.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/user/patient_time_frame.dart';
 import 'package:medical/src/repo/user/user_client.dart';
@@ -321,6 +322,7 @@ class _ScheduleActivityControllerState
     try {
       BotToast.showLoading();
       await UserClient().updatePatientTimeFrame(model!);
+      Observable.instance.notifyObservers([], notifyName: "refresh_home");
       BotToast.closeAllLoading();
       Navigator.pop(context);
     } catch (e, _) {

@@ -8,6 +8,7 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
   final bool hasBackIcon;
   final Widget rightAction;
   final double elevation;
+  final bool? centerTitle;
 
   const AppBarWidget({
     Key? key,
@@ -16,6 +17,7 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
     required this.title,
     this.rightAction = const SizedBox(),
     this.hasBackIcon = true,
+    this.centerTitle,
   }) : super(key: key);
 
   @override
@@ -25,6 +27,7 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
       backgroundColor: Colors.white,
       elevation: elevation,
       shadowColor: Colors.black.withOpacity(0.2),
+      centerTitle: centerTitle,
       title: Stack(
         children: <Widget>[
           if (hasBackIcon)
@@ -51,17 +54,30 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
                 ),
               ),
             ),
-          Center(
-            child: AutoSizeText(
-              title,
-              maxLines: 1,
-              style: TextStyle(
-                fontSize: 18,
-                color: R.color.textDark,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-          ),
+          centerTitle == true
+              ? Center(
+                  child: AutoSizeText(
+                    title,
+                    maxLines: 1,
+                    style: TextStyle(
+                      fontSize: 18,
+                      color: R.color.textDark,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                )
+              : Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    title,
+                    maxLines: 1,
+                    style: TextStyle(
+                      fontSize: 18,
+                      color: R.color.textDark,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
           Positioned(right: 5, top: 0, bottom: 0, child: rightAction),
         ],
       ),

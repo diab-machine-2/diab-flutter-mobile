@@ -6,6 +6,8 @@ import 'package:medical/src/modal/HbA1C/HbA1C_lastestSumary.dart';
 import 'package:medical/src/modal/HbA1C/HbA1C_trend.dart';
 import 'package:medical/src/modal/HbA1C/short_gui.dart';
 import 'package:medical/src/modal/error/error_model.dart';
+import 'package:medical/src/model/response/base/response.dart';
+import 'package:medical/src/model/response/config/hba1c_color_config.dart';
 import 'package:medical/src/widget/helper/http_helper.dart';
 import 'package:easy_localization/easy_localization.dart';
 
@@ -29,6 +31,21 @@ class HbA1CClient extends FetchClient {
           ? e
           : R.string.error_can_not_connect_to_server.tr();
     }
+  }
+
+  Future<List<Hba1cColorConfig>?> fetchColorConfig() async {
+    final Response response =
+        await super.fetchData(url: '/App/HbA1C/Config/Status', params: {});
+
+    if (response.statusCode == 200) {
+      final listResponse = ListResponse.fromJson(
+        response.data as Map<String, dynamic>,
+        Hba1cColorConfig.fromJson,
+      );
+      return listResponse.data;
+    }
+    
+    return null;
   }
 
   Future<InputHbA1CDataModel> fetchInput(

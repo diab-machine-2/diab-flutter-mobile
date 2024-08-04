@@ -23,6 +23,7 @@ import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
+import 'package:medical/src/widget/login/routing.dart';
 import 'package:medical/src/widget/home/widget/sync_modal.dart';
 import 'package:medical/src/widgets/button_language_picker.dart';
 import 'package:medical/src/widgets/spacing_row.dart';
@@ -504,18 +505,14 @@ class _StepListControllerState extends State<StepListController>
     );
   }
 
-  loginSuccess(String loginFrom) async {
-    try {
-      await TrackingManager.analytics.logEvent(
-        name: 'login',
-        parameters: {
-          "screen_name": 'login',
-          'method': loginFrom.toLowerCase(),
-        },
-      );
-    } catch (e) {
-      print(e);
-    }
+  void _loginSuccess(String loginFrom) async {
+    await TrackingManager.analytics.logEvent(
+      name: 'login',
+      parameters: {
+        "screen_name": 'login',
+        'method': loginFrom.toLowerCase(),
+      },
+    );
   }
 
   registerAccount(
@@ -562,7 +559,7 @@ class _StepListControllerState extends State<StepListController>
         "provider": 'Zalo',
         "zalo_id": account.id
       });
-      final user = await UserClient().fetchUser();
+      final user = await UserClient().fetchUser(skipNotifiUI: true);
       if (user == null) {
         registerAccount(
           account.id, // Ensure account is not null
@@ -573,10 +570,9 @@ class _StepListControllerState extends State<StepListController>
           zaloAccount: account,
         );
       } else {
-        loginSuccess("Zalo");
+        _loginSuccess("Zalo");
         BotToast.closeAllLoading();
-        Navigator.popUntil(context, (route) => route.isFirst);
-        Navigator.pushReplacementNamed(context, NavigatorName.tabbar);
+        LoginRouting().navigateToHome(context);
       }
     } on ZaloLoginBackException catch (_) {
       _loginZaloProgress = _LoginZaloProgress.none;

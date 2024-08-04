@@ -159,7 +159,7 @@ class EnergyChartState extends State<EnergyChart>
                                         .withOpacity(0.5),
                                     context: context,
                                     builder: (_) => NoticeChangePage(
-                                        description: R.string.consumption,
+                                        description: R.string.consumption.tr(),
                                         onClick: () {
                                           updateGoal(newInputEnergy);
                                           Future.delayed(

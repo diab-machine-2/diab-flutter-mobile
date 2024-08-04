@@ -13,6 +13,7 @@ import 'package:medical/src/modal/HbA1C/short_gui.dart';
 import 'package:medical/src/modal/blood_pressure/blood_pressure.dart';
 import 'package:medical/src/modal/error/error_model.dart';
 import 'package:medical/src/modal/glucose/glucose_timeFrame.dart';
+import 'package:medical/src/model/response/config/blood_pressure_color_config.dart';
 import 'package:medical/src/repo/HbA1C/HbA1C_client.dart';
 import 'package:medical/src/repo/blood_pressure/bloodPressure_client.dart';
 import 'package:medical/src/repo/glucose/glucose_client.dart';
@@ -66,15 +67,24 @@ class _AddBloodPressureControllerState
   int clickTime = 0;
   String? textValidate = '';
   ShortGuiModel? des;
-  List<int> rangeValueSystolic = [0, 90, 130, 140, 160, 180]; // init value
-  List<int> rangeValueDiastolic = [0, 60, 85, 90, 100, 220]; // init value
-  List<String> rangeLabel = [
+  List<int> _rangeValueSystolic = [0, 90, 130, 140, 160, 180]; // init value
+  List<int> _rangeValueDiastolic = [0, 60, 85, 90, 100, 220]; // init value
+  List<String> _rangeLabel = [
     "Thấp",
     "Bình thường",
     "Bình thường cao",
     "Tăng huyết áp độ 1",
     "Tăng huyết áp độ 2",
     "Tăng huyết áp độ 3",
+  ];
+
+  List<Color> _colorList = [
+    Color(0xFFF99D1A),
+    Color(0xFF21A567),
+    Color(0xFF008479),
+    Color(0xFFFF3C3C),
+    Color(0xFFC82221),
+    Color(0xFF880808),
   ];
   bool isLoading = true;
   late AnimationController _controller;
@@ -106,7 +116,7 @@ class _AddBloodPressureControllerState
     if (widget.type == 'update') {
       loadDataDetail();
     } else {
-      loadTimeFrame();
+      _loadConfig();
     }
     loadDescription();
     firebaseSetup();
@@ -125,8 +135,8 @@ class _AddBloodPressureControllerState
     BotToast.showLoading();
     try {
       Map<String, List<int>> ranges = await BloodPressureClient().fetchRange();
-      rangeValueSystolic = ranges['systolic']!;
-      rangeValueDiastolic = ranges['diastolic']!;
+      _rangeValueSystolic = ranges['systolic']!;
+      _rangeValueDiastolic = ranges['diastolic']!;
       isLoading = false;
       List<int> valueOfClickTime =
           await AppSettings.getValueOfClickShortGuide();
@@ -166,9 +176,24 @@ class _AddBloodPressureControllerState
 
   loadDataDetail() async {
     BotToast.showLoading();
-    model = await BloodPressureClient().fetchBloodPressureDetail(widget.id);
+    final result = await Future.wait([
+      BloodPressureClient().fetchBloodPressureDetail(widget.id),
+      BloodPressureClient().fetchColorConfig(),
+    ]);
+    if (result.length < 2) {
+      BotToast.closeAllLoading();
+      return;
+    }
+    model = result[0] as BloodPressureModel;
+    final colors = result[1] as List<BloodPressureColorConfig>?;
+    if (colors != null) {
+      _colorList = colors.map(((e) {
+        return Color(int.parse("0xFF" + e.background.substring(1)));
+      })).toList();
+      _rangeLabel = colors.map(((e) => e.name)).toList();
+    }
     BotToast.closeAllLoading();
-    print(model);
+
     if (model != null) {
       _controllerSystolic.text = model!.systolic?.toInt().toString() ?? '';
       _controllerDiastolic.text = model!.diastolic?.toInt().toString() ?? '';
@@ -184,11 +209,24 @@ class _AddBloodPressureControllerState
     setState(() {});
   }
 
-  loadTimeFrame() async {
+  void _loadConfig() async {
     BotToast.showLoading();
-    final timeFrames = await GlucoseClient().fetchFlucoseTimeFrame(
-        time: selectedDate.millisecondsSinceEpoch ~/ 1000);
-    selectedTimeFrame = timeFrames.length == 0 ? null : timeFrames.first;
+    final result = await Future.wait([
+      GlucoseClient().fetchFlucoseTimeFrame(time: selectedDate.millisecondsSinceEpoch ~/ 1000),
+      BloodPressureClient().fetchColorConfig(),
+    ]);
+    if (result.length > 1) {
+      final timeFrames = result[0] as List<TimeFrameModel>;
+      final colors = result[1] as List<BloodPressureColorConfig>?;
+      selectedTimeFrame = timeFrames.length == 0 ? null : timeFrames.first;
+
+      if (colors != null) {
+        _colorList = colors.map(((e) {
+          return Color(int.parse("0xFF" + e.background.substring(1)));
+        })).toList();
+        _rangeLabel = colors.map(((e) => e.name)).toList();
+      }
+    }
     BotToast.closeAllLoading();
     setState(() {});
   }
@@ -608,7 +646,7 @@ class _AddBloodPressureControllerState
                                             selectedDate =
                                                 date ?? DateTime.now();
                                           });
-                                          loadTimeFrame();
+                                          _loadConfig();
                                         },
                                         // selectedHour: (hour) {
                                         //   setState(() {
@@ -938,17 +976,17 @@ class _AddBloodPressureControllerState
     int systolicIndex = -1;
     int diastolicIndex = -1;
 
-    for (int i = 0; i < rangeValueSystolic.length - 1; i++) {
-      if (systolic >= rangeValueSystolic[i] &&
-          systolic < rangeValueSystolic[i + 1]) {
+    for (int i = 0; i < _rangeValueSystolic.length - 1; i++) {
+      if (systolic >= _rangeValueSystolic[i] &&
+          systolic < _rangeValueSystolic[i + 1]) {
         systolicIndex = i;
         break;
       }
     }
 
-    for (int i = 0; i < rangeValueDiastolic.length - 1; i++) {
-      if (diastolic >= rangeValueDiastolic[i] &&
-          diastolic < rangeValueDiastolic[i + 1]) {
+    for (int i = 0; i < _rangeValueDiastolic.length - 1; i++) {
+      if (diastolic >= _rangeValueDiastolic[i] &&
+          diastolic < _rangeValueDiastolic[i + 1]) {
         diastolicIndex = i;
         break;
       }
@@ -1058,20 +1096,12 @@ class _AddBloodPressureControllerState
               : "0")!;
     } catch (e) {}
 
-    List<Color> colorList = [
-      Color(0xFFF48222),
-      Color(0xFF02635A),
-      Color(0xFF9CD9B8),
-      Color(0xFFFFCCD1),
-      Color.fromARGB(255, 244, 111, 117),
-      Color(0xFFE53935),
-    ];
     int index = -1;
     int indexRangeSystolic =
-        findIndexInRanges(_valueOfSystolic, rangeValueSystolic);
+        findIndexInRanges(_valueOfSystolic, _rangeValueSystolic);
     int indexRangeDiastolic =
-        findIndexInRanges(_valueOfDiastolic, rangeValueDiastolic);
-    num widthRange = (AppMediaQuery.deviceWidth - 72) / (rangeLabel.length);
+        findIndexInRanges(_valueOfDiastolic, _rangeValueDiastolic);
+    num widthRange = (AppMediaQuery.deviceWidth - 72) / (_rangeLabel.length);
 
     // num width = _number == 0 ? 0 : widthRange * (indexRange);
     num widthOfSystolic =
@@ -1080,15 +1110,15 @@ class _AddBloodPressureControllerState
         _valueOfDiastolic == 0 ? 0 : widthRange * (indexRangeDiastolic);
 
     if (_valueOfDiastolic != 0 || _valueOfSystolic != 0) {
-      num minSystolic = rangeValueSystolic[indexRangeSystolic];
-      num minDiastolic = rangeValueDiastolic[indexRangeDiastolic];
+      num minSystolic = _rangeValueSystolic[indexRangeSystolic];
+      num minDiastolic = _rangeValueDiastolic[indexRangeDiastolic];
 
-      num maxSystolic = indexRangeSystolic + 1 >= rangeValueSystolic.length
-          ? rangeValueSystolic[indexRangeSystolic] + minSystolic
-          : rangeValueSystolic[indexRangeSystolic + 1];
-      num maxDiastolic = indexRangeDiastolic + 1 >= rangeValueDiastolic.length
-          ? rangeValueDiastolic[indexRangeDiastolic] + minDiastolic
-          : rangeValueDiastolic[indexRangeDiastolic + 1];
+      num maxSystolic = indexRangeSystolic + 1 >= _rangeValueSystolic.length
+          ? _rangeValueSystolic[indexRangeSystolic] + minSystolic
+          : _rangeValueSystolic[indexRangeSystolic + 1];
+      num maxDiastolic = indexRangeDiastolic + 1 >= _rangeValueDiastolic.length
+          ? _rangeValueDiastolic[indexRangeDiastolic] + minDiastolic
+          : _rangeValueDiastolic[indexRangeDiastolic + 1];
 
       num maximumValueSystolic = maxSystolic - minSystolic;
       num maximumValueDiastolic = maxDiastolic - minDiastolic;
@@ -1105,12 +1135,12 @@ class _AddBloodPressureControllerState
       widthDiastolic += widthPlusDiastolic;
 
       widthOfSystolic =
-          widthOfSystolic > (widthRange * rangeValueSystolic.length)
-              ? widthRange * rangeValueSystolic.length
+          widthOfSystolic > (widthRange * _rangeValueSystolic.length)
+              ? widthRange * _rangeValueSystolic.length
               : widthOfSystolic;
       widthDiastolic =
-          widthDiastolic > (widthRange * rangeValueDiastolic.length)
-              ? widthRange * rangeValueDiastolic.length
+          widthDiastolic > (widthRange * _rangeValueDiastolic.length)
+              ? widthRange * _rangeValueDiastolic.length
               : widthDiastolic;
     }
     int indexRange =
@@ -1128,9 +1158,9 @@ class _AddBloodPressureControllerState
                   fontSize: 16),
               children: <TextSpan>[
                 TextSpan(
-                  text: '“${rangeLabel[indexRange]}”',
+                  text: '“${_rangeLabel[indexRange]}”',
                   style: TextStyle(
-                    color: colorList[indexRange],
+                    color: _colorList[indexRange],
                     fontWeight: FontWeight.w700,
                   ),
                 ),
@@ -1145,13 +1175,13 @@ class _AddBloodPressureControllerState
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(5),
                 child: Row(
-                  children: colorList.map(
+                  children: _colorList.map(
                     (e) {
                       index++;
                       return Container(
                         height: 8,
                         width: widthRange.toDouble(),
-                        color: colorList[index],
+                        color: _colorList[index],
                       );
                     },
                   ).toList(),
@@ -1175,7 +1205,7 @@ class _AddBloodPressureControllerState
               right: 0,
               bottom: 20,
               child: Row(
-                  children: rangeValueDiastolic
+                  children: _rangeValueDiastolic
                       .map(
                         (e) => Expanded(
                           child: Stack(
@@ -1210,7 +1240,7 @@ class _AddBloodPressureControllerState
               right: 0,
               top: -30,
               child: Row(
-                  children: rangeValueSystolic
+                  children: _rangeValueSystolic
                       .map(
                         (e) => Expanded(
                           child: Stack(
@@ -1245,7 +1275,7 @@ class _AddBloodPressureControllerState
               right: 0,
               top: -15,
               child: Row(
-                  children: rangeValueSystolic
+                  children: _rangeValueSystolic
                       .map(
                         (e) => Expanded(
                           child: Container(
@@ -1269,7 +1299,7 @@ class _AddBloodPressureControllerState
               right: 0,
               bottom: 25,
               child: Row(
-                  children: rangeValueDiastolic
+                  children: _rangeValueDiastolic
                       .map(
                         (e) => Expanded(
                           child: Container(

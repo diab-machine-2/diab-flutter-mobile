@@ -52,7 +52,7 @@ enum CategoryType {
 class UserClient extends FetchClient {
   final AppRepository repository = AppRepository();
 
-  Future<UserModel?> fetchUser() async {
+  Future<UserModel?> fetchUser({bool skipNotifiUI = false}) async {
     try {
       final Response response =
           await super.fetchData(url: '/App/Patient/mobile/CurrentToken');
@@ -70,8 +70,10 @@ class UserClient extends FetchClient {
           await saveUserPreferences(user);
 
           //await fetchUserInfo(user.patientId);
-          Observable.instance
-              .notifyObservers([], notifyName: "user_info_change");
+          if (!skipNotifiUI) {
+            Observable.instance
+                .notifyObservers([], notifyName: "user_info_change");
+          }
           // DartNotificationCenter.post(channel: 'user_info_change');
           return user;
         }
@@ -262,7 +264,7 @@ class UserClient extends FetchClient {
       final status = await newVersion.getVersionStatus();
       if (status == null) return "";
       final localVersion = status.localVersion;
-      final storeVersion = status.storeVersion;
+      // final storeVersion = status.storeVersion;
       return localVersion ?? "";
     } catch (error) {
       return "";
@@ -859,6 +861,24 @@ class UserClient extends FetchClient {
     } catch (e) {
       throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
     }
+  }
+
+  Future<List<ScheduleReminderDataModelNew>> fetchScheduleRemindersForHomePage() async {
+    try {
+      final Response response =
+          await super.fetchData(url: '/App/Patient/PatientRemindForHomeMobile');
+      if (response.statusCode == 200 && response.data['data'] != null && response.data['data'] is List) {
+        // cast
+        List<dynamic> data = response.data['data'];
+        return data.map((e) => ScheduleReminderDataModelNew.fromJson(e as Map<String, dynamic>)).toList();
+      } else {
+        final error = Error.fromJson(response);
+        throw error;
+      }
+    } catch (e, s) {
+      TrackingManager.recordError(e, s);
+    }
+    return <ScheduleReminderDataModelNew>[];
   }
 
   Future<ScheduleReminderModel> fetchScheduleReminderDetail(String? id) async {
