@@ -122,7 +122,7 @@ class _PopupReminderState extends State<PopupReminder> {
                           colors: [R.color.greenGradientTop, R.color.greenGradientBottom]),
                       borderRadius: BorderRadius.circular(200)),
                   child: Center(
-                    child: Text(R.string.save,
+                    child: Text(R.string.save.tr(),
                         style: TextStyle(
                             color: Colors.white,
                             fontSize: 16,

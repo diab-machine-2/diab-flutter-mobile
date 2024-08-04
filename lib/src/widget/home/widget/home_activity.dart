@@ -93,22 +93,20 @@ class HomeActivity extends StatelessWidget {
 
             const SizedBox(height: 16.0),
 
-            if (loading)
-              SizedBox(height: 64.0)
-            else if (isFinishedAll || isEmpty)
+            if (!loading && (isFinishedAll || isEmpty))
               Center(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Image.asset(
-                      isEmpty ? R.drawable.im_activity_empty : R.drawable.im_activity_complete,
+                      isFinishedAll ? R.drawable.im_activity_complete : R.drawable.im_activity_empty,
                       width: 168.0,
                       height: 168.0,
                     ),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16.0),
                       child: Text(
-                        (isEmpty ? "empty_activity" : "complete_activity").tr(),
+                        (isFinishedAll ? "complete_activity" : "empty_activity").tr(),
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           fontSize: 14.0,
@@ -127,6 +125,9 @@ class HomeActivity extends StatelessWidget {
                   ],
                 ),
               ),
+
+            if (loading && isEmpty)
+              const SizedBox(height: 64.0),
 
             if (!isEmpty && !isHaveMore)
               for (var activity in renderingActivities)

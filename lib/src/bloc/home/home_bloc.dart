@@ -74,34 +74,46 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
           try {
             // if any, just ignore the error
             model = await AppSettings.getHome();
+            if (model != null) {
+              _cached = HomeLoaded(model: model, activities: model.activities);
+              yield _cached!;
+            } else {
+              yield HomeLoading(model: model);
+            }
           } catch (e) {}
+        } else {
+          // other is mem cache
+          yield _cached!;
         }
-        // other is mem cache
-        yield _cached?.copyWith(model: model) ?? HomeLoading(model: model);
 
         // Load measurements
         final home = await client.fetchHomes();
         home.inlineMeasurements = _castInlineMeasurements(home);
         home.measurements = _castMeasurements(home);
-        HomeLoaded currentState = _cached?.copyWith(model: home) ??
-            HomeLoaded(
-              model: home,
-              utilities: this.getAllUtilities(full: false),
-              measurementLoading: false,
-            );
+        // at this point, home will lost "activities" data
+        HomeLoaded currentState =
+            (_cached?.copyWith(model: home) ?? HomeLoaded(model: home)).copyWith(
+          utilities: this.getAllUtilities(full: false),
+          measurementLoading: false,
+        );
         yield currentState;
 
-        // do cache
-        AppSettings.saveHome(home.toJson()).catchError((e) {
-          print(e);
-          return true;
-        });
+        // load reminders
+        yield* _fetchReminders();
 
         // load today target
         yield* _fetchActivities();
 
-        // load reminders
-        yield* _fetchReminders();
+        // set "activities" data
+        if (state is HomeLoaded) {
+          home.activities = (state as HomeLoaded).activities;
+        }
+        // +
+        // then do cache
+        AppSettings.saveHome(home.toJson()).catchError((e) {
+          print(e);
+          return true;
+        });
 
         // load news (learning post)
         yield* _fetchNews();
@@ -109,7 +121,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         // load lessons
         yield* _fetchLessons();
 
-        _cached = currentState;
+        _cached = state is HomeLoaded ? state as HomeLoaded : null;
 
         break; // Break the loop if successful
       } catch (e, _) {
@@ -137,7 +149,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     apiResult.when(
       success: (SmartGoalListReponse response) {
         List<HomeActivityData> combinedActivities = [];
-        if (response.data?.daily != null || response.data?.weekly != null) {
+        if (response.data?.daily?.isNotEmpty == true || response.data?.weekly?.isNotEmpty == true) {
           final dailyActivities =
               (response.data?.daily ?? []).where((e) => e != null).map((e) => e!).map((e) {
             final ScheduleType type = ScheduleTypeExtend.getTypeFromIndex(e.type);
@@ -169,13 +181,10 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
           bool isCompletedAll = combinedActivities.isEmpty ||
               combinedActivities.every((element) => element.smartGoal.state == 1);
           bool stillLoading = isCompletedAll;
-          if (isCompletedAll) {
-            return;
-          }
           currentState =
               currentState.copyWith(activities: combinedActivities, activityLoading: stillLoading);
         } else {
-          currentState = currentState.copyWith(activityLoading: false);
+          currentState = currentState.copyWith(activityLoading: false, activities: []);
         }
       },
       failure: (error) {
@@ -184,10 +193,17 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       },
     );
 
+    // check fetch target recommendation
+    bool needFetchRecommend = currentState.activities == null || currentState.activities!.isEmpty;
+    // or completed all
+    needFetchRecommend = needFetchRecommend ||
+        currentState.activities!.every((element) => element.smartGoal.state == 1);
+
     // do fetch target recommendation
-    if (currentState.activities == null || currentState.activities!.isEmpty) {
+    if (needFetchRecommend) {
       final targetRecommend = await HomeClient().fetchTargetRecommendation(week: _currentWeek);
       if (targetRecommend != null) {
+        // If have target recommendation => override
         final ScheduleType type = ScheduleTypeExtend.getTypeFromIndex(targetRecommend.type);
         final activity = HomeActivityData(
           id: '####',
@@ -199,6 +215,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         );
         currentState = currentState.copyWith(activities: [activity], activityLoading: false);
       } else {
+        // else, just keep the current state, stop loading
         currentState = currentState.copyWith(activityLoading: false);
       }
     }
@@ -209,7 +226,12 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     HomeLoaded currentState = state as HomeLoaded;
     final remindersResponse = await UserClient().fetchScheduleRemindersForHomePage();
     if (remindersResponse.isNotEmpty) {
-      final reminders = remindersResponse.map((e) {
+      final reminders = remindersResponse
+          // .where((e) {
+          //   final time = DateUtil.parseTimespanToDateTime(e.time);
+          //   return time.isAfter(DateTime.now());
+          // })
+          .map((e) {
         final time = DateUtil.parseTimespanToDateTime(e.time);
         final timeString = _reminderFormatter.format(time);
 
@@ -416,9 +438,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       icon: R.drawable.ic_home_weight,
       titleColor: haveWeight ? _haveValueTitleColor : _noValueTitleColor,
       value: haveWeight ? model.weightCard!.weight!.toString() : "--",
-      color: model?.weightCard?.weightColorCode != null
-          ? 0xFF008479
-          : _noValueColor,
+      color: model?.weightCard?.weightColorCode != null ? 0xFF008479 : _noValueColor,
       unit: model?.weightCard?.unit ?? "kg",
       navigatorName: haveWeight ? NavigatorName.detail_bmi : NavigatorName.add_bmi,
       args: haveWeight ? null : {'type': 'input'},

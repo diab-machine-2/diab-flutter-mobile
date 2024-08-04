@@ -115,32 +115,31 @@ class CurvedNavigationBarState extends State<CurvedNavigationBar>
   @override
   Widget build(BuildContext context) {
     final textDirection = Directionality.of(context);
-    final media = MediaQuery.of(context);
-    final double fullPaddingBottom = media.padding.bottom;
-    final double fullHeight = widget.height + (fullPaddingBottom / 2).roundToDouble();
     final double activeIconSize = 52.0;
-    final double activeTabPaddingTitle = 6.0;
-    return SizedBox(
-      height: fullHeight,
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          final maxWidth = min(constraints.maxWidth, widget.maxWidth ?? constraints.maxWidth);
-          if (widget.items.indexOf(_icon) > -1) {
-            final iconPath = widget.assetPaths[widget.items.indexOf(_icon)];
-            final activeIconPath = widget.activeIconReplacement(iconPath);
-            _icon = Image.asset(
-              activeIconPath,
-              width: widget.iconSize,
-              height: widget.iconSize,
-              color: widget.activeButtonColor,
-            );
-          }
-          return Align(
-            alignment:
-                textDirection == TextDirection.ltr ? Alignment.bottomLeft : Alignment.bottomRight,
-            child: Container(
+    final double activeTabPaddingTitle = 4.0;
+    final double titleHeight = 11.0;
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final maxWidth = min(constraints.maxWidth, widget.maxWidth ?? constraints.maxWidth);
+        if (widget.items.indexOf(_icon) > -1) {
+          final iconPath = widget.assetPaths[widget.items.indexOf(_icon)];
+          final activeIconPath = widget.activeIconReplacement(iconPath);
+          _icon = Image.asset(
+            activeIconPath,
+            width: widget.iconSize,
+            height: widget.iconSize,
+            color: widget.activeButtonColor,
+          );
+        }
+        final media = MediaQuery.of(context);
+        double paddingBottom = media.padding.bottom * 2.0 / 3.0;
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
               color: widget.backgroundColor,
               width: maxWidth,
+              height: widget.height,
               child: ClipRect(
                 clipper: NavCustomClipper(
                   deviceHeight: MediaQuery.sizeOf(context).height,
@@ -163,15 +162,18 @@ class CurvedNavigationBarState extends State<CurvedNavigationBar>
                           iconSize: activeIconSize,
                         ),
                         child: Container(
-                          height: fullHeight,
+                          height: widget.height,
                         ),
                       ),
                     ),
 
                     // Active
                     Positioned(
-                      // active icon + padding + title
-                      bottom: fullHeight - (activeIconSize / 2) - activeTabPaddingTitle - 16.0,
+                      // height - half-icon - padding-between-icon-and-title - title-height
+                      bottom: widget.height -
+                          (activeIconSize / 2) -
+                          (activeTabPaddingTitle + 4.0) -
+                          titleHeight,
                       left: textDirection == TextDirection.rtl ? null : _pos * maxWidth,
                       right: textDirection == TextDirection.rtl ? _pos * maxWidth : null,
                       width: maxWidth / _length,
@@ -199,7 +201,7 @@ class CurvedNavigationBarState extends State<CurvedNavigationBar>
                                 child: _icon,
                               ),
 
-                              SizedBox(height: activeTabPaddingTitle),
+                              SizedBox(height: activeTabPaddingTitle + 4.0),
 
                               // title
                               if (_endingIndex >= 0)
@@ -207,7 +209,7 @@ class CurvedNavigationBarState extends State<CurvedNavigationBar>
                                 MediaQuery(
                                   data: media.copyWith(
                                     textScaler: media.textScaler
-                                        .clamp(minScaleFactor: 1.0, maxScaleFactor: 1.1),
+                                        .clamp(minScaleFactor: 1.0, maxScaleFactor: 1.0),
                                   ),
                                   child: Text(
                                     widget.tabTitles[_endingIndex],
@@ -215,8 +217,7 @@ class CurvedNavigationBarState extends State<CurvedNavigationBar>
                                     style: TextStyle(
                                       color: widget.buttonBackgroundColor,
                                       fontWeight: FontWeight.bold,
-                                      fontSize: 11.0,
-                                      height: 16.0 / 11.0,
+                                      fontSize: titleHeight,
                                     ),
                                   ),
                                 ),
@@ -232,7 +233,7 @@ class CurvedNavigationBarState extends State<CurvedNavigationBar>
                       right: 0,
                       bottom: 0,
                       child: SizedBox(
-                          height: fullHeight,
+                          height: widget.height,
                           child: Row(
                               children: widget.items.map((item) {
                             final index = widget.items.indexOf(item);
@@ -246,15 +247,14 @@ class CurvedNavigationBarState extends State<CurvedNavigationBar>
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 children: [
-                                  const SizedBox(height: 4.0),
+                                  SizedBox(height: activeTabPaddingTitle),
                                   item,
                                   const SizedBox(height: 4.0),
                                   Text(
                                     widget.tabTitles[index],
                                     style: TextStyle(
                                       color: widget.normalButtonColor,
-                                      fontSize: 11.0,
-                                      height: 16.0 / 11.0,
+                                      fontSize: titleHeight,
                                     ),
                                   ),
                                 ],
@@ -266,9 +266,10 @@ class CurvedNavigationBarState extends State<CurvedNavigationBar>
                 ),
               ),
             ),
-          );
-        },
-      ),
+            Container(color: Colors.white, height: paddingBottom),
+          ],
+        );
+      },
     );
   }
 

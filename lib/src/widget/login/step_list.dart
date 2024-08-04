@@ -15,8 +15,8 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/app_setting/deep_link_config.dart';
 import 'package:medical/src/app_setting/dynamic_link_config.dart';
-import 'package:medical/src/repo/login/login_client.dart';
 import 'package:medical/src/modal/error/error_model.dart';
+import 'package:medical/src/repo/login/login_client.dart';
 import 'package:medical/src/repo/user/user_client.dart';
 import 'package:medical/src/service/zalo_service.dart';
 import 'package:medical/src/utils/const.dart';
@@ -24,11 +24,11 @@ import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/login/routing.dart';
+import 'package:medical/src/widget/home/widget/sync_modal.dart';
 import 'package:medical/src/widgets/button_language_picker.dart';
 import 'package:medical/src/widgets/spacing_row.dart';
 import 'package:package_info/package_info.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
-import 'package:http/http.dart' as http;
 
 import 'widgets/social_login_section.dart';
 
@@ -37,6 +37,7 @@ enum _LoginZaloProgress { none, inprogress, gottoken }
 class StepListController extends StatefulWidget {
   const StepListController(this.sharedCode);
   final String sharedCode;
+  final String screenName = "stepList";
   @override
   _StepListControllerState createState() => _StepListControllerState();
 }
@@ -504,21 +505,14 @@ class _StepListControllerState extends State<StepListController>
     );
   }
 
-  loginSuccess(String loginFrom) async {
-    try {
-      Future.delayed(Duration(milliseconds: 300), () async {
-        Observable.instance.notifyObservers([], notifyName: "refresh_home");
-      });
-      await TrackingManager.analytics.logEvent(
-        name: 'login',
-        parameters: {
-          "screen_name": 'login',
-          'method': loginFrom.toLowerCase(),
-        },
-      );
-    } catch (e) {
-      print(e);
-    }
+  void _loginSuccess(String loginFrom) async {
+    await TrackingManager.analytics.logEvent(
+      name: 'login',
+      parameters: {
+        "screen_name": 'login',
+        'method': loginFrom.toLowerCase(),
+      },
+    );
   }
 
   registerAccount(
@@ -554,7 +548,7 @@ class _StepListControllerState extends State<StepListController>
       _loginZaloProgress = _LoginZaloProgress.inprogress;
       account = await ZaloService().login();
       await AppSettings.setZaloId(account.id);
-      AppSettings.zaloExternalToken = account.accessToken;
+      await AppSettings.setZaloExternalToken(account.accessToken);
       _loginZaloProgress = _LoginZaloProgress.gottoken;
       BotToast.showLoading();
       await LoginClient().login({
@@ -565,7 +559,7 @@ class _StepListControllerState extends State<StepListController>
         "provider": 'Zalo',
         "zalo_id": account.id
       });
-      final user = await UserClient().fetchUser();
+      final user = await UserClient().fetchUser(skipNotifiUI: true);
       if (user == null) {
         registerAccount(
           account.id, // Ensure account is not null
@@ -576,7 +570,7 @@ class _StepListControllerState extends State<StepListController>
           zaloAccount: account,
         );
       } else {
-        loginSuccess("Zalo");
+        _loginSuccess("Zalo");
         BotToast.closeAllLoading();
         LoginRouting().navigateToHome(context);
       }
@@ -590,14 +584,16 @@ class _StepListControllerState extends State<StepListController>
       Message.showToastMessage(context, "zalo_first_failed_message".tr());
     } catch (error) {
       if (error is Error && error.code == '5' && account != null) {
-        registerAccount(
-          account.id, // Ensure account is not null
-          account.accessToken, // Ensure account is not null
-          'Zalo',
-          account.name,
-          false,
-          zaloAccount: account,
-        );
+        // registerAccount(
+        //   account.id, // Ensure account is not null
+        //   account.accessToken, // Ensure account is not null
+        //   'Zalo',
+        //   account.name,
+        //   false,
+        //   zaloAccount: account,
+        // );
+        _showModalSyncAccount(context, account.id, account.accessToken, 'Zalo',
+            account.name, false, account);
       } else if (error is PlatformException && error.code == 'network_error') {
         Message.showToastMessage(
           context,
@@ -608,6 +604,52 @@ class _StepListControllerState extends State<StepListController>
         Message.showToastMessage(context, error.toString());
       }
     }
+  }
+
+  void _showModalSyncAccount(
+      BuildContext context,
+      String accountId,
+      String accessToken,
+      String providerName,
+      String accountName,
+      bool isUpdate,
+      ZaloLoginResult result) {
+    BotToast.closeAllLoading();
+    SyncAccountModal.show(
+      context,
+      onTapSync: () async {
+        Navigator.pushNamed(context, NavigatorName.sync_screen);
+        await TrackingManager.analytics.logEvent(
+          name: 'zalo_select_sync',
+          parameters: {
+            "screen_name": widget.screenName,
+            'cta_button_name': 'cta_zalo_sync_yes',
+          },
+        );
+      },
+      onTapCancel: () async {
+        registerAccount(
+          accountId, // Ensure account is not null
+          accessToken, // Ensure account is not null
+          providerName,
+          accountName,
+          isUpdate,
+          zaloAccount: result,
+        );
+        await AppSettings.setIsFirstDownload(false);
+        try {
+          await TrackingManager.analytics.logEvent(
+            name: 'zalo_select_sync',
+            parameters: {
+              "screen_name": widget.screenName,
+              'cta_button_name': 'cta_zalo_sync_no',
+            },
+          );
+        } catch (e) {
+          print(e);
+        }
+      },
+    );
   }
 
   Widget imageItem(

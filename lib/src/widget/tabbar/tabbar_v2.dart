@@ -226,7 +226,7 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
 
   void _jumpTo(int index) {
     if (_lastIndex != TabBarType.home.index && index == TabBarType.home.index) {
-      Observable.instance.notifyObservers([], notifyName: "refresh_home");
+      Observable.instance.notifyObservers([], notifyName: "back_to_home");
     }
     _lastIndex = index;
     pageController!.jumpToPage(index);

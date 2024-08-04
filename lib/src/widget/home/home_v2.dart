@@ -24,6 +24,7 @@ import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/date_utils.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/navigator_name.dart';
+import 'package:medical/src/widget/BloodSugar/blood_sugar_functions.dart';
 import 'package:medical/src/widget/Bmi/views/add_bmi_view/widgets/custom_height_picker.dart';
 import 'package:medical/src/widget/Bmi/views/add_bmi_view/widgets/custome_weight_picker.dart';
 import 'package:medical/src/widget/Food/daily_nutrition/daily_nutrition.dart';
@@ -79,6 +80,9 @@ class _HomeControllerState extends State<HomeController>
   bool _isActivityExpanded = false;
   bool _isReminderExpanded = false;
 
+  // trigger reload when complete lesson
+  bool _isReloadLesson = false;
+
   @override
   bool get wantKeepAlive => true;
 
@@ -128,6 +132,12 @@ class _HomeControllerState extends State<HomeController>
 
   @override
   void update(Observable observable, String? notifyName, Map<dynamic, dynamic>? map) async {
+    // case back from lesson tab when complete recommend lesson
+    if (_isReloadLesson && notifyName == 'back_to_home') {
+      _homeBloc.add(HomeFetchActivityEvent());
+      _isReloadLesson = false;
+      return;
+    }
     if (notifyName == 'refresh_home_activity') {
       _homeBloc.add(HomeFetchActivityEvent());
       return;
@@ -311,8 +321,8 @@ class _HomeControllerState extends State<HomeController>
             },
           );
 
-          bool needSwapReminderAndUtilities =
-              stateLoaded?.activityLoading == false && stateLoaded?.reminders?.isEmpty == true;
+          bool needSwapReminderAndUtilities = stateLoaded?.activityLoading == false &&
+              !(stateLoaded?.reminders?.isNotEmpty == true);
 
           return RefreshIndicator(
             onRefresh: _pullToRefresh,
@@ -345,9 +355,15 @@ class _HomeControllerState extends State<HomeController>
                             onAddMeasurement: () => _showAddMeasurement(context),
                             onHealthProfile: () {},
                             onMeasurement: (routeName, args) {
+                              // case require weight input
                               if (_checkWeightInputDialog(routeName, args: args) == false) {
                                 return;
                               }
+                              // case input glucose
+                              if (_showGlucoseAddBottomSheet(routeName) == false) {
+                                return;
+                              }
+                              // others
                               if (routeName != null) {
                                 Navigator.pushNamed(context, routeName, arguments: args);
                               }
@@ -487,6 +503,7 @@ class _HomeControllerState extends State<HomeController>
     );
   }
 
+  // Button "Thêm chỉ số"
   void _showAddMeasurement(BuildContext context) {
     // show add measurement screen
     final measurementIndexes = BlocProvider.of<HomeBloc>(context).getAllMeasurements();
@@ -494,9 +511,15 @@ class _HomeControllerState extends State<HomeController>
       measurements: measurementIndexes,
       onItemTap: (item) {
         Navigator.pop(context);
+        // case require weight input
         if (_checkWeightInputDialog(item.navigatorName, args: item.args) == false) {
           return;
         }
+        // case input glucose
+        if (_showGlucoseAddBottomSheet(item.navigatorName) == false) {
+          return;
+        }
+        // others
         Navigator.pushNamed(context, item.navigatorName, arguments: item.args);
       },
     );
@@ -515,12 +538,23 @@ class _HomeControllerState extends State<HomeController>
     );
   }
 
+  // return allow next route
   bool _checkWeightInputDialog(String? routeName, {dynamic args}) {
     if (routeName == NavigatorName.add_exercrises) {
       if (AppSettings.userInfo?.weight == null || AppSettings.userInfo!.weight == 0) {
         showPopupWeight(nextRoute: routeName, args: args);
         return false;
       }
+    }
+    return true;
+  }
+
+  // return allow next route
+  bool _showGlucoseAddBottomSheet(String? routeName) {
+    if (routeName == NavigatorName.add_blood_sugar_new ||
+        routeName == NavigatorName.add_blood_sugar) {
+      BloodSugarFunctions.showModalAddData(context);
+      return false;
     }
     return true;
   }
@@ -537,11 +571,13 @@ class _HomeControllerState extends State<HomeController>
   // Copy from lib\src\widget\my_plan_screens\activity_tab\activity_tab\activity_tab_page.dart
   Future<void> _onSelectGoal(ScheduleType type, {SmartGoalList? smartGoal}) async {
     Observable.instance.notifyObservers([], notifyName: Const.HIDE_OVERLAY_KEY);
+    _isReloadLesson = type == ScheduleType.lesson_recommend;
     switch (type) {
       case ScheduleType.blood_sugar:
       case ScheduleType.blood_sugar_recommend:
-        await Navigator.pushNamed(context, NavigatorName.add_blood_sugar_new,
-            arguments: {'type': 'input', 'goalId': smartGoal?.id});
+        _showGlucoseAddBottomSheet(NavigatorName.add_blood_sugar_new);
+        // await Navigator.pushNamed(context, NavigatorName.add_blood_sugar_new,
+        //     arguments: {'type': 'input', 'goalId': smartGoal?.id});
         // _cubit.refreshData(isRefresh: true);
         break;
       case ScheduleType.blood_pressure:
