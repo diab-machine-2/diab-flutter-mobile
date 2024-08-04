@@ -33,7 +33,7 @@ platform :android do
       firebase_cli_token: ENV['FIREBASE_TOKEN'],
       groups: "diab-android-tester",
       testers: "ngocphuc1612@gmail.com,chuongdinh2202@gmail.com,nhancmvn12@gmail.com",
-      release_notes: "<CHANGE THIS>"
+      release_notes: "Staging: - fixes and improvements"
     )
   end
 end
