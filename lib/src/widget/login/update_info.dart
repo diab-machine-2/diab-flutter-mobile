@@ -25,6 +25,7 @@ import 'package:medical/src/widget/base/text_field_custom.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
+import 'package:medical/src/widget/login/routing.dart';
 import 'package:medical/src/widget/login/rules.dart';
 import 'package:medical/src/widgets/custom_checkbox_widget.dart';
 import 'package:medical/src/widgets/radio_custom.dart';
@@ -589,8 +590,10 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
       final result = await LoginClient().createPatient(params);
       if (result == true) {
         await UserClient().fetchUser();
-        Navigator.popUntil(context, (route) => route.isFirst);
-        Navigator.pushReplacementNamed(context, NavigatorName.tabbar);
+        if (widget.type == 'zalo') {
+          await AppSettings.setIsFirstTimeLoginZalo(true);
+        }
+        LoginRouting().navigateToHome(context);
       }
       BotToast.closeAllLoading();
     } catch (e, _) {

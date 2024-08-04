@@ -6,11 +6,16 @@ import 'package:medical/src/widgets/app_bar_widget.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class WebviewStore extends StatefulWidget {
-  const WebviewStore({Key? key, required this.urlStore}) : super(key: key);
+  const WebviewStore({
+    Key? key,
+    required this.urlStore,
+    this.rootPage = false,
+  }) : super(key: key);
+  final String urlStore;
+  final bool rootPage;
 
   @override
   State<WebviewStore> createState() => _WebviewStoreState();
-  final String urlStore;
 }
 
 class _WebviewStoreState extends State<WebviewStore> {
@@ -28,27 +33,21 @@ class _WebviewStoreState extends State<WebviewStore> {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async {
-        if (await controller.canGoBack()) {
-          controller.goBack();
-          return false;
-        } else {
-          return true;
-        }
-      },
-      child: Scaffold(
-        appBar: AppBarWidget(
-          title: 'Cửa hàng',
-        ),
-        body: Stack(
-          children: [
-            InAppWebView(
+    final scaffold = Scaffold(
+      backgroundColor: Colors.transparent,
+      appBar: AppBarWidget(
+        title: 'Cửa hàng',
+        hasBackIcon: !widget.rootPage,
+        centerTitle: widget.rootPage ? false : null,
+      ),
+      body: Stack(
+        children: [
+          Positioned.fill(
+            child: InAppWebView(
               initialUrlRequest: URLRequest(url: Uri.parse(widget.urlStore)),
               initialOptions: InAppWebViewGroupOptions(
                 android: AndroidInAppWebViewOptions(
-                  mixedContentMode:
-                      AndroidMixedContentMode.MIXED_CONTENT_ALWAYS_ALLOW,
+                  mixedContentMode: AndroidMixedContentMode.MIXED_CONTENT_ALWAYS_ALLOW,
                 ),
               ),
               onWebViewCreated: (InAppWebViewController webViewController) {
@@ -77,16 +76,14 @@ class _WebviewStoreState extends State<WebviewStore> {
                     refreshView();
                   }
                   if (url != null && url.path.contains('referralCode')) {
-                    await launch(
-                        'https://click.diab.com.vn/referralCode/VdoJZzKZDN9rHSu88');
+                    await launch('https://click.diab.com.vn/referralCode/VdoJZzKZDN9rHSu88');
                     refreshView();
                   }
                 } catch (e) {
                   setState(() {
                     isLoading = false;
                   });
-                  Message.showToastMessage(
-                      context, 'DiaB đang xử lý bạn chờ chút nhé.');
+                  Message.showToastMessage(context, 'DiaB đang xử lý bạn chờ chút nhé.');
                 }
               },
               onLoadStop: (InAppWebViewController controller, Uri? url) async {
@@ -95,10 +92,25 @@ class _WebviewStoreState extends State<WebviewStore> {
                 });
               },
             ),
-            if (isLoading) Center(child: CircularProgressIndicator()),
-          ],
-        ),
+            bottom: widget.rootPage ? 56.0 : 0,
+          ),
+          if (isLoading) Center(child: CircularProgressIndicator()),
+        ],
       ),
+    );
+    if (widget.rootPage) {
+      return scaffold;
+    }
+    return WillPopScope(
+      onWillPop: () async {
+        if (await controller.canGoBack()) {
+          controller.goBack();
+          return false;
+        } else {
+          return true;
+        }
+      },
+      child: scaffold,
     );
   }
 }

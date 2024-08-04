@@ -18,7 +18,7 @@ import 'package:medical/src/widget/HbA1C/hba1c_tabble.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/modal/error/error_model.dart';
-import 'package:medical/src/widget/tabbar/tabbar.dart';
+import 'package:medical/src/widget/tabbar/tabbar_v2.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:medical/src/widgets/empty_data_box.dart';
 

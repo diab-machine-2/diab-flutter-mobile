@@ -63,11 +63,14 @@ class BloodSugarFunctions {
                     backgroundColor: Color(0xFFE4FCF3),
                     textColor: Color(0xff249B92),
                     title: 'Kết nối từ thiết bị',
-                    onPressed: () => Navigator.push(
+                    onPressed: () {
+                      Navigator.pop(context);
+                      Navigator.push(
                         context,
                         MaterialPageRoute(
                             builder: (BuildContext context) =>
-                                RocheConnectionView())),
+                                RocheConnectionView()));
+                    },
                   ),
                   SizedBox(height: 15),
                   ButtonWidget(
@@ -75,9 +78,12 @@ class BloodSugarFunctions {
                     backgroundColor: Color(0xFFE4FCF3),
                     textColor: Color(0xff249B92),
                     title: 'Nhập thủ công',
-                    onPressed: () => Navigator.pushNamed(
+                    onPressed: () {
+                      Navigator.pop(context);
+                      Navigator.pushNamed(
                           context, NavigatorName.add_blood_sugar_new,
-                          arguments: {'type': 'input'}),
+                          arguments: {'type': 'input'});
+                    },
                   ),
                   SizedBox(height: 15),
                   ButtonWidget(

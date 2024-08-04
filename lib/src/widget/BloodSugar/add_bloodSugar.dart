@@ -66,12 +66,9 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController>
   double mmollToMgdlFactor = 18.018;
   bool fromNipro = false;
 
-  late AnimationController _animtionController;
-  late Animation _animation;
   FocusNode _focusNode = FocusNode();
 
   void initState() {
-    animationFocus();
     super.initState();
     if (widget.type == 'update') {
       loadDetail();
@@ -81,25 +78,6 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController>
     loadDescription();
     firebaseSetup();
   }
-
-  animationFocus() {
-    _animtionController =
-        AnimationController(vsync: this, duration: Duration(milliseconds: 300));
-    _animation = Tween(begin: 10.0, end: AppMediaQuery.deviceHeight / 3)
-        .animate(_animtionController)
-      ..addListener(() {
-        setState(() {});
-      });
-
-    _focusNode.addListener(() {
-      if (_focusNode.hasFocus) {
-        _animtionController.forward();
-      } else {
-        _animtionController.reverse();
-      }
-    });
-  }
-
   Future firebaseSetup() async {
     await TrackingManager.analytics.logScreenView(
         screenName: "kpi_glycemic_add",
@@ -117,7 +95,6 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController>
 
   void dispose() {
     _controller.dispose();
-    _animtionController.dispose();
     _focusNode.dispose();
     _controllerNote.dispose();
     super.dispose();
@@ -773,7 +750,6 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController>
                                                           ]),
                                                     ));
                                         }),
-                                    SizedBox(height: _animation.value),
                                   ]),
                             ),
                           ),

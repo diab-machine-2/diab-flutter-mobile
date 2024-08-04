@@ -555,6 +555,8 @@ class _ScheduleGlucoseControllerState extends State<ScheduleGlucoseController> w
       model!.currentDate = (dateTime0.millisecondsSinceEpoch ~/ 1000).toInt();
       await UserClient().updateScheduleGlucose(model!);
       BotToast.closeAllLoading();
+      Observable.instance
+          .notifyObservers([], notifyName: "refresh_home_activity");
       Navigator.pop(context);
     } catch (e, _) {
       BotToast.closeAllLoading();

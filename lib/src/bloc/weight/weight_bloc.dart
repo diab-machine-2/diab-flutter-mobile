@@ -24,16 +24,13 @@ class WeightBloc extends Bloc<WeightEvent, WeightState> {
     //       event.startDateTime, event.endDateTime, event.page);
     // }
     if (event is FetchTrendWeight) {
-      yield* fetchTrendWeight(
-          event.currentDateTime, event.periodFilterType, event.page);
+      yield* fetchTrendWeight(event.currentDateTime, event.periodFilterType, event.page);
     }
     if (event is FetchTrendHip) {
-      yield* fetchTrendHip(
-          event.currentDateTime, event.periodFilterType, event.page);
+      yield* fetchTrendHip(event.currentDateTime, event.periodFilterType, event.page);
     }
     if (event is FetchInputWeight) {
-      yield* fetchInputWeight(
-          event.currentDateTime, event.periodFilterType, event.page);
+      yield* fetchInputWeight(event.currentDateTime, event.periodFilterType, event.page);
     }
     if (event is FetchTrendBMI) {
       yield* fetchTrendBMI(event.currentDateTime, event.periodFilterType);
@@ -68,13 +65,11 @@ class WeightBloc extends Bloc<WeightEvent, WeightState> {
 
   Stream<WeightState> fetchTrendWeight(
       String? currentDateTime, String? periodFilterType, String? page) async* {
-    periodFilterType =
-        await AppSettings.getPeriodByScreen(ScreenList.WEIGHT.index);
+    periodFilterType = await AppSettings.getPeriodByScreen(ScreenList.WEIGHT.index);
     // try {
     final client = WeightClient();
     yield WeightLoading();
-    var model =
-        await client.fetchWeightTrend(currentDateTime, periodFilterType, page);
+    var model = await client.fetchWeightTrend(currentDateTime, periodFilterType, page);
     yield WeightTrendLoaded(trend: model);
     // } catch (e, _) {
     //   if (e is Error) {
@@ -90,20 +85,16 @@ class WeightBloc extends Bloc<WeightEvent, WeightState> {
   Stream<WeightState> fetchTrendHip(
       String? currentDateTime, String? periodFilterType, String? page) async* {
     try {
-      periodFilterType =
-          await AppSettings.getPeriodByScreen(ScreenList.WEIGHT.index);
+      periodFilterType = await AppSettings.getPeriodByScreen(ScreenList.WEIGHT.index);
       final client = WeightClient();
       yield WeightLoading();
-      var model =
-          await client.fetchHipTrend(currentDateTime, periodFilterType, page);
+      var model = await client.fetchHipTrend(currentDateTime, periodFilterType, page);
       yield WeightTrendLoaded(trend: model);
     } catch (e, _) {
       if (e is Error) {
         yield WeightError(message: e.message);
       } else {
-        yield WeightError(
-            message:
-                R.string.error_can_not_connect_to_server.tr());
+        yield WeightError(message: R.string.error_can_not_connect_to_server.tr());
       }
     }
   }
@@ -114,47 +105,51 @@ class WeightBloc extends Bloc<WeightEvent, WeightState> {
     int? page,
   ) async* {
     try {
-      periodFilterType =
-          await AppSettings.getPeriodByScreen(ScreenList.WEIGHT.index);
+      periodFilterType = await AppSettings.getPeriodByScreen(ScreenList.WEIGHT.index);
       final client = WeightClient();
       final WeightState currenState = state;
-      var model =
-          await client.fetchInput(currentDateTime, periodFilterType, page);
+      var model = await client.fetchInput(currentDateTime, periodFilterType, page);
 
       if (currenState is WeightAllLoaded) {
         if (page != 1) {
           model.inputs.insertAll(0, currenState.inputWeightModel);
         }
       }
-      yield WeightAllLoaded(
-          inputWeightModel: model.inputs, hasMore: model.hasMore);
+      yield WeightAllLoaded(inputWeightModel: model.inputs, hasMore: model.hasMore);
     } catch (e, _) {
       if (e is Error) {
         yield WeightError(message: e.message);
       } else {
-        yield WeightError(
-            message:
-                R.string.error_can_not_connect_to_server.tr());
+        yield WeightError(message: R.string.error_can_not_connect_to_server.tr());
       }
     }
   }
 
-  Stream<WeightState> fetchTrendBMI(
-      String? currentDateTime, String? periodFilterType) async* {
+  Stream<WeightState> fetchTrendBMI(String? currentDateTime, String? periodFilterType) async* {
     try {
-      periodFilterType =
-          await AppSettings.getPeriodByScreen(ScreenList.WEIGHT.index);
+      periodFilterType = await AppSettings.getPeriodByScreen(ScreenList.WEIGHT.index);
       final client = WeightClient();
       yield WeightLoading();
       var model = await client.fetchTrendBMI(currentDateTime, periodFilterType);
-      yield WeightTrendBMILoaded(trendBMI: model);
+      List<int> colors = <int>[
+        0xFFF58220,
+        0xFF21A567,
+        0xFF008479,
+        0xFFFF3C3C,
+        0xFFC82221,
+      ];
+      final configColors = await client.fetchColorConfig();
+      if (configColors != null && configColors.length == colors.length) {
+        colors = configColors.map((e) {
+          return int.parse(e.backgroundColorCode.replaceAll("#", "0xff"));
+        }).toList();
+      }
+      yield WeightTrendBMILoaded(trendBMI: model, colors: colors);
     } catch (e, _) {
       if (e is Error) {
         yield WeightError(message: e.message);
       } else {
-        yield WeightError(
-            message:
-                R.string.error_can_not_connect_to_server.tr());
+        yield WeightError(message: R.string.error_can_not_connect_to_server.tr());
       }
     }
   }

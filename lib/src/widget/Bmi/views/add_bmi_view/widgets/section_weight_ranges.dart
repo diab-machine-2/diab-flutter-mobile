@@ -76,7 +76,7 @@ class SectionWeightRanges extends StatelessWidget with AddBmiMixin {
                       return Container(
                         height: 8,
                         width: widthRange.toDouble(),
-                        color: parseColor(range.colorCode!),
+                        color: parseColor(range.backgroundColorCode!),
                       );
                     },
                   ).toList(),

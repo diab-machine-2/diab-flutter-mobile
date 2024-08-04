@@ -51,6 +51,7 @@ class NetWorkImageWidget extends StatelessWidget {
   Widget _buildErrorWidget(double errorIconSize) {
     return Container(
       alignment: Alignment.center,
+      height: height,
       decoration: BoxDecoration(
         color: R.color.main_6,
         borderRadius: BorderRadius.circular(6),

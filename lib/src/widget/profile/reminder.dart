@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_observer/Observable.dart';
 import 'package:flutter_observer/Observer.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:loadmore/loadmore.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/modal/error/error_model.dart';
@@ -13,7 +12,6 @@ import 'package:medical/src/modal/user/schedule_reminder_model.dart';
 import 'package:medical/src/repo/user/user_client.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
-import 'package:medical/src/widget/components/load_more.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 
@@ -103,6 +101,8 @@ class _ReminderControllerState extends State<ReminderController> with Observer  
                       highlightColor: R.color.transparent,
                       icon: Icon(Icons.arrow_back, color: R.color.textDark),
                       onPressed: () {
+                        Observable.instance
+                            .notifyObservers([], notifyName: "refresh_home_activity");
                         Navigator.pop(context);
                       }),
                 ),
@@ -268,7 +268,7 @@ class _ReminderControllerState extends State<ReminderController> with Observer  
   String getTimeFrame(ScheduleReminderModel model) {
     List<String> names = [];
     if (model.isWakeUp == true) {
-      names.add(R.string.wake_up.toLowerCase());
+      names.add(R.string.wake_up.tr().toLowerCase());
     }
     if (model.isBreakfast == true) {
       names.add('ăn sáng');

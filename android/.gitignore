@@ -4,3 +4,5 @@ gradle-wrapper.jar
 /gradlew
 /gradlew.bat
 GeneratedPluginRegistrant.java
+fastlane/report.xml
+fastlane/.env
