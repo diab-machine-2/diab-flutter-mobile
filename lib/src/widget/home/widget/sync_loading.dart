@@ -11,6 +11,7 @@ import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
+import 'package:medical/src/widget/login/routing.dart';
 
 class SyncLoadingController extends StatefulWidget {
   final String phoneNumber;
@@ -93,8 +94,7 @@ class _SyncLoadingControllerState extends State<SyncLoadingController> {
         "zalo_id": zaloId
       });
       await UserClient().fetchUser();
-      Navigator.popUntil(context, (route) => route.isFirst);
-      Navigator.pushReplacementNamed(context, NavigatorName.tabbar);
+      LoginRouting().navigateToHome(context);
     } catch (e) {
       throw e;
     } finally {
@@ -113,8 +113,7 @@ class _SyncLoadingControllerState extends State<SyncLoadingController> {
         "phone_number": phone
       });
       await UserClient().fetchUser();
-      Navigator.popUntil(context, (route) => route.isFirst);
-      Navigator.pushReplacementNamed(context, NavigatorName.tabbar);
+      LoginRouting().navigateToHome(context);
     } catch (e) {
       throw e;
     } finally {
