@@ -383,7 +383,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       });
     }
 
-    return full ? all : all.take(7).toList()..add(moreItem);
+    return full ? all : [...all.take(7), moreItem];
   }
 
   List<HomeMeasurementIndex> getAllMeasurements() {
