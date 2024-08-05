@@ -515,8 +515,7 @@ class _AppApi implements AppApi {
     final _result = await _dio.fetch<Map<String, dynamic>>(
         _setStreamType<ExerciseMovementResponse>(
             Options(method: 'GET', headers: _headers, extra: _extra)
-                .compose(_dio.options, 'App/ExerciseMovement/All',
-                     data: _data)
+                .compose(_dio.options, 'App/ExerciseMovement/All', data: _data)
                 .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
     final value = ExerciseMovementResponse.fromJson(_result.data!);
     return value;
@@ -1113,6 +1112,23 @@ class _AppApi implements AppApi {
                 .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
     final value = UserInfoReferralCodeResponse.fromJson(_result.data!);
     return value;
+  }
+
+  @override
+  void syncIndexFromZaloToPhone(String accountPhone, String accountZalo) {
+    print("====> SyncIndexFromZaloToPhone trigger");
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    final _data = <String, String>{
+      "accountPhone": accountPhone,
+      "accountZalo": accountZalo
+    };
+    _dio.fetch<Map<String, dynamic>>(_setStreamType<CommonResponse>(
+        Options(method: 'POST', headers: _headers, extra: _extra)
+            .compose(_dio.options, 'App/Account/SyncData',
+                queryParameters: queryParameters, data: _data)
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
   }
 
   RequestOptions _setStreamType<T>(RequestOptions requestOptions) {

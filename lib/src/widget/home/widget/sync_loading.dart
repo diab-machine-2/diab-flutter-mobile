@@ -3,6 +3,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
+import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/repo/login/login_client.dart';
 import 'package:medical/src/repo/user/user_client.dart';
 import 'package:medical/src/service/zalo_service.dart';
@@ -10,6 +11,7 @@ import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
+import 'package:medical/src/widget/login/routing.dart';
 
 class SyncLoadingController extends StatefulWidget {
   final String phoneNumber;
@@ -27,6 +29,8 @@ class SyncLoadingController extends StatefulWidget {
 }
 
 class _SyncLoadingControllerState extends State<SyncLoadingController> {
+  final AppRepository repository = AppRepository();
+
   @override
   void initState() {
     super.initState();
@@ -52,15 +56,18 @@ class _SyncLoadingControllerState extends State<SyncLoadingController> {
       await LoginClient().syncAccount(
           widget.phoneNumber, widget.providerName, widget.providerKey);
       await AppSettings.logout(isNavigateToStepListScreen: false, isSync: true);
-
       String? externalToken = await AppSettings.getZaloExternalToken();
       String? zaloId = await AppSettings.getZaloId();
+
       if (externalToken != null && zaloId != null) {
         await loginByZalo(externalToken, zaloId);
       } else {
         await loginByPhonenumber(widget.phoneNumber,
             "GQlLFRRkHKpvqzYlRBWvxXCMJZ5lsTvS97SCHp8gikqck8vl8i");
       }
+     
+      repository.syncIndexFromZaloToPhone(
+          widget.phoneNumber, widget.providerKey);
       AppSettings.isSyncSuccess = true;
       await AppSettings.setIsFirstDownload(false);
       await TrackingManager.analytics.logEvent(
@@ -87,8 +94,7 @@ class _SyncLoadingControllerState extends State<SyncLoadingController> {
         "zalo_id": zaloId
       });
       await UserClient().fetchUser();
-      Navigator.popUntil(context, (route) => route.isFirst);
-      Navigator.pushReplacementNamed(context, NavigatorName.tabbar);
+      LoginRouting().navigateToHome(context);
     } catch (e) {
       throw e;
     } finally {
@@ -107,8 +113,7 @@ class _SyncLoadingControllerState extends State<SyncLoadingController> {
         "phone_number": phone
       });
       await UserClient().fetchUser();
-      Navigator.popUntil(context, (route) => route.isFirst);
-      Navigator.pushReplacementNamed(context, NavigatorName.tabbar);
+      LoginRouting().navigateToHome(context);
     } catch (e) {
       throw e;
     } finally {

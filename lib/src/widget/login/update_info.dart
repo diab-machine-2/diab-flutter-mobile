@@ -590,9 +590,6 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
       final result = await LoginClient().createPatient(params);
       if (result == true) {
         await UserClient().fetchUser();
-        if (widget.type == 'zalo') {
-          await AppSettings.setIsFirstTimeLoginZalo(true);
-        }
         LoginRouting().navigateToHome(context);
       }
       BotToast.closeAllLoading();
