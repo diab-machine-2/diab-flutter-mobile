@@ -177,10 +177,12 @@ class HomeUtilityData {
   final String icon;
   final String title;
   final String navigatorName;
+  final String slug;
 
   HomeUtilityData({
     required this.icon,
     required this.title,
     required this.navigatorName,
+    required this.slug,
   });
 }
