@@ -15,6 +15,7 @@ class FirebaseRemoteSetting {
   late String? _storeNavigationUrl;
   late bool _activePopupHealthConnect; //ACTIVE_POPUP_HEALTH_CONNECT
   late String _linkStoreNavigation;
+  String? _utilitiesOrder;
   bool? _appDeveloperMode = false;
 
   String get appStoreVersion => _appStoreVersion;
@@ -26,6 +27,7 @@ class FirebaseRemoteSetting {
   bool get activePopupHealthConnect => _activePopupHealthConnect;
   String get linkStoreNavigation => _linkStoreNavigation;
   bool get appDeveloperMode => _appDeveloperMode ?? false;
+  String? get utilitiesOrder => _utilitiesOrder;
 
   Future<void> init({Duration timeout = const Duration(seconds: 10)}) async {
     // Get local settings
@@ -44,11 +46,13 @@ class FirebaseRemoteSetting {
           "{\"Lazada\":\"https://www.lazada.vn/shop/diab-official123/?spm=a2o4n.pdp_revamp.seller.1.22551b10iVUR71&itemId=2204466993&channelSource=pdp\",\"Shopee\":\"https://shopee.vn/diab_official123?categoryId=100001&entryPoint=ShopByPDP&itemId=17493490410\",\"Store\":\"https://store.diab.com.vn\"}",
       "APP_DEVELOPER_MODE":
           bool.parse(localSetting["APP_DEVELOPER_MODE"] ?? "true"),
+      "UTILITIES_ORDER":
+          "lich-do-duong-huyet,thuc-don-mau,thiet-lap-muc-tieu,ket-noi-thiet-bi,moi-ban-be,lich-uong-thuoc,tu-van-bac-si",
     });
     // Config timeout for remoteConfig
     await remoteConfig.setConfigSettings(RemoteConfigSettings(
       fetchTimeout: timeout,
-      minimumFetchInterval: const Duration(hours: 1),
+      minimumFetchInterval: const Duration(minutes: 5),
     ));
 
     /**
@@ -79,5 +83,6 @@ class FirebaseRemoteSetting {
         remoteConfig.getBool('ACTIVE_POPUP_HEALTH_CONNECT');
     _linkStoreNavigation = remoteConfig.getString('LINKSTORE_NAVIGATION_URL');
     _appDeveloperMode = remoteConfig.getBool('APP_DEVELOPER_MODE');
+    _utilitiesOrder = remoteConfig.getString('UTILITIES_ORDER');
   }
 }
