@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
+import 'package:medical/src/widget/meeting/meeting_prepare_page.dart';
 import 'package:medical/src/widget/my_plan_screens/activity_tab/create_goal/create_goal.dart';
 import 'package:medical/src/widget/utilities/utilities_page.dart';
 
@@ -52,6 +53,11 @@ class AppRoutes {
       case NavigatorName.add_goal:
         {
           page = CreateGoalPage(AppSettings.smartGoalDayList);
+          break;
+        }
+      case NavigatorName.meeting_prepare:
+        {
+          page = MeetingPreparePage();
           break;
         }
       default:

@@ -27,7 +27,7 @@ platform :ios do
     upload_to_testflight(
       skip_waiting_for_build_processing: true,
       skip_submission: true,
-      beta_app_description: "<CHANGE THIS>",
+      beta_app_description: "Staging: - fixes and improvements",
       ipa: "Runner.ipa"
     )
   end

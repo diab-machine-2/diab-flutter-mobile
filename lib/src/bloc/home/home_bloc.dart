@@ -7,6 +7,7 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/app_setting/app_sharing.dart';
 import 'package:medical/src/app_setting/dynamic_link_config.dart';
+import 'package:medical/src/app_setting/firebase_remote_config.dart';
 import 'package:medical/src/modal/home/home_model.dart';
 import 'package:medical/src/modal/learning/learning_post_model.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
@@ -309,55 +310,80 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   // Stream<HomeState> _syncHealthApp() async* {}
 
   List<HomeUtilityData> getAllUtilities({bool full = false}) {
-    return [
-      HomeUtilityData(
-        icon: R.drawable.ic_home_goal,
-        title: "Thiết lập mục tiêu",
-        navigatorName: NavigatorName.goal_setting,
-      ),
+    String? preOrder = FirebaseRemoteSetting.instance.utilitiesOrder;
+    final moreItem = HomeUtilityData(
+      icon: R.drawable.ic_home_more,
+      title: "Xem thêm",
+      slug: "xem-them",
+      navigatorName: NavigatorName.utilities,
+    );
+    final all = [
       HomeUtilityData(
         icon: R.drawable.ic_home_glucose_calendar,
         title: "Lịch đo đường huyết",
+        slug: "lich-do-duong-huyet",
         navigatorName: NavigatorName.schedule_glucose,
-      ),
-      HomeUtilityData(
-        icon: R.drawable.ic_home_reminder,
-        title: "Lịch nhắc nhở",
-        navigatorName: NavigatorName.reminder,
       ),
       HomeUtilityData(
         icon: R.drawable.ic_home_sample_menu,
         title: "Thực đơn mẫu",
+        slug: "thuc-don-mau",
         navigatorName: NavigatorName.food_menu,
+      ),
+      HomeUtilityData(
+        icon: R.drawable.ic_home_goal,
+        title: "Thiết lập mục tiêu",
+        slug: "thiet-lap-muc-tieu",
+        navigatorName: NavigatorName.goal_setting,
       ),
       HomeUtilityData(
         icon: R.drawable.ic_home_peripheral,
         title: "Kết nối thiết bị",
+        slug: "ket-noi-thiet-bi",
         navigatorName: NavigatorName.connect_device_app,
-      ),
-      HomeUtilityData(
-        icon: R.drawable.ic_home_medicine,
-        title: "Lịch uống thuốc",
-        navigatorName: "medicine",
       ),
       HomeUtilityData(
         icon: R.drawable.ic_home_referral,
         title: "Mời bạn bè",
+        slug: "moi-ban-be",
         navigatorName: "share",
       ),
-      if (full) ...[
-        HomeUtilityData(
-          icon: R.drawable.ic_home_doctor_consult,
-          title: "Tư vấn bác sĩ",
-          navigatorName: "consult",
-        ),
-      ] else
-        HomeUtilityData(
-          icon: R.drawable.ic_home_more,
-          title: "Xem thêm",
-          navigatorName: NavigatorName.utilities,
-        ),
+      HomeUtilityData(
+        icon: R.drawable.ic_home_medicine,
+        title: "Lịch uống thuốc",
+        slug: "lich-uong-thuoc",
+        navigatorName: "medicine",
+      ),
+      // HomeUtilityData(
+      //   icon: R.drawable.ic_home_reminder,
+      //   title: "Book lịch tại cơ sở y tế",
+      //   slug: "book-lich-tai-co-so-y-te",
+      //   navigatorName: NavigatorName.reminder,
+      // ),
+      // HomeUtilityData(
+      //   icon: R.drawable.ic_home_reminder,
+      //   title: "Book lịch tại cơ sở y tế",
+      //   slug: "book-lich-tai-co-so-y-te",
+      //   navigatorName: NavigatorName.reminder,
+      // ),
+      HomeUtilityData(
+        icon: R.drawable.ic_home_doctor_consult,
+        title: "Tư vấn Bác sĩ",
+        slug: "tu-van-bac-si",
+        navigatorName: "consult",
+      ),
     ];
+
+    if (preOrder?.isNotEmpty == true) {
+      final preOrderSlug = preOrder!.split(",").where((e) => e.trim().isNotEmpty).toList();
+      all.sort((a, b) {
+        final aIndex = preOrderSlug.indexOf(a.slug);
+        final bIndex = preOrderSlug.indexOf(b.slug);
+        return aIndex - bIndex;
+      });
+    }
+
+    return full ? all : [...all.take(7), moreItem];
   }
 
   List<HomeMeasurementIndex> getAllMeasurements() {
