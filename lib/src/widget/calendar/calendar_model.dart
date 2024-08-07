@@ -29,7 +29,7 @@ class CalendarCoachModel {
       courseId: json['courseId'],
       startTime: json['startTime'],
       endTime: json['endTime'],
-      status: json['status'],
+      status: json['status'] ?? 0,
       isDeleted: json['isDeleted'] ?? false,
       createDatetime: json['createDatetime'] ?? 0,
       updateDatetime: json['updateDatetime'] ?? 0,

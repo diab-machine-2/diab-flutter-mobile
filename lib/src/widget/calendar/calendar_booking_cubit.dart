@@ -1,3 +1,4 @@
+import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/request/create_calendar_request.dart';
@@ -14,18 +15,43 @@ class CalendarBookingCubit extends Cubit<CalendarBookingState> {
   late List<CalendarCoachModel> calendarCoachs = [];
 
   static CreateCalendarResponse? myCalendar;
+  static String? courseId;
 
   static int updateCount = 1;
 
   CalendarBookingCubit(this.repository) : super(InitialCalendarBookingState());
 
-  Future<List<CalendarCoachModel>> getCalendarBooking() async {
-    emit(CalendarBookingLoading());
-    List<CalendarCoachModel> data =
-        await UserClient().fetchCalendarCoach() ?? [];
-    calendarCoachs = data;
-    emit(CalendarBookingSuccess());
-    return data;
+  Future<List<CalendarCoachModel>> getCalendarBooking({String? id}) async {
+    try {
+      emit(CalendarBookingLoading());
+
+      await _initializeMyCalendar(courseId: id);
+
+      List<CalendarCoachModel> data =
+          await UserClient().fetchCalendarCoach() ?? [];
+
+      calendarCoachs = data;
+      emit(CalendarBookingSuccess());
+      return data;
+    } catch (e) {
+      emit(CalendarBookingFailure(
+          "An error occurred while fetching calendar data."));
+      return [];
+    } finally {
+      BotToast.closeAllLoading();
+    }
+  }
+
+  Future<void> _initializeMyCalendar({
+    String? courseId,
+    int? startDate,
+    int? endDate,
+  }) async {
+    courseId ??= "71546da0-3a83-11ef-956b-3713adbaa661";
+    startDate ??=
+        (DateTime.now().add(Duration(days: 1)).millisecondsSinceEpoch ~/ 1000);
+    endDate ??=
+        (DateTime.now().add(Duration(days: 21)).millisecondsSinceEpoch ~/ 1000);
   }
 
   Future<void> createCalendar(

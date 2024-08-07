@@ -10,7 +10,12 @@ abstract class CalendarBookingState extends Equatable {
   List<Object> get props => [];
 }
 
-class InitialCalendarBookingState extends CalendarBookingState {}
+class InitialCalendarBookingState extends CalendarBookingState {
+  @override
+  String toString() {
+    return 'InitialCalendarBookingState';
+  }
+}
 
 class CalendarBookingLoading extends CalendarBookingState {
   @override

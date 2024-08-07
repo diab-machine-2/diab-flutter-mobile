@@ -7,6 +7,7 @@ import 'package:medical/src/model/request/create_calendar_request.dart';
 import 'package:medical/src/model/response/create_calendar_response.dart';
 import 'package:medical/src/model/service/api_result.dart';
 import 'package:medical/src/model/service/network_exceptions.dart';
+import 'package:medical/src/utils/app_media_query.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/calendar/calendar_booking_cubit.dart';
@@ -142,8 +143,7 @@ class _CalendarBookingControllerState extends State<CalendarBookingController> {
                   highlightColor: R.color.transparent,
                   icon: Icon(Icons.arrow_back, color: R.color.textDark),
                   onPressed: () {
-                    Navigator.of(context).pop();
-                    // Navigator.pushNamed(context, NavigatorName.profile);
+                    Navigator.pushNamed(context, NavigatorName.tabbar);
                   }),
             ),
             Expanded(
@@ -212,95 +212,129 @@ class _CalendarBookingControllerState extends State<CalendarBookingController> {
             )
           ],
         ),
-        Positioned(
-          bottom: 10,
-          left: 0,
-          right: 0,
-          child: GestureDetector(
-            onTap: () {
-              if (myCalendar != null && pickSlot != null) {
-                // case not change slot
-                bool isSameSlot =
-                    pickSlot!.startTime == myCalendar!.appointmentDate &&
-                        (pickSlot!.endTime - pickSlot!.startTime) ==
-                            myCalendar!.duration;
-                if (isSameSlot) {
-                  Navigator.pushNamed(context, NavigatorName.calendar,
-                      arguments: {"pickSlot": myCalendar});
-                  return;
-                }
-                // Case: update
-                // If update count is 2 or more, show popup
-                if (CalendarBookingCubit.updateCount > 2) {
-                  _showPopupOverSwitchTime(onConfirm: () => {});
-                  return;
-                } else {
-                  _cubit.deleteCalendar({
-                    "id": myCalendar!.id,
-                    "calendarCoachId": myCalendar!.calendarCoach.id,
-                    "deleteType": "0",
-                  });
-                }
-              }
-              // case create
-              if (pickItems.length == 0 && pickSlot == null) return;
-              var pickItemsFilter = pickItems
-                  .where((item) =>
-                      pickSlot != null &&
-                      item.startTime == pickSlot!.startTime &&
-                      item.endTime == pickSlot!.endTime)
-                  .toList();
-              // Handle the tap event here
-              CalendarAccount account = CalendarAccount(
-                accountId: AppSettings.userInfo!.accountId!,
-                modelStatus: 3, // ModelStatusEnum => 3  is New
-              );
-              CreateCalendarRequest request = new CreateCalendarRequest(
-                name: "Phỏng vấn đầu vào",
-                courseId: "09a1eb10-3781-11ef-a0de-bf2ff70bdfcd",
-                performerId: pickSlot!.coachId,
-                appointmentDate: pickSlot!.startTime,
-                calendarCoachs: pickItemsFilter,
-                duration: pickSlot!.endTime - pickSlot!.startTime,
-                repeatType: "0", // not repeat
-                modelStatus: 3,
-                meetingLink: "",
-                zoomTypeId: 1, // auto generate link zoom
-                type: "1", // CalendarTypeEnums = 1 is DanhGiaDauVao
-                calendarAccounts: [account],
-                goal: "Phỏng vấn đầu vào",
-                trainingGroupIds: [],
-              );
-              _cubit.createCalendar(request);
-            },
-            child: Align(
-              alignment: Alignment.center,
-              child: Container(
-                  height: 48,
-                  width: 195,
-                  decoration: BoxDecoration(
-                      color: R.color.mainColor,
-                      borderRadius: BorderRadius.circular(200),
-                      gradient: LinearGradient(
-                          begin: Alignment.topLeft,
-                          end: Alignment.centerRight,
-                          colors: [
-                            R.color.greenGradientTop,
-                            R.color.greenGradientBottom
-                          ])),
-                  child: Center(
-                      child: Text(
-                          pickItems.length > 0 && myCalendar != null
-                              ? "Đổi lịch"
-                              : "Đặt lịch",
-                          style: TextStyle(
-                              color: R.color.white,
-                              fontWeight: FontWeight.w600,
-                              fontSize: 16)))),
+        Stack(
+          children: [
+            Positioned(
+              bottom: 10,
+              left: 20,
+              right: 20,
+              child: Row(
+                mainAxisAlignment: CalendarBookingCubit.updateCount > 1
+                    ? MainAxisAlignment.spaceBetween
+                    : MainAxisAlignment.center,
+                children: [
+                  if (CalendarBookingCubit.updateCount > 1 &&
+                      myCalendar != null) ...[
+                    _buildButton(
+                      "Lịch của tôi",
+                      () {
+                        Navigator.pushNamed(context, NavigatorName.calendar,
+                            arguments: {"pickSlot": myCalendar});
+                      },
+                    ),
+                    SizedBox(
+                      width: 16,
+                    )
+                  ],
+                  _buildButton(
+                    pickItems.length > 0 && myCalendar != null
+                        ? "Đổi lịch"
+                        : "Đặt lịch",
+                    () {
+                      if (myCalendar != null && pickSlot != null) {
+                        // case not change slot
+                        bool isSameSlot = pickSlot!.startTime ==
+                                myCalendar!.appointmentDate &&
+                            (pickSlot!.endTime - pickSlot!.startTime) ==
+                                myCalendar!.duration;
+                        if (isSameSlot) {
+                          Navigator.pushNamed(context, NavigatorName.calendar,
+                              arguments: {"pickSlot": myCalendar});
+                          return;
+                        }
+                        // Case: update
+                        // If update count is 2 or more, show popup
+                        if (CalendarBookingCubit.updateCount > 1) {
+                          _showPopupOverSwitchTime(onConfirm: () => {});
+                          return;
+                        } else {
+                          _cubit.deleteCalendar({
+                            "id": myCalendar!.id,
+                            "calendarCoachId": myCalendar!.calendarCoach.id,
+                            "deleteType": "0",
+                          });
+                        }
+                      }
+                      // case create
+                      if (pickItems.length == 0 && pickSlot == null) return;
+                      var pickItemsFilter = pickItems
+                          .where((item) =>
+                              pickSlot != null &&
+                              item.startTime == pickSlot!.startTime &&
+                              item.endTime == pickSlot!.endTime)
+                          .toList();
+                      // Handle the tap event here
+                      CalendarAccount account = CalendarAccount(
+                        accountId: AppSettings.userInfo!.accountId!,
+                        modelStatus: 3, // ModelStatusEnum => 3  is New
+                      );
+                      CreateCalendarRequest request = new CreateCalendarRequest(
+                        name: "Phỏng vấn đầu vào",
+                        courseId: "71546da0-3a83-11ef-956b-3713adbaa661",
+                        performerId: pickSlot!.coachId,
+                        appointmentDate: pickSlot!.startTime,
+                        calendarCoachs: pickItemsFilter,
+                        duration: pickSlot!.endTime - pickSlot!.startTime,
+                        repeatType: "0", // not repeat
+                        modelStatus: 3,
+                        meetingLink: "",
+                        zoomTypeId: 1, // auto generate link zoom
+                        type: "1", // CalendarTypeEnums = 1 is DanhGiaDauVao
+                        calendarAccounts: [account],
+                        goal: "Phỏng vấn đầu vào",
+                        trainingGroupIds: [],
+                      );
+                      _cubit.createCalendar(request);
+                    },
+                  ),
+                ],
+              ),
+            ),
+          ],
+        )
+      ],
+    );
+  }
+
+  Widget _buildButton(String text, VoidCallback onTap) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        height: 48,
+        width: AppMediaQuery.deviceWidth * 0.4,
+        decoration: BoxDecoration(
+          color: R.color.mainColor,
+          borderRadius: BorderRadius.circular(200),
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.centerRight,
+            colors: [
+              R.color.greenGradientTop,
+              R.color.greenGradientBottom,
+            ],
+          ),
+        ),
+        child: Center(
+          child: Text(
+            text,
+            style: TextStyle(
+              color: R.color.white,
+              fontWeight: FontWeight.w600,
+              fontSize: 16,
             ),
           ),
         ),
-      ],
+      ),
     );
   }
 
@@ -518,6 +552,13 @@ class _CalendarBookingControllerState extends State<CalendarBookingController> {
               model.startTime * 1000,
               isUtc: true,
             ))
+        .where((date) {
+          DateTime today = DateTime.now();
+          DateTime startOfToday = DateTime(today.year, today.month, today.day);
+          DateTime endDate = startOfToday
+              .add(Duration(days: 21)); // date start course + 3 weeks
+          return date.isAfter(startOfToday) && date.isBefore(endDate);
+        })
         .map((dateTime) => DateTime(
               dateTime.year,
               dateTime.month,
@@ -549,9 +590,10 @@ class _CalendarBookingControllerState extends State<CalendarBookingController> {
         initialDate: seletedDate,
         firstDate: DateTime.parse("1969-07-20 20:18:04Z"),
         activeDates: activeDates,
-        lastDate: activeDates.length > 0
-            ? activeDates.last
-            : DateTime.now().add(Duration(days: 30)),
+        lastDate:
+            activeDates.length > 0 && activeDates.last.isAfter(seletedDate)
+                ? activeDates.last
+                : DateTime.now().add(Duration(days: 30)),
         onDateChanged: (datetime) {
           if (datetime != null) {
             var targets = _cubit.calendarCoachs

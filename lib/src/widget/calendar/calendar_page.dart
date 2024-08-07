@@ -5,7 +5,6 @@ import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/response/create_calendar_response.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/calendar/calendar_booking_cubit.dart';
-import 'package:medical/src/widget/calendar/calendar_model.dart';
 
 import '../../utils/navigator_name.dart';
 
@@ -74,8 +73,7 @@ class _CalendarControllerState extends State<CalendarController> {
                   highlightColor: Colors.transparent,
                   icon: Icon(Icons.arrow_back, color: R.color.textDark),
                   onPressed: () {
-                    Navigator.pushNamed(
-                        context, NavigatorName.calendar_booking);
+                    Navigator.pushNamed(context, NavigatorName.tabbar);
                   },
                 ),
               ),
@@ -123,8 +121,7 @@ class _CalendarControllerState extends State<CalendarController> {
           width: 20,
         ),
         GestureDetector(
-          onTap: (() =>
-              {Navigator.pushNamed(context, NavigatorName.interview_success)}),
+          onTap: (() => {Navigator.pushNamed(context, NavigatorName.tabbar)}),
           child: Container(
               margin: EdgeInsets.only(top: 16, bottom: 16),
               height: 48,
