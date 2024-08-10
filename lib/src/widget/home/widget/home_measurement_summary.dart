@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/widget/home/schema/home_schema.dart';
 
-typedef MeasurementCallback = void Function(String? routeName, dynamic args);
+typedef MeasurementCallback = void Function(String? routeName, dynamic args, String title);
 
 class MeasurementSummary extends StatelessWidget {
   const MeasurementSummary({
@@ -95,7 +95,7 @@ class MeasurementSummary extends StatelessWidget {
 
   Widget _buildInlineMeasurementWidget(HomeMeasurementInlineData data) {
     return InkWell(
-      onTap: () => onMeasurement(data.navigatorName, data.args),
+      onTap: () => onMeasurement(data.navigatorName, data.args, data.title ?? ""),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.center,
@@ -182,7 +182,7 @@ class MeasurementSummary extends StatelessWidget {
       );
     }
     return InkWell(
-      onTap: () => onMeasurement(data.navigatorName, data.args),
+      onTap: () => onMeasurement(data.navigatorName, data.args, data.title),
       child: Container(
         width: 88.0 * textScaleFactor,
         child: Column(
