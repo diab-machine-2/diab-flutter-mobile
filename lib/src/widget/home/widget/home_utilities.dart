@@ -9,11 +9,11 @@ class HomeUtilities extends StatelessWidget {
   const HomeUtilities({
     super.key,
     required this.utilities,
-    required this.onNavigate,
+    required this.onTap,
   });
 
   final List<HomeUtilityData> utilities;
-  final Function(String) onNavigate;
+  final Function(HomeUtilityData) onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -76,7 +76,7 @@ class HomeUtilities extends StatelessWidget {
 
   Widget _buildActivityItem(HomeUtilityData utility) {
     return InkWell(
-      onTap: () => onNavigate(utility.navigatorName),
+      onTap: () => onTap(utility),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [

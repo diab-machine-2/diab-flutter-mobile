@@ -70,6 +70,7 @@ class _HomeControllerState extends State<HomeController>
     with Observer, AutomaticKeepAliveClientMixin<HomeController> {
   final GlobalKey<CourseSuggestState> _courseSuggestKey = GlobalKey();
   final HomeBloc _homeBloc = HomeBloc();
+  final String _screenName = "home";
 
   int page = 1;
   bool isLoading = false;
@@ -436,7 +437,14 @@ class _HomeControllerState extends State<HomeController>
 
           Widget utilitiesW = HomeUtilities(
             utilities: stateLoaded?.utilities ?? [],
-            onNavigate: (routeName) {
+            onTap: (utility) {
+              // track event
+              final String eventName = "home_select_utility";
+              TrackingManager.trackEvent(eventName, _screenName, params: {
+                "object_title": utility.title,
+              });
+
+              final routeName = utility.navigatorName;
               // case show all utilities
               if (routeName == NavigatorName.utilities) {
                 final utilities = BlocProvider.of<HomeBloc>(context)
@@ -502,7 +510,12 @@ class _HomeControllerState extends State<HomeController>
                             onAddMeasurement: () =>
                                 _showAddMeasurement(context),
                             onHealthProfile: () {},
-                            onMeasurement: (routeName, args) {
+                            onMeasurement: (routeName, args, title) {
+                              // track event
+                              final String eventName = "home_select_kpi";
+                              TrackingManager.trackEvent(eventName, _screenName, params: {
+                                "object_title": title,
+                              });
                               // case require weight input
                               if (_checkWeightInputDialog(routeName,
                                       args: args) ==
@@ -550,7 +563,8 @@ class _HomeControllerState extends State<HomeController>
                               onViewMore: _viewMoreActivity,
                               onActivityTap: (activity) => _onSelectGoal(
                                   activity.type,
-                                  smartGoal: activity.smartGoal),
+                                  smartGoal: activity.smartGoal,
+                                  title: activity.title),
                             ),
                           ),
 
@@ -674,12 +688,20 @@ class _HomeControllerState extends State<HomeController>
 
   // Button "Thêm chỉ số"
   void _showAddMeasurement(BuildContext context) {
+    // track event
+    final String eventName = "home_add_kpi";
+    TrackingManager.trackEvent(eventName, _screenName);
     // show add measurement screen
     final measurementIndexes =
         BlocProvider.of<HomeBloc>(context).getAllMeasurements();
     final dialog = AddMeasurement(
       measurements: measurementIndexes,
       onItemTap: (item) {
+        // track event
+        final String eventName = "home_add_kpi_item";
+        TrackingManager.trackEvent(eventName, _screenName, params: {
+          "object_title": item.title,
+        });
         Navigator.pop(context);
         // case require weight input
         if (_checkWeightInputDialog(item.navigatorName, args: item.args) ==
@@ -742,7 +764,12 @@ class _HomeControllerState extends State<HomeController>
   // #region Copy from lib\src\widget\my_plan_screens\activity_tab\activity_tab\activity_tab_page.dart
   // Copy from lib\src\widget\my_plan_screens\activity_tab\activity_tab\activity_tab_page.dart
   Future<void> _onSelectGoal(ScheduleType type,
-      {SmartGoalList? smartGoal}) async {
+      {SmartGoalList? smartGoal, required String title}) async {
+    // track event
+    final String eventName = "home_select_activity";
+    TrackingManager.trackEvent(eventName, _screenName, params: {
+      "object_title": title,
+    });
     Observable.instance.notifyObservers([], notifyName: Const.HIDE_OVERLAY_KEY);
     _isReloadLesson = type == ScheduleType.lesson_recommend;
     switch (type) {
