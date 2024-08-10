@@ -1165,4 +1165,42 @@ class _AppApi implements AppApi {
             .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl));
     return _result.data;
   }
+
+  @override
+  Future<List<CreateCalendarResponse>> getMyCalendar(
+      CalendarFilter request) async {
+    try {
+      const _extra = <String, dynamic>{};
+      final queryParameters = <String, dynamic>{
+        // "fromDate": (request.fromDate.millisecondsSinceEpoch ~/ 1000),
+        // "toDate": (request.toDate.millisecondsSinceEpoch ~/ 1000),
+        "fromDate": (request.fromDate.millisecondsSinceEpoch ~/ 1000),
+        "toDate": (request.toDate.millisecondsSinceEpoch ~/ 1000),
+        "accountPatientId": request.accountPatientId,
+        "CourseId": request.courseId,
+        "calendarTypes": request.calendarType
+      };
+      final _headers = <String, dynamic>{};
+      final _result =
+          await _dio.fetch<Map<String, dynamic>>(_setStreamType(Options(
+        method: 'GET',
+        headers: _headers,
+        extra: _extra,
+      )
+              .compose(
+                _dio.options,
+                '/App/Calendar/v1',
+                queryParameters: queryParameters,
+              )
+              .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+      var data = _result.data!["data"] as List;
+      final value = data!
+          .map((dynamic i) => CreateCalendarResponse.fromJson(
+              i as Map<String, dynamic>, "", "", null))
+          .toList();
+      return value;
+    } catch (e) {
+      return [];
+    }
+  }
 }

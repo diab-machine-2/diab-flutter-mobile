@@ -389,4 +389,7 @@ abstract class AppApi {
   @POST("/App/Calendar/v1/{id}")
   Future<Map<String, dynamic>?> deleteCalendar(
       @Body() Map<String, String> request);
+
+  @POST("/App/Calendar/v1")
+  Future<List<CreateCalendarResponse>> getMyCalendar(CalendarFilter request);
 }

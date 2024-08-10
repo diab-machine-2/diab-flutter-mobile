@@ -27,34 +27,41 @@ class CalendarBookingController extends StatefulWidget {
 class _CalendarBookingControllerState extends State<CalendarBookingController> {
   late CalendarBookingCubit _cubit;
 
-  late List<CalendarCoachModel> pickItems;
+  late List<CalendarCoachModel> pickSlots = [];
 
   CalendarCoachModel? pickSlot;
+  CalendarCoachModel? pickSlotOld;
 
   CreateCalendarResponse? myCalendar;
 
-  late DateTime seletedDate;
+  late DateTime seletedDate = DateTime.now();
   final AppRepository repository = AppRepository();
 
   @override
   void initState() {
     super.initState();
     _cubit = CalendarBookingCubit(repository);
+    setUpCalendar();
+  }
+
+  Future<void> setUpCalendar() async {
+    await _cubit.initializeMyCalendar();
     myCalendar = CalendarBookingCubit.myCalendar;
     seletedDate = myCalendar != null
         ? _parseToDateTime(myCalendar!.appointmentDate)
-        : DateTime.now();
-    pickSlot = myCalendar != null ? myCalendar!.calendarCoach : null;
-    pickItems = [];
+        : seletedDate;
 
-    if (myCalendar != null)
-      initPickItems();
-    else {
+    if (myCalendar != null) {
+      // Khi đã có calendar rồi, back lại sẽ render lại slot lịch của calendar đó
+      initpickSlots();
+    } else {
+      // Chưa có calendar nào
       _cubit.getCalendarBooking();
     }
   }
 
-  void initPickItems() async {
+  void initpickSlots() async {
+    // optimize thi query string để chỉ cần lấy theo điều kiện mà không phải get lấy về rồi filter
     List<CalendarCoachModel> defaultCalendarCoach =
         await _cubit.getCalendarBooking();
     defaultCalendarCoach = defaultCalendarCoach
@@ -63,7 +70,9 @@ class _CalendarBookingControllerState extends State<CalendarBookingController> {
             _parseToDateTime(calendar.startTime)))
         .toList();
     setState(() {
-      pickItems = defaultCalendarCoach;
+      pickSlots = defaultCalendarCoach;
+      pickSlot = defaultCalendarCoach.firstWhere((p) => p.status == 1);
+      pickSlotOld = pickSlot;
     });
   }
 
@@ -144,6 +153,8 @@ class _CalendarBookingControllerState extends State<CalendarBookingController> {
                   icon: Icon(Icons.arrow_back, color: R.color.textDark),
                   onPressed: () {
                     Navigator.pushNamed(context, NavigatorName.tabbar);
+                    CalendarBookingCubit.myCalendar = null;
+                    CalendarBookingCubit.updateCount = 0;
                   }),
             ),
             Expanded(
@@ -223,8 +234,7 @@ class _CalendarBookingControllerState extends State<CalendarBookingController> {
                     ? MainAxisAlignment.spaceBetween
                     : MainAxisAlignment.center,
                 children: [
-                  if (CalendarBookingCubit.updateCount > 1 &&
-                      myCalendar != null) ...[
+                  if (CalendarBookingCubit.updateCount > 1) ...[
                     _buildButton(
                       "Lịch của tôi",
                       () {
@@ -237,11 +247,10 @@ class _CalendarBookingControllerState extends State<CalendarBookingController> {
                     )
                   ],
                   _buildButton(
-                    pickItems.length > 0 && myCalendar != null
-                        ? "Đổi lịch"
-                        : "Đặt lịch",
+                    myCalendar != null ? "Đổi lịch" : "Đặt lịch",
                     () {
-                      if (myCalendar != null && pickSlot != null) {
+                      // Case: update
+                      if (myCalendar != null) {
                         // case not change slot
                         bool isSameSlot = pickSlot!.startTime ==
                                 myCalendar!.appointmentDate &&
@@ -252,7 +261,6 @@ class _CalendarBookingControllerState extends State<CalendarBookingController> {
                               arguments: {"pickSlot": myCalendar});
                           return;
                         }
-                        // Case: update
                         // If update count is 2 or more, show popup
                         if (CalendarBookingCubit.updateCount > 1) {
                           _showPopupOverSwitchTime(onConfirm: () => {});
@@ -260,14 +268,18 @@ class _CalendarBookingControllerState extends State<CalendarBookingController> {
                         } else {
                           _cubit.deleteCalendar({
                             "id": myCalendar!.id,
-                            "calendarCoachId": myCalendar!.calendarCoach.id,
+                            "calendarCoachId": pickSlotOld!.id,
                             "deleteType": "0",
                           });
                         }
                       }
-                      // case create
-                      if (pickItems.length == 0 && pickSlot == null) return;
-                      var pickItemsFilter = pickItems
+                      // Case: create
+                      if (pickSlot == null) {
+                        _showPopupOverSwitchTime(
+                            onConfirm: () => {}, message: "Chưa chọn lịch");
+                        return;
+                      }
+                      var pickSlotsFilter = pickSlots
                           .where((item) =>
                               pickSlot != null &&
                               item.startTime == pickSlot!.startTime &&
@@ -283,7 +295,7 @@ class _CalendarBookingControllerState extends State<CalendarBookingController> {
                         courseId: "71546da0-3a83-11ef-956b-3713adbaa661",
                         performerId: pickSlot!.coachId,
                         appointmentDate: pickSlot!.startTime,
-                        calendarCoachs: pickItemsFilter,
+                        calendarCoachs: pickSlotsFilter,
                         duration: pickSlot!.endTime - pickSlot!.startTime,
                         repeatType: "0", // not repeat
                         modelStatus: 3,
@@ -338,7 +350,9 @@ class _CalendarBookingControllerState extends State<CalendarBookingController> {
     );
   }
 
-  _showPopupOverSwitchTime({required Function onConfirm}) {
+  _showPopupOverSwitchTime(
+      {required Function onConfirm,
+      String? message = 'Bạn đã đến giới hạn đổi lịch hẹn'}) {
     showDialog(
       context: context,
       builder: (context) {
@@ -354,7 +368,7 @@ class _CalendarBookingControllerState extends State<CalendarBookingController> {
                       Image.asset(R.drawable.ic_warning, width: 64, height: 64),
                       Padding(
                         padding: const EdgeInsets.only(top: 16.0),
-                        child: Text('Bạn đã đến giới hạn đổi lịch hẹn',
+                        child: Text(message!,
                             textAlign: TextAlign.center,
                             style: TextStyle(
                                 color: R.color.textDark,
@@ -424,27 +438,12 @@ class _CalendarBookingControllerState extends State<CalendarBookingController> {
     );
   }
 
-  void _createCalendar(CreateCalendarRequest request,
-      List<CalendarCoachModel> calendarCoach, BuildContext context) async {
-    final ApiResult<CreateCalendarResponse> apiResult =
-        await repository.createCalendar(request);
-    apiResult.when(success: (CreateCalendarResponse response) {
-      Navigator.pushNamed(context, NavigatorName.calendar,
-          arguments: {"pickSlot": calendarCoach});
-    }, failure: (NetworkExceptions error) {
-      Message.showToastMessage(context, error.toString());
-    });
-    BotToast.closeAllLoading();
-  }
-
   Widget _buildTimeFrame() {
-    List<CalendarCoachModel> coachSchedules = pickItems;
+    List<CalendarCoachModel> coachSchedules = pickSlots;
     List<List<Widget>> targets = [];
     Set<String> addedStartTimes = Set<String>();
     Set<String> addedEndTimes = Set<String>();
-// Iterate through coachSchedules
     for (int i = 0; i < coachSchedules.length; i++) {
-// Extract start and end times for each schedule
       String startTime =
           "${_parseToDateTime(coachSchedules[i].startTime).hour.toString().padLeft(2, '0')} : ${_parseToDateTime(coachSchedules[i].startTime).minute.toString().padLeft(2, '0')}";
       String endTime =
@@ -606,7 +605,7 @@ class _CalendarBookingControllerState extends State<CalendarBookingController> {
                     ))
                 .toList();
             setState(() {
-              pickItems = targets;
+              pickSlots = targets;
               seletedDate = datetime;
             });
           }

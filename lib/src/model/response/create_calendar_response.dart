@@ -35,48 +35,49 @@ class CreateCalendarResponse {
   final dynamic patients;
   final dynamic coaches;
   final dynamic hostZooms;
-  final CalendarCoachModel calendarCoach;
+  final bool? isDeleted;
+  final CalendarCoachModel? calendarCoach;
 
-  CreateCalendarResponse({
-    required this.calendarCoach,
-    required this.coachAvatar,
-    required this.coachName,
-    this.creatorId,
-    required this.id,
-    this.code,
-    required this.name,
-    required this.type,
-    required this.appointmentDate,
-    this.duration,
-    required this.performerId,
-    this.updaterName,
-    required this.repeatType,
-    this.goal,
-    this.meetingLink,
-    this.linkJoin,
-    this.meetingPassword,
-    this.calendarSchedulerId,
-    required this.complete,
-    this.calendarId,
-    this.roomId,
-    this.hostZoomId,
-    required this.zoomTypeId,
-    this.dynamicLink,
-    this.performer,
-    this.calendarScheduler,
-    this.calendarAccounts,
-    this.calendarTraining,
-    this.calendarTypes,
-    this.calendarActive,
-    this.calendarRepeatTypes,
-    this.trainingGroups,
-    this.patients,
-    this.coaches,
-    this.hostZooms,
-  });
+  CreateCalendarResponse(
+      {required this.calendarCoach,
+      required this.coachAvatar,
+      required this.coachName,
+      this.creatorId,
+      required this.id,
+      this.code,
+      required this.name,
+      required this.type,
+      required this.appointmentDate,
+      this.duration,
+      required this.performerId,
+      this.updaterName,
+      required this.repeatType,
+      this.goal,
+      this.meetingLink,
+      this.linkJoin,
+      this.meetingPassword,
+      this.calendarSchedulerId,
+      required this.complete,
+      this.calendarId,
+      this.roomId,
+      this.hostZoomId,
+      required this.zoomTypeId,
+      this.dynamicLink,
+      this.performer,
+      this.calendarScheduler,
+      this.calendarAccounts,
+      this.calendarTraining,
+      this.calendarTypes,
+      this.calendarActive,
+      this.calendarRepeatTypes,
+      this.trainingGroups,
+      this.patients,
+      this.coaches,
+      this.hostZooms,
+      this.isDeleted});
 
   factory CreateCalendarResponse.fromJson(Map<String, dynamic> json,
-      String coachName, String coachAvatar, CalendarCoachModel calendarCoach) {
+      String coachName, String coachAvatar, CalendarCoachModel? calendarCoach) {
     return CreateCalendarResponse(
         creatorId: json['creatorId'],
         id: json['id'] ?? '00000000-0000-0000-0000-000000000000',
@@ -111,6 +112,7 @@ class CreateCalendarResponse {
         patients: json['patients'],
         coaches: json['coaches'],
         hostZooms: json['hostZooms'],
+        isDeleted: json['isDeleted'] || false,
         coachName: coachName,
         coachAvatar: coachAvatar,
         calendarCoach: calendarCoach);
@@ -150,7 +152,8 @@ class CreateCalendarResponse {
       'patients': patients,
       'coaches': coaches,
       'hostZooms': hostZooms,
-      'coachName': coachName
+      'coachName': coachName,
+      'isDeleted': isDeleted
     };
   }
 }

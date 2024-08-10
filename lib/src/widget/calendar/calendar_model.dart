@@ -51,3 +51,18 @@ class CalendarCoachModel {
 
   // Method to format the start time to a specific string format
 }
+
+class CalendarFilter {
+  final String? accountPatientId;
+  final DateTime fromDate;
+  final DateTime toDate;
+  final String courseId;
+  final int calendarType;
+
+  CalendarFilter(
+      {this.accountPatientId,
+      required this.fromDate,
+      required this.toDate,
+      required this.courseId,
+      required this.calendarType});
+}

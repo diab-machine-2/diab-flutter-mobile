@@ -1,5 +1,6 @@
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/request/create_calendar_request.dart';
 import 'package:medical/src/model/response/create_calendar_response.dart';
@@ -25,10 +26,16 @@ class CalendarBookingCubit extends Cubit<CalendarBookingState> {
     try {
       emit(CalendarBookingLoading());
 
-      await _initializeMyCalendar(courseId: id);
-
       List<CalendarCoachModel> data =
           await UserClient().fetchCalendarCoach() ?? [];
+
+      // Filter based on status
+      data = data
+          .where((e) =>
+              e.status == 0 ||
+              (myCalendar != null &&
+                  e.startTime == myCalendar!.appointmentDate))
+          .toList();
 
       calendarCoachs = data;
       emit(CalendarBookingSuccess());
@@ -42,16 +49,33 @@ class CalendarBookingCubit extends Cubit<CalendarBookingState> {
     }
   }
 
-  Future<void> _initializeMyCalendar({
+  Future<void> initializeMyCalendar({
     String? courseId,
-    int? startDate,
-    int? endDate,
+    DateTime? startDate,
+    DateTime? endDate,
   }) async {
     courseId ??= "71546da0-3a83-11ef-956b-3713adbaa661";
-    startDate ??=
-        (DateTime.now().add(Duration(days: 1)).millisecondsSinceEpoch ~/ 1000);
-    endDate ??=
-        (DateTime.now().add(Duration(days: 21)).millisecondsSinceEpoch ~/ 1000);
+    startDate ??= DateTime.now().add(Duration(days: 1));
+    endDate ??= DateTime.now().add(Duration(days: 21));
+
+    final request = CalendarFilter(
+        accountPatientId: AppSettings.userInfo!.accountId,
+        courseId: courseId,
+        fromDate: startDate,
+        toDate: endDate,
+        calendarType: 1);
+
+    final ApiResult<List<CreateCalendarResponse>> apiResult =
+        await repository.getMyCalendar(request);
+    apiResult.when(success: (List<CreateCalendarResponse> response) {
+      if (response.length > 0) {
+        updateCount = response.length;
+        myCalendar = response.firstWhere((item) => item.isDeleted == false);
+        print(1);
+      }
+    }, failure: (NetworkExceptions error) {
+      emit(CalendarBookingFailure("Lỗi hệ thống trong quá trình tạo lịch"));
+    });
   }
 
   Future<void> createCalendar(

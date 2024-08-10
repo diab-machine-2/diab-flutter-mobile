@@ -59,6 +59,7 @@ import 'package:medical/src/model/response/week_states_response.dart';
 import 'package:medical/src/model/response/zoom_token_response.dart';
 import 'package:medical/src/model/service/api_result.dart';
 import 'package:medical/src/model/service/network_exceptions.dart';
+import 'package:medical/src/widget/calendar/calendar_model.dart';
 
 import '../app_api.dart';
 import '../request/SelectRoadmapRequest.dart';
@@ -845,6 +846,17 @@ class AppRepository {
     try {
       final Map<String, dynamic>? response =
           await appClient.deleteCalendar(request);
+      return ApiResult.success(data: response);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
+  Future<ApiResult<List<CreateCalendarResponse>>> getMyCalendar(
+      CalendarFilter request) async {
+    try {
+      final List<CreateCalendarResponse> response =
+          await appClient.getMyCalendar(request);
       return ApiResult.success(data: response);
     } catch (e) {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));

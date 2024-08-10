@@ -74,6 +74,8 @@ class _CalendarControllerState extends State<CalendarController> {
                   icon: Icon(Icons.arrow_back, color: R.color.textDark),
                   onPressed: () {
                     Navigator.pushNamed(context, NavigatorName.tabbar);
+                    CalendarBookingCubit.myCalendar = null;
+                    CalendarBookingCubit.updateCount = 0;
                   },
                 ),
               ),
@@ -161,7 +163,8 @@ class _CalendarControllerState extends State<CalendarController> {
     String startTimeFormatted = DateFormat.Hm().format(targetDate);
     targetDate =
         targetDate.add(Duration(seconds: widget.pickSlot.duration ?? 0));
-    String endTimeFormatted = DateFormat.Hm().format(targetDate);
+    String endTimeFormatted =
+        DateFormat.Hm().format(targetDate.add(Duration(minutes: 30)));
 
     return Container(
       padding: EdgeInsets.all(20),
@@ -199,7 +202,9 @@ class _CalendarControllerState extends State<CalendarController> {
               Row(
                 children: [
                   Image.network(
-                    widget.pickSlot.coachAvatar,
+                    widget.pickSlot.coachAvatar.isEmpty
+                        ? "https://img.freepik.com/free-photo/beautiful-young-female-doctor-looking-camera-office_1301-7807.jpg"
+                        : widget.pickSlot.coachAvatar,
                     height: 80,
                     width: 40,
                   ),
@@ -217,9 +222,13 @@ class _CalendarControllerState extends State<CalendarController> {
                         height: 8,
                       ),
                       Text(
-                        widget.pickSlot.coachName,
+                        widget.pickSlot.coachName != ""
+                            ? widget.pickSlot.coachName
+                            : (widget.pickSlot.updaterName ?? 'Unknown'),
                         style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 18),
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18,
+                        ),
                       ),
                     ],
                   )
