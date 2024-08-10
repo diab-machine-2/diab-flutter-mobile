@@ -25,7 +25,6 @@ import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/Bmi/widget/add_bmi.dart';
-import 'package:medical/src/widget/components/HomeButton/main.dart';
 import 'package:medical/src/widget/helper/notification_manager.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
@@ -259,15 +258,6 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
         },
         onTap: _onBottomNavigationBarTap,
       ),
-    );
-  }
-
-  void _showMaterialDialog() {
-    showDialog(
-      barrierColor: R.color.color0xff003F38.withOpacity(0.8),
-      useSafeArea: false,
-      context: context,
-      builder: (_) => FunkyOverlay(),
     );
   }
 

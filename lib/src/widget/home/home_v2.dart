@@ -440,7 +440,7 @@ class _HomeControllerState extends State<HomeController>
             onTap: (utility) {
               // track event
               final String eventName = "home_select_utility";
-              TrackingManager.trackEvent(eventName, _screenName, {
+              TrackingManager.trackEvent(eventName, _screenName, params: {
                 "object_title": utility.title,
               });
 
@@ -513,7 +513,7 @@ class _HomeControllerState extends State<HomeController>
                             onMeasurement: (routeName, args, title) {
                               // track event
                               final String eventName = "home_select_kpi";
-                              TrackingManager.trackEvent(eventName, _screenName, {
+                              TrackingManager.trackEvent(eventName, _screenName, params: {
                                 "object_title": title,
                               });
                               // case require weight input
@@ -688,12 +688,20 @@ class _HomeControllerState extends State<HomeController>
 
   // Button "Thêm chỉ số"
   void _showAddMeasurement(BuildContext context) {
+    // track event
+    final String eventName = "home_add_kpi";
+    TrackingManager.trackEvent(eventName, _screenName);
     // show add measurement screen
     final measurementIndexes =
         BlocProvider.of<HomeBloc>(context).getAllMeasurements();
     final dialog = AddMeasurement(
       measurements: measurementIndexes,
       onItemTap: (item) {
+        // track event
+        final String eventName = "home_add_kpi_item";
+        TrackingManager.trackEvent(eventName, _screenName, params: {
+          "object_title": item.title,
+        });
         Navigator.pop(context);
         // case require weight input
         if (_checkWeightInputDialog(item.navigatorName, args: item.args) ==
@@ -759,7 +767,7 @@ class _HomeControllerState extends State<HomeController>
       {SmartGoalList? smartGoal, required String title}) async {
     // track event
     final String eventName = "home_select_activity";
-    TrackingManager.trackEvent(eventName, _screenName, {
+    TrackingManager.trackEvent(eventName, _screenName, params: {
       "object_title": title,
     });
     Observable.instance.notifyObservers([], notifyName: Const.HIDE_OVERLAY_KEY);
