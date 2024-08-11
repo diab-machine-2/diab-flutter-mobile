@@ -5,8 +5,6 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/model/request/create_calendar_request.dart';
 import 'package:medical/src/model/response/create_calendar_response.dart';
-import 'package:medical/src/model/service/api_result.dart';
-import 'package:medical/src/model/service/network_exceptions.dart';
 import 'package:medical/src/utils/app_media_query.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
@@ -249,64 +247,73 @@ class _CalendarBookingControllerState extends State<CalendarBookingController> {
                   _buildButton(
                     myCalendar != null ? "Đổi lịch" : "Đặt lịch",
                     () {
-                      // Case: update
-                      if (myCalendar != null) {
-                        // case not change slot
-                        bool isSameSlot = pickSlot!.startTime ==
-                                myCalendar!.appointmentDate &&
-                            (pickSlot!.endTime - pickSlot!.startTime) ==
-                                myCalendar!.duration;
-                        if (isSameSlot) {
-                          Navigator.pushNamed(context, NavigatorName.calendar,
-                              arguments: {"pickSlot": myCalendar});
+                      try {
+                        BotToast.showLoading();
+                        if (myCalendar != null) {
+                          // case not change slot
+                          bool isSameSlot = pickSlot!.startTime ==
+                                  myCalendar!.appointmentDate &&
+                              (pickSlot!.endTime - pickSlot!.startTime) ==
+                                  myCalendar!.duration;
+                          if (isSameSlot) {
+                            Navigator.pushNamed(context, NavigatorName.calendar,
+                                arguments: {"pickSlot": myCalendar});
+                            BotToast.closeAllLoading();
+                            return;
+                          }
+                          // If update count is 2 or more, show popup
+                          if (CalendarBookingCubit.updateCount > 1) {
+                            _showPopupOverSwitchTime(onConfirm: () => {});
+                            BotToast.closeAllLoading();
+                            return;
+                          } else {
+                            _cubit.deleteCalendar({
+                              "id": myCalendar!.id,
+                              "calendarCoachId": pickSlotOld!.id,
+                              "deleteType": "0",
+                            });
+                          }
+                        }
+                        // Case: create
+                        if (pickSlot == null) {
+                          _showPopupOverSwitchTime(
+                              onConfirm: () => {}, message: "Chưa chọn lịch");
+                          BotToast.closeAllLoading();
                           return;
                         }
-                        // If update count is 2 or more, show popup
-                        if (CalendarBookingCubit.updateCount > 1) {
-                          _showPopupOverSwitchTime(onConfirm: () => {});
-                          return;
-                        } else {
-                          _cubit.deleteCalendar({
-                            "id": myCalendar!.id,
-                            "calendarCoachId": pickSlotOld!.id,
-                            "deleteType": "0",
-                          });
-                        }
+                        var pickSlotsFilter = pickSlots
+                            .where((item) =>
+                                pickSlot != null &&
+                                item.startTime == pickSlot!.startTime &&
+                                item.endTime == pickSlot!.endTime)
+                            .toList();
+                        // Handle the tap event here
+                        CalendarAccount account = CalendarAccount(
+                          accountId: AppSettings.userInfo!.accountId!,
+                          modelStatus: 3, // ModelStatusEnum => 3  is New
+                        );
+                        CreateCalendarRequest request =
+                            new CreateCalendarRequest(
+                          name: "Phỏng vấn đầu vào",
+                          courseId: "71546da0-3a83-11ef-956b-3713adbaa661",
+                          performerId: pickSlot!.coachId,
+                          appointmentDate: pickSlot!.startTime,
+                          calendarCoachs: pickSlotsFilter,
+                          duration: pickSlot!.endTime - pickSlot!.startTime,
+                          repeatType: "0", // not repeat
+                          modelStatus: 3,
+                          meetingLink: "",
+                          zoomTypeId: 1, // auto generate link zoom
+                          type: "1", // CalendarTypeEnums = 1 is DanhGiaDauVao
+                          calendarAccounts: [account],
+                          goal: "Phỏng vấn đầu vào",
+                          trainingGroupIds: [],
+                        );
+                        _cubit.createCalendar(request);
+                      } catch (e) {
+                      } finally {
+                        BotToast.closeAllLoading();
                       }
-                      // Case: create
-                      if (pickSlot == null) {
-                        _showPopupOverSwitchTime(
-                            onConfirm: () => {}, message: "Chưa chọn lịch");
-                        return;
-                      }
-                      var pickSlotsFilter = pickSlots
-                          .where((item) =>
-                              pickSlot != null &&
-                              item.startTime == pickSlot!.startTime &&
-                              item.endTime == pickSlot!.endTime)
-                          .toList();
-                      // Handle the tap event here
-                      CalendarAccount account = CalendarAccount(
-                        accountId: AppSettings.userInfo!.accountId!,
-                        modelStatus: 3, // ModelStatusEnum => 3  is New
-                      );
-                      CreateCalendarRequest request = new CreateCalendarRequest(
-                        name: "Phỏng vấn đầu vào",
-                        courseId: "71546da0-3a83-11ef-956b-3713adbaa661",
-                        performerId: pickSlot!.coachId,
-                        appointmentDate: pickSlot!.startTime,
-                        calendarCoachs: pickSlotsFilter,
-                        duration: pickSlot!.endTime - pickSlot!.startTime,
-                        repeatType: "0", // not repeat
-                        modelStatus: 3,
-                        meetingLink: "",
-                        zoomTypeId: 1, // auto generate link zoom
-                        type: "1", // CalendarTypeEnums = 1 is DanhGiaDauVao
-                        calendarAccounts: [account],
-                        goal: "Phỏng vấn đầu vào",
-                        trainingGroupIds: [],
-                      );
-                      _cubit.createCalendar(request);
                     },
                   ),
                 ],
@@ -448,11 +455,11 @@ class _CalendarBookingControllerState extends State<CalendarBookingController> {
           "${_parseToDateTime(coachSchedules[i].startTime).hour.toString().padLeft(2, '0')} : ${_parseToDateTime(coachSchedules[i].startTime).minute.toString().padLeft(2, '0')}";
       String endTime =
           "${_parseToDateTime(coachSchedules[i].endTime).hour.toString().padLeft(2, '0')} : ${_parseToDateTime(coachSchedules[i].endTime).minute.toString().padLeft(2, '0')}";
-
       if (!addedStartTimes.contains(startTime) ||
           !addedEndTimes.contains(endTime)) {
         List<Widget> item = [
           _buildItemTimeFrame(startTime, coachSchedules[i].id,
+              coachSchedules[i].startTime, coachSchedules[i].endTime,
               onTap: () => {
                     setState(() {
                       pickSlot = coachSchedules[i];
@@ -463,6 +470,7 @@ class _CalendarBookingControllerState extends State<CalendarBookingController> {
             style: TextStyle(fontSize: 30.0),
           ),
           _buildItemTimeFrame(endTime, coachSchedules[i].id,
+              coachSchedules[i].startTime, coachSchedules[i].endTime,
               onTap: () => {
                     setState(() {
                       pickSlot = coachSchedules[i];
@@ -507,7 +515,8 @@ class _CalendarBookingControllerState extends State<CalendarBookingController> {
     );
   }
 
-  Widget _buildItemTimeFrame(String time, String id, {VoidCallback? onTap}) {
+  Widget _buildItemTimeFrame(String time, String id, int startTime, int endTime,
+      {VoidCallback? onTap}) {
     return GestureDetector(
       onTap: onTap,
       child: SizedBox(
@@ -524,7 +533,9 @@ class _CalendarBookingControllerState extends State<CalendarBookingController> {
               style: TextStyle(
                   color: R.color.greenGradientBottom,
                   fontSize: 16,
-                  fontWeight: pickSlot != null && pickSlot!.id == id
+                  fontWeight: pickSlot != null &&
+                          pickSlot!.startTime == startTime &&
+                          pickSlot!.endTime == endTime
                       ? FontWeight.bold
                       : FontWeight.normal),
               children: [

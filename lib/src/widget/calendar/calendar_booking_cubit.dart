@@ -49,6 +49,14 @@ class CalendarBookingCubit extends Cubit<CalendarBookingState> {
     }
   }
 
+  Future<void> completedCalendar(String id) async {
+    try {
+      await repository.markCompletedCalendar(id);
+    } catch (e) {
+      print(e);
+    }
+  }
+
   Future<void> initializeMyCalendar({
     String? courseId,
     DateTime? startDate,
@@ -57,6 +65,7 @@ class CalendarBookingCubit extends Cubit<CalendarBookingState> {
     courseId ??= "71546da0-3a83-11ef-956b-3713adbaa661";
     startDate ??= DateTime.now().add(Duration(days: 1));
     endDate ??= DateTime.now().add(Duration(days: 21));
+    emit(CalendarBookingLoading());
 
     final request = CalendarFilter(
         accountPatientId: AppSettings.userInfo!.accountId,
@@ -70,8 +79,8 @@ class CalendarBookingCubit extends Cubit<CalendarBookingState> {
     apiResult.when(success: (List<CreateCalendarResponse> response) {
       if (response.length > 0) {
         updateCount = response.length;
-        myCalendar = response.firstWhere((item) => item.isDeleted == false);
-        print(1);
+        var filteredItems = response.where((item) => item.isDeleted == false);
+        myCalendar = filteredItems.isNotEmpty ? filteredItems.first : null;
       }
     }, failure: (NetworkExceptions error) {
       emit(CalendarBookingFailure("Lỗi hệ thống trong quá trình tạo lịch"));

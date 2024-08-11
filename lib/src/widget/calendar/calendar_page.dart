@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/response/create_calendar_response.dart';
+import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/calendar/calendar_booking_cubit.dart';
 
@@ -123,7 +124,10 @@ class _CalendarControllerState extends State<CalendarController> {
           width: 20,
         ),
         GestureDetector(
-          onTap: (() => {Navigator.pushNamed(context, NavigatorName.tabbar)}),
+          onTap: (() => {
+                _cubit.completedCalendar(widget.pickSlot.id),
+                Navigator.pushNamed(context, NavigatorName.tabbar)
+              }),
           child: Container(
               margin: EdgeInsets.only(top: 16, bottom: 16),
               height: 48,
@@ -203,10 +207,17 @@ class _CalendarControllerState extends State<CalendarController> {
                 children: [
                   Image.network(
                     widget.pickSlot.coachAvatar.isEmpty
-                        ? "https://img.freepik.com/free-photo/beautiful-young-female-doctor-looking-camera-office_1301-7807.jpg"
+                        ? Const.DEFAULT_BG_COACH
                         : widget.pickSlot.coachAvatar,
                     height: 80,
                     width: 40,
+                    errorBuilder: (context, error, stackTrace) {
+                      return Image.network(
+                        Const.DEFAULT_BG_COACH,
+                        height: 80,
+                        width: 40,
+                      );
+                    },
                   ),
                   SizedBox(
                     width: 8,
@@ -222,9 +233,7 @@ class _CalendarControllerState extends State<CalendarController> {
                         height: 8,
                       ),
                       Text(
-                        widget.pickSlot.coachName != ""
-                            ? widget.pickSlot.coachName
-                            : (widget.pickSlot.updaterName ?? 'Unknown'),
+                        widget.pickSlot.updaterName ?? "Chưa có tên",
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 18,
