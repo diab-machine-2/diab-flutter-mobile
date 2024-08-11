@@ -22,6 +22,11 @@ class CalendarBookingLoading extends CalendarBookingState {
   String toString() => 'CalendarBookingLoading';
 }
 
+class CalendarBookingCloseLoading extends CalendarBookingState {
+  @override
+  String toString() => 'CalendarBookingCloseLoading';
+}
+
 class CalendarBookingSuccess extends CalendarBookingState {
   @override
   String toString() {

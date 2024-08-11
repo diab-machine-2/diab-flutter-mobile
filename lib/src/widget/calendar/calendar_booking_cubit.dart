@@ -83,6 +83,7 @@ class CalendarBookingCubit extends Cubit<CalendarBookingState> {
         var filteredItems = response.where((item) => item.isDeleted == false);
         myCalendar = filteredItems.isNotEmpty ? filteredItems.first : null;
       }
+      emit(CalendarBookingCloseLoading());
     }, failure: (NetworkExceptions error) {
       emit(CalendarBookingFailure("Lỗi hệ thống trong quá trình tạo lịch"));
     });
@@ -97,6 +98,7 @@ class CalendarBookingCubit extends Cubit<CalendarBookingState> {
     apiResult.when(success: (CreateCalendarResponse response) {
       myCalendar = response;
       emit(CreateCalendarSuccess(response));
+      emit(CalendarBookingCloseLoading());
       return apiResult;
     }, failure: (NetworkExceptions error) {
       emit(CalendarBookingFailure("Lỗi hệ thống trong quá trình tạo lịch"));
@@ -106,11 +108,9 @@ class CalendarBookingCubit extends Cubit<CalendarBookingState> {
   Future<void> deleteCalendar(
     Map<String, String> request,
   ) async {
-    emit(CalendarBookingLoading());
     final ApiResult<Map<String, dynamic>?> apiResult =
         await repository.deleteCalendar(request);
     apiResult.when(success: (response) {
-      print(request);
       emit(DeleteCalendarSuccess());
     }, failure: (NetworkExceptions error) {
       emit(CalendarBookingFailure("Lỗi hệ thống trong quá trình tạo lịch"));

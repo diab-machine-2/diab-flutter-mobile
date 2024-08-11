@@ -624,7 +624,9 @@ class _AppState extends State<App> {
                       Map<String, dynamic>? args =
                           settings.arguments as Map<String, dynamic>?;
                       return _buildRoute(
-                          settings, CalendarController(args!["pickSlot"]));
+                          settings,
+                          CalendarController(
+                              args!["pickSlot"], args["courseId"]));
                     }
 
                   case NavigatorName.interview_success:

@@ -6,6 +6,7 @@ import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/model/request/create_calendar_request.dart';
 import 'package:medical/src/model/response/create_calendar_response.dart';
 import 'package:medical/src/utils/app_media_query.dart';
+import 'package:medical/src/utils/date_utils.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/calendar/calendar_booking_cubit.dart';
@@ -63,7 +64,7 @@ class _CalendarBookingControllerState extends State<CalendarBookingController> {
     List<CalendarCoachModel> defaultCalendarCoach =
         await _cubit.getCalendarBooking();
     defaultCalendarCoach = defaultCalendarCoach
-        .where((calendar) => _isSameDate(
+        .where((calendar) => DateUtil.isSameDate(
             _parseToDateTime(myCalendar!.appointmentDate),
             _parseToDateTime(calendar.startTime)))
         .toList();
@@ -98,7 +99,10 @@ class _CalendarBookingControllerState extends State<CalendarBookingController> {
               child: BlocConsumer<CalendarBookingCubit, CalendarBookingState>(
                   listener: (context, state) => {
                         if (state is CalendarBookingFailure)
-                          Message.showToastMessage(context, state.error)
+                          {
+                            Message.showToastMessage(context, state.error),
+                            BotToast.closeAllLoading()
+                          }
                         else if (state is CreateCalendarSuccess)
                           {
                             if (myCalendar != null)
@@ -114,7 +118,7 @@ class _CalendarBookingControllerState extends State<CalendarBookingController> {
                     try {
                       if (state is CalendarBookingLoading) {
                         BotToast.showLoading();
-                      } else {
+                      } else if (state is CalendarBookingCloseLoading) {
                         BotToast.closeAllLoading();
                       }
                       return _buildPage();
@@ -286,7 +290,8 @@ class _CalendarBookingControllerState extends State<CalendarBookingController> {
                         // Case: create
                         if (pickSlot == null) {
                           _showPopupOverSwitchTime(
-                              onConfirm: () => {}, message: "Chưa chọn lịch");
+                              onConfirm: () => {},
+                              message: "Vui lòng chọn lịch");
                           BotToast.closeAllLoading();
                           return;
                         }
@@ -559,12 +564,6 @@ class _CalendarBookingControllerState extends State<CalendarBookingController> {
     );
   }
 
-  bool _isSameDate(DateTime date1, DateTime date2) {
-    return date1.year == date2.year &&
-        date1.month == date2.month &&
-        date1.day == date2.day;
-  }
-
   Widget _buildSectionCalendarBooking() {
     List<DateTime> activeDates = _cubit.calendarCoachs
         .map((model) => DateTime.fromMillisecondsSinceEpoch(
@@ -616,7 +615,7 @@ class _CalendarBookingControllerState extends State<CalendarBookingController> {
         onDateChanged: (datetime) {
           if (datetime != null) {
             var targets = _cubit.calendarCoachs
-                .where((model) => _isSameDate(
+                .where((model) => DateUtil.isSameDate(
                       DateTime.fromMillisecondsSinceEpoch(
                         model.startTime * 1000,
                         isUtc: true,

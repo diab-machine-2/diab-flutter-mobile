@@ -28,6 +28,8 @@ class Const {
   static const String CLIENT_SECRET =
       "oTxBinRm9NpNen3rs++jN9sWXvOkya60nuffhv6x304=";
 
+  static const String DEFAULT_BG_COACH =
+      "https://img.freepik.com/free-photo/beautiful-young-female-doctor-looking-camera-office_1301-7807.jpg";
   static const String ID = "ID";
   static const String CODE = "Code";
   static const String NAME = "Name";

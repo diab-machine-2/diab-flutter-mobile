@@ -167,8 +167,7 @@ class _CalendarControllerState extends State<CalendarController> {
     String startTimeFormatted = DateFormat.Hm().format(targetDate);
     targetDate =
         targetDate.add(Duration(seconds: widget.pickSlot.duration ?? 0));
-    String endTimeFormatted =
-        DateFormat.Hm().format(targetDate.add(Duration(minutes: 30)));
+    String endTimeFormatted = DateFormat.Hm().format(targetDate);
 
     return Container(
       padding: EdgeInsets.all(20),
