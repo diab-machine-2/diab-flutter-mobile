@@ -12,6 +12,7 @@ import 'package:medical/src/model/response/expert_comment_list_response.dart';
 import 'package:medical/src/model/response/lesson_module_response.dart';
 import 'package:medical/src/model/response/question_answer_response.dart';
 import 'package:medical/src/model/response/report_response.dart';
+import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/widget/calendar/calendar_model.dart';
 import 'package:retrofit/http.dart';
 import 'package:retrofit/retrofit.dart';
@@ -392,4 +393,8 @@ abstract class AppApi {
 
   @POST("/App/Calendar/v1")
   Future<List<CreateCalendarResponse>> getMyCalendar(CalendarFilter request);
+
+  // Customer Receives
+  @PUT("/App/CustomerReceives/interview/{courseId}")
+  Future<void> updateDoneInterview(String courseId);
 }

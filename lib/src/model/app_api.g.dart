@@ -1140,14 +1140,7 @@ class _AppApi implements AppApi {
             .compose(_dio.options, 'App/Calendar/v1',
                 queryParameters: queryParameters, data: _data)
             .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl));
-    CalendarCoachModel calendarCoach =
-        CalendarCoachModel.fromJson(_result.data!['CalendarBooked']);
-    final value = CreateCalendarResponse.fromJson(
-        _result.data!['Calendar'],
-        _result.data!['CoachName'] ?? "Coach chưa có tên",
-        _result.data!['CoachAvatar'] ??
-            "https://img.freepik.com/free-photo/beautiful-young-female-doctor-looking-camera-office_1301-7807.jpg",
-        calendarCoach);
+    final value = CreateCalendarResponse.fromJson(_result.data!);
     return value;
   }
 
@@ -1172,8 +1165,6 @@ class _AppApi implements AppApi {
     try {
       const _extra = <String, dynamic>{};
       final queryParameters = <String, dynamic>{
-        // "fromDate": (request.fromDate.millisecondsSinceEpoch ~/ 1000),
-        // "toDate": (request.toDate.millisecondsSinceEpoch ~/ 1000),
         "fromDate": (request.fromDate.millisecondsSinceEpoch ~/ 1000),
         "toDate": (request.toDate.millisecondsSinceEpoch ~/ 1000),
         "accountPatientId": request.accountPatientId,
@@ -1196,11 +1187,24 @@ class _AppApi implements AppApi {
       var data = _result.data!["data"] as List;
       final value = data!
           .map((dynamic i) => CreateCalendarResponse.fromJson(
-              i as Map<String, dynamic>, "", "", null))
+                i as Map<String, dynamic>,
+              ))
           .toList();
       return value;
     } catch (e) {
       return [];
     }
+  }
+
+  @override
+  Future<void> updateDoneInterview(String courseId) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    await _dio.fetch<Map<String, dynamic>>(
+        Options(method: 'PUT', headers: _headers, extra: _extra)
+            .compose(_dio.options, 'App/CustomerReceives/interview/$courseId',
+                queryParameters: queryParameters)
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl));
   }
 }

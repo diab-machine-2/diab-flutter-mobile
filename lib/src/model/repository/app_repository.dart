@@ -862,4 +862,15 @@ class AppRepository {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));
     }
   }
+
+  // Customer Receives
+
+  Future<ApiResult<CommonResponse>> updateDoneInterview(String id) async {
+    try {
+      await appClient.updateDoneInterview(id);
+      return ApiResult.success(data: CommonResponse(statusCode: 200));
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
 }

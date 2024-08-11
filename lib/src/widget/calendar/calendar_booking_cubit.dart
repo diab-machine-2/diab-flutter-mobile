@@ -49,9 +49,10 @@ class CalendarBookingCubit extends Cubit<CalendarBookingState> {
     }
   }
 
-  Future<void> completedCalendar(String id) async {
+  Future<void> completedCalendar(String calendarId, String courseId) async {
     try {
-      await repository.markCompletedCalendar(id);
+      await repository.markCompletedCalendar(calendarId);
+      await repository.updateDoneInterview(courseId);
     } catch (e) {
       print(e);
     }

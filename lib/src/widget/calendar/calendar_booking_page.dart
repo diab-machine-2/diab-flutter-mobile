@@ -103,8 +103,11 @@ class _CalendarBookingControllerState extends State<CalendarBookingController> {
                           {
                             if (myCalendar != null)
                               CalendarBookingCubit.updateCount += 1,
-                            Navigator.pushNamed(context, NavigatorName.calendar,
-                                arguments: {"pickSlot": state.response})
+                            Navigator.pushNamed(
+                                context, NavigatorName.calendar, arguments: {
+                              "pickSlot": state.response,
+                              "courseId": "71546da0-3a83-11ef-956b-3713adbaa661"
+                            })
                           }
                       },
                   builder: ((context, state) {
@@ -237,7 +240,10 @@ class _CalendarBookingControllerState extends State<CalendarBookingController> {
                       "Lịch của tôi",
                       () {
                         Navigator.pushNamed(context, NavigatorName.calendar,
-                            arguments: {"pickSlot": myCalendar});
+                            arguments: {
+                              "pickSlot": myCalendar,
+                              "courseId": "71546da0-3a83-11ef-956b-3713adbaa661"
+                            });
                       },
                     ),
                     SizedBox(
@@ -256,8 +262,11 @@ class _CalendarBookingControllerState extends State<CalendarBookingController> {
                               (pickSlot!.endTime - pickSlot!.startTime) ==
                                   myCalendar!.duration;
                           if (isSameSlot) {
-                            Navigator.pushNamed(context, NavigatorName.calendar,
-                                arguments: {"pickSlot": myCalendar});
+                            Navigator.pushNamed(
+                                context, NavigatorName.calendar, arguments: {
+                              "pickSlot": myCalendar,
+                              "courseId": "71546da0-3a83-11ef-956b-3713adbaa661"
+                            });
                             BotToast.closeAllLoading();
                             return;
                           }
