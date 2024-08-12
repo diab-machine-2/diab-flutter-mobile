@@ -617,7 +617,7 @@ class _AppState extends State<App> {
                     return _buildRoute(settings, MeetingPreparePage());
                   case NavigatorName.calendar_booking:
                     {
-                      return _buildRoute(settings, CalendarBookingController());
+                      return _buildRoute(settings, CalendarBookingController(courseId: settings.arguments as String));
                     }
                   case NavigatorName.calendar:
                     {

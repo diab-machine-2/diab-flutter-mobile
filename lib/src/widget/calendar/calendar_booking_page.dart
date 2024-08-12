@@ -18,6 +18,9 @@ import 'package:medical/src/widgets/CalendarPicker/custom_date_picker.dart';
 import '../../model/repository/app_repository.dart';
 
 class CalendarBookingController extends StatefulWidget {
+  final String courseId;
+  const CalendarBookingController({Key? key, required this.courseId})
+      : super(key: key);
   @override
   _CalendarBookingControllerState createState() =>
       _CalendarBookingControllerState();
@@ -44,7 +47,7 @@ class _CalendarBookingControllerState extends State<CalendarBookingController> {
   }
 
   Future<void> setUpCalendar() async {
-    await _cubit.initializeMyCalendar();
+    await _cubit.initializeMyCalendar(courseId: widget.courseId);
     myCalendar = CalendarBookingCubit.myCalendar;
     seletedDate = myCalendar != null
         ? _parseToDateTime(myCalendar!.appointmentDate)
@@ -110,7 +113,7 @@ class _CalendarBookingControllerState extends State<CalendarBookingController> {
                             Navigator.pushNamed(
                                 context, NavigatorName.calendar, arguments: {
                               "pickSlot": state.response,
-                              "courseId": "71546da0-3a83-11ef-956b-3713adbaa661"
+                              "courseId": widget.courseId,
                             })
                           }
                       },
@@ -246,7 +249,7 @@ class _CalendarBookingControllerState extends State<CalendarBookingController> {
                         Navigator.pushNamed(context, NavigatorName.calendar,
                             arguments: {
                               "pickSlot": myCalendar,
-                              "courseId": "71546da0-3a83-11ef-956b-3713adbaa661"
+                              "courseId": widget.courseId,
                             });
                       },
                     ),
@@ -269,7 +272,7 @@ class _CalendarBookingControllerState extends State<CalendarBookingController> {
                             Navigator.pushNamed(
                                 context, NavigatorName.calendar, arguments: {
                               "pickSlot": myCalendar,
-                              "courseId": "71546da0-3a83-11ef-956b-3713adbaa661"
+                              "courseId": widget.courseId,
                             });
                             BotToast.closeAllLoading();
                             return;
@@ -309,7 +312,7 @@ class _CalendarBookingControllerState extends State<CalendarBookingController> {
                         CreateCalendarRequest request =
                             new CreateCalendarRequest(
                           name: "Phỏng vấn đầu vào",
-                          courseId: "71546da0-3a83-11ef-956b-3713adbaa661",
+                          courseId: widget.courseId,
                           performerId: pickSlot!.coachId,
                           appointmentDate: pickSlot!.startTime,
                           calendarCoachs: pickSlotsFilter,
