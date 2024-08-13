@@ -76,6 +76,7 @@ import 'utils/navigator_name.dart';
 import 'widget/BloodSugar/add_bloodSugar_new.dart';
 import 'widget/helper/photo_view.dart';
 import 'widget/home/widget/sync_screen.dart';
+import 'widget/meeting/meeting_prepare_page.dart';
 import 'widget/meeting/meeting_wait_room_page.dart';
 import 'widget/news_detail/presentation/news_detail_view.dart';
 import 'widget/ocr/test_ocr_camera_page.dart';
