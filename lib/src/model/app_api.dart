@@ -169,6 +169,10 @@ abstract class AppApi {
   @GET("App/Account/GetCurrentUserInfo")
   Future<UserInfoResponse> getCurrentUserInfo();
 
+  //Acount
+  @GET("App/Account/SyncData")
+  void syncIndexFromZaloToPhone(String accountPhone, String accountZalo);
+
   //My Plan
   @POST("App/Lesson/MyLessonsOptimizedAndCacheLessonPercent")
   Future<MyLessonResponse> getLessonsList(

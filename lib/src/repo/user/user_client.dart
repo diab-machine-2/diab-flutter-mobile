@@ -52,7 +52,7 @@ enum CategoryType {
 class UserClient extends FetchClient {
   final AppRepository repository = AppRepository();
 
-  Future<UserModel?> fetchUser() async {
+  Future<UserModel?> fetchUser({bool skipNotifiUI = false}) async {
     try {
       final Response response =
           await super.fetchData(url: '/App/Patient/mobile/CurrentToken');
@@ -70,8 +70,10 @@ class UserClient extends FetchClient {
           await saveUserPreferences(user);
 
           //await fetchUserInfo(user.patientId);
-          Observable.instance
-              .notifyObservers([], notifyName: "user_info_change");
+          if (!skipNotifiUI) {
+            Observable.instance
+                .notifyObservers([], notifyName: "user_info_change");
+          }
           // DartNotificationCenter.post(channel: 'user_info_change');
           return user;
         }

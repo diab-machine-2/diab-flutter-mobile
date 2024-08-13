@@ -1,0 +1,39 @@
+# This file contains the fastlane.tools configuration
+# You can find the documentation at https://docs.fastlane.tools
+#
+# For a list of all available actions, check out
+#
+#     https://docs.fastlane.tools/actions
+#
+# For a list of all available plugins, check out
+#
+#     https://docs.fastlane.tools/plugins/available-plugins
+#
+
+# Uncomment the line if you want fastlane to automatically update itself
+# update_fastlane
+
+default_platform(:android)
+
+def root_path
+  Dir.pwd.sub(/.*\Kfastlane/, '').sub(/.*\Kandroid/, '').sub(/.*\Kios/, '').sub(/.*\K\/\//, '')
+end
+
+platform :android do
+
+  desc "Submit a new Beta Build to Firebase App Distribution"
+  lane :upload_beta do
+    # build_android_app(
+    #   task: "bundleRelease"
+    # )
+    firebase_app_distribution(
+      app: "1:116899682757:android:7c75d2f35137754ae013ac",
+      android_artifact_type: "AAB",
+      android_artifact_path: "#{root_path}/build/app/outputs/bundle/release/app-release.aab",
+      firebase_cli_token: ENV['FIREBASE_TOKEN'],
+      groups: "diab-android-tester",
+      testers: "ngocphuc1612@gmail.com,chuongdinh2202@gmail.com,nhancmvn12@gmail.com",
+      release_notes: "Staging: - fixes and improvements"
+    )
+  end
+end

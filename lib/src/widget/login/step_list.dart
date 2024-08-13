@@ -505,21 +505,14 @@ class _StepListControllerState extends State<StepListController>
     );
   }
 
-  loginSuccess(String loginFrom) async {
-    try {
-      Future.delayed(Duration(milliseconds: 300), () async {
-        Observable.instance.notifyObservers([], notifyName: "refresh_home");
-      });
-      await TrackingManager.analytics.logEvent(
-        name: 'login',
-        parameters: {
-          "screen_name": 'login',
-          'method': loginFrom.toLowerCase(),
-        },
-      );
-    } catch (e) {
-      print(e);
-    }
+  void _loginSuccess(String loginFrom) async {
+    await TrackingManager.analytics.logEvent(
+      name: 'login',
+      parameters: {
+        "screen_name": 'login',
+        'method': loginFrom.toLowerCase(),
+      },
+    );
   }
 
   registerAccount(
@@ -566,7 +559,7 @@ class _StepListControllerState extends State<StepListController>
         "provider": 'Zalo',
         "zalo_id": account.id
       });
-      final user = await UserClient().fetchUser();
+      final user = await UserClient().fetchUser(skipNotifiUI: true);
       if (user == null) {
         registerAccount(
           account.id, // Ensure account is not null
@@ -577,7 +570,7 @@ class _StepListControllerState extends State<StepListController>
           zaloAccount: account,
         );
       } else {
-        loginSuccess("Zalo");
+        _loginSuccess("Zalo");
         BotToast.closeAllLoading();
         LoginRouting().navigateToHome(context);
       }

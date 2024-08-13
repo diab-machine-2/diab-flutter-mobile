@@ -7,6 +7,7 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/app_setting/app_sharing.dart';
 import 'package:medical/src/app_setting/dynamic_link_config.dart';
+import 'package:medical/src/app_setting/firebase_remote_config.dart';
 import 'package:medical/src/modal/home/home_model.dart';
 import 'package:medical/src/modal/learning/learning_post_model.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
@@ -74,34 +75,46 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
           try {
             // if any, just ignore the error
             model = await AppSettings.getHome();
+            if (model != null) {
+              _cached = HomeLoaded(model: model, activities: model.activities);
+              yield _cached!;
+            } else {
+              yield HomeLoading(model: model);
+            }
           } catch (e) {}
+        } else {
+          // other is mem cache
+          yield _cached!;
         }
-        // other is mem cache
-        yield _cached?.copyWith(model: model) ?? HomeLoading(model: model);
 
         // Load measurements
         final home = await client.fetchHomes();
         home.inlineMeasurements = _castInlineMeasurements(home);
         home.measurements = _castMeasurements(home);
-        HomeLoaded currentState = _cached?.copyWith(model: home) ??
-            HomeLoaded(
-              model: home,
-              utilities: this.getAllUtilities(full: false),
-              measurementLoading: false,
-            );
+        // at this point, home will lost "activities" data
+        HomeLoaded currentState =
+            (_cached?.copyWith(model: home) ?? HomeLoaded(model: home)).copyWith(
+          utilities: this.getAllUtilities(full: false),
+          measurementLoading: false,
+        );
         yield currentState;
 
-        // do cache
-        AppSettings.saveHome(home.toJson()).catchError((e) {
-          print(e);
-          return true;
-        });
+        // load reminders
+        yield* _fetchReminders();
 
         // load today target
         yield* _fetchActivities();
 
-        // load reminders
-        yield* _fetchReminders();
+        // set "activities" data
+        if (state is HomeLoaded) {
+          home.activities = (state as HomeLoaded).activities;
+        }
+        // +
+        // then do cache
+        AppSettings.saveHome(home.toJson()).catchError((e) {
+          print(e);
+          return true;
+        });
 
         // load news (learning post)
         yield* _fetchNews();
@@ -109,7 +122,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         // load lessons
         yield* _fetchLessons();
 
-        _cached = currentState;
+        _cached = state is HomeLoaded ? state as HomeLoaded : null;
 
         break; // Break the loop if successful
       } catch (e, _) {
@@ -184,7 +197,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     // check fetch target recommendation
     bool needFetchRecommend = currentState.activities == null || currentState.activities!.isEmpty;
     // or completed all
-    needFetchRecommend = needFetchRecommend || currentState.activities!.every((element) => element.smartGoal.state == 1);
+    needFetchRecommend = needFetchRecommend ||
+        currentState.activities!.every((element) => element.smartGoal.state == 1);
 
     // do fetch target recommendation
     if (needFetchRecommend) {
@@ -214,11 +228,11 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     final remindersResponse = await UserClient().fetchScheduleRemindersForHomePage();
     if (remindersResponse.isNotEmpty) {
       final reminders = remindersResponse
-      .where((e) {
-        final time = DateUtil.parseTimespanToDateTime(e.time);
-        return time.isAfter(DateTime.now());
-      })
-      .map((e) {
+          // .where((e) {
+          //   final time = DateUtil.parseTimespanToDateTime(e.time);
+          //   return time.isAfter(DateTime.now());
+          // })
+          .map((e) {
         final time = DateUtil.parseTimespanToDateTime(e.time);
         final timeString = _reminderFormatter.format(time);
 
@@ -296,55 +310,80 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   // Stream<HomeState> _syncHealthApp() async* {}
 
   List<HomeUtilityData> getAllUtilities({bool full = false}) {
-    return [
-      HomeUtilityData(
-        icon: R.drawable.ic_home_goal,
-        title: "Thiết lập mục tiêu",
-        navigatorName: NavigatorName.goal_setting,
-      ),
+    String? preOrder = FirebaseRemoteSetting.instance.utilitiesOrder;
+    final moreItem = HomeUtilityData(
+      icon: R.drawable.ic_home_more,
+      title: "Xem thêm",
+      slug: "xem-them",
+      navigatorName: NavigatorName.utilities,
+    );
+    final all = [
       HomeUtilityData(
         icon: R.drawable.ic_home_glucose_calendar,
         title: "Lịch đo đường huyết",
+        slug: "lich-do-duong-huyet",
         navigatorName: NavigatorName.schedule_glucose,
-      ),
-      HomeUtilityData(
-        icon: R.drawable.ic_home_reminder,
-        title: "Lịch nhắc nhở",
-        navigatorName: NavigatorName.reminder,
       ),
       HomeUtilityData(
         icon: R.drawable.ic_home_sample_menu,
         title: "Thực đơn mẫu",
+        slug: "thuc-don-mau",
         navigatorName: NavigatorName.food_menu,
+      ),
+      HomeUtilityData(
+        icon: R.drawable.ic_home_goal,
+        title: "Thiết lập mục tiêu",
+        slug: "thiet-lap-muc-tieu",
+        navigatorName: NavigatorName.goal_setting,
       ),
       HomeUtilityData(
         icon: R.drawable.ic_home_peripheral,
         title: "Kết nối thiết bị",
+        slug: "ket-noi-thiet-bi",
         navigatorName: NavigatorName.connect_device_app,
-      ),
-      HomeUtilityData(
-        icon: R.drawable.ic_home_medicine,
-        title: "Lịch uống thuốc",
-        navigatorName: "medicine",
       ),
       HomeUtilityData(
         icon: R.drawable.ic_home_referral,
         title: "Mời bạn bè",
+        slug: "moi-ban-be",
         navigatorName: "share",
       ),
-      if (full) ...[
-        HomeUtilityData(
-          icon: R.drawable.ic_home_doctor_consult,
-          title: "Tư vấn bác sĩ",
-          navigatorName: "consult",
-        ),
-      ] else
-        HomeUtilityData(
-          icon: R.drawable.ic_home_more,
-          title: "Xem thêm",
-          navigatorName: NavigatorName.utilities,
-        ),
+      HomeUtilityData(
+        icon: R.drawable.ic_home_medicine,
+        title: "Lịch uống thuốc",
+        slug: "lich-uong-thuoc",
+        navigatorName: "medicine",
+      ),
+      // HomeUtilityData(
+      //   icon: R.drawable.ic_home_reminder,
+      //   title: "Book lịch tại cơ sở y tế",
+      //   slug: "book-lich-tai-co-so-y-te",
+      //   navigatorName: NavigatorName.reminder,
+      // ),
+      // HomeUtilityData(
+      //   icon: R.drawable.ic_home_reminder,
+      //   title: "Book lịch tại cơ sở y tế",
+      //   slug: "book-lich-tai-co-so-y-te",
+      //   navigatorName: NavigatorName.reminder,
+      // ),
+      HomeUtilityData(
+        icon: R.drawable.ic_home_doctor_consult,
+        title: "Tư vấn Bác sĩ",
+        slug: "tu-van-bac-si",
+        navigatorName: "consult",
+      ),
     ];
+
+    if (preOrder?.isNotEmpty == true) {
+      final preOrderSlug = preOrder!.split(",").where((e) => e.trim().isNotEmpty).toList();
+      all.sort((a, b) {
+        final aIndex = preOrderSlug.indexOf(a.slug);
+        final bIndex = preOrderSlug.indexOf(b.slug);
+        return aIndex - bIndex;
+      });
+    }
+
+    return full ? all : [...all.take(7), moreItem];
   }
 
   List<HomeMeasurementIndex> getAllMeasurements() {
@@ -425,9 +464,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       icon: R.drawable.ic_home_weight,
       titleColor: haveWeight ? _haveValueTitleColor : _noValueTitleColor,
       value: haveWeight ? model.weightCard!.weight!.toString() : "--",
-      color: model?.weightCard?.weightColorCode != null
-          ? 0xFF008479
-          : _noValueColor,
+      color: model?.weightCard?.weightColorCode != null ? 0xFF008479 : _noValueColor,
       unit: model?.weightCard?.unit ?? "kg",
       navigatorName: haveWeight ? NavigatorName.detail_bmi : NavigatorName.add_bmi,
       args: haveWeight ? null : {'type': 'input'},

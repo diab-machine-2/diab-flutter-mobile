@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/firebase_tracking/kpi_motion_tracking.dart';
 import 'package:medical/src/widget/Exercrises/widget/exercrises_contain_detail.dart';
-import 'package:medical/src/widget/Exercrises/widget/exercrises_ranking_chart.dart';
 import 'package:medical/src/widget/Exercrises/widget/exercrises_trend_calo_chart.dart';
 import 'package:medical/src/widget/Exercrises/widget/exercrises_trend_chart.dart';
 import 'package:medical/src/widget/HbA1C/widget/course_suggest.dart';
@@ -22,7 +21,7 @@ class ExercrisesOverviewControllerState
   GlobalKey<ExercrisesTrendChartState> exercrisesTrendChartKey = GlobalKey();
   GlobalKey<ExercrisesTrendCaloChartState> exercrisesTrendCaloChartKey =
       GlobalKey();
-  GlobalKey<ExercrisesRankingChartState> exercrisesRankKey = GlobalKey();
+  // GlobalKey<ExercrisesRankingChartState> exercrisesRankKey = GlobalKey();
 
   @override
   void initState() {
@@ -41,9 +40,9 @@ class ExercrisesOverviewControllerState
     if (exercrisesTrendCaloChartKey.currentState != null) {
       exercrisesTrendCaloChartKey.currentState!.reloadData(periodFilterType);
     }
-    if (exercrisesRankKey.currentState != null) {
-      exercrisesRankKey.currentState!.reloadData(periodFilterType);
-    }
+    // if (exercrisesRankKey.currentState != null) {
+    //   exercrisesRankKey.currentState!.reloadData(periodFilterType);
+    // }
   }
 
   @override
@@ -70,7 +69,7 @@ class ExercrisesOverviewControllerState
             ExercrisesDetail(key: excersireKey),
             ExercrisesTrendChart(key: exercrisesTrendChartKey),
             ExercrisesTrendCaloChart(key: exercrisesTrendCaloChartKey),
-            ExercrisesRankingChart(key: exercrisesRankKey),
+            // ExercrisesRankingChart(key: exercrisesRankKey),
             CourseSuggest(position: 6),
             SizedBox(height: 36)
           ]),

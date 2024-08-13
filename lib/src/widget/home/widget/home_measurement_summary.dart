@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/widget/home/schema/home_schema.dart';
 
-typedef MeasurementCallback = void Function(String? routeName, dynamic args);
+typedef MeasurementCallback = void Function(String? routeName, dynamic args, String title);
 
 class MeasurementSummary extends StatelessWidget {
   const MeasurementSummary({
@@ -29,59 +29,73 @@ class MeasurementSummary extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textScaleFactor = max(1.0, MediaQuery.of(context).textScaleFactor);
-    return Container(
-      padding: const EdgeInsets.all(16.0),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.only(
-          bottomLeft: Radius.circular(16.0),
-          bottomRight: Radius.circular(16.0),
-        ),
-        color: Colors.white,
-      ),
-      child: Column(
-        children: [
-          // Inline measurements
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            mainAxisSize: MainAxisSize.max,
-            children: inlineMeasurements.map((e) => _buildInlineMeasurementWidget(e)).toList(),
-          ),
-
-          const SizedBox(height: 20.0),
-
-          // Measurements
-          SizedBox(
-            height: 88.0 * textScaleFactor,
-            child: ListView.separated(
-              itemBuilder: (_, index) =>
-                  _buildMeasurementWidget(measurements[index], textScaleFactor),
-              separatorBuilder: (_, index) => const SizedBox(width: 8.0),
-              itemCount: measurements.length,
-              scrollDirection: Axis.horizontal,
+    return Stack(
+      fit: StackFit.loose,
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(bottom: 16.0),
+          child: Container(
+            padding: const EdgeInsets.all(16.0),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.only(
+                bottomLeft: Radius.circular(16.0),
+                bottomRight: Radius.circular(16.0),
+              ),
+              color: Colors.white,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Inline measurements
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  mainAxisSize: MainAxisSize.max,
+                  children: inlineMeasurements.map((e) => _buildInlineMeasurementWidget(e)).toList(),
+                ),
+            
+                const SizedBox(height: 20.0),
+            
+                // Measurements
+                SizedBox(
+                  height: 88.0 * textScaleFactor,
+                  child: ListView.separated(
+                    itemBuilder: (_, index) =>
+                        _buildMeasurementWidget(measurements[index], textScaleFactor),
+                    separatorBuilder: (_, index) => const SizedBox(width: 8.0),
+                    itemCount: measurements.length,
+                    scrollDirection: Axis.horizontal,
+                  ),
+                ),
+            
+                const SizedBox(height: 12.0),
+            
+              ],
             ),
           ),
-
-          const SizedBox(height: 20.0),
-
-          Row(
+        ),
+        Positioned(
+          bottom: 0.0,
+          left: 0.0,
+          right: 0.0,
+          child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               // Health Profile Button
               // _buildHealthProfileButton(),
-
+                
               // Add measurement
               _buildAddMeasurementButton(),
             ],
-          )
-        ],
-      ),
+          ),
+        ),
+      ],
     );
   }
 
   Widget _buildInlineMeasurementWidget(HomeMeasurementInlineData data) {
     return InkWell(
-      onTap: () => onMeasurement(data.navigatorName, data.args),
+      onTap: () => onMeasurement(data.navigatorName, data.args, data.title ?? ""),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.center,
@@ -168,7 +182,7 @@ class MeasurementSummary extends StatelessWidget {
       );
     }
     return InkWell(
-      onTap: () => onMeasurement(data.navigatorName, data.args),
+      onTap: () => onMeasurement(data.navigatorName, data.args, data.title),
       child: Container(
         width: 88.0 * textScaleFactor,
         child: Column(
@@ -241,7 +255,7 @@ class MeasurementSummary extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(16.0),
-          color: R.color.greenGradientBottom,
+          color: Color(0xFF01857A),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
@@ -258,7 +272,6 @@ class MeasurementSummary extends StatelessWidget {
                 color: Colors.white,
                 fontWeight: FontWeight.bold,
                 fontSize: 13.0,
-                height: 16.0 / 13.0,
               ),
             ),
           ],
