@@ -19,7 +19,9 @@ import '../../model/repository/app_repository.dart';
 
 class CalendarBookingController extends StatefulWidget {
   final String courseId;
-  const CalendarBookingController({Key? key, required this.courseId})
+  final String endTime;
+  const CalendarBookingController(
+      {Key? key, required this.courseId, required this.endTime})
       : super(key: key);
   @override
   _CalendarBookingControllerState createState() =>
@@ -47,7 +49,11 @@ class _CalendarBookingControllerState extends State<CalendarBookingController> {
   }
 
   Future<void> setUpCalendar() async {
-    await _cubit.initializeMyCalendar(courseId: widget.courseId);
+    await _cubit.initializeMyCalendar(
+        courseId: widget.courseId,
+        endDate: DateTime.fromMillisecondsSinceEpoch(
+            int.parse(widget.endTime) * 1000));
+
     myCalendar = CalendarBookingCubit.myCalendar;
     seletedDate = myCalendar != null
         ? _parseToDateTime(myCalendar!.appointmentDate)
@@ -58,14 +64,14 @@ class _CalendarBookingControllerState extends State<CalendarBookingController> {
       initpickSlots();
     } else {
       // Chưa có calendar nào
-      _cubit.getCalendarBooking();
+      await _cubit.getCalendarCoach(widget.courseId, widget.endTime);
     }
   }
 
   void initpickSlots() async {
     // optimize thi query string để chỉ cần lấy theo điều kiện mà không phải get lấy về rồi filter
     List<CalendarCoachModel> defaultCalendarCoach =
-        await _cubit.getCalendarBooking();
+        await _cubit.getCalendarCoach(widget.courseId, widget.endTime);
     defaultCalendarCoach = defaultCalendarCoach
         .where((calendar) => DateUtil.isSameDate(
             _parseToDateTime(myCalendar!.appointmentDate),
@@ -110,11 +116,12 @@ class _CalendarBookingControllerState extends State<CalendarBookingController> {
                           {
                             if (myCalendar != null)
                               CalendarBookingCubit.updateCount += 1,
-                            Navigator.pushNamed(
-                                context, NavigatorName.calendar, arguments: {
-                              "pickSlot": state.response,
-                              "courseId": widget.courseId,
-                            })
+                            Navigator.pushNamed(context, NavigatorName.calendar,
+                                arguments: {
+                                  "pickSlot": state.response,
+                                  "courseId": widget.courseId,
+                                  "endTime": widget.endTime
+                                })
                           }
                       },
                   builder: ((context, state) {
@@ -250,6 +257,7 @@ class _CalendarBookingControllerState extends State<CalendarBookingController> {
                             arguments: {
                               "pickSlot": myCalendar,
                               "courseId": widget.courseId,
+                              'endTime': widget.endTime
                             });
                       },
                     ),
@@ -269,11 +277,12 @@ class _CalendarBookingControllerState extends State<CalendarBookingController> {
                               (pickSlot!.endTime - pickSlot!.startTime) ==
                                   myCalendar!.duration;
                           if (isSameSlot) {
-                            Navigator.pushNamed(
-                                context, NavigatorName.calendar, arguments: {
-                              "pickSlot": myCalendar,
-                              "courseId": widget.courseId,
-                            });
+                            Navigator.pushNamed(context, NavigatorName.calendar,
+                                arguments: {
+                                  "pickSlot": myCalendar,
+                                  "courseId": widget.courseId,
+                                  'endTime': widget.endTime
+                                });
                             BotToast.closeAllLoading();
                             return;
                           }

@@ -12,7 +12,8 @@ import '../../utils/navigator_name.dart';
 class CalendarController extends StatefulWidget {
   final CreateCalendarResponse pickSlot;
   final String courseId;
-  CalendarController(this.pickSlot, this.courseId);
+  final String endTime;
+  CalendarController(this.pickSlot, this.courseId, this.endTime);
 
   @override
   _CalendarControllerState createState() => _CalendarControllerState();
@@ -99,7 +100,11 @@ class _CalendarControllerState extends State<CalendarController> {
         GestureDetector(
           onTap: (() {
             Navigator.pushNamed(context, NavigatorName.calendar_booking,
-                arguments: {"updateSlot": widget.pickSlot});
+                arguments: {
+                  "updateSlot": widget.pickSlot,
+                  'courseId': widget.courseId,
+                  'endTime': widget.endTime
+                });
           }),
           child: Container(
               margin: EdgeInsets.only(top: 16, bottom: 16),

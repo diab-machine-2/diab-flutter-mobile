@@ -12,10 +12,15 @@ class DeepLinkConfig {
 
   String? sharedCode;
 
-  static void setUpHandleDeepLink({required Function(String? code) onHaveLink}) {
+  static void setUpHandleDeepLink(
+      {required Function(String? code) onHaveLink}) {
     linkStream.listen((link) {
       bool haveMeetLink = _tryCaptureMeetLink(link);
       if (haveMeetLink) return;
+      if (link != null && link.startsWith("branch")) {
+        print("link=====> " + link);
+        return;
+      }
       if (link != null &&
           !link.contains("click.diab.com.vn") &&
           !link.contains("referralCode") &&

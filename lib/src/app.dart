@@ -617,16 +617,26 @@ class _AppState extends State<App> {
                     return _buildRoute(settings, MeetingPreparePage());
                   case NavigatorName.calendar_booking:
                     {
-                      return _buildRoute(settings, CalendarBookingController(courseId: settings.arguments as String));
+                      final arguments =
+                          settings.arguments as Map<String, dynamic>?;
+
+                      return _buildRoute(
+                        settings,
+                        CalendarBookingController(
+                          courseId: arguments?['courseId'] as String? ?? '',
+                          endTime: arguments?['endTime'] as String? ?? '',
+                        ),
+                      );
                     }
+
                   case NavigatorName.calendar:
                     {
                       Map<String, dynamic>? args =
                           settings.arguments as Map<String, dynamic>?;
                       return _buildRoute(
                           settings,
-                          CalendarController(
-                              args!["pickSlot"], args["courseId"]));
+                          CalendarController(args!["pickSlot"],
+                              args["courseId"], args["endTime"]));
                     }
 
                   case NavigatorName.interview_success:

@@ -22,12 +22,14 @@ class CalendarBookingCubit extends Cubit<CalendarBookingState> {
 
   CalendarBookingCubit(this.repository) : super(InitialCalendarBookingState());
 
-  Future<List<CalendarCoachModel>> getCalendarBooking({String? id}) async {
+  Future<List<CalendarCoachModel>> getCalendarCoach(
+      String courseId, String endTime,
+      {String? id}) async {
     try {
       emit(CalendarBookingLoading());
 
       List<CalendarCoachModel> data =
-          await UserClient().fetchCalendarCoach() ?? [];
+          await UserClient().fetchCalendarCoach(courseId, endTime) ?? [];
 
       // Filter based on status
       data = data
