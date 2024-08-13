@@ -170,8 +170,8 @@ class _MeetingPreparePageState extends State<MeetingPreparePage> {
 
   String _generateToken(String username) {
     const Map configs = {
-      'ZOOM_SDK_KEY': 'CcZccx9xSvKnC_lNjaiHOw',
-      'ZOOM_SDK_SECRET': 'ReEJdcGnz45oGin4FFFWOGbEIu8ToRPq',
+      'ZOOM_SDK_KEY': 'NKVBsW7GQNij99U4d0r2Ug',
+      'ZOOM_SDK_SECRET': 'bn5QLW7Ed40RpoqGZW3iuGOkyZIC9j0C',
     };
 
     try {
