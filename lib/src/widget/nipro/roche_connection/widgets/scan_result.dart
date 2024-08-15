@@ -76,13 +76,13 @@ class ScanResultWidget extends StatelessWidget {
     return res.join(', ');
   }
 
-  String getNiceServiceData(Map<String, List<int>> data) {
+  String getNiceServiceData(Map<Guid, List<int>> data) {
     if (data.isEmpty) {
       return 'N/A';
     }
     List<String> res = [];
     data.forEach((id, bytes) {
-      res.add('${id.toUpperCase()}: ${getNiceHexArray(bytes)}');
+      res.add('${id.toString().toUpperCase()}: ${getNiceHexArray(bytes)}');
     });
     return res.join(', ');
   }

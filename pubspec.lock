@@ -739,10 +739,10 @@ packages:
     dependency: "direct main"
     description:
       name: flutter_blue_plus
-      sha256: a977e90b7f9dcece90a95a287f8843e3b9028a61199c41bc279832c096d31d43
+      sha256: "1bf31abe0c6d4992c10212fe80b3b9529b082eb62b451bf9858d3a172ca76a3a"
       url: "https://pub.dev"
     source: hosted
-    version: "1.5.2"
+    version: "1.32.11"
   flutter_branch_sdk:
     dependency: "direct main"
     description:
@@ -1199,6 +1199,22 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.2.1+1"
+  in_app_review:
+    dependency: "direct main"
+    description:
+      name: in_app_review
+      sha256: "99869244d09adc76af16bf8fd731dd13cef58ecafd5917847589c49f378cbb30"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.0.9"
+  in_app_review_platform_interface:
+    dependency: transitive
+    description:
+      name: in_app_review_platform_interface
+      sha256: fed2c755f2125caa9ae10495a3c163aa7fab5af3585a9c62ef4a6920c5b45f10
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.0.5"
   intl:
     dependency: transitive
     description:
@@ -1543,14 +1559,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.5.1"
-  protobuf:
-    dependency: transitive
-    description:
-      name: protobuf
-      sha256: "01dd9bd0fa02548bf2ceee13545d4a0ec6046459d847b6b061d8a27237108a08"
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.1.0"
   provider:
     dependency: "direct overridden"
     description:
