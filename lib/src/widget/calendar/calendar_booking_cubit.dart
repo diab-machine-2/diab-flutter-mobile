@@ -103,7 +103,7 @@ class CalendarBookingCubit extends Cubit<CalendarBookingState> {
       emit(CalendarBookingCloseLoading());
       return apiResult;
     }, failure: (NetworkExceptions error) {
-      emit(CalendarBookingFailure("Lỗi hệ thống trong quá trình tạo lịch"));
+      emit(CalendarBookingFailure("Lịch này đã có người đặt trước"));
     });
   }
 
