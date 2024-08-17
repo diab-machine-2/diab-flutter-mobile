@@ -61,11 +61,10 @@ class CalendarBookingCubit extends Cubit<CalendarBookingState> {
   }
 
   Future<void> initializeMyCalendar({
-    String? courseId,
+    required String courseId,
     DateTime? startDate,
     DateTime? endDate,
   }) async {
-    courseId ??= "71546da0-3a83-11ef-956b-3713adbaa661";
     startDate ??= DateTime.now().add(Duration(days: 1));
     endDate ??= DateTime.now().add(Duration(days: 21));
     emit(CalendarBookingLoading());

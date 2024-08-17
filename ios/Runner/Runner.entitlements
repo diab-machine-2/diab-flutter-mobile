@@ -13,6 +13,10 @@
 		<string>applinks:diab.page.link</string>
 		<string>applinks:news.diab.com.vn</string>
 		<string>applinks:click.diab.com.vn</string>
+		<string>applinks:app.diab.com.vn</string>
+		<string>applinks:diabvn.app.link</string>
+		<string>applinks:diabvn.test-app.link</string>
+		<string>applinks:diabvn-alternate.app.link</string>
 	</array>
 </dict>
 </plist>

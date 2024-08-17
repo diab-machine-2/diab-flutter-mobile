@@ -93,7 +93,7 @@ class UserClient extends FetchClient {
               1000);
       final Response response =
           await super.fetchData(url: '/App/CalendarCoach/', params: {
-        "courseId": courseId ?? "71546da0-3a83-11ef-956b-3713adbaa661",
+        "courseId": courseId,
         "startTime": targetTime
             .toString(), // only booking calendar after currentday + 24h
         "endTime": endTime

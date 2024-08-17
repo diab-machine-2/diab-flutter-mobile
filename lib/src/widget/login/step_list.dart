@@ -5,7 +5,6 @@ import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_branch_sdk/flutter_branch_sdk.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_observer/Observable.dart';
 import 'package:flutter_observer/Observer.dart';
@@ -27,7 +26,6 @@ import 'package:medical/src/widgets/button_language_picker.dart';
 import 'package:medical/src/widgets/spacing_row.dart';
 import 'package:package_info/package_info.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
-import 'package:http/http.dart' as http;
 
 import 'widgets/social_login_section.dart';
 
@@ -84,28 +82,10 @@ class _StepListControllerState extends State<StepListController>
   ];
 
   Timer? _timer;
-  late StreamSubscription<Map> streamSubscriptionDeepLink;
 
   String version = '';
   String buildNumber = '';
   String sharedCode = '';
-  //SecureModel? secureModel;
-  void listenDynamicLinks() async {
-    //FlutterBranchSdk.validateSDKIntegration();
-    streamSubscriptionDeepLink =
-        FlutterBranchSdk.initSession().listen((data) async {
-      print('listenDynamicLinks - DeepLink Data: $data');
-      if (data.containsKey('+clicked_branch_link') &&
-          data['+clicked_branch_link'] == true) {
-        print("Clicked brand");
-      }
-    }, onError: (error) {
-      PlatformException platformException = error as PlatformException;
-      print(
-          'InitSession error: ${platformException.code} - ${platformException.message}');
-    });
-    print(streamSubscriptionDeepLink);
-  }
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
@@ -135,7 +115,6 @@ class _StepListControllerState extends State<StepListController>
     super.initState();
     Observable.instance.addObserver(this);
     WidgetsBinding.instance.addObserver(this);
-    listenDynamicLinks();
     // DynamicLinkConfig.instance.getLongLink();
     // DynamicLinkConfig.instance.setUpHandleDeepLink();
     // if (widget.sharedCode != "") {

@@ -26,7 +26,7 @@ class BranchioLinkConfig {
       if (data['+clicked_branch_link'] == true &&
           data.containsKey("\$course")) {
         processBookingCourseLink(
-            data['\$course'] as String, data['\$end_time'] as String);
+            data['\$course'] as String, data['\$end_time'] as String?);
         return;
       }
       // TODO: Handle other deep link
@@ -65,7 +65,7 @@ class BranchioLinkConfig {
     return '';
   }
 
-  void processBookingCourseLink(String courseId, String endTime) {
+  void processBookingCourseLink(String courseId, String? endTime) {
     if (AppSettings.userInfo == null) {
       _courseId = courseId;
       _endTime = endTime;

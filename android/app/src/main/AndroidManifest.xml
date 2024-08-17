@@ -115,9 +115,8 @@
 				<action android:name="android.intent.action.VIEW" />
 				<category android:name="android.intent.category.DEFAULT" />
 				<category android:name="android.intent.category.BROWSABLE" />
-				<!-- REPLACE `android:host` with your `app.link` domain -->
+				<data android:scheme="https" android:host="app.diab.com.vn" />
 				<data android:scheme="https" android:host="diabvn.app.link" />
-				<!-- REPLACE `android:host` with your `-alternate` domain (required for proper functioning of App Links and Deepviews) -->
 				<data android:scheme="https" android:host="diabvn-alternate.app.link" />
 			</intent-filter>
 
