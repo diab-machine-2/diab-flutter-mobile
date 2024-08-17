@@ -127,7 +127,8 @@ class _ConditionWidgetState extends State<ConditionWidget> {
                                 if (Platform.isAndroid) {
                                   FlutterBluePlus.turnOn();
                                 } else {
-                                  Settings.AppSettings.openBluetoothSettings();
+                                  Settings.AppSettings
+                                      .openAppSettings(type: Settings.AppSettingsType.bluetooth);
                                 }
                               },
                               child: Text(
