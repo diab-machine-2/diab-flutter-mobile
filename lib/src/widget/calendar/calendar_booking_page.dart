@@ -321,6 +321,8 @@ class _CalendarBookingControllerState extends State<CalendarBookingController> {
                         CreateCalendarRequest request =
                             new CreateCalendarRequest(
                           name: "Phỏng vấn đầu vào",
+                          startTime: pickSlot!.startTime,
+                          endTime: pickSlot!.endTime,
                           courseId: widget.courseId,
                           performerId: pickSlot!.coachId,
                           appointmentDate: pickSlot!.startTime,

@@ -15,23 +15,26 @@ class CreateCalendarRequest {
   List<String> trainingGroupIds;
   List<CalendarCoachModel> calendarCoachs;
   String courseId;
+  int startTime;
+  int endTime;
 
-  CreateCalendarRequest({
-    required this.name,
-    required this.appointmentDate,
-    required this.duration,
-    required this.repeatType,
-    required this.modelStatus,
-    required this.meetingLink,
-    required this.performerId,
-    required this.zoomTypeId,
-    required this.type,
-    required this.calendarAccounts,
-    required this.goal,
-    required this.trainingGroupIds,
-    required this.calendarCoachs,
-    required this.courseId,
-  });
+  CreateCalendarRequest(
+      {required this.name,
+      required this.appointmentDate,
+      required this.duration,
+      required this.repeatType,
+      required this.modelStatus,
+      required this.meetingLink,
+      required this.performerId,
+      required this.zoomTypeId,
+      required this.type,
+      required this.calendarAccounts,
+      required this.goal,
+      required this.trainingGroupIds,
+      required this.calendarCoachs,
+      required this.courseId,
+      required this.endTime,
+      required this.startTime});
 
   factory CreateCalendarRequest.fromJson(Map<String, dynamic> json) {
     // Parse calendarAccounts
@@ -73,6 +76,8 @@ class CreateCalendarRequest {
       trainingGroupIds: trainingGroups,
       calendarCoachs: coaches,
       courseId: json['courseId'] ?? '',
+      startTime: json['startTime'] ?? DateTime.now(),
+      endTime: json['endTime'] ?? DateTime.now(),
     );
   }
 
@@ -93,6 +98,8 @@ class CreateCalendarRequest {
       'trainingGroupIds': trainingGroupIds,
       'calendarCoachs': calendarCoachs.map((coach) => coach.toJson()).toList(),
       'courseId': courseId,
+      'startTime': startTime,
+      'endTime': endTime
     };
   }
 }

@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/services.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:medical/src/app_setting/branchio_link_config.dart';
 import 'package:medical/src/modal/error/error_model.dart';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -146,8 +147,20 @@ class _SocialLoginSectionState extends State<SocialLoginSection> {
             googleAccount: null,
             appleCredential: credential);
       } else {
-        Navigator.popUntil(context, (route) => route.isFirst);
-        Navigator.pushReplacementNamed(context, NavigatorName.tabbar);
+        if (BranchioLinkConfig.instance.courseId != null &&
+            BranchioLinkConfig.instance.endTime != null) {
+          BranchioLinkConfig.instance
+              .navigateTo(NavigatorName.calendar_booking);
+        } else {
+          if (BranchioLinkConfig.instance.courseId != null &&
+              BranchioLinkConfig.instance.endTime != null) {
+            BranchioLinkConfig.instance
+                .navigateTo(NavigatorName.calendar_booking);
+          } else {
+            Navigator.popUntil(context, (route) => route.isFirst);
+            Navigator.pushReplacementNamed(context, NavigatorName.tabbar);
+          }
+        }
       }
     } catch (error) {
       BotToast.closeAllLoading();
@@ -224,8 +237,14 @@ class _SocialLoginSectionState extends State<SocialLoginSection> {
         // Navigator.pushReplacementNamed(context, NavigatorName.update_info,
         //     arguments: {'type': 'google', 'googleAccount': account});
       } else {
-        Navigator.popUntil(context, (route) => route.isFirst);
-        Navigator.pushReplacementNamed(context, NavigatorName.tabbar);
+        if (BranchioLinkConfig.instance.courseId != null &&
+            BranchioLinkConfig.instance.endTime != null) {
+          BranchioLinkConfig.instance
+              .navigateTo(NavigatorName.calendar_booking);
+        } else {
+          Navigator.popUntil(context, (route) => route.isFirst);
+          Navigator.pushReplacementNamed(context, NavigatorName.tabbar);
+        }
       }
     } catch (error) {
       if (error is Error && error.code == '5' && account != null) {

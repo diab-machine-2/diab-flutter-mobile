@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'package:flutter/services.dart';
 import 'package:flutter_branch_sdk/flutter_branch_sdk.dart';
 import 'package:medical/src/app.dart';
@@ -6,6 +7,7 @@ import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/modal/learning/learning_post_model.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
+
 import '../model/response/lesson_section_list_response.dart';
 
 class BranchioLinkConfig {
@@ -73,7 +75,24 @@ class BranchioLinkConfig {
       // Navigate
       navigatorKey.currentState?.pushNamed(NavigatorName.calendar_booking,
           arguments: {'courseId': courseId, 'endTime': endTime});
+      _resetDataLink();
     }
+  }
+
+  void _resetDataLink() {
+    _courseId = null;
+    _endTime = null;
+  }
+
+  void navigateTo(String screenName) {
+    switch (screenName) {
+      case NavigatorName.calendar_booking:
+        navigatorKey.currentState?.pushNamed(NavigatorName.calendar_booking,
+            arguments: {'courseId': courseId, 'endTime': endTime});
+        break;
+      default:
+    }
+    _resetDataLink();
   }
 
   void dispose() {

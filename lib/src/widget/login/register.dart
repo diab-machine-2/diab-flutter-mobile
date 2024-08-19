@@ -11,6 +11,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
+import 'package:medical/src/app_setting/branchio_link_config.dart';
 import 'package:medical/src/app_setting/dynamic_link_config.dart';
 import 'package:medical/src/modal/base/referral_code_temp.dart';
 import 'package:medical/src/modal/error/error_model.dart';
@@ -576,8 +577,14 @@ class _RegisterControllerState extends State<RegisterController> {
             //   'userInfo': profile
             // });
           } else {
-            Navigator.popUntil(context, (route) => route.isFirst);
-            Navigator.pushReplacementNamed(context, NavigatorName.tabbar);
+            if (BranchioLinkConfig.instance.courseId != null &&
+                BranchioLinkConfig.instance.endTime != null) {
+              BranchioLinkConfig.instance
+                  .navigateTo(NavigatorName.calendar_booking);
+            } else {
+              Navigator.popUntil(context, (route) => route.isFirst);
+              Navigator.pushReplacementNamed(context, NavigatorName.tabbar);
+            }
           }
         } catch (error) {
           BotToast.closeAllLoading();
@@ -642,8 +649,14 @@ class _RegisterControllerState extends State<RegisterController> {
         // Navigator.pushReplacementNamed(context, NavigatorName.update_info,
         //     arguments: {'type': 'google', 'googleAccount': account});
       } else {
-        Navigator.popUntil(context, (route) => route.isFirst);
-        Navigator.pushReplacementNamed(context, NavigatorName.tabbar);
+        if (BranchioLinkConfig.instance.courseId != null &&
+            BranchioLinkConfig.instance.endTime != null) {
+          BranchioLinkConfig.instance
+              .navigateTo(NavigatorName.calendar_booking);
+        } else {
+          Navigator.popUntil(context, (route) => route.isFirst);
+          Navigator.pushReplacementNamed(context, NavigatorName.tabbar);
+        }
       }
     } catch (error) {
       if (error is Error && error.code == '5' && account != null) {
@@ -701,8 +714,14 @@ class _RegisterControllerState extends State<RegisterController> {
             googleAccount: null,
             appleCredential: credential);
       } else {
-        Navigator.popUntil(context, (route) => route.isFirst);
-        Navigator.pushReplacementNamed(context, NavigatorName.tabbar);
+        if (BranchioLinkConfig.instance.courseId != null &&
+            BranchioLinkConfig.instance.endTime != null) {
+          BranchioLinkConfig.instance
+              .navigateTo(NavigatorName.calendar_booking);
+        } else {
+          Navigator.popUntil(context, (route) => route.isFirst);
+          Navigator.pushReplacementNamed(context, NavigatorName.tabbar);
+        }
       }
     } catch (error) {
       BotToast.closeAllLoading();
