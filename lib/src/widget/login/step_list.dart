@@ -553,12 +553,10 @@ class _StepListControllerState extends State<StepListController>
         loginSuccess("Zalo");
         BotToast.closeAllLoading();
         Navigator.popUntil(context, (route) => route.isFirst);
-        if (BranchioLinkConfig.instance.courseId != null &&
-            BranchioLinkConfig.instance.endTime != null) {
+        Navigator.pushReplacementNamed(context, NavigatorName.tabbar);
+        if (BranchioLinkConfig.instance.isNavigateToBooking) {
           BranchioLinkConfig.instance
               .navigateTo(NavigatorName.calendar_booking);
-        } else {
-          Navigator.pushReplacementNamed(context, NavigatorName.tabbar);
         }
       }
     } on ZaloLoginBackException catch (_) {
