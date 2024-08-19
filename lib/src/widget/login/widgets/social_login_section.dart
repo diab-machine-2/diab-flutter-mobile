@@ -147,19 +147,11 @@ class _SocialLoginSectionState extends State<SocialLoginSection> {
             googleAccount: null,
             appleCredential: credential);
       } else {
-        if (BranchioLinkConfig.instance.courseId != null &&
-            BranchioLinkConfig.instance.endTime != null) {
+        Navigator.popUntil(context, (route) => route.isFirst);
+        Navigator.pushReplacementNamed(context, NavigatorName.tabbar);
+        if (BranchioLinkConfig.instance.isNavigateToBooking) {
           BranchioLinkConfig.instance
               .navigateTo(NavigatorName.calendar_booking);
-        } else {
-          if (BranchioLinkConfig.instance.courseId != null &&
-              BranchioLinkConfig.instance.endTime != null) {
-            BranchioLinkConfig.instance
-                .navigateTo(NavigatorName.calendar_booking);
-          } else {
-            Navigator.popUntil(context, (route) => route.isFirst);
-            Navigator.pushReplacementNamed(context, NavigatorName.tabbar);
-          }
         }
       }
     } catch (error) {
@@ -237,13 +229,11 @@ class _SocialLoginSectionState extends State<SocialLoginSection> {
         // Navigator.pushReplacementNamed(context, NavigatorName.update_info,
         //     arguments: {'type': 'google', 'googleAccount': account});
       } else {
-        if (BranchioLinkConfig.instance.courseId != null &&
-            BranchioLinkConfig.instance.endTime != null) {
+        Navigator.popUntil(context, (route) => route.isFirst);
+        Navigator.pushReplacementNamed(context, NavigatorName.tabbar);
+        if (BranchioLinkConfig.instance.isNavigateToBooking) {
           BranchioLinkConfig.instance
               .navigateTo(NavigatorName.calendar_booking);
-        } else {
-          Navigator.popUntil(context, (route) => route.isFirst);
-          Navigator.pushReplacementNamed(context, NavigatorName.tabbar);
         }
       }
     } catch (error) {

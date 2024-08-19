@@ -353,17 +353,15 @@ class _LoginControllerState extends State<LoginController> {
         Navigator.pushReplacementNamed(context, NavigatorName.update_info,
             arguments: {'type': 'phone', 'diabeteStates': diabeteStates});
       } else {
-        if (BranchioLinkConfig.instance.courseId != null &&
-            BranchioLinkConfig.instance.endTime != null) {
+        Navigator.popUntil(context, (route) => route.isFirst);
+        Navigator.pushReplacementNamed(
+          context,
+          NavigatorName.tabbar,
+          arguments: widget.sharedCode,
+        );
+        if (BranchioLinkConfig.instance.isNavigateToBooking) {
           BranchioLinkConfig.instance
               .navigateTo(NavigatorName.calendar_booking);
-        } else {
-          Navigator.popUntil(context, (route) => route.isFirst);
-          Navigator.pushReplacementNamed(
-            context,
-            NavigatorName.tabbar,
-            arguments: widget.sharedCode,
-          );
         }
       }
     } catch (e, _) {

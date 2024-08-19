@@ -127,16 +127,14 @@ class _FlashScreenControllerState extends State<FlashScreenController> {
             isNavigateToStepList = true;
           }
         } else {
-          if (BranchioLinkConfig.instance.courseId != null &&
-              BranchioLinkConfig.instance.endTime != null) {
+          await Navigator.pushReplacementNamed(
+            context,
+            NavigatorName.tabbar,
+            arguments: sharedCode,
+          );
+          if (BranchioLinkConfig.instance.isNavigateToBooking) {
             BranchioLinkConfig.instance
                 .navigateTo(NavigatorName.calendar_booking);
-          } else {
-            await Navigator.pushReplacementNamed(
-              context,
-              NavigatorName.tabbar,
-              arguments: sharedCode,
-            );
           }
         }
       } else {

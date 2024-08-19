@@ -22,6 +22,8 @@ class BranchioLinkConfig {
   String? get courseId => _courseId;
   String? get endTime => _endTime;
 
+  bool get isNavigateToBooking => _courseId != null && endTime != null;
+
   void setUpHandleDeepLink() {
     _subLink = FlutterBranchSdk.initSession().listen((data) async {
       print('listenDynamicLinks - DeepLink Data: $data');
