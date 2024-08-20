@@ -5,6 +5,8 @@ import 'package:medical/src/modal/bmi/calculate_bmi.dart';
 import 'package:medical/src/modal/bmi/weight_input.dart';
 import 'package:medical/src/modal/bmi/weight_input_data_model.dart';
 import 'package:medical/src/modal/bmi/weight_trend.dart';
+import 'package:medical/src/model/response/base/response.dart';
+import 'package:medical/src/model/response/config/bmi_color_config.dart';
 import 'package:medical/src/utils/api_methods.dart';
 import 'package:medical/src/utils/app_log.dart';
 import 'package:medical/src/utils/utils.dart';
@@ -124,6 +126,19 @@ class WeightClient extends FetchClient {
     } catch (e) {
       throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
     }
+  }
+
+  Future<List<BmiColorConfig>?> fetchColorConfig() async {
+    final Response response = await super.fetchData(url: '/App/Bmi', params: {});
+
+    if (response.statusCode == 200) {
+      final listResponse = ListResponse.fromJson(
+        response.data as Map<String, dynamic>,
+        BmiColorConfig.fromJson,
+      );
+      return listResponse.data;
+    }
+    return null;
   }
 
   //============ cập nhật chỉ số Weight =============/

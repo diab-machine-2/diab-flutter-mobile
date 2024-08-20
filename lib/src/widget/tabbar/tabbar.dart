@@ -396,38 +396,3 @@ class _TabbarControllerState extends State<TabbarController>
   //   }
   // }
 }
-
-showPopupWeight() {
-  showDialog(
-    barrierColor: R.color.color0xff003F38.withOpacity(0.5),
-    context: navigatorKey.currentContext!,
-    builder: (_) => CustomNumPicker(
-        callback: (number) async {
-          try {
-            BotToast.showLoading();
-            UserModel userInfo = AppSettings.userInfo!;
-            userInfo = userInfo.copyWith(height: number?.toDouble());
-            await UserClient()
-                .updateUserInfo(AppSettings.userInfo!.id, userInfo);
-            await UserClient().fetchUser();
-            Navigator.pushNamed(
-                navigatorKey.currentContext!, NavigatorName.add_exercrises,
-                arguments: {'type': 'input'});
-            BotToast.closeAllLoading();
-          } catch (e, _) {
-            BotToast.closeAllLoading();
-            if (e is Error) {
-              Message.showToastMessage(navigatorKey.currentContext!, e.message);
-            } else {
-              Message.showToastMessage(
-                  navigatorKey.currentContext!, e.toString());
-            }
-          }
-        },
-        title: R.string.update_weight.tr(),
-        subTitle: R.string.update_weight_description.tr(),
-        max: 200,
-        numberDefault: 50,
-        unit: R.string.kg.tr()),
-  );
-}

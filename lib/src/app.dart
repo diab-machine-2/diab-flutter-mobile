@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/model/response/create_calendar_response.dart';
+import 'package:medical/src/app_routes.dart';
 import 'package:medical/src/service/zoom_service.dart';
 import 'package:medical/src/theme/app_theme.dart';
 import 'package:medical/src/utils/app_log.dart';
@@ -39,6 +40,7 @@ import 'package:medical/src/widget/calendar/calendar_model.dart';
 import 'package:medical/src/widget/calendar/calendar_page.dart';
 import 'package:medical/src/widget/calendar/interview_success.dart';
 import 'package:medical/src/widget/flash_screen/flash_screen.dart';
+import 'package:medical/src/widget/home/widget/sync_loading.dart';
 import 'package:medical/src/widget/login/change_password.dart';
 import 'package:medical/src/widget/login/create_new_password.dart';
 import 'package:medical/src/widget/login/forgot_password.dart';
@@ -46,13 +48,11 @@ import 'package:medical/src/widget/login/login.dart';
 import 'package:medical/src/widget/login/policy.dart';
 import 'package:medical/src/widget/login/register.dart';
 import 'package:medical/src/widget/login/register_success.dart';
-import 'package:medical/src/widget/login/rules.dart';
 import 'package:medical/src/widget/login/step_list.dart';
 import 'package:medical/src/widget/login/update_info.dart';
 import 'package:medical/src/widget/login/verify_phone.dart';
 import 'package:medical/src/widget/meeting/meeting_cubit.dart';
 import 'package:medical/src/widget/meeting/meeting_page.dart';
-import 'package:medical/src/widget/meeting/meeting_prepare_page.dart';
 import 'package:medical/src/widget/nipro/connect_device_app.dart';
 import 'package:medical/src/widget/nipro/connection_instructions.dart';
 import 'package:medical/src/widget/my_plan_screens/lesson_tab/lesson_detail/lesson_detail.dart';
@@ -80,6 +80,8 @@ import 'package:flutter_in_app_pip/flutter_in_app_pip.dart';
 import 'utils/navigator_name.dart';
 import 'widget/BloodSugar/add_bloodSugar_new.dart';
 import 'widget/helper/photo_view.dart';
+import 'widget/home/widget/sync_screen.dart';
+import 'widget/meeting/meeting_prepare_page.dart';
 import 'widget/meeting/meeting_wait_room_page.dart';
 import 'widget/news_detail/presentation/news_detail_view.dart';
 import 'widget/ocr/test_ocr_camera_page.dart';
@@ -149,6 +151,10 @@ class _AppState extends State<App> {
               useInheritedMediaQuery: true,
               onGenerateRoute: (settings) {
                 Console.log('settings.name', settings.name);
+                final newRoute = AppRoutes.tryGenerateNewRoutes(settings);
+                if (newRoute != null) {
+                  return newRoute;
+                }
                 switch (settings.name) {
                   case NavigatorName.tabbar:
                     String sharedCode = '';
@@ -453,14 +459,6 @@ class _AppState extends State<App> {
                     return _buildRoute(
                         settings, EmotionDetailTabbarController(),
                         isPresent: true);
-                  case '/add_food':
-                    final data = settings.arguments as Map<String, dynamic>?;
-                    return _buildRoute(
-                        settings,
-                        AddFoodController(
-                          type: data?['type'],
-                          id: data?['id'],
-                        ));
                   case NavigatorName.profile:
                     return _buildRoute(settings, const ProfileController());
                   case NavigatorName.profile_info:
@@ -479,7 +477,7 @@ class _AppState extends State<App> {
                   case NavigatorName.detail_food:
                     return _buildRoute(settings, FoodDetailTabbarController(),
                         isPresent: true);
-                  case '/add_food':
+                  case NavigatorName.add_food:
                     final data = settings.arguments as Map<String, dynamic>?;
                     return _buildRoute(
                         settings,
@@ -641,6 +639,19 @@ class _AppState extends State<App> {
 
                   case NavigatorName.interview_success:
                     return _buildRoute(settings, InterviewSuccessController());
+                  case NavigatorName.sync_screen:
+                    return _buildRoute(settings, SyncScreenController());
+                  case NavigatorName.sync_loading:
+                    {
+                      final args = settings.arguments as Map<String, dynamic>;
+                      return _buildRoute(
+                          settings,
+                          SyncLoadingController(
+                            phoneNumber: args['phoneNumber'],
+                            providerName: args['providerName'],
+                            providerKey: args['providerKey'],
+                          ));
+                    }
                   case NavigatorName.meeting:
                     {
                       if (settings.arguments is MeetingCubit) {

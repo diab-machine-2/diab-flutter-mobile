@@ -609,7 +609,7 @@ class _DailyNutritionPageState extends State<DailyNutritionPage>
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
-                                      Text(R.string.luong_calo_ban_da_nap,
+                                      Text(R.string.luong_calo_ban_da_nap.tr(),
                                           style: TextStyle(
                                               fontSize: 16,
                                               fontWeight: FontWeight.w600)),
@@ -628,7 +628,8 @@ class _DailyNutritionPageState extends State<DailyNutritionPage>
                                               fontWeight: FontWeight.w400),
                                           decoration: InputDecoration(
                                               hintText: R
-                                                  .string.luong_calo_ban_da_nap,
+                                                  .string.luong_calo_ban_da_nap
+                                                  .tr(),
                                               contentPadding:
                                                   EdgeInsets.only(bottom: 8),
                                               counterText: '',

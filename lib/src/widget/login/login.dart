@@ -5,6 +5,7 @@ import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_facebook_login/flutter_facebook_login.dart';
+import 'package:flutter_observer/Observable.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
 import 'package:medical/res/R.dart';
@@ -18,6 +19,7 @@ import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/base/text_field_custom.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
+import 'package:medical/src/widget/login/routing.dart';
 import 'package:medical/src/widget/login/widgets/social_login_section.dart';
 import 'package:medical/src/widgets/spacing_row.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
@@ -270,6 +272,8 @@ class _LoginControllerState extends State<LoginController> {
           isLogin = true;
         });
         FocusScope.of(context).requestFocus(passwordFocusNode);
+      } else if (isExistAccount && !isActive) {
+        phoneKey.currentState!.validate(R.string.tai_khoan_het_hieu_luc.tr());
       } else {
         sendOtpRegister(phone, phoneNumberConfirmed);
       }
@@ -351,12 +355,7 @@ class _LoginControllerState extends State<LoginController> {
         Navigator.pushReplacementNamed(context, NavigatorName.update_info,
             arguments: {'type': 'phone', 'diabeteStates': diabeteStates});
       } else {
-        Navigator.popUntil(context, (route) => route.isFirst);
-        Navigator.pushReplacementNamed(
-          context,
-          NavigatorName.tabbar,
-          arguments: widget.sharedCode,
-        );
+        LoginRouting().navigateToHome(context, arguments: widget.sharedCode);
       }
     } catch (e, _) {
       BotToast.closeAllLoading();
@@ -454,6 +453,9 @@ class _LoginControllerState extends State<LoginController> {
   }
 
   loginSuccess(String loginFrom) async {
+    Future.delayed(Duration(milliseconds: 300), () async {
+      Observable.instance.notifyObservers([], notifyName: "refresh_home");
+    });
     await TrackingManager.analytics.logEvent(
       name: 'login',
       parameters: {

@@ -1,11 +1,12 @@
 import 'package:dio/dio.dart';
 import 'package:medical/res/R.dart';
-import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/modal/error/error_model.dart';
 import 'package:medical/src/modal/home/home_model.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
+import 'package:medical/src/model/response/target_recommendation.dart';
 import 'package:medical/src/widget/helper/http_helper.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:medical/src/widget/helper/tracking_manager.dart';
 
 import '../../model/request/complete_smart_goal_request.dart';
 import '../../model/response/common_response.dart';
@@ -19,8 +20,9 @@ class HomeClient extends FetchClient {
     try {
       final Response response = await super.fetchData(url: '/App/Home');
       if (response.statusCode == 200) {
-        await AppSettings.saveHome(response.data['data']);
-        return HomeModel.fromJson(response.data['data']);
+        // await AppSettings.saveHome(response.data['data']);
+        final model = HomeModel.fromJson(response.data['data']);
+        return model;
       } else {
         final error = Error.fromJson(response);
         throw error;
@@ -30,22 +32,34 @@ class HomeClient extends FetchClient {
     }
   }
 
-  Future<void> completeSmartGoal(DateTime selectedDate, String? id,
-      int? executeDayTimes, int? type) async {
+  Future<void> completeSmartGoal(
+      DateTime selectedDate, String? id, int? executeDayTimes, int? type) async {
     if (id == null) return;
-    DateTime dateTime0 = DateTime(
-        selectedDate.year, selectedDate.month, selectedDate.day, 0, 0, 0);
+    DateTime dateTime0 = DateTime(selectedDate.year, selectedDate.month, selectedDate.day, 0, 0, 0);
     int startDate = (dateTime0.millisecondsSinceEpoch ~/ 1000).toInt();
 
     final CompleteSmartGoalRequest request = CompleteSmartGoalRequest(
-        id: id,
-        executeTimes: executeDayTimes,
-        type: type,
-        appointmentDate: startDate);
-    final ApiResult<CommonResponse> apiResult =
-        await repository.completeSmartGoal(request);
-    apiResult.when(
-        success: (CommonResponse response) {},
-        failure: (NetworkExceptions error) {});
+        id: id, executeTimes: executeDayTimes, type: type, appointmentDate: startDate);
+    final ApiResult<CommonResponse> apiResult = await repository.completeSmartGoal(request);
+    apiResult.when(success: (CommonResponse response) {}, failure: (NetworkExceptions error) {});
+  }
+
+  Future<TargetRecommendation?> fetchTargetRecommendation({required int week}) async {
+    try {
+      final Response response = await super.postUri(
+        url: '/App/Target/TargetRecommendation',
+        baseOption: true,
+        params: {
+          "FilterLesson": {"type": 1, "isNotCompleted": false, "week": week, "page": 1, "size": 10}
+        },
+      );
+      if (response.statusCode == 200) {
+        final model = TargetRecommendation.fromJson(response.data['data']);
+        return model;
+      }
+    } catch (e, s) {
+      TrackingManager.recordError(e, s);
+    }
+    return null;
   }
 }

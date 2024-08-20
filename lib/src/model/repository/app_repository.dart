@@ -377,6 +377,14 @@ class AppRepository {
     }
   }
 
+  void syncIndexFromZaloToPhone(String accountPhone, String accountZalo) {
+    try {
+      appClient.syncIndexFromZaloToPhone(accountPhone, accountZalo);
+    } catch (e) {
+      print("SyncIndexFromZaloToPhone exception: $e");
+    }
+  }
+
   /// My Plan
   Future<ApiResult<MyLessonResponse>> getLessonsList(
       LessonFilterRequest request) async {

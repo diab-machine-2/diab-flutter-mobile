@@ -116,6 +116,11 @@ blogs,Blogs,Blogs,
 app_reviews,Đánh giá ứng dụng,App reviews,
 profile,Thông tin tài khoản,Profile,
 save,Lưu,Save,
+first_login_zalo,Đăng nhập bằng tài khoản Zalo lần đầu tiên.,Log in with your Zalo account for the first time.
+question_sync_zalo,Trước đây bạn đã từng dùng số điện thoại để đăng nhập vào ứng dụng DiaB chưa?,Have you ever used your phone number to log into the DiaB app before?
+not_yet,Chưa từng,not yet
+used_to,Đã từng,used to
+input_for_sync,Nhập số điện thoại cũ để tiến hành đồng bộ,Enter your old phone number to synchronize
 name,Họ và tên,Name,
 date_of_birth,Ngày sinh,Vietnamese,
 change_password,Đổi mật khẩu,Change password,
@@ -1111,3 +1116,6 @@ zalo_first_failed_message,"Đồng bộ thông tin tài khoản Zalo không thà
 zalo_second_failed_message,"Đăng nhập Zalo không thành công. Vui lòng chọn phương thức đăng nhập khác.","Login to Zalo failed. Please choose another login method."
 action_try_again,"Thử lại","Try again"
 action_cancel,"Thoát","Cancel"
+empty_activity,"Bạn chưa có hoạt động nào hôm nay.\nThiết lập mục tiêu ngay để nâng cao hiệu quả luyện tập.","You have no activities today.\nSet goals now to improve exercise efficiency."
+complete_activity,"Bạn đã hoàn thành tất cả hoạt động hôm nay.\nHãy duy trì đều đặn mỗi ngày bạn nhé.","You have completed all activities today.\nKeep it regular every day."
+empty_reminder,"Bạn chưa có lịch nhắc nhở nào hôm nay.\nHãy thêm nhắc nhở để chúng tôi giúp bạn duy trì sức khỏe tốt nhé!",You have no reminders today.\nAdd reminders to help us keep you healthy!"

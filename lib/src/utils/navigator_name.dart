@@ -35,6 +35,7 @@ class NavigatorName {
   static const String add_symbo = '/add_symbo';
   static const String add_work = '/add_work';
   static const String add_insight = '/add_insight';
+  static const String add_food = '/add_food';
   static const String detail_food = '/detail_food';
   static const String detail_emotion = '/detail_emotion';
   static const String emotion_table = '/emotion_table';
@@ -70,6 +71,14 @@ class NavigatorName {
   static const String calendar_booking = '/calendar-booking';
   static const String meeting_wait_room = '/meeting-wait-room';
   static const String meeting = '/meeting';
+  static const String sync_screen = '/sync-screen';
+  static const String sync_loading = '/sync-loading';
+
+  // NEW UI
+  static const String utilities = '/utilities';
+  static const String food_menu = '/food-menu';
+  static const String add_nutrition = '/add-nutrition';
+  static const String add_goal = '/add-goal';
 
   // Test OCR ZONE
   static const String test_ocr = '/test_ocr';

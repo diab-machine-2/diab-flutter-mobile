@@ -12,7 +12,8 @@ class DeepLinkConfig {
 
   String? sharedCode;
 
-  static void setUpHandleDeepLink({required Function(String? code) onHaveLink}) {
+  static void setUpHandleDeepLink(
+      {required Function(String? code) onHaveLink}) {
     linkStream.listen((link) {
       bool haveMeetLink = _tryCaptureMeetLink(link);
       if (haveMeetLink) return;

@@ -72,6 +72,7 @@ class _AllQuestionAnswerPageState extends State<AllQuestionAnswerPage>
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Scaffold(
       body: BlocProvider(
         create: (context) => _cubit,
@@ -98,13 +99,14 @@ class _AllQuestionAnswerPageState extends State<AllQuestionAnswerPage>
   }
 
   Widget _buildPage(BuildContext context, AllQuestionAnswerState state) {
+    final media = MediaQuery.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _buildLessonModule(context),
         Expanded(
           child: Container(
-            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            padding: EdgeInsets.fromLTRB(16, 8, 16, 0),
             color: R.color.greenbg,
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -112,17 +114,15 @@ class _AllQuestionAnswerPageState extends State<AllQuestionAnswerPage>
                 _buildMakeQuestion(),
                 SizedBox(height: 8),
                 _buildQuestionList(state),
-                SizedBox(height: 16),
                 Visibility(
                   visible: state is LoadmoreAllQuestionAnswerLoading,
                   child: Container(
+                    margin: EdgeInsets.only(top: 16, bottom: 8 + media.padding.bottom / 2),
                     width: 24,
                     height: 24,
                     child: CircularProgressIndicator(),
                   ),
                 ),
-                SizedBox(height: 8),
-                // SizedBox(height: MediaQuery.of(context).padding.bottom)
               ],
             ),
           ),

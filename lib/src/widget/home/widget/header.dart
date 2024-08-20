@@ -53,6 +53,7 @@ class _HomeHeaderState extends State<HomeHeader> with Observer {
   void update(
       Observable observable, String? notifyName, Map<dynamic, dynamic>? map) {
     if (notifyName == 'user_info_change') {
+      user = AppSettings.userInfo;
       setState(() {});
     }
     if (notifyName == 'reload_notification' ||
@@ -270,9 +271,7 @@ class _HomeHeaderState extends State<HomeHeader> with Observer {
                             padding: const EdgeInsets.all(4),
                             color: R.color.transparent,
                             child: Image.asset(
-                                notificationCount! > 0
-                                    ? R.drawable.ic_bell_dot
-                                    : R.drawable.ic_bell,
+                                R.drawable.ic_bell,
                                 width: 24,
                                 height: 24),
                           ),

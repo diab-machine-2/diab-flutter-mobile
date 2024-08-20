@@ -85,4 +85,13 @@ class TrackingManager {
     );
     return FirebaseCrashlytics.instance.recordFlutterError(error, fatal: fatal);
   }
+
+  static Future<void> trackEvent(String name, String screenName, {Map<String, dynamic>? params}) {
+    Map<String, dynamic> parameters = {
+      'screen_name': screenName,
+      ...(params ?? {}),
+    };
+
+    return analytics.logEvent(name: name, parameters: parameters);
+  }
 }

@@ -47,7 +47,13 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
   DateTime today = DateTime.now();
   bool btnAction = true;
   List<int> rangeValue = [0, 60, 65, 75];
-  List<String> rangeLabel = ["Tuyệt vời", "Tốt", "Khá cao", "Rất cao"];
+  List<String> _rangeLabel = ["Tuyệt vời", "Tốt", "Khá cao", "Rất cao"];
+  List<Color> _colorList = [
+      Color(0xFF20A468),
+      Color(0xFF9CD9B8),
+      Color(0xFFFFCCD1),
+      Color(0xFFE53935),
+    ];
   InputHbA1CModel? model;
   List<String?> removeIDs = [];
   bool isLoading = true;
@@ -96,6 +102,13 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
     isLoading = false;
     List<int> valueOfClickTime = await AppSettings.getValueOfClickShortGuide();
     clickTime = valueOfClickTime[ScreenList.HBA1C.index];
+    final colors = await HbA1CClient().fetchColorConfig();
+    if (colors != null) {
+      _colorList = colors.map((e) {
+        return Color(int.parse("0xFF" + e.background.substring(1)));
+      }).toList();
+      _rangeLabel = colors.map(((e) => e.name)).toList();
+    }
     setState(() {});
     BotToast.closeAllLoading();
   }
@@ -939,12 +952,6 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
               : "0")! *
           10;
     } catch (e) {}
-    List<Color> colorList = [
-      Color(0xFF20A468),
-      Color(0xFF9CD9B8),
-      Color(0xFFFFCCD1),
-      Color(0xFFE53935),
-    ];
 
     int index = -1;
     int indexRange = findIndexInRanges(_number, rangeValue);
@@ -993,9 +1000,9 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
                   fontSize: 16),
               children: <TextSpan>[
                 TextSpan(
-                  text: '“${rangeLabel[indexRange]}”',
+                  text: '“${_rangeLabel[indexRange]}”',
                   style: TextStyle(
-                    color: colorList[indexRange],
+                    color: _colorList[indexRange],
                     fontWeight: FontWeight.w700,
                   ),
                 ),
@@ -1010,13 +1017,13 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(5),
                 child: Row(
-                  children: colorList.map(
+                  children: _colorList.map(
                     (e) {
                       index++;
                       return Container(
                         height: 8,
                         width: widthRange.toDouble(),
-                        color: colorList[index],
+                        color: _colorList[index],
                       );
                     },
                   ).toList(),

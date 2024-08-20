@@ -65,6 +65,8 @@ class LessonDetailCubit extends Cubit<LessonDetailState> {
       checkSectionComplete();
       if (isAllSectionCompleted && currentSection == (sectionList.length - 1)) {
         Observable.instance
+            .notifyObservers([], notifyName: "refresh_home_activity");
+        Observable.instance
             .notifyObservers([], notifyName: "goal_calo_changed");
         emit(LessonDetailCompleted(showPopupShare: showQuizLesson == false));
         return;

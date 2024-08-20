@@ -53,7 +53,8 @@ class LoginClient extends FetchClient {
     }
   }
 
-  Future<RegisterModel> submitRegister(String phone) async {
+  Future<RegisterModel> submitRegister(String phone,
+      {bool? isSyncAccount = false}) async {
     // try {
     final Response<dynamic> response = await super.postUri(
       baseIdentify: true,
@@ -62,10 +63,38 @@ class LoginClient extends FetchClient {
       params: {
         'phoneNumber': phone,
         'password': "123@56789",
+        'isSyncAccount': isSyncAccount
       },
     );
     if (response.statusCode == 200) {
       return RegisterModel.fromJson(response.data);
+    } else {
+      final error = Error.fromJson1(response);
+      throw error;
+    }
+    // } catch (e) {
+    //   throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+    // }
+  }
+
+  Future<bool> syncAccount(
+    String phone,
+    String providerName,
+    String providerKey,
+  ) async {
+    // try {
+    final Response<dynamic> response = await super.postUri(
+      baseIdentify: true,
+      baseOption: true,
+      url: '/api/Account/v1/users/current/sync-account',
+      params: {
+        'phoneNumber': phone,
+        'providerKey': providerKey,
+        'providerName': providerName
+      },
+    );
+    if (response.statusCode == 200) {
+      return true;
     } else {
       final error = Error.fromJson1(response);
       throw error;
@@ -140,7 +169,7 @@ class LoginClient extends FetchClient {
   }
 
   Future<bool> verifyOTP(String? phone, String otp,
-      {bool isCompleted = false}) async {
+      {bool isCompleted = false, bool isSyncAccount = false}) async {
     try {
       final Map<String, dynamic> params = {
         'phoneNumber': phone,
@@ -156,7 +185,7 @@ class LoginClient extends FetchClient {
       if (response.statusCode == 204 || response.statusCode == 200) {
         return true;
       } else {
-        final error = Error.fromJson(response);
+        final error = Error.fromJson(response, isSyncAccount: isSyncAccount);
         throw error;
       }
     } catch (e) {

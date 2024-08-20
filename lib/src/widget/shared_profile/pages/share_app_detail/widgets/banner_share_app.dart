@@ -60,29 +60,30 @@ class _BannerShareAppState extends State<BannerShareApp> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisAlignment: MainAxisAlignment.spaceAround,
                           children: [
-                            AutoSizeText(
-                              isVoucherAvailable
-                                  ? R.string.event_share_app_title.tr()
-                                  : R.string.diab_refferal.tr(),
-                              maxLines: 2,
-                              minFontSize: 15,
-                              style: TextStyle(
-                                fontSize: 18,
-                                color: Color(0xFF172823),
-                                fontWeight: FontWeight.w700,
-                              ),
-                            ),
-                            Text(
-                              isVoucherAvailable
-                                  ? R.string.event_share_app_content.tr()
-                                  : R.string.refferal_content.tr(),
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: Color(0xFF172823),
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                            SizedBox(height: 13),
+                            // AutoSizeText(
+                            //   isVoucherAvailable
+                            //       ? R.string.event_share_app_title.tr()
+                            //       : R.string.diab_refferal.tr(),
+                            //   maxLines: 2,
+                            //   minFontSize: 15,
+                            //   style: TextStyle(
+                            //     fontSize: 18,
+                            //     color: Color(0xFF172823),
+                            //     fontWeight: FontWeight.w700,
+                            //   ),
+                            // ),
+                            // Text(
+                            //   isVoucherAvailable
+                            //       ? R.string.event_share_app_content.tr()
+                            //       : R.string.refferal_content.tr(),
+                            //   style: TextStyle(
+                            //     fontSize: 12,
+                            //     color: Color(0xFF172823),
+                            //     fontWeight: FontWeight.w500,
+                            //   ),
+                            // ),
+                            // SizedBox(height: 30),
+                            Spacer(),
                             Container(
                               height: 28,
                               width: 82,

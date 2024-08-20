@@ -145,6 +145,7 @@ dependencies:
   # Social login
   zalo_flutter: ^0.0.6
   flutter_branch_sdk: ^8.1.0
+  in_app_review: ^2.0.9
 
 dev_dependencies:
   flutter_test:
@@ -178,6 +179,8 @@ flutter:
     - lib/res/
     - lib/res/fonts/
     - lib/res/drawables/
+    - lib/res/drawables/home/
+    - lib/res/drawables/tab/
     - lib/res/drawables/zoom/
     - lib/res/translations/
     - lib/res/generated/

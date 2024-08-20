@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
 
 class AppBarBottom extends StatelessWidget {
-  const AppBarBottom({this.child});
+  const AppBarBottom({this.child, this.activeShadow = true});
   final Widget? child;
+  final bool activeShadow;
 
   @override
   Widget build(BuildContext context) {
@@ -22,13 +23,13 @@ class AppBarBottom extends StatelessWidget {
             borderRadius: const BorderRadius.vertical(
               bottom: Radius.circular(16),
             ),
-            boxShadow: [
+            boxShadow: activeShadow ? [
               BoxShadow(
                 color: R.color.greenGradientBottom.withOpacity(0.08),
                 spreadRadius: 5,
                 blurRadius: 7,
               ),
-            ],
+            ] : null,
           ),
           child: child ?? const SizedBox.shrink()),
     );

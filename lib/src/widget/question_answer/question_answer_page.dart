@@ -51,6 +51,7 @@ class _QuestionAnswerPageState extends State<QuestionAnswerPage> with Observer {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.transparent,
       resizeToAvoidBottomInset: true,
       body: SafeArea(
         top: true,

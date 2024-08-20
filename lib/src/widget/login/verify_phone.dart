@@ -9,9 +9,12 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/repo/login/login_client.dart';
 import 'package:medical/src/repo/user/user_client.dart';
+import 'package:medical/src/service/zalo_service.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigator_name.dart';
+import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
+import 'package:medical/src/widget/login/step_list.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
@@ -441,7 +444,9 @@ class _VerifyPhoneControllerState extends State<VerifyPhoneController> {
             <String, dynamic>{}) as Map;
 
         final result = await LoginClient().verifyOTP(widget.phone, otpCode,
-            isCompleted: arguments.containsKey("isCompleted"));
+            isCompleted: arguments.containsKey("isCompleted"),
+            isSyncAccount: arguments.containsKey("syncAccount") &&
+                arguments["syncAccount"]);
         BotToast.closeAllLoading();
         await TrackingManager.analytics.logEvent(
           name: 'sign_up',
@@ -449,12 +454,16 @@ class _VerifyPhoneControllerState extends State<VerifyPhoneController> {
             "screen_name": 'otp_verify',
           },
         );
-        if (result) {
-          Navigator.pushReplacementNamed(context, NavigatorName.register,
-              arguments: {
-                'phone': widget.phone,
-                'referalCode': widget.referalCode,
-              });
+        if (arguments.containsKey("syncAccount")) {
+          await handleSyncAccount();
+        } else {
+          if (result) {
+            Navigator.pushReplacementNamed(context, NavigatorName.register,
+                arguments: {
+                  'phone': widget.phone,
+                  'referalCode': widget.referalCode,
+                });
+          }
         }
         // Remove
 
@@ -473,6 +482,41 @@ class _VerifyPhoneControllerState extends State<VerifyPhoneController> {
       // } else {
       //   Message.showToastMessage(context, e.toString());
       // }
+    }
+  }
+
+  handleSyncAccount() async {
+    try {
+      BotToast.showLoading();
+      String? zaloId = await AppSettings.getZaloId();
+      String? externalToken = await AppSettings.getZaloExternalToken();
+
+      // Check is Exits Zalo account
+      if (AppSettings.userInfo == null && zaloId != null) {
+        await LoginClient().registerWithSocial({
+          'providerName': 'Zalo',
+          'providerKey': zaloId,
+          'IsHasPatient': false
+        });
+        await LoginClient().login({
+          "client_id": Const.CLIENT_ID,
+          "client_secret": Const.CLIENT_SECRET,
+          "grant_type": "external",
+          "external_token": externalToken,
+          "provider": 'Zalo',
+          "zalo_id": zaloId
+        });
+      }
+      Navigator.pushNamed(context, NavigatorName.sync_loading, arguments: {
+        'phoneNumber': widget.phone!,
+        'providerKey': zaloId ?? AppSettings.userInfo?.userName,
+        'providerName': 'Zalo',
+      });
+      print('handle sync account');
+    } catch (e) {
+      Message.showToastMessage(context, "Lỗi khi sync account");
+    } finally {
+      BotToast.closeAllLoading();
     }
   }
 
@@ -495,7 +539,11 @@ class _VerifyPhoneControllerState extends State<VerifyPhoneController> {
     startTimer();
     BotToast.showLoading();
     try {
-      final result = await LoginClient().submitRegister(widget.phone!);
+      final arguments = (ModalRoute.of(context)?.settings.arguments ??
+          <String, dynamic>{}) as Map;
+      final result = await LoginClient().submitRegister(widget.phone!,
+          isSyncAccount:
+              arguments.containsKey("syncAccount") && arguments["syncAccount"]);
       // final result = await LoginClient().requestOTP(
       //     {"password": widget.password, "phoneNumber": widget.phone});
       otpCount = result.remainingRequestCount;
