@@ -12,7 +12,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
-import 'package:medical/src/app_setting/branchio_link_config.dart';
 import 'package:medical/src/app_setting/deep_link_config.dart';
 import 'package:medical/src/app_setting/dynamic_link_config.dart';
 import 'package:medical/src/repo/login/login_client.dart';
@@ -554,10 +553,6 @@ class _StepListControllerState extends State<StepListController>
         BotToast.closeAllLoading();
         Navigator.popUntil(context, (route) => route.isFirst);
         Navigator.pushReplacementNamed(context, NavigatorName.tabbar);
-        if (BranchioLinkConfig.instance.isNavigateToBooking) {
-          BranchioLinkConfig.instance
-              .navigateTo(NavigatorName.calendar_booking);
-        }
       }
     } on ZaloLoginBackException catch (_) {
       _loginZaloProgress = _LoginZaloProgress.none;

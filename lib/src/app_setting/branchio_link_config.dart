@@ -19,17 +19,12 @@ class BranchioLinkConfig {
   String? _courseId;
   String? _endTime;
 
-  String? get courseId => _courseId;
-  String? get endTime => _endTime;
-
-  bool get isNavigateToBooking => _courseId != null && endTime != null;
-
   void setUpHandleDeepLink() {
     _subLink = FlutterBranchSdk.initSession().listen((data) async {
       print('listenDynamicLinks - DeepLink Data: $data');
       if (data['+clicked_branch_link'] == true &&
           data.containsKey("\$course")) {
-        processBookingCourseLink(
+        _processBookingCourseLink(
             data['\$course'] as String, data['\$end_time'] as String?);
         return;
       }
@@ -44,6 +39,14 @@ class BranchioLinkConfig {
       }
       TrackingManager.recordError(error, null);
     });
+  }
+
+  void tryNavigateBooking() {
+    if (_courseId != null) {
+      navigatorKey.currentState?.pushNamed(NavigatorName.calendar_booking,
+          arguments: {'courseId': _courseId, 'endTime': _endTime});
+      _resetDataLink();
+    }
   }
 
   Future<void> createShareReferralLink() async {
@@ -69,32 +72,17 @@ class BranchioLinkConfig {
     return '';
   }
 
-  void processBookingCourseLink(String courseId, String? endTime) {
-    if (AppSettings.userInfo == null) {
+  void _processBookingCourseLink(String courseId, String? endTime) {
       _courseId = courseId;
       _endTime = endTime;
-    } else {
-      // Navigate
-      navigatorKey.currentState?.pushNamed(NavigatorName.calendar_booking,
-          arguments: {'courseId': courseId, 'endTime': endTime});
-      _resetDataLink();
+    if (AppSettings.userInfo != null) {
+      tryNavigateBooking();
     }
   }
 
   void _resetDataLink() {
     _courseId = null;
     _endTime = null;
-  }
-
-  void navigateTo(String screenName) {
-    switch (screenName) {
-      case NavigatorName.calendar_booking:
-        navigatorKey.currentState?.pushNamed(NavigatorName.calendar_booking,
-            arguments: {'courseId': courseId, 'endTime': endTime});
-        break;
-      default:
-    }
-    _resetDataLink();
   }
 
   void dispose() {

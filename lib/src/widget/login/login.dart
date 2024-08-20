@@ -4,13 +4,11 @@ import 'dart:io' show Platform;
 import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
-import 'package:medical/src/app_setting/branchio_link_config.dart';
 import 'package:medical/src/modal/error/error_model.dart';
 import 'package:medical/src/modal/register/register_model.dart';
 import 'package:medical/src/repo/login/login_client.dart';
@@ -359,10 +357,6 @@ class _LoginControllerState extends State<LoginController> {
           NavigatorName.tabbar,
           arguments: widget.sharedCode,
         );
-        if (BranchioLinkConfig.instance.isNavigateToBooking) {
-          BranchioLinkConfig.instance
-              .navigateTo(NavigatorName.calendar_booking);
-        }
       }
     } catch (e, _) {
       BotToast.closeAllLoading();

@@ -11,7 +11,6 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
-import 'package:medical/src/app_setting/branchio_link_config.dart';
 import 'package:medical/src/app_setting/dynamic_link_config.dart';
 import 'package:medical/src/modal/base/referral_code_temp.dart';
 import 'package:medical/src/modal/error/error_model.dart';
@@ -579,10 +578,6 @@ class _RegisterControllerState extends State<RegisterController> {
           } else {
             Navigator.popUntil(context, (route) => route.isFirst);
             Navigator.pushReplacementNamed(context, NavigatorName.tabbar);
-            if (BranchioLinkConfig.instance.isNavigateToBooking) {
-              BranchioLinkConfig.instance
-                  .navigateTo(NavigatorName.calendar_booking);
-            }
           }
         } catch (error) {
           BotToast.closeAllLoading();
@@ -649,10 +644,6 @@ class _RegisterControllerState extends State<RegisterController> {
       } else {
         Navigator.popUntil(context, (route) => route.isFirst);
         Navigator.pushReplacementNamed(context, NavigatorName.tabbar);
-        if (BranchioLinkConfig.instance.isNavigateToBooking) {
-          BranchioLinkConfig.instance
-              .navigateTo(NavigatorName.calendar_booking);
-        }
       }
     } catch (error) {
       if (error is Error && error.code == '5' && account != null) {
@@ -712,10 +703,6 @@ class _RegisterControllerState extends State<RegisterController> {
       } else {
         Navigator.popUntil(context, (route) => route.isFirst);
         Navigator.pushReplacementNamed(context, NavigatorName.tabbar);
-        if (BranchioLinkConfig.instance.isNavigateToBooking) {
-          BranchioLinkConfig.instance
-              .navigateTo(NavigatorName.calendar_booking);
-        }
       }
     } catch (error) {
       BotToast.closeAllLoading();

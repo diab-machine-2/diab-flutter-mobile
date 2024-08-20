@@ -167,9 +167,9 @@ class _CalendarBookingControllerState extends State<CalendarBookingController> {
                   highlightColor: R.color.transparent,
                   icon: Icon(Icons.arrow_back, color: R.color.textDark),
                   onPressed: () {
-                    Navigator.pushNamed(context, NavigatorName.tabbar);
                     CalendarBookingCubit.myCalendar = null;
                     CalendarBookingCubit.updateCount = 0;
+                    Navigator.of(context).popUntil((route) => route.isFirst);
                   }),
             ),
             Expanded(
