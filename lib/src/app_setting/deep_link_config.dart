@@ -12,15 +12,12 @@ class DeepLinkConfig {
 
   String? sharedCode;
 
-  static void setUpHandleDeepLink(
-      {required Function(String? code) onHaveLink}) {
+  static void setUpHandleDeepLink({required Function(String? code) onHaveLink}) {
     linkStream.listen((link) {
       bool haveMeetLink = _tryCaptureMeetLink(link);
       if (haveMeetLink) return;
-      if (link != null && link.startsWith("branch")) {
-        print("link=====> " + link);
-        return;
-      }
+      bool ignorePatterns = instance._branchioIgnorePatterns(link ?? "");
+      if (ignorePatterns) return;
       if (link != null &&
           !link.contains("click.diab.com.vn") &&
           !link.contains("referralCode") &&
@@ -47,6 +44,8 @@ class DeepLinkConfig {
       final String? initialLink = await getInitialLink();
       bool haveMeetLink = _tryCaptureMeetLink(initialLink);
       if (haveMeetLink) return null;
+      bool ignorePatterns = instance._branchioIgnorePatterns(initialLink ?? "");
+      if (ignorePatterns) return null;
       if (initialLink != null &&
           !initialLink.contains("click.diab.com.vn") &&
           !initialLink.contains("referralCode") &&
@@ -65,6 +64,20 @@ class DeepLinkConfig {
     if (link != null && link.contains('meet.diab.com.vn')) {
       // for e.g: https://meet.diab.com.vn/room001?p=1222
       DynamicLinkConfig.instance.progressDynamicLink(Uri.parse(link));
+      return true;
+    }
+    return false;
+  }
+
+  bool _branchioIgnorePatterns(String url) {
+    final knownPatterns = [
+      "branchdiab://",
+      "app.diab.com.vn",
+      "diabvn.app.link",
+      "diabvn-alternate.app.link",
+      "diabvn.app-test.link",
+    ];
+    if (knownPatterns.any((element) => url.contains(element))) {
       return true;
     }
     return false;

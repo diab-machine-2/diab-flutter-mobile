@@ -20,7 +20,7 @@ class BranchioLinkConfig {
   String? _endTime;
 
   void setUpHandleDeepLink() {
-    _subLink = FlutterBranchSdk.initSession().listen((data) async {
+    _subLink = FlutterBranchSdk.listSession().listen((data) async {
       print('listenDynamicLinks - DeepLink Data: $data');
       if (data['+clicked_branch_link'] == true &&
           data.containsKey("\$course")) {
