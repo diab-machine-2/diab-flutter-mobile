@@ -41,8 +41,11 @@ class BranchioLinkConfig {
     });
   }
 
-  void tryNavigateBooking() {
+  void tryNavigateBooking({bool initial = false}) async {
     if (_courseId != null) {
+      if (initial) {
+        await Future.delayed(Duration(milliseconds: 500));
+      }
       navigatorKey.currentState?.pushNamed(NavigatorName.calendar_booking,
           arguments: {'courseId': _courseId, 'endTime': _endTime});
       _resetDataLink();

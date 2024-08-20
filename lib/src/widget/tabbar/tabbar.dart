@@ -126,7 +126,7 @@ class _TabbarControllerState extends State<TabbarController>
     });
     _checkUserReferralCode();
     _checkExistZoomId();
-    BranchioLinkConfig.instance.tryNavigateBooking();
+    BranchioLinkConfig.instance.tryNavigateBooking(initial: true);
   }
 
   void _checkExistZoomId() async {
