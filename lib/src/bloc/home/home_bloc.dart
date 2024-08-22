@@ -76,6 +76,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
           // if have cache
           _cached = HomeLoaded(
             model: model,
+            utilities: this.getAllUtilities(full: false),
             activities: model.activities,
             reminders: model.reminders,
             activityLoading: false,
