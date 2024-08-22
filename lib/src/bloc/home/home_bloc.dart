@@ -34,6 +34,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   final DateFormat _reminderFormatter = DateFormat("h:mm");
 
   HomeLoaded? _cached;
+  bool _firstLoad = false;
 
   int get _currentWeek {
     if (AppSettings.userInfo?.ownPackage?.ownRoadmap?.currentWeek != null) {
@@ -66,22 +67,34 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     final client = HomeClient();
 
     int retry = 1;
+    _firstLoad = false;
     while (retry <= 10) {
       try {
         HomeModel? model;
         // Load cached home data
         if (_cached == null) {
-          // shared preference
+          // shared preference ~ 1st load
           try {
-            // if any, just ignore the error
+            // try to load from cache
             model = await AppSettings.getHome();
             if (model != null) {
-              _cached = HomeLoaded(model: model, activities: model.activities);
+              // if have cache
+              _cached = HomeLoaded(
+                model: model,
+                activities: model.activities,
+                activityLoading: false,
+                measurementLoading: false,
+                reminderLoading: false,
+              );
               yield _cached!;
             } else {
+              // first load
+              _firstLoad = true;
               yield HomeLoading(model: model);
             }
-          } catch (e) {}
+          } catch (e) {
+            _firstLoad = true;
+          }
         } else {
           // other is mem cache
           yield _cached!;
@@ -96,6 +109,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
             (_cached?.copyWith(model: home) ?? HomeLoaded(model: home)).copyWith(
           utilities: this.getAllUtilities(full: false),
           measurementLoading: false,
+          activityLoading: _firstLoad,
+          reminderLoading: _firstLoad,
         );
         yield currentState;
 
@@ -122,6 +137,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         // load lessons
         yield* _fetchLessons();
 
+        _firstLoad = false;
         _cached = state is HomeLoaded ? state as HomeLoaded : null;
 
         break; // Break the loop if successful
@@ -182,8 +198,10 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
           bool isCompletedAll = combinedActivities.isEmpty ||
               combinedActivities.every((element) => element.smartGoal.state == 1);
           bool stillLoading = isCompletedAll;
-          currentState =
-              currentState.copyWith(activities: combinedActivities, activityLoading: stillLoading);
+          currentState = currentState.copyWith(
+            activities: combinedActivities,
+            activityLoading: _firstLoad && stillLoading,
+          );
         } else {
           currentState = currentState.copyWith(activityLoading: false, activities: []);
         }
