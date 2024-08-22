@@ -231,7 +231,7 @@ class _HomeControllerState extends State<HomeController>
     await AppSettings.increaseNumberOfOpenHome();
   }
 
-  Future _firebaseSetup() async {
+  void _firebaseSetup() async {
     await TrackingManager.analytics
         .logScreenView(screenName: "home", screenClass: "HomeController");
     AppSettings.currentScreenName = 'home';

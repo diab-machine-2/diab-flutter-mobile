@@ -29,7 +29,9 @@ part 'home_bloc_event.dart';
 part 'home_bloc_state.dart';
 
 class HomeBloc extends Bloc<HomeEvent, HomeState> {
-  HomeBloc() : super(HomeInitial());
+  HomeBloc() : super(HomeInitial()) {
+    add(FetchHome());
+  }
   final timeToRetry = 10;
   final DateFormat _reminderFormatter = DateFormat("h:mm");
 
@@ -64,42 +66,39 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   }
 
   Stream<HomeState> _fetchHomes() async* {
+    // init load from cache
+    if (_cached == null) {
+      // try first load from cache (shared preference)
+      try {
+        // try to load from cache
+        final model = await AppSettings.getHome();
+        if (model != null) {
+          // if have cache
+          _cached = HomeLoaded(
+            model: model,
+            activities: model.activities,
+            reminders: model.reminders,
+            activityLoading: false,
+            measurementLoading: false,
+            reminderLoading: false,
+          );
+          yield _cached!;
+        } else {
+          // if no cache
+          _firstLoad = true;
+          yield HomeLoading(model: null);
+        }
+      } catch (e, s) {
+        // init load failed
+        TrackingManager.recordError(e, s);
+      }
+    }
+
     final client = HomeClient();
 
     int retry = 1;
-    _firstLoad = false;
-    while (retry <= 10) {
+    while (retry <= 3) {
       try {
-        HomeModel? model;
-        // Load cached home data
-        if (_cached == null) {
-          // shared preference ~ 1st load
-          try {
-            // try to load from cache
-            model = await AppSettings.getHome();
-            if (model != null) {
-              // if have cache
-              _cached = HomeLoaded(
-                model: model,
-                activities: model.activities,
-                activityLoading: false,
-                measurementLoading: false,
-                reminderLoading: false,
-              );
-              yield _cached!;
-            } else {
-              // first load
-              _firstLoad = true;
-              yield HomeLoading(model: model);
-            }
-          } catch (e) {
-            _firstLoad = true;
-          }
-        } else {
-          // other is mem cache
-          yield _cached!;
-        }
-
         // Load measurements
         final home = await client.fetchHomes();
         home.inlineMeasurements = _castInlineMeasurements(home);
@@ -116,6 +115,10 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
 
         // load reminders
         yield* _fetchReminders();
+        // set "reminders" data
+        if (state is HomeLoaded) {
+          home.reminders = (state as HomeLoaded).reminders;
+        }
 
         // load today target
         yield* _fetchActivities();

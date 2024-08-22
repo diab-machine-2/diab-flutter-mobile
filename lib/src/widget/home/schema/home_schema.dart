@@ -171,6 +171,26 @@ class HomeReminderData {
     required this.time,
     this.navigatorName,
   });
+
+  factory HomeReminderData.fromJson(Map<String, dynamic> map) {
+    return HomeReminderData(
+      id: map['id'],
+      icon: map['icon'],
+      title: map['title'],
+      time: map['time'],
+      navigatorName: map['navigatorName'],
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'icon': icon,
+      'title': title,
+      'time': time,
+      'navigatorName': navigatorName,
+    };
+  }
 }
 
 class HomeUtilityData {

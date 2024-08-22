@@ -22,6 +22,7 @@ class HomeModel {
   List<HomeMeasurementData>? measurements;
 
   List<HomeActivityData>? activities;
+  List<HomeReminderData>? reminders;
 
   HomeModel({
     required this.glucoseIndex,
@@ -38,6 +39,7 @@ class HomeModel {
     this.inlineMeasurements,
     this.measurements,
     this.activities,
+    this.reminders,
   });
 
   factory HomeModel.fromJson(Map<String, dynamic> json) {
@@ -76,6 +78,11 @@ class HomeModel {
           : (json['activities'] as List)
               .map((item) => HomeActivityData.fromJson(item as Map<String, dynamic>))
               .toList(),
+      reminders: json['reminders'] == null
+          ? null
+          : (json['reminders'] as List)
+              .map((item) => HomeReminderData.fromJson(item as Map<String, dynamic>))
+              .toList(),
     );
   }
 
@@ -95,6 +102,7 @@ class HomeModel {
       'inlineMeasurements': inlineMeasurements?.map((e) => e.toJson()).toList(),
       'measurements': measurements?.map((e) => e.toJson()).toList(),
       'activities': activities?.map((e) => e.toJson()).toList(),
+      'reminders': reminders?.map((e) => e.toJson()).toList(),
     };
   }
 
