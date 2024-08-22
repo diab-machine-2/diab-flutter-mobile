@@ -29,6 +29,7 @@ class _ConnectionInstructionsControllerState
     extends State<ConnectionInstructionsController> {
   MethodChannel _channel = const MethodChannel('iBleSdk');
   EventChannel messageChannel = const EventChannel('eventChannelStreamiBle');
+  late StreamSubscription _subscription;
 
   String userManual = '';
 
@@ -46,12 +47,12 @@ class _ConnectionInstructionsControllerState
   @override
   void initState() {
     super.initState();
-    initSDK();
-    loadHowToUse();
+    _initSDK();
+    _loadHowToUse();
   }
 
-  initSDK() async {
-    messageChannel.receiveBroadcastStream().listen((result) async {
+  void _initSDK() async {
+    _subscription = messageChannel.receiveBroadcastStream().listen((result) async {
       final String event = result['event'];
       final mapData = result['data'];
       List<Map<String, String>> data = [];
@@ -108,7 +109,7 @@ class _ConnectionInstructionsControllerState
         }
       } else if (event == 'get_data_success' && data.length != 0) {
         BotToast.closeAllLoading();
-        stopScan();
+        _stopScan();
         if (listDataKey.currentState != null) {
           listDataKey.currentState!.glucoseData += data;
           listDataKey.currentState!.setState(() {});
@@ -156,17 +157,17 @@ class _ConnectionInstructionsControllerState
 
     final savedDevices = AppSettings.getNiproDevices();
     if (savedDevices.length != 0) {
-      showPopupStartScan();
+      _showPopupStartScan();
     }
   }
 
-  startScan() {
+  void _startScan() {
     _timer?.cancel();
     _timer = new Timer.periodic(
       Duration(seconds: 1),
       (Timer timer) {
         if (timer.tick > 60) {
-          stopScan();
+          _stopScan();
         }
       },
     );
@@ -174,13 +175,13 @@ class _ConnectionInstructionsControllerState
     _channel.invokeMethod('start_scan');
   }
 
-  stopScan() {
+  void _stopScan() {
     _timer?.cancel();
     isScanning = true;
     _channel.invokeMethod('stop_scan');
   }
 
-  loadHowToUse() async {
+  void _loadHowToUse() async {
     try {
       BotToast.showLoading();
       userManual = await GlucoseClient().fetchUserManual();
@@ -195,6 +196,7 @@ class _ConnectionInstructionsControllerState
   void dispose() {
     _timer?.cancel();
     //_channel.invokeMethod('destroy_sdk');
+    _subscription.cancel();
     super.dispose();
   }
 
@@ -366,7 +368,7 @@ class _ConnectionInstructionsControllerState
             ),
             GestureDetector(
               onTap: () async {
-                showPopupStartScan();
+                _showPopupStartScan();
               },
               child: SafeArea(
                 top: false,
@@ -397,7 +399,7 @@ class _ConnectionInstructionsControllerState
     );
   }
 
-  showPopupStartScan() async {
+  void _showPopupStartScan() async {
     final String blueToothPermission =
         await _channel.invokeMethod('request_permission');
 
@@ -410,7 +412,7 @@ class _ConnectionInstructionsControllerState
     } else if (!locationGranted) {
       Message.showToastMessage(context, 'Bạn chưa bật vị trí');
     } else {
-      startScan();
+      _startScan();
       final result = await showModalBottomSheet(
           shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.vertical(top: Radius.circular(15))),
@@ -421,18 +423,18 @@ class _ConnectionInstructionsControllerState
               key: listDevicesKey,
               devices: devices,
               request: () {
-                startScan();
+                _startScan();
               }));
       if (result != null) {
         device = result;
         BotToast.showLoading();
         _channel.invokeMethod('connect', device!['address']);
       }
-      stopScan();
+      _stopScan();
     }
   }
 
-  _showDialogConnectFaild(BuildContext context) {
+  void _showDialogConnectFaild(BuildContext context) {
     showDialog(
       context: context,
       builder: (context) {

@@ -21,12 +21,14 @@ class ListDevicesState extends State<ListDevices> {
   void initState() {
     devices = widget.devices;
     super.initState();
-    getDevices();
+    _getDevices();
   }
 
-  getDevices() async {
+  void _getDevices() async {
     savedDevices = AppSettings.getNiproDevices();
-    setState(() {});
+    if (mounted) {
+      setState(() {});
+    }
   }
 
   @override
