@@ -16,15 +16,15 @@ class _ConnectDeviceAppState extends State<ConnectDeviceApp> {
 
   @override
   void initState() {
-    onLoaded();
     super.initState();
+    _onLoaded();
   }
 
-  onLoaded() async {
+  void _onLoaded() async {
     bool? _hasPermission = await AppStorages.getHealthAppPermission();
-    setState(() {
-      hasPermission = _hasPermission ?? false;
-    });
+    hasPermission = _hasPermission ?? false;
+    if (!mounted) return;
+    setState(() {});
   }
 
   @override

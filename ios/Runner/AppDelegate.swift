@@ -90,14 +90,16 @@ import BranchSDK
     }
     
     private func initIBle() {
-
         let iManager = iDeviceManager.shared
         iManager.m_delegate = self
+        // for setting internal data as base
         iManager.initialize()
-        iManager.bPrintOn = false
+        // to set the option for showing internal data log.
+        iManager.bPrintOn = true
+        // for converting glucose value by specific unit (mg/dL, mmol/L) - Int (0: mg/dL, 1: mmol/L)
         iManager.setUnit(0)
-        let manager = iBTManager.shared
-        manager.m_delegate = self
+        // to set the callback service for managing the received data.
+        iBTManager.shared.m_delegate = self
     }
     
     private func startScan() {
@@ -118,6 +120,7 @@ import BranchSDK
             selectedDevice = device
             DispatchQueue.main.async {
                 //iBTManager.shared.disconnect(device)
+                // to re-initialize the internal data
                 iDeviceManager.shared.resetSettings()
                 //iDeviceManager.shared.setCurrentPeripheral(iBTManager.shared.currManager)
                 iBTManager.shared.connect(device: device)
@@ -223,10 +226,20 @@ extension AppDelegate: iBTManagerDelegate {
 
 // ================================================================================================================ by isens
 extension AppDelegate: iDeviceManagerDelegate {
+    // Definition
+    // public var callType: ibtFramework.TaskType
+    // - with_idle: normal process
+    // - total_count: request total count of saved data
+    // - download_all: request all data from device
+    // - download_after: request data from device with specific range
+    // - sync_time: request time synchronization
+    
+    // When the error has occurred, send a notification
     func receivedError(_ str: String) {
         AppDelegate.sink!(["event":"connect_error", "data": []])
     }
     
+    // When the user wants to make disconnect or error has occurred
     func makeDisconnect() {
 //        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
 //            iBTManager.shared.disconnect()
@@ -234,10 +247,12 @@ extension AppDelegate: iDeviceManagerDelegate {
 //        AppDelegate.sink!(["event":"device_disconnect", "data": []])
     }
     
+    // The FW Version of device is too old
     func receivedLowVersion(_ bCheck: Bool) {
         //AppDelegate.sink!(["event":"receivedLowVersion", "data": []])
     }
     
+    // When it receives the information of device (device name, Manufacture)
     func receivedManufactureName(_ name: String, _ productName: String) {
         var fullName = productName.count > 0 ? productName : "failed!"
         fullName += " by "
@@ -245,17 +260,18 @@ extension AppDelegate: iDeviceManagerDelegate {
         AppDelegate.sink!(["event":fullName, "data": []])
     }
     
+    // When it receives the information of revision version
     func receivedSWRevision(_ version: String ) {
         //AppDelegate.sink!(["event": (version.count > 0 ? version : "failed!"), "data": []])
     }
     
+    // When it receives the information of serial number
     func receivedSerialNumber(_ number: String) {
         //AppDelegate.sink!(["event": "receivedSerialNumber", "data": []])
         iBTManager.shared.procType = .connected
-        
-        
     }
     
+    // When the device has connected
     func completeBonded() {
 //        iBTManager.shared.procType = .connected
 //        //AppDelegate.sink!(["event": "device_connected", "data": []])
@@ -277,11 +293,13 @@ extension AppDelegate: iDeviceManagerDelegate {
         }
     }
     
+    // When it receives the total count of data
     func receivedTotalCount(_ count: Int, _ sequence: String) {
         //AppDelegate.sink!(["event": (count > 0 ? "\(count)" : "failed"), "data": []])
         
     }
     
+    // When it receives the measured data
     func receivedGlucose(_ obj: RecordInfo?) {
         guard let data = obj else { return }
         glucoseData?.append(data)
@@ -295,10 +313,13 @@ extension AppDelegate: iDeviceManagerDelegate {
 
     }
     
+    // When it receives the context data, (input data by user)
+    // In this case, it shows only meal type or ketone info.
     func receivedContext(_ obj: RecordInfo?) {
         AppDelegate.sink!(["event": "receivedContext", "data": []])
     }
     
+    // When it receives the response for time sync
     func receivedSyncTime(_ str: String) {
 
         if str.count > 0 {
@@ -312,15 +333,15 @@ extension AppDelegate: iDeviceManagerDelegate {
     }
     
     func receivedNoRecords() {
-                var data: [[String: String]?] = []
-                glucoseData?.forEach({ recordInfo in
-                    let dateFormatter = DateFormatter()
-                    dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
-                    let date = dateFormatter.date(from: recordInfo.date)
-                    let interval: String = String(Int(date?.timeIntervalSince1970 ?? 0))
-                    data.append(["glucose": String(recordInfo.glucose), "date": interval])
-                })
-                AppDelegate.sink!(["event": "get_data_success", "data": data])
+        var data: [[String: String]?] = []
+        glucoseData?.forEach({ recordInfo in
+            let dateFormatter = DateFormatter()
+            dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
+            let date = dateFormatter.date(from: recordInfo.date)
+            let interval: String = String(Int(date?.timeIntervalSince1970 ?? 0))
+            data.append(["glucose": String(recordInfo.glucose), "date": interval])
+        })
+        AppDelegate.sink!(["event": "get_data_success", "data": data])
 //        DispatchQueue.main.async {
 //
 //           iBTManager.shared.disconnect()
@@ -334,7 +355,6 @@ extension AppDelegate: iDeviceManagerDelegate {
 //            iBTManager.shared.procType = .None
 //        }
         iDeviceManager.shared.operateTimer(false)
-                
     }
     
     
