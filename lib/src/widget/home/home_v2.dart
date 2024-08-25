@@ -73,6 +73,7 @@ class _HomeControllerState extends State<HomeController>
   final String _screenName = "home";
 
   int page = 1;
+  bool _isDisplayedWelcome = false;
 
   var user = AppSettings.userInfo;
   var popupStore = PopupStore;
@@ -400,7 +401,8 @@ class _HomeControllerState extends State<HomeController>
           if (state is HomeLoaded) {
             model = state.model;
             stateLoaded = state;
-            if (false == model?.packageAccount?.isDisplayedWelcome) {
+            if (false == model?.packageAccount?.isDisplayedWelcome && !_isDisplayedWelcome) {
+              _isDisplayedWelcome = true;
               if (AppSettings.isDisplayedWelcome == false) {
                 Future.delayed(Duration.zero, () async {
                   _showWelcomeDialog(model?.packageAccount);
