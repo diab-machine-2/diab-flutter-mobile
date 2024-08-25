@@ -34,21 +34,22 @@ class NiproBloc extends Bloc<NiproEvent, NiproState> {
   final List<NiproDevice> _savedDevices = [];
   final List<NiproDevice> _devices = [];
 
-  NiproBloc() : super(NiproStateInitial()) {
-    final savedDevices = AppSettings.getNiproDevices();
-    if (savedDevices.length > 0) {
-      _savedDevices.addAll(savedDevices
-          .map((e) => NiproDevice(address: e['address']!, name: e['name']!, saved: true))
-          .toList());
-      _devices.addAll(_savedDevices);
-    }
-  }
+  NiproBloc() : super(NiproStateInitial());
 
   @override
   Stream<NiproState> mapEventToState(
     NiproEvent event,
   ) async* {
-    if (event is NiproEventStartScan) {
+    if (event is NiproEventFetchSavedDevice) {
+      final savedDevices = AppSettings.getNiproDevices();
+      if (savedDevices.length > 0) {
+        _savedDevices.addAll(savedDevices
+            .map((e) => NiproDevice(address: e['address']!, name: e['name']!, saved: true))
+            .toList());
+        _devices.addAll(_savedDevices);
+        yield NiproStateListDevice(devices: _devices, isScanning: false);
+      }
+    } else if (event is NiproEventStartScan) {
       _devices.clear();
       _devices.addAll(_savedDevices);
       _isAutoConnect = event.isAutoConnect;

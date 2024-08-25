@@ -3,6 +3,10 @@ part of 'nipro_bloc.dart';
 @immutable
 abstract class NiproEvent {}
 
+class NiproEventFetchSavedDevice extends NiproEvent {
+  NiproEventFetchSavedDevice();
+}
+
 class NiproEventStartScan extends NiproEvent {
   final bool isAutoConnect;
   NiproEventStartScan({this.isAutoConnect = false});
