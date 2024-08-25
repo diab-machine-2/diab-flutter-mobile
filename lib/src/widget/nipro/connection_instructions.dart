@@ -12,12 +12,10 @@ import 'package:medical/src/widget/HbA1C/widget/description/description_detail.d
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
-import 'package:medical/src/widget/nipro/list_data.dart';
 import 'package:medical/src/widget/nipro/list_devices.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:timelines/timelines.dart';
 import 'package:app_settings/app_settings.dart' as Settings;
-import 'dart:io' show Platform;
 
 class ConnectionInstructionsController extends StatefulWidget {
   final bool? connectOnly;
@@ -49,15 +47,7 @@ class _ConnectionInstructionsControllerState extends State<ConnectionInstruction
       } else if (state is NiproStateDeviceData) {
         // Download data success
         BotToast.closeAllLoading();
-        showModalBottomSheet(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.vertical(top: Radius.circular(15)),
-          ),
-          backgroundColor: R.color.white,
-          context: context,
-          isScrollControlled: true,
-          builder: (context) => ListData(glucoseData: state.glucoseData),
-        );
+        bloc.showListData(context, state.glucoseData);
       }
     });
 
@@ -281,35 +271,29 @@ class _ConnectionInstructionsControllerState extends State<ConnectionInstruction
   }
 
   void _showPopupStartScan() async {
-    String blueToothPermission = await BlocProvider.of<NiproBloc>(context).requestPermission();
+    String? anyError = await BlocProvider.of<NiproBloc>(context).checkAndRequestPermission();
 
-    final locationGranted = Platform.isIOS
-        ? true
-        : (await Permission.location.isGranted &&
-            await Permission.location.serviceStatus.isEnabled);
-    if (blueToothPermission != 'ble_already') {
-      Message.showToastMessage(context, 'Bạn chưa bật Bluetooth');
-    } else if (!locationGranted) {
-      Message.showToastMessage(context, 'Bạn chưa bật vị trí');
-    } else {
-      _startScan();
-      final result = await showModalBottomSheet(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.vertical(top: Radius.circular(15)),
-          ),
-          backgroundColor: R.color.white,
-          context: context,
-          isScrollControlled: true,
-          builder: (context) => ListDevices(request: () {
-                _startScan();
-              }));
-      if (result != null && result is NiproDevice) {
-        BotToast.showLoading();
-        BlocProvider.of<NiproBloc>(context)
-            .add(NiproEventConnectDevice(device: result, connectOnly: widget.connectOnly!));
-      }
-      _stopScan();
+    if (anyError != null) {
+      Message.showToastMessage(context, anyError);
+      return;
     }
+
+    _startScan();
+    final result = await showModalBottomSheet(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(15)),
+      ),
+      backgroundColor: R.color.white,
+      context: context,
+      isScrollControlled: true,
+      builder: (context) => ListDevices(request: _startScan),
+    );
+    if (result != null && result is NiproDevice) {
+      BotToast.showLoading();
+      BlocProvider.of<NiproBloc>(context)
+          .add(NiproEventConnectDevice(device: result, connectOnly: widget.connectOnly!));
+    }
+    _stopScan();
   }
 
   void _showDialogConnectFaild(BuildContext context) {

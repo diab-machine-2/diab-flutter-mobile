@@ -1,15 +1,22 @@
 // ignore_for_file: invalid_use_of_visible_for_testing_member
 
 import 'dart:async';
+import 'dart:io';
 
+import 'package:bot_toast/bot_toast.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:medical/src/app.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/bloc/nipro/model/glucose_data.dart';
 import 'package:medical/src/bloc/nipro/model/nipro_device.dart';
 import 'package:medical/src/repo/glucose/glucose_client.dart';
-import 'package:meta/meta.dart';
+import 'package:medical/src/widget/helper/tracking_manager.dart';
+import 'package:medical/src/widget/nipro/list_data.dart';
+import 'package:medical/src/widget/nipro/roche_connection/roche_connection_view.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 part 'nipro_bloc_event.dart';
 part 'nipro_bloc_state.dart';
@@ -17,10 +24,13 @@ part 'nipro_bloc_state.dart';
 class NiproBloc extends Bloc<NiproEvent, NiproState> {
   final MethodChannel _channel = const MethodChannel('iBleSdk');
   final EventChannel _messageChannel = const EventChannel('eventChannelStreamiBle');
-  late StreamSubscription _subscription;
+  StreamSubscription? _subscription;
+  bool _initialized = false;
 
   NiproDevice? _connectedDevice;
   bool _connectOnly = false;
+  bool _isAutoConnect = false;
+  bool _isAutoConnectFoundDevice = false;
   final List<NiproDevice> _savedDevices = [];
   final List<NiproDevice> _devices = [];
 
@@ -32,6 +42,59 @@ class NiproBloc extends Bloc<NiproEvent, NiproState> {
           .toList());
       _devices.addAll(_savedDevices);
     }
+  }
+
+  @override
+  Stream<NiproState> mapEventToState(
+    NiproEvent event,
+  ) async* {
+    if (event is NiproEventStartScan) {
+      _devices.clear();
+      _devices.addAll(_savedDevices);
+      _isAutoConnect = event.isAutoConnect;
+      _isAutoConnectFoundDevice = false;
+      _channel.invokeMethod('start_scan');
+      yield NiproStateListDevice(devices: _devices, isScanning: true);
+    } else if (event is NiproEventStopScan) {
+      _channel.invokeMethod('stop_scan');
+      yield NiproStateListDevice(devices: _devices, isScanning: false);
+    } else if (event is NiproEventConnectDevice) {
+      _connectedDevice = event.device;
+      _connectOnly = event.connectOnly;
+      _channel.invokeMethod('connect', event.device.address);
+      yield NiproStateConnectingDevice(device: event.device);
+    }
+  }
+
+  Future<String> requestPermission() async {
+    return await _channel.invokeMethod('request_permission');
+  }
+
+  // Return any error?
+  Future<String?> checkAndRequestPermission() async {
+    String blueToothPermission = await requestPermission();
+
+    final locationGranted = Platform.isIOS
+        ? true
+        : (await Permission.location.isGranted &&
+            await Permission.location.serviceStatus.isEnabled);
+    if (blueToothPermission != 'ble_already') {
+      return 'Bạn chưa bật Bluetooth';
+    } else if (!locationGranted) {
+      return 'Bạn chưa bật vị trí';
+    }
+    // ok case
+    return null;
+  }
+
+  void initialize() {
+    // check for initialized to prevent multiple call
+    if (_initialized) {
+      return;
+    }
+    _initialized = true;
+
+    // do init
     _subscription = _messageChannel.receiveBroadcastStream().listen((result) async {
       final String event = result['event'];
       final mapData = result['data'];
@@ -48,7 +111,21 @@ class NiproBloc extends Bloc<NiproEvent, NiproState> {
           print('event: $event\ndata: $data');
           break;
         case 'new_device':
-          // TODO:
+          if (_isAutoConnect) {
+            if (_isAutoConnectFoundDevice) {
+              return;
+            }
+            if (data.length > 0) {
+              int index = _savedDevices.indexWhere(
+                (element) => element.address == data[0]['address'],
+              );
+              if (index != -1) {
+                _isAutoConnectFoundDevice = true;
+                add(NiproEventConnectDevice(device: _savedDevices[index], connectOnly: false));
+              }
+            }
+            return;
+          }
           // parse to NiproDevice
           for (int i = 0; i < data.length; i++) {
             if (_devices.indexWhere((element) => element.address == data[i]['address']) == -1) {
@@ -99,7 +176,6 @@ class NiproBloc extends Bloc<NiproEvent, NiproState> {
         case 'device_disconnect':
         case 'connect_error':
         case 'device_not_connect':
-          // TODO:
           _devices.clear();
           if (event == 'connect_error' || event == 'device_not_connect') {
             // emit error
@@ -117,33 +193,6 @@ class NiproBloc extends Bloc<NiproEvent, NiproState> {
           break;
       }
     });
-  }
-
-  @override
-  Stream<NiproState> mapEventToState(
-    NiproEvent event,
-  ) async* {
-    if (event is NiproEventStartScan) {
-      _devices.clear();
-      _devices.addAll(_savedDevices);
-      _channel.invokeMethod('start_scan');
-      yield NiproStateListDevice(devices: _devices, isScanning: true);
-    } else if (event is NiproEventStopScan) {
-      _channel.invokeMethod('stop_scan');
-      yield NiproStateListDevice(devices: _devices, isScanning: false);
-    } else if (event is NiproEventConnectDevice) {
-      _connectedDevice = event.device;
-      _connectOnly = event.connectOnly;
-      _channel.invokeMethod('connect', event.device.address);
-      yield NiproStateConnectingDevice(device: event.device);
-    }
-  }
-
-  Future<String> requestPermission() async {
-    return await _channel.invokeMethod('request_permission');
-  }
-
-  void initialize() {
     _channel.invokeMethod('init_IBle_Sdk');
   }
 
@@ -165,9 +214,102 @@ class NiproBloc extends Bloc<NiproEvent, NiproState> {
     return result;
   }
 
+  Future<bool> submitData(List<GlucoseData> input) {
+    return GlucoseClient().postGlucoseInputs(input.map((e) => e.toJson()).toList());
+  }
+
+  void showListData(BuildContext context, List<GlucoseData> glucoseData) {
+    showModalBottomSheet(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(15)),
+      ),
+      backgroundColor: Colors.white,
+      context: context,
+      isScrollControlled: true,
+      builder: (context) => ListData(glucoseData: glucoseData),
+    );
+  }
+
   @override
   Future<void> close() {
-    _subscription.cancel();
+    _subscription?.cancel();
     return super.close();
+  }
+
+  // Nipro auto connect & get data
+  void tryAutoConnect() async {
+    void fallBackNavigate() {
+      navigatorKey.currentState!.push(
+        MaterialPageRoute(builder: (BuildContext _) => RocheConnectionView()),
+      );
+    }
+
+    final NiproBloc niproBloc = this;
+    // start connect within 5s
+    if (!niproBloc.haveSavedDevice()) {
+      fallBackNavigate();
+      return;
+    }
+
+    StreamSubscription? sub;
+    bool haveDiscoverDevice = false;
+    bool haveDiscoverData = false;
+    final int timeout = 5;
+    try {
+      BotToast.showLoading();
+      // init
+      niproBloc.initialize();
+      await Permission.location.request();
+      await Permission.bluetoothScan.request();
+      await Permission.bluetoothConnect.request();
+      // listen for event
+      sub = niproBloc.stream.listen((state) {
+        if (state is NiproStateConnectingDevice) {
+          haveDiscoverDevice = true;
+          return;
+        }
+        // clear resource
+        if (state is NiproStateFailure || state is NiproStateDeviceData) {
+          BotToast.closeAllLoading();
+          sub?.cancel();
+          niproBloc.add(NiproEventStopScan());
+        }
+        // then navigate
+        if (state is NiproStateFailure) {
+          fallBackNavigate();
+        } else if (state is NiproStateDeviceData) {
+          haveDiscoverData = true;
+          niproBloc.showListData(navigatorKey.currentContext!, state.glucoseData);
+        }
+      });
+
+      String? anyError = await niproBloc.checkAndRequestPermission();
+      if (anyError == null) {
+        niproBloc.add(NiproEventStartScan(isAutoConnect: true));
+        await Future.delayed(Duration(seconds: timeout));
+      }
+    } catch (e, s) {
+      TrackingManager.recordError(e, s);
+    } finally {
+      if (!haveDiscoverDevice) {
+        sub?.cancel();
+        BotToast.closeAllLoading();
+        niproBloc.add(NiproEventStopScan());
+        fallBackNavigate();
+      } else {
+        // Connecting device
+        if (!haveDiscoverData) {
+          // wait for 5s
+          await Future.delayed(Duration(seconds: timeout));
+          // then re-check
+          if (!haveDiscoverData) {
+            sub?.cancel();
+            BotToast.closeAllLoading();
+            niproBloc.add(NiproEventStopScan());
+            fallBackNavigate();
+          }
+        }
+      }
+    }
   }
 }

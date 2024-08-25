@@ -4,7 +4,8 @@ part of 'nipro_bloc.dart';
 abstract class NiproEvent {}
 
 class NiproEventStartScan extends NiproEvent {
-  NiproEventStartScan();
+  final bool isAutoConnect;
+  NiproEventStartScan({this.isAutoConnect = false});
 }
 
 class NiproEventStopScan extends NiproEvent {

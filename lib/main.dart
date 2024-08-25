@@ -57,7 +57,7 @@ Future<void> main() async {
   Bloc.observer = SimpleBlocObserver();
   //WidgetsFlutterBinding.ensureInitialized();
 
-  WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+  WidgetsFlutterBinding.ensureInitialized();
 
   // config health
   Health().configure(useHealthConnectIfAvailable: true);
