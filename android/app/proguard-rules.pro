@@ -17,3 +17,17 @@
 -keep class com.zing.zalo.**{ *; }
 -keep enum com.zing.zalo.**{ *; }
 -keep interface com.zing.zalo.**{ *; }
+
+-dontwarn com.crashlytics.android.ndk.CrashlyticsNdk
+-dontwarn com.google.android.exoplayer2.trackselection.TrackSelectionOverrides$Builder
+-dontwarn com.google.android.exoplayer2.trackselection.TrackSelectionOverrides$TrackSelectionOverride
+-dontwarn com.google.android.exoplayer2.trackselection.TrackSelectionOverrides
+-dontwarn com.google.api.client.http.GenericUrl
+-dontwarn com.google.api.client.http.HttpHeaders
+-dontwarn com.google.api.client.http.HttpRequest
+-dontwarn com.google.api.client.http.HttpRequestFactory
+-dontwarn com.google.api.client.http.HttpResponse
+-dontwarn com.google.api.client.http.HttpTransport
+-dontwarn com.google.api.client.http.javanet.NetHttpTransport$Builder
+-dontwarn com.google.api.client.http.javanet.NetHttpTransport
+-dontwarn org.joda.time.Instant

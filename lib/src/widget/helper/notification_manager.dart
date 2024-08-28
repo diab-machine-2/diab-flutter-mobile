@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:device_info/device_info.dart';
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:html/parser.dart';
@@ -229,7 +229,7 @@ class NotificationManager {
         final AndroidDeviceInfo androidDeviceInfo = await info.androidInfo;
         deviceInformation = {
           'uuid': androidDeviceInfo.id,
-          'androidId': androidDeviceInfo.androidId,
+          'androidId': androidDeviceInfo.id,
           'board': androidDeviceInfo.board,
           'bootloader': androidDeviceInfo.bootloader,
           'brand': androidDeviceInfo.brand,

@@ -49,7 +49,11 @@ class _ConditionWidgetState extends State<ConditionWidget> {
   }
 
   Future<void> _checkDeviceBluetoothIsOn() async {
-    bool _isBlueOn = await FlutterBluePlus.instance.isOn;
+    bool _isBlueOn = false;
+    try {
+      final state = await FlutterBluePlus.adapterState.first;
+      _isBlueOn = state == BluetoothAdapterState.on;
+    } catch (e) {}
     setState(() {
       isBlueOn = _isBlueOn;
     });
@@ -57,12 +61,11 @@ class _ConditionWidgetState extends State<ConditionWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final _btInstance = FlutterBluePlus.instance;
-    return StreamBuilder<BluetoothState>(
-        stream: _btInstance.state,
-        initialData: BluetoothState.unknown,
+    return StreamBuilder<BluetoothAdapterState>(
+        stream: FlutterBluePlus.adapterState,
+        initialData: BluetoothAdapterState.unknown,
         builder: (context, snapshot) {
-          bool isDiviceOn = snapshot.data == BluetoothState.on || isBlueOn;
+          bool isDiviceOn = snapshot.data == BluetoothAdapterState.on || isBlueOn;
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -122,9 +125,10 @@ class _ConditionWidgetState extends State<ConditionWidget> {
                             GestureDetector(
                               onTap: () async {
                                 if (Platform.isAndroid) {
-                                  FlutterBluePlus.instance.turnOn();
+                                  FlutterBluePlus.turnOn();
                                 } else {
-                                  Settings.AppSettings.openBluetoothSettings();
+                                  Settings.AppSettings
+                                      .openAppSettings(type: Settings.AppSettingsType.bluetooth);
                                 }
                               },
                               child: Text(

@@ -145,7 +145,7 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
           if (device != null) {
             await device!.disconnect();
           }
-          await FlutterBluePlus.instance.stopScan();
+          await FlutterBluePlus.stopScan();
           Navigator.pop(context);
         },
         child: Container(
@@ -477,7 +477,7 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
               setState(() {
                 appStatus = AppStatus.isScanning;
               });
-              FlutterBluePlus.instance
+              FlutterBluePlus
                   .startScan(timeout: const Duration(seconds: 25));
             },
           ),
@@ -548,18 +548,18 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
 
   startScan() async {
     List<BluetoothDevice> connectedDevices =
-        await FlutterBluePlus.instance.connectedDevices;
+        await FlutterBluePlus.connectedDevices;
     connectedDevices.forEach((element) {
       element.disconnect();
     });
 
-    FlutterBluePlus.instance.startScan(timeout: const Duration(seconds: 25));
-    FlutterBluePlus.instance.scanResults.listen((scanResultList) {
+    FlutterBluePlus.startScan(timeout: const Duration(seconds: 25));
+    FlutterBluePlus.scanResults.listen((scanResultList) {
       if (!deviceFound && appStatus == AppStatus.isScanning) {
         connectToAvailableDevice(scanResultList);
       }
     });
-    FlutterBluePlus.instance.isScanning.listen((event) {
+    FlutterBluePlus.isScanning.listen((event) {
       if (event == false && appStatus == AppStatus.isScanning) {
         appStatus = AppStatus.isNoDeviceFound;
       }
@@ -574,7 +574,7 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
         connectDevice(result.device);
         device = result.device;
         appStatus = AppStatus.isConnecting;
-        await FlutterBluePlus.instance.stopScan();
+        await FlutterBluePlus.stopScan();
         return;
       }
     });

@@ -30,7 +30,7 @@ part 'healthApp_bloc_state.dart';
 
 class HealthAppBloc extends Bloc<HealthAppEvent, HealthAppState> {
   HealthAppBloc() : super(HealthAppState());
-  HealthFactory health = HealthFactory();
+  Health health = Health();
   final client = WeightClient();
   final stepRepository = StepRepository();
   final glucoseClient = GlucoseClient();
@@ -82,16 +82,16 @@ class HealthAppBloc extends Bloc<HealthAppEvent, HealthAppState> {
     List<SyncSystolicAndDiastolicModel> dataSync = [];
 
     List<HealthDataPoint> bloodPressureSystolic =
-        await health.getHealthDataFromTypes(dateFrom, dateTo, [
+        await health.getHealthDataFromTypes(startTime: dateFrom, endTime: dateTo, types: [
       HealthDataType.BLOOD_PRESSURE_SYSTOLIC,
     ]);
     List<HealthDataPoint> bloodPressureDiastolic =
-        await health.getHealthDataFromTypes(dateFrom, dateTo, [
+        await health.getHealthDataFromTypes(startTime: dateFrom, endTime: dateTo, types: [
       HealthDataType.BLOOD_PRESSURE_DIASTOLIC,
     ]);
 
     List<HealthDataPoint> healthRateList =
-        await health.getHealthDataFromTypes(dateFrom, dateTo, [
+        await health.getHealthDataFromTypes(startTime: dateFrom, endTime: dateTo, types: [
       HealthDataType.HEART_RATE,
     ]);
 
@@ -241,7 +241,7 @@ class HealthAppBloc extends Bloc<HealthAppEvent, HealthAppState> {
   syncStepByDateV2(DateTime dateFrom, DateTime dateTo,
       {StepItemModel? latestStep}) async {
     List<HealthDataPoint> steps = await health
-        .getHealthDataFromTypes(dateFrom, dateTo, [HealthDataType.STEPS]);
+        .getHealthDataFromTypes(startTime: dateFrom, endTime: dateTo, types: [HealthDataType.STEPS]);
     if (steps.isNotEmpty) {
       List<RequestSyncStepModel> stepCollected = [];
       for (int i = 0; i < steps.length; i++) {
@@ -277,7 +277,7 @@ class HealthAppBloc extends Bloc<HealthAppEvent, HealthAppState> {
             value: newValue,
             totalMinute: newTotalMinute,
             platform:
-                steps.first.platform == PlatformType.IOS ? 'ios' : 'android',
+                steps.first.sourcePlatform == HealthPlatformType.appleHealth ? 'ios' : 'android',
           );
           stepCollected.add(requestSyncStepModel);
         } else {
@@ -315,7 +315,7 @@ class HealthAppBloc extends Bloc<HealthAppEvent, HealthAppState> {
               // get min move of this day
               List<HealthDataPoint> minutes = await health
                   .getHealthDataFromTypes(
-                      start, end, [HealthDataType.MOVE_MINUTES]);
+                      startTime: start, endTime: end, types: [HealthDataType.MOVE_MINUTES]);
               // get total value of this day
               int totalMinuteValue = 0;
               for (HealthDataPoint minute in minutes) {
@@ -372,7 +372,7 @@ class HealthAppBloc extends Bloc<HealthAppEvent, HealthAppState> {
         999, // millisecond
         999999); // microsecond
     List<HealthDataPoint> steps = await health
-        .getHealthDataFromTypes(dateFrom, dateTo, [HealthDataType.STEPS]);
+        .getHealthDataFromTypes(startTime: dateFrom, endTime: dateTo, types: [HealthDataType.STEPS]);
 
     if (steps.isNotEmpty) {
       List<RequestSyncStepModel> stepCollected = [];
@@ -409,7 +409,7 @@ class HealthAppBloc extends Bloc<HealthAppEvent, HealthAppState> {
             value: newValue,
             totalMinute: newTotalMinute,
             platform:
-                steps.first.platform == PlatformType.IOS ? 'ios' : 'android',
+                steps.first.sourcePlatform == HealthPlatformType.appleHealth ? 'ios' : 'android',
           );
           stepCollected.add(requestSyncStepModel);
         } else {
@@ -484,12 +484,12 @@ class HealthAppBloc extends Bloc<HealthAppEvent, HealthAppState> {
     }
 
     List<HealthDataPoint> weightList =
-        await health.getHealthDataFromTypes(dateFrom, dateTo, [
+        await health.getHealthDataFromTypes(startTime: dateFrom, endTime: dateTo, types: [
       HealthDataType.WEIGHT,
     ]);
 
     List<HealthDataPoint> heightList =
-        await health.getHealthDataFromTypes(dateFrom, dateTo, [
+        await health.getHealthDataFromTypes(startTime: dateFrom, endTime: dateTo, types: [
       HealthDataType.HEIGHT,
     ]);
 
@@ -586,7 +586,7 @@ class HealthAppBloc extends Bloc<HealthAppEvent, HealthAppState> {
     }
 
     List<HealthDataPoint> dataSync = await health.getHealthDataFromTypes(
-        dateFrom, dateTo, [HealthDataType.BLOOD_GLUCOSE]);
+        startTime: dateFrom, endTime: dateTo, types: [HealthDataType.BLOOD_GLUCOSE]);
 
     if (dataSync.isNotEmpty) {
       // Bắt đầu sync
