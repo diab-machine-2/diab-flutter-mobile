@@ -2162,7 +2162,7 @@ packages:
     description:
       path: "."
       ref: HEAD
-      resolved-ref: "7ad223405ff88a82531bc5b1489475ab78d4cf44"
+      resolved-ref: "03f9bdf223a041cdbc6e0a660d61ee41856e8fd4"
       url: "https://github.com/ngocphuc1612/zalo_flutter"
     source: git
     version: "0.0.6"
