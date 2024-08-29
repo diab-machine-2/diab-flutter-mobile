@@ -279,7 +279,7 @@ class _ConnectionInstructionsControllerState
                                                     'Bluetooth đã được bật');
                                               } else {
                                                 Settings.AppSettings
-                                                    .openBluetoothSettings();
+                                                    .openAppSettings(type: Settings.AppSettingsType.bluetooth);
                                               }
                                             },
                                             child: Text('Bật Bluetooth',

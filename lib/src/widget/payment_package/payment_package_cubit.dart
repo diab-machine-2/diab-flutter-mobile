@@ -32,19 +32,16 @@ class PaymentPackageCubit extends Cubit<PaymentPackageState> {
 
   // Platform messages are asynchronous, so we initialize in an async method.
   Future<void> initPlatformState() async {
-    _connectionSubscription =
-        FlutterInappPurchase.connectionUpdated.listen((connected) {});
+    _connectionSubscription = FlutterInappPurchase.connectionUpdated.listen((connected) {});
 
-    _purchaseUpdatedSubscription =
-        FlutterInappPurchase.purchaseUpdated.listen((productItem) {
+    _purchaseUpdatedSubscription = FlutterInappPurchase.purchaseUpdated.listen((productItem) {
       if (productItem != null) {
         handlePurchase(productItem);
         FlutterInappPurchase.instance.finishTransaction(productItem);
       }
     });
 
-    _purchaseErrorSubscription =
-        FlutterInappPurchase.purchaseError.listen((purchaseError) {
+    _purchaseErrorSubscription = FlutterInappPurchase.purchaseError.listen((purchaseError) {
       String? error = purchaseError?.message;
       handlePurchase(null, error: error);
     });
@@ -57,8 +54,7 @@ class PaymentPackageCubit extends Cubit<PaymentPackageState> {
       return;
     } else {
       String skuId = "pro_${monthUsed}_${Platform.isIOS ? "months" : "month"}";
-      int indexSku =
-          listItem.indexWhere((element) => element.productId == skuId);
+      int indexSku = listItem.indexWhere((element) => element.productId == skuId);
       if (indexSku >= 0) {
         FlutterInappPurchase.instance.requestSubscription(skuId);
       } else {
@@ -73,8 +69,8 @@ class PaymentPackageCubit extends Cubit<PaymentPackageState> {
       emit(PaymentPackageFailure(error!));
     } else {
       if (Platform.isIOS) {
-        ApiResult<dynamic> apiResult = await appRepository.verifyReceipt(
-            receipt: item!.transactionReceipt);
+        ApiResult<dynamic> apiResult =
+            await appRepository.verifyReceipt(receipt: item!.transactionReceipt);
         apiResult.when(success: (dynamic response) {
           emit(PurchaseSuccess());
         }, failure: (NetworkExceptions error) {
@@ -100,7 +96,7 @@ class PaymentPackageCubit extends Cubit<PaymentPackageState> {
     _connectionSubscription.cancel();
     _purchaseUpdatedSubscription.cancel();
     _purchaseErrorSubscription.cancel();
-    await FlutterInappPurchase.instance.endConnection;
+    await FlutterInappPurchase.instance.finalize();
     return super.close();
   }
 }

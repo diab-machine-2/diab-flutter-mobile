@@ -48,6 +48,7 @@ import 'package:medical/src/widgets/network_image_widget.dart';
 import 'package:medical/src/widgets/share_profile_popup.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../../service/rating_service.dart';
 import 'welcome_package_screen/welcome_package_screen.dart';
 import 'package:medical/src/widget/nipro/health_app/blocs/healthApp_bloc.dart';
 
@@ -55,6 +56,7 @@ import 'widget/add_measurement.dart';
 import 'widget/home_activity.dart';
 import 'widget/home_measurement_summary.dart';
 import 'widget/home_news.dart';
+import 'widget/sync_modal.dart';
 
 class HomeController extends StatefulWidget {
   const HomeController({super.key, this.sharedCode});
@@ -68,9 +70,10 @@ class _HomeControllerState extends State<HomeController>
     with Observer, AutomaticKeepAliveClientMixin<HomeController> {
   final GlobalKey<CourseSuggestState> _courseSuggestKey = GlobalKey();
   final HomeBloc _homeBloc = HomeBloc();
+  final String _screenName = "home";
 
   int page = 1;
-  bool isLoading = false;
+  bool _isDisplayedWelcome = false;
 
   var user = AppSettings.userInfo;
   var popupStore = PopupStore;
@@ -92,8 +95,8 @@ class _HomeControllerState extends State<HomeController>
     Observable.instance.addObserver(this);
 
     if (user?.isShare == true) {
-      ShareProfilePopup.instance
-          .onHasSharedCode(requestFromDoctor: true, code: user?.shareRefCode ?? '');
+      ShareProfilePopup.instance.onHasSharedCode(
+          requestFromDoctor: true, code: user?.shareRefCode ?? '');
     }
     _firebaseSetup();
     _initHealthApp();
@@ -110,6 +113,25 @@ class _HomeControllerState extends State<HomeController>
     final String? lessonId = DynamicLinkConfig.instance.lessonId;
     final String? zoomId = DynamicLinkConfig.instance.zoomId;
     final String? activityId = DynamicLinkConfig.instance.activityId;
+    _checkShowRating();
+
+    Future.delayed(Duration.zero, () async {
+      String? username = AppSettings.userInfo!.userName;
+      String? firstLinked = AppSettings.userInfo!.firstLinkedAccount;
+      bool isFirstDownload = await AppSettings.getIsFirstDownload();
+      bool isZaloAccountAndNotSynchronized = firstLinked != null &&
+          firstLinked.toLowerCase() == "zalo" &&
+          username != null &&
+          !username.startsWith("+84");
+      if (isZaloAccountAndNotSynchronized && isFirstDownload) {
+        _showModalSyncAccount();
+      }
+      if (AppSettings.isSyncSuccess) {
+        _showDialogSuccess();
+        AppSettings.isSyncSuccess = false;
+      }
+    });
+
     if (lessonId == null && zoomId == null && activityId == null) {
       Future.delayed(Duration(milliseconds: 1000), () async {
         bool? hasHealthConnection = await AppStorages.getHealthAppPermission();
@@ -124,14 +146,136 @@ class _HomeControllerState extends State<HomeController>
     }
   }
 
-  Future _firebaseSetup() async {
+  void _showDialogSuccess() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        final deviceWidth = MediaQuery.of(context).size.width;
+
+        return Dialog(
+          insetPadding:
+              EdgeInsets.all(10), // Adjust padding to fit screen better
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20), // Adjust the radius here
+          ),
+          child: Container(
+            width: deviceWidth * 0.9,
+            padding: EdgeInsets.all(30),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Image.asset(
+                  R.drawable.sync_success,
+                  width: deviceWidth * 0.6,
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 16.0),
+                  child: Text(
+                    'Cập nhật thành công',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: R.color.textDark,
+                      fontSize: 20,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 14.0),
+                  child: Text(
+                    'Tài khoản của bạn đã được đồng bộ và bảo vệ',
+                    textAlign: TextAlign.center,
+                    style: R.style.normalTextStyle,
+                  ),
+                ),
+                SizedBox(height: 14),
+                GestureDetector(
+                  onTap: () {
+                    Navigator.pop(context);
+                  },
+                  child: Container(
+                    height: 43,
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(999),
+                        gradient: LinearGradient(
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                            colors: [
+                              Color(0xFF4BB2AB),
+                              Color(0xFF01857A),
+                              Color(0xFF008479)
+                            ])),
+                    child: Center(
+                      child: Text(
+                        'Quay về trang chủ',
+                        style: TextStyle(
+                          color: R.color.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> _checkShowRating() async {
+    int turn = await AppSettings.numberOfOpenHome();
+    if (turn > 3) return;
+    if (turn > 0 && turn <= 3) RatingService.showRating();
+    await AppSettings.increaseNumberOfOpenHome();
+  }
+
+  void _firebaseSetup() async {
     await TrackingManager.analytics
         .logScreenView(screenName: "home", screenClass: "HomeController");
     AppSettings.currentScreenName = 'home';
   }
 
+  void _showModalSyncAccount() {
+    try {
+      SyncAccountModal.show(
+        context,
+        onTapSync: () async {
+          Navigator.pushNamed(context, NavigatorName.sync_screen);
+          await TrackingManager.analytics.logEvent(
+            name: 'zalo_select_sync',
+            parameters: {
+              "screen_name": "home",
+              'cta_button_name': 'cta_zalo_sync_yes',
+            },
+          );
+        },
+        onTapCancel: () async {
+          Navigator.pop(context);
+          await AppSettings.setIsFirstDownload(false);
+          try {
+            await TrackingManager.analytics.logEvent(
+              name: 'zalo_select_sync',
+              parameters: {
+                "screen_name": "home",
+                'cta_button_name': 'cta_zalo_sync_no',
+              },
+            );
+          } catch (e) {
+            print(e);
+          }
+        },
+      );
+    } catch (e) {
+      print("key diab => " + e.toString());
+    }
+  }
+
   @override
-  void update(Observable observable, String? notifyName, Map<dynamic, dynamic>? map) async {
+  void update(Observable observable, String? notifyName,
+      Map<dynamic, dynamic>? map) async {
     // case back from lesson tab when complete recommend lesson
     if (_isReloadLesson && notifyName == 'back_to_home') {
       _homeBloc.add(HomeFetchActivityEvent());
@@ -182,7 +326,8 @@ class _HomeControllerState extends State<HomeController>
     if (notifyName == 'goal_calo_changed' || notifyName == 'refresh_home') {
       _refresh();
     }
-    if (notifyName == 'syncing_heath_app' && AppSettings.currentScreenName != 'welcome') {
+    if (notifyName == 'syncing_heath_app' &&
+        AppSettings.currentScreenName != 'welcome') {
       bool? hasHealthConnection = await AppStorages.getHealthAppPermission();
       if (hasHealthConnection == true) {
         HealthAppBloc()..add(SubmitSyncData(true));
@@ -243,7 +388,8 @@ class _HomeControllerState extends State<HomeController>
     super.build(context);
     return BlocProvider<HomeBloc>.value(
         value: _homeBloc,
-        child: BlocBuilder<HomeBloc, HomeState>(builder: (BuildContext context, HomeState state) {
+        child: BlocBuilder<HomeBloc, HomeState>(
+            builder: (BuildContext context, HomeState state) {
           if (state is HomeInitial) {
             // Skip first load, just after user change info then load (Logged in state)
             // BlocProvider.of<HomeBloc>(context).add(FetchHome());
@@ -255,19 +401,19 @@ class _HomeControllerState extends State<HomeController>
           if (state is HomeLoaded) {
             model = state.model;
             stateLoaded = state;
-            if (false == model?.packageAccount?.isDisplayedWelcome) {
+            if (false == model?.packageAccount?.isDisplayedWelcome && !_isDisplayedWelcome) {
+              _isDisplayedWelcome = true;
               if (AppSettings.isDisplayedWelcome == false) {
                 Future.delayed(Duration.zero, () async {
                   _showWelcomeDialog(model?.packageAccount);
                 });
               } else {}
             }
-            isLoading = false;
           }
 
           Widget reminderW = HomeReminder(
             reminders: stateLoaded?.reminders ?? [],
-            loading: stateLoaded?.reminderLoading ?? true,
+            loading: stateLoaded?.reminderLoading ?? false,
             onAdd: () {
               Navigator.pushNamed(context, NavigatorName.add_reminder,
                   arguments: {'type': 'input'});
@@ -291,10 +437,18 @@ class _HomeControllerState extends State<HomeController>
 
           Widget utilitiesW = HomeUtilities(
             utilities: stateLoaded?.utilities ?? [],
-            onNavigate: (routeName) {
+            onTap: (utility) {
+              // track event
+              final String eventName = "home_select_utility";
+              TrackingManager.trackEvent(eventName, _screenName, params: {
+                "object_title": utility.title,
+              });
+
+              final routeName = utility.navigatorName;
               // case show all utilities
               if (routeName == NavigatorName.utilities) {
-                final utilities = BlocProvider.of<HomeBloc>(context).getAllUtilities(full: true);
+                final utilities = BlocProvider.of<HomeBloc>(context)
+                    .getAllUtilities(full: true);
                 Navigator.pushNamed(context, routeName, arguments: utilities);
                 return;
               }
@@ -321,8 +475,9 @@ class _HomeControllerState extends State<HomeController>
             },
           );
 
-          bool needSwapReminderAndUtilities = stateLoaded?.activityLoading == false &&
-              !(stateLoaded?.reminders?.isNotEmpty == true);
+          bool needSwapReminderAndUtilities =
+              stateLoaded?.activityLoading == false &&
+                  !(stateLoaded?.reminders?.isNotEmpty == true);
 
           return RefreshIndicator(
             onRefresh: _pullToRefresh,
@@ -352,20 +507,30 @@ class _HomeControllerState extends State<HomeController>
                           MeasurementSummary(
                             inlineMeasurements: model?.inlineMeasurements ?? [],
                             measurements: model?.measurements ?? [],
-                            onAddMeasurement: () => _showAddMeasurement(context),
+                            onAddMeasurement: () =>
+                                _showAddMeasurement(context),
                             onHealthProfile: () {},
-                            onMeasurement: (routeName, args) {
+                            onMeasurement: (routeName, args, title) {
+                              // track event
+                              final String eventName = "home_select_kpi";
+                              TrackingManager.trackEvent(eventName, _screenName, params: {
+                                "object_title": title,
+                              });
                               // case require weight input
-                              if (_checkWeightInputDialog(routeName, args: args) == false) {
+                              if (_checkWeightInputDialog(routeName,
+                                      args: args) ==
+                                  false) {
                                 return;
                               }
                               // case input glucose
-                              if (_showGlucoseAddBottomSheet(routeName) == false) {
+                              if (_showGlucoseAddBottomSheet(routeName) ==
+                                  false) {
                                 return;
                               }
                               // others
                               if (routeName != null) {
-                                Navigator.pushNamed(context, routeName, arguments: args);
+                                Navigator.pushNamed(context, routeName,
+                                    arguments: args);
                               }
                             },
                             loading: stateLoaded?.measurementLoading ?? true,
@@ -375,11 +540,12 @@ class _HomeControllerState extends State<HomeController>
 
                           // Activities
                           Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 12.0),
                             child: HomeActivity(
                               activities: stateLoaded?.activities ?? [],
                               expanded: _isActivityExpanded,
-                              loading: stateLoaded?.activityLoading ?? true,
+                              loading: stateLoaded?.activityLoading ?? false,
                               onExpand: () {
                                 setState(() {
                                   _isActivityExpanded = true;
@@ -391,11 +557,14 @@ class _HomeControllerState extends State<HomeController>
                                 });
                               },
                               onAddActivity: () {
-                                Navigator.pushNamed(context, NavigatorName.add_goal);
+                                Navigator.pushNamed(
+                                    context, NavigatorName.add_goal);
                               },
                               onViewMore: _viewMoreActivity,
-                              onActivityTap: (activity) =>
-                                  _onSelectGoal(activity.type, smartGoal: activity.smartGoal),
+                              onActivityTap: (activity) => _onSelectGoal(
+                                  activity.type,
+                                  smartGoal: activity.smartGoal,
+                                  title: activity.title),
                             ),
                           ),
 
@@ -403,30 +572,39 @@ class _HomeControllerState extends State<HomeController>
 
                           // Reminder >< Utilities
                           Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                            child: needSwapReminderAndUtilities ? utilitiesW : reminderW,
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 12.0),
+                            child: needSwapReminderAndUtilities
+                                ? utilitiesW
+                                : reminderW,
                           ),
 
                           const SizedBox(height: 16.0),
 
                           // Utilities >< Reminder
                           Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                            child: needSwapReminderAndUtilities ? reminderW : utilitiesW,
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 12.0),
+                            child: needSwapReminderAndUtilities
+                                ? reminderW
+                                : utilitiesW,
                           ),
 
                           const SizedBox(height: 16.0),
 
                           // Lessons
-                          if (stateLoaded?.lessons != null && stateLoaded!.lessons!.isNotEmpty) ...[
+                          if (stateLoaded?.lessons != null &&
+                              stateLoaded!.lessons!.isNotEmpty) ...[
                             Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 12.0),
                               child: HomeLesson(
                                 lessons: stateLoaded.lessons!,
                                 onLessonTap: (lesson) async {
                                   ActivityListTracking.clickLessonItem(
                                     objectId: lesson.id,
-                                    objectIndex: stateLoaded!.lessons!.indexOf(lesson),
+                                    objectIndex:
+                                        stateLoaded!.lessons!.indexOf(lesson),
                                     objectTitle: lesson.name,
                                   );
 
@@ -451,7 +629,8 @@ class _HomeControllerState extends State<HomeController>
 
                           // Popular News
                           Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 12.0),
                             child: HomeNews(
                               items: stateLoaded?.news ?? [],
                               onViewMore: () {},
@@ -492,8 +671,12 @@ class _HomeControllerState extends State<HomeController>
     final _ = await NavigationUtil.navigatePage(
       context,
       WelcomePackageScreenPage(
-        icon: isRoadmap ? R.drawable.ic_package_roadmap : R.drawable.ic_package_experience,
-        title: isRoadmap ? R.string.package_roadmap.tr() : R.string.package_experience.tr(),
+        icon: isRoadmap
+            ? R.drawable.ic_package_roadmap
+            : R.drawable.ic_package_experience,
+        title: isRoadmap
+            ? R.string.package_roadmap.tr()
+            : R.string.package_experience.tr(),
         subTitle: isRoadmap
             ? R.string.package_roadmap_subtitle.tr()
             : R.string.package_experience_subtitle.tr(),
@@ -505,14 +688,24 @@ class _HomeControllerState extends State<HomeController>
 
   // Button "Thêm chỉ số"
   void _showAddMeasurement(BuildContext context) {
+    // track event
+    final String eventName = "home_add_kpi";
+    TrackingManager.trackEvent(eventName, _screenName);
     // show add measurement screen
-    final measurementIndexes = BlocProvider.of<HomeBloc>(context).getAllMeasurements();
+    final measurementIndexes =
+        BlocProvider.of<HomeBloc>(context).getAllMeasurements();
     final dialog = AddMeasurement(
       measurements: measurementIndexes,
       onItemTap: (item) {
+        // track event
+        final String eventName = "home_add_kpi_item";
+        TrackingManager.trackEvent(eventName, _screenName, params: {
+          "object_title": item.title,
+        });
         Navigator.pop(context);
         // case require weight input
-        if (_checkWeightInputDialog(item.navigatorName, args: item.args) == false) {
+        if (_checkWeightInputDialog(item.navigatorName, args: item.args) ==
+            false) {
           return;
         }
         // case input glucose
@@ -541,7 +734,8 @@ class _HomeControllerState extends State<HomeController>
   // return allow next route
   bool _checkWeightInputDialog(String? routeName, {dynamic args}) {
     if (routeName == NavigatorName.add_exercrises) {
-      if (AppSettings.userInfo?.weight == null || AppSettings.userInfo!.weight == 0) {
+      if (AppSettings.userInfo?.weight == null ||
+          AppSettings.userInfo!.weight == 0) {
         showPopupWeight(nextRoute: routeName, args: args);
         return false;
       }
@@ -569,7 +763,13 @@ class _HomeControllerState extends State<HomeController>
 
   // #region Copy from lib\src\widget\my_plan_screens\activity_tab\activity_tab\activity_tab_page.dart
   // Copy from lib\src\widget\my_plan_screens\activity_tab\activity_tab\activity_tab_page.dart
-  Future<void> _onSelectGoal(ScheduleType type, {SmartGoalList? smartGoal}) async {
+  Future<void> _onSelectGoal(ScheduleType type,
+      {SmartGoalList? smartGoal, required String title}) async {
+    // track event
+    final String eventName = "home_select_activity";
+    TrackingManager.trackEvent(eventName, _screenName, params: {
+      "object_title": title,
+    });
     Observable.instance.notifyObservers([], notifyName: Const.HIDE_OVERLAY_KEY);
     _isReloadLesson = type == ScheduleType.lesson_recommend;
     switch (type) {
@@ -629,7 +829,8 @@ class _HomeControllerState extends State<HomeController>
         await NavigationUtil.navigatePage(
             context, ExerciseDetail(exerciseData: smartGoal?.exerciseData));
         // _cubit.refreshData(isRefresh: true);
-        Observable.instance.notifyObservers([], notifyName: "refresh_exercise_tab");
+        Observable.instance
+            .notifyObservers([], notifyName: "refresh_exercise_tab");
         Observable.instance.notifyObservers([], notifyName: "refresh_home");
         break;
       case ScheduleType.custom:
@@ -648,14 +849,17 @@ class _HomeControllerState extends State<HomeController>
         _showSurveyPopup(survey: smartGoal);
         break;
       case ScheduleType.lesson_recommend:
-        Observable.instance.notifyObservers([], notifyName: Const.NAVIGATE_TO_LESSON_TAB);
+        Observable.instance
+            .notifyObservers([], notifyName: Const.NAVIGATE_TO_LESSON_TAB);
         break;
       case ScheduleType.lesson:
-        final LessonSectionListResponseData? lessonDetail = smartGoal?.lessonData;
+        final LessonSectionListResponseData? lessonDetail =
+            smartGoal?.lessonData;
         if (smartGoal?.state == Const.LESSON_LOCKED) {
           // if (lessonDetail?.learningStatus == null || lessonDetail?.learningStatus == Const.LESSON_LOCKED) {
           _showLockedDialog(
-              title: R.string.lesson_locked.tr(), description: R.string.lesson_locked_warning.tr());
+              title: R.string.lesson_locked.tr(),
+              description: R.string.lesson_locked_warning.tr());
           return;
         }
         await NavigationUtil.navigatePage(
@@ -666,7 +870,8 @@ class _HomeControllerState extends State<HomeController>
               onComplete: (String, int) {},
             ));
         // _cubit.refreshData(isRefresh: true);
-        Observable.instance.notifyObservers([], notifyName: "refresh_lesson_tab");
+        Observable.instance
+            .notifyObservers([], notifyName: "refresh_lesson_tab");
         Observable.instance.notifyObservers([], notifyName: "refresh_home");
         break;
       case ScheduleType.io_evaluate:
@@ -674,15 +879,17 @@ class _HomeControllerState extends State<HomeController>
         break;
       case ScheduleType.update_profile:
       case ScheduleType.update_profile_recommend:
-        await Navigator.pushNamed(context, NavigatorName.profile_info, arguments: {
-          'id': smartGoal?.state != 1 ? smartGoal?.id : null,
-        });
+        await Navigator.pushNamed(context, NavigatorName.profile_info,
+            arguments: {
+              'id': smartGoal?.state != 1 ? smartGoal?.id : null,
+            });
         break;
       case ScheduleType.output_assessment:
         _showCoachingPopup(smartGoal);
         break;
       case ScheduleType.hba1c_recommend:
-        await Navigator.pushNamed(context, NavigatorName.add_hba1c, arguments: {'type': 'input'});
+        await Navigator.pushNamed(context, NavigatorName.add_hba1c,
+            arguments: {'type': 'input'});
         break;
       case ScheduleType.schedule_glucose_recommend:
         await Navigator.pushNamed(context, NavigatorName.schedule_glucose);
@@ -706,7 +913,8 @@ class _HomeControllerState extends State<HomeController>
   }
 
   void _viewMoreActivity() {
-    Observable.instance.notifyObservers([], notifyName: Const.NAVIGATE_TO_MY_PLAN_TAB);
+    Observable.instance
+        .notifyObservers([], notifyName: Const.NAVIGATE_TO_MY_PLAN_TAB);
     Observable.instance.notifyObservers([], notifyName: "activity_tab_reload");
   }
 
@@ -761,11 +969,13 @@ class _HomeControllerState extends State<HomeController>
                             child: Container(
                               margin: EdgeInsets.symmetric(horizontal: 16),
                               child: ButtonWidget(
-                                backgroundColor:
-                                    isDisableCompleteButton ? R.color.white : R.color.accentColor,
+                                backgroundColor: isDisableCompleteButton
+                                    ? R.color.white
+                                    : R.color.accentColor,
                                 title: buttonTitle ?? '',
                                 textSize: 14,
-                                onPressed: isDisableCompleteButton ? null : onTap,
+                                onPressed:
+                                    isDisableCompleteButton ? null : onTap,
                               ),
                             ),
                           ),
@@ -802,8 +1012,9 @@ class _HomeControllerState extends State<HomeController>
     return _showPopup(
       context: context,
       buttonTitle: R.string.complete_lesson.tr(),
-      isDisableCompleteButton:
-          DateUtil.isAfter(smartGoal?.appointmentDate, AppSettings.currentDateTime) ?? false,
+      isDisableCompleteButton: DateUtil.isAfter(
+              smartGoal?.appointmentDate, AppSettings.currentDateTime) ??
+          false,
       onTap: smartGoal?.isCompleted == true
           ? null
           : () {
@@ -824,12 +1035,18 @@ class _HomeControllerState extends State<HomeController>
           ),
           Text(
             smartGoal?.name ?? '',
-            style: TextStyle(color: R.color.textDark, fontSize: 20, fontWeight: FontWeight.w700),
+            style: TextStyle(
+                color: R.color.textDark,
+                fontSize: 20,
+                fontWeight: FontWeight.w700),
           ),
           const SizedBox(height: 6),
           Text(
             description,
-            style: TextStyle(color: R.color.textDark, fontSize: 14, fontWeight: FontWeight.w400),
+            style: TextStyle(
+                color: R.color.textDark,
+                fontSize: 14,
+                fontWeight: FontWeight.w400),
           ),
         ],
       ),
@@ -872,11 +1089,13 @@ class _HomeControllerState extends State<HomeController>
       context: context,
       buttonTitle: R.string.join.tr(),
       isDisableCompleteButton: !DateUtil.isSameDay(
-          DateTime.now().millisecondsSinceEpoch ~/ 1000, smartGoal?.appointmentDate),
+          DateTime.now().millisecondsSinceEpoch ~/ 1000,
+          smartGoal?.appointmentDate),
       onTap: () async {
         Navigator.pop(context);
         if (smartGoal?.calendar?.meetingLink != null) {
-          PermissionStatus statusMicrophone = await Permission.microphone.status;
+          PermissionStatus statusMicrophone =
+              await Permission.microphone.status;
           if (statusMicrophone.isDenied) {
             await Permission.microphone.request();
           }
@@ -902,22 +1121,35 @@ class _HomeControllerState extends State<HomeController>
         children: [
           Text(
             "${getWeekDay(smartGoal?.appointmentDate ?? 0)}, ${convertToUTC(smartGoal?.appointmentDate ?? 0, "dd/MM/yyyy")}",
-            style: TextStyle(color: R.color.main_1, fontSize: 20, fontWeight: FontWeight.w700),
+            style: TextStyle(
+                color: R.color.main_1,
+                fontSize: 20,
+                fontWeight: FontWeight.w700),
           ),
           SizedBox(height: 4),
-          if ((smartGoal?.description != null && smartGoal!.description!.isNotEmpty))
+          if ((smartGoal?.description != null &&
+              smartGoal!.description!.isNotEmpty))
             Text(
               smartGoal.description ?? "",
-              style: TextStyle(color: R.color.main_1, fontSize: 20, fontWeight: FontWeight.w700),
+              style: TextStyle(
+                  color: R.color.main_1,
+                  fontSize: 20,
+                  fontWeight: FontWeight.w700),
             ),
-          if (smartGoal?.description != null && smartGoal!.description!.isNotEmpty)
+          if (smartGoal?.description != null &&
+              smartGoal!.description!.isNotEmpty)
             const SizedBox(height: 12),
-          if ((smartGoal?.calendar?.goal != null && smartGoal!.calendar!.goal!.isNotEmpty))
+          if ((smartGoal?.calendar?.goal != null &&
+              smartGoal!.calendar!.goal!.isNotEmpty))
             Text(
               smartGoal.calendar?.goal ?? "",
-              style: TextStyle(color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w400),
+              style: TextStyle(
+                  color: R.color.textDark,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w400),
             ),
-          if ((smartGoal?.calendar?.goal != null && smartGoal!.calendar!.goal!.isNotEmpty))
+          if ((smartGoal?.calendar?.goal != null &&
+              smartGoal!.calendar!.goal!.isNotEmpty))
             const SizedBox(height: 16),
           if (smartGoal?.calendar?.performer != null)
             Row(
@@ -933,13 +1165,17 @@ class _HomeControllerState extends State<HomeController>
                     Text(
                       'Coach',
                       style: TextStyle(
-                          color: R.color.textDark, fontSize: 14, fontWeight: FontWeight.w400),
+                          color: R.color.textDark,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w400),
                     ),
                     const SizedBox(height: 4),
                     Text(
                       smartGoal.calendar!.performer!.fullName ?? "",
                       style: TextStyle(
-                          color: R.color.main_1, fontSize: 16, fontWeight: FontWeight.w700),
+                          color: R.color.main_1,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700),
                     ),
                   ],
                 )
@@ -1019,7 +1255,8 @@ class _HomeControllerState extends State<HomeController>
     );
   }
 
-  _showDialogConfirmCreateGoal(BuildContext context, String title, VoidCallback onContinue) {
+  _showDialogConfirmCreateGoal(
+      BuildContext context, String title, VoidCallback onContinue) {
     showDialog(
       context: context,
       builder: (context) {
@@ -1032,58 +1269,64 @@ class _HomeControllerState extends State<HomeController>
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Padding(
-                      padding: EdgeInsets.only(top: 36.0, bottom: 10, left: 16, right: 16),
+                      padding: EdgeInsets.only(
+                          top: 36.0, bottom: 10, left: 16, right: 16),
                       child: Text(title,
                           textAlign: TextAlign.center,
                           style: TextStyle(
-                              color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w600)),
+                              color: R.color.textDark,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600)),
                     ),
                     Container(
                       margin: EdgeInsets.only(top: 16),
-                      child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                        Expanded(
-                          child: GestureDetector(
-                            onTap: () {
-                              Navigator.pop(context);
-                            },
-                            child: Container(
-                                height: 40,
-                                decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(200),
-                                    color: R.color.grayBorder),
-                                child: Center(
-                                  child: Text(R.string.back.tr(),
-                                      style: TextStyle(
-                                          color: R.color.textDark,
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w600)),
-                                )),
-                          ),
-                        ),
-                        SizedBox(width: 14),
-                        Expanded(
-                          child: GestureDetector(
-                            onTap: () async {
-                              Navigator.pop(context);
-                              onContinue();
-                            },
-                            child: Container(
-                              height: 40,
-                              decoration: BoxDecoration(
-                                color: R.color.mainColor,
-                                borderRadius: BorderRadius.circular(200),
-                              ),
-                              child: Center(
-                                child: Text(R.string.tiep_tuc.tr(),
-                                    style: TextStyle(
-                                        color: R.color.white,
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w600)),
+                      child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Expanded(
+                              child: GestureDetector(
+                                onTap: () {
+                                  Navigator.pop(context);
+                                },
+                                child: Container(
+                                    height: 40,
+                                    decoration: BoxDecoration(
+                                        borderRadius:
+                                            BorderRadius.circular(200),
+                                        color: R.color.grayBorder),
+                                    child: Center(
+                                      child: Text(R.string.back.tr(),
+                                          style: TextStyle(
+                                              color: R.color.textDark,
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w600)),
+                                    )),
                               ),
                             ),
-                          ),
-                        ),
-                      ]),
+                            SizedBox(width: 14),
+                            Expanded(
+                              child: GestureDetector(
+                                onTap: () async {
+                                  Navigator.pop(context);
+                                  onContinue();
+                                },
+                                child: Container(
+                                  height: 40,
+                                  decoration: BoxDecoration(
+                                    color: R.color.mainColor,
+                                    borderRadius: BorderRadius.circular(200),
+                                  ),
+                                  child: Center(
+                                    child: Text(R.string.tiep_tuc.tr(),
+                                        style: TextStyle(
+                                            color: R.color.white,
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w600)),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ]),
                     ),
                   ],
                 ),
@@ -1103,8 +1346,8 @@ class _HomeControllerState extends State<HomeController>
   }
   // #endregion
 
-  Future<void> _completeSmartGoal(
-      String? smartGoalId, int? executeDayTimes, int? type, int? appointmentDate) async {
+  Future<void> _completeSmartGoal(String? smartGoalId, int? executeDayTimes,
+      int? type, int? appointmentDate) async {
     if (smartGoalId == null) return;
     try {
       BotToast.showLoading();
@@ -1134,7 +1377,8 @@ class _HomeControllerState extends State<HomeController>
       builder: (_) => CustomNumPicker(
           callback: (data) {
             if (data == null || data <= 0) {
-              Message.showToastMessage(context, R.string.mes_height_must_greater_than_zero.tr());
+              Message.showToastMessage(
+                  context, R.string.mes_height_must_greater_than_zero.tr());
               return;
             }
             final userInfo = AppSettings.userInfo!;
@@ -1147,7 +1391,8 @@ class _HomeControllerState extends State<HomeController>
           },
           title: R.string.enter_height.tr(),
           max: 250,
-          numberDefault: (AppSettings.userInfo!.height == null || AppSettings.userInfo!.height == 0
+          numberDefault: (AppSettings.userInfo!.height == null ||
+                      AppSettings.userInfo!.height == 0
                   ? 150
                   : AppSettings.userInfo!.height)!
               .toInt(),
@@ -1162,7 +1407,8 @@ class _HomeControllerState extends State<HomeController>
       builder: (_) => CustomWeightPicker(
           callback: (weight) {
             if (weight <= 0) {
-              Message.showToastMessage(context, R.string.mes_weight_must_greater_than_zero.tr());
+              Message.showToastMessage(
+                  context, R.string.mes_weight_must_greater_than_zero.tr());
               return;
             }
             final userInfo = AppSettings.userInfo!;
@@ -1175,7 +1421,8 @@ class _HomeControllerState extends State<HomeController>
           },
           title: R.string.enter_weight.tr(),
           max: 180,
-          numberDefault: (AppSettings.userInfo!.weight == null || AppSettings.userInfo!.weight == 0
+          numberDefault: (AppSettings.userInfo!.weight == null ||
+                      AppSettings.userInfo!.weight == 0
                   ? 50
                   : AppSettings.userInfo!.weight)!
               .toInt(),

@@ -29,11 +29,14 @@ part 'home_bloc_event.dart';
 part 'home_bloc_state.dart';
 
 class HomeBloc extends Bloc<HomeEvent, HomeState> {
-  HomeBloc() : super(HomeInitial());
+  HomeBloc() : super(HomeInitial()) {
+    add(FetchHome());
+  }
   final timeToRetry = 10;
   final DateFormat _reminderFormatter = DateFormat("h:mm");
 
   HomeLoaded? _cached;
+  bool _firstLoad = false;
 
   int get _currentWeek {
     if (AppSettings.userInfo?.ownPackage?.ownRoadmap?.currentWeek != null) {
@@ -63,30 +66,40 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   }
 
   Stream<HomeState> _fetchHomes() async* {
+    // init load from cache
+    if (_cached == null) {
+      // try first load from cache (shared preference)
+      try {
+        // try to load from cache
+        final model = await AppSettings.getHome();
+        if (model != null) {
+          // if have cache
+          _cached = HomeLoaded(
+            model: model,
+            utilities: this.getAllUtilities(full: false),
+            activities: model.activities,
+            reminders: model.reminders,
+            activityLoading: false,
+            measurementLoading: false,
+            reminderLoading: false,
+          );
+          yield _cached!;
+        } else {
+          // if no cache
+          _firstLoad = true;
+          yield HomeLoading(model: null);
+        }
+      } catch (e, s) {
+        // init load failed
+        TrackingManager.recordError(e, s);
+      }
+    }
+
     final client = HomeClient();
 
     int retry = 1;
-    while (retry <= 10) {
+    while (retry <= 3) {
       try {
-        HomeModel? model;
-        // Load cached home data
-        if (_cached == null) {
-          // shared preference
-          try {
-            // if any, just ignore the error
-            model = await AppSettings.getHome();
-            if (model != null) {
-              _cached = HomeLoaded(model: model, activities: model.activities);
-              yield _cached!;
-            } else {
-              yield HomeLoading(model: model);
-            }
-          } catch (e) {}
-        } else {
-          // other is mem cache
-          yield _cached!;
-        }
-
         // Load measurements
         final home = await client.fetchHomes();
         home.inlineMeasurements = _castInlineMeasurements(home);
@@ -96,11 +109,17 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
             (_cached?.copyWith(model: home) ?? HomeLoaded(model: home)).copyWith(
           utilities: this.getAllUtilities(full: false),
           measurementLoading: false,
+          activityLoading: _firstLoad,
+          reminderLoading: _firstLoad,
         );
         yield currentState;
 
         // load reminders
         yield* _fetchReminders();
+        // set "reminders" data
+        if (state is HomeLoaded) {
+          home.reminders = (state as HomeLoaded).reminders;
+        }
 
         // load today target
         yield* _fetchActivities();
@@ -122,6 +141,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         // load lessons
         yield* _fetchLessons();
 
+        _firstLoad = false;
         _cached = state is HomeLoaded ? state as HomeLoaded : null;
 
         break; // Break the loop if successful
@@ -182,8 +202,10 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
           bool isCompletedAll = combinedActivities.isEmpty ||
               combinedActivities.every((element) => element.smartGoal.state == 1);
           bool stillLoading = isCompletedAll;
-          currentState =
-              currentState.copyWith(activities: combinedActivities, activityLoading: stillLoading);
+          currentState = currentState.copyWith(
+            activities: combinedActivities,
+            activityLoading: _firstLoad && stillLoading,
+          );
         } else {
           currentState = currentState.copyWith(activityLoading: false, activities: []);
         }
