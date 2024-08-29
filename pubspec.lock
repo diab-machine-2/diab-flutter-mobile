@@ -150,10 +150,10 @@ packages:
     description:
       path: "."
       ref: HEAD
-      resolved-ref: e9de844b4c84e1dcbbaa1099ca06f434bf279627
+      resolved-ref: db1cd41ad58ec24f9b461acde9ff0ab8b44cc60a
       url: "https://github.com/ngocphuc1612/betterplayer"
     source: git
-    version: "0.0.84"
+    version: "0.0.85"
   bloc:
     dependency: transitive
     description:
