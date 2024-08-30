@@ -73,7 +73,7 @@ class _HomeControllerState extends State<HomeController>
   final String _screenName = "home";
 
   int page = 1;
-  bool isLoading = false;
+  bool _isDisplayedWelcome = false;
 
   var user = AppSettings.userInfo;
   var popupStore = PopupStore;
@@ -232,7 +232,7 @@ class _HomeControllerState extends State<HomeController>
     await AppSettings.increaseNumberOfOpenHome();
   }
 
-  Future _firebaseSetup() async {
+  void _firebaseSetup() async {
     await TrackingManager.analytics
         .logScreenView(screenName: "home", screenClass: "HomeController");
     AppSettings.currentScreenName = 'home';
@@ -401,19 +401,19 @@ class _HomeControllerState extends State<HomeController>
           if (state is HomeLoaded) {
             model = state.model;
             stateLoaded = state;
-            if (false == model?.packageAccount?.isDisplayedWelcome) {
+            if (false == model?.packageAccount?.isDisplayedWelcome && !_isDisplayedWelcome) {
+              _isDisplayedWelcome = true;
               if (AppSettings.isDisplayedWelcome == false) {
                 Future.delayed(Duration.zero, () async {
                   _showWelcomeDialog(model?.packageAccount);
                 });
               } else {}
             }
-            isLoading = false;
           }
 
           Widget reminderW = HomeReminder(
             reminders: stateLoaded?.reminders ?? [],
-            loading: stateLoaded?.reminderLoading ?? true,
+            loading: stateLoaded?.reminderLoading ?? false,
             onAdd: () {
               Navigator.pushNamed(context, NavigatorName.add_reminder,
                   arguments: {'type': 'input'});
@@ -545,7 +545,7 @@ class _HomeControllerState extends State<HomeController>
                             child: HomeActivity(
                               activities: stateLoaded?.activities ?? [],
                               expanded: _isActivityExpanded,
-                              loading: stateLoaded?.activityLoading ?? true,
+                              loading: stateLoaded?.activityLoading ?? false,
                               onExpand: () {
                                 setState(() {
                                   _isActivityExpanded = true;

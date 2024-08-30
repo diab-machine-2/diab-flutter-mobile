@@ -12,7 +12,7 @@ import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/service/zoom_service.dart';
 import 'package:medical/src/utils/async_queue.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
-import 'package:wakelock/wakelock.dart';
+import 'package:wakelock_plus/wakelock_plus.dart';
 import 'models/meeting_message.dart';
 
 import 'meeting_state.dart';
@@ -100,7 +100,7 @@ class MeetingCubit extends Cubit<MeetingState> with WidgetsBindingObserver {
 
   MeetingCubit(this.args) : super(MeetingJoining()) {
     WidgetsBinding.instance.addObserver(this);
-    Wakelock.enable();
+    WakelockPlus.enable();
 
     // Join session
     _doJoinMeeting();
@@ -146,7 +146,7 @@ class MeetingCubit extends Cubit<MeetingState> with WidgetsBindingObserver {
     _timeoutTimer = null;
 
     WidgetsBinding.instance.removeObserver(this);
-    Wakelock.disable();
+    WakelockPlus.disable();
 
     return super.close();
   }
