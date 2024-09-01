@@ -68,13 +68,16 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
                 )
               : Align(
                   alignment: Alignment.centerLeft,
-                  child: Text(
-                    title,
-                    maxLines: 1,
-                    style: TextStyle(
-                      fontSize: 18,
-                      color: R.color.textDark,
-                      fontWeight: FontWeight.w700,
+                  child: Padding(
+                    padding: EdgeInsets.only(left: hasBackIcon ? 40 : 0),
+                    child: Text(
+                      title,
+                      maxLines: 1,
+                      style: TextStyle(
+                        fontSize: 18,
+                        color: R.color.textDark,
+                        fontWeight: FontWeight.w700,
+                      ),
                     ),
                   ),
                 ),
