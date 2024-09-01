@@ -548,27 +548,30 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
 
   startScan() async {
     List<BluetoothDevice> connectedDevices =
-        await FlutterBluePlus.connectedDevices;
+        FlutterBluePlus.connectedDevices;
     connectedDevices.forEach((element) {
       element.disconnect();
     });
 
     FlutterBluePlus.startScan(timeout: const Duration(seconds: 25));
-    FlutterBluePlus.scanResults.listen((scanResultList) {
+    final scanResultSub = FlutterBluePlus.scanResults.listen((scanResultList) {
       if (!deviceFound && appStatus == AppStatus.isScanning) {
         connectToAvailableDevice(scanResultList);
       }
     });
-    FlutterBluePlus.isScanning.listen((event) {
+    final isScanningSub = FlutterBluePlus.isScanning.listen((event) {
       if (event == false && appStatus == AppStatus.isScanning) {
         appStatus = AppStatus.isNoDeviceFound;
       }
     });
+    FlutterBluePlus.cancelWhenScanComplete(scanResultSub);
+    FlutterBluePlus.cancelWhenScanComplete(isScanningSub);
   }
 
   connectToAvailableDevice(List<ScanResult> scanResultList) async {
-    scanResultList.forEach((result) async {
-      if (result.device.name.contains('meter')) {
+    for (var i = 0; i < scanResultList.length; i++) {
+      final result = scanResultList[i];
+      if (result.device.platformName.contains('meter')) {
         deviceFound = true;
         await result.device.connect();
         connectDevice(result.device);
@@ -577,7 +580,7 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
         await FlutterBluePlus.stopScan();
         return;
       }
-    });
+    }
   }
 
   bool isSelected(Map<String, String> glucose) {
@@ -596,14 +599,14 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
 
     // Tìm Service 0x1808
     BluetoothService serviceGlucoseMeasurement = services.firstWhere((service) {
-      return service.uuid.toString() ==
+      return service.serviceUuid.str128 ==
           GlucoseProfileConfiguration.GLUCOSE_SERVICE_UUID;
     });
 
     // Tim Characteristic 0x2A18
     BluetoothCharacteristic charGlucoseMeasurement =
         serviceGlucoseMeasurement.characteristics.firstWhere((characteristic) =>
-            characteristic.uuid.toString() ==
+            characteristic.characteristicUuid.str128 ==
             GlucoseProfileConfiguration
                 .GLUCOSE_MEASUREMENT_CHARACTERISTIC_UUID);
 
@@ -612,13 +615,13 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
     appStatus = AppStatus.isConnected;
 
     BluetoothService rocheService = services.firstWhere((service) {
-      return service.uuid.toString() ==
+      return service.serviceUuid.str128 ==
           GlucoseProfileConfiguration.ROCHE_SERVICE_UUID;
     });
 
     for (BluetoothCharacteristic rocheCharacteristic
         in rocheService.characteristics) {
-      if (rocheCharacteristic.uuid.toString() ==
+      if (rocheCharacteristic.characteristicUuid.str128 ==
           GlucoseProfileConfiguration.MODEL_NUMBER_STRING_UUID) {
         List<int> modelNumberStringValue = await rocheCharacteristic.read();
         String modelNo = utf8.decode(modelNumberStringValue);
@@ -642,13 +645,13 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
     for (BluetoothCharacteristic characteristic
         in serviceGlucoseMeasurement.characteristics) {
       // Tim Characteristic 0x2A18
-      if (characteristic.uuid.toString() ==
+      if (characteristic.characteristicUuid.str128 ==
           GlucoseProfileConfiguration.GLUCOSE_MEASUREMENT_CHARACTERISTIC_UUID) {
         await characteristic.setNotifyValue(true);
         appStatus = AppStatus.isSyncing;
         previousDataCount = 0;
         glucoseMeasurementRecordList.clear();
-        characteristicListener = characteristic.value.listen((data) async {
+        characteristicListener = characteristic.lastValueStream.listen((data) async {
           GlucoseMeasurementRecord glucoseMeasurementRecord =
               GlucoseFunctions().readDataFrom2A18(data);
           if (glucoseMeasurementRecord.isBloodGlucose) {
@@ -658,7 +661,7 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
       }
 
       // Tim Characteristic 0x2A52
-      if (characteristic.uuid.toString() ==
+      if (characteristic.characteristicUuid.str128 ==
           GlucoseProfileConfiguration
               .RECORD_ACCESS_CONTROL_POINT_CHARACTERISTIC_UUID) {
         await characteristic.setNotifyValue(true);
