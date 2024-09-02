@@ -17,6 +17,7 @@ import 'package:medical/src/utils/date_utils.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
+import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widgets/button_widget.dart';
 import 'package:medical/src/widgets/custom_checkbox_widget.dart';
 import '../blocs/rocheConnection_cubit.dart';
@@ -53,7 +54,6 @@ class _ScanDeviceViewState extends State<ScanDeviceView> with SingleTickerProvid
   StreamController<int> secondsStreamController = StreamController<int>();
   Stream<int> get secondsStream => secondsStreamController.stream;
   StreamSubscription? characteristicListener;
-  StreamSubscription? valueReceivedCharacteristicListener;
 
   List<GlucoseMeasurementRecord> glucoseMeasurementRecordList = [];
   List<GlucoseMeasurementRecord> dataSelected = [];
@@ -67,8 +67,8 @@ class _ScanDeviceViewState extends State<ScanDeviceView> with SingleTickerProvid
 
   @override
   void initState() {
-    startScan();
-    checkAppStatus();
+    _startScan();
+    _checkAppStatus();
     super.initState();
     _controller = AnimationController(
       duration: Duration(seconds: 3),
@@ -76,7 +76,7 @@ class _ScanDeviceViewState extends State<ScanDeviceView> with SingleTickerProvid
     )..repeat();
   }
 
-  void checkAppStatus() {
+  void _checkAppStatus() {
     Timer.periodic(Duration(seconds: 1), (timer) {
       secondsStreamController.add(DateTime.now().second);
     });
@@ -88,7 +88,6 @@ class _ScanDeviceViewState extends State<ScanDeviceView> with SingleTickerProvid
       device!.disconnect();
     }
     characteristicListener?.cancel();
-    valueReceivedCharacteristicListener?.cancel();
     _controller.dispose();
     super.dispose();
   }
@@ -472,7 +471,7 @@ class _ScanDeviceViewState extends State<ScanDeviceView> with SingleTickerProvid
                 deviceFound = false;
                 appStatus = AppStatus.isScanning;
               });
-              startScan();
+              _startScan();
             },
           ),
         )
@@ -540,37 +539,43 @@ class _ScanDeviceViewState extends State<ScanDeviceView> with SingleTickerProvid
     );
   }
 
-  void startScan() async {
-    List<BluetoothDevice> connectedDevices = FlutterBluePlus.connectedDevices;
-    // for in
-    for (final device in connectedDevices) {
-      await device.disconnect();
-    }
+  void _startScan() async {
+    try {
+      List<BluetoothDevice> connectedDevices = FlutterBluePlus.connectedDevices;
 
-    FlutterBluePlus.startScan(
-      timeout: const Duration(seconds: 25),
-      withServices: [
-        Guid.fromString(GlucoseProfileConfiguration.GLUCOSE_SERVICE_UUID),
-        Guid.fromString(GlucoseProfileConfiguration.ROCHE_SERVICE_UUID),
-      ],
-    );
-    final scanResultSub = FlutterBluePlus.scanResults.listen((scanResultList) {
-      if (!deviceFound && appStatus == AppStatus.isScanning) {
-        connectToAvailableDevice(scanResultList);
+      for (final device in connectedDevices) {
+        await device.disconnect();
       }
-    });
-    final isScanningSub = FlutterBluePlus.isScanning.listen((event) {
-      if (event == false && appStatus == AppStatus.isScanning) {
+
+      final timeout = const Duration(seconds: 25);
+      FlutterBluePlus.startScan(
+        timeout: timeout,
+        withServices: [
+          Guid.fromString(GlucoseProfileConfiguration.GLUCOSE_SERVICE_UUID),
+          Guid.fromString(GlucoseProfileConfiguration.ROCHE_SERVICE_UUID),
+        ],
+      );
+      final scanResultSub = FlutterBluePlus.scanResults.listen((scanResultList) {
+        if (!deviceFound && appStatus == AppStatus.isScanning) {
+          connectToAvailableDevice(scanResultList);
+        }
+      });
+      FlutterBluePlus.cancelWhenScanComplete(scanResultSub);
+
+      await Future.delayed(timeout);
+      if (!deviceFound || appStatus == AppStatus.isScanning) {
         appStatus = AppStatus.isNoDeviceFound;
+        await FlutterBluePlus.stopScan();
       }
-    });
-    FlutterBluePlus.cancelWhenScanComplete(scanResultSub);
-    FlutterBluePlus.cancelWhenScanComplete(isScanningSub);
+    } catch (e, s) {
+      deviceFound = false;
+      appStatus = AppStatus.isNoDeviceFound;
+      TrackingManager.recordError(e, s);
+    }
   }
 
   void connectToAvailableDevice(List<ScanResult> scanResultList) async {
     for (var i = 0; i < scanResultList.length; i++) {
-      print("device: " + scanResultList[i].device.platformName);
       final result = scanResultList[i];
       if (result.device.platformName.contains('meter')) {
         deviceFound = true;
@@ -643,13 +648,11 @@ class _ScanDeviceViewState extends State<ScanDeviceView> with SingleTickerProvid
       // Tim Characteristic 0x2A18
       if (characteristic.characteristicUuid.str128 ==
           GlucoseProfileConfiguration.GLUCOSE_MEASUREMENT_CHARACTERISTIC_UUID) {
-        print('validating characteristic GLUCOSE_MEASUREMENT_CHARACTERISTIC_UUID');
         await characteristic.setNotifyValue(true);
         appStatus = AppStatus.isSyncing;
         previousDataCount = 0;
         glucoseMeasurementRecordList.clear();
         characteristicListener = characteristic.lastValueStream.listen((data) async {
-          print('lastValueStream: $data');
           if (data.isEmpty) {
             return;
           }
@@ -659,20 +662,15 @@ class _ScanDeviceViewState extends State<ScanDeviceView> with SingleTickerProvid
             glucoseMeasurementRecordList.add(glucoseMeasurementRecord);
           }
         });
-
-        // valueReceivedCharacteristicListener = characteristic.onValueReceived.listen((event) {
-        //   print('onValueReceived: $event');
-        // });
       }
 
       // Tim Characteristic 0x2A52
       if (characteristic.characteristicUuid.str128 ==
           GlucoseProfileConfiguration.RECORD_ACCESS_CONTROL_POINT_CHARACTERISTIC_UUID) {
-        print('validating characteristic RECORD_ACCESS_CONTROL_POINT_CHARACTERISTIC_UUID');
         await characteristic.setNotifyValue(true);
         List<int> requestData = [0x01, 0x01];
-        await characteristic.write(requestData, withoutResponse: true);
-        await Future.delayed(Duration(seconds: 20));
+        await characteristic.write(requestData);
+        await Future.delayed(Duration(seconds: 5));
         startCheckingData();
       }
     }
