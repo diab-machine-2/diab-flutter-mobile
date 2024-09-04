@@ -149,10 +149,10 @@ class _ConnectionInstructionsControllerState
         }
       }
     });
-    _channel.invokeMethod('init_IBle_Sdk');
     await Permission.location.request();
     await Permission.bluetoothScan.request();
     await Permission.bluetoothConnect.request();
+    _channel.invokeMethod('init_IBle_Sdk');
 
     final savedDevices = AppSettings.getNiproDevices();
     if (savedDevices.length != 0) {
