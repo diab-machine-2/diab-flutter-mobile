@@ -17,7 +17,7 @@ PODS:
     - GCDWebServer
     - HLSCachingReverseProxyServer
     - PINCache
-  - BranchSDK (2.2.2)
+  - BranchSDK (3.6.0)
   - Cache (6.0.0)
   - camera_avfoundation (0.0.1):
     - Flutter
@@ -154,8 +154,8 @@ PODS:
   - flutter_blue_plus/Protos (0.0.1):
     - Flutter
     - Protobuf (~> 3.21)
-  - flutter_branch_sdk (6.8.0):
-    - BranchSDK (~> 2.2.1)
+  - flutter_branch_sdk (8.1.0):
+    - BranchSDK (~> 3.6.0)
     - Flutter
   - flutter_facebook_login (0.0.1):
     - FBSDKCoreKit (~> 5.5)
@@ -534,7 +534,7 @@ SPEC CHECKSUMS:
   audio_session: 4f3e461722055d21515cf3261b64c973c062f345
   audioplayers_darwin: 877d9a4d06331c5c374595e46e16453ac7eafa40
   better_player: 2406bfe8175203c7a46fa15f9d778d73b12e1646
-  BranchSDK: 324f47ce8568005684cf024a47980bb713f47648
+  BranchSDK: 40ff1a13b1dc0729f79a9aae230418d25bf739a8
   Cache: 4ca7e00363fca5455f26534e5607634c820ffc2d
   camera_avfoundation: 8b8d780bcfb6a4a02b0fbe2b4bd17b5b71946e68
   device_info: d7d233b645a32c40dfdc212de5cf646ca482f175
@@ -563,7 +563,7 @@ SPEC CHECKSUMS:
   FirebaseSharedSwift: c92645b392db3c41a83a0aa967de16f8bad25568
   Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
   flutter_blue_plus: 316ac8d1179789616d2c148e8a03c37720e63933
-  flutter_branch_sdk: 938f6f386a976356ee7e5f60969e53d4ae5704d9
+  flutter_branch_sdk: e5b94559acdc8596fe7b68598a706879602cb0e7
   flutter_facebook_login: cfb5659f686b1c575ef205c6b6fd20db9679d3c4
   flutter_image_compress_common: ec1d45c362c9d30a3f6a0426c297f47c52007e3e
   flutter_inapp_purchase: 5c6a1ac3f11b11d0c8c0321c0c41c1f05805e4c8
