@@ -195,7 +195,7 @@ public class MainActivity extends FlutterActivity {
                         emitData("event_cancel", null);
                     }
                 }
-        );      
+        );
     }
 
 
@@ -205,7 +205,7 @@ public class MainActivity extends FlutterActivity {
         public void CallbackInitSDK(int version) {
             emitData("init_success", null);
                     emitData("SDK init Success with Version : " + version, null);
-            
+
         }
 
         @Override
@@ -233,7 +233,7 @@ public class MainActivity extends FlutterActivity {
                         return;
                     }
 
-                    
+
                     for (int i = mRecords.size() - 1; i >= 0; i--) {
                         final IBLE_GlucoseRecord glucoseRecord = mRecords.valueAt(i);
                         Map<String, String> map = new HashMap();
@@ -241,7 +241,7 @@ public class MainActivity extends FlutterActivity {
                         map.put("date", String.valueOf(glucoseRecord.time));
                         data.add(map);
                     }
-                    
+
                     emitData("get_data_success", data);
         }
 
@@ -525,7 +525,7 @@ public class MainActivity extends FlutterActivity {
         ExtendedDevice device = mDeviceAdapter.getItem(address);
                 if (device != null) {
                     emitData("connecting device", null);
-                    IBLE_Manager.getInstance().ConnectDevice(device.device.toString());
+                    IBLE_Manager.getInstance().ConnectDevice(device.device.getAddress());
                 } else {
                     emitData("device_not_connect", null);
                 }

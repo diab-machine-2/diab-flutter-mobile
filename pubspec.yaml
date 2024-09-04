@@ -128,7 +128,7 @@ dependencies:
   health: ^10.2.0
   flutter_inappwebview: ^5.7.2+3
   # flutter_app_version_checker: ^0.3.2
-  flutter_blue_plus: 1.32.11
+  flutter_blue_plus: ^1.32.11
   # fwfh_text_style: ^2.22.8+3
   store_redirect: ^2.0.1
   youtube_player_flutter: ^8.1.2
