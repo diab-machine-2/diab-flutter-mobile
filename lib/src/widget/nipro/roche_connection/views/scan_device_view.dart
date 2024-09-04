@@ -17,6 +17,7 @@ import 'package:medical/src/utils/date_utils.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
+import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widgets/button_widget.dart';
 import 'package:medical/src/widgets/custom_checkbox_widget.dart';
 import '../blocs/rocheConnection_cubit.dart';
@@ -43,8 +44,7 @@ class ScanDeviceView extends StatefulWidget {
   State<ScanDeviceView> createState() => _ScanDeviceViewState();
 }
 
-class _ScanDeviceViewState extends State<ScanDeviceView>
-    with SingleTickerProviderStateMixin {
+class _ScanDeviceViewState extends State<ScanDeviceView> with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   List<ScanResult> resultList = [];
   BluetoothDevice? device;
@@ -67,8 +67,8 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
 
   @override
   void initState() {
-    startScan();
-    checkAppStatus();
+    _startScan();
+    _checkAppStatus();
     super.initState();
     _controller = AnimationController(
       duration: Duration(seconds: 3),
@@ -76,7 +76,7 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
     )..repeat();
   }
 
-  void checkAppStatus() {
+  void _checkAppStatus() {
     Timer.periodic(Duration(seconds: 1), (timer) {
       secondsStreamController.add(DateTime.now().second);
     });
@@ -168,30 +168,24 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
     );
   }
 
-  Future<void> submitSyncDataNew(
-      List<Map<String, String>> selectedGlucose) async {
+  Future<void> submitSyncDataNew(List<Map<String, String>> selectedGlucose) async {
     setState(() {
       isLoading = true;
     });
-    bool result = await GlucoseClient().postGlucoseInputs(selectedGlucose,
-        modelName: modelName, modelNumber: modelNumber);
+    bool result = await GlucoseClient()
+        .postGlucoseInputs(selectedGlucose, modelName: modelName, modelNumber: modelNumber);
     setState(() {
       isLoading = false;
     });
     if (result) {
-      Observable.instance
-          .notifyObservers([], notifyName: Const.NAVIGATE_TO_PROFILE_TAB);
-      Navigator.of(context)
-          .popUntil((route) => route.settings.name == NavigatorName.tabbar);
+      Observable.instance.notifyObservers([], notifyName: Const.NAVIGATE_TO_PROFILE_TAB);
+      Navigator.of(context).popUntil((route) => route.settings.name == NavigatorName.tabbar);
       Navigator.pushNamed(context, NavigatorName.detail_blood_sugar);
-      Message.showToastMessage(
-          context, "Đồng bộ chỉ số đường huyết thành công!");
+      Message.showToastMessage(context, "Đồng bộ chỉ số đường huyết thành công!");
       Future.delayed(Duration(seconds: 2)).then((value) => Observable.instance
-          .notifyObservers([],
-              notifyName: "glucose_change_data", map: {'index': 1}));
+          .notifyObservers([], notifyName: "glucose_change_data", map: {'index': 1}));
     } else {
-      Message.showToastMessage(
-          context, 'Không thể đồng bộ dữ liệu, xin vui lòng thử lại sau.');
+      Message.showToastMessage(context, 'Không thể đồng bộ dữ liệu, xin vui lòng thử lại sau.');
     }
   }
 
@@ -247,8 +241,7 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
                         selectedGlucose.add(glucoseData);
                       }
                       setState(() {
-                        selectAllData =
-                            selectedGlucose.length == glucosedList.length;
+                        selectAllData = selectedGlucose.length == glucosedList.length;
                       });
                     },
                     glucoseUnits: glucoseUnits,
@@ -422,8 +415,7 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
       children: [
         _btnClose(context),
         Container(
-          constraints: BoxConstraints(
-              minHeight: AppMediaQuery.deviceHeigthAvailable - 100),
+          constraints: BoxConstraints(minHeight: AppMediaQuery.deviceHeigthAvailable - 100),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
@@ -473,12 +465,13 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
           width: double.infinity,
           child: ButtonWidget(
             title: 'Kết nối lại',
-            onPressed: () {
+            onPressed: () async {
+              await FlutterBluePlus.stopScan();
               setState(() {
+                deviceFound = false;
                 appStatus = AppStatus.isScanning;
               });
-              FlutterBluePlus
-                  .startScan(timeout: const Duration(seconds: 25));
+              _startScan();
             },
           ),
         )
@@ -546,29 +539,42 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
     );
   }
 
-  startScan() async {
-    List<BluetoothDevice> connectedDevices =
-        FlutterBluePlus.connectedDevices;
-    connectedDevices.forEach((element) {
-      element.disconnect();
-    });
+  void _startScan() async {
+    try {
+      List<BluetoothDevice> connectedDevices = FlutterBluePlus.connectedDevices;
 
-    FlutterBluePlus.startScan(timeout: const Duration(seconds: 25));
-    final scanResultSub = FlutterBluePlus.scanResults.listen((scanResultList) {
-      if (!deviceFound && appStatus == AppStatus.isScanning) {
-        connectToAvailableDevice(scanResultList);
+      for (final device in connectedDevices) {
+        await device.disconnect();
       }
-    });
-    final isScanningSub = FlutterBluePlus.isScanning.listen((event) {
-      if (event == false && appStatus == AppStatus.isScanning) {
+
+      final timeout = const Duration(seconds: 25);
+      FlutterBluePlus.startScan(
+        timeout: timeout,
+        withServices: [
+          Guid.fromString(GlucoseProfileConfiguration.GLUCOSE_SERVICE_UUID),
+          Guid.fromString(GlucoseProfileConfiguration.ROCHE_SERVICE_UUID),
+        ],
+      );
+      final scanResultSub = FlutterBluePlus.scanResults.listen((scanResultList) {
+        if (!deviceFound && appStatus == AppStatus.isScanning) {
+          connectToAvailableDevice(scanResultList);
+        }
+      });
+      FlutterBluePlus.cancelWhenScanComplete(scanResultSub);
+
+      await Future.delayed(timeout);
+      if (!deviceFound || appStatus == AppStatus.isScanning) {
         appStatus = AppStatus.isNoDeviceFound;
+        await FlutterBluePlus.stopScan();
       }
-    });
-    FlutterBluePlus.cancelWhenScanComplete(scanResultSub);
-    FlutterBluePlus.cancelWhenScanComplete(isScanningSub);
+    } catch (e, s) {
+      deviceFound = false;
+      appStatus = AppStatus.isNoDeviceFound;
+      TrackingManager.recordError(e, s);
+    }
   }
 
-  connectToAvailableDevice(List<ScanResult> scanResultList) async {
+  void connectToAvailableDevice(List<ScanResult> scanResultList) async {
     for (var i = 0; i < scanResultList.length; i++) {
       final result = scanResultList[i];
       if (result.device.platformName.contains('meter')) {
@@ -578,7 +584,7 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
         device = result.device;
         appStatus = AppStatus.isConnecting;
         await FlutterBluePlus.stopScan();
-        return;
+        // return;
       }
     }
   }
@@ -586,8 +592,7 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
   bool isSelected(Map<String, String> glucose) {
     bool isSelected = false;
     selectedGlucose.forEach((element) {
-      if (element['glucose'] == glucose['glucose'] &&
-          element['date'] == glucose['date']) {
+      if (element['glucose'] == glucose['glucose'] && element['date'] == glucose['date']) {
         isSelected = true;
       }
     });
@@ -595,32 +600,30 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
   }
 
   Future<void> connectDevice(BluetoothDevice deviceFounded) async {
-    List<BluetoothService> services = await deviceFounded.discoverServices();
+    List<BluetoothService> services = await deviceFounded.discoverServices(
+      subscribeToServicesChanged: false,
+    );
 
     // Tìm Service 0x1808
     BluetoothService serviceGlucoseMeasurement = services.firstWhere((service) {
-      return service.serviceUuid.str128 ==
-          GlucoseProfileConfiguration.GLUCOSE_SERVICE_UUID;
+      return service.serviceUuid.str128 == GlucoseProfileConfiguration.GLUCOSE_SERVICE_UUID;
     });
 
     // Tim Characteristic 0x2A18
-    BluetoothCharacteristic charGlucoseMeasurement =
-        serviceGlucoseMeasurement.characteristics.firstWhere((characteristic) =>
+    BluetoothCharacteristic charGlucoseMeasurement = serviceGlucoseMeasurement.characteristics
+        .firstWhere((characteristic) =>
             characteristic.characteristicUuid.str128 ==
-            GlucoseProfileConfiguration
-                .GLUCOSE_MEASUREMENT_CHARACTERISTIC_UUID);
+            GlucoseProfileConfiguration.GLUCOSE_MEASUREMENT_CHARACTERISTIC_UUID);
 
-    // // Bật noti cho 0x2A18
+    // Bật noti cho 0x2A18
     await charGlucoseMeasurement.setNotifyValue(true);
     appStatus = AppStatus.isConnected;
 
     BluetoothService rocheService = services.firstWhere((service) {
-      return service.serviceUuid.str128 ==
-          GlucoseProfileConfiguration.ROCHE_SERVICE_UUID;
+      return service.serviceUuid.str128 == GlucoseProfileConfiguration.ROCHE_SERVICE_UUID;
     });
 
-    for (BluetoothCharacteristic rocheCharacteristic
-        in rocheService.characteristics) {
+    for (BluetoothCharacteristic rocheCharacteristic in rocheService.characteristics) {
       if (rocheCharacteristic.characteristicUuid.str128 ==
           GlucoseProfileConfiguration.MODEL_NUMBER_STRING_UUID) {
         List<int> modelNumberStringValue = await rocheCharacteristic.read();
@@ -637,13 +640,11 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
             return;
           }
         });
-        updateGlucoseUnit(glucoseUnits,
-            modelNameParam: modelName, modelNoParam: modelNo);
+        updateGlucoseUnit(glucoseUnits, modelNameParam: modelName, modelNoParam: modelNo);
       }
     }
 
-    for (BluetoothCharacteristic characteristic
-        in serviceGlucoseMeasurement.characteristics) {
+    for (BluetoothCharacteristic characteristic in serviceGlucoseMeasurement.characteristics) {
       // Tim Characteristic 0x2A18
       if (characteristic.characteristicUuid.str128 ==
           GlucoseProfileConfiguration.GLUCOSE_MEASUREMENT_CHARACTERISTIC_UUID) {
@@ -652,6 +653,9 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
         previousDataCount = 0;
         glucoseMeasurementRecordList.clear();
         characteristicListener = characteristic.lastValueStream.listen((data) async {
+          if (data.isEmpty) {
+            return;
+          }
           GlucoseMeasurementRecord glucoseMeasurementRecord =
               GlucoseFunctions().readDataFrom2A18(data);
           if (glucoseMeasurementRecord.isBloodGlucose) {
@@ -662,12 +666,11 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
 
       // Tim Characteristic 0x2A52
       if (characteristic.characteristicUuid.str128 ==
-          GlucoseProfileConfiguration
-              .RECORD_ACCESS_CONTROL_POINT_CHARACTERISTIC_UUID) {
+          GlucoseProfileConfiguration.RECORD_ACCESS_CONTROL_POINT_CHARACTERISTIC_UUID) {
         await characteristic.setNotifyValue(true);
         List<int> requestData = [0x01, 0x01];
         await characteristic.write(requestData);
-        await Future.delayed(Duration(seconds: 3));
+        await Future.delayed(Duration(seconds: 5));
         startCheckingData();
       }
     }
@@ -676,10 +679,8 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
   Future<void> updateGlucoseUnit(GlucoseUnitsFlag glucoseUnitsFlag,
       {String? modelNameParam, String? modelNoParam}) async {
     bool isMilligramPerDeciliter = AppSettings.userInfo!.glucoseUnit == 1;
-    if (glucoseUnitsFlag == GlucoseUnitsFlag.mgPerDL &&
-        !isMilligramPerDeciliter) {
-      ScheduleGlucoseTimeModel timeModel =
-          await UserClient().fetchScheduleGlucoseSetting();
+    if (glucoseUnitsFlag == GlucoseUnitsFlag.mgPerDL && !isMilligramPerDeciliter) {
+      ScheduleGlucoseTimeModel timeModel = await UserClient().fetchScheduleGlucoseSetting();
       await UserClient().updateScheduleGlucoseSetting(ScheduleGlucoseTimeModel(
         beforeEat: timeModel.beforeEat,
         afterEat: timeModel.afterEat,
@@ -688,10 +689,8 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
       ));
       await UserClient().fetchUser();
       Observable.instance.notifyObservers([], notifyName: "refresh_home");
-    } else if (glucoseUnitsFlag == GlucoseUnitsFlag.mmolPerL &&
-        isMilligramPerDeciliter) {
-      ScheduleGlucoseTimeModel timeModel =
-          await UserClient().fetchScheduleGlucoseSetting();
+    } else if (glucoseUnitsFlag == GlucoseUnitsFlag.mmolPerL && isMilligramPerDeciliter) {
+      ScheduleGlucoseTimeModel timeModel = await UserClient().fetchScheduleGlucoseSetting();
       await UserClient().updateScheduleGlucoseSetting(ScheduleGlucoseTimeModel(
         beforeEat: timeModel.beforeEat,
         afterEat: timeModel.afterEat,
@@ -727,8 +726,8 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
 
     if (glucoseMeasurementRecordList.isNotEmpty) {
       glucoseMeasurementRecordList.forEach((element) {
-        final glucose = roundAsFixed(roundDouble(element
-            .convertGlucoseConcentrationValueToMilligramsPerDeciliter()));
+        final glucose = roundAsFixed(
+            roundDouble(element.convertGlucoseConcentrationValueToMilligramsPerDeciliter()));
 
         if (!uniqueValues.contains(element.calendar)) {
           glucoseDataRequest.add({
@@ -739,14 +738,11 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
         }
       });
 
-      final result =
-          await GlucoseClient().fetchGlucoseInputNotExist(glucoseDataRequest);
+      final result = await GlucoseClient().fetchGlucoseInputNotExist(glucoseDataRequest);
 
       result.forEach((element) {
-        glucoseDataList.add({
-          'glucose': element['glucose'].toString(),
-          'date': element['createDate'].toString()
-        });
+        glucoseDataList.add(
+            {'glucose': element['glucose'].toString(), 'date': element['createDate'].toString()});
       });
 
       selectAllData = true;
