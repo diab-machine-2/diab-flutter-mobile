@@ -159,7 +159,9 @@
 	<key>branch_universal_link_domains</key>
 	<array>
 		<string>diabvn.app.link</string>
+		<string>diabvn.test-app.link</string>
 		<string>diabvn-alternate.app.link</string>
+		<string>app.diab.com.vn</string>
 	</array>
 	<key>io.flutter.embedded_views_preview</key>
 	<false/>
