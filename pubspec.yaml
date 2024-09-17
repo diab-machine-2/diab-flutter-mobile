@@ -152,7 +152,7 @@ dependencies:
     git:
       url: https://github.com/ngocphuc1612/zalo_flutter
       tag: 0.0.8
-  flutter_branch_sdk: ^6.9.0
+  flutter_branch_sdk: ^8.1.0
   in_app_review: ^2.0.9
 
 dev_dependencies:
@@ -168,7 +168,7 @@ dependency_overrides:
   meta: 1.10.0
   fwfh_text_style: 2.23.8 # <- to build with flutter 3.16
   visibility_detector: 0.4.0+2
-  js: 0.7.0 # <- to build with flutter 3.16
+  js: 0.7.1
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
