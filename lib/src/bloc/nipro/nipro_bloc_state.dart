@@ -25,7 +25,7 @@ class NiproStateListDevice extends NiproState {
   }
 
   @override
-  List<Object> get props => [devices];
+  List<Object> get props => [devices, DateTime.now()];
 }
 
 class NiproStateConnectingDevice extends NiproState {

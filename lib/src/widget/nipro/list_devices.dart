@@ -5,19 +5,9 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:medical/src/bloc/nipro/model/nipro_device.dart';
 import 'package:medical/src/bloc/nipro/nipro_bloc.dart';
 
-class ListDevices extends StatefulWidget {
+class ListDevices extends StatelessWidget {
   final VoidCallback request;
   ListDevices({Key? key, required this.request}) : super(key: key);
-
-  @override
-  State<ListDevices> createState() => ListDevicesState();
-}
-
-class ListDevicesState extends State<ListDevices> {
-  @override
-  void initState() {
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -103,7 +93,7 @@ class ListDevicesState extends State<ListDevices> {
                                       ),
                                       GestureDetector(
                                         onTap: () {
-                                          widget.request();
+                                          request();
                                         },
                                         child: Container(
                                           height: 48,
