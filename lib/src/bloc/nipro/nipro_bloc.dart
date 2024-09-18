@@ -138,7 +138,7 @@ class NiproBloc extends Bloc<NiproEvent, NiproState> {
             }
           }
           // emit event
-          emit(NiproStateListDevice(devices: _devices, isScanning: true));
+          emit(NiproStateListDevice(devices: [..._devices], isScanning: true));
           break;
         case 'device_connected':
           if (!_connectOnly) {

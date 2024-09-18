@@ -463,7 +463,9 @@ public class MainActivity extends FlutterActivity {
     private void startScan() {
         mLocationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
         initIBle();
-        mDeviceAdapter.clearDevices();
+        if (mDeviceAdapter != null) {
+            mDeviceAdapter.clearDevices();
+        } 
         try {
             if (mBluetoothAdapter.getState() == BluetoothAdapter.STATE_ON) {
                 String xStr = Integer.toString(Build.VERSION.SDK_INT);
