@@ -89,6 +89,8 @@ import 'widget/shared_profile/pages/share_app_detail/share_app_detail.dart';
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 class App extends StatelessWidget {
+  final _niproBloc = NiproBloc();
+
   @override
   Widget build(BuildContext context) {
     return ScreenUtilInit(
@@ -628,7 +630,7 @@ class App extends StatelessWidget {
 
         return MultiBlocProvider(
           providers: [
-            BlocProvider.value(value: NiproBloc()),
+            BlocProvider.value(value: _niproBloc),
           ],
           child: page,
         );
