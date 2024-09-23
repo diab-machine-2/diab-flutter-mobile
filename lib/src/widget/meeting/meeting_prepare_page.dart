@@ -1,14 +1,19 @@
+import 'dart:io';
+
 import 'package:bot_toast/bot_toast.dart';
 import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_in_app_pip/flutter_in_app_pip.dart';
+import 'package:flutter_zoom_meeting/zoom_options.dart';
+import 'package:flutter_zoom_meeting/zoom_view.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/service/zalo_service.dart';
 import 'package:medical/src/service/zoom_service.dart';
 import 'package:medical/src/utils/navigator_name.dart';
+import 'package:medical/src/widget/helper/tracking_manager.dart';
 
-MethodChannel _channel = const MethodChannel("DiaB_MeetingMC");
+// MethodChannel _channel = const MethodChannel("DiaB_MeetingMC");
 
 class MeetingPreparePage extends StatefulWidget {
   const MeetingPreparePage({super.key});
@@ -146,22 +151,74 @@ class _MeetingPreparePageState extends State<MeetingPreparePage> {
       String username = AppSettings.userInfo?.fullName ?? "Test Meeting";
       String jwtToken = _generateToken(username);
 
-      bool authenticated = await _channel.invokeMethod("initZoom", {
-        "jwtToken": jwtToken,
-      });
+      ZoomOptions zoomOptions = ZoomOptions(
+        domain: "zoom.us",
+        jwtToken: jwtToken,
+      );
 
-      if (!authenticated) {
-        BotToast.closeAllLoading();
-        BotToast.showText(text: "Lỗi kết nối");
-        return;
+      final meetingOptions = ZoomMeetingOptions(
+        // zoomAccessToken:zoomAccessToken,
+        meetingId: meetingID,
+        meetingPassword: password,
+        displayName: username,
+
+        /// pass meeting password for join meeting only
+        disableDialIn: "true",
+        disableDrive: "true",
+        disableTitlebar: "false",
+        viewOptions: "true",
+        autoConnectInternetAudio: "true",
+        muteAudioWhenJoinMeeting: "true",
+        meetingInviteHidden: "true",
+        meetingInviteUrlHidden: "true",
+        meetingShareHidden: "true",
+        recordButtonHidden: "true",
+        meetingPasswordHidden: "true",
+      );
+
+      final zoom = ZoomView();
+      final results = await zoom.initZoom(zoomOptions);
+      print('---------- pip pip success initialize zoom sdk');
+      if (results[0] == 0) {
+        zoom.onMeetingStatus().listen((status) {
+          if (kDebugMode) {
+            print("[Meeting Status Stream] : " + status[0] + " - " + status[1]);
+          }
+          if (_isMeetingEnded(status[0])) {
+            _unInitialize();
+            if (kDebugMode) {
+              print("[Meeting Status] :- Ended");
+            }
+          }
+        });
+        if (kDebugMode) {
+          print("listen on event channel");
+        }
+        zoom.joinMeeting(meetingOptions).then((joinMeetingResult) {});
+      } else {
+        if (kDebugMode) {
+          print("[Error] : $results");
+        }
       }
 
-      _channel.invokeMethod("joinMeeting", {
-        "meetingID": meetingID,
-        "password": password,
-        "username": username,
-      });
-    } catch (e) {
+      // bool authenticated = await _channel.invokeMethod("initZoom", {
+      //   "jwtToken": jwtToken,
+      // });
+
+      // if (!authenticated) {
+      //   BotToast.closeAllLoading();
+      //   BotToast.showText(text: "Lỗi kết nối");
+      //   return;
+      // }
+
+      // _channel.invokeMethod("joinMeeting", {
+      //   "meetingID": meetingID,
+      //   "password": password,
+      //   "username": username,
+      // });
+    } catch (e, s) {
+      print("$e, $s");
+      TrackingManager.recordError(e, s);
       BotToast.showText(text: "Lỗi kết nối");
     } finally {
       BotToast.closeAllLoading();
@@ -196,5 +253,23 @@ class _MeetingPreparePageState extends State<MeetingPreparePage> {
       print(s);
       throw e;
     }
+  }
+
+  bool _isMeetingEnded(String status) {
+    bool result = false;
+
+    if (Platform.isAndroid) {
+      result = status == "MEETING_STATUS_DISCONNECTING" ||
+          status == "MEETING_STATUS_FAILED";
+    } else {
+      result = status == "MEETING_STATUS_IDLE";
+    }
+
+    return result;
+  }
+
+  void _unInitialize() async {
+    final zoom = ZoomView();
+    await zoom.unInitialize();
   }
 }

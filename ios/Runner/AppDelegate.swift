@@ -5,7 +5,7 @@ import CoreBluetooth
 import ibtFramework
 import ZaloSDK
 import BranchSDK
-import MobileRTC
+// import MobileRTC
 
 @UIApplicationMain
 @objc class AppDelegate: FlutterAppDelegate {
@@ -17,8 +17,8 @@ import MobileRTC
     private var glucoseData: [RecordInfo]? = []
     private var isInit: Bool = false
     
-    private var zoomInited: Bool = false
-    private var zoomAuthResult: FlutterResult?
+    // private var zoomInited: Bool = false
+    // private var zoomAuthResult: FlutterResult?
     
     override func application(
         _ application: UIApplication,
@@ -62,18 +62,18 @@ import MobileRTC
         eventChannel.setStreamHandler(IBleStreamHandler())
         
         // Start method-channel handler for zoom-meeting-sdk
-        let zoomMeetingSdkMC = FlutterMethodChannel(name: "DiaB_MeetingMC", binaryMessenger: controller.binaryMessenger)
-        zoomMeetingSdkMC.setMethodCallHandler({
-            (call: FlutterMethodCall, result: @escaping FlutterResult) -> Void in
-            if call.method == "initZoom" {
-                self.initZoom(info: call.arguments as! Dictionary<String, Any>, result: result)
-            } else if call.method == "joinMeeting" {
-                self.joinMeeting(info: call.arguments as! Dictionary<String, Any>, result: result)
-            } else {
-                result(FlutterMethodNotImplemented)
-                return
-            }
-        })
+        // let zoomMeetingSdkMC = FlutterMethodChannel(name: "DiaB_MeetingMC", binaryMessenger: controller.binaryMessenger)
+        // zoomMeetingSdkMC.setMethodCallHandler({
+        //     (call: FlutterMethodCall, result: @escaping FlutterResult) -> Void in
+        //     if call.method == "initZoom" {
+        //         self.initZoom(info: call.arguments as! Dictionary<String, Any>, result: result)
+        //     } else if call.method == "joinMeeting" {
+        //         self.joinMeeting(info: call.arguments as! Dictionary<String, Any>, result: result)
+        //     } else {
+        //         result(FlutterMethodNotImplemented)
+        //         return
+        //     }
+        // })
         
         
         GeneratedPluginRegistrant.register(with: self)
@@ -84,25 +84,25 @@ import MobileRTC
         return ZDKApplicationDelegate.sharedInstance().application(app, open: url, options: options)
     }
     
-    override func applicationWillResignActive(_ application: UIApplication) {
-        super.applicationWillResignActive(application)
-        MobileRTC.shared().appWillResignActive()
-    }
+    // override func applicationWillResignActive(_ application: UIApplication) {
+    //     super.applicationWillResignActive(application)
+    //     MobileRTC.shared().appWillResignActive()
+    // }
     
-    override func applicationDidBecomeActive(_ application: UIApplication) {
-        super.applicationDidBecomeActive(application)
-        MobileRTC.shared().appDidBecomeActive()
-    }
+    // override func applicationDidBecomeActive(_ application: UIApplication) {
+    //     super.applicationDidBecomeActive(application)
+    //     MobileRTC.shared().appDidBecomeActive()
+    // }
     
-    override func applicationDidEnterBackground(_ application: UIApplication) {
-        super.applicationDidEnterBackground(application)
-        MobileRTC.shared().appDidEnterBackgroud()
-    }
+    // override func applicationDidEnterBackground(_ application: UIApplication) {
+    //     super.applicationDidEnterBackground(application)
+    //     MobileRTC.shared().appDidEnterBackgroud()
+    // }
     
-    override func applicationWillTerminate(_ application: UIApplication) {
-        super.applicationWillTerminate(application)
-        MobileRTC.shared().appWillTerminate()
-    }
+    // override func applicationWillTerminate(_ application: UIApplication) {
+    //     super.applicationWillTerminate(application)
+    //     MobileRTC.shared().appWillTerminate()
+    // }
     
     private func requestPermission(result: FlutterResult) {
         
@@ -374,141 +374,141 @@ extension AppDelegate: iDeviceManagerDelegate {
                 
     }
 }
-extension AppDelegate: MobileRTCAuthDelegate, MobileRTCMeetingServiceDelegate {
-    func initZoom(info: Dictionary<String, Any>, result: @escaping FlutterResult) {
-        if (MobileRTC.shared().getAuthService()?.isLoggedIn() == true) {
-            return result(true)
-        }
-        let jwtToken = info["jwtToken"] as! String
-        let domain: String = "https://zoom.us"
-        zoomAuthResult = result
+// extension AppDelegate: MobileRTCAuthDelegate, MobileRTCMeetingServiceDelegate {
+//     func initZoom(info: Dictionary<String, Any>, result: @escaping FlutterResult) {
+//         if (MobileRTC.shared().getAuthService()?.isLoggedIn() == true) {
+//             return result(true)
+//         }
+//         let jwtToken = info["jwtToken"] as! String
+//         let domain: String = "https://zoom.us"
+//         zoomAuthResult = result
 
-        if (!zoomInited) {
-            // init zoom sdk
-            let initContext = MobileRTCSDKInitContext()
-            initContext.domain = domain
-            // Set your Apple AppGroupID here
-            // initContext.appGroupId = appGroupId
-            // Turn on SDK logging
-            initContext.enableLog = true
-            initContext.locale = .default
+//         if (!zoomInited) {
+//             // init zoom sdk
+//             let initContext = MobileRTCSDKInitContext()
+//             initContext.domain = domain
+//             // Set your Apple AppGroupID here
+//             // initContext.appGroupId = appGroupId
+//             // Turn on SDK logging
+//             initContext.enableLog = true
+//             initContext.locale = .default
             
-            let sdkInitSuccess = MobileRTC.shared().initialize(initContext)
-            if (!sdkInitSuccess) {
-                print("Failed to initialize Zoom SDK")
-                result(FlutterError(code: "SDK_INIT_FAILED", message: "Failed to initialize Zoom SDK", details: nil))
-                return
-            }
+//             let sdkInitSuccess = MobileRTC.shared().initialize(initContext)
+//             if (!sdkInitSuccess) {
+//                 print("Failed to initialize Zoom SDK")
+//                 result(FlutterError(code: "SDK_INIT_FAILED", message: "Failed to initialize Zoom SDK", details: nil))
+//                 return
+//             }
             
-            zoomInited = true
-        }
+//             zoomInited = true
+//         }
 
-        // Set the Zoom SDK root controller
-    //    let rootController = UIApplication.shared.windows.first?.rootViewController?.navigationController
-    //    let sdkRootController = MobileRTC.shared().setMobileRTCRootController(rootController)
-    //    if (sdkRootController == nil) {
-    //        print("Failed to set Zoom SDK root controller")
-    //        result(FlutterError(code: "SDK_INIT_FAILED", message: "Failed to set Zoom SDK root controller", details: nil))
-    //        return
-    //    }
+//         // Set the Zoom SDK root controller
+//     //    let rootController = UIApplication.shared.windows.first?.rootViewController?.navigationController
+//     //    let sdkRootController = MobileRTC.shared().setMobileRTCRootController(rootController)
+//     //    if (sdkRootController == nil) {
+//     //        print("Failed to set Zoom SDK root controller")
+//     //        result(FlutterError(code: "SDK_INIT_FAILED", message: "Failed to set Zoom SDK root controller", details: nil))
+//     //        return
+//     //    }
 
-        // Set auth service delegate
-        let authService = MobileRTC.shared().getAuthService()
-        if (authService != nil && authService?.isLoggedIn() == false) {
+//         // Set auth service delegate
+//         let authService = MobileRTC.shared().getAuthService()
+//         if (authService != nil && authService?.isLoggedIn() == false) {
 
-            print("Auth service is not nil")
+//             print("Auth service is not nil")
 
-            // Auth with JWT
-            authService!.delegate = self
-            authService!.jwtToken = jwtToken
-            authService!.sdkAuth()
+//             // Auth with JWT
+//             authService!.delegate = self
+//             authService!.jwtToken = jwtToken
+//             authService!.sdkAuth()
             
-        }
-        print("Zoom SDK initialized successfully")
-//        result(true)
-    }
+//         }
+//         print("Zoom SDK initialized successfully")
+// //        result(true)
+//     }
 
-    // join meeting
-    func joinMeeting(info: Dictionary<String, Any>, result: @escaping FlutterResult) {
-        // Join
-        let username = info["username"] as! String
-        let password = info["password"] as! String
-        let meetingNo = info["meetingID"] as! String
+//     // join meeting
+//     func joinMeeting(info: Dictionary<String, Any>, result: @escaping FlutterResult) {
+//         // Join
+//         let username = info["username"] as! String
+//         let password = info["password"] as! String
+//         let meetingNo = info["meetingID"] as! String
 
-        let options = MobileRTCMeetingJoinParam()
-        options.noAudio = false
-        options.noVideo = false
-        options.meetingNumber = meetingNo
-        options.password = password
-        options.userName = username
+//         let options = MobileRTCMeetingJoinParam()
+//         options.noAudio = false
+//         options.noVideo = false
+//         options.meetingNumber = meetingNo
+//         options.password = password
+//         options.userName = username
         
-        if let meetingSetting = MobileRTC.shared().getMeetingSettings() {
-            meetingSetting.setAutoConnectInternetAudio(true)
-            meetingSetting.disableDriveMode(true)
-            meetingSetting.enableVideoCallPicture(inPicture: true)
+//         if let meetingSetting = MobileRTC.shared().getMeetingSettings() {
+//             meetingSetting.setAutoConnectInternetAudio(true)
+//             meetingSetting.disableDriveMode(true)
+//             meetingSetting.enableVideoCallPicture(inPicture: true)
             
-            meetingSetting.meetingPasswordHidden = true
-            meetingSetting.meetingInviteHidden = true
-            meetingSetting.meetingInviteUrlHidden = true
-            meetingSetting.meetingShareHidden = true
-            meetingSetting.recordButtonHidden = true
+//             meetingSetting.meetingPasswordHidden = true
+//             meetingSetting.meetingInviteHidden = true
+//             meetingSetting.meetingInviteUrlHidden = true
+//             meetingSetting.meetingShareHidden = true
+//             meetingSetting.recordButtonHidden = true
             
-            meetingSetting.setMuteAudioWhenJoinMeeting(true)
-            meetingSetting.disableMinimizeMeeting(false)
-            meetingSetting.disableCopyMeetingUrl(true)
-        }
+//             meetingSetting.setMuteAudioWhenJoinMeeting(true)
+//             meetingSetting.disableMinimizeMeeting(false)
+//             meetingSetting.disableCopyMeetingUrl(true)
+//         }
         
 
-        if let meetingService = MobileRTC.shared().getMeetingService() {
-            meetingService.delegate = self
-            let ret = meetingService.joinMeeting(with: options)
-            print(ret)
-            result(nil)
-        }
+//         if let meetingService = MobileRTC.shared().getMeetingService() {
+//             meetingService.delegate = self
+//             let ret = meetingService.joinMeeting(with: options)
+//             print(ret)
+//             result(nil)
+//         }
         
-        print("Meeting Service empty")
-        return result(nil)
-    }
+//         print("Meeting Service empty")
+//         return result(nil)
+//     }
 
-    // print log for MobileRTCAuthDelegate functions
-    func onMobileRTCAuthReturn(_ returnValue: MobileRTCAuthError) {
-        print("onMobileRTCAuthReturn \(returnValue)")
-        if (zoomAuthResult == nil) {
-            return
-        }
-        if (returnValue == .success) {
-            zoomAuthResult!(true)
-        } else {
-            zoomAuthResult!(false)
-        }
-    }
+//     // print log for MobileRTCAuthDelegate functions
+//     func onMobileRTCAuthReturn(_ returnValue: MobileRTCAuthError) {
+//         print("onMobileRTCAuthReturn \(returnValue)")
+//         if (zoomAuthResult == nil) {
+//             return
+//         }
+//         if (returnValue == .success) {
+//             zoomAuthResult!(true)
+//         } else {
+//             zoomAuthResult!(false)
+//         }
+//     }
 
-    func onMobileRTCAuthExpired() {
-        print("onMobileRTCAuthExpired")
-    }
+//     func onMobileRTCAuthExpired() {
+//         print("onMobileRTCAuthExpired")
+//     }
 
-    func onMobileRTCLoginResult(_ returnValue: MobileRTCLoginFailReason) {
-        print("onMobileRTCLoginResult \(returnValue)")
-    }
+//     func onMobileRTCLoginResult(_ returnValue: MobileRTCLoginFailReason) {
+//         print("onMobileRTCLoginResult \(returnValue)")
+//     }
 
-    func onMobileRTCLogoutReturn(_ returnValue: Int) {
-        print("onMobileRTCLogoutReturn \(returnValue)")
-    }
+//     func onMobileRTCLogoutReturn(_ returnValue: Int) {
+//         print("onMobileRTCLogoutReturn \(returnValue)")
+//     }
 
-    // onNotificationServiceStatus
-    func onNotificationServiceStatus(_ status: MobileRTCNotificationServiceStatus, _ error: MobileRTCNotificationServiceError) {
-        print("onNotificationServiceStatus \(status) \(error)")
-    }
-    // END MobileRTCAuthDelegate functions
+//     // onNotificationServiceStatus
+//     func onNotificationServiceStatus(_ status: MobileRTCNotificationServiceStatus, _ error: MobileRTCNotificationServiceError) {
+//         print("onNotificationServiceStatus \(status) \(error)")
+//     }
+//     // END MobileRTCAuthDelegate functions
 
-    // print log for MobileRTCMeetingServiceDelegate functions
-    func onMeetingError(_ error: MobileRTCMeetError, message: String?) {
-        print("onMeetingError \(error) \(message ?? "")")
-    }
+//     // print log for MobileRTCMeetingServiceDelegate functions
+//     func onMeetingError(_ error: MobileRTCMeetError, message: String?) {
+//         print("onMeetingError \(error) \(message ?? "")")
+//     }
 
-    // onMeetingStateChange
-    func onMeetingStateChange(_ state: MobileRTCMeetingState) {
-        print("onMeetingStateChange \(state)")
-    }
+//     // onMeetingStateChange
+//     func onMeetingStateChange(_ state: MobileRTCMeetingState) {
+//         print("onMeetingStateChange \(state)")
+//     }
 
-}
+// }
