@@ -157,7 +157,9 @@ dependencies:
   dart_jsonwebtoken: ^2.14.0
 
   flutter_zoom_meeting:
-    path: /Users/phuctran/Desktop/Work/Projects/flutter_packages/flutter_zoom_meeting_sdk
+    git:
+      url: https://github.com/ngocphuc1612/flutter_zoom_meeting_sdk.git
+      ref: 1.0.3
 
 dev_dependencies:
   flutter_test:

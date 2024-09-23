@@ -984,6 +984,15 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.15.1"
+  flutter_zoom_meeting:
+    dependency: "direct main"
+    description:
+      path: "."
+      ref: "1.0.3"
+      resolved-ref: "998ce9a03fb337b544dacca0cf1758e9a55859d6"
+      url: "https://github.com/ngocphuc1612/flutter_zoom_meeting_sdk.git"
+    source: git
+    version: "1.0.3"
   fluttertoast:
     dependency: "direct main"
     description:
@@ -2176,5 +2185,5 @@ packages:
     source: git
     version: "0.0.8"
 sdks:
-  dart: ">=3.2.0 <4.0.0"
+  dart: ">=3.2.6 <4.0.0"
   flutter: ">=3.16.0"
