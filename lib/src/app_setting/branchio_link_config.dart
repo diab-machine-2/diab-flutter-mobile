@@ -5,6 +5,7 @@ import 'package:flutter_branch_sdk/flutter_branch_sdk.dart';
 import 'package:medical/src/app.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/modal/learning/learning_post_model.dart';
+import 'package:medical/src/service/zoom_service.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 
@@ -27,6 +28,13 @@ class BranchioLinkConfig {
         _processBookingCourseLink(
             data['\$course'] as String, data['\$end_time'] as String?);
         return;
+      } else if (data['+clicked_branch_link'] == true &&
+          data.containsKey("\$meetingId") &&
+          data.containsKey("\$meetingPassword")) {
+        String meetingId = data['\$meetingId'] as String;
+        String meetingPassword = data['\$meetingPassword'] as String;
+
+        ZoomService().launchZoomMeeting(meetingId, meetingPassword);
       }
       // TODO: Handle other deep link
     }, onError: (error) {
