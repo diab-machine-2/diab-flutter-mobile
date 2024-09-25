@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_branch_sdk/flutter_branch_sdk.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 // import 'package:flutter_zoom_videosdk/native/zoom_videosdk.dart';
@@ -111,6 +112,7 @@ Future<void> main() async {
   //   enableLog: true,
   // );
   // zoom.initSdk(initConfig);
+  await FlutterBranchSdk.init(enableLogging: false, disableTracking: false);
 
   SystemChrome.setPreferredOrientations(
       [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]).then((_) {

@@ -606,6 +606,8 @@ class _AppState extends State<App> {
                       return _buildRoute(
                           settings, MeetingWaitRoomPage(args: args));
                     }
+                  case NavigatorName.meeting_prepare:
+                    return _buildRoute(settings, MeetingPreparePage());
                   case NavigatorName.sync_screen:
                     return _buildRoute(settings, SyncScreenController());
                   case NavigatorName.sync_loading:

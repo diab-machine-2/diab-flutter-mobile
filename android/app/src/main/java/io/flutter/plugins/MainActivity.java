@@ -67,10 +67,6 @@ import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 import org.json.JSONObject;
 
-import io.branch.indexing.BranchUniversalObject;
-import io.branch.referral.Branch;
-import io.branch.referral.BranchError;
-import io.branch.referral.util.LinkProperties;
 import android.util.Log;
 // import javax.naming.spi.DirStateFactory.Result;
 
@@ -96,52 +92,7 @@ public class MainActivity extends FlutterActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 	}
-    @Override
-	protected void onStart() {
-		super.onStart();
-		Branch.sessionBuilder(this).withCallback(new Branch.BranchUniversalReferralInitListener() {
-			@Override
-			public void onInitFinished(BranchUniversalObject branchUniversalObject, LinkProperties linkProperties, BranchError error) {
-				if (error != null) {
-					Log.e("BranchSDK_Tester", "branch init failed. Caused by -" + error.getMessage());
-				} else {
-					Log.i("BranchSDK_Tester", "branch init complete!");
-					if (branchUniversalObject != null) {
-						Log.i("BranchSDK_Tester", "title " + branchUniversalObject.getTitle());
-						Log.i("BranchSDK_Tester", "CanonicalIdentifier " + branchUniversalObject.getCanonicalIdentifier());
-						Log.i("BranchSDK_Tester", "metadata " + branchUniversalObject.getContentMetadata().convertToJson());
-					}
 
-					if (linkProperties != null) {
-						Log.i("BranchSDK_Tester", "Channel " + linkProperties.getChannel());
-						Log.i("BranchSDK_Tester", "control params " + linkProperties.getControlParams());
-					}
-				}
-			}
-		}).withData(this.getIntent().getData()).init();
-	}
-    @Override
-    protected void onNewIntent(Intent intent) {
-        super.onNewIntent(intent);
-        try {
-            setIntent(intent);
-            // if activity is in foreground (or in backstack but partially visible) launching the same
-            // activity will skip onStart, handle this case with reInitSession
-            Branch.sessionBuilder(this).withCallback(branchReferralInitListener).reInit();
-        }
-        catch (Exception ignored) { }
-    }
-    private Branch.BranchReferralInitListener branchReferralInitListener = new Branch.BranchReferralInitListener() {
-    @Override
-    public void onInitFinished(JSONObject referringParams, BranchError error) {
-        // do stuff with deep link data (nav to page, display content, etc)
-        if (error != null) {
-            Log.e("BranchSDK_Tester", error.getMessage());
-        } else if (referringParams != null) {
-            Log.i("BranchSDK_Tester", referringParams.toString());
-        }
-    }
-};
     @Override
     protected void onDestroy() {
         IBLE_Manager.getInstance().DestroySDK();
