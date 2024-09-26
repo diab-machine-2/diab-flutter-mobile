@@ -52,12 +52,9 @@ android {
     }
 
     sourceSets { 
-        main.java.srcDirs += 'src/main/kotlin'
-    }
-
-    repositories {
-        flatDir{
-            dirs 'libs'
+        main {
+            java.srcDirs += 'src/main/kotlin'
+            jniLibs.srcDirs = ['libs']
         }
     }
 
@@ -99,7 +96,7 @@ android {
             // Signing with the debug keys for now, so `flutter run --release` works.
             signingConfig signingConfigs.release
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-            shrinkResources false
+            // shrinkResources false
         }
     }
 }
