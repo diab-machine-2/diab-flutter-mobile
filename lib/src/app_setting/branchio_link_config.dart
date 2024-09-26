@@ -20,6 +20,11 @@ class BranchioLinkConfig {
   String? _courseId;
   String? _endTime;
 
+  String? _meetingId;
+  String? _meetingPassword;
+  String? get meetingId => _meetingId;
+  String? get meetingPassword => _meetingPassword;
+
   void setUpHandleDeepLink() {
     _subLink = FlutterBranchSdk.listSession().listen((data) async {
       print('listenDynamicLinks - DeepLink Data: $data');
@@ -34,6 +39,14 @@ class BranchioLinkConfig {
         String meetingId = data['\$meetingId'] as String;
         String meetingPassword = data['\$meetingPassword'] as String;
 
+        // Not logged in => save meetingId and meetingPassword
+        if (AppSettings.userInfo == null) {
+          _meetingId = meetingId;
+          _meetingPassword = meetingPassword;
+          return;
+        }
+
+        // Logged in => launch zoom meeting
         ZoomService().launchZoomMeeting(meetingId, meetingPassword);
       }
       // TODO: Handle other deep link
@@ -71,6 +84,10 @@ class BranchioLinkConfig {
   }) async {
     // TODO:
     return '';
+  }
+
+  void removeMeetingId() {
+    _courseId = null;
   }
 
   void removeActivityId() {
