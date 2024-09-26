@@ -608,14 +608,17 @@ class App extends StatelessWidget {
                             providerKey: args['providerKey'],
                           ));
                     }
+                  case NavigatorName.meeting_prepare: {
+                    return _buildRoute(settings, MeetingPreparePage());
+                  }
                   case NavigatorName.meeting:
                     {
-                      if (settings.arguments is MeetingCubit) {
-                        final cubit = settings.arguments as MeetingCubit;
-                        return _buildRoute(settings, MeetingPage(null, cubit));
-                      }
+                      // if (settings.arguments is MeetingCubit) {
+                      //   final cubit = settings.arguments as MeetingCubit;
+                      //   return _buildRoute(settings, MeetingPage(null, cubit));
+                      // }
                       final args = settings.arguments as MeetingArguments;
-                      return _buildRoute(settings, MeetingPage(args, null));
+                      return _buildRoute(settings, MeetingPage(args));
                     }
                   // test ocr
                   case NavigatorName.test_ocr:

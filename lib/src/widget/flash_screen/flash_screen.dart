@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
+import 'package:medical/src/app_setting/branchio_link_config.dart';
 import 'package:medical/src/app_setting/deep_link_config.dart';
 import 'package:medical/src/app_setting/dynamic_link_config.dart';
 import 'package:medical/src/app_setting/firebase_remote_config.dart';
@@ -39,6 +40,7 @@ class _FlashScreenControllerState extends State<FlashScreenController> {
   }
 
   void _initStateAsync() async {
+    BranchioLinkConfig.instance.setUpHandleDeepLink();
     await DynamicLinkConfig.instance.setUpHandleDeepLink();
     await getSecuredModel();
     await getVersion();

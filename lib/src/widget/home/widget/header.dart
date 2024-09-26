@@ -5,8 +5,8 @@ import 'package:flutter_observer/Observable.dart';
 import 'package:flutter_observer/Observer.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
+import 'package:medical/src/app_setting/branchio_link_config.dart';
 import 'package:medical/src/app_setting/deep_link_config.dart';
-import 'package:medical/src/app_setting/dynamic_link_config.dart';
 import 'package:medical/src/modal/error/error_model.dart';
 import 'package:medical/src/modal/user/motivation_model.dart';
 import 'package:medical/src/repo/notification/notification_client.dart';
@@ -40,8 +40,8 @@ class _HomeHeaderState extends State<HomeHeader> with Observer {
     super.initState();
     Observable.instance.addObserver(this);
     DeepLinkConfig.setUpHandleDeepLink(onHaveLink: (code) {
-      final String? zoomId = DynamicLinkConfig.instance.zoomId;
-      if (code?.isNotEmpty == true && zoomId == null) {
+      final String? meetingId = BranchioLinkConfig.instance.meetingId;
+      if (code?.isNotEmpty == true && meetingId == null) {
         ShareProfilePopup.instance
             .onHasSharedCode(context: context, code: code!);
       }
@@ -77,8 +77,8 @@ class _HomeHeaderState extends State<HomeHeader> with Observer {
       loadNotification(),
       loadMotivation(),
     ]);
-    final String? zoomId = DynamicLinkConfig.instance.zoomId;
-    if (widget.sharedCode?.isNotEmpty == true && zoomId == null) {
+    final String? meetingId = BranchioLinkConfig.instance.meetingId;
+    if (widget.sharedCode?.isNotEmpty == true && meetingId == null) {
       ShareProfilePopup.instance.onHasSharedCode(
           context: context, code: widget.sharedCode.toString());
     }

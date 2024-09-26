@@ -6,7 +6,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_branch_sdk/flutter_branch_sdk.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
-import 'package:flutter_zoom_videosdk/native/zoom_videosdk.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
+// import 'package:flutter_zoom_videosdk/native/zoom_videosdk.dart';
 import 'package:health/health.dart';
 import 'package:medical/src/app.dart';
 import 'package:medical/src/model/localization/localization.dart';
@@ -105,14 +106,13 @@ Future<void> main() async {
   await EasyLocalization.ensureInitialized();
   await Firebase.initializeApp();
 
+  // var zoom = ZoomVideoSdk();
+  // InitConfig initConfig = InitConfig(
+  //   domain: "zoom.us",
+  //   enableLog: true,
+  // );
+  // zoom.initSdk(initConfig);
   await FlutterBranchSdk.init(enableLogging: false, disableTracking: false);
-
-  var zoom = ZoomVideoSdk();
-  InitConfig initConfig = InitConfig(
-    domain: "zoom.us",
-    enableLog: true,
-  );
-  zoom.initSdk(initConfig);
 
   SystemChrome.setPreferredOrientations(
       [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]).then((_) {
