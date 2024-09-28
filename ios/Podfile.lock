@@ -11,7 +11,7 @@ PODS:
     - Flutter
   - audioplayers_darwin (0.0.1):
     - Flutter
-  - better_player (0.0.1):
+  - better_player_plus (1.0.0):
     - Cache (~> 6.0.0)
     - Flutter
     - GCDWebServer
@@ -344,7 +344,7 @@ DEPENDENCIES:
   - app_settings (from `.symlinks/plugins/app_settings/ios`)
   - audio_session (from `.symlinks/plugins/audio_session/ios`)
   - audioplayers_darwin (from `.symlinks/plugins/audioplayers_darwin/ios`)
-  - better_player (from `.symlinks/plugins/better_player/ios`)
+  - better_player_plus (from `.symlinks/plugins/better_player_plus/ios`)
   - BranchSDK
   - camera_avfoundation (from `.symlinks/plugins/camera_avfoundation/ios`)
   - device_info_plus (from `.symlinks/plugins/device_info_plus/ios`)
@@ -437,8 +437,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/audio_session/ios"
   audioplayers_darwin:
     :path: ".symlinks/plugins/audioplayers_darwin/ios"
-  better_player:
-    :path: ".symlinks/plugins/better_player/ios"
+  better_player_plus:
+    :path: ".symlinks/plugins/better_player_plus/ios"
   camera_avfoundation:
     :path: ".symlinks/plugins/camera_avfoundation/ios"
   device_info_plus:
@@ -525,7 +525,7 @@ SPEC CHECKSUMS:
   AppAuth: 501c04eda8a8d11f179dbe8637b7a91bb7e5d2fa
   audio_session: 4f3e461722055d21515cf3261b64c973c062f345
   audioplayers_darwin: 877d9a4d06331c5c374595e46e16453ac7eafa40
-  better_player: 2406bfe8175203c7a46fa15f9d778d73b12e1646
+  better_player_plus: 89f911bd69171edfe6d2ee689014355036bffdb0
   BranchSDK: 40ff1a13b1dc0729f79a9aae230418d25bf739a8
   Cache: 4ca7e00363fca5455f26534e5607634c820ffc2d
   camera_avfoundation: 8b8d780bcfb6a4a02b0fbe2b4bd17b5b71946e68
