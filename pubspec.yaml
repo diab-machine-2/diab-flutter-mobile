@@ -94,10 +94,11 @@ dependencies:
   flutter_inapp_purchase: 5.6.1
   #video player
   # better_player: 0.0.83
-  better_player:
-    git:
-      url: https://github.com/ngocphuc1612/betterplayer
-      tag: 0.0.85
+  # better_player:
+  #   git:
+  #     url: https://github.com/ngocphuc1612/betterplayer
+  #     tag: 0.0.85
+  better_player_plus: 1.0.6
   # video_thumbnail: ^0.5.2
   # path_provider: ^2.0.10
   #audio player
@@ -135,7 +136,6 @@ dependencies:
   # zoom video sdk
   flutter_zoom_videosdk:
     path: packages/zoom_video_sdk
-  wakelock_plus: 1.1.6
   # Metadata detection
   linkify: ^5.0.0
   # integrating ocr
@@ -166,6 +166,7 @@ dev_dependencies:
 dependency_overrides:
   provider: 6.0.2
   meta: 1.10.0
+  wakelock_plus: 1.1.6
   fwfh_text_style: 2.23.8 # <- to build with flutter 3.16
   visibility_detector: 0.4.0+2
   js: 0.7.0 # <- to build with flutter 3.16

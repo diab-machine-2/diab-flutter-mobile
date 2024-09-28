@@ -145,15 +145,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.0.2"
-  better_player:
+  better_player_plus:
     dependency: "direct main"
     description:
-      path: "."
-      ref: HEAD
-      resolved-ref: db1cd41ad58ec24f9b461acde9ff0ab8b44cc60a
-      url: "https://github.com/ngocphuc1612/betterplayer"
-    source: git
-    version: "0.0.85"
+      name: better_player_plus
+      sha256: "252525a98b54f0ac684897a738cf2f4181540b2c38e82851062fe40e5e676fd6"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.6"
   bloc:
     dependency: transitive
     description:
@@ -964,10 +963,10 @@ packages:
     dependency: transitive
     description:
       name: flutter_widget_from_html_core
-      sha256: df7c7c9e5ea144f7ab0adfbad733b4d4f7d408ab733c94e6e9fdcb327af92aa1
+      sha256: cc1d9be3d187ce668ee02091cd5442dfb050cdaf98e0ab9a4d12ad008f966979
       url: "https://pub.dev"
     source: hosted
-    version: "0.15.1"
+    version: "0.14.12"
   flutter_zoom_videosdk:
     dependency: "direct main"
     description:
@@ -2070,7 +2069,7 @@ packages:
     source: hosted
     version: "0.4.0+2"
   wakelock_plus:
-    dependency: "direct main"
+    dependency: "direct overridden"
     description:
       name: wakelock_plus
       sha256: "26ebc8b5e0037c15e2a1b661dcec8a475cb7205befcce8a33f545ae8c86b367c"
