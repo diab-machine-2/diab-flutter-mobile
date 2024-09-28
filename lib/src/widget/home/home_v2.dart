@@ -747,6 +747,9 @@ class _HomeControllerState extends State<HomeController>
   bool _showGlucoseAddBottomSheet(String? routeName) {
     if (routeName == NavigatorName.add_blood_sugar_new ||
         routeName == NavigatorName.add_blood_sugar) {
+      if (AppSettings.isUS) {
+        return true;
+      }
       BloodSugarFunctions.showModalAddData(context);
       return false;
     }
