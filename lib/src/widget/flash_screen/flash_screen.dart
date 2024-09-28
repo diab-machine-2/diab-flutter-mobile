@@ -11,6 +11,7 @@ import 'package:medical/src/bloc/nipro/nipro_bloc.dart';
 import 'package:medical/src/modal/user/user_model.dart';
 import 'package:medical/src/repo/login/login_client.dart';
 import 'package:medical/src/repo/user/user_client.dart';
+import 'package:medical/src/service/country_service.dart';
 import 'package:medical/src/utils/app_media_query.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigator_name.dart';
@@ -37,6 +38,7 @@ class _FlashScreenControllerState extends State<FlashScreenController> {
   void initState() {
     super.initState();
     _initStateAsync();
+    _getCountryCode();
   }
 
   void _initStateAsync() async {
@@ -46,6 +48,15 @@ class _FlashScreenControllerState extends State<FlashScreenController> {
     await getVersion();
     BlocProvider.of<NiproBloc>(context).add(NiproEventFetchSavedDevice());
     await getData(context);
+  }
+
+  void _getCountryCode() async {
+    try {
+      final countryCode = await CountryService().getCountryCode();
+      AppSettings.setCountryCode(countryCode);
+    } catch (e, s) {
+      TrackingManager.recordError(e, s);
+    }
   }
 
   Future<void> getVersion() async {
