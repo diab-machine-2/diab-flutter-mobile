@@ -130,7 +130,7 @@ class _CalendarControllerState extends State<CalendarController> {
         ),
         GestureDetector(
           onTap: (() => {
-                _cubit.completedCalendar(widget.pickSlot.id, widget.courseId),
+                // _cubit.completedCalendar(widget.pickSlot.id, widget.courseId),
                 Navigator.pushNamed(context, NavigatorName.tabbar)
               }),
           child: Container(

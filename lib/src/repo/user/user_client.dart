@@ -90,9 +90,10 @@ class UserClient extends FetchClient {
   Future<List<CalendarCoachModel>?> fetchCalendarCoach(
       String courseId, String endTime) async {
     try {
-      final targetTime =
-          (DateTime.now().add(Duration(days: 1)).millisecondsSinceEpoch ~/
-              1000);
+      final targetTime = (DateTime.now()
+              .add(Duration(days: 1, hours: 7))
+              .millisecondsSinceEpoch ~/
+          1000);
       final Response response =
           await super.fetchData(url: '/App/CalendarCoach/', params: {
         "courseId": courseId,
@@ -108,6 +109,7 @@ class UserClient extends FetchClient {
           List<CalendarCoachModel> calendarCoaches = (data as List)
               .map((json) => CalendarCoachModel.fromJson(json))
               .toList();
+
           return calendarCoaches;
         }
       } else {
@@ -116,6 +118,29 @@ class UserClient extends FetchClient {
       }
     } catch (e) {
       throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+    }
+  }
+
+  Future<bool> IsExistCourse(String courseId) async {
+    try {
+      final Response response =
+          await super.fetchData(url: '/App/Courses/$courseId');
+
+      if (response.statusCode == 200) {
+        final data = response.data['data'];
+        if (data == null ||
+            data['id'] == "00000000-0000-0000-0000-000000000000") {
+          return false; // Return false if no data found
+        } else {
+          return true;
+        }
+      } else {
+        final error = Error.fromJson(response.data);
+        throw error; // Throw error if status code is not 200
+      }
+    } catch (e) {
+      // Catch and throw an error if something goes wrong
+      throw e is Error ? e : Exception("Unable to connect to the server");
     }
   }
 
@@ -896,14 +921,20 @@ class UserClient extends FetchClient {
     }
   }
 
-  Future<List<ScheduleReminderDataModelNew>> fetchScheduleRemindersForHomePage() async {
+  Future<List<ScheduleReminderDataModelNew>>
+      fetchScheduleRemindersForHomePage() async {
     try {
       final Response response =
           await super.fetchData(url: '/App/Patient/PatientRemindForHomeMobile');
-      if (response.statusCode == 200 && response.data['data'] != null && response.data['data'] is List) {
+      if (response.statusCode == 200 &&
+          response.data['data'] != null &&
+          response.data['data'] is List) {
         // cast
         List<dynamic> data = response.data['data'];
-        return data.map((e) => ScheduleReminderDataModelNew.fromJson(e as Map<String, dynamic>)).toList();
+        return data
+            .map((e) => ScheduleReminderDataModelNew.fromJson(
+                e as Map<String, dynamic>))
+            .toList();
       } else {
         final error = Error.fromJson(response);
         throw error;
