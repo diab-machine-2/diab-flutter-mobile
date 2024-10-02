@@ -114,6 +114,12 @@ class RequestHealthConnect extends StatelessWidget {
                       title: "Kết nối với $appTitle",
                       onPressed: () async {
                         if (Platform.isAndroid) {
+                          // Note that for Android, the target phone needs to have the Health Connect app installed (which is currently in beta) and have access to the internet.
+                          final isHealthConnectAvailable = await HealthSetting
+                              .instance
+                              .isHealthConnectSdkStatusAvailable();
+                          // Handle case target Android phone does not install Health Connect
+
                           await Permission.activityRecognition.request();
                           await Permission.location.request();
                         }
