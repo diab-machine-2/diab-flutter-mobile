@@ -44,14 +44,18 @@ class HealthSetting {
     try {
       final healthStatus = await health.getHealthConnectSdkStatus();
 
-      print(
-          "[HEALTH_CONNECT] isHealthConnectSdkStatusAvailable result: $status");
       status = healthStatus == HealthConnectSdkStatus.sdkAvailable;
+      print(
+          "[HEALTH_CONNECT] is HealthConnect Sdk Status Available result: $status");
     } catch (e) {
-      print("[HEALTH_CONNECT] Error requesting authorization: $e");
+      print("[HEALTH_CONNECT] Error getHealthConnectSdkStatus: $e");
       status = false;
     }
     return status;
+  }
+
+  Future<void> installHealthConnect() async {
+    await health.installHealthConnect();
   }
 
   Future<bool?> checkConnectionPermission() async {
