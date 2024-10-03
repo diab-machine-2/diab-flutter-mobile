@@ -1158,6 +1158,16 @@ class _AppApi implements AppApi {
                 queryParameters: queryParameters, data: _data)
             .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl));
     final value = CreateCalendarResponse.fromJson(_result.data!);
+
+    _dio.fetch<Map<String, dynamic>>(
+        Options(method: 'POST', headers: _headers, extra: _extra).compose(
+            _dio.options, 'App/Calendar/booking-success',
+            queryParameters: queryParameters,
+            data: {
+          "link": value.linkJoin,
+          "appointmentDate": value.appointmentDate
+        }).copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl));
+
     return value;
   }
 
