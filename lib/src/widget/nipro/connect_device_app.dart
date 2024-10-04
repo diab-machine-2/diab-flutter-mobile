@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/utils/app_storages.dart';
@@ -92,10 +93,10 @@ class _ConnectDeviceAppState extends State<ConnectDeviceApp> {
                   // SizedBox(height: 16),
                   GestureDetector(
                     onTap: () => Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (BuildContext context) =>
-                                  RocheConnectionView())),
+                        context,
+                        MaterialPageRoute(
+                            builder: (BuildContext context) =>
+                                RocheConnectionView())),
                     child: Container(
                         decoration: BoxDecoration(
                             color: Colors.white,
@@ -149,7 +150,7 @@ class _ConnectDeviceAppState extends State<ConnectDeviceApp> {
                               Image.asset(
                                   Platform.isIOS
                                       ? R.drawable.logo_healthkit
-                                      : R.drawable.logo_googleFit,
+                                      : R.drawable.logo_healthConnect,
                                   height: 48),
                               SizedBox(width: 12),
                               Column(
@@ -157,8 +158,10 @@ class _ConnectDeviceAppState extends State<ConnectDeviceApp> {
                                 children: [
                                   Text(
                                     Platform.isIOS
-                                        ? 'Kết nối từ Apple Health'
-                                        : 'Kết nối từ Google Fit',
+                                        ? R.string.connect_from_Apple_Health
+                                            .tr()
+                                        : R.string.connect_from_Health_Connect
+                                            .tr(),
                                     style: TextStyle(
                                       fontSize: 16,
                                       color: R.color.textDark,

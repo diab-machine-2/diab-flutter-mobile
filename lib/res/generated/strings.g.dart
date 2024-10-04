@@ -1143,6 +1143,6 @@ class Strings {
   String get i_understand => 'i_understand';
   String get choose_how_to_enter => 'choose_how_to_enter';
   String get connect_from_Apple_Health => 'connect_from_Apple_Health';
-  String get connect_from_Google_Fit => 'connect_from_Google_Fit';
+  String get connect_from_Health_Connect => 'connect_from_Health_Connect';
   String get enter_manually => 'enter_manually';
 }

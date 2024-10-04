@@ -35,9 +35,10 @@ class RequestHealthConnect extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    String appTitle = Platform.isIOS ? 'Apple Health' : 'Google Fit';
-    String appLogo =
-        Platform.isIOS ? R.drawable.logo_healthkit : R.drawable.logo_googleFit;
+    String appTitle = Platform.isIOS ? 'Apple Health' : 'Health Connect';
+    String appLogo = Platform.isIOS
+        ? R.drawable.logo_healthkit
+        : R.drawable.logo_healthConnect;
     return BlocProvider<HealthAppBloc>(
       create: (_) => HealthAppBloc()..add(SubmitSyncData(isSyncing)),
       child: BlocBuilder<HealthAppBloc, HealthAppState>(
