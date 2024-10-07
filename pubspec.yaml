@@ -154,6 +154,7 @@ dependencies:
       tag: 0.0.8
   flutter_branch_sdk: ^6.9.0
   in_app_review: ^2.0.9
+  mixpanel_flutter: ^2.3.3
 
 dev_dependencies:
   flutter_test:
