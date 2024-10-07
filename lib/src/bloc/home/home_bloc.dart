@@ -192,7 +192,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
             final activity = HomeActivityData(
               id: e.id!,
               icon: type.icon,
-              title: type.title,
+              title:
+                  e.description != null ? type.title : (e.name ?? type.title),
               type: type,
               smartGoal: e,
               description: e.description,
