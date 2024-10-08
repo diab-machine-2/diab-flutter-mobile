@@ -56,6 +56,7 @@ class VideoManager {
     }
 
     if (sourceList.isEmpty) {
+      debugPrint('[VIDEO] exercise video url: ${exerciseData.videoUrl}');
       sourceList.add(VideoSourceData(
           url: exerciseData.videoUrl ?? '',
           loopTimes: 1,
