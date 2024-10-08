@@ -1,8 +1,9 @@
 import 'dart:async';
-import 'package:bloc/bloc.dart';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/app_setting/app_sharing.dart';
@@ -191,7 +192,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
             final activity = HomeActivityData(
               id: e.id!,
               icon: type.icon,
-              title: type.title,
+              title:
+                  e.description != null ? type.title : (e.name ?? type.title),
               type: type,
               smartGoal: e,
               description: e.description,

@@ -1,6 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/app_setting/app_setting.dart';
 
 import '../add_bmi_cubit.dart';
 
@@ -53,7 +54,10 @@ mixin AddBmiMixin on Widget {
                         padding: const EdgeInsets.only(top: 16.0),
                         child: Text(
                             //'Cân nặng đang không ở mức lý tưởng. Mẹ cần chú ý chế độ dinh dưỡng và vận động phù hợp hơn.',
-                            R.string.weight_not_at_ideal.tr(),
+                            AppSettings.userInfo!.diabetesName ==
+                                    "Đái tháo đường thai kỳ"
+                                ? R.string.weight_not_at_ideal_pregnant.tr()
+                                : R.string.weight_not_at_ideal.tr(),
                             textAlign: TextAlign.center,
                             style: R.style.normalTextStyle),
                       ),

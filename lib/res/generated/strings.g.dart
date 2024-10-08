@@ -1139,6 +1139,7 @@ class Strings {
   String get select_disease_type_content => 'select_disease_type_content';
   String get weight_at => 'weight_at';
   String get weight_not_at_ideal => 'weight_not_at_ideal';
+  String get weight_not_at_ideal_pregnant => 'weight_not_at_ideal_pregnant';
   String get re_type => 're_type';
   String get i_understand => 'i_understand';
   String get choose_how_to_enter => 'choose_how_to_enter';

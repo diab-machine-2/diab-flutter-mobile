@@ -1,11 +1,12 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/bloc/nipro/nipro_bloc.dart';
 import 'package:medical/src/utils/app_storages.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/nipro/health_app/widgets/request_health_connect.dart';
-import 'package:medical/src/widget/nipro/roche_connection/roche_connection_view.dart';
 import 'package:medical/src/widgets/button_widget.dart';
 
 class BloodSugarFunctions {
@@ -65,11 +66,7 @@ class BloodSugarFunctions {
                     title: 'Kết nối từ thiết bị',
                     onPressed: () {
                       Navigator.pop(context);
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (BuildContext context) =>
-                                RocheConnectionView()));
+                      BlocProvider.of<NiproBloc>(context).tryAutoConnect();
                     },
                   ),
                   SizedBox(height: 15),

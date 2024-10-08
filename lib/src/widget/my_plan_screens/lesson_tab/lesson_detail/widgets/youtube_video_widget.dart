@@ -4,8 +4,8 @@ import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
 class YoutubeVideoWidget extends StatefulWidget {
   final String videoUrl;
-  final Function onEnded;
-  final Function onPlay;
+  final Function({YoutubeMetaData? meta}) onEnded;
+  final Function({YoutubeMetaData? meta}) onPlay;
   const YoutubeVideoWidget(
       {Key? key,
       required this.videoUrl,
@@ -21,6 +21,8 @@ class _YoutubeVideoWidgetState extends State<YoutubeVideoWidget> {
   late YoutubePlayerController _controller;
   bool _isPlayerReady = false;
   bool _isPlayerStarted = false;
+
+  late YoutubeMetaData _videoMetaData;
 
   @override
   void initState() {
@@ -38,14 +40,24 @@ class _YoutubeVideoWidgetState extends State<YoutubeVideoWidget> {
         forceHD: false,
         enableCaption: true,
       ),
-    );
+    )..addListener(listener);
+    _videoMetaData = const YoutubeMetaData();
   }
 
   void listener() {
-    if (_isPlayerStarted == false && _controller.value.isPlaying) {
-      widget.onPlay();
+    if (_isPlayerReady && mounted && !_controller.value.isFullScreen) {
       setState(() {
-        _isPlayerStarted = true;
+        _videoMetaData = _controller.metadata;
+      });
+    }
+
+    // When player is started for the first time and still playing
+    if (_isPlayerStarted == false && _controller.value.isPlaying) {
+      setState(() {
+        if (_videoMetaData.videoId.isNotEmpty) {
+          widget.onPlay(meta: _videoMetaData);
+          _isPlayerStarted = true;
+        }
       });
     }
   }
@@ -73,7 +85,7 @@ class _YoutubeVideoWidgetState extends State<YoutubeVideoWidget> {
         showVideoProgressIndicator: true,
         progressIndicatorColor: Colors.blueAccent,
         onReady: () => _isPlayerReady = true,
-        onEnded: (data) => widget.onEnded(),
+        onEnded: (data) => widget.onEnded(meta: data),
       ),
       builder: (context, player) => player,
     );

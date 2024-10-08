@@ -2,6 +2,10 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>NSCalendarsUsageDescription</key>
+	<string>Cho phép thêm sự kiện vào lịch của bạn</string>
+	<key>NSContactsUsageDescription</key>
+	<string>Cho phép try cặp danh bạ để gửi lời mời tham gia</string>
 	<key>AllowsInlineMediaPlayback</key>
 	<true/>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
@@ -159,7 +163,9 @@
 	<key>branch_universal_link_domains</key>
 	<array>
 		<string>diabvn.app.link</string>
+		<string>diabvn.test-app.link</string>
 		<string>diabvn-alternate.app.link</string>
+		<string>app.diab.com.vn</string>
 	</array>
 	<key>io.flutter.embedded_views_preview</key>
 	<false/>

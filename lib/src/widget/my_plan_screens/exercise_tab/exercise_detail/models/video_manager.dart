@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:better_player/better_player.dart';
+import 'package:better_player_plus/better_player_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:medical/src/model/response/exercise_movement_response.dart';
@@ -56,6 +56,7 @@ class VideoManager {
     }
 
     if (sourceList.isEmpty) {
+      debugPrint('[VIDEO] exercise video url: ${exerciseData.videoUrl}');
       sourceList.add(VideoSourceData(
           url: exerciseData.videoUrl ?? '',
           loopTimes: 1,
@@ -113,15 +114,15 @@ class VideoManager {
       newController.setupDataSource(betterPlayerDataSource);
 
       newController.videoPlayerController?.addListener(() async {
-        if (Platform.isIOS) {
-          if ((newController
-                  .videoPlayerController!.value.position.inMilliseconds) ==
-              newController
-                  .videoPlayerController!.value.duration!.inMilliseconds) {
-            //    Message.showToastMessage(context, 'Paused');
-            // await newController.pause();
-          }
-        }
+        // if (Platform.isIOS) {
+        //   if ((newController
+        //           .videoPlayerController!.value.position.inMilliseconds) ==
+        //       newController
+        //           .videoPlayerController!.value.duration!.inMilliseconds) {
+        //     //    Message.showToastMessage(context, 'Paused');
+        //     // await newController.pause();
+        //   }
+        // }
         if (videoDuration == null) {
           videoDuration = newController.videoPlayerController!.value.duration;
         }
@@ -193,7 +194,7 @@ class VideoManager {
             isCompleted == false) ||
         type == CustomPlayerEventType.videoReplay) {
       currentEventState = type;
-      callbackEventListener!(type, videoDuration!);
+      callbackEventListener!(type, videoDuration ?? Duration.zero);
     }
   }
 

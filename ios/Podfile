@@ -32,9 +32,9 @@ target 'Runner' do
   use_modular_headers!
 
   flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
-  pod 'ZoomVideoSDK/ZoomVideoSDK', '1.10.11'
-  pod 'ZoomVideoSDK/zoomcml', '1.10.11'
-  pod 'ZoomVideoSDK/CptShare', '1.10.11'
+  # pod 'ZoomVideoSDK/ZoomVideoSDK', '1.10.11'
+  # pod 'ZoomVideoSDK/zoomcml', '1.10.11'
+  # pod 'ZoomVideoSDK/CptShare', '1.10.11'
   # pod 'ZoomVideoSDK/zm_annoter_dynamic', '1.10.11'
   pod 'BranchSDK'
 end

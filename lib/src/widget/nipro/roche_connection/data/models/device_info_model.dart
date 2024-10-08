@@ -30,6 +30,7 @@ class TutorialModel {
 }
 
 List<DeviceInfoModel> examples = [
+  // * Accu Chek Instant
   DeviceInfoModel(
     image: 'lib/res/drawables/accu-chek-instant.png',
     imagePin: 'lib/res/drawables/accu-chek-instant-6.png',
@@ -185,6 +186,7 @@ List<DeviceInfoModel> examples = [
       ),
     ],
   ),
+  // * Accu Chek Guide
   DeviceInfoModel(
     image: 'lib/res/drawables/accu-chek-guide.png',
     imagePin: 'lib/res/drawables/accu-chek-guide-7.png',
@@ -370,6 +372,7 @@ List<DeviceInfoModel> examples = [
       ),
     ],
   ),
+  // * NIPRO Premier a
   DeviceInfoModel(
       image: 'lib/res/drawables/nipro_device.png',
       imagePin: '',
