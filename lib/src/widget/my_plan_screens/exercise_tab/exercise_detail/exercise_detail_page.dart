@@ -11,6 +11,8 @@ import 'package:medical/src/model/response/exercise_movement_response.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
+import 'package:medical/src/widget/my_plan_screens/lesson_tab/lesson_detail/widgets/youtube_video_widget.dart';
+import 'package:medical/src/widget/my_plan_screens/my_plan/models/completion_status.dart';
 import 'package:medical/src/widgets/button_widget.dart';
 
 import '../exercise_feedback/exercise_feedback.dart';
@@ -83,10 +85,40 @@ class _ExerciseDetailState extends State<ExerciseDetail> {
                       padding: const EdgeInsets.symmetric(
                         horizontal: 16,
                       ),
-                      child: _cubit.videoManager.controller != null
-                          ? BetterPlayer(
-                              controller: _cubit.videoManager.controller!)
-                          : const SizedBox.shrink(),
+                      child: isYoutubeUrl(_cubit.exerciseData.videoUrl ?? '') ==
+                              false
+                          ? _cubit.videoManager.controller != null
+                              ? BetterPlayer(
+                                  controller: _cubit.videoManager.controller!)
+                              : const SizedBox.shrink()
+                          : YoutubeVideoWidget(
+                              videoUrl: _cubit.exerciseData.videoUrl ?? '',
+                              onPlay: ({meta}) {
+                                debugPrint(
+                                    '[VIDEO] onPlay youtube video: $meta - ${_cubit.exerciseData.id} - ${_cubit.exerciseData.name}');
+                                ExcerciseDetailTracking.playVideo(
+                                  eventType: CustomPlayerEventType.videoPlay,
+                                  videoDuration:
+                                      meta?.duration ?? Duration(seconds: 0),
+                                  objectId: _cubit.exerciseData.id,
+                                  objectTitle: _cubit.exerciseData.name,
+                                );
+                              },
+                              onEnded: ({meta}) async {
+                                debugPrint(
+                                    '[VIDEO] onEnded youtube video: $meta - ${_cubit.exerciseData.id} - ${_cubit.exerciseData.name}');
+                                ExcerciseDetailTracking.playVideo(
+                                  eventType:
+                                      CustomPlayerEventType.videoCompleted,
+                                  videoDuration:
+                                      meta?.duration ?? Duration(seconds: 0),
+                                  objectId: _cubit.exerciseData.id,
+                                  objectTitle: _cubit.exerciseData.name,
+                                );
+                                await _cubit.completeExercise(
+                                    _cubit.exerciseData.id ?? '');
+                              },
+                            ),
                     ),
                     SizedBox(height: 2),
                     Expanded(
@@ -301,5 +333,13 @@ class _ExerciseDetailState extends State<ExerciseDetail> {
       ),
     );
     NavigationUtil.pop(context);
+  }
+
+  bool isYoutubeUrl(String url) {
+    RegExp youtubeRegExp = RegExp(
+      r'^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.?be)\/.+$',
+      caseSensitive: false,
+    );
+    return youtubeRegExp.hasMatch(url);
   }
 }
