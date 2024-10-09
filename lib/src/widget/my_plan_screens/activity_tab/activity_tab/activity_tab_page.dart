@@ -8,6 +8,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
+import 'package:medical/src/app_setting/branchio_link_config.dart';
 import 'package:medical/src/app_setting/dynamic_link_config.dart';
 import 'package:medical/src/app_setting/firebase_tracking/activity_list_tracking.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
@@ -85,9 +86,9 @@ class _ActivityTabPageState extends State<ActivityTabPage>
   bool get wantKeepAlive => true;
 
   void _checkExistZoomId() async {
-    String? calendarId = DynamicLinkConfig.instance.zoomId;
+    String? calendarId = BranchioLinkConfig.instance.meetingId;
     if (calendarId != null) {
-      DynamicLinkConfig.instance.removeZoomId();
+      BranchioLinkConfig.instance.removeMeetingId();
       // await _cubit.markCompletedCalendar(calendarId);
       if (isVisible) {
         _cubit.refreshData(isRefresh: true);

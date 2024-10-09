@@ -46,6 +46,12 @@ class AppSettings {
 
   static bool isSyncSuccess = false;
 
+  static String _countryCode = "VN";
+  static bool get isUS => _countryCode == "US";
+  static void setCountryCode(String code) {
+    _countryCode = code;
+  }
+
   static Future<void> setZaloId(String id) async {
     zaloId = id;
     appPreference.setData("zaloId", id);

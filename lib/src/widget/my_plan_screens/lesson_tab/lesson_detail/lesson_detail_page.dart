@@ -327,9 +327,9 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                                             videoUrl: _cubit
                                                 .currentSectionDetail!
                                                 .videoAddressLink!,
-                                            onPlay: () =>
+                                            onPlay: ({meta}) =>
                                                 _onTrackingVideoPlay(),
-                                            onEnded: () {
+                                            onEnded: ({meta}) {
                                               LessonDetailTracking
                                                   .completed50PercentVideo(
                                                 objectId:
