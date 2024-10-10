@@ -85,8 +85,7 @@ class _ExerciseDetailState extends State<ExerciseDetail> {
                       padding: const EdgeInsets.symmetric(
                         horizontal: 16,
                       ),
-                      child: isYoutubeUrl(_cubit.exerciseData.videoUrl ?? '') ==
-                              false
+                      child: _cubit.videoManager.isYoutubeUrl() == false
                           ? _cubit.videoManager.controller != null
                               ? BetterPlayer(
                                   controller: _cubit.videoManager.controller!)
@@ -95,7 +94,7 @@ class _ExerciseDetailState extends State<ExerciseDetail> {
                               videoUrl: _cubit.exerciseData.videoUrl ?? '',
                               onPlay: ({meta}) {
                                 debugPrint(
-                                    '[VIDEO] onPlay youtube video: $meta - ${_cubit.exerciseData.id} - ${_cubit.exerciseData.name}');
+                                    '[EXERCISE] onPlay youtube video: $meta - ${_cubit.exerciseData.id} - ${_cubit.exerciseData.name}');
                                 ExcerciseDetailTracking.playVideo(
                                   eventType: CustomPlayerEventType.videoPlay,
                                   videoDuration:
@@ -106,7 +105,7 @@ class _ExerciseDetailState extends State<ExerciseDetail> {
                               },
                               onEnded: ({meta}) async {
                                 debugPrint(
-                                    '[VIDEO] onEnded youtube video: $meta - ${_cubit.exerciseData.id} - ${_cubit.exerciseData.name}');
+                                    '[EXERCISE] onEnded youtube video: $meta - ${_cubit.exerciseData.id} - ${_cubit.exerciseData.name}');
                                 ExcerciseDetailTracking.playVideo(
                                   eventType:
                                       CustomPlayerEventType.videoCompleted,
@@ -333,13 +332,5 @@ class _ExerciseDetailState extends State<ExerciseDetail> {
       ),
     );
     NavigationUtil.pop(context);
-  }
-
-  bool isYoutubeUrl(String url) {
-    RegExp youtubeRegExp = RegExp(
-      r'^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.?be)\/.+$',
-      caseSensitive: false,
-    );
-    return youtubeRegExp.hasMatch(url);
   }
 }
