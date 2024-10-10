@@ -22,6 +22,7 @@
 -dontwarn com.google.android.exoplayer2.trackselection.TrackSelectionOverrides$Builder
 -dontwarn com.google.android.exoplayer2.trackselection.TrackSelectionOverrides$TrackSelectionOverride
 -dontwarn com.google.android.exoplayer2.trackselection.TrackSelectionOverrides
+-dontwarn com.google.android.exoplayer2.TracksInfo
 -dontwarn com.google.api.client.http.GenericUrl
 -dontwarn com.google.api.client.http.HttpHeaders
 -dontwarn com.google.api.client.http.HttpRequest
