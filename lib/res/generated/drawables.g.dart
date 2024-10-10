@@ -503,6 +503,7 @@ class Drawables {
   String get logo_diab => "lib/res/drawables/logo_diab.png";
   String get logo_healthkit => "lib/res/drawables/logo_healthkit.png";
   String get logo_googleFit => "lib/res/drawables/logo_googleFit.png";
+  String get logo_healthConnect => "lib/res/drawables/logo_healthConnect.png";
   String get rada_effect => "lib/res/drawables/rada_effect.png";
   String get icon_bluetooth => "lib/res/drawables/icon_bluetooth.png";
   String get img_error => "lib/res/drawables/img_error.png";

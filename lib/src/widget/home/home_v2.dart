@@ -8,6 +8,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/app_setting/app_sharing.dart';
+import 'package:medical/src/app_setting/branchio_link_config.dart';
 import 'package:medical/src/app_setting/dynamic_link_config.dart';
 import 'package:medical/src/app_setting/firebase_tracking/activity_list_tracking.dart';
 import 'package:medical/src/bloc/home/home_bloc.dart';
@@ -73,7 +74,7 @@ class _HomeControllerState extends State<HomeController>
   final String _screenName = "home";
 
   int page = 1;
-  bool isLoading = false;
+  bool _isDisplayedWelcome = false;
 
   var user = AppSettings.userInfo;
   var popupStore = PopupStore;
@@ -111,7 +112,7 @@ class _HomeControllerState extends State<HomeController>
   void _initHealthApp() async {
     await AppSettings.setIsSyncing(false);
     final String? lessonId = DynamicLinkConfig.instance.lessonId;
-    final String? zoomId = DynamicLinkConfig.instance.zoomId;
+    final String? meetingId = BranchioLinkConfig.instance.meetingId;
     final String? activityId = DynamicLinkConfig.instance.activityId;
     _checkShowRating();
 
@@ -132,7 +133,7 @@ class _HomeControllerState extends State<HomeController>
       }
     });
 
-    if (lessonId == null && zoomId == null && activityId == null) {
+    if (lessonId == null && meetingId == null && activityId == null) {
       Future.delayed(Duration(milliseconds: 1000), () async {
         bool? hasHealthConnection = await AppStorages.getHealthAppPermission();
         if (hasHealthConnection == true) {
@@ -232,7 +233,7 @@ class _HomeControllerState extends State<HomeController>
     await AppSettings.increaseNumberOfOpenHome();
   }
 
-  Future _firebaseSetup() async {
+  void _firebaseSetup() async {
     await TrackingManager.analytics
         .logScreenView(screenName: "home", screenClass: "HomeController");
     AppSettings.currentScreenName = 'home';
@@ -401,19 +402,19 @@ class _HomeControllerState extends State<HomeController>
           if (state is HomeLoaded) {
             model = state.model;
             stateLoaded = state;
-            if (false == model?.packageAccount?.isDisplayedWelcome) {
+            if (false == model?.packageAccount?.isDisplayedWelcome && !_isDisplayedWelcome) {
+              _isDisplayedWelcome = true;
               if (AppSettings.isDisplayedWelcome == false) {
                 Future.delayed(Duration.zero, () async {
                   _showWelcomeDialog(model?.packageAccount);
                 });
               } else {}
             }
-            isLoading = false;
           }
 
           Widget reminderW = HomeReminder(
             reminders: stateLoaded?.reminders ?? [],
-            loading: stateLoaded?.reminderLoading ?? true,
+            loading: stateLoaded?.reminderLoading ?? false,
             onAdd: () {
               Navigator.pushNamed(context, NavigatorName.add_reminder,
                   arguments: {'type': 'input'});
@@ -545,7 +546,7 @@ class _HomeControllerState extends State<HomeController>
                             child: HomeActivity(
                               activities: stateLoaded?.activities ?? [],
                               expanded: _isActivityExpanded,
-                              loading: stateLoaded?.activityLoading ?? true,
+                              loading: stateLoaded?.activityLoading ?? false,
                               onExpand: () {
                                 setState(() {
                                   _isActivityExpanded = true;
@@ -747,6 +748,9 @@ class _HomeControllerState extends State<HomeController>
   bool _showGlucoseAddBottomSheet(String? routeName) {
     if (routeName == NavigatorName.add_blood_sugar_new ||
         routeName == NavigatorName.add_blood_sugar) {
+      if (AppSettings.isUS) {
+        return true;
+      }
       BloodSugarFunctions.showModalAddData(context);
       return false;
     }

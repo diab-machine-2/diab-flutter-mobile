@@ -1,19 +1,22 @@
 import 'dart:io';
 
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/bloc/nipro/nipro_bloc.dart';
 import 'package:medical/src/utils/app_storages.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/nipro/health_app/widgets/request_health_connect.dart';
-import 'package:medical/src/widget/nipro/roche_connection/roche_connection_view.dart';
 import 'package:medical/src/widgets/button_widget.dart';
 
 class BloodSugarFunctions {
   static Future<void> showModalAddData(BuildContext context) async {
     String healthIcon =
-        Platform.isIOS ? R.drawable.logo_healthkit : R.drawable.logo_googleFit;
-    String healthTitle =
-        Platform.isIOS ? 'Kết nối từ Apple Health' : 'Kết nối từ Google Fit';
+        Platform.isIOS ? R.drawable.logo_healthkit : R.drawable.logo_healthConnect;
+    String healthTitle = Platform.isIOS
+        ? R.string.connect_from_Apple_Health.tr()
+        : R.string.connect_from_Health_Connect.tr();
     bool? hasHealthConnection = await AppStorages.getHealthAppPermission();
     showModalBottomSheet(
       shape: RoundedRectangleBorder(
@@ -65,11 +68,7 @@ class BloodSugarFunctions {
                     title: 'Kết nối từ thiết bị',
                     onPressed: () {
                       Navigator.pop(context);
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (BuildContext context) =>
-                                RocheConnectionView()));
+                      BlocProvider.of<NiproBloc>(context).tryAutoConnect();
                     },
                   ),
                   SizedBox(height: 15),

@@ -2,10 +2,12 @@ import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/model/response/create_calendar_response.dart';
 import 'package:medical/src/app_routes.dart';
+import 'package:medical/src/bloc/nipro/nipro_bloc.dart';
 import 'package:medical/src/service/zoom_service.dart';
 import 'package:medical/src/theme/app_theme.dart';
 import 'package:medical/src/utils/app_log.dart';
@@ -90,25 +92,10 @@ import 'widget/ocr/test_ocr_page.dart';
 import 'widget/profile/profile_controller.dart';
 import 'widget/shared_profile/pages/share_app_detail/share_app_detail.dart';
 
-class App extends StatefulWidget {
-  @override
-  _AppState createState() => _AppState();
-}
-
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
-class _AppState extends State<App> {
-  @override
-  void initState() {
-    super.initState();
-    // DeepLinkConfig.instance.handleDeepLink();
-  }
-
-  @override
-  void dispose() {
-    // DeepLinkConfig.instance.dispose();
-    super.dispose();
-  }
+class App extends StatelessWidget {
+  final _niproBloc = NiproBloc();
 
   @override
   Widget build(BuildContext context) {
@@ -117,7 +104,7 @@ class _AppState extends State<App> {
       splitScreenMode: true,
       designSize: const Size(375, 812),
       builder: (_, child) {
-        return RefreshConfiguration(
+        final page = RefreshConfiguration(
           headerTriggerDistance: 25,
           headerBuilder: () => MaterialClassicHeader(
             color: R.color.accentColor,
@@ -611,8 +598,6 @@ class _AppState extends State<App> {
                       return _buildRoute(
                           settings, MeetingWaitRoomPage(args: args));
                     }
-                  case NavigatorName.meeting_prepare:
-                    return _buildRoute(settings, MeetingPreparePage());
                   case NavigatorName.calendar_booking:
                     {
                       final arguments =
@@ -652,14 +637,17 @@ class _AppState extends State<App> {
                             providerKey: args['providerKey'],
                           ));
                     }
+                  case NavigatorName.meeting_prepare: {
+                    return _buildRoute(settings, MeetingPreparePage());
+                  }
                   case NavigatorName.meeting:
                     {
-                      if (settings.arguments is MeetingCubit) {
-                        final cubit = settings.arguments as MeetingCubit;
-                        return _buildRoute(settings, MeetingPage(null, cubit));
-                      }
+                      // if (settings.arguments is MeetingCubit) {
+                      //   final cubit = settings.arguments as MeetingCubit;
+                      //   return _buildRoute(settings, MeetingPage(null, cubit));
+                      // }
                       final args = settings.arguments as MeetingArguments;
-                      return _buildRoute(settings, MeetingPage(args, null));
+                      return _buildRoute(settings, MeetingPage(args));
                     }
                   // test ocr
                   case NavigatorName.test_ocr:
@@ -673,6 +661,13 @@ class _AppState extends State<App> {
                     return null;
                 }
               }),
+        );
+
+        return MultiBlocProvider(
+          providers: [
+            BlocProvider.value(value: _niproBloc),
+          ],
+          child: page,
         );
       },
     );

@@ -405,7 +405,7 @@ extension iBTManager: CBCentralManagerDelegate {
             }
             
             str += "=========================================="
-            //print("\(str)")
+            print("\(str)")
             
             searchedbt?.append(searched)
             searchedPeri?.append(peripheral)

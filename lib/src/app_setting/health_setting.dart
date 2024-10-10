@@ -20,7 +20,7 @@ class HealthSetting {
     HealthDataAccess.READ,
     HealthDataAccess.READ,
   ];
-  HealthFactory health = HealthFactory();
+  Health health = Health();
   HealthSetting._privateConstructor();
   static final HealthSetting instance = HealthSetting._privateConstructor();
 
@@ -37,6 +37,25 @@ class HealthSetting {
     bool? result =
         await health.requestAuthorization(types, permissions: permissions);
     return result;
+  }
+
+  Future<bool> isHealthConnectSdkStatusAvailable() async {
+    bool? status;
+    try {
+      final healthStatus = await health.getHealthConnectSdkStatus();
+
+      status = healthStatus == HealthConnectSdkStatus.sdkAvailable;
+      print(
+          "[HEALTH_CONNECT] is HealthConnect Sdk Status Available result: $status");
+    } catch (e) {
+      print("[HEALTH_CONNECT] Error getHealthConnectSdkStatus: $e");
+      status = false;
+    }
+    return status;
+  }
+
+  Future<void> installHealthConnect() async {
+    await health.installHealthConnect();
   }
 
   Future<bool?> checkConnectionPermission() async {
@@ -65,7 +84,9 @@ class HealthSetting {
     if (requested) {
       try {
         steps = await health.getHealthDataFromTypes(
-            midnight, now, [HealthDataType.BLOOD_GLUCOSE]);
+            startTime: midnight,
+            endTime: now,
+            types: [HealthDataType.BLOOD_GLUCOSE]);
       } catch (error) {
         print("Caught exception in getTotalStepsInInterval: $error");
       }
@@ -85,7 +106,8 @@ class HealthSetting {
     print("requested 1: $requested");
     if (requested) {
       try {
-        steps = await health.getHealthDataFromTypes(midnight, now, types);
+        steps = await health.getHealthDataFromTypes(
+            startTime: midnight, endTime: now, types: types);
         print('getBloodPressureSystolic: $steps');
       } catch (error) {
         print("Caught exception in getTotalStepsInInterval: $error");

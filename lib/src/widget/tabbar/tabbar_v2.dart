@@ -86,9 +86,9 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
     NotificationManager.instance.requestFirebaseToken(context);
     final String? activityId = DynamicLinkConfig.instance.activityId;
     final String? lessonId = DynamicLinkConfig.instance.lessonId;
-    final String? zoomId = DynamicLinkConfig.instance.zoomId;
+    final String? meetingId = BranchioLinkConfig.instance.meetingId;
 
-    if (activityId != null || zoomId != null) {
+    if (activityId != null || meetingId != null) {
       _initialPage = TabBarType.program.index;
     } else if (lessonId != null || widget.isRedirectFromNotification) {
       _initialPage = TabBarType.library.index;
@@ -128,14 +128,10 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
   }
 
   void _checkExistZoomId() async {
-    final String? zoomId = DynamicLinkConfig.instance.zoomId;
-    if (zoomId != null) {
+    final String? meetingId = BranchioLinkConfig.instance.meetingId;
+    if (meetingId != null) {
       await Future.delayed(Duration(seconds: 1));
-      ZoomService().launchZoom(
-        zoomId,
-        AppSettings.userInfo?.fullName ?? 'Người dùng',
-        context,
-      );
+      ZoomService().launchZoomMeeting(meetingId, BranchioLinkConfig.instance.meetingPassword!);
     }
   }
 

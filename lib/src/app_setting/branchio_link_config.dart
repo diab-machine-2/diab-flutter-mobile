@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_branch_sdk/flutter_branch_sdk.dart';
 import 'package:medical/src/app.dart';
@@ -9,7 +8,7 @@ import 'package:medical/src/modal/learning/learning_post_model.dart';
 import 'package:medical/src/repo/user/user_client.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
-import 'package:medical/src/widget/login/routing.dart';
+import 'package:medical/src/service/zoom_service.dart';
 
 import '../model/response/lesson_section_list_response.dart';
 
@@ -22,6 +21,11 @@ class BranchioLinkConfig {
   String? _courseId;
   String? _endTime;
 
+  String? _meetingId;
+  String? _meetingPassword;
+  String? get meetingId => _meetingId;
+  String? get meetingPassword => _meetingPassword;
+
   void setUpHandleDeepLink() {
     _subLink = FlutterBranchSdk.listSession().listen((data) async {
       print('listenDynamicLinks - DeepLink Data: $data');
@@ -30,6 +34,21 @@ class BranchioLinkConfig {
         _processBookingCourseLink(
             data['\$course'] as String, data['\$end_time'] as String?);
         return;
+      } else if (data['+clicked_branch_link'] == true &&
+          data.containsKey("\$meetingId") &&
+          data.containsKey("\$meetingPassword")) {
+        String meetingId = data['\$meetingId'] as String;
+        String meetingPassword = data['\$meetingPassword'] as String;
+
+        // Not logged in => save meetingId and meetingPassword
+        if (AppSettings.userInfo == null) {
+          _meetingId = meetingId;
+          _meetingPassword = meetingPassword;
+          return;
+        }
+
+        // Logged in => launch zoom meeting
+        ZoomService().launchZoomMeeting(meetingId, meetingPassword);
       }
       // TODO: Handle other deep link
     }, onError: (error) {
@@ -72,6 +91,10 @@ class BranchioLinkConfig {
     return '';
   }
 
+  void removeMeetingId() {
+    _courseId = null;
+  }
+
   void removeActivityId() {
     _courseId = null;
   }
@@ -82,10 +105,9 @@ class BranchioLinkConfig {
     return '';
   }
 
-  void _processBookingCourseLink(String courseId, String? endTime) async {
-    _courseId = courseId;
-    _endTime = endTime;
-
+  void _processBookingCourseLink(String courseId, String? endTime) {
+      _courseId = courseId;
+      _endTime = endTime;
     if (AppSettings.userInfo != null) {
       tryNavigateBooking();
     }

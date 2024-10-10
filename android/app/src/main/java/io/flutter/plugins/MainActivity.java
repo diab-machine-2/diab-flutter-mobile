@@ -2,7 +2,7 @@ package com.vbhc.diab;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import io.flutter.embedding.android.FlutterActivity;
+import io.flutter.embedding.android.FlutterFragmentActivity;
 import io.flutter.embedding.engine.FlutterEngine;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.EventChannel;
@@ -77,7 +77,7 @@ import io.reactivex.schedulers.Schedulers;
 import android.content.Intent;
 import android.os.Bundle;
 
-public class MainActivity extends FlutterActivity {
+public class MainActivity extends FlutterFragmentActivity {
 
     private ScanCallback mScanCallback;
     private LocationManager mLocationManager;
@@ -146,7 +146,7 @@ public class MainActivity extends FlutterActivity {
                         emitData("event_cancel", null);
                     }
                 }
-        );      
+        );
     }
 
 
@@ -156,7 +156,7 @@ public class MainActivity extends FlutterActivity {
         public void CallbackInitSDK(int version) {
             emitData("init_success", null);
                     emitData("SDK init Success with Version : " + version, null);
-            
+
         }
 
         @Override
@@ -184,7 +184,7 @@ public class MainActivity extends FlutterActivity {
                         return;
                     }
 
-                    
+
                     for (int i = mRecords.size() - 1; i >= 0; i--) {
                         final IBLE_GlucoseRecord glucoseRecord = mRecords.valueAt(i);
                         Map<String, String> map = new HashMap();
@@ -192,7 +192,7 @@ public class MainActivity extends FlutterActivity {
                         map.put("date", String.valueOf(glucoseRecord.time));
                         data.add(map);
                     }
-                    
+
                     emitData("get_data_success", data);
         }
 
@@ -414,7 +414,9 @@ public class MainActivity extends FlutterActivity {
     private void startScan() {
         mLocationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
         initIBle();
-        mDeviceAdapter.clearDevices();
+        if (mDeviceAdapter != null) {
+            mDeviceAdapter.clearDevices();
+        } 
         try {
             if (mBluetoothAdapter.getState() == BluetoothAdapter.STATE_ON) {
                 String xStr = Integer.toString(Build.VERSION.SDK_INT);
@@ -476,7 +478,7 @@ public class MainActivity extends FlutterActivity {
         ExtendedDevice device = mDeviceAdapter.getItem(address);
                 if (device != null) {
                     emitData("connecting device", null);
-                    IBLE_Manager.getInstance().ConnectDevice(device.device.toString());
+                    IBLE_Manager.getInstance().ConnectDevice(device.device.getAddress());
                 } else {
                     emitData("device_not_connect", null);
                 }

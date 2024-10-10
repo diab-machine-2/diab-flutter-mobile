@@ -1,14 +1,17 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/app_setting/branchio_link_config.dart';
 import 'package:medical/src/app_setting/deep_link_config.dart';
 import 'package:medical/src/app_setting/dynamic_link_config.dart';
 import 'package:medical/src/app_setting/firebase_remote_config.dart';
+import 'package:medical/src/bloc/nipro/nipro_bloc.dart';
 import 'package:medical/src/modal/user/user_model.dart';
 import 'package:medical/src/repo/login/login_client.dart';
 import 'package:medical/src/repo/user/user_client.dart';
+import 'package:medical/src/service/country_service.dart';
 import 'package:medical/src/utils/app_media_query.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigator_name.dart';
@@ -35,6 +38,7 @@ class _FlashScreenControllerState extends State<FlashScreenController> {
   void initState() {
     super.initState();
     _initStateAsync();
+    _getCountryCode();
   }
 
   void _initStateAsync() async {
@@ -42,7 +46,17 @@ class _FlashScreenControllerState extends State<FlashScreenController> {
     await DynamicLinkConfig.instance.setUpHandleDeepLink();
     await getSecuredModel();
     await getVersion();
+    BlocProvider.of<NiproBloc>(context).add(NiproEventFetchSavedDevice());
     await getData(context);
+  }
+
+  void _getCountryCode() async {
+    try {
+      final countryCode = await CountryService().getCountryCode();
+      AppSettings.setCountryCode(countryCode);
+    } catch (e, s) {
+      TrackingManager.recordError(e, s);
+    }
   }
 
   Future<void> getVersion() async {

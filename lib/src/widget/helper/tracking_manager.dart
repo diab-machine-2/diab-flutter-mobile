@@ -3,12 +3,15 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
+import 'package:mixpanel_flutter/mixpanel_flutter.dart';
 
 class TrackingManager {
   // Toggle this to cause an async error to be thrown during initialization
 // and to test that runZonedGuarded() catches the error
   static final _kShouldTestAsyncErrorOnInit = false;
   static bool _settedUserInfo = false;
+
+  static late Mixpanel _mixpanel;
 
 // Toggle this for testing Crashlytics in your app locally.
   static final _kTestingCrashlytics = !kDebugMode;
@@ -65,6 +68,10 @@ class TrackingManager {
     }
   }
 
+  static void initializeMixpanel() async {
+    _mixpanel = await Mixpanel.init("457ac685ce1ba9f3d0ab636880de4c72", trackAutomaticEvents: true);
+  }
+
   static Future<void> _guardUserInfoWritten() async {
     if (AppSettings.userInfo != null && !_settedUserInfo) {
       await FirebaseCrashlytics.instance.setUserIdentifier(AppSettings.userInfo!.id!);
@@ -91,6 +98,8 @@ class TrackingManager {
       'screen_name': screenName,
       ...(params ?? {}),
     };
+
+    _mixpanel.track(name, properties: parameters);
 
     return analytics.logEvent(name: name, parameters: parameters);
   }

@@ -7,9 +7,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_branch_sdk/flutter_branch_sdk.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
-import 'package:flutter_zoom_videosdk/native/zoom_videosdk.dart';
+// import 'package:flutter_zoom_videosdk/native/zoom_videosdk.dart';
+import 'package:health/health.dart';
 import 'package:medical/src/app.dart';
-import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/model/localization/localization.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -59,7 +59,10 @@ Future<void> main() async {
   Bloc.observer = SimpleBlocObserver();
   //WidgetsFlutterBinding.ensureInitialized();
 
-  WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // config health
+  Health().configure(useHealthConnectIfAvailable: true);
 
   if (Platform.isAndroid) {
     await AndroidInAppWebViewController.setWebContentsDebuggingEnabled(false);
@@ -98,6 +101,7 @@ Future<void> main() async {
   // ]);
   //await initializeDateFormatting('vi_VN');
   await TrackingManager.initializeFlutterFire();
+  TrackingManager.initializeMixpanel();
   // final window = widgetsBinding.window;
   // await _ensureScreenSize(window);
   await EasyLocalization.ensureInitialized();
@@ -105,12 +109,13 @@ Future<void> main() async {
 
   await FlutterBranchSdk.init(enableLogging: false, disableTracking: false);
 
-  var zoom = ZoomVideoSdk();
-  InitConfig initConfig = InitConfig(
-    domain: "zoom.us",
-    enableLog: true,
-  );
-  zoom.initSdk(initConfig);
+  // var zoom = ZoomVideoSdk();
+  // InitConfig initConfig = InitConfig(
+  //   domain: "zoom.us",
+  //   enableLog: true,
+  // );
+  // zoom.initSdk(initConfig);
+  await FlutterBranchSdk.init(enableLogging: false, disableTracking: false);
 
   SystemChrome.setPreferredOrientations(
       [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]).then((_) {
