@@ -200,10 +200,10 @@ class _BmiDetailTabbarControllerState extends State<BmiDetailTabbarController>
     } else {
       String healthIcon = Platform.isIOS
           ? R.drawable.logo_healthkit
-          : R.drawable.logo_googleFit;
+          : R.drawable.logo_healthConnect;
       String healthTitle = Platform.isIOS
           ? R.string.connect_from_Apple_Health.tr()
-          : R.string.connect_from_Google_Fit.tr();
+          : R.string.connect_from_Health_Connect.tr();
       showModalBottomSheet(
         shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.vertical(top: Radius.circular(15))),

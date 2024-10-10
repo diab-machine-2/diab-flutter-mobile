@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:better_player_plus/better_player_plus.dart';
 import 'package:flutter/material.dart';
@@ -38,6 +37,15 @@ class VideoManager {
     }
   }
 
+  bool isYoutubeUrl() {
+    debugPrint('[EXERCISE] isYoutubeUrl: ${sourceList[currentSourceIndex].url}');
+    RegExp youtubeRegExp = RegExp(
+      r'^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.?be)\/.+$',
+      caseSensitive: false,
+    );
+    return youtubeRegExp.hasMatch(sourceList[currentSourceIndex].url);
+  }
+
   VideoManager.fromExerciseData(
     BuildContext context,
     ExerciseMovementResponseData exerciseData, {
@@ -56,7 +64,6 @@ class VideoManager {
     }
 
     if (sourceList.isEmpty) {
-      debugPrint('[VIDEO] exercise video url: ${exerciseData.videoUrl}');
       sourceList.add(VideoSourceData(
           url: exerciseData.videoUrl ?? '',
           loopTimes: 1,
@@ -107,6 +114,8 @@ class VideoManager {
             }
           }
         });
+      print(
+          '[EXERCISE] video manager init from exercise data url: ${sourceList[currentSourceIndex].url}');
       BetterPlayerDataSource betterPlayerDataSource = BetterPlayerDataSource(
         BetterPlayerDataSourceType.network,
         sourceList[currentSourceIndex].url,
@@ -200,6 +209,7 @@ class VideoManager {
 
   void dispose() {
     this.controller?.dispose(forceDispose: true);
+    debugPrint('[EXERCISE] video manager controller disposed');
   }
 }
 

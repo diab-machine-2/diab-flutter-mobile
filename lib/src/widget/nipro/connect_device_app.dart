@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
@@ -152,7 +153,7 @@ class _ConnectDeviceAppState extends State<ConnectDeviceApp> {
                               Image.asset(
                                   Platform.isIOS
                                       ? R.drawable.logo_healthkit
-                                      : R.drawable.logo_googleFit,
+                                      : R.drawable.logo_healthConnect,
                                   height: 48),
                               SizedBox(width: 12),
                               Column(
@@ -160,8 +161,10 @@ class _ConnectDeviceAppState extends State<ConnectDeviceApp> {
                                 children: [
                                   Text(
                                     Platform.isIOS
-                                        ? 'Kết nối từ Apple Health'
-                                        : 'Kết nối từ Google Fit',
+                                        ? R.string.connect_from_Apple_Health
+                                            .tr()
+                                        : R.string.connect_from_Health_Connect
+                                            .tr(),
                                     style: TextStyle(
                                       fontSize: 16,
                                       color: R.color.textDark,
