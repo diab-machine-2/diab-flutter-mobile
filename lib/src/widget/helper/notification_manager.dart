@@ -19,6 +19,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 class NotificationManager {
   static final NotificationManager instance = NotificationManager._internal();
+  bool _hasHandledInitialMessage = false;
 
   factory NotificationManager() {
     return instance;
@@ -93,12 +94,18 @@ class NotificationManager {
 
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
       print("Firebase Messaging - onMessageOpenedApp ");
-      navigateNotification(message);
+      if (!_hasHandledInitialMessage) {
+        _hasHandledInitialMessage = true;
+        navigateNotification(message);
+      }
     });
 
     FirebaseMessaging.instance.getInitialMessage().then((message) {
       print("Firebase Messaging - getInitialMessage ");
-      navigateNotification(message);
+      if (message != null && !_hasHandledInitialMessage) {
+        _hasHandledInitialMessage = true;
+        navigateNotification(message);
+      }
     });
 
     FirebaseMessaging.onBackgroundMessage(myBackgroundMessageHandler);
@@ -175,8 +182,8 @@ class NotificationManager {
               arguments: {'type': 'update', 'id': model.data?.remindId});
           break;
         case NotificationActionType.add_blood_sugar:
-          Navigator.pushNamed(
-              navigatorKey.currentState!.context, NavigatorName.add_blood_sugar_new,
+          Navigator.pushNamed(navigatorKey.currentState!.context,
+              NavigatorName.add_blood_sugar_new,
               arguments: {'type': 'input', 'id': model.data?.communicationId});
           break;
         case NotificationActionType.none:
