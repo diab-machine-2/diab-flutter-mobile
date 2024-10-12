@@ -72,7 +72,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       // try first load from cache (shared preference)
       try {
         // try to load from cache
-        final model = await AppSettings.getHome();
+        final model = (AppSettings.popPrecachedHome() ?? await AppSettings.getHome());
         if (model != null) {
           // if have cache
           _cached = HomeLoaded(
