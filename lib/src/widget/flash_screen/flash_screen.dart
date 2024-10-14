@@ -141,6 +141,9 @@ class _FlashScreenControllerState extends State<FlashScreenController> {
             isNavigateToStepList = true;
           }
         } else {
+          await AppSettings.loadPrecachedHome().catchError((e) {
+            TrackingManager.recordError(e, null);
+          });
           await Navigator.pushReplacementNamed(
             context,
             NavigatorName.tabbar,
