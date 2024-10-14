@@ -295,7 +295,7 @@ class AddBmiCubit extends Cubit<CubitBaseState> {
             .notifyObservers([], notifyName: "Weight_change_data");
         emit(DataLoadedState());
       }
-      emit(LoadingState());
+      // emit(LoadingState());
     } catch (e, _) {
       emit(LoadingCompleteStateWithoutProps());
       if (e is Error) {

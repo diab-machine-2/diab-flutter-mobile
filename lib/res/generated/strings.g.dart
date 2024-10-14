@@ -1139,10 +1139,11 @@ class Strings {
   String get select_disease_type_content => 'select_disease_type_content';
   String get weight_at => 'weight_at';
   String get weight_not_at_ideal => 'weight_not_at_ideal';
+  String get weight_not_at_ideal_pregnant => 'weight_not_at_ideal_pregnant';
   String get re_type => 're_type';
   String get i_understand => 'i_understand';
   String get choose_how_to_enter => 'choose_how_to_enter';
   String get connect_from_Apple_Health => 'connect_from_Apple_Health';
-  String get connect_from_Google_Fit => 'connect_from_Google_Fit';
+  String get connect_from_Health_Connect => 'connect_from_Health_Connect';
   String get enter_manually => 'enter_manually';
 }

@@ -210,9 +210,10 @@ class _BloodPressureDetailTabbarControllerState
     } else {
       String healthIcon = Platform.isIOS
           ? R.drawable.logo_healthkit
-          : R.drawable.logo_googleFit;
-      String healthTitle =
-          Platform.isIOS ? 'Kết nối từ Apple Health' : 'Kết nối từ Google Fit';
+          : R.drawable.logo_healthConnect;
+      String healthTitle = Platform.isIOS
+          ? R.string.connect_from_Apple_Health.tr()
+          : R.string.connect_from_Health_Connect.tr();
       showModalBottomSheet(
         shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.vertical(top: Radius.circular(15))),

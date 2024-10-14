@@ -200,7 +200,7 @@ class CardCourseQuizSurveyPageState extends State<CardCourseQuizSurveyPage>
         alignment: Alignment.topCenter,
         child: TextFieldWidget(
           autoFocus: false,
-          // controller: _textController,
+          controller: _textController,
           borderColor: R.color.accentColor,
           maxLength: 1000,
           readOnly: isCompletedSurvey,

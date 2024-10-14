@@ -78,6 +78,9 @@
 		97C147001CF9000F007C117D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		97C147021CF9000F007C117D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		B466A99A5D7A6746DF100D9F /* Pods_Runner.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Runner.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		C528774E2C4CC8A0005DD6C9 /* MobileRTC.xcframework */ = {isa = PBXFileReference; expectedSignature = "AppleDeveloperProgram:BJ4HAAB9B3:Zoom Video Communications, Inc."; lastKnownFileType = wrapper.xcframework; name = MobileRTC.xcframework; path = lib/MobileRTC.xcframework; sourceTree = "<group>"; };
+		C52877532C4CC901005DD6C9 /* MobileRTCScreenShare.xcframework */ = {isa = PBXFileReference; expectedSignature = "AppleDeveloperProgram:BJ4HAAB9B3:Zoom Video Communications, Inc."; lastKnownFileType = wrapper.xcframework; name = MobileRTCScreenShare.xcframework; path = lib/MobileRTCScreenShare.xcframework; sourceTree = "<group>"; };
+		C52877542C4CC901005DD6C9 /* zoomcml.xcframework */ = {isa = PBXFileReference; expectedSignature = "AppleDeveloperProgram:BJ4HAAB9B3:Zoom Video Communications, Inc."; lastKnownFileType = wrapper.xcframework; name = zoomcml.xcframework; path = lib/zoomcml.xcframework; sourceTree = "<group>"; };
 		C5AD034C2BDA1C43005D4F41 /* GoogleService-Info.com.cactusoftware.diab.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.com.cactusoftware.diab.plist"; sourceTree = "<group>"; };
 		DFF6CEFE46EF252BFC3FCAE5 /* Pods-Runner.stag.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.stag.release.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.stag.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -99,6 +102,9 @@
 		7F886EB7CEFFA1A5ABEA3A69 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				C52877532C4CC901005DD6C9 /* MobileRTCScreenShare.xcframework */,
+				C52877542C4CC901005DD6C9 /* zoomcml.xcframework */,
+				C528774E2C4CC8A0005DD6C9 /* MobileRTC.xcframework */,
 				5A88EF06294CC7380038A34F /* XcodeKit.framework */,
 				6C731C1F270ABB8800B4BC5B /* StoreKit.framework */,
 				B466A99A5D7A6746DF100D9F /* Pods_Runner.framework */,

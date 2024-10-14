@@ -8,6 +8,7 @@ import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:flutter_observer/Observable.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
+import 'package:medical/src/bloc/nipro/model/glucose_data.dart';
 import 'package:medical/src/modal/user/schedule_glucose_time.dart';
 import 'package:medical/src/repo/glucose/glucose_client.dart';
 import 'package:medical/src/repo/user/user_client.dart';
@@ -720,7 +721,7 @@ class _ScanDeviceViewState extends State<ScanDeviceView> with SingleTickerProvid
 
   Future<void> fetchGlucoseInputNotExist() async {
     List<Map<String, String>> glucoseDataList = [];
-    List<Map<String, String>> glucoseDataRequest = [];
+    List<GlucoseData> glucoseDataRequest = [];
 
     Set<DateTime> uniqueValues = Set<DateTime>();
 
@@ -730,10 +731,10 @@ class _ScanDeviceViewState extends State<ScanDeviceView> with SingleTickerProvid
             roundDouble(element.convertGlucoseConcentrationValueToMilligramsPerDeciliter()));
 
         if (!uniqueValues.contains(element.calendar)) {
-          glucoseDataRequest.add({
-            'glucose': glucose.toString(),
-            'date': DateUtil.getDayInMillis(element.calendar!).toString(),
-          });
+          glucoseDataRequest.add(GlucoseData(
+            glucose: glucose.toString(),
+            date: DateUtil.getDayInMillis(element.calendar!).toString(),
+          ));
           uniqueValues.add(element.calendar!);
         }
       });

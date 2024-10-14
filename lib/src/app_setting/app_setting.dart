@@ -46,6 +46,12 @@ class AppSettings {
 
   static bool isSyncSuccess = false;
 
+  static String _countryCode = "VN";
+  static bool get isUS => _countryCode == "US";
+  static void setCountryCode(String code) {
+    _countryCode = code;
+  }
+
   static Future<void> setZaloId(String id) async {
     zaloId = id;
     appPreference.setData("zaloId", id);
@@ -187,6 +193,17 @@ class AppSettings {
     final token = appPreference.getData(Const.TOKEN) ?? '';
     Console.log("getToken", token);
     return token;
+  }
+
+  static HomeModel? _precachedHome;
+  static Future<void> loadPrecachedHome() async {
+    _precachedHome = await getHome();
+  }
+
+  static HomeModel? popPrecachedHome() {
+    final home = _precachedHome;
+    _precachedHome = null;
+    return home;
   }
 
   static Future<List<String>> getHomeFilters() async {
