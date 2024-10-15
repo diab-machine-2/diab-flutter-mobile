@@ -278,7 +278,8 @@ class AddBmiCubit extends Cubit<CubitBaseState> {
         paths);
     if (result == true) {
       Observable.instance.notifyObservers([], notifyName: "Weight_change_data");
-      if (AppSettings.userInfo!.height != selectedHeight) {
+      if (AppSettings.userInfo!.height != selectedHeight ||
+          AppSettings.userInfo!.weight != selectedWeight) {
         updateHeightProfile();
       }
       emit(DataLoadedState());
