@@ -196,6 +196,17 @@ class AppSettings {
     return token;
   }
 
+  static HomeModel? _precachedHome;
+  static Future<void> loadPrecachedHome() async {
+    _precachedHome = await getHome();
+  }
+
+  static HomeModel? popPrecachedHome() {
+    final home = _precachedHome;
+    _precachedHome = null;
+    return home;
+  }
+
   static Future<List<String>> getHomeFilters() async {
     List<String>? filterList = appPreference.getStringList("homeFilters");
     return filterList ??
