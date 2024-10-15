@@ -1,5 +1,7 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/utils/app_storages.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'dart:io' show Platform;
@@ -16,15 +18,15 @@ class _ConnectDeviceAppState extends State<ConnectDeviceApp> {
 
   @override
   void initState() {
-    onLoaded();
     super.initState();
+    _onLoaded();
   }
 
-  onLoaded() async {
+  void _onLoaded() async {
     bool? _hasPermission = await AppStorages.getHealthAppPermission();
-    setState(() {
-      hasPermission = _hasPermission ?? false;
-    });
+    hasPermission = _hasPermission ?? false;
+    if (!mounted) return;
+    setState(() {});
   }
 
   @override
@@ -90,39 +92,41 @@ class _ConnectDeviceAppState extends State<ConnectDeviceApp> {
                   //       )),
                   // ),
                   // SizedBox(height: 16),
-                  GestureDetector(
-                    onTap: () => Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (BuildContext context) =>
-                                  RocheConnectionView())),
-                    child: Container(
-                        decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(12)),
-                        padding: EdgeInsets.all(12),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Row(children: [
-                              Image.asset(R.drawable.ic_connect_from_device,
-                                  height: 48),
-                              SizedBox(width: 12),
-                              Text('Kết nối từ thiết bị',
-                                  style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
-                                      color: R.color.textDark))
-                            ]),
-                            Padding(
-                              padding: EdgeInsets.only(right: 8),
-                              child: Icon(Icons.arrow_forward_ios,
-                                  color: R.color.mainColor, size: 18),
-                            )
-                          ],
-                        )),
-                  ),
-                  SizedBox(height: 16),
+                  if (!AppSettings.isUS) ...[
+                    GestureDetector(
+                      onTap: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (BuildContext context) =>
+                                    RocheConnectionView())),
+                      child: Container(
+                          decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(12)),
+                          padding: EdgeInsets.all(12),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Row(children: [
+                                Image.asset(R.drawable.ic_connect_from_device,
+                                    height: 48),
+                                SizedBox(width: 12),
+                                Text('Kết nối từ thiết bị',
+                                    style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                        color: R.color.textDark))
+                              ]),
+                              Padding(
+                                padding: EdgeInsets.only(right: 8),
+                                child: Icon(Icons.arrow_forward_ios,
+                                    color: R.color.mainColor, size: 18),
+                              )
+                            ],
+                          )),
+                    ),
+                    SizedBox(height: 16),
+                  ],
                   GestureDetector(
                     onTap: () {
                       if (hasPermission == false) {
@@ -149,7 +153,7 @@ class _ConnectDeviceAppState extends State<ConnectDeviceApp> {
                               Image.asset(
                                   Platform.isIOS
                                       ? R.drawable.logo_healthkit
-                                      : R.drawable.logo_googleFit,
+                                      : R.drawable.logo_healthConnect,
                                   height: 48),
                               SizedBox(width: 12),
                               Column(
@@ -157,8 +161,10 @@ class _ConnectDeviceAppState extends State<ConnectDeviceApp> {
                                 children: [
                                   Text(
                                     Platform.isIOS
-                                        ? 'Kết nối từ Apple Health'
-                                        : 'Kết nối từ Google Fit',
+                                        ? R.string.connect_from_Apple_Health
+                                            .tr()
+                                        : R.string.connect_from_Health_Connect
+                                            .tr(),
                                     style: TextStyle(
                                       fontSize: 16,
                                       color: R.color.textDark,

@@ -6,6 +6,7 @@ import 'package:flutter_observer/Observable.dart';
 import 'package:flutter_observer/Observer.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
+import 'package:medical/src/app_setting/branchio_link_config.dart';
 import 'package:medical/src/app_setting/dynamic_link_config.dart';
 import 'package:medical/src/app_setting/firebase_tracking/activity_list_tracking.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
@@ -54,9 +55,9 @@ class _MyPlanPageState extends State<MyPlanPage> with Observer {
   @override
   void update(Observable observable, String? notifyName, Map? map) {
     if (notifyName == 'mark_completed_calendar') {
-      String? calendarId = DynamicLinkConfig.instance.zoomId;
+      String? calendarId = BranchioLinkConfig.instance.meetingId;
       if (calendarId != null) {
-        DynamicLinkConfig.instance.removeZoomId();
+        BranchioLinkConfig.instance.removeMeetingId();
       }
     // } else if (notifyName == Const.NAVIGATE_TO_ACTIVITY_TAB) {
     //   if (_cubit.currentPlanType != PlanType.goal) {

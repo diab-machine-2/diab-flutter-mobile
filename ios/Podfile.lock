@@ -11,13 +11,13 @@ PODS:
     - Flutter
   - audioplayers_darwin (0.0.1):
     - Flutter
-  - better_player (0.0.1):
+  - better_player_plus (1.0.0):
     - Cache (~> 6.0.0)
     - Flutter
     - GCDWebServer
     - HLSCachingReverseProxyServer
     - PINCache
-  - BranchSDK (2.2.2)
+  - BranchSDK (3.6.0)
   - Cache (6.0.0)
   - camera_avfoundation (0.0.1):
     - Flutter
@@ -149,8 +149,8 @@ PODS:
   - Flutter (1.0.0)
   - flutter_blue_plus (0.0.1):
     - Flutter
-  - flutter_branch_sdk (6.8.0):
-    - BranchSDK (~> 2.2.1)
+  - flutter_branch_sdk (8.1.0):
+    - BranchSDK (~> 3.6.0)
     - Flutter
   - flutter_facebook_login (0.0.1):
     - FBSDKCoreKit (~> 5.5)
@@ -174,9 +174,8 @@ PODS:
     - Flutter
   - flutter_pdfview (1.0.2):
     - Flutter
-  - flutter_zoom_videosdk (0.0.1):
+  - flutter_zoom_meeting (0.0.1):
     - Flutter
-    - ZoomVideoSDK/ZoomVideoSDK
   - fluttertoast (0.0.2):
     - Flutter
     - Toast
@@ -340,15 +339,12 @@ PODS:
   - ZaloSDK/Core (4.1.0120)
   - ZaloSDK/Main (4.1.0120):
     - ZaloSDK/Core
-  - ZoomVideoSDK/CptShare (1.10.11)
-  - ZoomVideoSDK/zoomcml (1.10.11)
-  - ZoomVideoSDK/ZoomVideoSDK (1.10.11)
 
 DEPENDENCIES:
   - app_settings (from `.symlinks/plugins/app_settings/ios`)
   - audio_session (from `.symlinks/plugins/audio_session/ios`)
   - audioplayers_darwin (from `.symlinks/plugins/audioplayers_darwin/ios`)
-  - better_player (from `.symlinks/plugins/better_player/ios`)
+  - better_player_plus (from `.symlinks/plugins/better_player_plus/ios`)
   - BranchSDK
   - camera_avfoundation (from `.symlinks/plugins/camera_avfoundation/ios`)
   - device_info_plus (from `.symlinks/plugins/device_info_plus/ios`)
@@ -368,7 +364,7 @@ DEPENDENCIES:
   - flutter_inappwebview (from `.symlinks/plugins/flutter_inappwebview/ios`)
   - flutter_native_splash (from `.symlinks/plugins/flutter_native_splash/ios`)
   - flutter_pdfview (from `.symlinks/plugins/flutter_pdfview/ios`)
-  - flutter_zoom_videosdk (from `.symlinks/plugins/flutter_zoom_videosdk/ios`)
+  - flutter_zoom_meeting (from `.symlinks/plugins/flutter_zoom_meeting/ios`)
   - fluttertoast (from `.symlinks/plugins/fluttertoast/ios`)
   - google_sign_in_ios (from `.symlinks/plugins/google_sign_in_ios/ios`)
   - health (from `.symlinks/plugins/health/ios`)
@@ -390,9 +386,6 @@ DEPENDENCIES:
   - url_launcher_ios (from `.symlinks/plugins/url_launcher_ios/ios`)
   - wakelock_plus (from `.symlinks/plugins/wakelock_plus/ios`)
   - zalo_flutter (from `.symlinks/plugins/zalo_flutter/ios`)
-  - ZoomVideoSDK/CptShare (= 1.10.11)
-  - ZoomVideoSDK/zoomcml (= 1.10.11)
-  - ZoomVideoSDK/ZoomVideoSDK (= 1.10.11)
 
 SPEC REPOS:
   trunk:
@@ -436,7 +429,6 @@ SPEC REPOS:
     - Toast
     - TOCropViewController
     - ZaloSDK
-    - ZoomVideoSDK
 
 EXTERNAL SOURCES:
   app_settings:
@@ -445,8 +437,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/audio_session/ios"
   audioplayers_darwin:
     :path: ".symlinks/plugins/audioplayers_darwin/ios"
-  better_player:
-    :path: ".symlinks/plugins/better_player/ios"
+  better_player_plus:
+    :path: ".symlinks/plugins/better_player_plus/ios"
   camera_avfoundation:
     :path: ".symlinks/plugins/camera_avfoundation/ios"
   device_info_plus:
@@ -483,8 +475,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/flutter_native_splash/ios"
   flutter_pdfview:
     :path: ".symlinks/plugins/flutter_pdfview/ios"
-  flutter_zoom_videosdk:
-    :path: ".symlinks/plugins/flutter_zoom_videosdk/ios"
+  flutter_zoom_meeting:
+    :path: ".symlinks/plugins/flutter_zoom_meeting/ios"
   fluttertoast:
     :path: ".symlinks/plugins/fluttertoast/ios"
   google_sign_in_ios:
@@ -533,8 +525,8 @@ SPEC CHECKSUMS:
   AppAuth: 501c04eda8a8d11f179dbe8637b7a91bb7e5d2fa
   audio_session: 4f3e461722055d21515cf3261b64c973c062f345
   audioplayers_darwin: 877d9a4d06331c5c374595e46e16453ac7eafa40
-  better_player: 2406bfe8175203c7a46fa15f9d778d73b12e1646
-  BranchSDK: 324f47ce8568005684cf024a47980bb713f47648
+  better_player_plus: 89f911bd69171edfe6d2ee689014355036bffdb0
+  BranchSDK: 40ff1a13b1dc0729f79a9aae230418d25bf739a8
   Cache: 4ca7e00363fca5455f26534e5607634c820ffc2d
   camera_avfoundation: 8b8d780bcfb6a4a02b0fbe2b4bd17b5b71946e68
   device_info_plus: c6fb39579d0f423935b0c9ce7ee2f44b71b9fce6
@@ -562,14 +554,14 @@ SPEC CHECKSUMS:
   FirebaseSharedSwift: 20530f495084b8d840f78a100d8c5ee613375f6e
   Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
   flutter_blue_plus: 4837da7d00cf5d441fdd6635b3a57f936778ea96
-  flutter_branch_sdk: 938f6f386a976356ee7e5f60969e53d4ae5704d9
+  flutter_branch_sdk: e5b94559acdc8596fe7b68598a706879602cb0e7
   flutter_facebook_login: cfb5659f686b1c575ef205c6b6fd20db9679d3c4
   flutter_image_compress_common: ec1d45c362c9d30a3f6a0426c297f47c52007e3e
   flutter_inapp_purchase: 5c6a1ac3f11b11d0c8c0321c0c41c1f05805e4c8
   flutter_inappwebview: 3d32228f1304635e7c028b0d4252937730bbc6cf
   flutter_native_splash: 52501b97d1c0a5f898d687f1646226c1f93c56ef
   flutter_pdfview: 25f53dd6097661e6395b17de506e6060585946bd
-  flutter_zoom_videosdk: 6cfe5ed4a015adaf8c2bc57e50261914f1ddd38b
+  flutter_zoom_meeting: e7b1969db6997fa1c9e49971a18fa33dbe6e8cde
   fluttertoast: 31b00dabfa7fb7bacd9e7dbee580d7a2ff4bf265
   GCDWebServer: 2c156a56c8226e2d5c0c3f208a3621ccffbe3ce4
   google_sign_in_ios: 8115e3fbe097e6509beb819ed602d47369d9011f
@@ -613,8 +605,7 @@ SPEC CHECKSUMS:
   wakelock_plus: 78ec7c5b202cab7761af8e2b2b3d0671be6c4ae1
   zalo_flutter: 0fe7092dc50f3f4baf26ed980cedc9b4ed66c5b2
   ZaloSDK: 233c5cb5247bd6891f4a7d2d9505f6a2b9aa38c6
-  ZoomVideoSDK: 51087fd802fe61cf7d0c2ae539555170417829e7
 
-PODFILE CHECKSUM: f227320da1d58ab1aa969b111b74bfff8f815274
+PODFILE CHECKSUM: 7fec11c2723e53f8d1e936cbf82f6df2af4de52a
 
 COCOAPODS: 1.14.3

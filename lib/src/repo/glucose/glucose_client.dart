@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
+import 'package:medical/src/bloc/nipro/model/glucose_data.dart';
 import 'package:medical/src/modal/error/error_model.dart';
 import 'package:medical/src/modal/glucose/Glucose_Input_data_model.dart';
 import 'package:medical/src/modal/glucose/glucose_comparer.dart';
@@ -161,13 +162,13 @@ class GlucoseClient extends FetchClient {
   }
 
   Future<List<dynamic>> fetchGlucoseInputNotExist(
-      List<Map<String, String>> glucoses) async {
+      List<GlucoseData> glucoses) async {
     try {
     List<Map<String, dynamic>> params = [];
     glucoses.forEach((element) {
       params.add({
-        'glucose': double.tryParse(element['glucose']!) ?? 0,
-        'createDate': int.tryParse(element['date']!) ?? 0,
+        'glucose': element.glucose,
+        'createDate': element.date,
         'unitType': 1
       });
     });

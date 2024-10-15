@@ -8,6 +8,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/app_setting/app_sharing.dart';
+import 'package:medical/src/app_setting/branchio_link_config.dart';
 import 'package:medical/src/app_setting/dynamic_link_config.dart';
 import 'package:medical/src/app_setting/firebase_tracking/activity_list_tracking.dart';
 import 'package:medical/src/bloc/home/home_bloc.dart';
@@ -111,7 +112,7 @@ class _HomeControllerState extends State<HomeController>
   void _initHealthApp() async {
     await AppSettings.setIsSyncing(false);
     final String? lessonId = DynamicLinkConfig.instance.lessonId;
-    final String? zoomId = DynamicLinkConfig.instance.zoomId;
+    final String? meetingId = BranchioLinkConfig.instance.meetingId;
     final String? activityId = DynamicLinkConfig.instance.activityId;
     _checkShowRating();
 
@@ -132,7 +133,7 @@ class _HomeControllerState extends State<HomeController>
       }
     });
 
-    if (lessonId == null && zoomId == null && activityId == null) {
+    if (lessonId == null && meetingId == null && activityId == null) {
       Future.delayed(Duration(milliseconds: 1000), () async {
         bool? hasHealthConnection = await AppStorages.getHealthAppPermission();
         if (hasHealthConnection == true) {
@@ -747,6 +748,9 @@ class _HomeControllerState extends State<HomeController>
   bool _showGlucoseAddBottomSheet(String? routeName) {
     if (routeName == NavigatorName.add_blood_sugar_new ||
         routeName == NavigatorName.add_blood_sugar) {
+      if (AppSettings.isUS) {
+        return true;
+      }
       BloodSugarFunctions.showModalAddData(context);
       return false;
     }

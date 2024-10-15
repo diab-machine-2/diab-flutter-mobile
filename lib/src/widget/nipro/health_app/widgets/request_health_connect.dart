@@ -35,9 +35,10 @@ class RequestHealthConnect extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    String appTitle = Platform.isIOS ? 'Apple Health' : 'Google Fit';
-    String appLogo =
-        Platform.isIOS ? R.drawable.logo_healthkit : R.drawable.logo_googleFit;
+    String appTitle = Platform.isIOS ? 'Apple Health' : 'Health Connect';
+    String appLogo = Platform.isIOS
+        ? R.drawable.logo_healthkit
+        : R.drawable.logo_healthConnect;
     return BlocProvider<HealthAppBloc>(
       create: (_) => HealthAppBloc()..add(SubmitSyncData(isSyncing)),
       child: BlocBuilder<HealthAppBloc, HealthAppState>(
@@ -114,6 +115,20 @@ class RequestHealthConnect extends StatelessWidget {
                       title: "Kết nối với $appTitle",
                       onPressed: () async {
                         if (Platform.isAndroid) {
+                          // Note that for Android, the target phone needs to have the Health Connect app installed
+                          // and have access to the internet.
+                          final isHealthConnectAvailable = await HealthSetting
+                              .instance
+                              .isHealthConnectSdkStatusAvailable();
+                          // Handle case target Android phone does not install Health Connect
+                          if (!isHealthConnectAvailable) {
+                            _showDialogWarning(context,
+                                onConfirm: () async => await HealthSetting
+                                    .instance
+                                    .installHealthConnect());
+                            return;
+                          }
+
                           await Permission.activityRecognition.request();
                           await Permission.location.request();
                         }
@@ -141,6 +156,98 @@ class RequestHealthConnect extends StatelessWidget {
           );
         },
       ),
+    );
+  }
+
+  _showDialogWarning(BuildContext context, {required Function onConfirm}) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return Container(
+          child: AlertDialog(
+              contentPadding: EdgeInsets.all(0),
+              content: Stack(children: [
+                Container(
+                  padding: EdgeInsets.all(16),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Image.asset(R.drawable.ic_warning, width: 64, height: 64),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 16.0),
+                        child: Text(
+                            'Không thể kết nối với Health Connect. Vui lòng cài đặt ứng dụng Health Connect trên thiết bị của bạn.',
+                            textAlign: TextAlign.center,
+                            style: R.style.normalTextStyle),
+                      ),
+                      SizedBox(height: 16),
+                      Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Expanded(
+                              child: GestureDetector(
+                                  onTap: () {
+                                    Navigator.pop(context);
+                                  },
+                                  child: Container(
+                                      height: 43,
+                                      decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(200),
+                                          color: R.color.grayBorder),
+                                      child: Center(
+                                        child: Text('Để sau',
+                                            style: TextStyle(
+                                                color: R.color.textDark,
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.w600)),
+                                      ))),
+                            ),
+                            SizedBox(width: 14),
+                            Expanded(
+                              child: GestureDetector(
+                                  onTap: () {
+                                    Navigator.pop(context);
+                                    onConfirm();
+                                  },
+                                  child: Container(
+                                    height: 43,
+                                    decoration: BoxDecoration(
+                                        color: R.color.red,
+                                        borderRadius:
+                                            BorderRadius.circular(200),
+                                        gradient: LinearGradient(
+                                            begin: Alignment.topLeft,
+                                            end: Alignment.centerRight,
+                                            colors: [
+                                              R.color.greenGradientTop,
+                                              R.color.greenGradientBottom
+                                            ])),
+                                    child: Center(
+                                      child: Text('Cài Đặt',
+                                          style: TextStyle(
+                                              color: R.color.white,
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w600)),
+                                    ),
+                                  )),
+                            ),
+                          ])
+                    ],
+                  ),
+                ),
+                Positioned(
+                  top: 0,
+                  right: 0,
+                  child: IconButton(
+                      icon: Icon(Icons.close, color: R.color.color0xffBEC0C8),
+                      onPressed: () {
+                        Navigator.pop(context);
+                      }),
+                )
+              ])),
+        );
+      },
     );
   }
 }

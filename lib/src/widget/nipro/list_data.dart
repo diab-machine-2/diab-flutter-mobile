@@ -1,43 +1,39 @@
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_observer/Observable.dart';
 import 'package:medical/res/R.dart';
-import 'package:medical/src/repo/glucose/glucose_client.dart';
+import 'package:medical/src/bloc/nipro/model/glucose_data.dart';
+import 'package:medical/src/bloc/nipro/nipro_bloc.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 
 class ListData extends StatefulWidget {
-  final List<Map<String, String>> glucoseData;
-  ListData({required Key key, required this.glucoseData}) : super(key: key);
+  final List<GlucoseData> glucoseData;
+  ListData({Key? key, required this.glucoseData}) : super(key: key);
 
   @override
   State<ListData> createState() => ListDataState();
 }
 
 class ListDataState extends State<ListData> {
-  List<Map<String, String>> glucoseData = [];
-  List<Map<String, String>> selectedGlucose = [];
+  List<GlucoseData> glucoseData = [];
+  List<GlucoseData> selectedGlucose = [];
   //Map<String, String>? glucose;
 
   @override
   void initState() {
     super.initState();
-    checkData();
+    _checkData();
   }
 
-  checkData() async {
+  void _checkData() async {
     glucoseData = [];
     try {
       BotToast.showLoading();
-      final result =
-          await GlucoseClient().fetchGlucoseInputNotExist(widget.glucoseData);
+      final result = await BlocProvider.of<NiproBloc>(context).removeSyncedData(widget.glucoseData);
 
-      result.forEach((element) {
-        glucoseData.add({
-          'glucose': element['glucose'].toString(),
-          'date': element['createDate'].toString()
-        });
-      });
+      glucoseData = result;
       selectedGlucose = [...glucoseData];
       setState(() {});
       BotToast.closeAllLoading();
@@ -54,10 +50,10 @@ class ListDataState extends State<ListData> {
         MediaQuery.of(context).padding.bottom -
         54;
 
-    final double countHight = glucoseData.length * 48.0 + 216;
+    // final double countHight = glucoseData.length * 48.0 + 216;
 
     glucoseData.sort(((a, b) {
-      return int.parse(b['date']!).compareTo(int.parse(a['date']!));
+      return b.date.compareTo(a.date);
     }));
 
     return SafeArea(
@@ -156,9 +152,7 @@ class ListDataState extends State<ListData> {
                                               CrossAxisAlignment.start,
                                           children: [
                                             Text(
-                                                (double.tryParse(
-                                                            data['glucose']!) ??
-                                                        0)
+                                                data.glucose
                                                     .round()
                                                     .toString(),
                                                 style: TextStyle(
@@ -168,9 +162,7 @@ class ListDataState extends State<ListData> {
                                             SizedBox(height: 8),
                                             Text(
                                                 convertToUTC(
-                                                    int.tryParse(
-                                                            data['date']!) ??
-                                                        0,
+                                                    data.date,
                                                     'HH:mm - dd-MM-yyyy'),
                                                 style: TextStyle(
                                                     color: R.color.grayCaption,
@@ -198,7 +190,7 @@ class ListDataState extends State<ListData> {
                       context, 'Bạn chưa chọn chỉ số dường huyết');
                   return;
                 }
-                submit();
+                _submit();
                 // Navigator.pop(context);
                 // Navigator.of(context).pop(glucose);
               },
@@ -231,30 +223,30 @@ class ListDataState extends State<ListData> {
     ));
   }
 
-  bool isSelected(Map<String, String> glucose) {
+  bool isSelected(GlucoseData that) {
     bool isSelected = false;
-    selectedGlucose.forEach((element) {
-      if (element['glucose'] == glucose['glucose'] &&
-          element['date'] == glucose['date']) {
+    selectedGlucose.forEach((e) {
+      if (e.glucose == that.glucose &&
+          e.date == that.date) {
         isSelected = true;
       }
     });
     return isSelected;
   }
 
-  submit() async {
+  void _submit() async {
     try {
       BotToast.showLoading();
-      await GlucoseClient().postGlucoseInputs(selectedGlucose);
+      await BlocProvider.of<NiproBloc>(context).submitData(selectedGlucose);
       BotToast.closeAllLoading();
-      showPopupSuccess();
+      _showPopupSuccess();
     } catch (e) {
       BotToast.closeAllLoading();
       Message.showToastMessage(context, e.toString());
     }
   }
 
-  showPopupSuccess() {
+  void _showPopupSuccess() {
     showDialog(
       context: context,
       builder: (context) {

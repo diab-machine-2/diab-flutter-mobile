@@ -17,6 +17,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.3.16"
+  adaptive_number:
+    dependency: transitive
+    description:
+      name: adaptive_number
+      sha256: "3a567544e9b5c9c803006f51140ad544aedc79604fd4f3f2c1380003f97c1d77"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.0"
   analyzer:
     dependency: transitive
     description:
@@ -145,15 +153,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.0.2"
-  better_player:
+  better_player_plus:
     dependency: "direct main"
     description:
-      path: "."
-      ref: HEAD
-      resolved-ref: db1cd41ad58ec24f9b461acde9ff0ab8b44cc60a
-      url: "https://github.com/ngocphuc1612/betterplayer"
-    source: git
-    version: "0.0.85"
+      name: better_player_plus
+      sha256: "252525a98b54f0ac684897a738cf2f4181540b2c38e82851062fe40e5e676fd6"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.6"
   bloc:
     dependency: transitive
     description:
@@ -418,6 +425,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "5.1.1"
+  dart_jsonwebtoken:
+    dependency: "direct main"
+    description:
+      name: dart_jsonwebtoken
+      sha256: "346e9a21e4bf6e6a431e19ece00ebb2e3668e1e339cabdf6f46d18d88692a848"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.14.0"
   dart_style:
     dependency: transitive
     description:
@@ -490,6 +505,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.0.2"
+  ed25519_edwards:
+    dependency: transitive
+    description:
+      name: ed25519_edwards
+      sha256: "6ce0112d131327ec6d42beede1e5dfd526069b18ad45dcf654f15074ad9276cd"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.3.1"
   equatable:
     dependency: "direct main"
     description:
@@ -498,14 +521,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.5"
-  events_emitter:
-    dependency: transitive
-    description:
-      name: events_emitter
-      sha256: a075477bdf9c8c0c31bb7c7b7bdd357b4486c34f30163119f96de4e7f54abeff
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.5.2"
   external_app_launcher:
     dependency: "direct main"
     description:
@@ -739,10 +754,10 @@ packages:
     dependency: "direct main"
     description:
       name: flutter_branch_sdk
-      sha256: "993a11e5fff9959155d99d45fce6ba6b22a25ce7168c55f7a238c465453f5063"
+      sha256: "7010713675e509625f1469a78151f512d7d56677528d0015e422ad417a447460"
       url: "https://pub.dev"
     source: hosted
-    version: "6.9.0"
+    version: "8.1.0"
   flutter_cache_manager:
     dependency: transitive
     description:
@@ -964,17 +979,19 @@ packages:
     dependency: transitive
     description:
       name: flutter_widget_from_html_core
-      sha256: df7c7c9e5ea144f7ab0adfbad733b4d4f7d408ab733c94e6e9fdcb327af92aa1
+      sha256: cc1d9be3d187ce668ee02091cd5442dfb050cdaf98e0ab9a4d12ad008f966979
       url: "https://pub.dev"
     source: hosted
-    version: "0.15.1"
-  flutter_zoom_videosdk:
+    version: "0.14.12"
+  flutter_zoom_meeting:
     dependency: "direct main"
     description:
-      path: "packages/zoom_video_sdk"
-      relative: true
-    source: path
-    version: "1.9.0"
+      path: "."
+      ref: "1.0.3"
+      resolved-ref: "998ce9a03fb337b544dacca0cf1758e9a55859d6"
+      url: "https://github.com/ngocphuc1612/flutter_zoom_meeting_sdk.git"
+    source: git
+    version: "1.0.3"
   fluttertoast:
     dependency: "direct main"
     description:
@@ -1243,10 +1260,10 @@ packages:
     dependency: "direct overridden"
     description:
       name: js
-      sha256: "4186c61b32f99e60f011f7160e32c89a758ae9b1d0c6d28e2c02ef0382300e2b"
+      sha256: c1b2e9b5ea78c45e1a0788d29606ba27dc5f71f019f32ca5140f61ef071838cf
       url: "https://pub.dev"
     source: hosted
-    version: "0.7.0"
+    version: "0.7.1"
   json_annotation:
     dependency: "direct main"
     description:
@@ -1343,6 +1360,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.4"
+  mixpanel_flutter:
+    dependency: "direct main"
+    description:
+      name: mixpanel_flutter
+      sha256: c1e35c54d8cfc1c50d35d2e8cc11416295efc45bb6dcaa88aec8f82219274833
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.3.3"
   modal_bottom_sheet:
     dependency: "direct main"
     description:
@@ -2070,7 +2095,7 @@ packages:
     source: hosted
     version: "0.4.0+2"
   wakelock_plus:
-    dependency: "direct main"
+    dependency: "direct overridden"
     description:
       name: wakelock_plus
       sha256: "26ebc8b5e0037c15e2a1b661dcec8a475cb7205befcce8a33f545ae8c86b367c"
@@ -2167,5 +2192,5 @@ packages:
     source: git
     version: "0.0.8"
 sdks:
-  dart: ">=3.2.0 <4.0.0"
+  dart: ">=3.2.6 <4.0.0"
   flutter: ">=3.16.0"

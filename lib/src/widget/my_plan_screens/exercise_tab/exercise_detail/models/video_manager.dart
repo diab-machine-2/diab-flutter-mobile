@@ -1,7 +1,6 @@
 import 'dart:async';
-import 'dart:io';
 
-import 'package:better_player/better_player.dart';
+import 'package:better_player_plus/better_player_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:medical/src/model/response/exercise_movement_response.dart';
@@ -36,6 +35,15 @@ class VideoManager {
     if (_timer?.isActive == true) {
       _timer?.cancel();
     }
+  }
+
+  bool isYoutubeUrl() {
+    debugPrint('[EXERCISE] isYoutubeUrl: ${sourceList[currentSourceIndex].url}');
+    RegExp youtubeRegExp = RegExp(
+      r'^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.?be)\/.+$',
+      caseSensitive: false,
+    );
+    return youtubeRegExp.hasMatch(sourceList[currentSourceIndex].url);
   }
 
   VideoManager.fromExerciseData(
@@ -106,6 +114,8 @@ class VideoManager {
             }
           }
         });
+      print(
+          '[EXERCISE] video manager init from exercise data url: ${sourceList[currentSourceIndex].url}');
       BetterPlayerDataSource betterPlayerDataSource = BetterPlayerDataSource(
         BetterPlayerDataSourceType.network,
         sourceList[currentSourceIndex].url,
@@ -113,15 +123,15 @@ class VideoManager {
       newController.setupDataSource(betterPlayerDataSource);
 
       newController.videoPlayerController?.addListener(() async {
-        if (Platform.isIOS) {
-          if ((newController
-                  .videoPlayerController!.value.position.inMilliseconds) ==
-              newController
-                  .videoPlayerController!.value.duration!.inMilliseconds) {
-            //    Message.showToastMessage(context, 'Paused');
-            // await newController.pause();
-          }
-        }
+        // if (Platform.isIOS) {
+        //   if ((newController
+        //           .videoPlayerController!.value.position.inMilliseconds) ==
+        //       newController
+        //           .videoPlayerController!.value.duration!.inMilliseconds) {
+        //     //    Message.showToastMessage(context, 'Paused');
+        //     // await newController.pause();
+        //   }
+        // }
         if (videoDuration == null) {
           videoDuration = newController.videoPlayerController!.value.duration;
         }
@@ -193,12 +203,13 @@ class VideoManager {
             isCompleted == false) ||
         type == CustomPlayerEventType.videoReplay) {
       currentEventState = type;
-      callbackEventListener!(type, videoDuration!);
+      callbackEventListener!(type, videoDuration ?? Duration.zero);
     }
   }
 
   void dispose() {
     this.controller?.dispose(forceDispose: true);
+    debugPrint('[EXERCISE] video manager controller disposed');
   }
 }
 
