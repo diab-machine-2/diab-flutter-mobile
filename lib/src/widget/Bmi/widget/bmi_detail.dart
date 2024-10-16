@@ -140,11 +140,13 @@ class BmiDetailControllerState extends State<BmiDetailController>
                             return GestureDetector(
                                 onTap: () {
                                   KpiBodyWeightTracking.clickKpiItem();
+                                  bool isCurrentBmi = kpiItem.id == model?.first.id;
                                   Navigator.pushNamed(
                                       context, NavigatorName.add_bmi,
                                       arguments: {
                                         'type': 'update',
                                         'id': kpiItem.id,
+                                        'isCurrentBmi': isCurrentBmi,
                                       });
                                 },
                                 child: SpacingColumn(

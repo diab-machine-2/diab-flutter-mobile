@@ -29,6 +29,7 @@ class AddBmiCubit extends Cubit<CubitBaseState> {
   final String? type;
   final String? id;
   final String? goalId;
+  final bool? isCurrentBmi;
   bool? isCloseShortGuide;
 
   void setIsCloseShortGuide(bool isClose) {
@@ -39,7 +40,8 @@ class AddBmiCubit extends Cubit<CubitBaseState> {
     return this.isCloseShortGuide ?? false;
   }
 
-  AddBmiCubit({this.type, this.id, this.goalId}) : super(InitialState()) {
+  AddBmiCubit({this.type, this.id, this.goalId, this.isCurrentBmi})
+      : super(InitialState()) {
     if (AppSettings.userInfo!.height != 0 &&
         AppSettings.userInfo!.height != null) {
       selectedHeight = AppSettings.userInfo!.height!.toInt();
@@ -143,7 +145,7 @@ class AddBmiCubit extends Cubit<CubitBaseState> {
         );
         await HomeClient().completeSmartGoal(
             selectedDate, goalId ?? '', 1, ScheduleType.weight.typeIndex);
-        if (AppSettings.userInfo!.height != selectedHeight) {
+        if (AppSettings.userInfo!.weight != selectedWeight) {
           updateHeightProfile();
         }
         emit(DataLoadedState());
@@ -278,8 +280,7 @@ class AddBmiCubit extends Cubit<CubitBaseState> {
         paths);
     if (result == true) {
       Observable.instance.notifyObservers([], notifyName: "Weight_change_data");
-      if (AppSettings.userInfo!.height != selectedHeight ||
-          AppSettings.userInfo!.weight != selectedWeight) {
+      if (AppSettings.userInfo!.weight != selectedWeight && isCurrentBmi == true) {
         updateHeightProfile();
       }
       emit(DataLoadedState());

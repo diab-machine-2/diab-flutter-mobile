@@ -264,6 +264,7 @@ class Strings {
   String get enter_waist => 'enter_waist';
   String get mes_weight_empty => 'mes_weight_empty';
   String get mes_height_empty => 'mes_height_empty';
+  String get mes_waist_empty => 'mes_waist_empty';
   String get waist_trend => 'waist_trend';
   String get muc_tieu_vong_eo => 'muc_tieu_vong_eo';
   String get hien_tai => 'hien_tai';
