@@ -76,7 +76,7 @@ class SectionFooter extends StatelessWidget with AddBmiMixin {
                     }
                     if (cubit.selectedHip == 0) {
                       Message.showToastMessage(
-                          context, R.string.mes_weight_empty.tr());
+                          context, R.string.mes_waist_empty.tr());
                       return;
                     }
                     int indexRange = findIndexInRanges(cubit: cubit);
