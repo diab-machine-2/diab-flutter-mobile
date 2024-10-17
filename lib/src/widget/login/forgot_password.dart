@@ -123,10 +123,9 @@ class _ForgotPasswordControllerState extends State<ForgotPasswordController> {
 
   verify(BuildContext context) async {
     await TrackingManager.analytics.logEvent(
-      name: 'cta_button_clicked',
+      name: 'password_submit',
       parameters: {
         "screen_name": 'forget_password',
-        'cta_button_name': 'cta_forget_password',
       },
     );
     FocusScope.of(context).unfocus();

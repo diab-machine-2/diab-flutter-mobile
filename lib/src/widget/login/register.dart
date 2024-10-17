@@ -315,13 +315,6 @@ class _RegisterControllerState extends State<RegisterController> {
   }
 
   submitUpdatePassword() async {
-    await TrackingManager.analytics.logEvent(
-      name: 'cta_button_clicked',
-      parameters: {
-        "screen_name": 'sign_up',
-        'cta_button_name': 'cta_sign_up_phone',
-      },
-    );
     if (phone.isEmpty) {
       phoneKey.currentState!
           .validate(R.string.ban_chua_nhap_so_dien_thoai.tr());
@@ -355,9 +348,23 @@ class _RegisterControllerState extends State<RegisterController> {
       final result = await LoginClient()
           .submitUpdatePasswordRegister(phone: phone, password: password);
       if (result) {
+        await TrackingManager.analytics.logEvent(
+          name: 'sign_up_start',
+          parameters: {
+            "screen_name": 'sign_up',
+            'status': 'success',
+          },
+        );
         getToken();
       }
     } catch (e, _) {
+      await TrackingManager.analytics.logEvent(
+        name: 'sign_up_start',
+        parameters: {
+          "screen_name": 'sign_up',
+          'status': 'fail',
+        },
+      );
       BotToast.closeAllLoading();
       if (e is Error) {
         if (e.code == 'USER002') {
@@ -412,13 +419,13 @@ class _RegisterControllerState extends State<RegisterController> {
   }
 
   verify() async {
-    await TrackingManager.analytics.logEvent(
-      name: 'cta_button_clicked',
-      parameters: {
-        "screen_name": 'sign_up',
-        'cta_button_name': 'cta_sign_up_phone',
-      },
-    );
+    // await TrackingManager.analytics.logEvent(
+    //   name: 'cta_button_clicked',
+    //   parameters: {
+    //     "screen_name": 'sign_up',
+    //     'cta_button_name': 'cta_sign_up_phone',
+    //   },
+    // );
     if (phone.isEmpty) {
       phoneKey.currentState!
           .validate(R.string.ban_chua_nhap_so_dien_thoai.tr());

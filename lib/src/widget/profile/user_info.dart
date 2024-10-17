@@ -25,6 +25,7 @@ import 'package:medical/src/widget/Bmi/widget/add_bmi.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
+import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/profile/address.dart';
 import 'package:medical/src/widgets/select_bottom_sheet_widget.dart';
 import 'package:medical/src/widgets/user_icon_widget.dart';
@@ -1377,8 +1378,14 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                         const SizedBox(width: 14),
                         Expanded(
                           child: GestureDetector(
-                            onTap: () {
+                            onTap: () async{
                               Observable.instance.notifyObservers([], notifyName: "logout");
+                              await TrackingManager.analytics.logEvent(
+                                  name: 'logout',
+                                  parameters: {
+                                      "screen_name": 'profile',
+                                },
+                              );
                               AppSettings.logout();
                             },
                             child: Container(

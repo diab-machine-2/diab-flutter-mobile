@@ -186,7 +186,7 @@ class _LoginControllerState extends State<LoginController> {
                         child: InkWell(
                           onTap: () async {
                             await TrackingManager.analytics.logEvent(
-                              name: 'cta_button_clicked',
+                              name: 'login_forget_password',
                               parameters: {
                                 "screen_name": 'login',
                                 'cta_button_name': 'cta_login_forget_password',
@@ -207,10 +207,17 @@ class _LoginControllerState extends State<LoginController> {
                       ),
                     ],
                     GestureDetector(
-                      onTap: () {
+                      onTap: () async {
                         if (isLogin) {
                           login();
                         } else {
+                          await TrackingManager.analytics.logEvent(
+                            name: 'login_phone_start',
+                            parameters: {
+                              "screen_name": 'login',
+                              'cta_button_name': 'cta_login_login',
+                            },
+                          );
                           checkExistPhoneNumber();
                         }
                       },
@@ -325,11 +332,6 @@ class _LoginControllerState extends State<LoginController> {
   }
 
   login() async {
-    await TrackingManager.analytics
-        .logEvent(name: 'cta_button_clicked', parameters: {
-      "screen_name": 'login',
-      'cta_button_name': 'cta_login_phone',
-    });
     FocusScope.of(context).unfocus();
     if (phone.isEmpty) {
       phoneKey.currentState!
@@ -356,9 +358,24 @@ class _LoginControllerState extends State<LoginController> {
         Navigator.pushReplacementNamed(context, NavigatorName.update_info,
             arguments: {'type': 'phone', 'diabeteStates': diabeteStates});
       } else {
+        await TrackingManager.analytics
+            .logEvent(name: 'login_phone', parameters: {
+          "screen_name": 'login',
+          'status': 'success',
+        });
+        await TrackingManager.analytics
+            .logEvent(name: 'login', parameters: {
+          "screen_name": 'welcome',
+          'method': 'phone',
+        });
         LoginRouting().navigateToHome(context, arguments: widget.sharedCode);
       }
     } catch (e, _) {
+      await TrackingManager.analytics
+          .logEvent(name: 'login_phone', parameters: {
+        "screen_name": 'login',
+        'status': 'fail',
+      });
       BotToast.closeAllLoading();
       if (e is Error) {
         if (e.code == '1') {

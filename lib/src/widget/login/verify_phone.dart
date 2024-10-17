@@ -259,11 +259,9 @@ class _VerifyPhoneControllerState extends State<VerifyPhoneController> {
                               GestureDetector(
                                 onTap: () async {
                                   await TrackingManager.analytics.logEvent(
-                                    name: 'cta_button_clicked',
+                                    name: 'verify_change_phone',
                                     parameters: {
                                       "screen_name": 'otp_verify',
-                                      'cta_button_name':
-                                          'cta_otp_verify_change_phone',
                                     },
                                   );
                                   Navigator.pop(context);
@@ -448,16 +446,21 @@ class _VerifyPhoneControllerState extends State<VerifyPhoneController> {
             isSyncAccount: arguments.containsKey("syncAccount") &&
                 arguments["syncAccount"]);
         BotToast.closeAllLoading();
-        await TrackingManager.analytics.logEvent(
-          name: 'sign_up',
-          parameters: {
-            "screen_name": 'otp_verify',
-          },
-        );
+        // await TrackingManager.analytics.logEvent(
+        //   name: 'sign_up',
+        //   parameters: {
+        //     "screen_name": 'otp_verify',
+        //   },
+        // );
         if (arguments.containsKey("syncAccount")) {
           await handleSyncAccount();
         } else {
           if (result) {
+            await TrackingManager.analytics
+                .logEvent(name: 'verify_otp', parameters: {
+              "screen_name": 'otp_verify',
+              'status': 'success',
+            });
             Navigator.pushReplacementNamed(context, NavigatorName.register,
                 arguments: {
                   'phone': widget.phone,
@@ -473,6 +476,10 @@ class _VerifyPhoneControllerState extends State<VerifyPhoneController> {
         // getToken();
       }
     } catch (e, _) {
+      await TrackingManager.analytics.logEvent(name: 'verify_otp', parameters: {
+        "screen_name": 'otp_verify',
+        'status': 'fail',
+      });
       setState(() {
         error = true;
       });
@@ -522,10 +529,9 @@ class _VerifyPhoneControllerState extends State<VerifyPhoneController> {
 
   resendOTP() async {
     await TrackingManager.analytics.logEvent(
-      name: 'cta_button_clicked',
+      name: 'verify_resend',
       parameters: {
         "screen_name": 'otp_verify',
-        'cta_button_name': 'cta_otp_verify_resend',
       },
     );
     if (timeCount > 0 || otpCount == null) {

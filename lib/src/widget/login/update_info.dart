@@ -478,13 +478,6 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
   }
 
   _submitData() async {
-    await TrackingManager.analytics.logEvent(
-      name: 'cta_button_clicked',
-      parameters: {
-        "screen_name": 'register_information',
-        'cta_button_name': 'cta_register_information',
-      },
-    );
     final name = nameController.text;
 
     if (name.isEmpty) {
@@ -589,6 +582,13 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
 
       final result = await LoginClient().createPatient(params);
       if (result == true) {
+        await TrackingManager.analytics.logEvent(
+          name: 'sign_up',
+          parameters: {
+            "screen_name": 'sign_up',
+            'method': widget.type?.toLowerCase(),
+          },
+        );
         await UserClient().fetchUser();
         LoginRouting().navigateToHome(context);
       }

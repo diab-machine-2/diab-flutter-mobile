@@ -138,10 +138,9 @@ class _NewPasswordControllerState extends State<NewPasswordController> {
 
   submit() async {
     await TrackingManager.analytics.logEvent(
-      name: 'cta_button_clicked',
+      name: 'password_save',
       parameters: {
-        "screen_name": 'new_password',
-        'cta_button_name': 'cta_forget_password_complete',
+        "screen_name": 'forget_password',
       },
     );
     FocusScope.of(context).unfocus();
