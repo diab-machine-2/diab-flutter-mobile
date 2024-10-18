@@ -1,9 +1,11 @@
 import 'package:medical/src/modal/exercrises/exercises_intensity.dart';
+import 'package:medical/src/model/request/booking_success_request.dart';
 import 'package:medical/src/model/request/complete_exercise_request.dart';
 import 'package:medical/src/model/request/complete_smart_goal_request.dart';
 import 'package:medical/src/model/request/create_calendar_request.dart';
 import 'package:medical/src/model/request/create_menu_request.dart';
 import 'package:medical/src/model/request/create_smart_goal_request.dart';
+import 'package:medical/src/model/request/delete_calendar_request.dart';
 import 'package:medical/src/model/request/exercise_feedback_request.dart';
 import 'package:medical/src/model/request/food_change_request.dart';
 import 'package:medical/src/model/request/ios_receipt_request.dart';
@@ -15,11 +17,13 @@ import 'package:medical/src/model/request/mark_share_request.dart';
 import 'package:medical/src/model/request/post_survey_request.dart';
 import 'package:medical/src/model/request/send_feedback_course_request.dart';
 import 'package:medical/src/model/request/send_interest_request.dart';
+import 'package:medical/src/model/request/sync_index_from_zalo_request.dart';
 import 'package:medical/src/model/request/update_lesson_section_request.dart';
 import 'package:medical/src/model/request/update_quiz_lesson_request.dart';
 import 'package:medical/src/model/request/update_shared_profile_request.dart';
 import 'package:medical/src/model/request/zoom_token_request.dart';
 import 'package:medical/src/model/response/blood_sugar_template_response.dart';
+import 'package:medical/src/model/response/branchio_generate_zoom_response.dart';
 import 'package:medical/src/model/response/common_response.dart';
 import 'package:medical/src/model/response/create_calendar_response.dart';
 import 'package:medical/src/model/response/create_menu_response.dart';
@@ -379,7 +383,8 @@ class AppRepository {
 
   void syncIndexFromZaloToPhone(String accountPhone, String accountZalo) {
     try {
-      appClient.syncIndexFromZaloToPhone(accountPhone, accountZalo);
+      appClient.syncIndexFromZaloToPhone(SyncIndexFromZaloToPhoneRequest(
+          accountPhone: accountPhone, accountZalo: accountZalo));
     } catch (e) {
       print("SyncIndexFromZaloToPhone exception: $e");
     }
@@ -849,11 +854,10 @@ class AppRepository {
     }
   }
 
-  Future<ApiResult<Map<String, dynamic>?>> deleteCalendar(
-      Map<String, String> request) async {
+  Future<ApiResult<CommonResponse>> deleteCalendar(
+      DeleteCalendarRequest request) async {
     try {
-      final Map<String, dynamic>? response =
-          await appClient.deleteCalendar(request);
+      final response = await appClient.deleteCalendar(request);
       return ApiResult.success(data: response);
     } catch (e) {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));
@@ -863,8 +867,37 @@ class AppRepository {
   Future<ApiResult<List<CreateCalendarResponse>>> getMyCalendar(
       CalendarFilter request) async {
     try {
+      final fromDate = request.fromDate.millisecondsSinceEpoch ~/ 1000;
+      final toDate = request.toDate.millisecondsSinceEpoch ~/ 1000;
       final List<CreateCalendarResponse> response =
-          await appClient.getMyCalendar(request);
+          await appClient.getMyCalendar(
+        accountPatientId: request.accountPatientId,
+        fromDate: fromDate,
+        toDate: toDate,
+        courseId: request.courseId,
+        calendarType: request.calendarType,
+      );
+      return ApiResult.success(data: response);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
+  Future<ApiResult<CommonResponse>> notifyBookingSuccess(
+      BookingSuccessRequest request) async {
+    try {
+      await appClient.notifyBookingSuccess(request);
+      return ApiResult.success(data: CommonResponse(statusCode: 200));
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
+  Future<ApiResult<BranchioGenerateZoomResponse>> branchioGenerateZoom(
+      {String? email, String? topic, String? date}) async {
+    try {
+      final BranchioGenerateZoomResponse response =
+          await appClient.branchioGenerateZoom(email, topic, date);
       return ApiResult.success(data: response);
     } catch (e) {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));

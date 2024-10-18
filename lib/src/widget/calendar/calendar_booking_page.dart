@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/model/request/create_calendar_request.dart';
+import 'package:medical/src/model/request/delete_calendar_request.dart';
 import 'package:medical/src/model/response/create_calendar_response.dart';
 import 'package:medical/src/utils/app_media_query.dart';
 import 'package:medical/src/utils/date_utils.dart';
@@ -292,11 +293,17 @@ class _CalendarBookingControllerState extends State<CalendarBookingController> {
                             BotToast.closeAllLoading();
                             return;
                           } else {
-                            _cubit.deleteCalendar({
-                              "id": myCalendar!.id,
-                              "calendarCoachId": pickSlotOld!.id,
-                              "deleteType": "0",
-                            });
+                            // _cubit.deleteCalendar({
+                            //   "id": myCalendar!.id,
+                            //   "calendarCoachId": pickSlotOld!.id,
+                            //   "deleteType": "0",
+                            // });
+                            _cubit.deleteCalendar(
+                              DeleteCalendarRequest(
+                                  id: myCalendar!.id,
+                                  calendarCoachId: pickSlotOld!.id,
+                                  deleteType: "0"),
+                            );
                           }
                         }
                         // Case: create

@@ -1,7 +1,5 @@
 import 'package:medical/src/utils/const.dart';
 
-import '../../widget/calendar/calendar_model.dart';
-
 class CreateCalendarResponse {
   final String? creatorId;
   final String id;
