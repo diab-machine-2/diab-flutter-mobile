@@ -40,17 +40,15 @@ class _CalendarControllerState extends State<CalendarController> {
   ];
   @override
   Widget build(BuildContext context) {
-    return PopScope(
-      onPopInvoked: (bool didPop) async {
-        if (didPop) {
-          return;
-        }
+    return WillPopScope(
+      onWillPop: () async {
         await Navigator.pushNamed(context, NavigatorName.calendar_booking,
             arguments: {
               "updateSlot": widget.pickSlot,
               'courseId': widget.courseId,
               'endTime': widget.endTime
             });
+        return false;
       },
       child: GestureDetector(
         onTap: () {
