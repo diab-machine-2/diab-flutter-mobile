@@ -40,51 +40,64 @@ class _CalendarControllerState extends State<CalendarController> {
   ];
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        FocusScope.of(context).unfocus();
+    return PopScope(
+      onPopInvoked: (bool didPop) async {
+        if (didPop) {
+          return;
+        }
+        await Navigator.pushNamed(context, NavigatorName.calendar_booking,
+            arguments: {
+              "updateSlot": widget.pickSlot,
+              'courseId': widget.courseId,
+              'endTime': widget.endTime
+            });
       },
-      child: Scaffold(
-        body: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [
-                R.color.color0xFFFDC798.withOpacity(0.3),
-                R.color.greenbg.withOpacity(0.9),
-              ],
-              begin: FractionalOffset(1, 1),
-              end: FractionalOffset(0.9, 0.5),
-              stops: [0.0, 1.0],
+      child: GestureDetector(
+        onTap: () {
+          FocusScope.of(context).unfocus();
+        },
+        child: Scaffold(
+          body: Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  R.color.color0xFFFDC798.withOpacity(0.3),
+                  R.color.greenbg.withOpacity(0.9),
+                ],
+                begin: FractionalOffset(1, 1),
+                end: FractionalOffset(0.9, 0.5),
+                stops: [0.0, 1.0],
+              ),
             ),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              CustomAppBar(
-                backgroundColor: Colors.transparent,
-                title: Text(
-                  "Calendar",
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
-                    color: R.color.textDark,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                CustomAppBar(
+                  backgroundColor: Colors.transparent,
+                  title: Text(
+                    "Calendar",
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
+                      color: R.color.textDark,
+                    ),
+                  ),
+                  leadingIcon: IconButton(
+                    splashColor: Colors.transparent,
+                    highlightColor: Colors.transparent,
+                    icon: Icon(Icons.arrow_back, color: R.color.textDark),
+                    onPressed: () {
+                      Navigator.pushNamed(context, NavigatorName.tabbar);
+                      CalendarBookingCubit.myCalendar = null;
+                      CalendarBookingCubit.updateCount = 0;
+                    },
                   ),
                 ),
-                leadingIcon: IconButton(
-                  splashColor: Colors.transparent,
-                  highlightColor: Colors.transparent,
-                  icon: Icon(Icons.arrow_back, color: R.color.textDark),
-                  onPressed: () {
-                    Navigator.pushNamed(context, NavigatorName.tabbar);
-                    CalendarBookingCubit.myCalendar = null;
-                    CalendarBookingCubit.updateCount = 0;
-                  },
-                ),
-              ),
-              _buildCalendarCard(),
-              Spacer(), // This pushes the button to the bottom
-              _buildBottomButton(),
-            ],
+                _buildCalendarCard(),
+                Spacer(), // This pushes the button to the bottom
+                _buildBottomButton(),
+              ],
+            ),
           ),
         ),
       ),
