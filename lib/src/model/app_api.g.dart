@@ -1676,23 +1676,34 @@ class _AppApi implements AppApi {
     queryParameters.removeWhere((k, v) => v == null);
     final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
-    final _result = await _dio.fetch<List<dynamic>>(
-        _setStreamType<List<CreateCalendarResponse>>(Options(
-      method: 'GET',
-      headers: _headers,
-      extra: _extra,
-    )
+    final _result = await _dio.fetch<Map<String, dynamic>>(
+      _setStreamType<Map<String, dynamic>>(
+        Options(
+          method: 'GET',
+          headers: _headers,
+          extra: _extra,
+        )
             .compose(
               _dio.options,
               '/App/Calendar/v1',
               queryParameters: queryParameters,
               data: _data,
             )
-            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
-    var value = _result.data!
-        .map((dynamic i) =>
-            CreateCalendarResponse.fromJson(i as Map<String, dynamic>))
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl),
+      ),
+    );
+
+    final Map<String, dynamic> responseData = _result.data!;
+
+    // Assuming the API returns a list of calendar items under a specific key
+    // You might need to adjust this based on the actual structure of your API response
+    List<dynamic> calendarItems = responseData['calendarItems'] ?? [];
+
+    var value = calendarItems
+        .map((item) =>
+            CreateCalendarResponse.fromJson(item as Map<String, dynamic>))
         .toList();
+
     return value;
   }
 
