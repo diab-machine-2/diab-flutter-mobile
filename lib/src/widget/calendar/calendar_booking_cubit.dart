@@ -105,7 +105,7 @@ class CalendarBookingCubit extends Cubit<CalendarBookingState> {
       myCalendar = response;
 
       final email = AppSettings.userInfo!.email ?? '';
-      final topic = "PHỎNG VẤN ĐẦU VÀO CÙNG ${AppSettings.userInfo!.fullName}";
+      final topic = "Phỏng Vấn Đầu Vào - ${AppSettings.userInfo!.fullName}";
       DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(
           response.appointmentDate * 1000); // Convert seconds to milliseconds
       String formattedDate =

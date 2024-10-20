@@ -40,6 +40,7 @@ import 'package:medical/src/model/response/latest_hba1c_input_response.dart';
 import 'package:medical/src/model/response/lesson_module_response.dart';
 import 'package:medical/src/model/response/lesson_section_list_response.dart';
 import 'package:medical/src/model/response/list_activity_response.dart';
+import 'package:medical/src/model/response/list_calendart_response.dart';
 import 'package:medical/src/model/response/list_package_response.dart';
 import 'package:medical/src/model/response/list_roadmap_response.dart';
 import 'package:medical/src/model/response/list_transaction_response.dart';
@@ -869,15 +870,14 @@ class AppRepository {
     try {
       final fromDate = request.fromDate.millisecondsSinceEpoch ~/ 1000;
       final toDate = request.toDate.millisecondsSinceEpoch ~/ 1000;
-      final List<CreateCalendarResponse> response =
-          await appClient.getMyCalendar(
-        accountPatientId: request.accountPatientId,
-        fromDate: fromDate,
-        toDate: toDate,
+      final CalendarListResponse response = await appClient.getMyCalendar(
+        accountPatientId: "bf421de0-e886-4c1f-95b6-41d79a3bd7d3",
+        fromDate: 1729332169,
+        toDate: 1734005532,
         courseId: request.courseId,
         calendarType: request.calendarType,
       );
-      return ApiResult.success(data: response);
+      return ApiResult.success(data: response.data ?? []);
     } catch (e) {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));
     }

@@ -1658,7 +1658,7 @@ class _AppApi implements AppApi {
   }
 
   @override
-  Future<List<CreateCalendarResponse>> getMyCalendar({
+  Future<CalendarListResponse> getMyCalendar({
     accountPatientId,
     fromDate,
     toDate,
@@ -1677,33 +1677,19 @@ class _AppApi implements AppApi {
     final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
     final _result = await _dio.fetch<Map<String, dynamic>>(
-      _setStreamType<Map<String, dynamic>>(
-        Options(
-          method: 'GET',
-          headers: _headers,
-          extra: _extra,
-        )
+        _setStreamType<CalendarListResponse>(Options(
+      method: 'GET',
+      headers: _headers,
+      extra: _extra,
+    )
             .compose(
               _dio.options,
               '/App/Calendar/v1',
               queryParameters: queryParameters,
               data: _data,
             )
-            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl),
-      ),
-    );
-
-    final Map<String, dynamic> responseData = _result.data!;
-
-    // Assuming the API returns a list of calendar items under a specific key
-    // You might need to adjust this based on the actual structure of your API response
-    List<dynamic> calendarItems = responseData['calendarItems'] ?? [];
-
-    var value = calendarItems
-        .map((item) =>
-            CreateCalendarResponse.fromJson(item as Map<String, dynamic>))
-        .toList();
-
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = CalendarListResponse.fromJson(_result.data!);
     return value;
   }
 

@@ -14,6 +14,7 @@ import 'package:medical/src/model/response/create_calendar_response.dart';
 import 'package:medical/src/model/response/expert_comment_list_response.dart';
 import 'package:medical/src/model/response/branchio_generate_zoom_response.dart';
 import 'package:medical/src/model/response/lesson_module_response.dart';
+import 'package:medical/src/model/response/list_calendart_response.dart';
 import 'package:medical/src/model/response/question_answer_response.dart';
 import 'package:medical/src/model/response/report_response.dart';
 import 'package:medical/src/utils/const.dart';
@@ -400,7 +401,7 @@ abstract class AppApi {
   Future<CommonResponse> deleteCalendar(@Body() DeleteCalendarRequest request);
 
   @GET("/App/Calendar/v1")
-  Future<List<CreateCalendarResponse>> getMyCalendar({
+  Future<CalendarListResponse> getMyCalendar({
     @Query("accountPatientId") String? accountPatientId,
     @Query("fromDate") int? fromDate,
     @Query("toDate") int? toDate,
