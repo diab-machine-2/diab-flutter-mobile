@@ -871,9 +871,9 @@ class AppRepository {
       final fromDate = request.fromDate.millisecondsSinceEpoch ~/ 1000;
       final toDate = request.toDate.millisecondsSinceEpoch ~/ 1000;
       final CalendarListResponse response = await appClient.getMyCalendar(
-        accountPatientId: "bf421de0-e886-4c1f-95b6-41d79a3bd7d3",
-        fromDate: 1729332169,
-        toDate: 1734005532,
+        accountPatientId: request.accountPatientId,
+        fromDate: fromDate,
+        toDate: toDate,
         courseId: request.courseId,
         calendarType: request.calendarType,
       );
