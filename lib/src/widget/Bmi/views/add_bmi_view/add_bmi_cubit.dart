@@ -133,8 +133,6 @@ class AddBmiCubit extends Cubit<CubitBaseState> {
           note,
           selectedTimeFrame!.id);
       if (result == true) {
-        Observable.instance
-            .notifyObservers([], notifyName: "Weight_change_data");
         await TrackingManager.analytics.logEvent(
           name: 'kpi_add_success',
           parameters: {
@@ -146,7 +144,9 @@ class AddBmiCubit extends Cubit<CubitBaseState> {
         await HomeClient().completeSmartGoal(
             selectedDate, goalId ?? '', 1, ScheduleType.weight.typeIndex);
         if (AppSettings.userInfo!.weight != selectedWeight) {
-          updateHeightProfile();
+          await updateHeightProfile();
+          Observable.instance
+              .notifyObservers([], notifyName: "Weight_change_data");
         }
         emit(DataLoadedState());
       }
@@ -279,9 +279,11 @@ class AddBmiCubit extends Cubit<CubitBaseState> {
         removeIDs,
         paths);
     if (result == true) {
-      Observable.instance.notifyObservers([], notifyName: "Weight_change_data");
-      if (AppSettings.userInfo!.weight != selectedWeight && isCurrentBmi == true) {
-        updateHeightProfile();
+      if (AppSettings.userInfo!.weight != selectedWeight &&
+          isCurrentBmi == true) {
+        await updateHeightProfile();
+        Observable.instance
+            .notifyObservers([], notifyName: "Weight_change_data");
       }
       emit(DataLoadedState());
     }
