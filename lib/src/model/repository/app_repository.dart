@@ -856,9 +856,9 @@ class AppRepository {
   }
 
   Future<ApiResult<CommonResponse>> deleteCalendar(
-      DeleteCalendarRequest request) async {
+      String id, DeleteCalendarRequest request) async {
     try {
-      final response = await appClient.deleteCalendar(request);
+      final response = await appClient.deleteCalendar(id, request);
       return ApiResult.success(data: response);
     } catch (e) {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));

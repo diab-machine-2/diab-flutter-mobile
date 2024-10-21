@@ -158,7 +158,7 @@ class CalendarBookingCubit extends Cubit<CalendarBookingState> {
     DeleteCalendarRequest request,
   ) async {
     final ApiResult<CommonResponse> apiResult =
-        await repository.deleteCalendar(request);
+        await repository.deleteCalendar(request.id, request);
     apiResult.when(success: (response) {
       emit(DeleteCalendarSuccess());
     }, failure: (NetworkExceptions error) {

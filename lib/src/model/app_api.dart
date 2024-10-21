@@ -397,8 +397,11 @@ abstract class AppApi {
   Future<CreateCalendarResponse> createCalendar(
       @Body() CreateCalendarRequest request);
 
-  @POST("/App/Calendar/v1/{id}")
-  Future<CommonResponse> deleteCalendar(@Body() DeleteCalendarRequest request);
+  @DELETE("/App/Calendar/v1/{id}")
+  Future<CommonResponse> deleteCalendar(
+    @Path('id') String id,
+    @Body() DeleteCalendarRequest request,
+  );
 
   @GET("/App/Calendar/v1")
   Future<CalendarListResponse> getMyCalendar({

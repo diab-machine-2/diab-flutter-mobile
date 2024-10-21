@@ -1634,7 +1634,10 @@ class _AppApi implements AppApi {
   }
 
   @override
-  Future<CommonResponse> deleteCalendar(request) async {
+  Future<CommonResponse> deleteCalendar(
+    id,
+    request,
+  ) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
@@ -1642,13 +1645,13 @@ class _AppApi implements AppApi {
     _data.addAll(request.toJson());
     final _result = await _dio
         .fetch<Map<String, dynamic>>(_setStreamType<CommonResponse>(Options(
-      method: 'POST',
+      method: 'DELETE',
       headers: _headers,
       extra: _extra,
     )
             .compose(
               _dio.options,
-              '/App/Calendar/v1/{id}',
+              '/App/Calendar/v1/${id}',
               queryParameters: queryParameters,
               data: _data,
             )
