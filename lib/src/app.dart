@@ -393,6 +393,7 @@ class App extends StatelessWidget {
                           type: data?['type'],
                           id: data?['id'],
                           goalId: data?['goalId'],
+                          isCurrentBmi: data?['isCurrentBmi'],
                         ));
                   case NavigatorName.add_emo:
                     final data = settings.arguments as Map<String, dynamic>?;
