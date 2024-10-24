@@ -105,7 +105,7 @@ class _HomeHeaderState extends State<HomeHeader> with Observer {
         bottom: false,
         child: Container(
             padding:
-                const EdgeInsets.only(top: 10, left: 16, right: 16, bottom: 16),
+                const EdgeInsets.only(top: 16, left: 16, right: 16, bottom: 16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -244,20 +244,20 @@ class _HomeHeaderState extends State<HomeHeader> with Observer {
                         // const SizedBox(width: 10),
                         InkWell(
                           onTap: () async {
-                            final scanedResult =
-                                await NavigationUtil.navigatePage(
-                              context,
-                              const QRScanWidget(),
-                            );
-                            if (scanedResult is String) {
-                              ShareProfilePopup.instance.onHasSharedCode(
-                                  context: context, code: scanedResult);
-                            }
+                            // final scanedResult =
+                            //     await NavigationUtil.navigatePage(
+                            //   context,
+                            //   const QRScanWidget(),
+                            // );
+                            // if (scanedResult is String) {
+                            //   ShareProfilePopup.instance.onHasSharedCode(
+                            //       context: context, code: scanedResult);
+                            // }
                           },
                           child: Container(
                             padding: const EdgeInsets.all(4),
                             color: R.color.transparent,
-                            child: Image.asset(R.drawable.ic_qr_scan,
+                            child: Image.asset(R.drawable.ic_chat_new,
                                 color: R.color.white, width: 24, height: 24),
                           ),
                         ),

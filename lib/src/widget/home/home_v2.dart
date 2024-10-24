@@ -1,4 +1,5 @@
 import 'package:bot_toast/bot_toast.dart';
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -83,6 +84,7 @@ class _HomeControllerState extends State<HomeController>
 
   bool _isActivityExpanded = false;
   bool _isReminderExpanded = false;
+  bool _isActivityReminerExpanded = false;
 
   // trigger reload when complete lesson
   bool _isReloadLesson = false;
@@ -402,7 +404,8 @@ class _HomeControllerState extends State<HomeController>
           if (state is HomeLoaded) {
             model = state.model;
             stateLoaded = state;
-            if (false == model?.packageAccount?.isDisplayedWelcome && !_isDisplayedWelcome) {
+            if (false == model?.packageAccount?.isDisplayedWelcome &&
+                !_isDisplayedWelcome) {
               _isDisplayedWelcome = true;
               if (AppSettings.isDisplayedWelcome == false) {
                 Future.delayed(Duration.zero, () async {
@@ -411,6 +414,28 @@ class _HomeControllerState extends State<HomeController>
               } else {}
             }
           }
+
+          Widget activitiesW = HomeActivity(
+            activities: stateLoaded?.activities ?? [],
+            expanded: _isActivityReminerExpanded,
+            loading: stateLoaded?.activityLoading ?? false,
+            onExpand: () {
+              setState(() {
+                _isActivityExpanded = true;
+              });
+            },
+            onCollapse: () {
+              setState(() {
+                _isActivityExpanded = false;
+              });
+            },
+            onAddActivity: () {
+              Navigator.pushNamed(context, NavigatorName.add_goal);
+            },
+            onViewMore: _viewMoreActivity,
+            onActivityTap: (activity) => _onSelectGoal(activity.type,
+                smartGoal: activity.smartGoal, title: activity.title),
+          );
 
           Widget reminderW = HomeReminder(
             reminders: stateLoaded?.reminders ?? [],
@@ -423,7 +448,7 @@ class _HomeControllerState extends State<HomeController>
               Navigator.pushNamed(context, NavigatorName.add_reminder,
                   arguments: {'type': 'update', 'id': reminder.id});
             },
-            expanded: _isReminderExpanded,
+            expanded: _isActivityReminerExpanded,
             onExpand: () {
               setState(() {
                 _isReminderExpanded = true;
@@ -476,9 +501,31 @@ class _HomeControllerState extends State<HomeController>
             },
           );
 
-          bool needSwapReminderAndUtilities =
-              stateLoaded?.activityLoading == false &&
-                  !(stateLoaded?.reminders?.isNotEmpty == true);
+          // bool needSwapReminderAndUtilities =
+          //     stateLoaded?.activityLoading == false &&
+          //         !(stateLoaded?.reminders?.isNotEmpty == true);
+
+          bool isActivityReminderEmpty =
+              (stateLoaded?.activities ?? []).isEmpty &&
+                  (stateLoaded?.reminders ?? []).isEmpty;
+
+          bool isActivityReminderHaveMore =
+              // Expand more when have more than 5 items (included activities + reminders)
+              (stateLoaded?.activities ?? []).length +
+                          (stateLoaded?.reminders ?? []).length >
+                      5 ||
+                  // Also expand when have more than 3 activities or 2 reminders
+                  (stateLoaded?.activities ?? []).length > 3 ||
+                  (stateLoaded?.reminders ?? []).length > 2;
+
+          final List<String> imgList = [
+            'https://images.unsplash.com/photo-1520342868574-5fa3804e551c?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=6ff92caffcdd63681a35134a6770ed3b&auto=format&fit=crop&w=1951&q=80',
+            'https://images.unsplash.com/photo-1522205408450-add114ad53fe?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=368f45b0888aeb0b7b08e3a1084d3ede&auto=format&fit=crop&w=1950&q=80',
+            'https://images.unsplash.com/photo-1519125323398-675f0ddb6308?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=94a1e718d89ca60a6337a6008341ca50&auto=format&fit=crop&w=1950&q=80',
+            'https://images.unsplash.com/photo-1523205771623-e0faa4d2813d?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=89719a0d55dd05e2deae4120227e6efc&auto=format&fit=crop&w=1953&q=80',
+            'https://images.unsplash.com/photo-1508704019882-f9cf40e475b4?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=8c6e5e3aba713b17aa1fe71ab4f0ae5b&auto=format&fit=crop&w=1352&q=80',
+            'https://images.unsplash.com/photo-1519985176271-adb1088fa94c?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=a0c8d632e977f94e5d312d9893258f59&auto=format&fit=crop&w=1355&q=80'
+          ];
 
           return RefreshIndicator(
             onRefresh: _pullToRefresh,
@@ -488,16 +535,15 @@ class _HomeControllerState extends State<HomeController>
                 children: [
                   DecoratedBox(
                     decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment(0.0, 2.0),
-                        colors: [
-                          Color(0xFF008479),
-                          Color(0xFF4BB2AB),
-                          Colors.white,
-                        ],
-                      ),
-                    ),
+                        gradient: LinearGradient(
+                      colors: [
+                        Color(0xff116459),
+                        Color(0xff22cab4),
+                      ],
+                      stops: [0.25, 0.75],
+                      begin: Alignment.bottomCenter,
+                      end: Alignment.topCenter,
+                    )),
                     child: HomeHeader(sharedCode: widget.sharedCode),
                   ),
                   Expanded(
@@ -514,9 +560,10 @@ class _HomeControllerState extends State<HomeController>
                             onMeasurement: (routeName, args, title) {
                               // track event
                               final String eventName = "home_select_kpi";
-                              TrackingManager.trackEvent(eventName, _screenName, params: {
-                                "object_title": title,
-                              });
+                              TrackingManager.trackEvent(eventName, _screenName,
+                                  params: {
+                                    "object_title": title,
+                                  });
                               // case require weight input
                               if (_checkWeightInputDialog(routeName,
                                       args: args) ==
@@ -539,57 +586,205 @@ class _HomeControllerState extends State<HomeController>
 
                           const SizedBox(height: 16.0),
 
-                          // Activities
+                          // // Activities
+                          // Padding(
+                          //   padding:
+                          //       const EdgeInsets.symmetric(horizontal: 12.0),
+                          //   child: HomeActivity(
+                          //     activities: stateLoaded?.activities ?? [],
+                          //     expanded: _isActivityExpanded,
+                          //     loading: stateLoaded?.activityLoading ?? false,
+                          //     onExpand: () {
+                          //       setState(() {
+                          //         _isActivityExpanded = true;
+                          //       });
+                          //     },
+                          //     onCollapse: () {
+                          //       setState(() {
+                          //         _isActivityExpanded = false;
+                          //       });
+                          //     },
+                          //     onAddActivity: () {
+                          //       Navigator.pushNamed(
+                          //           context, NavigatorName.add_goal);
+                          //     },
+                          //     onViewMore: _viewMoreActivity,
+                          //     onActivityTap: (activity) => _onSelectGoal(
+                          //         activity.type,
+                          //         smartGoal: activity.smartGoal,
+                          //         title: activity.title),
+                          //   ),
+                          // ),
+
                           Padding(
                             padding:
                                 const EdgeInsets.symmetric(horizontal: 12.0),
-                            child: HomeActivity(
-                              activities: stateLoaded?.activities ?? [],
-                              expanded: _isActivityExpanded,
-                              loading: stateLoaded?.activityLoading ?? false,
-                              onExpand: () {
-                                setState(() {
-                                  _isActivityExpanded = true;
-                                });
-                              },
-                              onCollapse: () {
-                                setState(() {
-                                  _isActivityExpanded = false;
-                                });
-                              },
-                              onAddActivity: () {
-                                Navigator.pushNamed(
-                                    context, NavigatorName.add_goal);
-                              },
-                              onViewMore: _viewMoreActivity,
-                              onActivityTap: (activity) => _onSelectGoal(
-                                  activity.type,
-                                  smartGoal: activity.smartGoal,
-                                  title: activity.title),
+                            child: AnimatedSize(
+                              duration: const Duration(milliseconds: 300),
+                              alignment: Alignment.topCenter,
+                              child: Container(
+                                padding:
+                                    const EdgeInsets.fromLTRB(16, 20, 16, 16),
+                                decoration: BoxDecoration(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(16.0)),
+                                  color: Colors.white,
+                                  border: Border.all(
+                                      color: const Color(0xFFE4E4E7),
+                                      width: 1.0),
+                                ),
+                                child: Padding(
+                                  padding:
+                                      EdgeInsets.symmetric(horizontal: 12.0),
+                                  child: Column(
+                                    children: [
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Text(
+                                            "Hoạt động hôm nay",
+                                            style: TextStyle(
+                                              fontSize: 18.0,
+                                              fontWeight: FontWeight.bold,
+                                              color: R.color.color0xff27272A,
+                                            ),
+                                          ),
+                                          SizedBox(
+                                            height: 24.0,
+                                            child: stateLoaded
+                                                        ?.activityLoading ??
+                                                    false
+                                                ? Align(
+                                                    alignment:
+                                                        Alignment.centerRight,
+                                                    child: Padding(
+                                                      padding:
+                                                          const EdgeInsets.only(
+                                                              right: 4.0),
+                                                      child: SizedBox(
+                                                        child:
+                                                            CircularProgressIndicator(
+                                                                strokeWidth:
+                                                                    2.0),
+                                                        width: 16.0,
+                                                        height: 16.0,
+                                                      ),
+                                                    ),
+                                                  )
+                                                : TextButton(
+                                                    style: TextButton.styleFrom(
+                                                      padding: EdgeInsets.zero,
+                                                      textStyle: TextStyle(
+                                                        fontSize: 14.0,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                        color: R.color
+                                                            .greenGradientBottom,
+                                                      ),
+                                                    ),
+                                                    onPressed:
+                                                        _viewMoreActivity,
+                                                    child: Text(
+                                                      "Xem thêm",
+                                                      style: TextStyle(
+                                                          color: R.color
+                                                              .burntOrange),
+                                                    ),
+                                                  ),
+                                          ),
+                                        ],
+                                      ),
+
+                                      // REMINDERS
+                                      reminderW,
+
+                                      // ACTIVITIES
+                                      activitiesW,
+
+                                      Builder(builder: (context) {
+                                        if (isActivityReminderEmpty ||
+                                            !isActivityReminderHaveMore)
+                                          return const SizedBox.shrink();
+                                        return Padding(
+                                          padding:
+                                              const EdgeInsets.only(top: 4.0),
+                                          child: InkWell(
+                                            onTap: _isActivityReminerExpanded
+                                                ? () => setState(() {
+                                                      _isActivityReminerExpanded =
+                                                          false;
+                                                    })
+                                                : () => setState(() {
+                                                      _isActivityReminerExpanded =
+                                                          true;
+                                                    }),
+                                            child: Row(
+                                              mainAxisSize: MainAxisSize.min,
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                Text(
+                                                  _isActivityReminerExpanded
+                                                      ? "Thu gọn"
+                                                      : "Mở rộng",
+                                                  style: TextStyle(
+                                                    fontSize: 14.0,
+                                                    color: R
+                                                        .color.primaryGreyColor,
+                                                    height: 20.0 / 14.0,
+                                                  ),
+                                                ),
+                                                const SizedBox(width: 6.0),
+                                                Icon(
+                                                  _isActivityReminerExpanded
+                                                      ? Icons.keyboard_arrow_up
+                                                      : Icons
+                                                          .keyboard_arrow_down,
+                                                  color:
+                                                      R.color.primaryGreyColor,
+                                                  size: 20.0,
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        );
+                                      }),
+                                    ],
+                                  ),
+                                ),
+                              ),
                             ),
                           ),
 
                           const SizedBox(height: 16.0),
 
-                          // Reminder >< Utilities
+                          // Utilities
                           Padding(
                             padding:
                                 const EdgeInsets.symmetric(horizontal: 12.0),
-                            child: needSwapReminderAndUtilities
-                                ? utilitiesW
-                                : reminderW,
+                            child: utilitiesW,
                           ),
 
-                          const SizedBox(height: 16.0),
+                          // // Reminder >< Utilities
+                          // Padding(
+                          //   padding:
+                          //       const EdgeInsets.symmetric(horizontal: 12.0),
+                          //   child: needSwapReminderAndUtilities
+                          //       ? utilitiesW
+                          //       : reminderW,
+                          // ),
 
-                          // Utilities >< Reminder
-                          Padding(
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 12.0),
-                            child: needSwapReminderAndUtilities
-                                ? reminderW
-                                : utilitiesW,
-                          ),
+                          // const SizedBox(height: 16.0),
+
+                          // // Utilities >< Reminder
+                          // Padding(
+                          //   padding:
+                          //       const EdgeInsets.symmetric(horizontal: 12.0),
+                          //   child: needSwapReminderAndUtilities
+                          //       ? reminderW
+                          //       : utilitiesW,
+                          // ),
 
                           const SizedBox(height: 16.0),
 

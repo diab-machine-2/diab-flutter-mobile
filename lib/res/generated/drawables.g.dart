@@ -550,4 +550,5 @@ class Drawables {
   String get sync_loading_theme => "lib/res/drawables/sync_loading_theme.png";
   String get sync_success => "lib/res/drawables/sync_success.png";
   String get sync_account_theme => "lib/res/drawables/sync_account_theme.png";
+  String get ic_chat_new => "lib/res/drawables/ic_chat_new.png";
 }
