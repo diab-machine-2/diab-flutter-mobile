@@ -1,19 +1,25 @@
 import 'package:dio/dio.dart';
 import 'package:medical/src/model/request/SelectRoadmapRequest.dart';
+import 'package:medical/src/model/request/booking_success_request.dart';
+import 'package:medical/src/model/request/create_calendar_request.dart';
+import 'package:medical/src/model/request/delete_calendar_request.dart';
 import 'package:medical/src/model/request/make_comment_request.dart';
 import 'package:medical/src/model/request/make_question_request.dart';
 import 'package:medical/src/model/request/mark_completed_target_request.dart';
+import 'package:medical/src/model/request/sync_index_from_zalo_request.dart';
 import 'package:medical/src/model/response/app_version_response.dart';
 import 'package:medical/src/model/response/calendar_training_response.dart';
 import 'package:medical/src/model/response/content_welcome_response.dart';
+import 'package:medical/src/model/response/create_calendar_response.dart';
 import 'package:medical/src/model/response/expert_comment_list_response.dart';
 import 'package:medical/src/model/response/learning_post_response.dart';
+import 'package:medical/src/model/response/branchio_generate_zoom_response.dart';
 import 'package:medical/src/model/response/lesson_module_response.dart';
+import 'package:medical/src/model/response/list_calendart_response.dart';
 import 'package:medical/src/model/response/question_answer_response.dart';
 import 'package:medical/src/model/response/report_response.dart';
 import 'package:retrofit/http.dart';
 import 'package:retrofit/retrofit.dart';
-
 import 'request/complete_exercise_request.dart';
 import 'request/complete_smart_goal_request.dart';
 import 'request/complete_video_request.dart';
@@ -172,7 +178,8 @@ abstract class AppApi {
 
   //Acount
   @GET("App/Account/SyncData")
-  void syncIndexFromZaloToPhone(String accountPhone, String accountZalo);
+  Future<void> syncIndexFromZaloToPhone(
+      @Body() SyncIndexFromZaloToPhoneRequest request);
 
   //My Plan
   @POST("App/Lesson/MyLessonsOptimizedAndCacheLessonPercent")
@@ -383,7 +390,41 @@ abstract class AppApi {
     @Path('referalCode') String referalCode,
   );
 
+  //  Calendar
+  @POST("/App/Calendar/mobile/v1/booking")
+  Future<CreateCalendarResponse> createCalendar(
+      @Body() CreateCalendarRequest request);
+
+  @DELETE("/App/Calendar/mobile/booking/v1/{id}")
+  Future<CommonResponse> deleteCalendar(
+    @Path('id') String id,
+    @Body() DeleteCalendarRequest request,
+  );
+
+  @GET("/App/Calendar/v1")
+  Future<CalendarListResponse> getMyCalendar({
+    @Query("accountPatientId") String? accountPatientId,
+    @Query("fromDate") int? fromDate,
+    @Query("toDate") int? toDate,
+    @Query("courseId") String? courseId,
+    @Query("calendarType") int? calendarType,
+  });
+
+  @POST("/App/Calendar/booking-success")
+  Future<void> notifyBookingSuccess(@Body() BookingSuccessRequest request);
+
+  @POST("/App/Zoom/BranchioGenerateZoom")
+  Future<BranchioGenerateZoomResponse> branchioGenerateZoom(
+    @Query("email") String? email,
+    @Query("topic") String? topic,
+    @Query("date") String? date,
+  );
+
   @GET("App/LearningPost")
   Future<LearningPostListResponse> getBanners(
       {@Query('Position') int? position});
+
+  // Customer Receives
+  @PUT("/App/CustomerReceives/interview/{courseId}")
+  Future<void> updateDoneInterview(String courseId);
 }

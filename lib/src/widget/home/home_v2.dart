@@ -610,32 +610,33 @@ class _HomeControllerState extends State<HomeController>
                           //   ),
                           // ),
 
-                          Container(
-                            padding: EdgeInsets.symmetric(horizontal: 12.0),
-                            alignment: Alignment.center,
-                            child: CarouselSlider.builder(
-                              options: CarouselOptions(
-                                autoPlay: true,
-                                aspectRatio: 16 / 7,
-                                autoPlayInterval: Duration(seconds: 3),
-                                viewportFraction: 1.0,
-                                initialPage: 0,
-                                padEnds: true,
-                              ),
-                              itemCount: 1,
-                              itemBuilder: (BuildContext context, int index,
-                                      int pageViewIndex) =>
-                                  ClipRRect(
-                                borderRadius: BorderRadius.circular(8.0),
-                                child: NetWorkImageWidget(
-                                  imageUrl: banners[index],
-                                  fit: BoxFit.cover,
-                                  width: 400.w,
-                                  // height: 110.h,
+                          if (banners.isNotEmpty)
+                            Container(
+                              padding: EdgeInsets.symmetric(horizontal: 12.0),
+                              alignment: Alignment.center,
+                              child: CarouselSlider.builder(
+                                options: CarouselOptions(
+                                  autoPlay: true,
+                                  aspectRatio: 16 / 7,
+                                  autoPlayInterval: Duration(seconds: 3),
+                                  viewportFraction: 1.0,
+                                  initialPage: 0,
+                                  padEnds: true,
+                                ),
+                                itemCount: 1,
+                                itemBuilder: (BuildContext context, int index,
+                                        int pageViewIndex) =>
+                                    ClipRRect(
+                                  borderRadius: BorderRadius.circular(8.0),
+                                  child: NetWorkImageWidget(
+                                    imageUrl: banners[index],
+                                    fit: BoxFit.cover,
+                                    width: 400.w,
+                                    // height: 110.h,
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
 
                           const SizedBox(height: 16.0),
 

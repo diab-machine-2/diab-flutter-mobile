@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/model/response/create_calendar_response.dart';
 import 'package:medical/src/app_routes.dart';
 import 'package:medical/src/bloc/nipro/nipro_bloc.dart';
 import 'package:medical/src/service/zoom_service.dart';
@@ -36,6 +37,10 @@ import 'package:medical/src/widget/HbA1C/add_hba1c.dart';
 import 'package:medical/src/widget/HbA1C/hba1c_detail_tabbar.dart';
 import 'package:medical/src/widget/HbA1C/hba1c_tabble.dart';
 import 'package:medical/src/widget/base/base_state.dart';
+import 'package:medical/src/widget/calendar/calendar_booking_page.dart';
+import 'package:medical/src/widget/calendar/calendar_model.dart';
+import 'package:medical/src/widget/calendar/calendar_page.dart';
+import 'package:medical/src/widget/calendar/interview_success.dart';
 import 'package:medical/src/widget/flash_screen/flash_screen.dart';
 import 'package:medical/src/widget/home/widget/sync_loading.dart';
 import 'package:medical/src/widget/login/change_password.dart';
@@ -594,8 +599,32 @@ class App extends StatelessWidget {
                       return _buildRoute(
                           settings, MeetingWaitRoomPage(args: args));
                     }
-                  case NavigatorName.meeting_prepare:
-                    return _buildRoute(settings, MeetingPreparePage());
+                  case NavigatorName.calendar_booking:
+                    {
+                      final arguments =
+                          settings.arguments as Map<String, dynamic>?;
+
+                      return _buildRoute(
+                        settings,
+                        CalendarBookingController(
+                          courseId: arguments?['courseId'] as String? ?? '',
+                          endTime: arguments?['endTime'] as String? ?? '',
+                        ),
+                      );
+                    }
+
+                  case NavigatorName.calendar:
+                    {
+                      Map<String, dynamic>? args =
+                          settings.arguments as Map<String, dynamic>?;
+                      return _buildRoute(
+                          settings,
+                          CalendarController(args!["pickSlot"],
+                              args["courseId"], args["endTime"]));
+                    }
+
+                  case NavigatorName.interview_success:
+                    return _buildRoute(settings, InterviewSuccessController());
                   case NavigatorName.sync_screen:
                     return _buildRoute(settings, SyncScreenController());
                   case NavigatorName.sync_loading:
