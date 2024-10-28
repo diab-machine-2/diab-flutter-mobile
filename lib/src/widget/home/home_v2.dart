@@ -518,6 +518,11 @@ class _HomeControllerState extends State<HomeController>
                   (stateLoaded?.activities ?? []).length > 3 ||
                   (stateLoaded?.reminders ?? []).length > 2;
 
+          List<String> banners = (stateLoaded?.banners ?? [])
+              .where((banner) => banner.link?.isNotEmpty == true)
+              .map((banner) => banner.link!)
+              .toList();
+
           return RefreshIndicator(
             onRefresh: _pullToRefresh,
             child: Scaffold(
@@ -623,7 +628,7 @@ class _HomeControllerState extends State<HomeController>
                                   ClipRRect(
                                 borderRadius: BorderRadius.circular(8.0),
                                 child: NetWorkImageWidget(
-                                  imageUrl: '',
+                                  imageUrl: banners[index],
                                   fit: BoxFit.cover,
                                   width: 400.w,
                                   // height: 110.h,

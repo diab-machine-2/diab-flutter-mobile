@@ -12,6 +12,7 @@ import 'package:medical/src/app_setting/firebase_remote_config.dart';
 import 'package:medical/src/modal/home/home_model.dart';
 import 'package:medical/src/modal/learning/learning_post_model.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
+import 'package:medical/src/model/response/learning_post_response.dart';
 import 'package:medical/src/model/response/lesson_section_list_response.dart';
 import 'package:medical/src/model/response/smart_goal_list_reponse.dart';
 import 'package:medical/src/model/service/api_result.dart';
@@ -57,6 +58,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       yield* _fetchLessons();
     } else if (event is HomeFetchNewsEvent) {
       yield* _fetchNews();
+    } else if (event is HomeFetchBannersEvent) {
+      yield* _fetchBanners();
     } else if (event is FetchHome) {
       // Fetch all data
       yield* _fetchHomes();
@@ -72,7 +75,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       // try first load from cache (shared preference)
       try {
         // try to load from cache
-        final model = (AppSettings.popPrecachedHome() ?? await AppSettings.getHome());
+        final model =
+            (AppSettings.popPrecachedHome() ?? await AppSettings.getHome());
         if (model != null) {
           // if have cache
           _cached = HomeLoaded(
@@ -107,7 +111,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         home.measurements = _castMeasurements(home);
         // at this point, home will lost "activities" data
         HomeLoaded currentState =
-            (_cached?.copyWith(model: home) ?? HomeLoaded(model: home)).copyWith(
+            (_cached?.copyWith(model: home) ?? HomeLoaded(model: home))
+                .copyWith(
           utilities: this.getAllUtilities(full: false),
           measurementLoading: false,
           activityLoading: _firstLoad,
@@ -139,6 +144,9 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         // load news (learning post)
         yield* _fetchNews();
 
+        // load banners
+        yield* _fetchBanners();
+
         // load lessons
         yield* _fetchLessons();
 
@@ -150,7 +158,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         if (e is Error) {
           await Future.delayed(Duration(seconds: timeToRetry));
         } else {
-          yield HomeError(message: R.string.error_can_not_connect_to_server.tr());
+          yield HomeError(
+              message: R.string.error_can_not_connect_to_server.tr());
           break; // Break the loop if a non-retryable error occurs
         }
       }
@@ -166,15 +175,20 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     // load today target
     final repository = AppRepository();
     final currentDay = DateUtil.getCurrentDayInMillis();
-    final apiResult = await repository.getListSmartGoal(day: currentDay, week: _currentWeek);
+    final apiResult =
+        await repository.getListSmartGoal(day: currentDay, week: _currentWeek);
     HomeLoaded currentState = state as HomeLoaded;
     apiResult.when(
       success: (SmartGoalListReponse response) {
         List<HomeActivityData> combinedActivities = [];
-        if (response.data?.daily?.isNotEmpty == true || response.data?.weekly?.isNotEmpty == true) {
-          final dailyActivities =
-              (response.data?.daily ?? []).where((e) => e != null).map((e) => e!).map((e) {
-            final ScheduleType type = ScheduleTypeExtend.getTypeFromIndex(e.type);
+        if (response.data?.daily?.isNotEmpty == true ||
+            response.data?.weekly?.isNotEmpty == true) {
+          final dailyActivities = (response.data?.daily ?? [])
+              .where((e) => e != null)
+              .map((e) => e!)
+              .map((e) {
+            final ScheduleType type =
+                ScheduleTypeExtend.getTypeFromIndex(e.type);
             final activity = HomeActivityData(
               id: e.id!,
               icon: type.icon,
@@ -186,9 +200,12 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
             return activity;
           }).toList();
           combinedActivities.addAll(dailyActivities);
-          final weeklyActivities =
-              (response.data?.weekly ?? []).where((e) => e != null).map((e) => e!).map((e) {
-            final ScheduleType type = ScheduleTypeExtend.getTypeFromIndex(e.type);
+          final weeklyActivities = (response.data?.weekly ?? [])
+              .where((e) => e != null)
+              .map((e) => e!)
+              .map((e) {
+            final ScheduleType type =
+                ScheduleTypeExtend.getTypeFromIndex(e.type);
             final activity = HomeActivityData(
               id: e.id!,
               icon: type.icon,
@@ -202,14 +219,16 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
           }).toList();
           combinedActivities.addAll(weeklyActivities);
           bool isCompletedAll = combinedActivities.isEmpty ||
-              combinedActivities.every((element) => element.smartGoal.state == 1);
+              combinedActivities
+                  .every((element) => element.smartGoal.state == 1);
           bool stillLoading = isCompletedAll;
           currentState = currentState.copyWith(
             activities: combinedActivities,
             activityLoading: _firstLoad && stillLoading,
           );
         } else {
-          currentState = currentState.copyWith(activityLoading: false, activities: []);
+          currentState =
+              currentState.copyWith(activityLoading: false, activities: []);
         }
       },
       failure: (error) {
@@ -219,26 +238,32 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     );
 
     // check fetch target recommendation
-    bool needFetchRecommend = currentState.activities == null || currentState.activities!.isEmpty;
+    bool needFetchRecommend =
+        currentState.activities == null || currentState.activities!.isEmpty;
     // or completed all
     needFetchRecommend = needFetchRecommend ||
-        currentState.activities!.every((element) => element.smartGoal.state == 1);
+        currentState.activities!
+            .every((element) => element.smartGoal.state == 1);
 
     // do fetch target recommendation
     if (needFetchRecommend) {
-      final targetRecommend = await HomeClient().fetchTargetRecommendation(week: _currentWeek);
+      final targetRecommend =
+          await HomeClient().fetchTargetRecommendation(week: _currentWeek);
       if (targetRecommend != null) {
         // If have target recommendation => override
-        final ScheduleType type = ScheduleTypeExtend.getTypeFromIndex(targetRecommend.type);
+        final ScheduleType type =
+            ScheduleTypeExtend.getTypeFromIndex(targetRecommend.type);
         final activity = HomeActivityData(
           id: '####',
           icon: type.icon,
           title: targetRecommend.title,
           type: type,
-          smartGoal:
-              SmartGoalList(state: targetRecommend.type == 29 ? 1 : 0, type: targetRecommend.type),
+          smartGoal: SmartGoalList(
+              state: targetRecommend.type == 29 ? 1 : 0,
+              type: targetRecommend.type),
         );
-        currentState = currentState.copyWith(activities: [activity], activityLoading: false);
+        currentState = currentState
+            .copyWith(activities: [activity], activityLoading: false);
       } else {
         // else, just keep the current state, stop loading
         currentState = currentState.copyWith(activityLoading: false);
@@ -249,7 +274,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
 
   Stream<HomeState> _fetchReminders() async* {
     HomeLoaded currentState = state as HomeLoaded;
-    final remindersResponse = await UserClient().fetchScheduleRemindersForHomePage();
+    final remindersResponse =
+        await UserClient().fetchScheduleRemindersForHomePage();
     if (remindersResponse.isNotEmpty) {
       final reminders = remindersResponse
           // .where((e) {
@@ -264,11 +290,13 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
           id: e.id,
           icon: R.drawable.ic_home_measurement_glucose_inactive,
           title: e.name,
-          time: timeString + " " + (e.timeFrameName?.toLowerCase() ?? "hôm nay"),
+          time:
+              timeString + " " + (e.timeFrameName?.toLowerCase() ?? "hôm nay"),
           navigatorName: "TODO",
         );
       }).toList();
-      currentState = currentState.copyWith(reminders: reminders, reminderLoading: false);
+      currentState =
+          currentState.copyWith(reminders: reminders, reminderLoading: false);
     } else {
       currentState = currentState.copyWith(reminderLoading: false);
     }
@@ -281,6 +309,22 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     if (newsResponse.isNotEmpty) {
       final currentState = state as HomeLoaded;
       yield currentState.copyWith(news: newsResponse);
+    }
+  }
+
+  Stream<HomeState> _fetchBanners() async* {
+    final ApiResult<LearningPostListResponse> apiResult =
+        await AppRepository().getBanners(position: 9);
+    List<LearningPostModel>? bannersResp;
+    apiResult.when(success: (LearningPostListResponse response) {
+      bannersResp = response.data?.map((e) => e).toList();
+    }, failure: (error) {
+      TrackingManager.recordError(error, null);
+    });
+    final banners = bannersResp ?? [];
+    if (banners.isNotEmpty) {
+      final currentState = state as HomeLoaded;
+      yield currentState.copyWith(banners: banners);
     }
   }
 
@@ -307,8 +351,10 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       String? featureImage;
       String? lessonDescription;
       apiResult.when(success: (LessonSectionListResponse response) {
-        lessonSections =
-            response.data?.lessonSections?.where((e) => e != null).map((e) => e!).toList();
+        lessonSections = response.data?.lessonSections
+            ?.where((e) => e != null)
+            .map((e) => e!)
+            .toList();
         lessonDescription = response.data?.description;
         featureImage = response.data?.image?.url;
       }, failure: (error) {
@@ -318,8 +364,11 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       if (lessons.isNotEmpty) {
         // Do share
         final lesson = lessons.first;
-        String shareLink = await DynamicLinkConfig.instance.createShareLessonLink(
-            lesson: lesson, featureImage: featureImage, lessonDescription: lessonDescription);
+        String shareLink = await DynamicLinkConfig.instance
+            .createShareLessonLink(
+                lesson: lesson,
+                featureImage: featureImage,
+                lessonDescription: lessonDescription);
         AppShare.instance.lessonDetail(context, shareLink, lesson.name ?? "");
       }
     } catch (e, s) {
@@ -399,7 +448,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     ];
 
     if (preOrder?.isNotEmpty == true) {
-      final preOrderSlug = preOrder!.split(",").where((e) => e.trim().isNotEmpty).toList();
+      final preOrderSlug =
+          preOrder!.split(",").where((e) => e.trim().isNotEmpty).toList();
       all.sort((a, b) {
         final aIndex = preOrderSlug.indexOf(a.slug);
         final bIndex = preOrderSlug.indexOf(b.slug);
@@ -468,7 +518,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
 
   List<HomeMeasurementInlineData>? _castInlineMeasurements(HomeModel? model) {
     // Hb1Ac
-    final haveHba1c = model?.hbA1CIndex.index != null && model!.hbA1CIndex.index! > 0;
+    final haveHba1c =
+        model?.hbA1CIndex.index != null && model!.hbA1CIndex.index! > 0;
     final hba1c = HomeMeasurementInlineData(
       title: "HbA1C",
       titleColor: haveHba1c ? _haveValueTitleColor : _noValueTitleColor,
@@ -477,20 +528,25 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
           ? _convertHexStringToInt(model!.hbA1CIndex.color!)
           : _noValueColor,
       unit: model?.hbA1CIndex.unit ?? "%",
-      navigatorName: haveHba1c ? NavigatorName.detail_hba1c : NavigatorName.add_hba1c,
+      navigatorName:
+          haveHba1c ? NavigatorName.detail_hba1c : NavigatorName.add_hba1c,
       args: haveHba1c ? null : {'type': 'input'},
     );
 
     // Weight
-    final haveWeight = model?.weightCard?.weight != null && model!.weightCard!.weight! > 0;
+    final haveWeight =
+        model?.weightCard?.weight != null && model!.weightCard!.weight! > 0;
     final weight = HomeMeasurementInlineData(
       title: "Cân nặng",
       icon: R.drawable.ic_home_weight,
       titleColor: haveWeight ? _haveValueTitleColor : _noValueTitleColor,
       value: haveWeight ? model.weightCard!.weight!.toString() : "--",
-      color: model?.weightCard?.weightColorCode != null ? 0xFF008479 : _noValueColor,
+      color: model?.weightCard?.weightColorCode != null
+          ? 0xFF008479
+          : _noValueColor,
       unit: model?.weightCard?.unit ?? "kg",
-      navigatorName: haveWeight ? NavigatorName.detail_bmi : NavigatorName.add_bmi,
+      navigatorName:
+          haveWeight ? NavigatorName.detail_bmi : NavigatorName.add_bmi,
       args: haveWeight ? null : {'type': 'input'},
     );
 
@@ -504,7 +560,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       color: model?.bmiCard?.color != null
           ? _convertHexStringToInt(model!.bmiCard!.color)
           : _noValueColor,
-      navigatorName: haveWeight ? NavigatorName.detail_bmi : NavigatorName.add_bmi,
+      navigatorName:
+          haveWeight ? NavigatorName.detail_bmi : NavigatorName.add_bmi,
       args: haveBmi ? null : {'type': 'input'},
     );
 
@@ -517,7 +574,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
 
   List<HomeMeasurementData>? _castMeasurements(HomeModel? model) {
     // Glucose
-    final haveGlucose = model?.glucoseIndex.index != null && model!.glucoseIndex.index! > 0;
+    final haveGlucose =
+        model?.glucoseIndex.index != null && model!.glucoseIndex.index! > 0;
     final glucose = HomeMeasurementData(
       title: "Đường Huyết",
       titleColor: haveGlucose ? _haveValueTitleColor : _noValueTitleColor,
@@ -525,12 +583,15 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
           ? R.drawable.ic_home_measurement_glucose
           : R.drawable.ic_home_measurement_glucose_inactive,
       value1: haveGlucose ? model.glucoseIndex.index!.toString() : "--",
-      value1Color: haveGlucose ? _convertHexStringToInt(model.glucoseIndex.color!) : _noValueColor,
+      value1Color: haveGlucose
+          ? _convertHexStringToInt(model.glucoseIndex.color!)
+          : _noValueColor,
       value2: null,
       value2Color: null,
       unit: model?.glucoseIndex.unit ?? 'mmol/l',
-      navigatorName:
-          haveGlucose ? NavigatorName.detail_blood_sugar : NavigatorName.add_blood_sugar_new,
+      navigatorName: haveGlucose
+          ? NavigatorName.detail_blood_sugar
+          : NavigatorName.add_blood_sugar_new,
       args: haveGlucose ? null : {'type': 'input'},
     );
 
@@ -545,11 +606,15 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       icon: haveBloodPressure
           ? R.drawable.ic_home_measurement_blood
           : R.drawable.ic_home_measurement_blood_inactive,
-      value1: haveBloodPressure ? model.bloodPressureIndex.systolic!.toString() : "--",
+      value1: haveBloodPressure
+          ? model.bloodPressureIndex.systolic!.toString()
+          : "--",
       value1Color: model?.bloodPressureIndex.colorSystolic != null
           ? _convertHexStringToInt(model!.bloodPressureIndex.colorSystolic!)
           : _noValueColor,
-      value2: haveBloodPressure ? model.bloodPressureIndex.diastolic!.toString() : "--",
+      value2: haveBloodPressure
+          ? model.bloodPressureIndex.diastolic!.toString()
+          : "--",
       value2Color: model?.bloodPressureIndex.colorDiastolic != null
           ? _convertHexStringToInt(model!.bloodPressureIndex.colorDiastolic!)
           : _noValueColor,
@@ -561,7 +626,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     );
 
     // Exercise
-    final haveExercise = model?.exercise?.index != null && model!.exercise!.index! > 0;
+    final haveExercise =
+        model?.exercise?.index != null && model!.exercise!.index! > 0;
     final exercise = HomeMeasurementData(
       title: "Vận Động",
       titleColor: haveExercise ? _haveValueTitleColor : _noValueTitleColor,
@@ -573,31 +639,35 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       value2: null,
       value2Color: null,
       unit: model?.exercise?.unit ?? "kcal",
-      navigatorName: haveExercise ? NavigatorName.detail_exercrises : NavigatorName.add_exercrises,
+      navigatorName: haveExercise
+          ? NavigatorName.detail_exercrises
+          : NavigatorName.add_exercrises,
       args: haveExercise ? null : {'type': 'input'},
     );
 
     // Nutrition (Food)
-    final haveNutrition =
-        model?.energyCard?.consumedEnergy != null && model!.energyCard!.consumedEnergy! > 0;
+    final haveNutrition = model?.energyCard?.consumedEnergy != null &&
+        model!.energyCard!.consumedEnergy! > 0;
     final nutrition = HomeMeasurementData(
       title: "Dinh Dưỡng",
       titleColor: haveNutrition ? _haveValueTitleColor : _noValueTitleColor,
       icon: haveNutrition
           ? R.drawable.ic_home_measurement_nutrition
           : R.drawable.ic_home_measurement_nutrition_inactive,
-      value1: haveNutrition ? model.energyCard!.consumedEnergy!.toString() : "--",
+      value1:
+          haveNutrition ? model.energyCard!.consumedEnergy!.toString() : "--",
       value1Color: haveNutrition ? _haveValueTitleColor : _noValueColor,
       value2: null,
       value2Color: null,
       unit: model?.energyCard?.unit ?? "kcal",
-      navigatorName: haveNutrition ? NavigatorName.detail_food : NavigatorName.add_food,
+      navigatorName:
+          haveNutrition ? NavigatorName.detail_food : NavigatorName.add_food,
       args: haveNutrition ? null : {'type': 'input'},
     );
 
     // Emotion
-    final haveEmotion =
-        model?.emotionCard?.details != null && model!.emotionCard!.details!.isNotEmpty;
+    final haveEmotion = model?.emotionCard?.details != null &&
+        model!.emotionCard!.details!.isNotEmpty;
     final emotion = HomeMeasurementData(
       title: "Cảm Xúc",
       titleColor: haveEmotion ? _haveValueTitleColor : _noValueTitleColor,
@@ -609,7 +679,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       value2: null,
       value2Color: null,
       unit: "",
-      navigatorName: haveEmotion ? NavigatorName.detail_emotion : NavigatorName.add_emo,
+      navigatorName:
+          haveEmotion ? NavigatorName.detail_emotion : NavigatorName.add_emo,
       args: haveEmotion ? null : {'type': 'input'},
     );
 

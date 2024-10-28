@@ -7,6 +7,7 @@ import 'package:medical/src/model/response/app_version_response.dart';
 import 'package:medical/src/model/response/calendar_training_response.dart';
 import 'package:medical/src/model/response/content_welcome_response.dart';
 import 'package:medical/src/model/response/expert_comment_list_response.dart';
+import 'package:medical/src/model/response/learning_post_response.dart';
 import 'package:medical/src/model/response/lesson_module_response.dart';
 import 'package:medical/src/model/response/question_answer_response.dart';
 import 'package:medical/src/model/response/report_response.dart';
@@ -381,4 +382,8 @@ abstract class AppApi {
   Future<UserInfoReferralCodeResponse> getUserFromReferralCode(
     @Path('referalCode') String referalCode,
   );
+
+  @GET("App/LearningPost")
+  Future<LearningPostListResponse> getBanners(
+      {@Query('Position') int? position});
 }
