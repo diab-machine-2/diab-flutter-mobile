@@ -104,21 +104,21 @@ class CalendarBookingCubit extends Cubit<CalendarBookingState> {
     apiResult.when(success: (CreateCalendarResponse response) async {
       myCalendar = response;
 
-      final email = AppSettings.userInfo!.email ?? '';
-      final topic = "Phỏng Vấn Đầu Vào - ${AppSettings.userInfo!.fullName}";
-      DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(
-          response.appointmentDate * 1000,
-          isUtc: true); // Convert seconds to milliseconds
-      String formattedDate =
-          DateFormat('MM/dd/yyyy hh:mm:ss a', 'en_US').format(dateTime);
-      final branchioLink = await getZoomLink(
-        email: email.isEmpty ? 'diabvn21coach5@gmail.com' : email,
-        topic: topic,
-        date: formattedDate,
-      );
+      // final email = AppSettings.userInfo!.email ?? '';
+      // final topic = "Phỏng Vấn Đầu Vào - ${AppSettings.userInfo!.fullName}";
+      // DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(
+      //     response.appointmentDate * 1000,
+      //     isUtc: true); // Convert seconds to milliseconds
+      // String formattedDate =
+      //     DateFormat('MM/dd/yyyy hh:mm:ss a', 'en_US').format(dateTime);
+      // final branchioLink = await getZoomLink(
+      //   email: email.isEmpty ? 'diabvn21coach5@gmail.com' : email,
+      //   topic: topic,
+      //   date: formattedDate,
+      // );
 
       final bookingSuccessRequest = BookingSuccessRequest(
-        link: branchioLink ?? '',
+        link: response.dynamicLink ?? '',
         appointmentDate: response.appointmentDate,
         coachName: response.updaterName ?? '',
       );
