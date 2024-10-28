@@ -393,11 +393,11 @@ abstract class AppApi {
   );
 
   //  Calendar
-  @POST("/App/Calendar/v1")
+  @POST("/App/Calendar/mobile/v1/booking")
   Future<CreateCalendarResponse> createCalendar(
       @Body() CreateCalendarRequest request);
 
-  @DELETE("/App/Calendar/v1/{id}")
+  @DELETE("/App/Calendar/mobile/booking/v1/{id}")
   Future<CommonResponse> deleteCalendar(
     @Path('id') String id,
     @Body() DeleteCalendarRequest request,

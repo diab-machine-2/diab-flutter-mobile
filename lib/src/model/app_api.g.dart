@@ -1624,7 +1624,7 @@ class _AppApi implements AppApi {
     )
             .compose(
               _dio.options,
-              '/App/Calendar/v1',
+              '/App/Calendar/mobile/v1/booking',
               queryParameters: queryParameters,
               data: _data,
             )
@@ -1651,7 +1651,7 @@ class _AppApi implements AppApi {
     )
             .compose(
               _dio.options,
-              '/App/Calendar/v1/${id}',
+              '/App/Calendar/mobile/booking/v1/${id}',
               queryParameters: queryParameters,
               data: _data,
             )
