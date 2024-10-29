@@ -519,8 +519,8 @@ class _HomeControllerState extends State<HomeController>
                   (stateLoaded?.reminders ?? []).length > 2;
 
           List<String> banners = (stateLoaded?.banners ?? [])
-              .where((banner) => banner.link?.isNotEmpty == true)
-              .map((banner) => banner.link!)
+              .where((banner) => banner.imageBannerUrl?.url?.isNotEmpty == true)
+              .map((banner) => banner.imageBannerUrl!.url!)
               .toList();
 
           return RefreshIndicator(
@@ -617,7 +617,7 @@ class _HomeControllerState extends State<HomeController>
                               child: CarouselSlider.builder(
                                 options: CarouselOptions(
                                   autoPlay: true,
-                                  aspectRatio: 16 / 7,
+                                  aspectRatio: 3 / 1,
                                   autoPlayInterval: Duration(seconds: 3),
                                   viewportFraction: 1.0,
                                   initialPage: 0,
