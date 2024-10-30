@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
+import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widgets/app_bar_widget.dart';
 import 'package:medical/src/widgets/button_widget.dart';
 import 'package:medical/src/widgets/normal_template.dart';
@@ -22,9 +23,17 @@ class DeviceDetailView extends StatelessWidget {
           margin: EdgeInsets.fromLTRB(15, 15, 15, 25),
           width: double.infinity,
           child: ButtonWidget(
-            title: 'Kết nối thiết bị',
-            onPressed: () async => _connectToDevice(context),
-          ),
+              title: 'Kết nối thiết bị',
+              onPressed: () async {
+                await TrackingManager.analytics.logEvent(
+                  name: 'glucose_pair_start',
+                  parameters: {
+                    "screen_name": 'kpi_glucose_device',
+                    'object_title': cubit.deviceInfo?.name,
+                  },
+                );
+                _connectToDevice(context);
+              }),
         ),
         appBar: AppBarWidget(
           title: 'Thiết bị kết nối & hướng dẫn',

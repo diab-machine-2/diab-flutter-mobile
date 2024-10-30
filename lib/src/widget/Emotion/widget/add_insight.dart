@@ -1014,14 +1014,14 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
           note,
           paths);
       if (result == true) {
-        await TrackingManager.analytics.logEvent(
-          name: 'kpi_add_success',
-          parameters: {
-            "screen_name": 'kpi_emotional_add',
-            'object_type': 'kpi_emotional',
-            'object_title': 'Chỉ số cảm xúc'
-          },
-        );
+        // await TrackingManager.analytics.logEvent(
+        //   name: 'kpi_add_success',
+        //   parameters: {
+        //     "screen_name": 'kpi_emotional_add',
+        //     'object_type': 'kpi_emotional',
+        //     'object_title': 'Chỉ số cảm xúc'
+        //   },
+        // );
         //  if(widget.goalId != null && widget.goalId?.isNotEmpty == true){
         await HomeClient().completeSmartGoal(selectedDate, widget.goalId ?? '',
             1, ScheduleType.emotion.typeIndex);

@@ -109,14 +109,14 @@ class _AddBloodSugarControllerNewState
         screenName: "kpi_glycemic_add",
         screenClass: "BloodSugarDetailController");
     AppSettings.currentScreenName = 'kpi_glycemic_add';
-    await TrackingManager.analytics.logEvent(
-      name: 'kpi_add_begin',
-      parameters: {
-        "screen_name": 'kpi_glycemic_add',
-        'object_type': 'kpi_glycemic',
-        'object_title': 'Chỉ số đường huyết'
-      },
-    );
+    // await TrackingManager.analytics.logEvent(
+    //   name: 'kpi_add_begin',
+    //   parameters: {
+    //     "screen_name": 'kpi_glycemic_add',
+    //     'object_type': 'kpi_glycemic',
+    //     'object_title': 'Chỉ số đường huyết'
+    //   },
+    // );
   }
 
   @override
@@ -494,13 +494,13 @@ class _AddBloodSugarControllerNewState
   }
 
   _submitData() async {
-    await TrackingManager.analytics.logEvent(
-      name: 'cta_button_clicked',
-      parameters: {
-        "screen_name": 'kpi_glycemic_add',
-        'cta_button_name': 'cta_save_glycemic',
-      },
-    );
+    // await TrackingManager.analytics.logEvent(
+    //   name: 'cta_button_clicked',
+    //   parameters: {
+    //     "screen_name": 'kpi_glycemic_add',
+    //     'cta_button_name': 'cta_save_glycemic',
+    //   },
+    // );
     FocusScope.of(context).unfocus();
     final note = _controllerNote.text;
 
@@ -533,11 +533,12 @@ class _AddBloodSugarControllerNewState
           paths);
       if (result == true) {
         await TrackingManager.analytics.logEvent(
-          name: 'kpi_add_success',
+          name: 'glucose_add',
           parameters: {
-            "screen_name": 'kpi_glycemic_add',
-            'object_type': 'kpi_glycemic',
-            'object_title': 'Chỉ số đường huyết'
+            "screen_name": 'kpi_glucose_add',
+            'index_range': _rangeValue.join(', '),
+            'index_time': selectedTimeFrame?.name,
+            'method':  fromNipro ? 'device' : 'manual',
           },
         );
         await HomeClient().completeSmartGoal(selectedDate, widget.goalId ?? '',

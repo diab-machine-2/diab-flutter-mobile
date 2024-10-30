@@ -7,17 +7,26 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/bloc/nipro/nipro_bloc.dart';
 import 'package:medical/src/utils/app_storages.dart';
 import 'package:medical/src/utils/navigator_name.dart';
+import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/nipro/health_app/widgets/request_health_connect.dart';
 import 'package:medical/src/widgets/button_widget.dart';
 
 class BloodSugarFunctions {
   static Future<void> showModalAddData(BuildContext context) async {
-    String healthIcon =
-        Platform.isIOS ? R.drawable.logo_healthkit : R.drawable.logo_healthConnect;
+    String healthIcon = Platform.isIOS
+        ? R.drawable.logo_healthkit
+        : R.drawable.logo_healthConnect;
     String healthTitle = Platform.isIOS
         ? R.string.connect_from_Apple_Health.tr()
         : R.string.connect_from_Health_Connect.tr();
     bool? hasHealthConnection = await AppStorages.getHealthAppPermission();
+    await TrackingManager.analytics.logEvent(
+      name: 'glucose_add_start',
+      parameters: {
+        "screen_name": 'kpi_glucose',
+        'cta_button_name': 'cta_add_glucose',
+      },
+    );
     showModalBottomSheet(
       shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(top: Radius.circular(15))),
@@ -52,14 +61,22 @@ class BloodSugarFunctions {
                 children: [
                   if (hasHealthConnection == false)
                     ButtonWidget(
-                      isIconSvg: false,
-                      icon: healthIcon,
-                      backgroundColor: Color(0xFFE4FCF3),
-                      textColor: Color(0xff249B92),
-                      title: healthTitle,
-                      onPressed: () => RequestHealthConnect.showModal(context,
-                          callback: () => Navigator.pop(context)),
-                    ),
+                        isIconSvg: false,
+                        icon: healthIcon,
+                        backgroundColor: Color(0xFFE4FCF3),
+                        textColor: Color(0xff249B92),
+                        title: healthTitle,
+                        onPressed: () async {
+                          await TrackingManager.analytics.logEvent(
+                            name: 'glucose_select_method',
+                            parameters: {
+                              "screen_name": 'kpi_glucose',
+                              'method': 'device',
+                            },
+                          );
+                          RequestHealthConnect.showModal(context,
+                              callback: () => Navigator.pop(context));
+                        }),
                   SizedBox(height: 15),
                   ButtonWidget(
                     icon: R.icons.ic_bluetooth,
@@ -77,7 +94,14 @@ class BloodSugarFunctions {
                     backgroundColor: Color(0xFFE4FCF3),
                     textColor: Color(0xff249B92),
                     title: 'Nhập thủ công',
-                    onPressed: () {
+                    onPressed: () async {
+                      await TrackingManager.analytics.logEvent(
+                        name: 'glucose_select_method',
+                        parameters: {
+                          "screen_name": 'kpi_glucose',
+                          'method': 'manual',
+                        },
+                      );
                       Navigator.pop(context);
                       Navigator.pushNamed(
                           context, NavigatorName.add_blood_sugar_new,

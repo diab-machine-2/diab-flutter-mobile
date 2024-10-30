@@ -83,14 +83,14 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController>
         screenName: "kpi_glycemic_add",
         screenClass: "BloodSugarDetailController");
     AppSettings.currentScreenName = 'kpi_glycemic_add';
-    await TrackingManager.analytics.logEvent(
-      name: 'kpi_add_begin',
-      parameters: {
-        "screen_name": 'kpi_glycemic_add',
-        'object_type': 'kpi_glycemic',
-        'object_title': 'Chỉ số đường huyết'
-      },
-    );
+    // await TrackingManager.analytics.logEvent(
+    //   name: 'kpi_add_begin',
+    //   parameters: {
+    //     "screen_name": 'kpi_glycemic_add',
+    //     'object_type': 'kpi_glycemic',
+    //     'object_title': 'Chỉ số đường huyết'
+    //   },
+    // );
   }
 
   void dispose() {
@@ -978,14 +978,14 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController>
           fromNipro,
           paths);
       if (result == true) {
-        await TrackingManager.analytics.logEvent(
-          name: 'kpi_add_success',
-          parameters: {
-            "screen_name": 'kpi_glycemic_add',
-            'object_type': 'kpi_glycemic',
-            'object_title': 'Chỉ số đường huyết'
-          },
-        );
+        // await TrackingManager.analytics.logEvent(
+        //   name: 'kpi_add_success',
+        //   parameters: {
+        //     "screen_name": 'kpi_glycemic_add',
+        //     'object_type': 'kpi_glycemic',
+        //     'object_title': 'Chỉ số đường huyết'
+        //   },
+        // );
         // if(widget.goalId != null && widget.goalId?.isNotEmpty == true){
         await HomeClient().completeSmartGoal(selectedDate, widget.goalId ?? '',
             1, ScheduleType.blood_sugar.typeIndex);

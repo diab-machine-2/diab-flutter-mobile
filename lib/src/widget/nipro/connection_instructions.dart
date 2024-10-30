@@ -296,7 +296,15 @@ class _ConnectionInstructionsControllerState extends State<ConnectionInstruction
     _stopScan();
   }
 
-  void _showDialogConnectFaild(BuildContext context) {
+  void _showDialogConnectFaild(BuildContext context) async {
+    await TrackingManager.analytics.logEvent(
+      name: 'glucose_pair',
+      parameters: {
+        "screen_name": 'kpi_glucose_device',
+        'status': 'fail',
+        'error_message': 'device not connect',
+      },
+    );
     showDialog(
       context: context,
       builder: (context) {
