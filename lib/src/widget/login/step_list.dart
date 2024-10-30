@@ -13,6 +13,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
+import 'package:medical/src/app_setting/branchio_link_config.dart';
 import 'package:medical/src/app_setting/deep_link_config.dart';
 import 'package:medical/src/app_setting/dynamic_link_config.dart';
 import 'package:medical/src/modal/error/error_model.dart';
@@ -210,7 +211,7 @@ class _StepListControllerState extends State<StepListController>
   }
 
   checkReferralCode() async {
-    final String? referalCode = DynamicLinkConfig.instance.referalCode;
+    final String? referalCode = BranchioLinkConfig.instance.referalCode;
     if (referalCode != null) {
       await Navigator.pushNamed(
         context,
