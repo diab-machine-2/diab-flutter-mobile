@@ -5,9 +5,10 @@ import 'package:flutter_branch_sdk/flutter_branch_sdk.dart';
 import 'package:medical/src/app.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/modal/learning/learning_post_model.dart';
-import 'package:medical/src/service/zoom_service.dart';
+import 'package:medical/src/repo/user/user_client.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
+import 'package:medical/src/service/zoom_service.dart';
 
 import '../model/response/lesson_section_list_response.dart';
 
@@ -63,6 +64,10 @@ class BranchioLinkConfig {
   }
 
   void tryNavigateBooking({bool initial = false}) async {
+    bool isExist = await UserClient().IsExistCourse(_courseId!);
+    if (!isExist) {
+      return;
+    }
     if (_courseId != null) {
       if (initial) {
         await Future.delayed(Duration(milliseconds: 500));
