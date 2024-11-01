@@ -223,7 +223,11 @@ class SmartGoalList {
       data = ExerciseMovementResponseData.fromJson(json['data']);
     }
     if (json['data'] != null && type == ScheduleType.lesson.typeIndex) {
-      data = LessonSectionListResponseData.fromJson(json['data']);
+      if (json['data'] is Map<String, dynamic>) {
+        data = LessonSectionListResponseData.fromJson(json['data']);
+      } else {
+        // do nothing, let data be null
+      }
     }
     targetScheduler = (json['targetScheduler'] != null)
         ? SmartGoalListReponseDataDailyTargetScheduler.fromJson(
