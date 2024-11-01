@@ -23,8 +23,10 @@ class BranchioLinkConfig {
 
   String? _meetingId;
   String? _meetingPassword;
+  String? _referalCode;
   String? get meetingId => _meetingId;
   String? get meetingPassword => _meetingPassword;
+  String? get referalCode => _referalCode;
 
   void setUpHandleDeepLink() {
     _subLink = FlutterBranchSdk.listSession().listen((data) async {
@@ -51,6 +53,11 @@ class BranchioLinkConfig {
         ZoomService().launchZoomMeeting(meetingId, meetingPassword);
       }
       // TODO: Handle other deep link
+      if (data['+clicked_branch_link'] == true &&
+          data.containsKey("\$referral_code")) {
+        _referalCode = data['\$referral_code'] as String;
+        return;
+      }
     }, onError: (error) {
       if (error is PlatformException) {
         PlatformException platformException = error;
@@ -106,8 +113,8 @@ class BranchioLinkConfig {
   }
 
   void _processBookingCourseLink(String courseId, String? endTime) {
-      _courseId = courseId;
-      _endTime = endTime;
+    _courseId = courseId;
+    _endTime = endTime;
     if (AppSettings.userInfo != null) {
       tryNavigateBooking();
     }
