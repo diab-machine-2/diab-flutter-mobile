@@ -617,7 +617,7 @@ class _HomeControllerState extends State<HomeController>
                               child: CarouselSlider.builder(
                                 options: CarouselOptions(
                                   autoPlay: true,
-                                  aspectRatio: 3 / 1,
+                                  aspectRatio: 16 / 7,
                                   autoPlayInterval: Duration(seconds: 3),
                                   viewportFraction: 1.0,
                                   initialPage: 0,
