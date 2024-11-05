@@ -62,7 +62,7 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   // config health
-  Health().configure(useHealthConnectIfAvailable: true);
+  Health().configure();
 
   if (Platform.isAndroid) {
     await AndroidInAppWebViewController.setWebContentsDebuggingEnabled(false);
