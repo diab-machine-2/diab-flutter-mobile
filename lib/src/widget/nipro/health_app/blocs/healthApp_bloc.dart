@@ -261,12 +261,15 @@ class HealthAppBloc extends Bloc<HealthAppEvent, HealthAppState> {
             999999);
         int index =
             stepCollected.indexWhere((item) => item.dateFrom == dateFrom);
-        int newValue = await health.getTotalStepsInInterval(
-                DateTime(element.dateFrom.year, element.dateFrom.month,
-                    element.dateFrom.day),
-                dateTo) ??
-            0;
-
+        // int newValue = await health.getTotalStepsInInterval(
+        //         DateTime(element.dateFrom.year, element.dateFrom.month,
+        //             element.dateFrom.day),
+        //         dateTo) ??
+        //     0;
+        int stepsCount = element.value is NumericHealthValue
+            ? (element.value as NumericHealthValue).numericValue.toInt()
+            : 0;
+        int newValue = stepsCount;
         int newTotalMinute =
             element.dateTo.difference(element.dateFrom).inMinutes;
 
@@ -280,7 +283,7 @@ class HealthAppBloc extends Bloc<HealthAppEvent, HealthAppState> {
                 steps.first.sourcePlatform == HealthPlatformType.appleHealth
                     ? 'ios'
                     : 'android',
-            caloriesBurned: 0,
+            burnCalories: 0,
           );
           stepCollected.add(requestSyncStepModel);
         } else {
@@ -352,7 +355,9 @@ class HealthAppBloc extends Bloc<HealthAppEvent, HealthAppState> {
 
           for (int i = 0; i < stepCollected.length; i++) {
             stepCollected[i] = stepCollected[i].copyWith(
-              caloriesBurned: caloriesBurnedByDate[stepCollected[i].dateFrom],
+              burnCalories:
+                  (caloriesBurnedByDate[stepCollected[i].dateFrom] ?? 0.0)
+                      .toPrecision(2),
             );
           }
           if (stepCollected.length > 0)
@@ -442,7 +447,7 @@ class HealthAppBloc extends Bloc<HealthAppEvent, HealthAppState> {
                 steps.first.sourcePlatform == HealthPlatformType.appleHealth
                     ? 'ios'
                     : 'android',
-            caloriesBurned: 0,
+            burnCalories: 0,
           );
           stepCollected.add(requestSyncStepModel);
         } else {

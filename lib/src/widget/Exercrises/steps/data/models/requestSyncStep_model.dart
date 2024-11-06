@@ -7,7 +7,7 @@ class RequestSyncStepModel {
   late int value;
   late String platform;
   late int totalMinute;
-  late double caloriesBurned;
+  late double burnCalories;
 
   RequestSyncStepModel({
     required this.dateFrom,
@@ -15,7 +15,7 @@ class RequestSyncStepModel {
     required this.value,
     required this.platform,
     required this.totalMinute,
-    required this.caloriesBurned,
+    required this.burnCalories,
   });
 
   RequestSyncStepModel.fromJson(Map<String, dynamic> json) {
@@ -24,13 +24,13 @@ class RequestSyncStepModel {
     value = json["value"] ?? 0;
     platform = json["platform"];
     totalMinute = json["totalMinute"];
-    caloriesBurned = json["caloriesBurned"] ?? 0;
+    burnCalories = json["burnCalories"] ?? 0;
   }
 
   RequestSyncStepModel copyWith({
     int? value,
     int? totalMinute,
-    double? caloriesBurned,
+    double? burnCalories,
   }) {
     return RequestSyncStepModel(
       value: value ?? this.value,
@@ -38,7 +38,7 @@ class RequestSyncStepModel {
       dateFrom: dateFrom,
       dateTo: dateTo,
       platform: platform,
-      caloriesBurned: caloriesBurned ?? this.caloriesBurned,
+      burnCalories: burnCalories ?? this.burnCalories,
     );
   }
 
@@ -49,7 +49,7 @@ class RequestSyncStepModel {
     _data["value"] = value;
     _data["platform"] = platform;
     _data["totalMinute"] = totalMinute;
-    _data["caloriesBurned"] = caloriesBurned;
+    _data["burnCalories"] = burnCalories;
     return _data;
   }
 }
