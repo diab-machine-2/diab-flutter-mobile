@@ -65,12 +65,12 @@ class _AddBloodSugarControllerNewState
   List<int> _rangeValue = [0, 60, 70, 95, 180];
   List<String> _rangeLabel = ['Rất thấp', "Thấp", 'Tốt', 'Cao', "Rất cao"];
   List<Color> _colorList = [
-      Color(0xFFF48222),
-      Color(0xFFF9B816),
-      Color(0xFF02635A),
-      Color(0xFFFE0201),
-      Color(0xFFB3020C),
-    ];
+    Color(0xFFF48222),
+    Color(0xFFF9B816),
+    Color(0xFF02635A),
+    Color(0xFFFE0201),
+    Color(0xFFB3020C),
+  ];
   double? number = 0;
   InputGlucoseModel? model;
   List<String?> removeIDs = [];
@@ -173,7 +173,8 @@ class _AddBloodSugarControllerNewState
     BotToast.showLoading();
     // load concurrent 2 api
     final result = await Future.wait([
-      GlucoseClient().fetchFlucoseTimeFrame(time: selectedDate.millisecondsSinceEpoch ~/ 1000),
+      GlucoseClient().fetchFlucoseTimeFrame(
+          time: selectedDate.millisecondsSinceEpoch ~/ 1000),
       GlucoseClient().fetchColorConfig(),
     ]);
 
@@ -247,7 +248,7 @@ class _AddBloodSugarControllerNewState
                         ),
                       ),
                       _selectImageSection(),
-                      _connectMachine(),
+                      if (!AppSettings.isUS) _connectMachine(),
                     ]),
                   ),
                 ),
