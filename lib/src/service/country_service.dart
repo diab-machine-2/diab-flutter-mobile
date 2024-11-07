@@ -6,7 +6,7 @@ class CountryService {
   Future<String> getCountryCode() async {
     final result = await Future.any([
       _getCountryCode(),
-      Future.delayed(Duration(seconds: 5), () => "Delayed 5 seconds"),
+      Future.delayed(Duration(seconds: 5), () => "VN"),
     ]);
     
     return result;
@@ -20,6 +20,6 @@ class CountryService {
       return data['countryCode'] ?? 'VN';
     }
 
-    return 'API Failed';
+    return 'VN';
   }
 }
