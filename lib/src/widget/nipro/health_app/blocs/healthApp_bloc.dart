@@ -198,14 +198,13 @@ class HealthAppBloc extends Bloc<HealthAppEvent, HealthAppState> {
     }
 
     dateTo = DateTime(
-        dateTo.year,
-        dateTo.month,
-        dateTo.day,
-        23, // Giờ
-        59, // Phút
-        59, // Giây
-        999, // millisecond
-        999999); // microsecond
+      dateTo.year,
+      dateTo.month,
+      dateTo.day,
+      23, // Giờ
+      59, // Phút
+      59, // Giây
+    );
     dateFrom = DateTime(
       dateFrom.year,
       dateFrom.month,
@@ -251,14 +250,13 @@ class HealthAppBloc extends Bloc<HealthAppEvent, HealthAppState> {
                 .millisecondsSinceEpoch ~/
             1000;
         DateTime dateTo = DateTime(
-            element.dateFrom.year,
-            element.dateFrom.month,
-            element.dateFrom.day,
-            23,
-            59,
-            59,
-            999,
-            999999);
+          element.dateFrom.year,
+          element.dateFrom.month,
+          element.dateFrom.day,
+          23,
+          59,
+          59,
+        );
         int index =
             stepCollected.indexWhere((item) => item.dateFrom == dateFrom);
         // int newValue = await health.getTotalStepsInInterval(
@@ -275,7 +273,7 @@ class HealthAppBloc extends Bloc<HealthAppEvent, HealthAppState> {
 
         if (index.isNegative) {
           RequestSyncStepModel requestSyncStepModel = RequestSyncStepModel(
-            dateTo: dateFrom,
+            dateTo: dateTo.millisecondsSinceEpoch ~/ 1000,
             dateFrom: dateFrom,
             value: newValue,
             totalMinute: newTotalMinute,
@@ -290,7 +288,7 @@ class HealthAppBloc extends Bloc<HealthAppEvent, HealthAppState> {
           newTotalMinute = stepCollected[index].totalMinute + newTotalMinute;
           RequestSyncStepModel requestSyncStepModel =
               stepCollected[index].copyWith(
-            value: newValue,
+            value: stepCollected[index].value + newValue,
             totalMinute: newTotalMinute,
           );
           stepCollected[index] = requestSyncStepModel;
@@ -357,7 +355,7 @@ class HealthAppBloc extends Bloc<HealthAppEvent, HealthAppState> {
             stepCollected[i] = stepCollected[i].copyWith(
               burnCalories:
                   (caloriesBurnedByDate[stepCollected[i].dateFrom] ?? 0.0)
-                      .toPrecision(2),
+                      .toPrecision(2).toInt(),
             );
           }
           if (stepCollected.length > 0)

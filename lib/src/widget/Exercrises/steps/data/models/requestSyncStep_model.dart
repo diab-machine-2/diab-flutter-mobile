@@ -7,7 +7,7 @@ class RequestSyncStepModel {
   late int value;
   late String platform;
   late int totalMinute;
-  late double burnCalories;
+  late int burnCalories;
 
   RequestSyncStepModel({
     required this.dateFrom,
@@ -30,7 +30,7 @@ class RequestSyncStepModel {
   RequestSyncStepModel copyWith({
     int? value,
     int? totalMinute,
-    double? burnCalories,
+    int? burnCalories,
   }) {
     return RequestSyncStepModel(
       value: value ?? this.value,

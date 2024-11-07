@@ -408,6 +408,8 @@ class Utils {
   static String getHostUrl() {
     if (AppSettings.environment == "staging") {
       return Const.HOST_URL_STAGING;
+    } else if (AppSettings.environment == "dev") {
+      return Const.HOST_URL_DEV;
     } else {
       return Const.HOST_URL;
     }

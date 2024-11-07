@@ -20,6 +20,7 @@ class ExercrisesListCard extends StatelessWidget {
     late Widget valueItem;
     if (dataSyncFromHealth) {
       valueItem = Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Row(
             crossAxisAlignment: CrossAxisAlignment.end,
@@ -32,7 +33,7 @@ class ExercrisesListCard extends StatelessWidget {
                       fontSize: 24,
                       fontWeight: FontWeight.w400)),
               Padding(
-                padding: const EdgeInsets.only(bottom: 3.0),
+                padding: const EdgeInsets.only(bottom: 5.0),
                 child: Text(' Bước',
                     style: TextStyle(
                         color: R.color.black,
@@ -41,22 +42,18 @@ class ExercrisesListCard extends StatelessWidget {
               ),
             ],
           ),
-          Text(
-            " • ",
-            style: TextStyle(fontSize: 28),
-          ),
           Row(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              Text('${formatNumber(itemInput.exercise.first.duration)}',
+              Text('${formatNumber(itemInput.exercise.first.burnedCalorie)}',
                   style: TextStyle(
                       fontFamily: 'Viga',
                       color: R.color.green,
                       fontSize: 24,
                       fontWeight: FontWeight.w400)),
               Padding(
-                padding: const EdgeInsets.only(bottom: 3.0),
-                child: Text(' Phút',
+                padding: const EdgeInsets.only(bottom: 5.0),
+                child: Text(' Kcal',
                     style: TextStyle(
                         color: R.color.black,
                         fontSize: 16,
@@ -213,14 +210,14 @@ class ExercrisesListCard extends StatelessWidget {
                                   // SizedBox(
                                   //   width: 2,
                                   // ),
-                                  if (!dataSyncFromHealth)
-                                    Text(
-                                      '${itemInputExercrise.duration!.toInt().toString()} ${R.string.minute.tr()}',
-                                      style: TextStyle(
-                                          color: R.color.primaryGreyColor,
-                                          fontWeight: FontWeight.w400,
-                                          fontSize: 12.0),
-                                    ),
+                                  // if (!dataSyncFromHealth)
+                                  Text(
+                                    '${itemInputExercrise.duration!.toInt().toString()} ${R.string.minute.tr()}',
+                                    style: TextStyle(
+                                        color: R.color.primaryGreyColor,
+                                        fontWeight: FontWeight.w400,
+                                        fontSize: 12.0),
+                                  ),
                                 ],
                               )
                             ],
