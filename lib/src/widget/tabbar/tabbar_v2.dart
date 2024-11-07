@@ -104,6 +104,7 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
     });
     _checkUserReferralCode();
     _checkExistZoomId();
+    BranchioLinkConfig.instance.tryNavigateBooking(initial: true);
   }
 
   void _onBottomNavigationBarTap(int index) {

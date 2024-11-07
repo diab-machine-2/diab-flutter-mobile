@@ -55,6 +55,8 @@ class Drawables {
   String get bg_user_icon => "lib/res/drawables/bg_user_icon.png";
   String get bg_weight => "lib/res/drawables/bg_weight.png";
   String get bg_welcome => "lib/res/drawables/bg_welcome.png";
+  String get calendar_theme => "lib/res/drawables/calendar-theme.png";
+  String get interview_theme => "lib/res/drawables/interview-theme.png";
   String get ic_a1c => "lib/res/drawables/ic_a1c.png";
   String get ic_account => "lib/res/drawables/ic_account.png";
   String get ic_activity_1 => "lib/res/drawables/ic_activity_1.png";

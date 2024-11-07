@@ -1053,7 +1053,7 @@ class _AddBmiControllerState extends BaseState<AddBmiController>
           removeIDs,
           paths);
       if (result == true) {
-        updateHeightProfile();
+        await updateHeightProfile();
         Message.showToastMessage(context, R.string.luu_thanh_cong.tr());
         Observable.instance
             .notifyObservers([], notifyName: "Weight_change_data");
@@ -1126,7 +1126,7 @@ class _AddBmiControllerState extends BaseState<AddBmiController>
         await HomeClient().completeSmartGoal(selectedDate, widget.goalId ?? '',
             1, ScheduleType.weight.typeIndex);
         //  }
-        updateHeightProfile();
+        await updateHeightProfile();
         Observable.instance
             .notifyObservers([], notifyName: "Weight_change_data");
       }

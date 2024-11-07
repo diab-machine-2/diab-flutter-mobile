@@ -107,6 +107,8 @@ Future<void> main() async {
   await EasyLocalization.ensureInitialized();
   await Firebase.initializeApp();
 
+  await FlutterBranchSdk.init(enableLogging: false, disableTracking: false);
+
   // var zoom = ZoomVideoSdk();
   // InitConfig initConfig = InitConfig(
   //   domain: "zoom.us",

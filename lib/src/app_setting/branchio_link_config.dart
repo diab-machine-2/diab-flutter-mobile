@@ -5,9 +5,10 @@ import 'package:flutter_branch_sdk/flutter_branch_sdk.dart';
 import 'package:medical/src/app.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/modal/learning/learning_post_model.dart';
-import 'package:medical/src/service/zoom_service.dart';
+import 'package:medical/src/repo/user/user_client.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
+import 'package:medical/src/service/zoom_service.dart';
 
 import '../model/response/lesson_section_list_response.dart';
 
@@ -22,8 +23,10 @@ class BranchioLinkConfig {
 
   String? _meetingId;
   String? _meetingPassword;
+  String? _referalCode;
   String? get meetingId => _meetingId;
   String? get meetingPassword => _meetingPassword;
+  String? get referalCode => _referalCode;
 
   void setUpHandleDeepLink() {
     _subLink = FlutterBranchSdk.listSession().listen((data) async {
@@ -50,6 +53,11 @@ class BranchioLinkConfig {
         ZoomService().launchZoomMeeting(meetingId, meetingPassword);
       }
       // TODO: Handle other deep link
+      if (data['+clicked_branch_link'] == true &&
+          data.containsKey("\$referral_code")) {
+        _referalCode = data['\$referral_code'] as String;
+        return;
+      }
     }, onError: (error) {
       if (error is PlatformException) {
         PlatformException platformException = error;
@@ -63,6 +71,10 @@ class BranchioLinkConfig {
   }
 
   void tryNavigateBooking({bool initial = false}) async {
+    bool isExist = await UserClient().IsExistCourse(_courseId!);
+    if (!isExist) {
+      return;
+    }
     if (_courseId != null) {
       if (initial) {
         await Future.delayed(Duration(milliseconds: 500));
@@ -101,8 +113,8 @@ class BranchioLinkConfig {
   }
 
   void _processBookingCourseLink(String courseId, String? endTime) {
-      _courseId = courseId;
-      _endTime = endTime;
+    _courseId = courseId;
+    _endTime = endTime;
     if (AppSettings.userInfo != null) {
       tryNavigateBooking();
     }

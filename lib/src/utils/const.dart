@@ -24,6 +24,8 @@ class Const {
   static const String CLIENT_ID = "4A293E78-4513-4DAF-958E-A04F93978332";
   static const String CLIENT_SECRET = "oTxBinRm9NpNen3rs++jN9sWXvOkya60nuffhv6x304=";
 
+  static const String DEFAULT_BG_COACH =
+      "https://img.freepik.com/free-photo/beautiful-young-female-doctor-looking-camera-office_1301-7807.jpg";
   static const String ID = "ID";
   static const String CODE = "Code";
   static const String NAME = "Name";

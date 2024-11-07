@@ -126,8 +126,7 @@ class HomeActivity extends StatelessWidget {
                 ),
               ),
 
-            if (loading && isEmpty)
-              const SizedBox(height: 64.0),
+            if (loading && isEmpty) const SizedBox(height: 64.0),
 
             if (!isEmpty && !isHaveMore)
               for (var activity in renderingActivities)
@@ -220,9 +219,9 @@ class HomeActivity extends StatelessWidget {
                         fontSize: 15.0,
                         fontWeight: FontWeight.w600,
                         color: R.color.greenGradientBottom,
-                        height: activity.description != null ? 24.0 / 15.0 : 1.0,
+                        height: activity.description != null ? 24.0 / 15.0 : 1.5,
                       ),
-                      maxLines: 1,
+                      maxLines: 2,
                     ),
                     if (activity.description != null)
                       Text(

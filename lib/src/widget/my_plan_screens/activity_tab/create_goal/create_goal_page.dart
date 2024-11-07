@@ -248,7 +248,7 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
           ScheduleType.blood_sugar,
           ScheduleType.exercise,
           ScheduleType.weight,
-          ScheduleType.emotion,
+          // ScheduleType.emotion,
           ScheduleType.food,
         ],
       ),
