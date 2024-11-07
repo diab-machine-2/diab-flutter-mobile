@@ -486,12 +486,12 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         navigatorName: NavigatorName.add_food,
         args: {'type': 'input'},
       ),
-      HomeMeasurementIndex(
-        title: R.string.cam_xuc.tr(),
-        icon: R.drawable.ic_home_measurement_emotion,
-        navigatorName: NavigatorName.add_emo,
-        args: {'type': 'input', 'id': null},
-      ),
+      // HomeMeasurementIndex(
+      //   title: R.string.cam_xuc.tr(),
+      //   icon: R.drawable.ic_home_measurement_emotion,
+      //   navigatorName: NavigatorName.add_emo,
+      //   args: {'type': 'input', 'id': null},
+      // ),
       HomeMeasurementIndex(
         title: R.string.hba1c.tr(),
         icon: R.drawable.ic_home_measurement_hb1ac,
@@ -690,7 +690,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       bloodPressure,
       exercise,
       nutrition,
-      if (haveEmotion) emotion,
+      // if (haveEmotion) emotion,
     ];
   }
 }

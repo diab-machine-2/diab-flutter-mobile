@@ -49,6 +49,7 @@ class AppSettings {
 
   static String _countryCode = "VN";
   static bool get isUS => _countryCode == "US";
+  static String get countryCode => _countryCode;
   static void setCountryCode(String code) {
     _countryCode = code;
   }

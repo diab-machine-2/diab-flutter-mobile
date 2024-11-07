@@ -1021,8 +1021,8 @@ class _HomeControllerState extends State<HomeController>
         // _cubit.refreshData(isRefresh: true);
         break;
       case ScheduleType.emotion:
-        await Navigator.pushNamed(context, NavigatorName.add_emo,
-            arguments: {'type': 'input', 'goalId': smartGoal?.id});
+        // await Navigator.pushNamed(context, NavigatorName.add_emo,
+        //     arguments: {'type': 'input', 'goalId': smartGoal?.id});
         //    _cubit.refreshData(isRefresh: true);
         break;
       case ScheduleType.food:
