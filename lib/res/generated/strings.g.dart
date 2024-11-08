@@ -1147,4 +1147,5 @@ class Strings {
   String get connect_from_Apple_Health => 'connect_from_Apple_Health';
   String get connect_from_Health_Connect => 'connect_from_Health_Connect';
   String get enter_manually => 'enter_manually';
+  String get contact => 'contact';
 }

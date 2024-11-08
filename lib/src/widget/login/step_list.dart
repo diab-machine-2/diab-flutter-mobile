@@ -196,7 +196,9 @@ class _StepListControllerState extends State<StepListController>
       await Navigator.pushNamed(
         context,
         NavigatorName.register,
-        arguments: referalCode,
+        arguments: {
+          'referalCode': referalCode,
+        },
       );
     }
   }
