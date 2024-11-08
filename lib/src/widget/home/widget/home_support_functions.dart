@@ -2,6 +2,8 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/utils/const.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class HomeSupportFunctions {
   static Future<void> showModalAddData(BuildContext context) async {
@@ -12,7 +14,7 @@ class HomeSupportFunctions {
       context: context,
       isScrollControlled: true,
       builder: (context) => Container(
-        height: 290,
+        height: 250,
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(20),
@@ -59,10 +61,10 @@ class HomeSupportFunctions {
                     iconHeight: 30,
                     backgroundColor: Color(0xFFF2F6F9),
                     textColor: R.color.black,
-                    title: 'Zalo OA Technical Support',
+                    title: R.string.chat_for_support.tr(),
                     onPressed: () {
                       Navigator.pop(context);
-                      // TODO:  implement zalo OA Technical Support
+                      _launchZaloOA();
                     },
                   ),
                   SizedBox(height: 15),
@@ -71,10 +73,10 @@ class HomeSupportFunctions {
                     backgroundColor: Color(0xFFF2F6F9),
                     textColor: R.color.black,
                     iconColor: R.color.black,
-                    title: 'Hotline Technical Support',
+                    title: R.string.call_for_support.tr(),
                     onPressed: () {
                       Navigator.pop(context);
-                      // TODO:  implement hotline Technical Support
+                      _launchCaller();
                     },
                   ),
                 ],
@@ -84,6 +86,24 @@ class HomeSupportFunctions {
         ),
       ),
     );
+  }
+}
+
+_launchCaller() async {
+  final launchUri = Uri(scheme: 'tel', path: Const.HOTLINE_NUMBER);
+  if (await canLaunchUrl(launchUri)) {
+    await launchUrl(launchUri);
+  } else {
+    throw 'Could not make phone call ${Const.HOTLINE_NUMBER}';
+  }
+}
+
+_launchZaloOA() async {
+  final launchUri = Uri.parse(Const.ZALO_OA_TECHNICAL_SUPPORT_LINK);
+  if (await canLaunchUrl(launchUri)) {
+    await launchUrl(launchUri);
+  } else {
+    throw 'Could launch Zalo OA technical support link ${Const.ZALO_OA_TECHNICAL_SUPPORT_LINK}';
   }
 }
 

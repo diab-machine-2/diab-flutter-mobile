@@ -364,7 +364,7 @@ class _ProfileControllerState extends State<ProfileController> with Observer {
                     Widget child = Padding(
                       padding: const EdgeInsets.all(15),
                       child: Text(
-                        'App version: ${AppSettings.version} (${AppSettings.buildNumber}) - countryCode: ${AppSettings.countryCode} - isUS:  ${AppSettings.isUS}',
+                        'App version: ${AppSettings.version} (${AppSettings.buildNumber})',
                         style: TextStyle(
                             fontWeight: FontWeight.w500,
                             fontSize: 16,

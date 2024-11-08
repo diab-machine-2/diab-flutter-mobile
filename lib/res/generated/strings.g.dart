@@ -1148,4 +1148,6 @@ class Strings {
   String get connect_from_Health_Connect => 'connect_from_Health_Connect';
   String get enter_manually => 'enter_manually';
   String get contact => 'contact';
+  String get call_for_support => 'call_for_support';
+  String get chat_for_support => 'chat_for_support';
 }
