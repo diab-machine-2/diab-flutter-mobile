@@ -523,6 +523,11 @@ class _HomeControllerState extends State<HomeController>
               .map((banner) => banner.imageBannerUrl!.url!)
               .toList();
 
+          List<String> bannerLinks = (stateLoaded?.banners ?? [])
+              .where((banner) => banner.imageBannerUrl?.url?.isNotEmpty == true)
+              .map((banner) => banner.link ?? '')
+              .toList();
+
           return RefreshIndicator(
             onRefresh: _pullToRefresh,
             child: Scaffold(
@@ -616,7 +621,7 @@ class _HomeControllerState extends State<HomeController>
                               alignment: Alignment.center,
                               child: CarouselSlider.builder(
                                 options: CarouselOptions(
-                                  autoPlay: true,
+                                  autoPlay: banners.length > 1 ? true : false,
                                   aspectRatio: 16 / 7,
                                   autoPlayInterval: Duration(seconds: 3),
                                   viewportFraction: 1.0,
@@ -628,11 +633,26 @@ class _HomeControllerState extends State<HomeController>
                                         int pageViewIndex) =>
                                     ClipRRect(
                                   borderRadius: BorderRadius.circular(8.0),
-                                  child: NetWorkImageWidget(
-                                    imageUrl: banners[index],
-                                    fit: BoxFit.cover,
-                                    width: 400.w,
-                                    // height: 110.h,
+                                  child: GestureDetector(
+                                    onTap: () async {
+                                      if (bannerLinks[index].isEmpty) {
+                                        return;
+                                      }
+
+                                      final launchUri =
+                                          Uri.parse(bannerLinks[index]);
+                                      if (await canLaunchUrl(launchUri)) {
+                                        await launchUrl(launchUri);
+                                      } else {
+                                        throw 'Could not launch banner link ${Const.ZALO_OA_TECHNICAL_SUPPORT_LINK}';
+                                      }
+                                    },
+                                    child: NetWorkImageWidget(
+                                      imageUrl: banners[index],
+                                      fit: BoxFit.cover,
+                                      width: 400.w,
+                                      // height: 110.h,
+                                    ),
                                   ),
                                 ),
                               ),
@@ -657,125 +677,116 @@ class _HomeControllerState extends State<HomeController>
                                       color: const Color(0xFFE4E4E7),
                                       width: 1.0),
                                 ),
-                                child: Padding(
-                                  padding:
-                                      EdgeInsets.symmetric(horizontal: 12.0),
-                                  child: Column(
-                                    children: [
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Text(
-                                            "Hoạt động hôm nay",
-                                            style: TextStyle(
-                                              fontSize: 18.0,
-                                              fontWeight: FontWeight.bold,
-                                              color: R.color.color0xff27272A,
-                                            ),
+                                child: Column(
+                                  children: [
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                          "Hoạt động hôm nay",
+                                          style: TextStyle(
+                                            fontSize: 18.0,
+                                            fontWeight: FontWeight.bold,
+                                            color: R.color.color0xff27272A,
                                           ),
-                                          SizedBox(
-                                            height: 24.0,
-                                            child: stateLoaded
-                                                        ?.activityLoading ??
-                                                    false
-                                                ? Align(
-                                                    alignment:
-                                                        Alignment.centerRight,
-                                                    child: Padding(
-                                                      padding:
-                                                          const EdgeInsets.only(
-                                                              right: 4.0),
-                                                      child: SizedBox(
-                                                        child:
-                                                            CircularProgressIndicator(
-                                                                strokeWidth:
-                                                                    2.0),
-                                                        width: 16.0,
-                                                        height: 16.0,
-                                                      ),
-                                                    ),
-                                                  )
-                                                : TextButton(
-                                                    style: TextButton.styleFrom(
-                                                      padding: EdgeInsets.zero,
-                                                      textStyle: TextStyle(
-                                                        fontSize: 14.0,
-                                                        fontWeight:
-                                                            FontWeight.bold,
-                                                        color: R.color
-                                                            .greenGradientBottom,
-                                                      ),
-                                                    ),
-                                                    onPressed:
-                                                        _viewMoreActivity,
-                                                    child: Text(
-                                                      "Xem thêm",
-                                                      style: TextStyle(
-                                                          color: R.color
-                                                              .burntOrange),
+                                        ),
+                                        SizedBox(
+                                          height: 24.0,
+                                          child: stateLoaded?.activityLoading ??
+                                                  false
+                                              ? Align(
+                                                  alignment:
+                                                      Alignment.centerRight,
+                                                  child: Padding(
+                                                    padding:
+                                                        const EdgeInsets.only(
+                                                            right: 4.0),
+                                                    child: SizedBox(
+                                                      child:
+                                                          CircularProgressIndicator(
+                                                              strokeWidth: 2.0),
+                                                      width: 16.0,
+                                                      height: 16.0,
                                                     ),
                                                   ),
-                                          ),
-                                        ],
-                                      ),
-
-                                      // REMINDERS
-                                      reminderW,
-
-                                      // ACTIVITIES
-                                      activitiesW,
-
-                                      Builder(builder: (context) {
-                                        if (isActivityReminderEmpty ||
-                                            !isActivityReminderHaveMore)
-                                          return const SizedBox.shrink();
-                                        return Padding(
-                                          padding:
-                                              const EdgeInsets.only(top: 4.0),
-                                          child: InkWell(
-                                            onTap: _isActivityReminerExpanded
-                                                ? () => setState(() {
-                                                      _isActivityReminerExpanded =
-                                                          false;
-                                                    })
-                                                : () => setState(() {
-                                                      _isActivityReminerExpanded =
-                                                          true;
-                                                    }),
-                                            child: Row(
-                                              mainAxisSize: MainAxisSize.min,
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.center,
-                                              children: [
-                                                Text(
-                                                  _isActivityReminerExpanded
-                                                      ? "Thu gọn"
-                                                      : "Mở rộng",
-                                                  style: TextStyle(
-                                                    fontSize: 14.0,
-                                                    color: R
-                                                        .color.primaryGreyColor,
-                                                    height: 20.0 / 14.0,
+                                                )
+                                              : TextButton(
+                                                  style: TextButton.styleFrom(
+                                                    padding: EdgeInsets.zero,
+                                                    textStyle: TextStyle(
+                                                      fontSize: 14.0,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      color: R.color
+                                                          .greenGradientBottom,
+                                                    ),
+                                                  ),
+                                                  onPressed: _viewMoreActivity,
+                                                  child: Text(
+                                                    "Xem thêm",
+                                                    style: TextStyle(
+                                                        color: R
+                                                            .color.burntOrange),
                                                   ),
                                                 ),
-                                                const SizedBox(width: 6.0),
-                                                Icon(
-                                                  _isActivityReminerExpanded
-                                                      ? Icons.keyboard_arrow_up
-                                                      : Icons
-                                                          .keyboard_arrow_down,
+                                        ),
+                                      ],
+                                    ),
+
+                                    // REMINDERS
+                                    reminderW,
+
+                                    // ACTIVITIES
+                                    activitiesW,
+
+                                    Builder(builder: (context) {
+                                      if (isActivityReminderEmpty ||
+                                          !isActivityReminderHaveMore)
+                                        return const SizedBox.shrink();
+                                      return Padding(
+                                        padding:
+                                            const EdgeInsets.only(top: 4.0),
+                                        child: InkWell(
+                                          onTap: _isActivityReminerExpanded
+                                              ? () => setState(() {
+                                                    _isActivityReminerExpanded =
+                                                        false;
+                                                  })
+                                              : () => setState(() {
+                                                    _isActivityReminerExpanded =
+                                                        true;
+                                                  }),
+                                          child: Row(
+                                            mainAxisSize: MainAxisSize.min,
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              Text(
+                                                _isActivityReminerExpanded
+                                                    ? "Thu gọn"
+                                                    : "Mở rộng",
+                                                style: TextStyle(
+                                                  fontSize: 14.0,
                                                   color:
                                                       R.color.primaryGreyColor,
-                                                  size: 20.0,
+                                                  height: 20.0 / 14.0,
                                                 ),
-                                              ],
-                                            ),
+                                              ),
+                                              const SizedBox(width: 6.0),
+                                              Icon(
+                                                _isActivityReminerExpanded
+                                                    ? Icons.keyboard_arrow_up
+                                                    : Icons.keyboard_arrow_down,
+                                                color: R.color.primaryGreyColor,
+                                                size: 20.0,
+                                              ),
+                                            ],
                                           ),
-                                        );
-                                      }),
-                                    ],
-                                  ),
+                                        ),
+                                      );
+                                    }),
+                                  ],
                                 ),
                               ),
                             ),

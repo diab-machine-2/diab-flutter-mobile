@@ -120,6 +120,9 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         );
         yield currentState;
 
+        // load banners
+        yield* _fetchBanners();
+
         // load reminders
         yield* _fetchReminders();
         // set "reminders" data
@@ -143,9 +146,6 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
 
         // load news (learning post)
         yield* _fetchNews();
-
-        // load banners
-        yield* _fetchBanners();
 
         // load lessons
         yield* _fetchLessons();

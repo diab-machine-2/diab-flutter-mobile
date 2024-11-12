@@ -103,7 +103,7 @@ _launchZaloOA() async {
   if (await canLaunchUrl(launchUri)) {
     await launchUrl(launchUri);
   } else {
-    throw 'Could launch Zalo OA technical support link ${Const.ZALO_OA_TECHNICAL_SUPPORT_LINK}';
+    throw 'Could not launch Zalo OA technical support link ${Const.ZALO_OA_TECHNICAL_SUPPORT_LINK}';
   }
 }
 

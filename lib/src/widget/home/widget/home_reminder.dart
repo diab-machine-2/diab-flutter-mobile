@@ -104,7 +104,7 @@ class HomeReminder extends StatelessWidget {
       child: InkWell(
         onTap: () => onItemTap(reminder),
         child: Container(
-          padding: const EdgeInsets.all(12.0),
+          padding: const EdgeInsets.fromLTRB(7, 15, 10, 15),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(12.0),
             color: Color(0xFFFFFFFF),
@@ -120,10 +120,27 @@ class HomeReminder extends StatelessWidget {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Image.asset(
-                reminder.icon,
-                width: 32.0,
-                height: 32.0,
+              Container(
+                width: 58,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Image.asset(
+                      reminder.icon,
+                      width: 24.0,
+                      height: 24.0,
+                    ),
+                    const SizedBox(height: 4.0),
+                    Text(
+                      R.string.reminder.tr(),
+                      style: TextStyle(
+                        fontSize: 10.0,
+                        color: R.color.reminder_color,
+                      ),
+                    ),
+                  ],
+                ),
               ),
               const SizedBox(width: 12.0),
               Expanded(

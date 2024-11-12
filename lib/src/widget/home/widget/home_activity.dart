@@ -141,7 +141,7 @@ class HomeActivity extends StatelessWidget {
       onTap: () => onActivityTap(activity),
       borderRadius: BorderRadius.circular(12.0),
       child: Container(
-        padding: const EdgeInsets.fromLTRB(10, 15, 15, 15),
+        padding: const EdgeInsets.fromLTRB(7, 15, 10, 15),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(12.0),
           color: Color(0xFFFFFFFF),
@@ -166,8 +166,8 @@ class HomeActivity extends StatelessWidget {
                 children: [
                   Image.asset(
                     activity.icon,
-                    width: 20.0,
-                    height: 20.0,
+                    width: 24.0,
+                    height: 24.0,
                   ),
                   SizedBox(height: 4.0),
                   Text(
@@ -181,7 +181,7 @@ class HomeActivity extends StatelessWidget {
               ),
             ),
 
-            const SizedBox(width: 10.0),
+            const SizedBox(width: 8.0),
 
             // Content
             Expanded(
@@ -192,7 +192,9 @@ class HomeActivity extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
-                      activity.title,
+                      activity.type == ScheduleType.lesson
+                          ? (activity.description ?? '')
+                          : activity.title,
                       style: TextStyle(
                         fontSize: 15.0,
                         color: R.color.black,
@@ -203,7 +205,11 @@ class HomeActivity extends StatelessWidget {
                     ),
                     if (activity.description != null)
                       Text(
-                        activity.description!,
+                        activity.type == ScheduleType.lesson
+                            ? (activity
+                                    .smartGoal.lessonData?.lessonModule?.name ??
+                                '')
+                            : activity.description!,
                         style: TextStyle(
                           fontSize: 13.0,
                           color: R.color.color0xff666666,

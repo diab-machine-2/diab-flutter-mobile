@@ -1160,4 +1160,6 @@ class Strings {
   String get ho_so => 'ho_so';
   String get exercise => 'exercise';
   String get event => 'event';
+  String get huong_dan => 'huong_dan';
+  String get reminder => 'reminder';
 }

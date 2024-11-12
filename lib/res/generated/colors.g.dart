@@ -130,4 +130,5 @@ class Colors {
   Color get ho_so_color => Color(0xffFDB913);
   Color get exercise_color => Color(0xff005484);
   Color get event_color => Color(0xff005484);
+  Color get reminder_color => Color(0xffD97708);
 }

@@ -18,6 +18,7 @@ class SmartGoalItem extends StatelessWidget {
       {required this.type,
       required this.name,
       required this.frequency,
+      required this.subject,
       this.appointmentDate,
       required this.isDone,
       required this.onTap,
@@ -26,6 +27,7 @@ class SmartGoalItem extends StatelessWidget {
   final ScheduleType type;
   final String name;
   final String frequency;
+  final String subject;
   final bool isDone;
   final int state;
   final int? appointmentDate;
@@ -108,8 +110,8 @@ class SmartGoalItem extends StatelessWidget {
                     children: [
                       Image.asset(
                         type.icon,
-                        width: 23,
-                        height: 23,
+                        width: 24,
+                        height: 24,
                       ),
                       const SizedBox(height: 4),
                       Text(
@@ -128,23 +130,34 @@ class SmartGoalItem extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text(
-                        (type == ScheduleType.custom ||
-                                type == ScheduleType.io_evaluate ||
-                                type == ScheduleType.output_assessment ||
-                                type == ScheduleType.book_1_1 ||
-                                type == ScheduleType.book_1_n)
-                            ? name
-                            : type.title,
-                        style: TextStyle(
+                      if (type != ScheduleType.lesson)
+                        Text(
+                          (type == ScheduleType.custom ||
+                                  type == ScheduleType.io_evaluate ||
+                                  type == ScheduleType.output_assessment ||
+                                  type == ScheduleType.book_1_1 ||
+                                  type == ScheduleType.book_1_n)
+                              ? name
+                              : type.title,
+                          style: TextStyle(
+                              color: R.color.textDark,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w700),
+                        ),
+                      if (type == ScheduleType.lesson)
+                        Text(
+                          frequency,
+                          style: TextStyle(
+                            fontSize: 16.0,
                             color: R.color.textDark,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w700),
-                      ),
+                            fontWeight: FontWeight.w700,
+                          ),
+                          maxLines: 2,
+                        ),
                       if (frequency.isNotEmpty) const SizedBox(height: 4),
                       if (frequency.isNotEmpty)
                         Text(
-                          frequency,
+                          type == ScheduleType.lesson ? subject : frequency,
                           style: TextStyle(
                               color: R.color.textDark,
                               fontSize: 14,

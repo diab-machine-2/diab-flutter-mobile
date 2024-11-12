@@ -490,15 +490,16 @@ class Utils {
       case ScheduleType.exercise:
         return R.string.exercise.tr();
       case ScheduleType.book_1_1:
+      case ScheduleType.io_evaluate:
         return R.string.event.tr();
       case ScheduleType.survey:
         return R.string.question.tr();
       case ScheduleType.lesson:
-        return R.string.lesson.tr();
+        return R.string.knowledge.tr();
       case ScheduleType.update_profile:
         return R.string.ho_so.tr();
       case ScheduleType.book_1_n:
-        return R.string.knowledge.tr();
+        return R.string.huong_dan.tr();
       default:
         return "";
     }
@@ -517,6 +518,7 @@ class Utils {
       case ScheduleType.exercise:
         return R.color.exercise_color;
       case ScheduleType.book_1_1:
+      case ScheduleType.io_evaluate:
         return R.color.event_color;
       case ScheduleType.survey:
         return R.color.question_color;
