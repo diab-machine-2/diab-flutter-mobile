@@ -1,6 +1,8 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/utils/utils.dart';
+import 'package:medical/src/widget/my_plan_screens/activity_tab/activity_tab/models/schedule_type.dart';
 
 import '../schema/home_schema.dart';
 
@@ -139,7 +141,7 @@ class HomeActivity extends StatelessWidget {
       onTap: () => onActivityTap(activity),
       borderRadius: BorderRadius.circular(12.0),
       child: Container(
-        padding: const EdgeInsets.all(12.0),
+        padding: const EdgeInsets.fromLTRB(10, 15, 15, 15),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(12.0),
           color: Color(0xFFFFFFFF),
@@ -156,13 +158,30 @@ class HomeActivity extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             // Icon
-            Image.asset(
-              activity.icon,
-              width: 32.0,
-              height: 32.0,
+            Container(
+              width: 58,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Image.asset(
+                    activity.icon,
+                    width: 20.0,
+                    height: 20.0,
+                  ),
+                  SizedBox(height: 4.0),
+                  Text(
+                    Utils.getActivityIconDescription(activity.type),
+                    style: TextStyle(
+                      fontSize: 10,
+                      color: Utils.getActivityIconTextColor(activity.type),
+                    ),
+                  ),
+                ],
+              ),
             ),
 
-            const SizedBox(width: 12.0),
+            const SizedBox(width: 10.0),
 
             // Content
             Expanded(

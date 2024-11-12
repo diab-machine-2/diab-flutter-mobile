@@ -82,8 +82,8 @@ class HomeUtilities extends StatelessWidget {
         children: [
           Image.asset(
             utility.icon,
-            width: 40.0,
-            height: 40.0,
+            width: 30.0,
+            height: 30.0,
           ),
           const SizedBox(height: 12.0),
           Container(

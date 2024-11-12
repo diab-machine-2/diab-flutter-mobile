@@ -288,7 +288,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
 
         return HomeReminderData(
           id: e.id,
-          icon: R.drawable.ic_home_measurement_glucose_inactive,
+          icon: R.drawable.ic_reminder,
           title: e.name,
           time:
               timeString + " " + (e.timeFrameName?.toLowerCase() ?? "hôm nay"),
@@ -427,24 +427,24 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         slug: "lich-uong-thuoc",
         navigatorName: "medicine",
       ),
-      // HomeUtilityData(
-      //   icon: R.drawable.ic_home_reminder,
-      //   title: "Book lịch tại cơ sở y tế",
-      //   slug: "book-lich-tai-co-so-y-te",
-      //   navigatorName: NavigatorName.reminder,
-      // ),
-      // HomeUtilityData(
-      //   icon: R.drawable.ic_home_reminder,
-      //   title: "Book lịch tại cơ sở y tế",
-      //   slug: "book-lich-tai-co-so-y-te",
-      //   navigatorName: NavigatorName.reminder,
-      // ),
       HomeUtilityData(
-        icon: R.drawable.ic_home_doctor_consult,
-        title: "Tư vấn Bác sĩ",
-        slug: "tu-van-bac-si",
-        navigatorName: "consult",
+        icon: R.drawable.ic_home_reminder,
+        title: "Lịch nhắc nhở",
+        slug: "lich-nhac-nho",
+        navigatorName: NavigatorName.reminder,
       ),
+      // HomeUtilityData(
+      //   icon: R.drawable.ic_home_reminder,
+      //   title: "Book lịch tại cơ sở y tế",
+      //   slug: "book-lich-tai-co-so-y-te",
+      //   navigatorName: NavigatorName.reminder,
+      // ),
+      // HomeUtilityData(
+      //   icon: R.drawable.ic_home_doctor_consult,
+      //   title: "Tư vấn Bác sĩ",
+      //   slug: "tu-van-bac-si",
+      //   navigatorName: "consult",
+      // ),
     ];
 
     if (preOrder?.isNotEmpty == true) {

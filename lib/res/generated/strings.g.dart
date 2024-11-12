@@ -1150,4 +1150,14 @@ class Strings {
   String get contact => 'contact';
   String get call_for_support => 'call_for_support';
   String get chat_for_support => 'chat_for_support';
+  String get blood_pressure => 'blood_pressure';
+  String get blood_sugar => 'blood_sugar';
+  String get weight => 'weight';
+  String get nutrition => 'nutrition';
+  String get knowledge => 'knowledge';
+  String get question => 'question';
+  String get lesson => 'lesson';
+  String get ho_so => 'ho_so';
+  String get exercise => 'exercise';
+  String get event => 'event';
 }
