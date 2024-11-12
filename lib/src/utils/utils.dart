@@ -491,6 +491,7 @@ class Utils {
         return R.string.exercise.tr();
       case ScheduleType.book_1_1:
       case ScheduleType.io_evaluate:
+      case ScheduleType.output_assessment:
         return R.string.event.tr();
       case ScheduleType.survey:
         return R.string.question.tr();
@@ -518,6 +519,7 @@ class Utils {
       case ScheduleType.exercise:
         return R.color.exercise_color;
       case ScheduleType.book_1_1:
+      case ScheduleType.output_assessment:
       case ScheduleType.io_evaluate:
         return R.color.event_color;
       case ScheduleType.survey:
