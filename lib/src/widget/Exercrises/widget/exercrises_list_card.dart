@@ -20,43 +20,25 @@ class ExercrisesListCard extends StatelessWidget {
     late Widget valueItem;
     if (dataSyncFromHealth) {
       valueItem = Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
+          Text('${itemInput.exercise.first.category}',
+              style: TextStyle(
+                  color: R.color.textDark,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600)),
           Row(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              Text(
-                  '${formatNumber(itemInput.exercise.first.value!.toDouble())}',
+              Text('${formatNumber(itemInput.exercise.first.burnedCalorie)}',
                   style: TextStyle(
                       fontFamily: 'Viga',
                       color: R.color.green,
                       fontSize: 24,
                       fontWeight: FontWeight.w400)),
               Padding(
-                padding: const EdgeInsets.only(bottom: 3.0),
-                child: Text(' Bước',
-                    style: TextStyle(
-                        color: R.color.black,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w400)),
-              ),
-            ],
-          ),
-          Text(
-            " • ",
-            style: TextStyle(fontSize: 28),
-          ),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Text('${formatNumber(itemInput.exercise.first.duration)}',
-                  style: TextStyle(
-                      fontFamily: 'Viga',
-                      color: R.color.green,
-                      fontSize: 24,
-                      fontWeight: FontWeight.w400)),
-              Padding(
-                padding: const EdgeInsets.only(bottom: 3.0),
-                child: Text(' Phút',
+                padding: const EdgeInsets.only(bottom: 5.0),
+                child: Text(' Kcal',
                     style: TextStyle(
                         color: R.color.black,
                         fontSize: 16,
@@ -126,7 +108,7 @@ class ExercrisesListCard extends StatelessWidget {
                   physics: NeverScrollableScrollPhysics(),
                   shrinkWrap: true,
                   padding:
-                      EdgeInsets.only(left: 0, right: 0, bottom: 8, top: 0),
+                      EdgeInsets.only(left: 0, right: 0, bottom: 5, top: 0),
                   itemCount: itemInput.exercise.length,
                   separatorBuilder: (BuildContext context, int index) {
                     return Container(height: 1, color: R.color.grayBorder);
@@ -204,23 +186,47 @@ class ExercrisesListCard extends StatelessWidget {
                                     MainAxisAlignment.spaceBetween,
                                 children: [
                                   Expanded(
-                                    child: Text(itemInputExercrise.name!,
-                                        style: TextStyle(
-                                            color: R.color.primaryGreyColor,
-                                            fontSize: 12,
-                                            fontWeight: FontWeight.w400)),
+                                    child: dataSyncFromHealth
+                                        ? Row(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.end,
+                                            children: [
+                                              Text(
+                                                  '${formatNumber(itemInput.exercise.first.value!.toDouble())}',
+                                                  style: TextStyle(
+                                                      color: R.color.green,
+                                                      fontSize: 18,
+                                                      fontWeight:
+                                                          FontWeight.w600)),
+                                              Padding(
+                                                padding: const EdgeInsets.only(
+                                                    bottom: 2.0),
+                                                child: Text(' Bước',
+                                                    style: TextStyle(
+                                                        color: R.color.black,
+                                                        fontSize: 12,
+                                                        fontWeight:
+                                                            FontWeight.w400)),
+                                              ),
+                                            ],
+                                          )
+                                        : Text(itemInputExercrise.name!,
+                                            style: TextStyle(
+                                                color: R.color.primaryGreyColor,
+                                                fontSize: 12,
+                                                fontWeight: FontWeight.w400)),
                                   ),
                                   // SizedBox(
                                   //   width: 2,
                                   // ),
-                                  if (!dataSyncFromHealth)
-                                    Text(
-                                      '${itemInputExercrise.duration!.toInt().toString()} ${R.string.minute.tr()}',
-                                      style: TextStyle(
-                                          color: R.color.primaryGreyColor,
-                                          fontWeight: FontWeight.w400,
-                                          fontSize: 12.0),
-                                    ),
+                                  // if (!dataSyncFromHealth)
+                                  Text(
+                                    '${itemInputExercrise.duration!.toInt().toString()} ${R.string.minute.tr()}',
+                                    style: TextStyle(
+                                        color: R.color.primaryGreyColor,
+                                        fontWeight: FontWeight.w400,
+                                        fontSize: 12.0),
+                                  ),
                                 ],
                               )
                             ],

@@ -344,8 +344,10 @@ class _HomeControllerState extends State<HomeController>
       var id = await UserClient().fetchPopupImage();
       if (Const.ENVIRONMENT_DEFAULT == 'product') {
         _urlPopup = Uri.https(Const.DOMAIN, 'App/Image/$id').toString();
-      } else {
+      } else if (Const.ENVIRONMENT_DEFAULT == 'staging') {
         _urlPopup = Uri.https(Const.DOMAIN_STAGING, 'App/Image/$id').toString();
+      } else {
+        _urlPopup = Uri.https(Const.DOMAIN_DEV, 'App/Image/$id').toString();
       }
       return _urlPopup;
     } catch (e, s) {
