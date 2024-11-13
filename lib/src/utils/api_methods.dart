@@ -13,9 +13,13 @@ class ApiMethods {
     "Content-Type": "application/json; charset=utf-8"
   };
   static String get baseURL {
-    return AppSettings.environment == "staging"
-        ? Const.DOMAIN_STAGING
-        : Const.DOMAIN;
+    if (AppSettings.environment == "staging") {
+      return Const.DOMAIN_STAGING;
+    } else if (AppSettings.environment == "dev") {
+      return Const.DOMAIN_DEV;
+    } else {
+      return Const.DOMAIN;
+    }
   }
 
   static Future<http.Response> get({
@@ -30,7 +34,6 @@ class ApiMethods {
     }
     pathUri = pathUri.replaceFirst("?&", "?");
     final token = await AppSettings.getToken();
-    
 
     _headers.addAll({'Authorization': 'Bearer $token'});
 
