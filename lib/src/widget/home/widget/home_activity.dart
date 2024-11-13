@@ -176,6 +176,7 @@ class HomeActivity extends StatelessWidget {
                       fontSize: 10,
                       color: Utils.getActivityIconTextColor(activity.type),
                     ),
+                    textAlign: TextAlign.center,
                   ),
                 ],
               ),
@@ -199,10 +200,12 @@ class HomeActivity extends StatelessWidget {
                         fontSize: 15.0,
                         color: R.color.black,
                         height:
-                            activity.description != null ? 24.0 / 15.0 : 1.5,
+                            activity.description != null ? 18.0 / 15.0 : 1.2,
                       ),
                       maxLines: 2,
                     ),
+                    if ((activity.description ?? '').isNotEmpty)
+                      const SizedBox(height: 4),
                     if (activity.description != null)
                       Text(
                         activity.type == ScheduleType.lesson
