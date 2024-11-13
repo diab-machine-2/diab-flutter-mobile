@@ -322,10 +322,10 @@ packages:
     source: hosted
     version: "4.2.1"
   carp_serializable:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: carp_serializable
-      sha256: "bd72f3e7521cfac78c2b34762d9240bded1bebe0c6e615703a516705a3a983a0"
+      sha256: bd72f3e7521cfac78c2b34762d9240bded1bebe0c6e615703a516705a3a983a0
       url: "https://pub.dev"
     source: hosted
     version: "1.2.0"
@@ -1092,10 +1092,10 @@ packages:
     dependency: "direct main"
     description:
       name: health
-      sha256: "01d6318b2d813d4b87044f9adb5a588f672acd176434ac380259d28de1f321a4"
+      sha256: "99786fd53e6a67f01211f943385a01da5dbd1c9c61b28a27879a2bbe3b708b00"
       url: "https://pub.dev"
     source: hosted
-    version: "11.1.0"
+    version: "11.0.0"
   html:
     dependency: transitive
     description:
