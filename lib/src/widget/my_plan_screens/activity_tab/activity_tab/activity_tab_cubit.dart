@@ -69,8 +69,15 @@ class ActivityTabCubit extends Cubit<ActivityTabState> {
       } else {
         DateTime dateTime =
             DateUtil.parseTimespanToDateTime(user.ownPackage!.endDateFirst!);
+
         dateTime = dateTime.add(Duration(days: (currentWeek! - 1) * 7));
-        return DateUtil.getDayInMillis(dateTime);
+        dateTime = dateTime.toLocal();
+
+        final utcDatetime = DateTime.utc(dateTime.year, dateTime.month,
+            dateTime.day, dateTime.hour, dateTime.minute, dateTime.second);
+        final localDatetime = utcDatetime.toLocal();
+
+        return DateUtil.getDayInMillis(localDatetime);
       }
     } else {
       if (dayStatesList.isEmpty) {

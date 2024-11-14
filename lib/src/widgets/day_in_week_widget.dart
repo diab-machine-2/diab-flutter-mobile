@@ -35,7 +35,9 @@ class DayInWeekWidget extends StatelessWidget {
                               margin: const EdgeInsets.only(bottom: 14.5),
                               width: _getDashLength(constraints.maxWidth),
                               height: 1,
-                              color: index ~/ 2 >= mark ? R.color.grayBorder : R.color.green,
+                              color: index ~/ 2 >= mark
+                                  ? R.color.grayBorder
+                                  : R.color.green,
                             )
                           : _buildSingleDay(
                               status: data[index ~/ 2].dayStatus,
@@ -72,7 +74,9 @@ class DayInWeekWidget extends StatelessWidget {
       bool? isToday,
       int? day,
       VoidCallback? onTap}) {
-    final DateTime today = DateTime.fromMillisecondsSinceEpoch((day ?? 0) * 1000);
+    DateTime today =
+        DateTime.fromMillisecondsSinceEpoch((day ?? 0) * 1000, isUtc: true);
+    today = today.toLocal();
     final String dayTitle = '${today.day}/${today.month}';
     return InkWell(
       onTap: onTap,
@@ -80,7 +84,7 @@ class DayInWeekWidget extends StatelessWidget {
         children: [
           Container(
             alignment: Alignment.bottomCenter,
-            width: 24,
+            width: 30,
             child: Text(
               title,
               style: TextStyle(
@@ -91,10 +95,10 @@ class DayInWeekWidget extends StatelessWidget {
             ),
           ),
           Visibility(
-            visible: showDateTime,
+            visible: true,
             child: Container(
               alignment: Alignment.bottomCenter,
-              width: 24,
+              width: 30,
               child: Text(
                 dayTitle,
                 style: TextStyle(

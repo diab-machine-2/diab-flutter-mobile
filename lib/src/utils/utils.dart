@@ -445,6 +445,14 @@ class Utils {
     return '';
   }
 
+  static String getDayInWeekTitleFromTimestamp(int? timestamp) {
+    if (timestamp == null) return '';
+    DateTime date =
+        DateTime.fromMillisecondsSinceEpoch(timestamp * 1000, isUtc: true)
+            .toLocal();
+    return getDayInWeekTitle(date.weekday - 1);
+  }
+
   static String getBMI({required double height, required double weight}) {
     if (height == 0) return '0';
     final double bmi = weight / pow(height / 100, 2);
@@ -498,6 +506,7 @@ class Utils {
       case ScheduleType.survey:
         return R.string.question.tr();
       case ScheduleType.lesson:
+      case ScheduleType.lesson_recommend:
         return R.string.knowledge.tr();
       case ScheduleType.update_profile:
         return R.string.ho_so.tr();
@@ -527,6 +536,7 @@ class Utils {
       case ScheduleType.survey:
         return R.color.question_color;
       case ScheduleType.lesson:
+      case ScheduleType.lesson_recommend:
         return R.color.lesson_color;
       case ScheduleType.update_profile:
         return R.color.ho_so_color;

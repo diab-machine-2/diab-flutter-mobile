@@ -173,7 +173,7 @@ class SmartGoalItem extends StatelessWidget {
                     ? Image.asset(R.drawable.ic_learning,
                         width: 24, height: 24, color: R.color.mainColor)
                     : Container(
-                        margin: EdgeInsets.only(left: 10),
+                        margin: EdgeInsets.only(left: 20),
                         width: 24,
                         height: 24,
                         alignment: Alignment.center,

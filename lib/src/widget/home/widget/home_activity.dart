@@ -193,7 +193,8 @@ class HomeActivity extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
-                      activity.type == ScheduleType.lesson
+                      activity.type == ScheduleType.lesson ||
+                              activity.type == ScheduleType.survey
                           ? (activity.description ?? '')
                           : activity.title,
                       style: TextStyle(
@@ -208,11 +209,7 @@ class HomeActivity extends StatelessWidget {
                       const SizedBox(height: 4),
                     if (activity.description != null)
                       Text(
-                        activity.type == ScheduleType.lesson
-                            ? (activity
-                                    .smartGoal.lessonData?.lessonModule?.name ??
-                                '')
-                            : activity.description!,
+                        getSubtitle(activity),
                         style: TextStyle(
                           fontSize: 13.0,
                           color: R.color.color0xff666666,
@@ -234,6 +231,19 @@ class HomeActivity extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  String getSubtitle(HomeActivityData activity) {
+    final type = activity.type;
+    if (type == ScheduleType.lesson) {
+      return activity.smartGoal.lessonData?.lessonModule?.name ?? '';
+    }
+
+    if (type == ScheduleType.survey) {
+      return activity.title.isEmpty ? type.title : activity.title;
+    }
+
+    return activity.description ?? '';
   }
 
   Widget _buttonSetNewGoal() {

@@ -82,7 +82,7 @@ class DateUtil {
   }
 
   static DateTime parseTimespanToDateTime(int timestamp) {
-    DateTime date = DateTime.fromMillisecondsSinceEpoch(timestamp * 1000);
+    DateTime date = DateTime.fromMillisecondsSinceEpoch(timestamp * 1000, isUtc: true);
     return date;
   }
 
