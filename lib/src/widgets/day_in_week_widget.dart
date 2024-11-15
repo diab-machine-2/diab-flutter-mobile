@@ -95,7 +95,7 @@ class DayInWeekWidget extends StatelessWidget {
             ),
           ),
           Visibility(
-            visible: true,
+            visible: showDateTime,
             child: Container(
               alignment: Alignment.bottomCenter,
               width: 30,
