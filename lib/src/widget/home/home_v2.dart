@@ -630,7 +630,7 @@ class _HomeControllerState extends State<HomeController>
                                   initialPage: 0,
                                   padEnds: true,
                                 ),
-                                itemCount: 1,
+                                itemCount: banners.length,
                                 itemBuilder: (BuildContext context, int index,
                                         int pageViewIndex) =>
                                     ClipRRect(
