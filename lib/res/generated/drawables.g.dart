@@ -55,6 +55,8 @@ class Drawables {
   String get bg_user_icon => "lib/res/drawables/bg_user_icon.png";
   String get bg_weight => "lib/res/drawables/bg_weight.png";
   String get bg_welcome => "lib/res/drawables/bg_welcome.png";
+  String get calendar_theme => "lib/res/drawables/calendar-theme.png";
+  String get interview_theme => "lib/res/drawables/interview-theme.png";
   String get ic_a1c => "lib/res/drawables/ic_a1c.png";
   String get ic_account => "lib/res/drawables/ic_account.png";
   String get ic_activity_1 => "lib/res/drawables/ic_activity_1.png";
@@ -550,4 +552,7 @@ class Drawables {
   String get sync_loading_theme => "lib/res/drawables/sync_loading_theme.png";
   String get sync_success => "lib/res/drawables/sync_success.png";
   String get sync_account_theme => "lib/res/drawables/sync_account_theme.png";
+  String get ic_chat_new => "lib/res/drawables/ic_chat_new.png";
+  String get ic_reminder => "lib/res/drawables/ic_reminder.png";
+
 }

@@ -213,7 +213,7 @@ class _ExercrisesDetailTabbarControllerState
                       border:
                           Border(bottom: BorderSide(color: Color(0xffF2F2F2)))),
                   child: Text(
-                    'Chọn cách nhập',
+                    R.string.choose_how_to_enter.tr(),
                     style: TextStyle(
                       fontSize: 16,
                       color: R.color.textDark,

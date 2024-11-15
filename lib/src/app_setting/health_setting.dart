@@ -9,9 +9,11 @@ class HealthSetting {
     HealthDataType.BLOOD_GLUCOSE,
     HealthDataType.BLOOD_PRESSURE_SYSTOLIC,
     HealthDataType.BLOOD_PRESSURE_DIASTOLIC,
+    HealthDataType.TOTAL_CALORIES_BURNED,
   ];
 
   final permissions = [
+    HealthDataAccess.READ,
     HealthDataAccess.READ,
     HealthDataAccess.READ,
     HealthDataAccess.READ,

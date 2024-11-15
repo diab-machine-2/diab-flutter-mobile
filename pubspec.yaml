@@ -126,7 +126,7 @@ dependencies:
   sticky_headers: ^0.3.0+2
   # flutter_share: ^2.0.0
   # webview_flutter: ^4.0.7
-  health: ^10.2.0
+  health: ^11.0.0
   flutter_inappwebview: ^5.7.2+3
   # flutter_app_version_checker: ^0.3.2
   flutter_blue_plus: ^1.32.11
@@ -145,6 +145,7 @@ dependencies:
   flutter_image_compress: ^2.2.0
 
   flutter_in_app_pip: ^1.7.3
+  carp_serializable: 1.2.0
 
   # Social login
   # zalo_flutter: ^0.0.6

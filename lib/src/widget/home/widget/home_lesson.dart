@@ -26,7 +26,7 @@ class HomeLesson extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final textScaleFactor =  max(1.0, MediaQuery.of(context).textScaleFactor);
+    final textScaleFactor = max(1.0, MediaQuery.of(context).textScaleFactor);
     final extraTitleHeight = (textScaleFactor - 1) * 60.0;
     return SizedBox(
       height: 320.0 + extraTitleHeight,
@@ -75,6 +75,7 @@ class HomeLesson extends StatelessWidget {
                         color: R.color.textDark,
                         fontSize: 15.0,
                         height: 24.0 / 15.0,
+                        fontWeight: FontWeight.w700,
                       ),
                     ),
                   ),
@@ -172,11 +173,13 @@ class HomeLesson extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.end,
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Image.asset(R.drawable.ic_lesson_share, width: 20.0, height: 20.0),
+                      Image.asset(R.drawable.ic_lesson_share,
+                          width: 20.0, height: 20.0),
                       const SizedBox(width: 8.0),
                       Text(
                         "Chia sẻ",
-                        style: TextStyle(color: R.color.textDark, fontSize: 15.0),
+                        style:
+                            TextStyle(color: R.color.textDark, fontSize: 15.0),
                       ),
                     ],
                   ),
@@ -185,7 +188,7 @@ class HomeLesson extends StatelessWidget {
                 // const SizedBox(width: 16.0),
               ],
             ),
-            
+
             const SizedBox(height: 16.0),
           ],
         ),

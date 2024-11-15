@@ -11,6 +11,8 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/model/preference/app_preference.dart';
 import 'package:medical/src/utils/app_log.dart';
+import 'package:medical/src/widget/home/schema/home_schema.dart';
+import 'package:medical/src/widget/my_plan_screens/activity_tab/activity_tab/models/schedule_type.dart';
 import 'package:path/path.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -408,6 +410,8 @@ class Utils {
   static String getHostUrl() {
     if (AppSettings.environment == "staging") {
       return Const.HOST_URL_STAGING;
+    } else if (AppSettings.environment == "dev") {
+      return Const.HOST_URL_DEV;
     } else {
       return Const.HOST_URL;
     }
@@ -439,6 +443,14 @@ class Utils {
     if (index >= 0 && index < 6) return 'T${index + 2}';
     if (index == 6) return 'CN';
     return '';
+  }
+
+  static String getDayInWeekTitleFromTimestamp(int? timestamp) {
+    if (timestamp == null) return '';
+    DateTime date =
+        DateTime.fromMillisecondsSinceEpoch(timestamp * 1000, isUtc: true)
+            .toLocal();
+    return getDayInWeekTitle(date.weekday - 1);
   }
 
   static String getBMI({required double height, required double weight}) {
@@ -473,6 +485,66 @@ class Utils {
       return !indexWhere.isNegative;
     }
     return result;
+  }
+
+  static String getActivityIconDescription(ScheduleType scheduleType) {
+    switch (scheduleType) {
+      case ScheduleType.blood_pressure:
+        return R.string.blood_pressure.tr();
+      case ScheduleType.blood_sugar:
+        return R.string.blood_sugar.tr();
+      case ScheduleType.weight:
+        return R.string.weight.tr();
+      case ScheduleType.food:
+        return R.string.nutrition.tr();
+      case ScheduleType.exercise:
+        return R.string.exercise.tr();
+      case ScheduleType.book_1_1:
+      case ScheduleType.io_evaluate:
+      case ScheduleType.output_assessment:
+        return R.string.event.tr();
+      case ScheduleType.survey:
+        return R.string.question.tr();
+      case ScheduleType.lesson:
+      case ScheduleType.lesson_recommend:
+        return R.string.knowledge.tr();
+      case ScheduleType.update_profile:
+        return R.string.ho_so.tr();
+      case ScheduleType.book_1_n:
+        return R.string.huong_dan.tr();
+      default:
+        return "";
+    }
+  }
+
+  static Color getActivityIconTextColor(ScheduleType scheduleType) {
+    switch (scheduleType) {
+      case ScheduleType.blood_pressure:
+        return R.color.blood_pressure_color;
+      case ScheduleType.blood_sugar:
+        return R.color.blood_sugar_color;
+      case ScheduleType.weight:
+        return R.color.weight_color;
+      case ScheduleType.food:
+        return R.color.nutrition_color;
+      case ScheduleType.exercise:
+        return R.color.exercise_color;
+      case ScheduleType.book_1_1:
+      case ScheduleType.output_assessment:
+      case ScheduleType.io_evaluate:
+        return R.color.event_color;
+      case ScheduleType.survey:
+        return R.color.question_color;
+      case ScheduleType.lesson:
+      case ScheduleType.lesson_recommend:
+        return R.color.lesson_color;
+      case ScheduleType.update_profile:
+        return R.color.ho_so_color;
+      case ScheduleType.book_1_n:
+        return R.color.knowledge_color;
+      default:
+        return R.color.black;
+    }
   }
 }
 

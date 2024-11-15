@@ -2,6 +2,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/bloc/glucose/glucose_bloc.dart';
 import 'package:medical/src/modal/glucose/glucose_distribution.dart';
 import 'package:medical/src/utils/navigator_name.dart';
@@ -288,8 +289,14 @@ class BloodSugarDetailState extends State<BloodSugarDetail>
                                             'cta_button_name':
                                                 'cta_add_glycemic_0',
                                           });
-                                      BloodSugarFunctions.showModalAddData(
-                                          context);
+                                      if (AppSettings.isUS) {
+                                        Navigator.pushNamed(context,
+                                            NavigatorName.add_blood_sugar_new,
+                                            arguments: {'type': 'input'});
+                                      } else {
+                                        BloodSugarFunctions.showModalAddData(
+                                            context);
+                                      }
                                     },
                                   )
                                 : buildChart(model)

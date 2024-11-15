@@ -25,11 +25,13 @@ class AddBmiView extends StatefulWidget with AddBmiMixin {
   final String? type;
   final String? id;
   final String? goalId;
+  final bool? isCurrentBmi;
 
   AddBmiView({
     this.type,
     this.id,
     this.goalId,
+    this.isCurrentBmi,
   });
 
   @override
@@ -45,6 +47,7 @@ class _AddBmiViewState extends State<AddBmiView> {
       type: widget.type,
       id: widget.id,
       goalId: widget.goalId,
+      isCurrentBmi: widget.isCurrentBmi,
     );
     firebaseSetup();
     super.initState();

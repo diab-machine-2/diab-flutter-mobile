@@ -86,8 +86,8 @@ class UtilitiesPage extends StatelessWidget {
                         children: [
                           Image.asset(
                             utility.icon,
-                            width: 40.0,
-                            height: 40.0,
+                            width: 30.0,
+                            height: 30.0,
                           ),
                           const SizedBox(width: 12.0),
                           Expanded(

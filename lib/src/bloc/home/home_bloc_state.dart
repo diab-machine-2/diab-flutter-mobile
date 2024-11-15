@@ -32,6 +32,7 @@ class HomeLoaded extends HomeState {
   final List<HomeUtilityData>? utilities;
   final List<LearningPostModel>? news;
   final List<LessonModel>? lessons;
+  final List<LearningPostModel>? banners;
 
   // Control loading state
   final bool measurementLoading;
@@ -45,6 +46,7 @@ class HomeLoaded extends HomeState {
     this.utilities,
     this.news,
     this.lessons,
+    this.banners,
     this.measurementLoading = true,
     this.activityLoading = true,
     this.reminderLoading = true,
@@ -61,6 +63,7 @@ class HomeLoaded extends HomeState {
         if (utilities != null) utilities!,
         if (news != null) news!,
         if (lessons != null) lessons!,
+        if (banners != null) banners!,
       ];
 
   // copyWith method to create a new instance of HomeLoaded
@@ -72,6 +75,7 @@ class HomeLoaded extends HomeState {
     List<HomeReminderData>? reminders,
     List<HomeUtilityData>? utilities,
     List<LearningPostModel>? news,
+    List<LearningPostModel>? banners,
     List<LessonModel>? lessons,
     bool? measurementLoading,
     bool? activityLoading,
@@ -84,6 +88,7 @@ class HomeLoaded extends HomeState {
       utilities: utilities ?? this.utilities,
       news: news ?? this.news,
       lessons: lessons ?? this.lessons,
+      banners: banners ?? this.banners,
       measurementLoading: measurementLoading ?? this.measurementLoading,
       activityLoading: activityLoading ?? this.activityLoading,
       reminderLoading: reminderLoading ?? this.reminderLoading,
