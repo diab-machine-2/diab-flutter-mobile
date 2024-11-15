@@ -1162,4 +1162,5 @@ class Strings {
   String get event => 'event';
   String get huong_dan => 'huong_dan';
   String get reminder => 'reminder';
+  String get target => 'target';
 }

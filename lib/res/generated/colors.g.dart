@@ -131,4 +131,7 @@ class Colors {
   Color get exercise_color => Color(0xff005484);
   Color get event_color => Color(0xff005484);
   Color get reminder_color => Color(0xffD97708);
+  Color get emotion_color => Color(0xffD97708);
+  Color get target_color => Color(0xffD04D4C);
+  Color get survey_color => Color(0xff1E8F66);
 }

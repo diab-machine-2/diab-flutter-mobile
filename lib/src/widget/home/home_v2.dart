@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bot_toast/bot_toast.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -92,6 +94,11 @@ class _HomeControllerState extends State<HomeController>
   @override
   bool get wantKeepAlive => true;
 
+  Timer? _debounce;
+
+// change debouce duration accordingly
+  Duration _debouceDuration = const Duration(milliseconds: 500);
+
   @override
   void initState() {
     super.initState();
@@ -108,6 +115,7 @@ class _HomeControllerState extends State<HomeController>
   @override
   void dispose() {
     Observable.instance.removeObserver(this);
+    _debounce?.cancel();
     super.dispose();
   }
 
@@ -466,40 +474,43 @@ class _HomeControllerState extends State<HomeController>
           Widget utilitiesW = HomeUtilities(
             utilities: stateLoaded?.utilities ?? [],
             onTap: (utility) {
-              // track event
-              final String eventName = "home_select_utility";
-              TrackingManager.trackEvent(eventName, _screenName, params: {
-                "object_title": utility.title,
-              });
+              if (_debounce?.isActive ?? false) _debounce?.cancel();
+              _debounce = Timer(_debouceDuration, () {
+                // track event
+                final String eventName = "home_select_utility";
+                TrackingManager.trackEvent(eventName, _screenName, params: {
+                  "object_title": utility.title,
+                });
 
-              final routeName = utility.navigatorName;
-              // case show all utilities
-              if (routeName == NavigatorName.utilities) {
-                final utilities = BlocProvider.of<HomeBloc>(context)
-                    .getAllUtilities(full: true);
-                Navigator.pushNamed(context, routeName, arguments: utilities);
-                return;
-              }
-
-              // other navigate case
-              if (routeName.startsWith("/")) {
-                Navigator.pushNamed(context, routeName);
-                return;
-              }
-
-              // special case for utilities
-              switch (routeName) {
-                case "share":
-                  String? shareLink = DynamicLinkConfig.instance.shareLink;
-                  if (shareLink != null) {
-                    AppShare.instance.userReferralCode(context, shareLink);
-                  }
+                final routeName = utility.navigatorName;
+                // case show all utilities
+                if (routeName == NavigatorName.utilities) {
+                  final utilities = BlocProvider.of<HomeBloc>(context)
+                      .getAllUtilities(full: true);
+                  Navigator.pushNamed(context, routeName, arguments: utilities);
                   return;
-                default:
-                  break;
-              }
-              Console.log("missing handler for routeName: $routeName");
-              BotToast.showText(text: "Chức năng đang được phát triển");
+                }
+
+                // other navigate case
+                if (routeName.startsWith("/")) {
+                  Navigator.pushNamed(context, routeName);
+                  return;
+                }
+
+                // special case for utilities
+                switch (routeName) {
+                  case "share":
+                    String? shareLink = DynamicLinkConfig.instance.shareLink;
+                    if (shareLink != null) {
+                      AppShare.instance.userReferralCode(context, shareLink);
+                    }
+                    return;
+                  default:
+                    break;
+                }
+                Console.log("missing handler for routeName: $routeName");
+                BotToast.showText(text: "Chức năng đang được phát triển");
+              });
             },
           );
 
