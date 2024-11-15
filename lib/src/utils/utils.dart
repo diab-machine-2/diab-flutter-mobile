@@ -504,14 +504,17 @@ class Utils {
       case ScheduleType.output_assessment:
         return R.string.event.tr();
       case ScheduleType.survey:
-        return R.string.question.tr();
+      case ScheduleType.update_profile:
+        return R.string.survey.tr();
       case ScheduleType.lesson:
       case ScheduleType.lesson_recommend:
         return R.string.knowledge.tr();
-      case ScheduleType.update_profile:
-        return R.string.ho_so.tr();
       case ScheduleType.book_1_n:
         return R.string.huong_dan.tr();
+      case ScheduleType.custom:
+        return R.string.target.tr();
+      case ScheduleType.emotion:
+        return R.string.cam_xuc.tr();
       default:
         return "";
     }
@@ -534,14 +537,18 @@ class Utils {
       case ScheduleType.io_evaluate:
         return R.color.event_color;
       case ScheduleType.survey:
-        return R.color.question_color;
+        return R.color.survey_color;
       case ScheduleType.lesson:
       case ScheduleType.lesson_recommend:
         return R.color.lesson_color;
       case ScheduleType.update_profile:
-        return R.color.ho_so_color;
+        return R.color.survey_color;
       case ScheduleType.book_1_n:
         return R.color.knowledge_color;
+      case ScheduleType.custom:
+        return R.color.target_color;
+      case ScheduleType.emotion:
+        return R.color.emotion_color;
       default:
         return R.color.black;
     }
