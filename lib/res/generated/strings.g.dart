@@ -1147,4 +1147,19 @@ class Strings {
   String get connect_from_Apple_Health => 'connect_from_Apple_Health';
   String get connect_from_Health_Connect => 'connect_from_Health_Connect';
   String get enter_manually => 'enter_manually';
+  String get contact => 'contact';
+  String get call_for_support => 'call_for_support';
+  String get chat_for_support => 'chat_for_support';
+  String get blood_pressure => 'blood_pressure';
+  String get blood_sugar => 'blood_sugar';
+  String get weight => 'weight';
+  String get nutrition => 'nutrition';
+  String get knowledge => 'knowledge';
+  String get question => 'question';
+  String get lesson => 'lesson';
+  String get ho_so => 'ho_so';
+  String get exercise => 'exercise';
+  String get event => 'event';
+  String get huong_dan => 'huong_dan';
+  String get reminder => 'reminder';
 }

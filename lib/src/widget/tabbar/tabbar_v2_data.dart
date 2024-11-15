@@ -34,7 +34,7 @@ extension TabBarTypeExt on TabBarType {
       case TabBarType.faq:
         return 'lib/res/drawables/tab/ic_tab_faq.png';
       case TabBarType.store:
-        return 'lib/res/drawables/tab/ic_tab_store.png';
+        return 'lib/res/drawables/tab/ic_tab_store_new.png';
     }
   }
 

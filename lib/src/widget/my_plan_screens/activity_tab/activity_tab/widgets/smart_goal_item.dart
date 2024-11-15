@@ -6,6 +6,7 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/utils/date_utils.dart';
 import 'package:medical/src/utils/navigation_util.dart';
+import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widgets/button_widget.dart';
 
@@ -17,6 +18,7 @@ class SmartGoalItem extends StatelessWidget {
       {required this.type,
       required this.name,
       required this.frequency,
+      required this.subject,
       this.appointmentDate,
       required this.isDone,
       required this.onTap,
@@ -25,6 +27,7 @@ class SmartGoalItem extends StatelessWidget {
   final ScheduleType type;
   final String name;
   final String frequency;
+  final String subject;
   final bool isDone;
   final int state;
   final int? appointmentDate;
@@ -76,7 +79,7 @@ class SmartGoalItem extends StatelessWidget {
         child: InkWell(
           onTap: onTap,
           child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            padding: const EdgeInsets.fromLTRB(7, 15, 15, 15),
             decoration: BoxDecoration(
               color: R.color.white,
               borderRadius: BorderRadius.circular(8),
@@ -85,43 +88,79 @@ class SmartGoalItem extends StatelessWidget {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
+                // Container(
+                //   width: 60,
+                //   height: 60,
+                //   alignment: Alignment.center,
+                //   decoration: BoxDecoration(
+                //     color: R.color.grey_6,
+                //     shape: BoxShape.circle,
+                //   ),
+                //   child: Image.asset(
+                //     type.icon,
+                //     width: 40,
+                //     height: 40,
+                //   ),
+                // ),
                 Container(
                   width: 60,
-                  height: 60,
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                    color: R.color.grey_6,
-                    shape: BoxShape.circle,
-                  ),
-                  child: Image.asset(
-                    type.icon,
-                    width: 40,
-                    height: 40,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Image.asset(
+                        type.icon,
+                        width: 24,
+                        height: 24,
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        Utils.getActivityIconDescription(type),
+                        style: TextStyle(
+                          fontSize: 10,
+                          color: Utils.getActivityIconTextColor(type),
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
                   ),
                 ),
-                const SizedBox(width: 16),
+                const SizedBox(width: 8),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text(
-                        (type == ScheduleType.custom ||
-                                type == ScheduleType.io_evaluate ||
-                                type == ScheduleType.output_assessment ||
-                                type == ScheduleType.book_1_1 ||
-                                type == ScheduleType.book_1_n)
-                            ? name
-                            : type.title,
-                        style: TextStyle(
+                      if (type != ScheduleType.lesson &&
+                          type != ScheduleType.survey)
+                        Text(
+                          (type == ScheduleType.custom ||
+                                  type == ScheduleType.io_evaluate ||
+                                  type == ScheduleType.output_assessment ||
+                                  type == ScheduleType.book_1_1 ||
+                                  type == ScheduleType.book_1_n)
+                              ? name
+                              : type.title,
+                          style: TextStyle(
+                              color: R.color.textDark,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w700),
+                        ),
+                      if (type == ScheduleType.lesson ||
+                          type == ScheduleType.survey)
+                        Text(
+                          frequency,
+                          style: TextStyle(
+                            fontSize: 16.0,
                             color: R.color.textDark,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w700),
-                      ),
+                            fontWeight: FontWeight.w700,
+                          ),
+                          maxLines: 2,
+                        ),
                       if (frequency.isNotEmpty) const SizedBox(height: 4),
                       if (frequency.isNotEmpty)
                         Text(
-                          frequency,
+                          getSubtitle(type),
                           style: TextStyle(
                               color: R.color.textDark,
                               fontSize: 14,
@@ -134,6 +173,7 @@ class SmartGoalItem extends StatelessWidget {
                     ? Image.asset(R.drawable.ic_learning,
                         width: 24, height: 24, color: R.color.mainColor)
                     : Container(
+                        margin: EdgeInsets.only(left: 20),
                         width: 24,
                         height: 24,
                         alignment: Alignment.center,
@@ -158,6 +198,18 @@ class SmartGoalItem extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  String getSubtitle(ScheduleType type) {
+    if (type == ScheduleType.lesson) {
+      return subject;
+    }
+
+    if (type == ScheduleType.survey) {
+      return name.isEmpty ? type.title : name;
+    }
+
+    return frequency;
   }
 
   Future<void> _showDeletePopup(BuildContext context) async {

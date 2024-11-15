@@ -12,16 +12,14 @@ import 'package:medical/src/model/response/calendar_training_response.dart';
 import 'package:medical/src/model/response/content_welcome_response.dart';
 import 'package:medical/src/model/response/create_calendar_response.dart';
 import 'package:medical/src/model/response/expert_comment_list_response.dart';
+import 'package:medical/src/model/response/learning_post_response.dart';
 import 'package:medical/src/model/response/branchio_generate_zoom_response.dart';
 import 'package:medical/src/model/response/lesson_module_response.dart';
 import 'package:medical/src/model/response/list_calendart_response.dart';
 import 'package:medical/src/model/response/question_answer_response.dart';
 import 'package:medical/src/model/response/report_response.dart';
-import 'package:medical/src/utils/const.dart';
-import 'package:medical/src/widget/calendar/calendar_model.dart';
 import 'package:retrofit/http.dart';
 import 'package:retrofit/retrofit.dart';
-
 import 'request/complete_exercise_request.dart';
 import 'request/complete_smart_goal_request.dart';
 import 'request/complete_video_request.dart';
@@ -421,6 +419,10 @@ abstract class AppApi {
     @Query("topic") String? topic,
     @Query("date") String? date,
   );
+
+  @GET("App/LearningPost")
+  Future<LearningPostListResponse> getBanners(
+      {@Query('Position') int? position});
 
   // Customer Receives
   @PUT("/App/CustomerReceives/interview/{courseId}")

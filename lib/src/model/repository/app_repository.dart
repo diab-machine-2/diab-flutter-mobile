@@ -37,6 +37,7 @@ import 'package:medical/src/model/response/expert_comment_list_response.dart';
 import 'package:medical/src/model/response/filter_data_response.dart';
 import 'package:medical/src/model/response/food_suggest_response.dart';
 import 'package:medical/src/model/response/latest_hba1c_input_response.dart';
+import 'package:medical/src/model/response/learning_post_response.dart';
 import 'package:medical/src/model/response/lesson_module_response.dart';
 import 'package:medical/src/model/response/lesson_section_list_response.dart';
 import 'package:medical/src/model/response/list_activity_response.dart';
@@ -898,6 +899,18 @@ class AppRepository {
     try {
       final BranchioGenerateZoomResponse response =
           await appClient.branchioGenerateZoom(email, topic, date);
+      return ApiResult.success(data: response);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
+  Future<ApiResult<LearningPostListResponse>> getBanners(
+      {int position = 9}) async {
+    try {
+      final LearningPostListResponse response =
+          await appClient.getBanners(position: position);
+
       return ApiResult.success(data: response);
     } catch (e) {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));

@@ -22,7 +22,8 @@ class HomeUtilities extends StatelessWidget {
 
     List<HomeUtilityData> renderingUtilities = utilities;
     if (isLargeFont) {
-      renderingUtilities = utilities.take(5).toList()..add(utilities[utilities.length - 1]);
+      renderingUtilities = utilities.take(5).toList()
+        ..add(utilities[utilities.length - 1]);
     }
 
     return Container(
@@ -65,7 +66,8 @@ class HomeUtilities extends StatelessWidget {
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: renderingUtilities
-                .getRange(renderingUtilities.length ~/ 2, renderingUtilities.length)
+                .getRange(
+                    renderingUtilities.length ~/ 2, renderingUtilities.length)
                 .map((utility) => Expanded(child: _buildActivityItem(utility)))
                 .toList(),
           ),
@@ -82,8 +84,8 @@ class HomeUtilities extends StatelessWidget {
         children: [
           Image.asset(
             utility.icon,
-            width: 40.0,
-            height: 40.0,
+            width: 28.0,
+            height: 28.0,
           ),
           const SizedBox(height: 12.0),
           Container(

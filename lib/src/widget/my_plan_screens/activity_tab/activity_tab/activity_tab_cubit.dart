@@ -69,13 +69,37 @@ class ActivityTabCubit extends Cubit<ActivityTabState> {
       } else {
         DateTime dateTime =
             DateUtil.parseTimespanToDateTime(user.ownPackage!.endDateFirst!);
+
+        dateTime =
+            DateTime.utc(dateTime.year, dateTime.month, dateTime.day, 0, 0, 0);
+        if (dateTime.weekday == DateTime.sunday) {
+          dateTime = dateTime.add(const Duration(days: 1));
+        } //Because endDateFirst is Sunday so we add 1 day
+
         dateTime = dateTime.add(Duration(days: (currentWeek! - 1) * 7));
-        return DateUtil.getDayInMillis(dateTime);
+        dateTime = dateTime.toLocal();
+
+        final utcDatetime = DateTime.utc(dateTime.year, dateTime.month,
+            dateTime.day, dateTime.hour, dateTime.minute, dateTime.second);
+        final localDatetime = utcDatetime.toLocal();
+
+        return DateUtil.getDayInMillis(localDatetime);
       }
     } else {
       if (dayStatesList.isEmpty) {
         return currentDate;
       } else {
+        if (user.ownPackage == null) {
+          // TODO: Need backend handle this case, basic account daysInCurrentWeek timestamp not match as package account
+          DateTime dateTime = DateUtil.parseTimespanToDateTime(
+            dayStatesList[currentDayIndex]?.day ?? currentDate!,
+          );
+          dateTime = dateTime.toLocal();
+          final utcDatetime = DateTime.utc(dateTime.year, dateTime.month,
+              dateTime.day, dateTime.hour, dateTime.minute, dateTime.second);
+          final localDatetime = utcDatetime.toLocal();
+          return DateUtil.getDayInMillis(localDatetime);
+        }
         return dayStatesList[currentDayIndex]?.day;
       }
     }

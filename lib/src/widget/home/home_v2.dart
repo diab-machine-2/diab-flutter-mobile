@@ -1,4 +1,5 @@
 import 'package:bot_toast/bot_toast.dart';
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -83,6 +84,7 @@ class _HomeControllerState extends State<HomeController>
 
   bool _isActivityExpanded = false;
   bool _isReminderExpanded = false;
+  bool _isActivityReminerExpanded = false;
 
   // trigger reload when complete lesson
   bool _isReloadLesson = false;
@@ -404,7 +406,8 @@ class _HomeControllerState extends State<HomeController>
           if (state is HomeLoaded) {
             model = state.model;
             stateLoaded = state;
-            if (false == model?.packageAccount?.isDisplayedWelcome && !_isDisplayedWelcome) {
+            if (false == model?.packageAccount?.isDisplayedWelcome &&
+                !_isDisplayedWelcome) {
               _isDisplayedWelcome = true;
               if (AppSettings.isDisplayedWelcome == false) {
                 Future.delayed(Duration.zero, () async {
@@ -413,6 +416,28 @@ class _HomeControllerState extends State<HomeController>
               } else {}
             }
           }
+
+          Widget activitiesW = HomeActivity(
+            activities: stateLoaded?.activities ?? [],
+            expanded: _isActivityReminerExpanded,
+            loading: stateLoaded?.activityLoading ?? false,
+            onExpand: () {
+              setState(() {
+                _isActivityExpanded = true;
+              });
+            },
+            onCollapse: () {
+              setState(() {
+                _isActivityExpanded = false;
+              });
+            },
+            onAddActivity: () {
+              Navigator.pushNamed(context, NavigatorName.add_goal);
+            },
+            onViewMore: _viewMoreActivity,
+            onActivityTap: (activity) => _onSelectGoal(activity.type,
+                smartGoal: activity.smartGoal, title: activity.title),
+          );
 
           Widget reminderW = HomeReminder(
             reminders: stateLoaded?.reminders ?? [],
@@ -425,7 +450,7 @@ class _HomeControllerState extends State<HomeController>
               Navigator.pushNamed(context, NavigatorName.add_reminder,
                   arguments: {'type': 'update', 'id': reminder.id});
             },
-            expanded: _isReminderExpanded,
+            expanded: _isActivityReminerExpanded,
             onExpand: () {
               setState(() {
                 _isReminderExpanded = true;
@@ -478,9 +503,32 @@ class _HomeControllerState extends State<HomeController>
             },
           );
 
-          bool needSwapReminderAndUtilities =
-              stateLoaded?.activityLoading == false &&
-                  !(stateLoaded?.reminders?.isNotEmpty == true);
+          // bool needSwapReminderAndUtilities =
+          //     stateLoaded?.activityLoading == false &&
+          //         !(stateLoaded?.reminders?.isNotEmpty == true);
+
+          bool isActivityReminderEmpty =
+              (stateLoaded?.activities ?? []).isEmpty &&
+                  (stateLoaded?.reminders ?? []).isEmpty;
+
+          bool isActivityReminderHaveMore =
+              // Expand more when have more than 5 items (included activities + reminders)
+              (stateLoaded?.activities ?? []).length +
+                          (stateLoaded?.reminders ?? []).length >
+                      5 ||
+                  // Also expand when have more than 3 activities or 2 reminders
+                  (stateLoaded?.activities ?? []).length > 3 ||
+                  (stateLoaded?.reminders ?? []).length > 2;
+
+          List<String> banners = (stateLoaded?.banners ?? [])
+              .where((banner) => banner.imageBannerUrl?.url?.isNotEmpty == true)
+              .map((banner) => banner.imageBannerUrl!.url!)
+              .toList();
+
+          List<String> bannerLinks = (stateLoaded?.banners ?? [])
+              .where((banner) => banner.imageBannerUrl?.url?.isNotEmpty == true)
+              .map((banner) => banner.link ?? '')
+              .toList();
 
           return RefreshIndicator(
             onRefresh: _pullToRefresh,
@@ -491,13 +539,10 @@ class _HomeControllerState extends State<HomeController>
                   DecoratedBox(
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment(0.0, 2.0),
-                        colors: [
-                          Color(0xFF008479),
-                          Color(0xFF4BB2AB),
-                          Colors.white,
-                        ],
+                        colors: [Color(0xff116459), Color(0xff22cab4)],
+                        stops: [0.01, 0.99],
+                        begin: Alignment.bottomCenter,
+                        end: Alignment.topCenter,
                       ),
                     ),
                     child: HomeHeader(sharedCode: widget.sharedCode),
@@ -516,9 +561,10 @@ class _HomeControllerState extends State<HomeController>
                             onMeasurement: (routeName, args, title) {
                               // track event
                               final String eventName = "home_select_kpi";
-                              TrackingManager.trackEvent(eventName, _screenName, params: {
-                                "object_title": title,
-                              });
+                              TrackingManager.trackEvent(eventName, _screenName,
+                                  params: {
+                                    "object_title": title,
+                                  });
                               // case require weight input
                               if (_checkWeightInputDialog(routeName,
                                       args: args) ==
@@ -541,57 +587,241 @@ class _HomeControllerState extends State<HomeController>
 
                           const SizedBox(height: 16.0),
 
-                          // Activities
+                          // // Activities
+                          // Padding(
+                          //   padding:
+                          //       const EdgeInsets.symmetric(horizontal: 12.0),
+                          //   child: HomeActivity(
+                          //     activities: stateLoaded?.activities ?? [],
+                          //     expanded: _isActivityExpanded,
+                          //     loading: stateLoaded?.activityLoading ?? false,
+                          //     onExpand: () {
+                          //       setState(() {
+                          //         _isActivityExpanded = true;
+                          //       });
+                          //     },
+                          //     onCollapse: () {
+                          //       setState(() {
+                          //         _isActivityExpanded = false;
+                          //       });
+                          //     },
+                          //     onAddActivity: () {
+                          //       Navigator.pushNamed(
+                          //           context, NavigatorName.add_goal);
+                          //     },
+                          //     onViewMore: _viewMoreActivity,
+                          //     onActivityTap: (activity) => _onSelectGoal(
+                          //         activity.type,
+                          //         smartGoal: activity.smartGoal,
+                          //         title: activity.title),
+                          //   ),
+                          // ),
+
+                          if (banners.isNotEmpty)
+                            Container(
+                              padding: EdgeInsets.symmetric(horizontal: 12.0),
+                              alignment: Alignment.center,
+                              child: CarouselSlider.builder(
+                                options: CarouselOptions(
+                                  autoPlay: banners.length > 1 ? true : false,
+                                  aspectRatio: 16 / 7,
+                                  autoPlayInterval: Duration(seconds: 3),
+                                  viewportFraction: 1.0,
+                                  initialPage: 0,
+                                  padEnds: true,
+                                ),
+                                itemCount: 1,
+                                itemBuilder: (BuildContext context, int index,
+                                        int pageViewIndex) =>
+                                    ClipRRect(
+                                  borderRadius: BorderRadius.circular(8.0),
+                                  child: GestureDetector(
+                                    onTap: () async {
+                                      if (bannerLinks[index].isEmpty) {
+                                        return;
+                                      }
+
+                                      final launchUri =
+                                          Uri.parse(bannerLinks[index]);
+                                      if (await canLaunchUrl(launchUri)) {
+                                        await launchUrl(launchUri);
+                                      } else {
+                                        throw 'Could not launch banner link ${Const.ZALO_OA_TECHNICAL_SUPPORT_LINK}';
+                                      }
+                                    },
+                                    child: NetWorkImageWidget(
+                                      imageUrl: banners[index],
+                                      fit: BoxFit.cover,
+                                      width: 400.w,
+                                      // height: 110.h,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+
+                          const SizedBox(height: 16.0),
+
                           Padding(
                             padding:
                                 const EdgeInsets.symmetric(horizontal: 12.0),
-                            child: HomeActivity(
-                              activities: stateLoaded?.activities ?? [],
-                              expanded: _isActivityExpanded,
-                              loading: stateLoaded?.activityLoading ?? false,
-                              onExpand: () {
-                                setState(() {
-                                  _isActivityExpanded = true;
-                                });
-                              },
-                              onCollapse: () {
-                                setState(() {
-                                  _isActivityExpanded = false;
-                                });
-                              },
-                              onAddActivity: () {
-                                Navigator.pushNamed(
-                                    context, NavigatorName.add_goal);
-                              },
-                              onViewMore: _viewMoreActivity,
-                              onActivityTap: (activity) => _onSelectGoal(
-                                  activity.type,
-                                  smartGoal: activity.smartGoal,
-                                  title: activity.title),
+                            child: AnimatedSize(
+                              duration: const Duration(milliseconds: 300),
+                              alignment: Alignment.topCenter,
+                              child: Container(
+                                padding:
+                                    const EdgeInsets.fromLTRB(16, 20, 16, 16),
+                                decoration: BoxDecoration(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(16.0)),
+                                  color: Colors.white,
+                                  border: Border.all(
+                                      color: const Color(0xFFE4E4E7),
+                                      width: 1.0),
+                                ),
+                                child: Column(
+                                  children: [
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                          "Hoạt động hôm nay",
+                                          style: TextStyle(
+                                            fontSize: 18.0,
+                                            fontWeight: FontWeight.bold,
+                                            color: R.color.color0xff27272A,
+                                          ),
+                                        ),
+                                        SizedBox(
+                                          height: 24.0,
+                                          child: stateLoaded?.activityLoading ??
+                                                  false
+                                              ? Align(
+                                                  alignment:
+                                                      Alignment.centerRight,
+                                                  child: Padding(
+                                                    padding:
+                                                        const EdgeInsets.only(
+                                                            right: 4.0),
+                                                    child: SizedBox(
+                                                      child:
+                                                          CircularProgressIndicator(
+                                                              strokeWidth: 2.0),
+                                                      width: 16.0,
+                                                      height: 16.0,
+                                                    ),
+                                                  ),
+                                                )
+                                              : TextButton(
+                                                  style: TextButton.styleFrom(
+                                                    padding: EdgeInsets.zero,
+                                                    textStyle: TextStyle(
+                                                      fontSize: 14.0,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      color: R.color
+                                                          .greenGradientBottom,
+                                                    ),
+                                                  ),
+                                                  onPressed: _viewMoreActivity,
+                                                  child: Text(
+                                                    "Xem thêm",
+                                                    style: TextStyle(
+                                                        color: R
+                                                            .color.burntOrange),
+                                                  ),
+                                                ),
+                                        ),
+                                      ],
+                                    ),
+
+                                    // REMINDERS
+                                    reminderW,
+
+                                    // ACTIVITIES
+                                    activitiesW,
+
+                                    Builder(builder: (context) {
+                                      if (isActivityReminderEmpty ||
+                                          !isActivityReminderHaveMore)
+                                        return const SizedBox.shrink();
+                                      return Padding(
+                                        padding:
+                                            const EdgeInsets.only(top: 4.0),
+                                        child: InkWell(
+                                          onTap: _isActivityReminerExpanded
+                                              ? () => setState(() {
+                                                    _isActivityReminerExpanded =
+                                                        false;
+                                                  })
+                                              : () => setState(() {
+                                                    _isActivityReminerExpanded =
+                                                        true;
+                                                  }),
+                                          child: Row(
+                                            mainAxisSize: MainAxisSize.min,
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              Text(
+                                                _isActivityReminerExpanded
+                                                    ? "Thu gọn"
+                                                    : "Mở rộng",
+                                                style: TextStyle(
+                                                  fontSize: 14.0,
+                                                  color:
+                                                      R.color.primaryGreyColor,
+                                                  height: 20.0 / 14.0,
+                                                ),
+                                              ),
+                                              const SizedBox(width: 6.0),
+                                              Icon(
+                                                _isActivityReminerExpanded
+                                                    ? Icons.keyboard_arrow_up
+                                                    : Icons.keyboard_arrow_down,
+                                                color: R.color.primaryGreyColor,
+                                                size: 20.0,
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      );
+                                    }),
+                                  ],
+                                ),
+                              ),
                             ),
                           ),
 
                           const SizedBox(height: 16.0),
 
-                          // Reminder >< Utilities
+                          // Utilities
                           Padding(
                             padding:
                                 const EdgeInsets.symmetric(horizontal: 12.0),
-                            child: needSwapReminderAndUtilities
-                                ? utilitiesW
-                                : reminderW,
+                            child: utilitiesW,
                           ),
 
-                          const SizedBox(height: 16.0),
+                          // // Reminder >< Utilities
+                          // Padding(
+                          //   padding:
+                          //       const EdgeInsets.symmetric(horizontal: 12.0),
+                          //   child: needSwapReminderAndUtilities
+                          //       ? utilitiesW
+                          //       : reminderW,
+                          // ),
 
-                          // Utilities >< Reminder
-                          Padding(
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 12.0),
-                            child: needSwapReminderAndUtilities
-                                ? reminderW
-                                : utilitiesW,
-                          ),
+                          // const SizedBox(height: 16.0),
+
+                          // // Utilities >< Reminder
+                          // Padding(
+                          //   padding:
+                          //       const EdgeInsets.symmetric(horizontal: 12.0),
+                          //   child: needSwapReminderAndUtilities
+                          //       ? reminderW
+                          //       : utilitiesW,
+                          // ),
 
                           const SizedBox(height: 16.0),
 

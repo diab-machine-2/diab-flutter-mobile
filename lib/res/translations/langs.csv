@@ -1120,4 +1120,19 @@ action_try_again,"Thử lại","Try again"
 action_cancel,"Thoát","Cancel"
 empty_activity,"Bạn chưa có hoạt động nào hôm nay.\nThiết lập mục tiêu ngay để nâng cao hiệu quả luyện tập.","You have no activities today.\nSet goals now to improve exercise efficiency."
 complete_activity,"Bạn đã hoàn thành tất cả hoạt động hôm nay.\nHãy duy trì đều đặn mỗi ngày bạn nhé.","You have completed all activities today.\nKeep it regular every day."
-empty_reminder,"Bạn chưa có lịch nhắc nhở nào hôm nay.\nHãy thêm nhắc nhở để chúng tôi giúp bạn duy trì sức khỏe tốt nhé!",You have no reminders today.\nAdd reminders to help us keep you healthy!"
+empty_reminder,"Bạn chưa có lịch nhắc nhở nào hôm nay.\nHãy thêm nhắc nhở để chúng tôi giúp bạn duy trì sức khỏe tốt nhé!",You have no reminders today.\nAdd reminders to help us keep you healthy!",
+contact,"Liên hệ","Contact",
+call_for_support,"Gọi hỗ trợ","Call for support",
+chat_for_support,"Nhắn tin hỗ trợ","Chat for support",
+blood_pressure,"Huyết áp","Blood pressure",
+blood_sugar,"Đường huyết","Blood sugar",
+weight,"Cân nặng","Weight",
+nutrition,"Dinh dưỡng","Nutrition",
+knowledge,"Kiến thức","Knowledge",
+question,"Câu hỏi","Question",
+lesson,"Bài học","Lesson",
+ho_so,"Hồ sơ","Profile",
+exercise,"Vận động","Exercise",
+event,"Sự kiện","Event",
+huong_dan,"Hướng dẫn","Education",
+reminder,"Nhắc nhở","Reminder"
