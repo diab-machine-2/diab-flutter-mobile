@@ -115,7 +115,6 @@ Future<void> main() async {
   //   enableLog: true,
   // );
   // zoom.initSdk(initConfig);
-  await FlutterBranchSdk.init(enableLogging: false, disableTracking: false);
 
   SystemChrome.setPreferredOrientations(
       [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]).then((_) {
