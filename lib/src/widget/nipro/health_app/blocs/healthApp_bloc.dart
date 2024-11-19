@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:bloc/bloc.dart';
 import 'package:collection/collection.dart';
@@ -298,11 +299,24 @@ class HealthAppBloc extends Bloc<HealthAppEvent, HealthAppState> {
         try {
           stepCollected =
               stepCollected.where((element) => element.value != 0).toList();
-          final caloriesBurnedList = await Health().getHealthDataFromTypes(
-            types: [HealthDataType.TOTAL_CALORIES_BURNED],
-            startTime: dateFrom,
-            endTime: dateTo,
-          );
+          List<HealthDataPoint> caloriesBurnedList = [];
+          if (Platform.isAndroid) {
+            caloriesBurnedList = await Health().getHealthDataFromTypes(
+              types: [HealthDataType.TOTAL_CALORIES_BURNED],
+              // types: [HealthDataType.ACTIVE_ENERGY_BURNED],
+              startTime: dateFrom,
+              endTime: dateTo,
+            );
+          }
+
+           if (Platform.isIOS) {
+            caloriesBurnedList = await Health().getHealthDataFromTypes(
+              // types: [HealthDataType.TOTAL_CALORIES_BURNED],
+              types: [HealthDataType.ACTIVE_ENERGY_BURNED],
+              startTime: dateFrom,
+              endTime: dateTo,
+            );
+          }
           // // Check if latestStep exists
           // if (latestStep != null) {
           //   // Remove elements with the same value as latestStep and the same dateFrom
@@ -355,7 +369,8 @@ class HealthAppBloc extends Bloc<HealthAppEvent, HealthAppState> {
             stepCollected[i] = stepCollected[i].copyWith(
               burnCalories:
                   (caloriesBurnedByDate[stepCollected[i].dateFrom] ?? 0.0)
-                      .toPrecision(2).toInt(),
+                      .toPrecision(2)
+                      .toInt(),
             );
           }
           if (stepCollected.length > 0)

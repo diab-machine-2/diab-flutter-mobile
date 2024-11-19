@@ -29,7 +29,7 @@ class HomeLesson extends StatelessWidget {
     final textScaleFactor = max(1.0, MediaQuery.of(context).textScaleFactor);
     final extraTitleHeight = (textScaleFactor - 1) * 60.0;
     return SizedBox(
-      height: 290.0 + extraTitleHeight,
+      height: 300.0 + extraTitleHeight,
       child: ListView.separated(
         itemCount: lessons.length,
         scrollDirection: Axis.horizontal,
@@ -49,7 +49,7 @@ class HomeLesson extends StatelessWidget {
       onTap: () => onLessonTap(lesson),
       borderRadius: BorderRadius.circular(12.0),
       child: Container(
-        height: 290.0 + extraTitleHeight,
+        height: 300.0 + extraTitleHeight,
         width: 338.0,
         padding: const EdgeInsets.only(top: 16.0),
         decoration: BoxDecoration(
