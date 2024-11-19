@@ -627,14 +627,15 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
 
     // Exercise
     final haveExercise =
-        model?.exercise?.index != null && model!.exercise!.index! > 0;
+        (model?.exercise?.index != null && model!.exercise!.index! > 0) ||
+            model?.exercise?.isDataNotEmpty == true;
     final exercise = HomeMeasurementData(
       title: "Vận Động",
       titleColor: haveExercise ? _haveValueTitleColor : _noValueTitleColor,
       icon: haveExercise
           ? R.drawable.ic_home_measurement_exercise
           : R.drawable.ic_home_measurement_exercise_inactive,
-      value1: haveExercise ? model.exercise!.index!.toString() : "--",
+      value1: haveExercise ? model?.exercise!.index!.toString() : "--",
       value1Color: haveExercise ? _haveValueTitleColor : _noValueColor,
       value2: null,
       value2Color: null,

@@ -14,7 +14,7 @@ class HomeSupportFunctions {
       context: context,
       isScrollControlled: true,
       builder: (context) => Container(
-        height: 250,
+        height: 200,
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(20),
@@ -24,9 +24,12 @@ class HomeSupportFunctions {
           children: [
             Row(
               children: [
+                SizedBox(
+                  width: 58,
+                ),
                 Expanded(
                   child: Container(
-                    padding: EdgeInsets.all(20),
+                    padding: EdgeInsets.all(15),
                     alignment: Alignment.center,
                     decoration: BoxDecoration(
                         border: Border(
@@ -36,6 +39,7 @@ class HomeSupportFunctions {
                       style: TextStyle(
                         fontSize: 16,
                         color: R.color.textDark,
+                        fontWeight: FontWeight.w700,
                       ),
                     ),
                   ),

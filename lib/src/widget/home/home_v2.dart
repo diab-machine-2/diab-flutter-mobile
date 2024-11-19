@@ -26,6 +26,7 @@ import 'package:medical/src/utils/app_log.dart';
 import 'package:medical/src/utils/app_storages.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/date_utils.dart';
+import 'package:medical/src/utils/debouncer.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/BloodSugar/blood_sugar_functions.dart';
@@ -94,10 +95,7 @@ class _HomeControllerState extends State<HomeController>
   @override
   bool get wantKeepAlive => true;
 
-  Timer? _debounce;
-
-// change debouce duration accordingly
-  Duration _debouceDuration = const Duration(milliseconds: 500);
+  final _debouncer = Debouncer(milliseconds: 500);
 
   @override
   void initState() {
@@ -115,7 +113,7 @@ class _HomeControllerState extends State<HomeController>
   @override
   void dispose() {
     Observable.instance.removeObserver(this);
-    _debounce?.cancel();
+    _debouncer.dispose();
     super.dispose();
   }
 
@@ -474,8 +472,7 @@ class _HomeControllerState extends State<HomeController>
           Widget utilitiesW = HomeUtilities(
             utilities: stateLoaded?.utilities ?? [],
             onTap: (utility) {
-              if (_debounce?.isActive ?? false) _debounce?.cancel();
-              _debounce = Timer(_debouceDuration, () {
+              _debouncer.run(() {
                 // track event
                 final String eventName = "home_select_utility";
                 TrackingManager.trackEvent(eventName, _screenName, params: {

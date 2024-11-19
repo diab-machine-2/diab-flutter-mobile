@@ -4,13 +4,15 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_sharing.dart';
 import 'package:medical/src/app_setting/dynamic_link_config.dart';
 import 'package:medical/src/utils/app_log.dart';
+import 'package:medical/src/utils/debouncer.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/home/schema/home_schema.dart';
 
 class UtilitiesPage extends StatelessWidget {
-  const UtilitiesPage({super.key, required this.utilities});
+  UtilitiesPage({super.key, required this.utilities});
 
   final List<HomeUtilityData> utilities;
+  final _debouncer = Debouncer(milliseconds: 500);
 
   @override
   Widget build(BuildContext context) {
@@ -54,61 +56,71 @@ class UtilitiesPage extends StatelessWidget {
                 physics: const ClampingScrollPhysics(),
                 itemBuilder: (context, index) {
                   final utility = utilities[index];
-                  return InkWell(
-                    onTap: () {
-                      final routeName = utility.navigatorName;
-                      if (routeName.startsWith("/")) {
-                        Navigator.of(context).pushNamed(routeName);
-                        return;
-                      }
-                      // special case for utilities
-                      switch (routeName) {
-                        case "share":
-                          String? shareLink = DynamicLinkConfig.instance.shareLink;
-                          if (shareLink != null) {
-                            AppShare.instance.userReferralCode(context, shareLink);
-                          }
-                          return;
-                        default:
-                          break;
-                      }
-                      Console.log("missing handler for routeName: $routeName");
-                      BotToast.showText(text: "Chức năng đang được phát triển");
-                    },
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(12.0),
-                      ),
-                      padding: const EdgeInsets.all(12.0),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Image.asset(
-                            utility.icon,
-                            width: 30.0,
-                            height: 30.0,
+                  return Builder(
+                    builder: (context) {
+                      return InkWell(
+                        onTap: () {
+                          _debouncer.run(() {
+                            final routeName = utility.navigatorName;
+                            if (routeName.startsWith("/")) {
+                              Navigator.of(context).pushNamed(routeName);
+                              return;
+                            }
+                            // special case for utilities
+                            switch (routeName) {
+                              case "share":
+                                String? shareLink =
+                                    DynamicLinkConfig.instance.shareLink;
+                                if (shareLink != null) {
+                                  AppShare.instance
+                                      .userReferralCode(context, shareLink);
+                                }
+                                return;
+                              default:
+                                break;
+                            }
+                            Console.log(
+                                "missing handler for routeName: $routeName");
+                            BotToast.showText(
+                                text: "Chức năng đang được phát triển");
+                          });
+                        },
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(12.0),
                           ),
-                          const SizedBox(width: 12.0),
-                          Expanded(
-                            child: Text(
-                              utility.title,
-                              style: TextStyle(
-                                fontSize: 15.0,
-                                fontWeight: FontWeight.w500,
-                                color: Color(0xFF27272A),
+                          padding: const EdgeInsets.all(12.0),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Image.asset(
+                                utility.icon,
+                                width: 30.0,
+                                height: 30.0,
                               ),
-                            ),
+                              const SizedBox(width: 12.0),
+                              Expanded(
+                                child: Text(
+                                  utility.title,
+                                  style: TextStyle(
+                                    fontSize: 15.0,
+                                    fontWeight: FontWeight.w500,
+                                    color: Color(0xFF27272A),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 12.0),
+                              const Icon(
+                                Icons.arrow_forward_ios,
+                                size: 24.0,
+                                color: Color(0xFF666666),
+                              ),
+                            ],
                           ),
-                          const SizedBox(width: 12.0),
-                          const Icon(
-                            Icons.arrow_forward_ios,
-                            size: 24.0,
-                            color: Color(0xFF666666),
-                          ),
-                        ],
-                      ),
-                    ),
+                        ),
+                      );
+                    },
                   );
                 },
                 separatorBuilder: (_, __) => const SizedBox(height: 12.0),

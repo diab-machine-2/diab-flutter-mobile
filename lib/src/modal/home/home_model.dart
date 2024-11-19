@@ -45,43 +45,58 @@ class HomeModel {
   factory HomeModel.fromJson(Map<String, dynamic> json) {
     return HomeModel(
       glucoseIndex: GloucoseIndexModel.fromJson(json['glucoseIndex']),
-      bloodPressureIndex: BloodPressureIndexModel.fromJson(json['bloodPressureIndex']),
-      exercise: json['exercise'] == null ? null : ExerciseIndexModel.fromJson(json['exercise']),
+      bloodPressureIndex:
+          BloodPressureIndexModel.fromJson(json['bloodPressureIndex']),
+      exercise: json['exercise'] == null
+          ? null
+          : ExerciseIndexModel.fromJson(json['exercise']),
       hbA1CIndex: HbA1CIndexModel.fromJson(json['hbA1CIndex']),
-      weightCard: json['weightCard'] == null ? null : WeightCardModel.fromJson(json['weightCard']),
-      emotionCard:
-          json['emotionCard'] == null ? null : EmotionCardModel.fromJson(json['emotionCard']),
-      energyCard: json['energyCard'] == null ? null : EnergyCardModel.fromJson(json['energyCard']),
+      weightCard: json['weightCard'] == null
+          ? null
+          : WeightCardModel.fromJson(json['weightCard']),
+      emotionCard: json['emotionCard'] == null
+          ? null
+          : EmotionCardModel.fromJson(json['emotionCard']),
+      energyCard: json['energyCard'] == null
+          ? null
+          : EnergyCardModel.fromJson(json['energyCard']),
       energyExerciseCard: json['energyExerciseCard'] == null
           ? null
           : EnergyExerciseCardModel.fromJson(
               json['energyExerciseCard'],
             ),
-      processCard:
-          json['processCard'] == null ? null : ProcessCardModel.fromJson(json['processCard']),
+      processCard: json['processCard'] == null
+          ? null
+          : ProcessCardModel.fromJson(json['processCard']),
       packageAccount: json['packageAccount'] == null
           ? null
           : PackageAccountHomeModel.fromJson(json['packageAccount']),
-      bmiCard: json['bmiCard'] == null ? null : BmiCardModel.fromJson(json['bmiCard']),
+      bmiCard: json['bmiCard'] == null
+          ? null
+          : BmiCardModel.fromJson(json['bmiCard']),
       inlineMeasurements: json['inlineMeasurements'] == null
           ? null
           : (json['inlineMeasurements'] as List)
-              .map((item) => HomeMeasurementInlineData.fromJson(item as Map<String, dynamic>))
+              .map((item) => HomeMeasurementInlineData.fromJson(
+                  item as Map<String, dynamic>))
               .toList(),
       measurements: json['measurements'] == null
           ? null
           : (json['measurements'] as List)
-              .map((item) => HomeMeasurementData.fromJson(item as Map<String, dynamic>))
+              .map((item) =>
+                  HomeMeasurementData.fromJson(item as Map<String, dynamic>))
               .toList(),
       activities: json['activities'] == null
           ? null
           : (json['activities'] as List)
-              .map((item) => HomeActivityData.fromJson(item as Map<String, dynamic>))
+              .map((item) =>
+                  HomeActivityData.fromJson(item as Map<String, dynamic>))
               .toList(),
       reminders: json['reminders'] == null
           ? null
           : (json['reminders'] as List)
-              .map((item) => HomeReminderData.fromJson(item as Map<String, dynamic>))
+              .map((item) =>
+                  HomeReminderData.fromJson(item as Map<String, dynamic>))
               .toList(),
     );
   }
@@ -128,12 +143,16 @@ class GloucoseIndexModel {
       required this.icon});
 
   factory GloucoseIndexModel.fromJson(Map<String, dynamic> json) {
-    final unit =
-        AppSettings.userInfo!.glucoseUnit == 1 ? R.string.mg_dl.tr() : R.string.mmol_l.tr();
+    final unit = AppSettings.userInfo!.glucoseUnit == 1
+        ? R.string.mg_dl.tr()
+        : R.string.mmol_l.tr();
     return GloucoseIndexModel(
-      index: AppSettings.userInfo!.glucoseUnit == 1 ? json['index'] : json['indexMmoll'],
-      indexChange:
-          AppSettings.userInfo!.glucoseUnit == 1 ? json['indexChange'] : json['indexChangeMmoll'],
+      index: AppSettings.userInfo!.glucoseUnit == 1
+          ? json['index']
+          : json['indexMmoll'],
+      indexChange: AppSettings.userInfo!.glucoseUnit == 1
+          ? json['indexChange']
+          : json['indexChangeMmoll'],
       unit: unit,
       createDateTime: json['createDateTime'],
       color: json['color'],
@@ -226,16 +245,19 @@ class ExerciseIndexModel {
   final int? createDateTime;
   final String? color;
   final ImagesModel? icon;
+  final bool? isDataNotEmpty;
 
-  ExerciseIndexModel(
-      {required this.index,
-      required this.indexChange,
-      required this.facExercise,
-      required this.targetExercise,
-      required this.unit,
-      required this.createDateTime,
-      required this.color,
-      required this.icon});
+  ExerciseIndexModel({
+    required this.index,
+    required this.indexChange,
+    required this.facExercise,
+    required this.targetExercise,
+    required this.unit,
+    required this.createDateTime,
+    required this.color,
+    required this.icon,
+    required this.isDataNotEmpty,
+  });
 
   factory ExerciseIndexModel.fromJson(Map<String, dynamic> json) {
     return ExerciseIndexModel(
@@ -247,6 +269,7 @@ class ExerciseIndexModel {
       createDateTime: json['createDateTime'],
       color: json['color'],
       icon: json['icon'] == null ? null : ImagesModel.fromJson(json['icon']),
+      isDataNotEmpty: json['isDataNotEmpty'] ?? false,
     );
   }
 
@@ -260,6 +283,7 @@ class ExerciseIndexModel {
       'createDateTime': createDateTime,
       'color': color,
       'icon': icon?.toJson(),
+      'isDataNotEmpty': isDataNotEmpty,
     };
   }
 
@@ -358,7 +382,9 @@ class EmotionCardModel {
   factory EmotionCardModel.fromJson(Map<String, dynamic> json) {
     return EmotionCardModel(
       emotionDateTime: json['emotionDateTime'],
-      details: json['details'] == null ? null : EmotionCardItemModel.toList(json['details']),
+      details: json['details'] == null
+          ? null
+          : EmotionCardItemModel.toList(json['details']),
     );
   }
 
@@ -416,7 +442,9 @@ class EnergyCardModel {
       consumedEnergyDateTime: json['consumedEnergyDateTime'],
       consumedEnergy: json['consumedEnergy'],
       unit: json['unit'],
-      energyIcon: json['energyIcon'] == null ? null : ImagesModel.fromJson(json['energyIcon']),
+      energyIcon: json['energyIcon'] == null
+          ? null
+          : ImagesModel.fromJson(json['energyIcon']),
     );
   }
 
