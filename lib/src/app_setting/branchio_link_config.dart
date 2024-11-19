@@ -71,6 +71,9 @@ class BranchioLinkConfig {
   }
 
   void tryNavigateBooking({bool initial = false}) async {
+    if (_courseId == null) {
+      return;
+    }
     bool isExist = await UserClient().IsExistCourse(_courseId!);
     if (!isExist) {
       return;
