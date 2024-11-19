@@ -29,7 +29,7 @@ class HomeLesson extends StatelessWidget {
     final textScaleFactor = max(1.0, MediaQuery.of(context).textScaleFactor);
     final extraTitleHeight = (textScaleFactor - 1) * 60.0;
     return SizedBox(
-      height: 320.0 + extraTitleHeight,
+      height: 290.0 + extraTitleHeight,
       child: ListView.separated(
         itemCount: lessons.length,
         scrollDirection: Axis.horizontal,
@@ -49,7 +49,7 @@ class HomeLesson extends StatelessWidget {
       onTap: () => onLessonTap(lesson),
       borderRadius: BorderRadius.circular(12.0),
       child: Container(
-        height: 320.0 + extraTitleHeight,
+        height: 290.0 + extraTitleHeight,
         width: 338.0,
         padding: const EdgeInsets.only(top: 16.0),
         decoration: BoxDecoration(
@@ -61,49 +61,47 @@ class HomeLesson extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Expanded(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                    child: Text(
-                      lesson.name,
-                      maxLines: 2,
-                      style: TextStyle(
-                        color: R.color.textDark,
-                        fontSize: 15.0,
-                        height: 24.0 / 15.0,
-                        fontWeight: FontWeight.w700,
-                      ),
+            Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: Text(
+                    lesson.name,
+                    maxLines: 2,
+                    style: TextStyle(
+                      color: R.color.textDark,
+                      fontSize: 15.0,
+                      height: 24.0 / 15.0,
+                      fontWeight: FontWeight.w700,
                     ),
                   ),
+                ),
 
-                  const SizedBox(height: 4.0),
+                const SizedBox(height: 4.0),
 
-                  // Category
-                  Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const SizedBox(width: 16.0),
-                      Image.asset(
-                        R.drawable.ic_lesson_category,
-                        width: 16.0,
-                        height: 16.0,
+                // Category
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const SizedBox(width: 16.0),
+                    Image.asset(
+                      R.drawable.ic_lesson_category,
+                      width: 16.0,
+                      height: 16.0,
+                    ),
+                    const SizedBox(width: 6.0),
+                    Text(
+                      lesson.module,
+                      style: TextStyle(
+                        color: R.color.color0xff666666,
+                        fontSize: 12.0,
                       ),
-                      const SizedBox(width: 6.0),
-                      Text(
-                        lesson.module,
-                        style: TextStyle(
-                          color: R.color.color0xff666666,
-                          fontSize: 12.0,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
+                    ),
+                  ],
+                ),
+              ],
             ),
 
             const SizedBox(height: 12.0),
@@ -188,8 +186,6 @@ class HomeLesson extends StatelessWidget {
                 // const SizedBox(width: 16.0),
               ],
             ),
-
-            const SizedBox(height: 16.0),
           ],
         ),
       ),

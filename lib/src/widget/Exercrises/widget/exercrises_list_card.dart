@@ -27,25 +27,28 @@ class ExercrisesListCard extends StatelessWidget {
                   color: R.color.textDark,
                   fontSize: 16,
                   fontWeight: FontWeight.w600)),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Text('${formatNumber(itemInput.exercise.first.burnedCalorie)}',
-                  style: TextStyle(
-                      fontFamily: 'Viga',
-                      color: R.color.green,
-                      fontSize: 24,
-                      fontWeight: FontWeight.w400)),
-              Padding(
-                padding: const EdgeInsets.only(bottom: 5.0),
-                child: Text(' Kcal',
-                    style: TextStyle(
-                        color: R.color.black,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w400)),
-              ),
-            ],
-          ),
+          (itemInput.exercise.first.burnedCalorie ?? 0) > 0
+              ? Row(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Text(
+                        '${formatNumber(itemInput.exercise.first.burnedCalorie)}',
+                        style: TextStyle(
+                            fontFamily: 'Viga',
+                            color: R.color.green,
+                            fontSize: 24,
+                            fontWeight: FontWeight.w400)),
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 5.0),
+                      child: Text(' Kcal',
+                          style: TextStyle(
+                              color: R.color.black,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w400)),
+                    ),
+                  ],
+                )
+              : SizedBox(),
         ],
       );
     } else {
