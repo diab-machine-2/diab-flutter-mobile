@@ -18,7 +18,7 @@ class AddMeasurement extends StatelessWidget {
   Widget build(BuildContext context) {
     // return const Placeholder();
     return Container(
-      height: 600.0,
+      height: 500.0,
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.only(

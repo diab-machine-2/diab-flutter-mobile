@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/bloc/glucose/glucose_bloc.dart';
 import 'package:medical/src/modal/glucose/glucose_data_trend.dart';
 import 'package:medical/src/utils/navigator_name.dart';
@@ -146,7 +147,14 @@ class BloodSugarChartState extends State<BloodSugarChart>
                                         "screen_name": 'kpi_glycemic',
                                         'cta_button_name': 'cta_add_glycemic_1',
                                       });
-                                  BloodSugarFunctions.showModalAddData(context);
+                                  if (AppSettings.isUS) {
+                                    Navigator.pushNamed(context,
+                                        NavigatorName.add_blood_sugar_new,
+                                        arguments: {'type': 'input'});
+                                  } else {
+                                    BloodSugarFunctions.showModalAddData(
+                                        context);
+                                  }
                                   // Navigator.pushNamed(
                                   //     context, NavigatorName.add_blood_sugar,
                                   //     arguments: {'type': 'input', 'id': null});

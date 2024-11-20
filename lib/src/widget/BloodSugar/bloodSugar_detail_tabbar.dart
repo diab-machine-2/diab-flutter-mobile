@@ -7,6 +7,7 @@ import 'package:medical/src/app_setting/firebase_tracking/kpi_glycemic_tracking.
 import 'package:medical/src/modal/HbA1C/short_gui.dart';
 import 'package:medical/src/repo/HbA1C/HbA1C_client.dart';
 import 'package:medical/src/utils/navigation_util.dart';
+import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/BloodSugar/bloodSugar_detail.dart';
 import 'package:medical/src/widget/BloodSugar/overview.dart';
@@ -188,7 +189,15 @@ class _BloodSugarDetailTabbarControllerState
           children: [
             FloatingActionButton(
               backgroundColor: R.color.transparent,
-              onPressed: () => BloodSugarFunctions.showModalAddData(context),
+              onPressed: () {
+                if (AppSettings.isUS) {
+                  Navigator.pushNamed(
+                      context, NavigatorName.add_blood_sugar_new,
+                      arguments: {'type': 'input'});
+                } else {
+                  BloodSugarFunctions.showModalAddData(context);
+                }
+              },
               child:
                   Image.asset(R.drawable.ic_button_plus, width: 80, height: 80),
             ),

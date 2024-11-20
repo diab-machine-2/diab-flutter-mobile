@@ -74,27 +74,27 @@ extension ScheduleTypeExtend on ScheduleType {
       case ScheduleType.lesson_recommend:
         return R.drawable.ic_schedule_lesson;
       case ScheduleType.blood_sugar_recommend:
-        return R.drawable.ic_home_measurement_glucose;
+        return R.drawable.ic_schedule_blood_sugar;
       case ScheduleType.hba1c_recommend:
-        return R.drawable.ic_home_measurement_hb1ac;
+        return R.drawable.ic_schedule_hb1ac;
       case ScheduleType.schedule_glucose_recommend:
-        return R.drawable.ic_home_glucose_calendar;
+        return R.drawable.ic_schedule_blood_sugar;
       case ScheduleType.food_menu:
-        return R.drawable.ic_home_sample_menu;
+        return R.drawable.ic_schedule_food;
       case ScheduleType.goal_setting_recommend:
-        return R.drawable.ic_home_goal;
+        return R.drawable.ic_schedule_exercise;
       case ScheduleType.schedule_recommend:
-        return R.drawable.ic_home_reminder;
+        return R.drawable.ic_reminder;
       case ScheduleType.blood_pressure_recommend:
-        return R.drawable.ic_home_measurement_blood;
+        return R.drawable.ic_schedule_blood_pressure;
       case ScheduleType.height_recommend:
-        return R.drawable.ic_home_target;
+        return R.drawable.ic_schedule_height;
       case ScheduleType.weight_recommend:
-        return R.drawable.ic_home_measurement_weight;
+        return R.drawable.ic_schedule_weight;
       case ScheduleType.exercise_recommend:
-        return R.drawable.ic_home_measurement_exercise;
+        return R.drawable.ic_schedule_exercise;
       case ScheduleType.food_recommend:
-        return R.drawable.ic_home_measurement_nutrition;
+        return R.drawable.ic_schedule_food;
       case ScheduleType.update_profile_recommend:
         return R.drawable.ic_schedule_update_profile;
       case ScheduleType.peripheral_recommend:
@@ -299,41 +299,58 @@ extension ScheduleTypeExtend on ScheduleType {
   }
 
   static ScheduleType getTypeFromIndex(int? index) {
-    if (index == ScheduleType.blood_pressure.typeIndex) return ScheduleType.blood_pressure;
-    if (index == ScheduleType.blood_sugar.typeIndex) return ScheduleType.blood_sugar;
+    if (index == ScheduleType.blood_pressure.typeIndex)
+      return ScheduleType.blood_pressure;
+    if (index == ScheduleType.blood_sugar.typeIndex)
+      return ScheduleType.blood_sugar;
     if (index == ScheduleType.exercise.typeIndex) return ScheduleType.exercise;
     if (index == ScheduleType.weight.typeIndex) return ScheduleType.weight;
     if (index == ScheduleType.emotion.typeIndex) return ScheduleType.emotion;
     if (index == ScheduleType.food.typeIndex) return ScheduleType.food;
-    if (index == ScheduleType.update_profile.typeIndex) return ScheduleType.update_profile;
-    if (index == ScheduleType.exercise_movement.typeIndex) return ScheduleType.exercise_movement;
+    if (index == ScheduleType.update_profile.typeIndex)
+      return ScheduleType.update_profile;
+    if (index == ScheduleType.exercise_movement.typeIndex)
+      return ScheduleType.exercise_movement;
     if (index == ScheduleType.book_1_1.typeIndex) return ScheduleType.book_1_1;
     if (index == ScheduleType.book_1_n.typeIndex) return ScheduleType.book_1_n;
     if (index == ScheduleType.survey.typeIndex) return ScheduleType.survey;
     if (index == ScheduleType.lesson.typeIndex) return ScheduleType.lesson;
-    if (index == ScheduleType.io_evaluate.typeIndex) return ScheduleType.io_evaluate;
-    if (index == ScheduleType.output_assessment.typeIndex) return ScheduleType.output_assessment;
+    if (index == ScheduleType.io_evaluate.typeIndex)
+      return ScheduleType.io_evaluate;
+    if (index == ScheduleType.output_assessment.typeIndex)
+      return ScheduleType.output_assessment;
 
     // NEW recommend target
-    if (index == ScheduleType.lesson_recommend.typeIndex) return ScheduleType.lesson_recommend;
+    if (index == ScheduleType.lesson_recommend.typeIndex)
+      return ScheduleType.lesson_recommend;
     if (index == ScheduleType.blood_sugar_recommend.typeIndex)
       return ScheduleType.blood_sugar_recommend;
-    if (index == ScheduleType.hba1c_recommend.typeIndex) return ScheduleType.hba1c_recommend;
+    if (index == ScheduleType.hba1c_recommend.typeIndex)
+      return ScheduleType.hba1c_recommend;
     if (index == ScheduleType.schedule_glucose_recommend.typeIndex)
       return ScheduleType.schedule_glucose_recommend;
-    if (index == ScheduleType.food_menu.typeIndex) return ScheduleType.food_menu;
-    if (index == ScheduleType.goal_setting_recommend.typeIndex) return ScheduleType.goal_setting_recommend;
-    if (index == ScheduleType.schedule_recommend.typeIndex) return ScheduleType.schedule_recommend;
+    if (index == ScheduleType.food_menu.typeIndex)
+      return ScheduleType.food_menu;
+    if (index == ScheduleType.goal_setting_recommend.typeIndex)
+      return ScheduleType.goal_setting_recommend;
+    if (index == ScheduleType.schedule_recommend.typeIndex)
+      return ScheduleType.schedule_recommend;
     if (index == ScheduleType.blood_pressure_recommend.typeIndex)
       return ScheduleType.blood_pressure_recommend;
-    if (index == ScheduleType.height_recommend.typeIndex) return ScheduleType.height_recommend;
-    if (index == ScheduleType.weight_recommend.typeIndex) return ScheduleType.weight_recommend;
-    if (index == ScheduleType.exercise_recommend.typeIndex) return ScheduleType.exercise_recommend;
-    if (index == ScheduleType.food_recommend.typeIndex) return ScheduleType.food_recommend;
-    if (index == ScheduleType.update_profile_recommend.typeIndex) return ScheduleType.update_profile_recommend;
+    if (index == ScheduleType.height_recommend.typeIndex)
+      return ScheduleType.height_recommend;
+    if (index == ScheduleType.weight_recommend.typeIndex)
+      return ScheduleType.weight_recommend;
+    if (index == ScheduleType.exercise_recommend.typeIndex)
+      return ScheduleType.exercise_recommend;
+    if (index == ScheduleType.food_recommend.typeIndex)
+      return ScheduleType.food_recommend;
+    if (index == ScheduleType.update_profile_recommend.typeIndex)
+      return ScheduleType.update_profile_recommend;
     if (index == ScheduleType.peripheral_recommend.typeIndex)
       return ScheduleType.peripheral_recommend;
-    if (index == ScheduleType.completed.typeIndex) return ScheduleType.completed;
+    if (index == ScheduleType.completed.typeIndex)
+      return ScheduleType.completed;
 
     return ScheduleType.custom;
   }

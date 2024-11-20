@@ -1,29 +1,36 @@
 class Const {
-  static const String ENVIRONMENT_DEFAULT = "staging"; //product or staging
+  static const String ENVIRONMENT_DEFAULT = "staging"; //product or staging or dev
 
   static const String IS_DOMAIN = "is.diab.com.vn";
   static const String IS_DOMAIN_STAGING = "is.staging.diab.com.vn";
+  static const String IS_DOMAIN_DEV = "is.dev.diab.vn";
 
   // static const String DOMAIN = "api.preprod.diab.com.vn";
   static const String DOMAIN = "api.diab.com.vn";
   static const String DOMAIN_STAGING = "api.staging.diab.com.vn";
+  static const String DOMAIN_DEV = "api.dev.diab.vn";
 
   static const String HOST_URL = "https://$DOMAIN/";
   static const String HOST_URL_STAGING = "https://$DOMAIN_STAGING/";
+  static const String HOST_URL_DEV = "https://$DOMAIN_DEV/";
 
   // ignore: non_constant_identifier_names
   static String API_URL = "${HOST_URL}api/";
 
   static double mmollToMgdlFactor = 18.018;
 
-  static const String HOST_GOOGLE_MAP_URL = "https://maps.googleapis.com/maps/api/";
+  static const String HOST_GOOGLE_MAP_URL =
+      "https://maps.googleapis.com/maps/api/";
   static const String ANDROID_KEY = "AIzaSyAVRrZKBfIphjlPiua9y5Pk4CJ3oaddGp0";
   static const String IOS_KEY = "AIzaSyB6P1Tq9lnnZPjkUJmAlTjUE1uqMVfTLFA";
   static const String PLACE_KEY = "AIzaSyC7tPpmwviNXdX0_krWw5QdxOVGOJgdFmo";
 
   static const String CLIENT_ID = "4A293E78-4513-4DAF-958E-A04F93978332";
-  static const String CLIENT_SECRET = "oTxBinRm9NpNen3rs++jN9sWXvOkya60nuffhv6x304=";
+  static const String CLIENT_SECRET =
+      "oTxBinRm9NpNen3rs++jN9sWXvOkya60nuffhv6x304=";
 
+  static const String DEFAULT_BG_COACH =
+      "https://img.freepik.com/free-photo/beautiful-young-female-doctor-looking-camera-office_1301-7807.jpg";
   static const String ID = "ID";
   static const String CODE = "Code";
   static const String NAME = "Name";
@@ -153,7 +160,8 @@ class Const {
   static const String NAVIGATE_TO_PROFILE_TAB = 'Navigate_to_profile_tab';
   static const String NAVIGATE_TO_LESSON_DETAIL = 'Navigate_to_lesson_detail';
   static const String NAVIGATE_TO_REGISTER = 'Navigate_to_register';
-  static const String NAVIGATE_TO_ACTIVITY_DETAIL = 'Navigate_to_activity_detail';
+  static const String NAVIGATE_TO_ACTIVITY_DETAIL =
+      'Navigate_to_activity_detail';
   static const String LANGUAGE_CHANGED = 'language_changed';
 
   static const List<int> hourList = [
@@ -182,4 +190,7 @@ class Const {
     22,
   ];
   static const List<int> minuteList = [0, 15, 30, 45];
+  static const String HOTLINE_NUMBER = '0931888832';
+  static const String ZALO_OA_TECHNICAL_SUPPORT_LINK =
+      'https://zalo.me/4592543430802584018';
 }

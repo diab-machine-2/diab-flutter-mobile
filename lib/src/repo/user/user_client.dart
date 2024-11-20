@@ -22,6 +22,7 @@ import 'package:medical/src/model/response/app_version_response.dart';
 import 'package:medical/src/utils/app_log.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/utils.dart';
+import 'package:medical/src/widget/calendar/calendar_model.dart';
 import 'package:medical/src/widget/helper/http_helper.dart';
 import 'package:medical/src/modal/error/error_model.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -83,6 +84,63 @@ class UserClient extends FetchClient {
       }
     } catch (e) {
       throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+    }
+  }
+
+  Future<List<CalendarCoachModel>?> fetchCalendarCoach(
+      String courseId, String endTime) async {
+    try {
+      final targetTime = (DateTime.now()
+              .add(Duration(days: 1, hours: 7))
+              .millisecondsSinceEpoch ~/
+          1000);
+      final Response response =
+          await super.fetchData(url: '/App/CalendarCoach/', params: {
+        "courseId": courseId,
+        "startTime": targetTime
+            .toString(), // only booking calendar after currentday + 24h
+        "endTime": endTime
+      });
+      if (response.statusCode == 200) {
+        final data = response.data['data'];
+        if (data == null) {
+          return null;
+        } else {
+          List<CalendarCoachModel> calendarCoaches = (data as List)
+              .map((json) => CalendarCoachModel.fromJson(json))
+              .toList();
+
+          return calendarCoaches;
+        }
+      } else {
+        final error = Error.fromJson(response.data);
+        throw error;
+      }
+    } catch (e) {
+      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+    }
+  }
+
+  Future<bool> IsExistCourse(String courseId) async {
+    try {
+      final Response response =
+          await super.fetchData(url: '/App/Courses/$courseId');
+
+      if (response.statusCode == 200) {
+        final data = response.data['data'];
+        if (data == null ||
+            data['id'] == "00000000-0000-0000-0000-000000000000") {
+          return false; // Return false if no data found
+        } else {
+          return true;
+        }
+      } else {
+        final error = Error.fromJson(response.data);
+        throw error; // Throw error if status code is not 200
+      }
+    } catch (e) {
+      // Catch and throw an error if something goes wrong
+      throw e is Error ? e : Exception("Unable to connect to the server");
     }
   }
 
@@ -863,14 +921,20 @@ class UserClient extends FetchClient {
     }
   }
 
-  Future<List<ScheduleReminderDataModelNew>> fetchScheduleRemindersForHomePage() async {
+  Future<List<ScheduleReminderDataModelNew>>
+      fetchScheduleRemindersForHomePage() async {
     try {
       final Response response =
           await super.fetchData(url: '/App/Patient/PatientRemindForHomeMobile');
-      if (response.statusCode == 200 && response.data['data'] != null && response.data['data'] is List) {
+      if (response.statusCode == 200 &&
+          response.data['data'] != null &&
+          response.data['data'] is List) {
         // cast
         List<dynamic> data = response.data['data'];
-        return data.map((e) => ScheduleReminderDataModelNew.fromJson(e as Map<String, dynamic>)).toList();
+        return data
+            .map((e) => ScheduleReminderDataModelNew.fromJson(
+                e as Map<String, dynamic>))
+            .toList();
       } else {
         final error = Error.fromJson(response);
         throw error;

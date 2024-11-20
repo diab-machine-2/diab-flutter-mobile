@@ -21,4 +21,5 @@ class Icons {
   String get ic_dou_chevron_right => "lib/res/icons/ic_dou_chevron_right.svg";
   String get ic_google_fit => "lib/res/icons/ic_google_fit.svg";
   String get ic_health_app => "lib/res/icons/ic_health_app.svg";
+  String get ic_telephone => "lib/res/icons/ic_telephone.svg";
 }

@@ -10,6 +10,7 @@ import 'package:flutter_observer/Observer.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
+import 'package:medical/src/app_setting/branchio_link_config.dart';
 import 'package:medical/src/app_setting/dynamic_link_config.dart';
 import 'package:medical/src/app_setting/firebase_remote_config.dart';
 import 'package:medical/src/modal/base/referral_code_temp.dart';
@@ -125,6 +126,7 @@ class _TabbarControllerState extends State<TabbarController>
     });
     _checkUserReferralCode();
     _checkExistZoomId();
+    BranchioLinkConfig.instance.tryNavigateBooking(initial: true);
   }
 
   void _checkExistZoomId() async {

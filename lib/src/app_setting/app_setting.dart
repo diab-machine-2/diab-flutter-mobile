@@ -15,6 +15,7 @@ import 'package:medical/src/repo/login/login_client.dart';
 import 'package:medical/src/utils/app_log.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigator_name.dart';
+import 'package:medical/src/widget/calendar/calendar_booking_cubit.dart';
 import 'package:medical/src/widget/helper/http_helper.dart';
 import 'package:medical/src/widget/home/fliter_enum.dart';
 
@@ -48,6 +49,7 @@ class AppSettings {
 
   static String _countryCode = "VN";
   static bool get isUS => _countryCode == "US";
+  static String get countryCode => _countryCode;
   static void setCountryCode(String code) {
     _countryCode = code;
   }
@@ -368,6 +370,8 @@ class AppSettings {
       appPreference.removeData("hasNewReports");
       appPreference.removeData("reports");
       appPreference.removeData("user");
+      CalendarBookingCubit.myCalendar = null;
+      CalendarBookingCubit.updateCount = 0;
       final GoogleSignIn _googleSignIn = GoogleSignIn();
       _googleSignIn.signOut();
       final facebookLogin = FacebookLogin();

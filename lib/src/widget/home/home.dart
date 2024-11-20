@@ -266,8 +266,10 @@ class _HomeControllerState extends State<HomeController> with Observer {
       var id = await UserClient().fetchPopupImage();
       if (Const.ENVIRONMENT_DEFAULT == 'product') {
         _urlPopup = Uri.https(Const.DOMAIN, 'App/Image/$id').toString();
-      } else {
+      } else if (Const.ENVIRONMENT_DEFAULT == 'staging') {
         _urlPopup = Uri.https(Const.DOMAIN_STAGING, 'App/Image/$id').toString();
+      } else {
+        _urlPopup = Uri.https(Const.DOMAIN_DEV, 'App/Image/$id').toString();
       }
       print(_urlPopup);
       return _urlPopup;

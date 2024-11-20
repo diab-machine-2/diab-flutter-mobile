@@ -7,6 +7,7 @@ class RequestSyncStepModel {
   late int value;
   late String platform;
   late int totalMinute;
+  late int burnCalories;
 
   RequestSyncStepModel({
     required this.dateFrom,
@@ -14,6 +15,7 @@ class RequestSyncStepModel {
     required this.value,
     required this.platform,
     required this.totalMinute,
+    required this.burnCalories,
   });
 
   RequestSyncStepModel.fromJson(Map<String, dynamic> json) {
@@ -22,19 +24,21 @@ class RequestSyncStepModel {
     value = json["value"] ?? 0;
     platform = json["platform"];
     totalMinute = json["totalMinute"];
+    burnCalories = json["burnCalories"] ?? 0;
   }
 
   RequestSyncStepModel copyWith({
     int? value,
     int? totalMinute,
+    int? burnCalories,
   }) {
-    print('copyWith $value');
     return RequestSyncStepModel(
       value: value ?? this.value,
       totalMinute: totalMinute ?? this.totalMinute,
       dateFrom: dateFrom,
       dateTo: dateTo,
       platform: platform,
+      burnCalories: burnCalories ?? this.burnCalories,
     );
   }
 
@@ -45,6 +49,7 @@ class RequestSyncStepModel {
     _data["value"] = value;
     _data["platform"] = platform;
     _data["totalMinute"] = totalMinute;
+    _data["burnCalories"] = burnCalories;
     return _data;
   }
 }

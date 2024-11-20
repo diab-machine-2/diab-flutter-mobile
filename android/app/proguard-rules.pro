@@ -32,6 +32,31 @@
 -dontwarn com.google.api.client.http.javanet.NetHttpTransport$Builder
 -dontwarn com.google.api.client.http.javanet.NetHttpTransport
 -dontwarn org.joda.time.Instant
+-dontwarn coil.compose.SingletonAsyncImageKt
+-dontwarn com.symbol.emdk.EMDKBase
+-dontwarn com.symbol.emdk.EMDKManager$EMDKListener
+-dontwarn com.symbol.emdk.EMDKManager$FEATURE_TYPE
+-dontwarn com.symbol.emdk.EMDKManager$StatusData
+-dontwarn com.symbol.emdk.EMDKManager$StatusListener
+-dontwarn com.symbol.emdk.EMDKManager
+-dontwarn com.symbol.emdk.EMDKResults$EXTENDED_STATUS_CODE
+-dontwarn com.symbol.emdk.EMDKResults$STATUS_CODE
+-dontwarn com.symbol.emdk.EMDKResults
+-dontwarn com.symbol.emdk.ProfileManager$PROFILE_FLAG
+-dontwarn com.symbol.emdk.ProfileManager
+-dontwarn io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+-dontwarn us.zoom.prism.R$attr
+-dontwarn us.zoom.prism.R$color
+-dontwarn us.zoom.prism.R$dimen
+-dontwarn us.zoom.prism.R$drawable
+-dontwarn us.zoom.prism.R$id
+-dontwarn us.zoom.prism.R$layout
+-dontwarn us.zoom.prism.R$plurals
+-dontwarn us.zoom.prism.R$string
+-dontwarn us.zoom.prism.R$style
+-dontwarn us.zoom.prism.R$styleable
+-dontwarn us.zoom.thirdparty.dialog.NoBrowserDialog
+-dontwarn us.zoom.thirdparty.login.util.CustomTabsHelper
 
 # Please add these rules to your existing keep rules in order to suppress warnings.
 # This is generated automatically by the Android Gradle plugin.

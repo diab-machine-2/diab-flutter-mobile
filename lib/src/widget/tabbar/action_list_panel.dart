@@ -32,10 +32,10 @@ class ActionListPanel extends StatelessWidget {
       'name': R.string.can_nang.tr(),
       'icon': R.drawable.ic_weight,
     },
-    {
-      'name': R.string.cam_xuc.tr(),
-      'icon': R.drawable.ic_emotion,
-    },
+    // {
+    //   'name': R.string.cam_xuc.tr(),
+    //   'icon': R.drawable.ic_emotion,
+    // },
   ];
 
   @override
@@ -108,9 +108,10 @@ class ActionListPanel extends StatelessWidget {
           Navigator.pushReplacementNamed(context, NavigatorName.detail_food);
         } else if (index == 5) {
           Navigator.pushReplacementNamed(context, NavigatorName.detail_bmi);
-        } else if (index == 6) {
-          Navigator.pushReplacementNamed(context, NavigatorName.detail_emotion);
-        }
+        } 
+        // else if (index == 6) {
+        //   Navigator.pushReplacementNamed(context, NavigatorName.detail_emotion);
+        // }
       },
       child: Container(
           height: 74,

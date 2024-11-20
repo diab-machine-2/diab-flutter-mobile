@@ -15,6 +15,7 @@ import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/components/HomeButton/main.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
+import 'package:medical/src/widget/home/widget/home_support_functions.dart';
 import 'package:medical/src/widget/profile/widgets/motivation_popup_widget.dart';
 import 'package:medical/src/widgets/qr_scan_widget.dart';
 import 'package:medical/src/widgets/share_profile_popup.dart';
@@ -105,7 +106,7 @@ class _HomeHeaderState extends State<HomeHeader> with Observer {
         bottom: false,
         child: Container(
             padding:
-                const EdgeInsets.only(top: 10, left: 16, right: 16, bottom: 16),
+                const EdgeInsets.only(top: 16, left: 16, right: 16, bottom: 16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -244,20 +245,21 @@ class _HomeHeaderState extends State<HomeHeader> with Observer {
                         // const SizedBox(width: 10),
                         InkWell(
                           onTap: () async {
-                            final scanedResult =
-                                await NavigationUtil.navigatePage(
-                              context,
-                              const QRScanWidget(),
-                            );
-                            if (scanedResult is String) {
-                              ShareProfilePopup.instance.onHasSharedCode(
-                                  context: context, code: scanedResult);
-                            }
+                            // final scanedResult =
+                            //     await NavigationUtil.navigatePage(
+                            //   context,
+                            //   const QRScanWidget(),
+                            // );
+                            // if (scanedResult is String) {
+                            //   ShareProfilePopup.instance.onHasSharedCode(
+                            //       context: context, code: scanedResult);
+                            // }
+                            HomeSupportFunctions.showModalAddData(context);
                           },
                           child: Container(
                             padding: const EdgeInsets.all(4),
                             color: R.color.transparent,
-                            child: Image.asset(R.drawable.ic_qr_scan,
+                            child: Image.asset(R.drawable.ic_chat_new,
                                 color: R.color.white, width: 24, height: 24),
                           ),
                         ),
@@ -270,10 +272,8 @@ class _HomeHeaderState extends State<HomeHeader> with Observer {
                           child: Container(
                             padding: const EdgeInsets.all(4),
                             color: R.color.transparent,
-                            child: Image.asset(
-                                R.drawable.ic_bell,
-                                width: 24,
-                                height: 24),
+                            child: Image.asset(R.drawable.ic_bell,
+                                width: 24, height: 24),
                           ),
                         ),
                       ],

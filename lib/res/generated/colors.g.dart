@@ -118,4 +118,22 @@ class Colors {
   Color get color0xffA1A3A6 => Color(0xffA1A3A6);
   Color get color0xff27272A => Color(0xff27272A);
   Color get color0xffE1FAF8 => Color(0xffE1FAF8);
+  Color get burntOrange => Color(0xffA4722F);
+  Color get burntSienna => Color(0xff8E6023);
+  Color get blood_pressure_color => Color(0xffD04D4C);
+  Color get blood_sugar_color => Color(0xffD04D4C);
+  Color get weight_color => Color(0xff005484);
+  Color get nutrition_color => Color(0xff1E8F66);
+  Color get knowledge_color => Color(0xff1E8F66);
+  Color get question_color => Color(0xffD97708);
+  Color get lesson_color => Color(0xffD04D4C);
+  Color get ho_so_color => Color(0xffFDB913);
+  Color get exercise_color => Color(0xff005484);
+  Color get event_color => Color(0xff005484);
+  Color get reminder_color => Color(0xffD97708);
+  Color get emotion_color => Color(0xffD97708);
+  Color get target_color => Color(0xffD04D4C);
+  Color get survey_color => Color(0xff1E8F66);
+  Color get hba1c_color => Color(0xff533BAA);
+  Color get height_color => Color(0xff008479);
 }

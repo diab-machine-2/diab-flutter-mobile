@@ -16,7 +16,9 @@ import 'package:medical/src/modal/food/food_model.dart';
 import 'package:medical/src/modal/glucose/glucose_timeFrame.dart';
 import 'package:medical/src/repo/HbA1C/HbA1C_client.dart';
 import 'package:medical/src/repo/food/food_client.dart';
+import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/widget/BloodSugar/add_bloodSugar.dart';
+import 'package:medical/src/widget/Food/food_detail_tabbar.dart';
 import 'package:medical/src/widget/Food/search_food_controller.dart';
 import 'package:medical/src/widget/Food/widget/food_info.dart';
 import 'package:medical/src/widget/Food/widget/time_frame_food.dart';
@@ -137,6 +139,7 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
+        print('[KPI] add food page: ${widget.type}');
         FocusScope.of(context).unfocus();
       },
       child: WillPopScope(
@@ -208,7 +211,8 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
                                     data: des,
                                     isCreateData: true,
                                     titleDetail: R.string
-                                        .che_do_dinh_duong_benh_tieu_duong.tr())
+                                        .che_do_dinh_duong_benh_tieu_duong
+                                        .tr())
                                 : SizedBox()),
                         Padding(
                             padding: const EdgeInsets.only(
@@ -1011,8 +1015,11 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
         Observable.instance.notifyObservers([], notifyName: "food_change_data");
         // DartNotificationCenter.post(channel: 'food_change_data');
         Navigator.pop(context);
+        if (widget.type == 'input') {
+          NavigationUtil.navigatePage(context, FoodDetailTabbarController());
+        }
       }
-
+      print("[KPI] close all loading.");
       BotToast.closeAllLoading();
     } catch (e, _) {
       BotToast.closeAllLoading();

@@ -12,8 +12,9 @@ import 'package:medical/src/widgets/button_widget.dart';
 
 class BloodSugarFunctions {
   static Future<void> showModalAddData(BuildContext context) async {
-    String healthIcon =
-        Platform.isIOS ? R.drawable.logo_healthkit : R.drawable.logo_healthConnect;
+    String healthIcon = Platform.isIOS
+        ? R.drawable.logo_healthkit
+        : R.drawable.logo_healthConnect;
     String healthTitle = Platform.isIOS
         ? R.string.connect_from_Apple_Health.tr()
         : R.string.connect_from_Health_Connect.tr();
@@ -39,7 +40,7 @@ class BloodSugarFunctions {
               decoration: BoxDecoration(
                   border: Border(bottom: BorderSide(color: Color(0xffF2F2F2)))),
               child: Text(
-                'Chọn cách nhập',
+                R.string.choose_how_to_enter.tr(),
                 style: TextStyle(
                   fontSize: 16,
                   color: R.color.textDark,

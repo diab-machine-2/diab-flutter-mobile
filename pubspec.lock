@@ -322,7 +322,7 @@ packages:
     source: hosted
     version: "4.2.1"
   carp_serializable:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: carp_serializable
       sha256: bd72f3e7521cfac78c2b34762d9240bded1bebe0c6e615703a516705a3a983a0
@@ -429,10 +429,10 @@ packages:
     dependency: "direct main"
     description:
       name: dart_jsonwebtoken
-      sha256: "346e9a21e4bf6e6a431e19ece00ebb2e3668e1e339cabdf6f46d18d88692a848"
+      sha256: adf073720e491d64fa599942615b919915710af2d809b2798146f9b7c4330f3f
       url: "https://pub.dev"
     source: hosted
-    version: "2.14.0"
+    version: "2.14.1"
   dart_style:
     dependency: transitive
     description:
@@ -754,10 +754,10 @@ packages:
     dependency: "direct main"
     description:
       name: flutter_branch_sdk
-      sha256: "7010713675e509625f1469a78151f512d7d56677528d0015e422ad417a447460"
+      sha256: dbbe124560d4e1406a6005bcf41d6a4fbb74f1c33e89a5f1a65a534937f63318
       url: "https://pub.dev"
     source: hosted
-    version: "8.1.0"
+    version: "8.1.1"
   flutter_cache_manager:
     dependency: transitive
     description:
@@ -1092,10 +1092,10 @@ packages:
     dependency: "direct main"
     description:
       name: health
-      sha256: "9b3c5ddb1cb22020a2bb423b3c091c8b47806a38f80d350dfb11831000af2392"
+      sha256: "99786fd53e6a67f01211f943385a01da5dbd1c9c61b28a27879a2bbe3b708b00"
       url: "https://pub.dev"
     source: hosted
-    version: "10.2.0"
+    version: "11.0.0"
   html:
     dependency: transitive
     description:

@@ -2,9 +2,11 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/home/schema/home_schema.dart';
 
-typedef MeasurementCallback = void Function(String? routeName, dynamic args, String title);
+typedef MeasurementCallback = void Function(
+    String? routeName, dynamic args, String title);
 
 class MeasurementSummary extends StatelessWidget {
   const MeasurementSummary({
@@ -50,25 +52,26 @@ class MeasurementSummary extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   mainAxisSize: MainAxisSize.max,
-                  children: inlineMeasurements.map((e) => _buildInlineMeasurementWidget(e)).toList(),
+                  children: inlineMeasurements
+                      .map((e) => _buildInlineMeasurementWidget(e))
+                      .toList(),
                 ),
-            
+
                 const SizedBox(height: 20.0),
-            
+
                 // Measurements
                 SizedBox(
                   height: 88.0 * textScaleFactor,
                   child: ListView.separated(
-                    itemBuilder: (_, index) =>
-                        _buildMeasurementWidget(measurements[index], textScaleFactor),
+                    itemBuilder: (_, index) => _buildMeasurementWidget(
+                        measurements[index], textScaleFactor),
                     separatorBuilder: (_, index) => const SizedBox(width: 8.0),
                     itemCount: measurements.length,
                     scrollDirection: Axis.horizontal,
                   ),
                 ),
-            
-                const SizedBox(height: 12.0),
-            
+
+                const SizedBox(height: 20.0),
               ],
             ),
           ),
@@ -83,7 +86,7 @@ class MeasurementSummary extends StatelessWidget {
             children: [
               // Health Profile Button
               // _buildHealthProfileButton(),
-                
+
               // Add measurement
               _buildAddMeasurementButton(),
             ],
@@ -95,7 +98,8 @@ class MeasurementSummary extends StatelessWidget {
 
   Widget _buildInlineMeasurementWidget(HomeMeasurementInlineData data) {
     return InkWell(
-      onTap: () => onMeasurement(data.navigatorName, data.args, data.title ?? ""),
+      onTap: () =>
+          onMeasurement(data.navigatorName, data.args, data.title ?? ""),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.center,
@@ -139,7 +143,8 @@ class MeasurementSummary extends StatelessWidget {
     );
   }
 
-  Widget _buildMeasurementWidget(HomeMeasurementData data, double textScaleFactor) {
+  Widget _buildMeasurementWidget(
+      HomeMeasurementData data, double textScaleFactor) {
     Widget valueWidget;
     final withUnit = data.unit.isNotEmpty;
     double valueFontSize = withUnit ? 12.0 : 14.0;
@@ -173,7 +178,10 @@ class MeasurementSummary extends StatelessWidget {
       );
     } else {
       valueWidget = Text(
-        data.value1 ?? "--",
+        data.value1 != null
+            ? (double.tryParse(data.value1!)?.toPrecision(2) ?? data.value1!)
+                .toString()
+            : "--",
         style: TextStyle(
             color: Color(data.value1Color),
             fontWeight: FontWeight.bold,
@@ -255,7 +263,13 @@ class MeasurementSummary extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(16.0),
-          color: Color(0xFF01857A),
+          color: R.color.burntSienna,
+          border: Border.all(
+            width: 8,
+            color: Color(0xffD8D8D8),
+            style: BorderStyle.solid,
+            strokeAlign: BorderSide.strokeAlignOutside,
+          ),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,

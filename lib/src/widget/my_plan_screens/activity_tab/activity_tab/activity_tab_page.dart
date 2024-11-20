@@ -314,7 +314,6 @@ class _ActivityTabPageState extends State<ActivityTabPage>
                                     }
                                   }),
                             ),
-
                             if (widget.extendTabbar) SizedBox(height: 56.0),
                           ],
                         ),
@@ -586,6 +585,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
           type: type,
           name: smartGoal?.name ?? '',
           frequency: smartGoal?.description ?? '',
+          subject: smartGoal?.lessonData?.lessonModule?.name ?? '',
           appointmentDate: smartGoal?.appointmentDate,
           isDone: smartGoal?.progress == 1,
           state: smartGoal?.state ?? 0,
@@ -664,6 +664,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
           type: type,
           name: smartGoal?.name ?? '',
           frequency: smartGoal?.description ?? '',
+          subject: smartGoal?.lessonData?.lessonModule?.name ?? '',
           appointmentDate: smartGoal?.appointmentDate,
           isDone: smartGoal?.progress == 1,
           state: smartGoal?.state ?? 0,
@@ -1120,8 +1121,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
           await _showReportBottomSheet();
           break;
         case StatisticalAction.chatting:
-          await NavigationUtil.navigatePage(
-              context, const ExpertCommentPage());
+          await NavigationUtil.navigatePage(context, const ExpertCommentPage());
           break;
         default:
       }
