@@ -27,12 +27,11 @@ class ExercrisesListCard extends StatelessWidget {
                   color: R.color.textDark,
                   fontSize: 16,
                   fontWeight: FontWeight.w600)),
-          (itemInput.exercise.first.burnedCalorie ?? 0) > 0
+          (itemInput.burnedCalorie ?? 0) > 0
               ? Row(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    Text(
-                        '${formatNumber(itemInput.exercise.first.burnedCalorie)}',
+                    Text('${formatNumber(itemInput.burnedCalorie)}',
                         style: TextStyle(
                             fontFamily: 'Viga',
                             color: R.color.green,
