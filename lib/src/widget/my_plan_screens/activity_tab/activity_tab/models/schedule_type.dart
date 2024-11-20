@@ -86,7 +86,7 @@ extension ScheduleTypeExtend on ScheduleType {
       case ScheduleType.schedule_recommend:
         return R.drawable.ic_reminder;
       case ScheduleType.blood_pressure_recommend:
-        return R.drawable.ic_home_measurement_blood;
+        return R.drawable.ic_schedule_blood_pressure;
       case ScheduleType.height_recommend:
         return R.drawable.ic_home_target;
       case ScheduleType.weight_recommend:
@@ -94,7 +94,7 @@ extension ScheduleTypeExtend on ScheduleType {
       case ScheduleType.exercise_recommend:
         return R.drawable.ic_home_measurement_exercise;
       case ScheduleType.food_recommend:
-        return R.drawable.ic_home_measurement_nutrition;
+        return R.drawable.ic_schedule_food;
       case ScheduleType.update_profile_recommend:
         return R.drawable.ic_schedule_update_profile;
       case ScheduleType.peripheral_recommend:
