@@ -82,17 +82,17 @@ extension ScheduleTypeExtend on ScheduleType {
       case ScheduleType.food_menu:
         return R.drawable.ic_schedule_food;
       case ScheduleType.goal_setting_recommend:
-        return R.drawable.ic_schedule_custom;
+        return R.drawable.ic_schedule_exercise;
       case ScheduleType.schedule_recommend:
         return R.drawable.ic_reminder;
       case ScheduleType.blood_pressure_recommend:
         return R.drawable.ic_schedule_blood_pressure;
       case ScheduleType.height_recommend:
-        return R.drawable.ic_home_target;
+        return R.drawable.ic_schedule_height;
       case ScheduleType.weight_recommend:
-        return R.drawable.ic_home_measurement_weight;
+        return R.drawable.ic_schedule_weight;
       case ScheduleType.exercise_recommend:
-        return R.drawable.ic_home_measurement_exercise;
+        return R.drawable.ic_schedule_exercise;
       case ScheduleType.food_recommend:
         return R.drawable.ic_schedule_food;
       case ScheduleType.update_profile_recommend:

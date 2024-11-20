@@ -302,14 +302,22 @@ class HealthAppBloc extends Bloc<HealthAppEvent, HealthAppState> {
           List<HealthDataPoint> caloriesBurnedList = [];
           if (Platform.isAndroid) {
             caloriesBurnedList = await Health().getHealthDataFromTypes(
-              types: [HealthDataType.TOTAL_CALORIES_BURNED],
+              types: [HealthDataType.ACTIVE_ENERGY_BURNED],
               // types: [HealthDataType.ACTIVE_ENERGY_BURNED],
               startTime: dateFrom,
               endTime: dateTo,
             );
+            if (caloriesBurnedList.isEmpty) {
+              caloriesBurnedList = await Health().getHealthDataFromTypes(
+                types: [HealthDataType.TOTAL_CALORIES_BURNED],
+                // types: [HealthDataType.ACTIVE_ENERGY_BURNED],
+                startTime: dateFrom,
+                endTime: dateTo,
+              );
+            }
           }
 
-           if (Platform.isIOS) {
+          if (Platform.isIOS) {
             caloriesBurnedList = await Health().getHealthDataFromTypes(
               // types: [HealthDataType.TOTAL_CALORIES_BURNED],
               types: [HealthDataType.ACTIVE_ENERGY_BURNED],
