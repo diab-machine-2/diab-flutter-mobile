@@ -500,6 +500,7 @@ class Utils {
         return R.string.weight.tr();
       case ScheduleType.food:
       case ScheduleType.food_menu:
+      case ScheduleType.food_recommend:
         return R.string.nutrition.tr();
       case ScheduleType.exercise:
         return R.string.exercise.tr();
@@ -541,6 +542,7 @@ class Utils {
         return R.color.weight_color;
       case ScheduleType.food:
       case ScheduleType.food_menu:
+      case ScheduleType.food_recommend:
         return R.color.nutrition_color;
       case ScheduleType.exercise:
         return R.color.exercise_color;
