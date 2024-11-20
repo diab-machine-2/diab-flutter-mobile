@@ -503,6 +503,7 @@ class Utils {
       case ScheduleType.food_recommend:
         return R.string.nutrition.tr();
       case ScheduleType.exercise:
+      case ScheduleType.exercise_recommend:
         return R.string.exercise.tr();
       case ScheduleType.book_1_1:
       case ScheduleType.io_evaluate:
@@ -525,6 +526,10 @@ class Utils {
         return R.string.reminder.tr();
       case ScheduleType.hba1c_recommend:
         return R.string.hba1c.tr();
+      case ScheduleType.height_recommend:
+        return R.string.chieu_cao.tr();
+      case ScheduleType.weight_recommend:
+        return R.string.can_nang.tr();
       default:
         return "";
     }
@@ -545,6 +550,7 @@ class Utils {
       case ScheduleType.food_recommend:
         return R.color.nutrition_color;
       case ScheduleType.exercise:
+      case ScheduleType.exercise_recommend:
         return R.color.exercise_color;
       case ScheduleType.book_1_1:
       case ScheduleType.output_assessment:
@@ -570,6 +576,10 @@ class Utils {
         return R.color.hba1c_color;
       case ScheduleType.schedule_glucose_recommend:
         return R.color.blood_sugar_color;
+      case ScheduleType.height_recommend:
+        return R.color.height_color;
+      case ScheduleType.weight_recommend:
+        return R.color.weight_color;
       default:
         return R.color.black;
     }
