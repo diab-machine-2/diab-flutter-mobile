@@ -134,4 +134,5 @@ class Colors {
   Color get emotion_color => Color(0xffD97708);
   Color get target_color => Color(0xffD04D4C);
   Color get survey_color => Color(0xff1E8F66);
+  Color get hba1c_color => Color(0xff533BAA);
 }

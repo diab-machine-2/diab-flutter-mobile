@@ -490,12 +490,16 @@ class Utils {
   static String getActivityIconDescription(ScheduleType scheduleType) {
     switch (scheduleType) {
       case ScheduleType.blood_pressure:
+      case ScheduleType.blood_pressure_recommend:
         return R.string.blood_pressure.tr();
       case ScheduleType.blood_sugar:
+      case ScheduleType.blood_sugar_recommend:
+      case ScheduleType.schedule_glucose_recommend:
         return R.string.blood_sugar.tr();
       case ScheduleType.weight:
         return R.string.weight.tr();
       case ScheduleType.food:
+      case ScheduleType.food_menu:
         return R.string.nutrition.tr();
       case ScheduleType.exercise:
         return R.string.exercise.tr();
@@ -512,9 +516,14 @@ class Utils {
       case ScheduleType.book_1_n:
         return R.string.huong_dan.tr();
       case ScheduleType.custom:
+      case ScheduleType.goal_setting_recommend:
         return R.string.target.tr();
       case ScheduleType.emotion:
         return R.string.cam_xuc.tr();
+      case ScheduleType.schedule_recommend:
+        return R.string.reminder.tr();
+      case ScheduleType.hba1c_recommend:
+        return R.string.hba1c.tr();
       default:
         return "";
     }
@@ -523,12 +532,15 @@ class Utils {
   static Color getActivityIconTextColor(ScheduleType scheduleType) {
     switch (scheduleType) {
       case ScheduleType.blood_pressure:
+      case ScheduleType.blood_pressure_recommend:
         return R.color.blood_pressure_color;
       case ScheduleType.blood_sugar:
+      case ScheduleType.blood_sugar_recommend:
         return R.color.blood_sugar_color;
       case ScheduleType.weight:
         return R.color.weight_color;
       case ScheduleType.food:
+      case ScheduleType.food_menu:
         return R.color.nutrition_color;
       case ScheduleType.exercise:
         return R.color.exercise_color;
@@ -546,9 +558,16 @@ class Utils {
       case ScheduleType.book_1_n:
         return R.color.knowledge_color;
       case ScheduleType.custom:
+      case ScheduleType.goal_setting_recommend:
         return R.color.target_color;
       case ScheduleType.emotion:
         return R.color.emotion_color;
+      case ScheduleType.schedule_recommend:
+        return R.color.reminder_color;
+      case ScheduleType.hba1c_recommend:
+        return R.color.hba1c_color;
+      case ScheduleType.schedule_glucose_recommend:
+        return R.color.blood_sugar_color;
       default:
         return R.color.black;
     }
