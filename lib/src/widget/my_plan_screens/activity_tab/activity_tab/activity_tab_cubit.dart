@@ -64,8 +64,8 @@ class ActivityTabCubit extends Cubit<ActivityTabState> {
       if (currentWeek == currentWeekStudying) {
         DateTime dateTime0 = DateTime.utc(DateTime.now().year,
             DateTime.now().month, DateTime.now().day, 0, 0, 0);
-        dateTime0 = dateTime0.toLocal();
-        int current = (dateTime0.millisecondsSinceEpoch ~/ 1000).toInt();
+        final localDateTime = dateTime0.toLocal();
+        int current = (localDateTime.millisecondsSinceEpoch ~/ 1000).toInt();
         return current;
       } else if (currentWeek == 0) {
         return user.ownPackage?.activationDate ??

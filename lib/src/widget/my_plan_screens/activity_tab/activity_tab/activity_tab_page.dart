@@ -86,8 +86,8 @@ class _ActivityTabPageState extends State<ActivityTabPage>
   bool get wantKeepAlive => true;
 
   void _checkExistZoomId() async {
-    String? calendarId = BranchioLinkConfig.instance.meetingId;
-    if (calendarId != null) {
+    String? meetingId = BranchioLinkConfig.instance.meetingId;
+    if (meetingId != null) {
       BranchioLinkConfig.instance.removeMeetingId();
       // await _cubit.markCompletedCalendar(calendarId);
       if (isVisible) {
