@@ -55,8 +55,8 @@ class _MyPlanPageState extends State<MyPlanPage> with Observer {
   @override
   void update(Observable observable, String? notifyName, Map? map) {
     if (notifyName == 'mark_completed_calendar') {
-      String? calendarId = BranchioLinkConfig.instance.meetingId;
-      if (calendarId != null) {
+      String? meetingId = BranchioLinkConfig.instance.meetingId;
+      if (meetingId != null) {
         BranchioLinkConfig.instance.removeMeetingId();
       }
     // } else if (notifyName == Const.NAVIGATE_TO_ACTIVITY_TAB) {

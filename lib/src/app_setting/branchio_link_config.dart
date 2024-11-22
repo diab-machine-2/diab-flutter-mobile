@@ -102,7 +102,7 @@ class BranchioLinkConfig {
   }
 
   void removeMeetingId() {
-    _courseId = null;
+    _meetingId = null;
   }
 
   void removeActivityId() {
