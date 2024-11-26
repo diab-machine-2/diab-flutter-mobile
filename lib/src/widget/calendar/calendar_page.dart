@@ -1,5 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/response/create_calendar_response.dart';
@@ -73,17 +74,57 @@ class _CalendarControllerState extends State<CalendarController> {
                 CustomAppBar(
                   backgroundColor: Colors.transparent,
                   title: Text(
-                    "Calendar",
+                    "",
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w600,
                       color: R.color.textDark,
                     ),
                   ),
+                  actions: [
+                    Container(
+                      width: 79,
+                      height: 33,
+                      padding: EdgeInsets.symmetric(vertical: 8, horizontal: 6),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(8),
+                        color: R.color.color0xffFCF8DA,
+                        border: Border.all(
+                          color: R.color.color0xffFEDC89,
+                        ),
+                      ),
+                      child: Row(
+                        children: [
+                          SvgPicture.asset(
+                            R.icons.ic_telephone,
+                            width: 16,
+                            height: 16,
+                            color: R.color.ho_so_color,
+                            fit: BoxFit.scaleDown,
+                          ),
+                          SizedBox(
+                            width: 4,
+                          ),
+                          Text(
+                            R.string.contact.tr(),
+                            style: TextStyle(
+                              fontSize: 13,
+                              fontFamily: 'sfpro',
+                              fontWeight: FontWeight.w700,
+                              color: R.color.ho_so_color,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                   leadingIcon: IconButton(
                     splashColor: Colors.transparent,
                     highlightColor: Colors.transparent,
-                    icon: Icon(Icons.arrow_back, color: R.color.textDark),
+                    icon: Icon(
+                      Icons.arrow_back,
+                      color: R.color.textDark,
+                    ),
                     onPressed: () {
                       Navigator.pushNamed(context, NavigatorName.tabbar);
                       CalendarBookingCubit.myCalendar = null;

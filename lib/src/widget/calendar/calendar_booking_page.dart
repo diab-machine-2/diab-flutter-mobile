@@ -257,7 +257,9 @@ class _CalendarBookingControllerState extends State<CalendarBookingController> {
                               }
                               // If update count is 2 or more, show popup
                               if (CalendarBookingCubit.updateCount > 1) {
-                                _showPopupOverSwitchTime(onConfirm: () => {});
+                                _showPopupOverSwitchTime(
+                                    onConfirm: () => {},
+                                    title: 'Bạn đã đến giới hạn đổi lịch hẹn');
                                 BotToast.closeAllLoading();
                                 return;
                               } else {
@@ -278,43 +280,57 @@ class _CalendarBookingControllerState extends State<CalendarBookingController> {
                             if (pickSlot == null) {
                               _showPopupOverSwitchTime(
                                   onConfirm: () => {},
-                                  message: "Vui lòng chọn lịch");
+                                  title: "Vui lòng chọn lịch",
+                                  subtitle:
+                                      'Vui lòng liên hệ 093188832 để được hỗ trợ.',
+                                  isShowImg: true);
                               BotToast.closeAllLoading();
                               return;
                             }
-                            var pickSlotsFilter = pickSlots
-                                .where((item) =>
-                                    pickSlot != null &&
-                                    item.startTime == pickSlot!.startTime &&
-                                    item.endTime == pickSlot!.endTime)
-                                .toList();
-                            // Handle the tap event here
-                            CalendarAccount account = CalendarAccount(
-                              accountId: AppSettings.userInfo!.accountId!,
-                              modelStatus: 3, // ModelStatusEnum => 3  is New
+
+                            _showPopupOverSwitchTime(
+                              onConfirm: () {
+                                var pickSlotsFilter = pickSlots
+                                    .where((item) =>
+                                        pickSlot != null &&
+                                        item.startTime == pickSlot!.startTime &&
+                                        item.endTime == pickSlot!.endTime)
+                                    .toList();
+                                // Handle the tap event here
+                                CalendarAccount account = CalendarAccount(
+                                  accountId: AppSettings.userInfo!.accountId!,
+                                  modelStatus:
+                                      3, // ModelStatusEnum => 3  is New
+                                );
+                                CreateCalendarRequest request =
+                                    new CreateCalendarRequest(
+                                  name:
+                                      "Phỏng Vấn Đầu Vào - ${AppSettings.userInfo!.fullName}",
+                                  startTime: pickSlot!.startTime,
+                                  endTime: pickSlot!.endTime,
+                                  courseId: widget.courseId,
+                                  performerId: pickSlot!.coachId,
+                                  appointmentDate: pickSlot!.startTime,
+                                  calendarCoachs: pickSlotsFilter,
+                                  duration:
+                                      pickSlot!.endTime - pickSlot!.startTime,
+                                  repeatType: "0", // not repeat
+                                  modelStatus: 3,
+                                  meetingLink: "",
+                                  zoomTypeId: 1, // auto generate link zoom
+                                  type:
+                                      "1", // CalendarTypeEnums = 1 is DanhGiaDauVao
+                                  calendarAccounts: [account],
+                                  goal: "Phỏng vấn đầu vào",
+                                  trainingGroupIds: [],
+                                );
+                                _cubit.createCalendar(request);
+                              },
+                              title: "Xác nhận lịch hẹn",
+                              subtitle:
+                                  'Hãy bấm “Xác nhận” để hoàn tất đặt lịch của bạn.',
+                              buttonTitle: 'Xác nhận',
                             );
-                            CreateCalendarRequest request =
-                                new CreateCalendarRequest(
-                              name:
-                                  "Phỏng Vấn Đầu Vào - ${AppSettings.userInfo!.fullName}",
-                              startTime: pickSlot!.startTime,
-                              endTime: pickSlot!.endTime,
-                              courseId: widget.courseId,
-                              performerId: pickSlot!.coachId,
-                              appointmentDate: pickSlot!.startTime,
-                              calendarCoachs: pickSlotsFilter,
-                              duration: pickSlot!.endTime - pickSlot!.startTime,
-                              repeatType: "0", // not repeat
-                              modelStatus: 3,
-                              meetingLink: "",
-                              zoomTypeId: 1, // auto generate link zoom
-                              type:
-                                  "1", // CalendarTypeEnums = 1 is DanhGiaDauVao
-                              calendarAccounts: [account],
-                              goal: "Phỏng vấn đầu vào",
-                              trainingGroupIds: [],
-                            );
-                            _cubit.createCalendar(request);
                           } catch (e) {
                           } finally {
                             BotToast.closeAllLoading();
@@ -365,43 +381,62 @@ class _CalendarBookingControllerState extends State<CalendarBookingController> {
     );
   }
 
-  _showPopupOverSwitchTime(
-      {required Function onConfirm,
-      String? message = 'Bạn đã đến giới hạn đổi lịch hẹn'}) {
+  _showPopupOverSwitchTime({
+    required Function onConfirm,
+    bool isShowImg = false,
+    String? subtitle,
+    String? title,
+    String buttonTitle = 'Tôi đã hiểu',
+  }) {
     showDialog(
       context: context,
       builder: (context) {
         return Container(
           child: AlertDialog(
-              contentPadding: EdgeInsets.all(0),
+              contentPadding: EdgeInsets.all(10),
               content: Stack(children: [
                 Container(
                   padding: EdgeInsets.all(16),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Image.asset(R.drawable.ic_warning, width: 64, height: 64),
+                      if (isShowImg)
+                        Image.asset(R.drawable.ic_warning,
+                            width: 64, height: 64),
+                      SizedBox(
+                        height: 20,
+                      ),
                       Padding(
-                        padding: const EdgeInsets.only(top: 16.0),
-                        child: Text(message!,
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                                color: R.color.textDark,
-                                fontSize: 20,
-                                fontWeight: FontWeight.w600)),
+                        padding: const EdgeInsets.only(top: 20.0),
+                        child: Text(
+                          title ?? '',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: R.color.color0xff141416,
+                            fontSize: 20,
+                            fontFamily: 'sfpro',
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
                       ),
                       Padding(
                         padding: const EdgeInsets.only(top: 16.0),
                         child: Text(
-                            'Vui lòng liên hệ 093188832 để được hỗ trợ.',
-                            textAlign: TextAlign.center,
-                            style: R.style.normalTextStyle),
+                          subtitle ?? "",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: R.color.color0xff777E90,
+                            fontSize: 15,
+                            fontFamily: 'sfpro',
+                            fontWeight: FontWeight.w400,
+                          ),
+                        ),
                       ),
-                      SizedBox(height: 16),
+                      SizedBox(height: 20),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          GestureDetector(
+                          InkWell(
                             onTap: () {
                               Navigator.pop(context);
                               onConfirm();
@@ -423,10 +458,11 @@ class _CalendarBookingControllerState extends State<CalendarBookingController> {
                               ),
                               child: Center(
                                 child: Text(
-                                  'Tôi đã hiểu',
+                                  buttonTitle,
                                   style: TextStyle(
                                     color: R.color.white,
-                                    fontSize: 16,
+                                    fontSize: 15,
+                                    fontFamily: 'sfpro',
                                     fontWeight: FontWeight.w600,
                                   ),
                                 ),
