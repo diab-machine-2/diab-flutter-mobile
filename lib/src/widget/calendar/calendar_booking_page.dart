@@ -166,11 +166,15 @@ class _CalendarBookingControllerState extends State<CalendarBookingController> {
           children: [
             CustomAppBar(
               backgroundColor: R.color.transparent,
-              title: Text(R.string.pick_time.tr(),
-                  style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w600,
-                      color: R.color.textDark)),
+              title: Text(
+                R.string.pick_time.tr(),
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                  color: R.color.textDark,
+                  fontFamily: 'sfpro',
+                ),
+              ),
               leadingIcon: IconButton(
                   splashColor: R.color.transparent,
                   highlightColor: R.color.transparent,
@@ -200,117 +204,126 @@ class _CalendarBookingControllerState extends State<CalendarBookingController> {
         Stack(
           children: [
             Positioned(
-              bottom: 10,
-              left: 20,
-              right: 20,
-              child: Row(
-                mainAxisAlignment: CalendarBookingCubit.updateCount > 1
-                    ? MainAxisAlignment.spaceBetween
-                    : MainAxisAlignment.center,
-                children: [
-                  if (CalendarBookingCubit.updateCount > 1) ...[
-                    _buildButton(
-                      "Lịch của tôi",
-                      () {
-                        Navigator.pushNamed(context, NavigatorName.calendar,
-                            arguments: {
-                              "pickSlot": myCalendar,
-                              "courseId": widget.courseId,
-                              'endTime': widget.endTime
-                            });
-                      },
-                    ),
-                    SizedBox(
-                      width: 16,
-                    )
-                  ],
-                  _buildButton(
-                    myCalendar != null ? "Đổi lịch" : "Đặt lịch",
-                    () {
-                      try {
-                        BotToast.showLoading();
-                        if (myCalendar != null) {
-                          // case not change slot
-                          bool isSameSlot = pickSlot!.startTime ==
-                                  myCalendar!.appointmentDate &&
-                              (pickSlot!.endTime - pickSlot!.startTime) ==
-                                  myCalendar!.duration;
-                          if (isSameSlot) {
-                            Navigator.pushNamed(context, NavigatorName.calendar,
-                                arguments: {
-                                  "pickSlot": myCalendar,
-                                  "courseId": widget.courseId,
-                                  'endTime': widget.endTime
-                                });
-                            BotToast.closeAllLoading();
-                            return;
-                          }
-                          // If update count is 2 or more, show popup
-                          if (CalendarBookingCubit.updateCount > 1) {
-                            _showPopupOverSwitchTime(onConfirm: () => {});
-                            BotToast.closeAllLoading();
-                            return;
-                          } else {
-                            // _cubit.deleteCalendar({
-                            //   "id": myCalendar!.id,
-                            //   "calendarCoachId": pickSlotOld!.id,
-                            //   "deleteType": "0",
-                            // });
-                            _cubit.deleteCalendar(
-                              DeleteCalendarRequest(
-                                  id: myCalendar!.id,
-                                  calendarCoachId: pickSlotOld!.id,
-                                  deleteType: "0"),
+              bottom: 0,
+              left: 0,
+              right: 0,
+              child: Container(
+                color: R.color.white,
+                child: Row(
+                  mainAxisAlignment: CalendarBookingCubit.updateCount > 1
+                      ? MainAxisAlignment.spaceBetween
+                      : MainAxisAlignment.center,
+                  children: [
+                    if (CalendarBookingCubit.updateCount > 1) ...[
+                      _buildButton(
+                        "Lịch của tôi",
+                        () {
+                          Navigator.pushNamed(context, NavigatorName.calendar,
+                              arguments: {
+                                "pickSlot": myCalendar,
+                                "courseId": widget.courseId,
+                                'endTime': widget.endTime
+                              });
+                        },
+                      ),
+                      SizedBox(
+                        width: 16,
+                      )
+                    ],
+                    Expanded(
+                      child: _buildButton(
+                        myCalendar != null
+                            ? R.string.change_booking.tr()
+                            : R.string.submit_booking.tr(),
+                        () {
+                          try {
+                            BotToast.showLoading();
+                            if (myCalendar != null) {
+                              // case not change slot
+                              bool isSameSlot = pickSlot!.startTime ==
+                                      myCalendar!.appointmentDate &&
+                                  (pickSlot!.endTime - pickSlot!.startTime) ==
+                                      myCalendar!.duration;
+                              if (isSameSlot) {
+                                Navigator.pushNamed(
+                                    context, NavigatorName.calendar,
+                                    arguments: {
+                                      "pickSlot": myCalendar,
+                                      "courseId": widget.courseId,
+                                      'endTime': widget.endTime
+                                    });
+                                BotToast.closeAllLoading();
+                                return;
+                              }
+                              // If update count is 2 or more, show popup
+                              if (CalendarBookingCubit.updateCount > 1) {
+                                _showPopupOverSwitchTime(onConfirm: () => {});
+                                BotToast.closeAllLoading();
+                                return;
+                              } else {
+                                // _cubit.deleteCalendar({
+                                //   "id": myCalendar!.id,
+                                //   "calendarCoachId": pickSlotOld!.id,
+                                //   "deleteType": "0",
+                                // });
+                                _cubit.deleteCalendar(
+                                  DeleteCalendarRequest(
+                                      id: myCalendar!.id,
+                                      calendarCoachId: pickSlotOld!.id,
+                                      deleteType: "0"),
+                                );
+                              }
+                            }
+                            // Case: create
+                            if (pickSlot == null) {
+                              _showPopupOverSwitchTime(
+                                  onConfirm: () => {},
+                                  message: "Vui lòng chọn lịch");
+                              BotToast.closeAllLoading();
+                              return;
+                            }
+                            var pickSlotsFilter = pickSlots
+                                .where((item) =>
+                                    pickSlot != null &&
+                                    item.startTime == pickSlot!.startTime &&
+                                    item.endTime == pickSlot!.endTime)
+                                .toList();
+                            // Handle the tap event here
+                            CalendarAccount account = CalendarAccount(
+                              accountId: AppSettings.userInfo!.accountId!,
+                              modelStatus: 3, // ModelStatusEnum => 3  is New
                             );
+                            CreateCalendarRequest request =
+                                new CreateCalendarRequest(
+                              name:
+                                  "Phỏng Vấn Đầu Vào - ${AppSettings.userInfo!.fullName}",
+                              startTime: pickSlot!.startTime,
+                              endTime: pickSlot!.endTime,
+                              courseId: widget.courseId,
+                              performerId: pickSlot!.coachId,
+                              appointmentDate: pickSlot!.startTime,
+                              calendarCoachs: pickSlotsFilter,
+                              duration: pickSlot!.endTime - pickSlot!.startTime,
+                              repeatType: "0", // not repeat
+                              modelStatus: 3,
+                              meetingLink: "",
+                              zoomTypeId: 1, // auto generate link zoom
+                              type:
+                                  "1", // CalendarTypeEnums = 1 is DanhGiaDauVao
+                              calendarAccounts: [account],
+                              goal: "Phỏng vấn đầu vào",
+                              trainingGroupIds: [],
+                            );
+                            _cubit.createCalendar(request);
+                          } catch (e) {
+                          } finally {
+                            BotToast.closeAllLoading();
                           }
-                        }
-                        // Case: create
-                        if (pickSlot == null) {
-                          _showPopupOverSwitchTime(
-                              onConfirm: () => {},
-                              message: "Vui lòng chọn lịch");
-                          BotToast.closeAllLoading();
-                          return;
-                        }
-                        var pickSlotsFilter = pickSlots
-                            .where((item) =>
-                                pickSlot != null &&
-                                item.startTime == pickSlot!.startTime &&
-                                item.endTime == pickSlot!.endTime)
-                            .toList();
-                        // Handle the tap event here
-                        CalendarAccount account = CalendarAccount(
-                          accountId: AppSettings.userInfo!.accountId!,
-                          modelStatus: 3, // ModelStatusEnum => 3  is New
-                        );
-                        CreateCalendarRequest request =
-                            new CreateCalendarRequest(
-                          name:
-                              "Phỏng Vấn Đầu Vào - ${AppSettings.userInfo!.fullName}",
-                          startTime: pickSlot!.startTime,
-                          endTime: pickSlot!.endTime,
-                          courseId: widget.courseId,
-                          performerId: pickSlot!.coachId,
-                          appointmentDate: pickSlot!.startTime,
-                          calendarCoachs: pickSlotsFilter,
-                          duration: pickSlot!.endTime - pickSlot!.startTime,
-                          repeatType: "0", // not repeat
-                          modelStatus: 3,
-                          meetingLink: "",
-                          zoomTypeId: 1, // auto generate link zoom
-                          type: "1", // CalendarTypeEnums = 1 is DanhGiaDauVao
-                          calendarAccounts: [account],
-                          goal: "Phỏng vấn đầu vào",
-                          trainingGroupIds: [],
-                        );
-                        _cubit.createCalendar(request);
-                      } catch (e) {
-                      } finally {
-                        BotToast.closeAllLoading();
-                      }
-                    },
-                  ),
-                ],
+                        },
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ],
@@ -320,11 +333,11 @@ class _CalendarBookingControllerState extends State<CalendarBookingController> {
   }
 
   Widget _buildButton(String text, VoidCallback onTap) {
-    return GestureDetector(
+    return InkWell(
       onTap: onTap,
       child: Container(
-        height: 48,
-        width: AppMediaQuery.deviceWidth * 0.4,
+        height: 44,
+        margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
           color: R.color.mainColor,
           borderRadius: BorderRadius.circular(200),
@@ -333,6 +346,7 @@ class _CalendarBookingControllerState extends State<CalendarBookingController> {
             end: Alignment.centerRight,
             colors: [
               R.color.greenGradientTop,
+              R.color.greenGradientMid,
               R.color.greenGradientBottom,
             ],
           ),
@@ -342,8 +356,8 @@ class _CalendarBookingControllerState extends State<CalendarBookingController> {
             text,
             style: TextStyle(
               color: R.color.white,
-              fontWeight: FontWeight.w600,
-              fontSize: 16,
+              fontWeight: FontWeight.w700,
+              fontSize: 15,
             ),
           ),
         ),
@@ -472,6 +486,7 @@ class _CalendarBookingControllerState extends State<CalendarBookingController> {
                       color: PickerHelper.getTextColorByState(
                           isSelected: isMorningSelected, hasSlot: true),
                       fontSize: 15,
+                      fontFamily: 'sfpro',
                       fontWeight: PickerHelper.getTextFontWeightByState(
                         isSelected: isMorningSelected,
                       ),
@@ -503,6 +518,7 @@ class _CalendarBookingControllerState extends State<CalendarBookingController> {
                       color: PickerHelper.getTextColorByState(
                           isSelected: !isMorningSelected, hasSlot: true),
                       fontSize: 15,
+                      fontFamily: 'sfpro',
                       fontWeight: PickerHelper.getTextFontWeightByState(
                           isSelected: !isMorningSelected),
                     ),
@@ -559,8 +575,14 @@ class _CalendarBookingControllerState extends State<CalendarBookingController> {
                   coachSchedules[i].endTime,
                 ),
                 Text(
-                  " - ",
-                  style: TextStyle(fontSize: 13.0),
+                  "-",
+                  style: TextStyle(
+                    fontSize: 13.0,
+                    fontFamily: 'sfpro',
+                    fontWeight: PickerHelper.getTextFontWeightByState(
+                      isSelected: isSlotPicked,
+                    ),
+                  ),
                 ),
                 _buildItemTimeFrame(
                   endTime,
@@ -591,14 +613,16 @@ class _CalendarBookingControllerState extends State<CalendarBookingController> {
           alignment: WrapAlignment.spaceBetween,
           children: List.generate((targets.length / 3).ceil() * 3, (index) {
             if (index < targets.length) {
-              return SizedBox(
+              return Container(
                 width: (constraints.maxWidth - 48) /
                     3, // Total width minus padding divided by 3
+                height: 41,
                 child: targets[index],
               );
             }
             return SizedBox(
               width: (constraints.maxWidth - 48) / 3,
+              height: 41,
             );
           }),
         ),
@@ -616,21 +640,15 @@ class _CalendarBookingControllerState extends State<CalendarBookingController> {
         color: R.color.white,
         borderRadius: BorderRadius.circular(8),
       ),
-      child: RichText(
-        textAlign: TextAlign.center,
-        text: TextSpan(
-          style: TextStyle(
-            color: PickerHelper.getTextColorByState(
-                isSelected: isSlotPicked, hasSlot: true),
-            fontSize: 13,
-            fontWeight:
-                PickerHelper.getTextFontWeightByState(isSelected: isSlotPicked),
-          ),
-          children: [
-            TextSpan(text: time.split(':')[0]), // Hour part
-            TextSpan(text: ':'),
-            TextSpan(text: time.split(':')[1]), // Minute part
-          ],
+      child: Text(
+        "${time.split(':')[0].trim()}:${time.split(':')[1].trim()}",
+        style: TextStyle(
+          color: PickerHelper.getTextColorByState(
+              isSelected: isSlotPicked, hasSlot: true),
+          fontSize: 13,
+          fontFamily: 'sfpro',
+          fontWeight:
+              PickerHelper.getTextFontWeightByState(isSelected: isSlotPicked),
         ),
       ),
     );
@@ -685,6 +703,7 @@ class _CalendarBookingControllerState extends State<CalendarBookingController> {
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w700,
+                fontFamily: 'sfpro',
               ),
             ),
           ),
@@ -721,7 +740,11 @@ class _CalendarBookingControllerState extends State<CalendarBookingController> {
               children: [
                 Text(
                   R.string.select_hour.tr(),
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w700,
+                    fontFamily: 'sfpro',
+                  ),
                 ),
               ],
             ),

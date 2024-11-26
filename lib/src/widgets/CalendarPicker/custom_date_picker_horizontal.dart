@@ -25,7 +25,7 @@ const Duration _monthScrollDuration = Duration(milliseconds: 200);
 // const double _yearPickerRowHeight = 52.0;
 // const double _yearPickerRowSpacing = 8.0;
 
-const double _datePickerWidth = 56.0;
+const double _datePickerWidth = 60.0;
 const double _datePickerHeight = 64.0;
 
 class CustomHorizontalDatePicker extends StatefulWidget {
@@ -202,6 +202,7 @@ class _CustomCalendarDatePickerState extends State<CustomHorizontalDatePicker> {
                       fontWeight: PickerHelper.getTextFontWeightByState(
                           isSelected: isSelected),
                       fontSize: 13,
+                      fontFamily: 'sfpro',
                     ),
                   ),
                   Text(
@@ -212,6 +213,7 @@ class _CustomCalendarDatePickerState extends State<CustomHorizontalDatePicker> {
                       fontWeight: PickerHelper.getTextFontWeightByState(
                           isSelected: isSelected),
                       fontSize: 15,
+                      fontFamily: 'sfpro',
                     ),
                   ),
                 ],

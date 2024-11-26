@@ -1165,4 +1165,5 @@ class Strings {
   String get target => 'target';
   String get select_hour => 'select_hour';
   String get the_afternoon => 'the_afternoon';
+  String get change_booking => 'change_booking';
 }
