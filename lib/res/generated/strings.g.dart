@@ -1163,4 +1163,6 @@ class Strings {
   String get huong_dan => 'huong_dan';
   String get reminder => 'reminder';
   String get target => 'target';
+  String get select_hour => 'select_hour';
+  String get the_afternoon => 'the_afternoon';
 }

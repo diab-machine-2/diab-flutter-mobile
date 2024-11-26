@@ -1,4 +1,5 @@
 import 'package:bot_toast/bot_toast.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
@@ -15,6 +16,8 @@ import 'package:medical/src/widget/calendar/calendar_booking_state.dart';
 import 'package:medical/src/widget/calendar/calendar_model.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widgets/CalendarPicker/custom_date_picker.dart';
+import 'package:medical/src/widgets/CalendarPicker/custom_date_picker_horizontal.dart';
+import 'package:medical/src/widgets/CalendarPicker/picker_helper.dart';
 
 import '../../model/repository/app_repository.dart';
 
@@ -38,6 +41,7 @@ class _CalendarBookingControllerState extends State<CalendarBookingController> {
   CalendarCoachModel? pickSlotOld;
 
   CreateCalendarResponse? myCalendar;
+  bool isMorningSelected = true;
 
   late DateTime seletedDate = DateTime.now();
   final AppRepository repository = AppRepository();
@@ -78,10 +82,14 @@ class _CalendarBookingControllerState extends State<CalendarBookingController> {
             _parseToDateTime(myCalendar!.appointmentDate),
             _parseToDateTime(calendar.startTime)))
         .toList();
+
     setState(() {
       pickSlots = defaultCalendarCoach;
       pickSlot = defaultCalendarCoach.firstWhere((p) => p.status == 1);
       pickSlotOld = pickSlot;
+
+      final isMorning = _parseToDateTime(pickSlot!.startTime).hour < 12;
+      isMorningSelected = isMorning;
     });
   }
 
@@ -158,7 +166,7 @@ class _CalendarBookingControllerState extends State<CalendarBookingController> {
           children: [
             CustomAppBar(
               backgroundColor: R.color.transparent,
-              title: Text("Đặt lịch chuyên gia",
+              title: Text(R.string.pick_time.tr(),
                   style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w600,
@@ -182,57 +190,7 @@ class _CalendarBookingControllerState extends State<CalendarBookingController> {
                   keyboardDismissBehavior:
                       ScrollViewKeyboardDismissBehavior.onDrag,
                   children: [
-                    Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 16),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Expanded(
-                            child: Text(
-                              "Đặt lịch tư vấn cùng chuyên gia giúp bạn có nhiều kiến thức trong quá trình chữa trị đái tháo đường",
-                            ),
-                          ),
-                          SizedBox(
-                            height: 116,
-                            child: Image.asset(
-                              R.drawable.calendar_theme,
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 18),
-                      child: Text(
-                        "Ngày đặt lịch",
-                        style: TextStyle(
-                            fontSize: 22, fontWeight: FontWeight.bold),
-                      ),
-                    ),
                     _buildSectionCalendarBooking(),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 18),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            "Thời gian đặt lịch",
-                            style: TextStyle(
-                                fontSize: 22, fontWeight: FontWeight.bold),
-                          ),
-                          SizedBox(height: 16),
-                          Text(
-                            "Bạn hãy chọn thời gian phù hợp để bắt đầu lịch tư vấn nhé! Thời gian cho mỗi buổi tư vấn là 1 giờ.",
-                          ),
-                        ],
-                      ),
-                    ),
-                    SizedBox(height: 16),
-                    _buildTimeFrame(),
-                    SizedBox(
-                      height: 70,
-                    )
                   ],
                 ),
               ),
@@ -327,7 +285,8 @@ class _CalendarBookingControllerState extends State<CalendarBookingController> {
                         );
                         CreateCalendarRequest request =
                             new CreateCalendarRequest(
-                          name: "Phỏng Vấn Đầu Vào - ${AppSettings.userInfo!.fullName}",
+                          name:
+                              "Phỏng Vấn Đầu Vào - ${AppSettings.userInfo!.fullName}",
                           startTime: pickSlot!.startTime,
                           endTime: pickSlot!.endTime,
                           courseId: widget.courseId,
@@ -480,9 +439,88 @@ class _CalendarBookingControllerState extends State<CalendarBookingController> {
     );
   }
 
+  Widget _buildTimePeriodSwitch() {
+    return Container(
+      margin: EdgeInsets.symmetric(horizontal: 16),
+      decoration: BoxDecoration(
+        color: R.color.color0xffF4F4F5,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      height: 43,
+      child: Row(
+        children: [
+          Expanded(
+            child: GestureDetector(
+              onTap: () {
+                setState(() {
+                  isMorningSelected = true;
+                });
+              },
+              child: Container(
+                height: 35,
+                margin: EdgeInsets.all(4),
+                decoration: BoxDecoration(
+                  color: isMorningSelected
+                      ? R.color.white
+                      : R.color.color0xffF4F4F5,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Center(
+                  child: Text(
+                    R.string.the_morning.tr(),
+                    style: TextStyle(
+                      color: PickerHelper.getTextColorByState(
+                          isSelected: isMorningSelected, hasSlot: true),
+                      fontSize: 15,
+                      fontWeight: PickerHelper.getTextFontWeightByState(
+                        isSelected: isMorningSelected,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+          SizedBox(width: 12),
+          Expanded(
+            child: GestureDetector(
+              onTap: () {
+                setState(() {
+                  isMorningSelected = false;
+                });
+              },
+              child: Container(
+                height: 35,
+                margin: EdgeInsets.all(4),
+                decoration: BoxDecoration(
+                  color: !isMorningSelected ? R.color.white : Color(0xfff4f4f5),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Center(
+                  child: Text(
+                    R.string.the_afternoon.tr(),
+                    style: TextStyle(
+                      color: PickerHelper.getTextColorByState(
+                          isSelected: !isMorningSelected, hasSlot: true),
+                      fontSize: 15,
+                      fontWeight: PickerHelper.getTextFontWeightByState(
+                          isSelected: !isMorningSelected),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildTimeFrame() {
     List<CalendarCoachModel> coachSchedules = pickSlots;
-    List<List<Widget>> targets = [];
+    List<Widget> morningTargets = [];
+    List<Widget> afternoonTargets = [];
+
     Set<String> addedStartTimes = Set<String>();
     Set<String> addedEndTimes = Set<String>();
     for (int i = 0; i < coachSchedules.length; i++) {
@@ -490,96 +528,109 @@ class _CalendarBookingControllerState extends State<CalendarBookingController> {
           "${_parseToDateTime(coachSchedules[i].startTime).hour.toString().padLeft(2, '0')} : ${_parseToDateTime(coachSchedules[i].startTime).minute.toString().padLeft(2, '0')}";
       String endTime =
           "${_parseToDateTime(coachSchedules[i].endTime).hour.toString().padLeft(2, '0')} : ${_parseToDateTime(coachSchedules[i].endTime).minute.toString().padLeft(2, '0')}";
+      final isSlotPicked = pickSlot != null &&
+          pickSlot!.startTime == coachSchedules[i].startTime &&
+          pickSlot!.endTime == coachSchedules[i].endTime;
+
       if (!addedStartTimes.contains(startTime) ||
           !addedEndTimes.contains(endTime)) {
-        List<Widget> item = [
-          _buildItemTimeFrame(startTime, coachSchedules[i].id,
-              coachSchedules[i].startTime, coachSchedules[i].endTime,
-              onTap: () => {
-                    setState(() {
-                      pickSlot = coachSchedules[i];
-                    })
-                  }),
-          Text(
-            "-",
-            style: TextStyle(fontSize: 30.0),
+        Widget item = InkWell(
+          onTap: () => {
+            setState(() {
+              pickSlot = coachSchedules[i];
+            })
+          },
+          child: Container(
+            padding: EdgeInsets.symmetric(horizontal: 7, vertical: 12),
+            decoration: BoxDecoration(
+              border: Border.all(
+                  color: PickerHelper.getBorderColorByState(
+                      isSelected: isSlotPicked, hasSlot: true)),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                _buildItemTimeFrame(
+                  startTime,
+                  coachSchedules[i].id,
+                  coachSchedules[i].startTime,
+                  coachSchedules[i].endTime,
+                ),
+                Text(
+                  " - ",
+                  style: TextStyle(fontSize: 13.0),
+                ),
+                _buildItemTimeFrame(
+                  endTime,
+                  coachSchedules[i].id,
+                  coachSchedules[i].startTime,
+                  coachSchedules[i].endTime,
+                ),
+              ],
+            ),
           ),
-          _buildItemTimeFrame(endTime, coachSchedules[i].id,
-              coachSchedules[i].startTime, coachSchedules[i].endTime,
-              onTap: () => {
-                    setState(() {
-                      pickSlot = coachSchedules[i];
-                    })
-                  }),
-        ];
+        );
 
-        targets.add(item);
+        final isMorning =
+            _parseToDateTime(coachSchedules[i].startTime).hour < 12;
+        isMorning ? morningTargets.add(item) : afternoonTargets.add(item);
       }
       addedStartTimes.add(startTime);
       addedEndTimes.add(endTime);
     }
 
-    return Container(
-      child: Column(
-        children: List.generate((targets.length / 2).ceil(), (index) {
-          int startIndex = index * 2;
-          int endIndex = startIndex + 2;
-          endIndex = endIndex > targets.length ? targets.length : endIndex;
-
-          List<Widget> rowChildren = targets
-              .sublist(startIndex, endIndex)
-              .expand((element) => element)
-              .toList();
-          if (rowChildren.length.isOdd) {
-            rowChildren.add(SizedBox(width: 80));
-            rowChildren.add(Text(
-              "-",
-              style: TextStyle(color: R.color.transparent),
-            ));
-            rowChildren.add(SizedBox(width: 80));
-          }
-          return Padding(
-            padding: const EdgeInsets.fromLTRB(8, 0, 8, 8),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: rowChildren,
-            ),
-          );
-        }),
-      ),
-    );
+    return LayoutBuilder(builder: (context, constraints) {
+      final targets = isMorningSelected ? morningTargets : afternoonTargets;
+      return Container(
+        padding: EdgeInsets.symmetric(horizontal: 16),
+        child: Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          alignment: WrapAlignment.spaceBetween,
+          children: List.generate((targets.length / 3).ceil() * 3, (index) {
+            if (index < targets.length) {
+              return SizedBox(
+                width: (constraints.maxWidth - 48) /
+                    3, // Total width minus padding divided by 3
+                child: targets[index],
+              );
+            }
+            return SizedBox(
+              width: (constraints.maxWidth - 48) / 3,
+            );
+          }),
+        ),
+      );
+    });
   }
 
-  Widget _buildItemTimeFrame(String time, String id, int startTime, int endTime,
-      {VoidCallback? onTap}) {
-    return GestureDetector(
-      onTap: onTap,
-      child: SizedBox(
-        width: 80, // Adjust the width as needed
-        child: Container(
-          padding: EdgeInsets.all(8),
-          decoration: BoxDecoration(
-            color: R.color.white,
-            borderRadius: BorderRadius.circular(8),
+  Widget _buildItemTimeFrame(
+      String time, String id, int startTime, int endTime) {
+    final isSlotPicked = pickSlot != null &&
+        pickSlot!.startTime == startTime &&
+        pickSlot!.endTime == endTime;
+    return Container(
+      decoration: BoxDecoration(
+        color: R.color.white,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: RichText(
+        textAlign: TextAlign.center,
+        text: TextSpan(
+          style: TextStyle(
+            color: PickerHelper.getTextColorByState(
+                isSelected: isSlotPicked, hasSlot: true),
+            fontSize: 13,
+            fontWeight:
+                PickerHelper.getTextFontWeightByState(isSelected: isSlotPicked),
           ),
-          child: RichText(
-            textAlign: TextAlign.center,
-            text: TextSpan(
-              style: TextStyle(
-                  color: R.color.greenGradientBottom,
-                  fontSize: 16,
-                  fontWeight: pickSlot != null &&
-                          pickSlot!.startTime == startTime &&
-                          pickSlot!.endTime == endTime
-                      ? FontWeight.bold
-                      : FontWeight.normal),
-              children: [
-                TextSpan(text: time.split(':')[0]), // Hour part
-                TextSpan(text: ' : '),
-                TextSpan(text: time.split(':')[1]), // Minute part
-              ],
-            ),
-          ),
+          children: [
+            TextSpan(text: time.split(':')[0]), // Hour part
+            TextSpan(text: ':'),
+            TextSpan(text: time.split(':')[1]), // Minute part
+          ],
         ),
       ),
     );
@@ -619,37 +670,70 @@ class _CalendarBookingControllerState extends State<CalendarBookingController> {
     });
 
     return Container(
-      margin: EdgeInsets.all(16.0),
-      padding: EdgeInsets.all(12.0),
+      margin: EdgeInsets.fromLTRB(16, 0, 16, 24),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16.0),
       ),
-      child: CustomCalendarDatePicker(
-        initialDate: seletedDate,
-        firstDate: DateTime.parse("1969-07-20 20:18:04Z"),
-        activeDates: activeDates,
-        lastDate:
-            activeDates.length > 0 && activeDates.last.isAfter(seletedDate)
-                ? activeDates.last
-                : DateTime.now().add(Duration(days: 30)),
-        onDateChanged: (datetime) {
-          if (datetime != null) {
-            var targets = _cubit.calendarCoachs
-                .where((model) => DateUtil.isSameDate(
-                      DateTime.fromMillisecondsSinceEpoch(
-                        model.startTime * 1000,
-                        isUtc: true,
-                      ),
-                      datetime,
-                    ))
-                .toList();
-            setState(() {
-              pickSlots = targets;
-              seletedDate = datetime;
-            });
-          }
-        },
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: Text(
+              R.string.pick_date.tr(),
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ),
+          CustomHorizontalDatePicker(
+            initialDate: seletedDate,
+            firstDate: DateTime.parse("1969-07-20 20:18:04Z"),
+            activeDates: activeDates,
+            lastDate:
+                activeDates.length > 0 && activeDates.last.isAfter(seletedDate)
+                    ? activeDates.last
+                    : DateTime.now().add(Duration(days: 30)),
+            onDateChanged: (datetime) {
+              if (datetime != null) {
+                var targets = _cubit.calendarCoachs
+                    .where((model) => DateUtil.isSameDate(
+                          DateTime.fromMillisecondsSinceEpoch(
+                            model.startTime * 1000,
+                            isUtc: true,
+                          ),
+                          datetime,
+                        ))
+                    .toList();
+                setState(() {
+                  pickSlots = targets;
+                  seletedDate = datetime;
+                });
+              }
+            },
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  R.string.select_hour.tr(),
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
+                ),
+              ],
+            ),
+          ),
+          SizedBox(height: 16),
+          _buildTimePeriodSwitch(),
+          SizedBox(height: 16),
+          _buildTimeFrame(),
+          SizedBox(
+            height: 16,
+          )
+        ],
       ),
     );
   }

@@ -136,4 +136,8 @@ class Colors {
   Color get survey_color => Color(0xff1E8F66);
   Color get hba1c_color => Color(0xff533BAA);
   Color get height_color => Color(0xff008479);
+  Color get color0xff008479 => Color(0xff008479);
+  Color get color0xff888892 => Color(0xff888892);
+  Color get color0xffD4D4D8 => Color(0xffD4D4D8);
+  Color get color0xffF4F4F5 => Color(0xffF4F4F5);
 }

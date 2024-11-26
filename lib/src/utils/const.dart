@@ -1,5 +1,6 @@
 class Const {
-  static const String ENVIRONMENT_DEFAULT = "staging"; //product or staging or dev
+  static const String ENVIRONMENT_DEFAULT =
+      "staging"; //product or staging or dev
 
   static const String IS_DOMAIN = "is.diab.com.vn";
   static const String IS_DOMAIN_STAGING = "is.staging.diab.com.vn";
@@ -193,4 +194,5 @@ class Const {
   static const String HOTLINE_NUMBER = '0931888832';
   static const String ZALO_OA_TECHNICAL_SUPPORT_LINK =
       'https://zalo.me/4592543430802584018';
+  static const int MAX_DAY_RANGE_PRIMARY_SCREENING = 14;
 }
