@@ -26,7 +26,8 @@ class HbA1CDetailState extends State<HbA1CDetail>
 
   @override
   void initState() {
-    periodFilterType = Hba1cDetailTabbarController.of(context)!.periodFilterType;
+    periodFilterType =
+        Hba1cDetailTabbarController.of(context)!.periodFilterType;
     super.initState();
   }
 
@@ -69,159 +70,172 @@ class HbA1CDetailState extends State<HbA1CDetail>
                         Padding(
                           padding: EdgeInsets.only(
                               left: 16, right: 16, top: 20, bottom: 24),
-                          child: Column(children: [
-                            Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(R.string.gan_nhat.tr(),
-                                      style: TextStyle(
-                                          color: R.color.black,
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.w700)),
-                                ]),
-                            SizedBox(height: 14),
-                            Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Row(
-                                    children: [
-                                      model.hbA1C == 0 || model.hbA1C == null
-                                          ? Text('--',
-                                              style: TextStyle(
-                                                  color: R.color.textDark,
-                                                  fontSize: 34,
-                                                  fontWeight: FontWeight.w700))
-                                          : Text(
-                                              model.hbA1C
-                                                  .toString()
-                                                  .split('.')
-                                                  .join(','),
-                                              style: TextStyle(
-                                                  fontFamily: 'Viga',
-                                                  color: toColor(
-                                                      model.percentColor),
-                                                  fontSize: 34,
-                                                  fontWeight: FontWeight.w400)),
-                                      Text('%',
-                                          style: TextStyle(
-                                              color: model.hbA1C == 0 ||
-                                                      model.hbA1C == null
-                                                  ? R.color.textDark
-                                                  : toColor(model.percentColor),
-                                              fontSize: 24,
-                                              fontWeight: FontWeight.w700)),
-                                      SizedBox(width: 8),
-                                      Text(
-                                          model.differentPercentage == 0 ||
-                                                  model.differentPercentage ==
-                                                      null
-                                              ? ''
-                                              : (model.differentPercentage! > 0
-                                                  ? '(+${model.differentPercentage}%)'
-                                                  : '(${model.differentPercentage}%)'),
-                                          style: TextStyle(
-                                              color: R.color.primaryGreyColor,
-                                              fontSize: 20,
-                                              fontWeight: FontWeight.w400)),
-                                    ],
-                                  ),
-                                  model.hbA1C == 0 || model.hbA1C == null
-                                      ? SizedBox()
-                                      : Container(
-                                          height: 32,
-                                          padding: EdgeInsets.only(
-                                              left: 14, right: 14),
-                                          decoration: BoxDecoration(
-                                              color: toColor(
-                                                  model.backgroundColor),
-                                              border: Border.all(
-                                                  color: model.borderColor ==
-                                                          'None'
-                                                      ? R.color.transparent
-                                                      : toColor(
-                                                          model.borderColor),
-                                                  width: model.borderColor ==
-                                                          'None'
-                                                      ? 0
-                                                      : 1),
-                                              borderRadius: BorderRadius.only(
-                                                  topLeft: Radius.circular(13),
-                                                  topRight: Radius.circular(13),
-                                                  bottomLeft:
-                                                      Radius.circular(13))),
-                                          child: Center(
-                                            child: Text(model.status!,
+                          child: Container(
+                            padding: EdgeInsets.all(16),
+                            decoration: BoxDecoration(
+                              color: R.color.white,
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Column(children: [
+                              Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(R.string.gan_nhat.tr(),
+                                        style: TextStyle(
+                                            color: R.color.black,
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.w700)),
+                                  ]),
+                              SizedBox(height: 14),
+                              Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        model.hbA1C == 0 || model.hbA1C == null
+                                            ? Text('--',
                                                 style: TextStyle(
-                                                    color: toColor(
-                                                        model.fontColor),
+                                                    color: R.color.textDark,
+                                                    fontSize: 34,
                                                     fontWeight:
-                                                        FontWeight.w600)),
-                                          ))
-                                ]),
-                            SizedBox(height: 14),
-                            Stack(
-                                alignment: AlignmentDirectional.bottomEnd,
-                                children: [
-                                  Container(
-                                      padding: EdgeInsets.only(
-                                          top: 16, right: 16, left: 16),
-                                      decoration: BoxDecoration(
-                                        color: R.color.white,
-                                        borderRadius: BorderRadius.circular(16),
-                                      ),
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.end,
-                                        children: [
-                                          Expanded(
-                                            child: Row(
-                                              children: [
-                                                Expanded(
-                                                  child: Column(
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .start,
-                                                    // mainAxisAlignment:
-                                                    //     MainAxisAlignment.spaceBetween,
-                                                    children: [
-                                                      Text(R.string.detail.tr(),
-                                                          style: TextStyle(
-                                                              color:
-                                                                  R.color.black,
-                                                              fontSize: 16,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w700)),
-                                                      SizedBox(height: 8),
-                                                      Text(model.description!,
-                                                          style: TextStyle(
-                                                              color: R.color.textDark,
-                                                              fontSize: 15,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w400)),
-                                                      SizedBox(height: 16)
-                                                    ],
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                          SizedBox(width: 115),
-                                        ],
-                                      )),
-                                  Padding(
-                                      padding: EdgeInsets.only(right: 16),
-                                      child: model.imageUrl == null
-                                          ? SizedBox()
-                                          : NetWorkImageWidget(imageUrl: model.imageUrl!.url!,
-                                              fit: BoxFit.fill))
-                                ]),
-                          ]),
+                                                        FontWeight.w700))
+                                            : Text(
+                                                model.hbA1C
+                                                    .toString()
+                                                    .split('.')
+                                                    .join(','),
+                                                style: TextStyle(
+                                                    fontFamily: 'Viga',
+                                                    color: toColor(
+                                                        model.percentColor),
+                                                    fontSize: 34,
+                                                    fontWeight:
+                                                        FontWeight.w400)),
+                                        Text('%',
+                                            style: TextStyle(
+                                                color: model.hbA1C == 0 ||
+                                                        model.hbA1C == null
+                                                    ? R.color.textDark
+                                                    : toColor(
+                                                        model.percentColor),
+                                                fontSize: 24,
+                                                fontWeight: FontWeight.w700)),
+                                        SizedBox(width: 8),
+                                        Text(
+                                            model.differentPercentage == 0 ||
+                                                    model.differentPercentage ==
+                                                        null
+                                                ? ''
+                                                : (model.differentPercentage! >
+                                                        0
+                                                    ? '(+${model.differentPercentage}%)'
+                                                    : '(${model.differentPercentage}%)'),
+                                            style: TextStyle(
+                                                color: R.color.primaryGreyColor,
+                                                fontSize: 20,
+                                                fontWeight: FontWeight.w400)),
+                                      ],
+                                    ),
+                                    model.hbA1C == 0 || model.hbA1C == null
+                                        ? SizedBox()
+                                        : Container(
+                                            height: 32,
+                                            padding: EdgeInsets.only(
+                                                left: 14, right: 14),
+                                            decoration: BoxDecoration(
+                                                color: toColor(
+                                                    model.backgroundColor),
+                                                border: Border.all(
+                                                    color: model.borderColor ==
+                                                            'None'
+                                                        ? R.color.transparent
+                                                        : toColor(
+                                                            model.borderColor),
+                                                    width: model.borderColor ==
+                                                            'None'
+                                                        ? 0
+                                                        : 1),
+                                                borderRadius: BorderRadius.only(
+                                                    topLeft:
+                                                        Radius.circular(13),
+                                                    topRight:
+                                                        Radius.circular(13),
+                                                    bottomLeft:
+                                                        Radius.circular(13))),
+                                            child: Center(
+                                              child: Text(model.status!,
+                                                  style: TextStyle(
+                                                      color: toColor(
+                                                          model.fontColor),
+                                                      fontWeight:
+                                                          FontWeight.w600)),
+                                            ))
+                                  ]),
+                              // SizedBox(height: ư14),
+                              // Stack(
+                              //     alignment: AlignmentDirectional.bottomEnd,
+                              //     children: [
+                              //       Container(
+                              //           padding: EdgeInsets.only(
+                              //               top: 16, right: 16, left: 16),
+                              //           decoration: BoxDecoration(
+                              //             color: R.color.white,
+                              //             borderRadius: BorderRadius.circular(16),
+                              //           ),
+                              //           child: Row(
+                              //             mainAxisAlignment:
+                              //                 MainAxisAlignment.spaceBetween,
+                              //             crossAxisAlignment:
+                              //                 CrossAxisAlignment.end,
+                              //             children: [
+                              //               Expanded(
+                              //                 child: Row(
+                              //                   children: [
+                              //                     Expanded(
+                              //                       child: Column(
+                              //                         crossAxisAlignment:
+                              //                             CrossAxisAlignment
+                              //                                 .start,
+                              //                         // mainAxisAlignment:
+                              //                         //     MainAxisAlignment.spaceBetween,
+                              //                         children: [
+                              //                           Text(R.string.detail.tr(),
+                              //                               style: TextStyle(
+                              //                                   color:
+                              //                                       R.color.black,
+                              //                                   fontSize: 16,
+                              //                                   fontWeight:
+                              //                                       FontWeight
+                              //                                           .w700)),
+                              //                           SizedBox(height: 8),
+                              //                           Text(model.description!,
+                              //                               style: TextStyle(
+                              //                                   color: R.color.textDark,
+                              //                                   fontSize: 15,
+                              //                                   fontWeight:
+                              //                                       FontWeight
+                              //                                           .w400)),
+                              //                           SizedBox(height: 16)
+                              //                         ],
+                              //                       ),
+                              //                     ),
+                              //                   ],
+                              //                 ),
+                              //               ),
+                              //               SizedBox(width: 115),
+                              //             ],
+                              //           )),
+                              //       Padding(
+                              //           padding: EdgeInsets.only(right: 16),
+                              //           child: model.imageUrl == null
+                              //               ? SizedBox()
+                              //               : NetWorkImageWidget(imageUrl: model.imageUrl!.url!,
+                              //                   fit: BoxFit.fill))
+                              //     ]),
+                            ]),
+                          ),
                         ),
                       ]),
                     ],
