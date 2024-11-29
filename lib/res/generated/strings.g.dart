@@ -1166,4 +1166,13 @@ class Strings {
   String get select_hour => 'select_hour';
   String get the_afternoon => 'the_afternoon';
   String get change_booking => 'change_booking';
+  String get back_home_page => 'back_home_page';
+  String get customer_information => 'customer_information';
+  String get schedule_information => 'schedule_information';
+  String get confirmed => 'confirmed';
+  String get confirm_schedule => 'confirm_schedule';
+  String get confirm_schedule_content => 'confirm_schedule_content';
+  String get confirm_change_schedule => 'confirm_change_schedule';
+  String get confirm_change_schedule_content => 'confirm_change_schedule_content';
+  String get join_now => 'join_now';
 }

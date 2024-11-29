@@ -173,7 +173,11 @@ class _CustomCalendarDatePickerState extends State<CustomHorizontalDatePicker> {
           final isSelected = DateUtil.isSameDate(date, _selectedDate!);
           final hasSlot = isHasSlot(date);
           return InkWell(
-            onTap: () => _handleDayChanged(date),
+            onTap: () {
+              if (hasSlot) {
+                _handleDayChanged(date);
+              }
+            },
             child: Container(
               width: _datePickerWidth,
               height: _datePickerHeight,

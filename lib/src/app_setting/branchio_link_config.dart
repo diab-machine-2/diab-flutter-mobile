@@ -5,8 +5,14 @@ import 'package:flutter_branch_sdk/flutter_branch_sdk.dart';
 import 'package:medical/src/app.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/modal/learning/learning_post_model.dart';
+import 'package:medical/src/model/repository/app_repository.dart';
+import 'package:medical/src/model/response/create_calendar_response.dart';
+import 'package:medical/src/model/service/api_result.dart';
+import 'package:medical/src/model/service/network_exceptions.dart';
 import 'package:medical/src/repo/user/user_client.dart';
+import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigator_name.dart';
+import 'package:medical/src/widget/calendar/calendar_model.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/service/zoom_service.dart';
 
@@ -78,13 +84,51 @@ class BranchioLinkConfig {
     if (!isExist) {
       return;
     }
+
     if (_courseId != null) {
       if (initial) {
         await Future.delayed(Duration(milliseconds: 500));
       }
-      navigatorKey.currentState?.pushNamed(NavigatorName.calendar_booking,
-          arguments: {'courseId': _courseId, 'endTime': _endTime});
-      _resetDataLink();
+
+      final startDate = DateTime.now().add(Duration(days: 0));
+      final endDate = DateTime.now().add(Duration(days: 21));
+      int bookingQuantity = 0;
+
+      final request = CalendarFilter(
+          accountPatientId: AppSettings.userInfo!.accountId,
+          courseId: _courseId!,
+          fromDate: startDate,
+          toDate: endDate,
+          calendarType: 1);
+      final ApiResult<List<CreateCalendarResponse>> apiResult =
+          await AppRepository().getMyCalendar(request);
+      apiResult.when(success: (List<CreateCalendarResponse> response) {
+        if (response.length > 0) {
+          bookingQuantity = response.length;
+          if (bookingQuantity >= 1) {
+            navigatorKey.currentState
+                ?.pushNamed(NavigatorName.calendar, arguments: {
+              "pickSlot": response.firstWhere(
+                  (element) => element.isDeleted == false,
+                  orElse: null),
+              "courseId": _courseId,
+              "endTime": _endTime,
+              "bookingQuantity": bookingQuantity,
+            });
+            _resetDataLink();
+            return;
+          }
+        }
+      }, failure: (NetworkExceptions error) {
+        // emit(CalendarBookingFailure("Lỗi hệ thống trong quá trình tạo lịch"));
+        return;
+      });
+
+      if (bookingQuantity == 0) {
+        navigatorKey.currentState?.pushNamed(NavigatorName.calendar_booking,
+            arguments: {'courseId': _courseId, 'endTime': _endTime});
+        _resetDataLink();
+      }
     }
   }
 
