@@ -85,4 +85,7 @@ class NavigatorName {
   static const String test_ocr_camera = '/test_ocr_camera';
   static const String test_ocr_gallery = '/test_ocr_gallery';
   static const String test_ocr_result = '/test_ocr_result';
+
+  // New Glucose
+  static const String glucose_intro = '/glucose-intro';
 }
