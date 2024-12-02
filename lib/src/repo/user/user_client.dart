@@ -88,16 +88,28 @@ class UserClient extends FetchClient {
   }
 
   Future<List<CalendarCoachModel>?> fetchCalendarCoach(
-      String courseId, String endTime) async {
+      String courseId, String endTime,
+      {bool isAdd1Day = true}) async {
     try {
-      final targetTime = (DateTime.now()
-              .add(Duration(days: 1, hours: 7))
+      // final targetTime =
+      //     (DateTime.now().add(Duration(hours: 7)).millisecondsSinceEpoch ~/
+      //         1000);
+      final localTargetTime = DateTime.utc(
+                  DateTime.now().year,
+                  DateTime.now().month,
+                  DateTime.now().day,
+                  DateTime.now().hour,
+                  DateTime.now().minute,
+                  DateTime.now().second)
+              .toLocal()
+              .add(Duration(days: isAdd1Day ? 1 : 0))
               .millisecondsSinceEpoch ~/
-          1000);
+          1000;
+
       final Response response =
           await super.fetchData(url: '/App/CalendarCoach/', params: {
         "courseId": courseId,
-        "startTime": targetTime
+        "startTime": localTargetTime
             .toString(), // only booking calendar after currentday + 24h
         "endTime": endTime
       });
