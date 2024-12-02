@@ -283,7 +283,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
           //   return time.isAfter(DateTime.now());
           // })
           .map((e) {
-        final time = DateUtil.parseTimespanToDateTime(e.time);
+        final time = DateUtil.parseTimespanToDateTime(e.time).toLocal();
         final timeString = _reminderFormatter.format(time);
 
         return HomeReminderData(
@@ -298,7 +298,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       currentState =
           currentState.copyWith(reminders: reminders, reminderLoading: false);
     } else {
-      currentState = currentState.copyWith(reminderLoading: false);
+      currentState = currentState.copyWith(reminders: [], reminderLoading: false);
     }
     yield currentState;
   }
