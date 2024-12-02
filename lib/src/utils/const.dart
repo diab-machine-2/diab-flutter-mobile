@@ -193,4 +193,5 @@ class Const {
   static const String HOTLINE_NUMBER = '0931888832';
   static const String ZALO_OA_TECHNICAL_SUPPORT_LINK =
       'https://zalo.me/4592543430802584018';
+  static const int MAX_DAY_RANGE_PRIMARY_SCREENING = 14;
 }
