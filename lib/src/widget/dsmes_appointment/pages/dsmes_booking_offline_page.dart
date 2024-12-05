@@ -10,18 +10,20 @@ import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/dsmes_appointment/dsmes_appointment_cubit.dart';
 import 'package:medical/src/widget/dsmes_appointment/model/dsmes_appointment_model.dart';
 import 'package:medical/src/widget/dsmes_appointment/dsmes_appointment_state.dart';
+import 'package:medical/src/widget/dsmes_appointment/model/dsmes_clinic_model.dart';
 import 'package:medical/src/widget/dsmes_appointment/widgets/dsmes_appointment_item.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
-class DsmesAppointmentPage extends StatefulWidget {
-  const DsmesAppointmentPage({Key? key}) : super(key: key);
+class DsmesBookingOfflinePage extends StatefulWidget {
+  const DsmesBookingOfflinePage({Key? key}) : super(key: key);
 
   @override
-  _DsmesAppointmentPageState createState() => _DsmesAppointmentPageState();
+  _DsmesBookingOfflinePageState createState() =>
+      _DsmesBookingOfflinePageState();
 }
 
-class _DsmesAppointmentPageState extends State<DsmesAppointmentPage> {
+class _DsmesBookingOfflinePageState extends State<DsmesBookingOfflinePage> {
   final RefreshController _controller = RefreshController();
   late DsmesAppointmentCubit _cubit;
 
@@ -30,7 +32,7 @@ class _DsmesAppointmentPageState extends State<DsmesAppointmentPage> {
     super.initState();
     final AppRepository repository = AppRepository();
     _cubit = DsmesAppointmentCubit(repository);
-    _cubit.getDsmesAppointmentList();
+    _cubit.getClinicDetail(id: 861);
   }
 
   @override
@@ -159,49 +161,20 @@ class _DsmesAppointmentPageState extends State<DsmesAppointmentPage> {
                       physics: NeverScrollableScrollPhysics(),
                       padding: EdgeInsets.zero,
                       shrinkWrap: true,
-                      itemCount: _cubit.listFilteredData.length,
+                      itemCount: _cubit.listClinic.length,
                       separatorBuilder: (context, index) => SizedBox(
                         height: 16,
                       ),
                       itemBuilder: (context, index) {
-                        DsmesAppointment data = _cubit.listFilteredData[index];
-                        return DsmesAppointmentItem(
-                          data: data,
-                          onChooseService: () {
-                            // Handle on tap detail
-                          },
-                          cubit: _cubit,
+                        DsmesClinicModel data = _cubit.listClinic[index];
+                        return Container(
+                          child: Text(data.name),
                         );
                       },
                     ),
                     SizedBox(
                       height: 20,
                     ),
-                    GestureDetector(
-                      onTap: () {
-                        // TODO: Handle create booking online
-                      },
-                      child: Image.asset(R.drawable.online_consulting),
-                    ),
-                    SizedBox(
-                      height: 20,
-                    ),
-                    GestureDetector(
-                       onTap: () {
-                        // TODO: Handle create booking offline
-                        Navigator.pushNamed(
-                            context, NavigatorName.dsmes_booking_offline);
-                      },
-                      child: Image.asset(R.drawable.offline_consulting),
-                    ),
-                    // Container(
-                    //     width: 128 ,
-                    //     child: ButtonWidget(
-                    //         title: R.string.text_continue.tr(),
-                    //         onPressed: () {
-                    //           NavigationUtil.navigatePage(
-                    //               context, UpgradeAccountPage());
-                    //         }))
                   ],
                 ),
               ),

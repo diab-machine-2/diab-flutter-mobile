@@ -1,4 +1,4 @@
-import 'package:medical/src/widget/dsmes_appointment/dsmes_appointment_model.dart';
+import 'package:medical/src/widget/dsmes_appointment/model/dsmes_appointment_model.dart';
 
 class GetDsmesAppointmentResponse {
   final int code;

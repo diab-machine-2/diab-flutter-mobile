@@ -4,17 +4,22 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
+import 'package:medical/src/model/response/dsmes_clinic_detail_response.dart';
+import 'package:medical/src/model/response/dsmes_clinic_list_response.dart';
 import 'package:medical/src/model/response/get_dsmes_appointment_response.dart';
 import 'package:medical/src/model/service/api_result.dart';
 import 'package:medical/src/model/service/network_exceptions.dart';
-import 'package:medical/src/widget/dsmes_appointment/dsmes_appointment_model.dart';
+import 'package:medical/src/widget/dsmes_appointment/model/dsmes_appointment_model.dart';
 import 'package:medical/src/widget/dsmes_appointment/dsmes_appointment_state.dart';
+import 'package:medical/src/widget/dsmes_appointment/model/dsmes_clinic_model.dart';
 
 class DsmesAppointmentCubit extends Cubit<DsmesAppointmentState> {
   final AppRepository appRepository;
 
   late List<DsmesAppointment> listData = [];
   late List<DsmesAppointment> listFilteredData = [];
+  late List<DsmesClinicModel> listClinic = [];
+
   int currentPage = 1;
   bool hasMore = true;
 
@@ -48,6 +53,19 @@ class DsmesAppointmentCubit extends Cubit<DsmesAppointmentState> {
         listData.addAll(response.data);
         listFilteredData = _getFilteredData();
       }
+      emit(DsmesAppointmentLoaded());
+    }, failure: (NetworkExceptions error) {
+      emit(DsmesAppointmentFailure(NetworkExceptions.getErrorMessage(error)));
+    });
+  }
+
+  Future<void> getClinicDetail({required int id}) async {
+    emit(DsmesAppointmentLoading());
+    ApiResult<DsmesClinicDetailResponse> apiResult =
+        await appRepository.getClinicDetail(id: id);
+    apiResult.when(success: (DsmesClinicDetailResponse response) {
+      listClinic = [response.data];
+
       emit(DsmesAppointmentLoaded());
     }, failure: (NetworkExceptions error) {
       emit(DsmesAppointmentFailure(NetworkExceptions.getErrorMessage(error)));

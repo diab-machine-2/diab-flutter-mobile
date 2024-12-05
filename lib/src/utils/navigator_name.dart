@@ -89,4 +89,6 @@ class NavigatorName {
   // DSMES BOOKING CENTER
   static const String dsmes_booking = '/dsmes_booking';
   static const String dsmes_booking_history = '/dsmes_booking_history';
+  static const String dsmes_booking_offline = '/dsmes_booking_offline';
+  static const String dsmes_booking_offline_detail = '/dsmes_booking_offline_detail';
 }

@@ -1154,4 +1154,5 @@ consulting_history,"Lịch sử tư vấn","Consulting history",
 consult_at_clinic,"Tư vấn tại trung tâm","Consulting at clinic",
 consult_online,"Tư vấn trực tuyến","Consulting online",
 requested,"Đã yêu cầu","Requested",
-rejected,"Đã huỷ","Rejected"
+rejected,"Đã huỷ","Rejected",
+choose_center,"Chọn trung tâm","Choose center"

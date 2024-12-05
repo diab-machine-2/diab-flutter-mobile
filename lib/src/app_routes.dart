@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/widget/dsmes_appointment/dsmes_appointment_page.dart';
 import 'package:medical/src/widget/dsmes_appointment/pages/dsmes_appointment_history_page.dart';
+import 'package:medical/src/widget/dsmes_appointment/pages/dsmes_booking_offline_page.dart';
 import 'package:medical/src/widget/meeting/meeting_prepare_page.dart';
 import 'package:medical/src/widget/my_plan_screens/activity_tab/create_goal/create_goal.dart';
 import 'package:medical/src/widget/utilities/utilities_page.dart';
@@ -70,6 +71,11 @@ class AppRoutes {
       case NavigatorName.dsmes_booking_history:
         {
           page = DsmesAppointmentHistoryPage();
+          break;
+        }
+        case NavigatorName.dsmes_booking_offline:
+        {
+          page = DsmesBookingOfflinePage();
           break;
         }
       default:

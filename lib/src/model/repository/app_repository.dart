@@ -34,6 +34,8 @@ import 'package:medical/src/model/response/delete_smart_goal_reponse.dart';
 import 'package:medical/src/model/response/detail_package_response.dart';
 import 'package:medical/src/model/response/detail_survey_response.dart';
 import 'package:medical/src/model/response/diabetes_status_response.dart';
+import 'package:medical/src/model/response/dsmes_clinic_detail_response.dart';
+import 'package:medical/src/model/response/dsmes_clinic_list_response.dart';
 import 'package:medical/src/model/response/exercise_movement_response.dart';
 import 'package:medical/src/model/response/expert_comment_list_response.dart';
 import 'package:medical/src/model/response/filter_data_response.dart';
@@ -940,6 +942,18 @@ class AppRepository {
     try {
       final response = await docosanClient.getListDsmesAppointment(
         GetDsmesAppointmentRequest(page: page),
+      );
+      return ApiResult.success(data: response);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
+  Future<ApiResult<DsmesClinicDetailResponse>> getClinicDetail(
+      {required int id}) async {
+    try {
+      final response = await docosanClient.getClinicDetail(
+        816,
       );
       return ApiResult.success(data: response);
     } catch (e) {

@@ -7,7 +7,7 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/dsmes_appointment/dsmes_appointment_cubit.dart';
-import 'package:medical/src/widget/dsmes_appointment/dsmes_appointment_model.dart';
+import 'package:medical/src/widget/dsmes_appointment/model/dsmes_appointment_model.dart';
 import 'package:medical/src/widget/dsmes_appointment/dsmes_appointment_state.dart';
 import 'package:medical/src/widget/dsmes_appointment/widgets/dsmes_appointment_item.dart';
 import 'package:medical/src/widget/helper/show_message.dart';

@@ -1181,4 +1181,5 @@ class Strings {
   String get consult_online => 'consult_online';
   String get requested => 'requested';
   String get rejected => 'rejected';
+  String get choose_center => 'choose_center';
 }
