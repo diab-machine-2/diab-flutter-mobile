@@ -14,6 +14,12 @@ class Const {
   static const String HOST_URL_STAGING = "https://$DOMAIN_STAGING/";
   static const String HOST_URL_DEV = "https://$DOMAIN_DEV/";
 
+  static const String DOCOSAN_DOMAIN = "api.docosan.com";
+  static const String DOCOSAN_DOMAIN_STAGING = "api.staging.docosan.com";
+
+  static const String HOST_DOCOSAN_URL = "https://$DOCOSAN_DOMAIN/";
+  static const String HOST_DOCOSAN_URL_STAGING = "https://$DOCOSAN_DOMAIN_STAGING/";
+
   // ignore: non_constant_identifier_names
   static String API_URL = "${HOST_URL}api/";
 
@@ -194,4 +200,5 @@ class Const {
   static const String ZALO_OA_TECHNICAL_SUPPORT_LINK =
       'https://zalo.me/4592543430802584018';
   static const int MAX_DAY_RANGE_PRIMARY_SCREENING = 14;
+  static const DOCOSAN_TOKEN = 'docosan_token';
 }

@@ -41,6 +41,8 @@ import 'package:medical/src/widget/calendar/calendar_booking_page.dart';
 import 'package:medical/src/widget/calendar/calendar_model.dart';
 import 'package:medical/src/widget/calendar/calendar_page.dart';
 import 'package:medical/src/widget/calendar/interview_success.dart';
+import 'package:medical/src/widget/dsmes_appointment/dsmes_appointment_page.dart';
+import 'package:medical/src/widget/dsmes_appointment/pages/dsmes_appointment_history_page.dart';
 import 'package:medical/src/widget/flash_screen/flash_screen.dart';
 import 'package:medical/src/widget/home/widget/sync_loading.dart';
 import 'package:medical/src/widget/login/change_password.dart';
@@ -662,6 +664,20 @@ class App extends StatelessWidget {
                     return _buildRoute(settings, TestOcrCamera());
                   case NavigatorName.test_ocr_gallery:
                     return _buildRoute(settings, TestOcrGallery());
+
+                  // DSMES Booking
+                  case NavigatorName.dsmes_booking:
+                    final args = settings.arguments as Map<String, dynamic>;
+                    return _buildRoute(
+                      settings,
+                      DsmesAppointmentPage(),
+                    );
+                  case NavigatorName.dsmes_booking_history:
+                    final args = settings.arguments as Map<String, dynamic>;
+                    return _buildRoute(
+                      settings,
+                      DsmesAppointmentHistoryPage(),
+                    );
 
                   default:
                     return null;

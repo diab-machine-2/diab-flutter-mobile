@@ -573,4 +573,10 @@ class Drawables {
   String get ic_reminder => "lib/res/drawables/ic_reminder.png";
   String get ic_schedule_hb1ac => "lib/res/drawables/ic_schedule_hb1ac.png";
   String get ic_schedule_height => "lib/res/drawables/ic_schedule_height.png";
+  String get ic_at_clinic => "lib/res/drawables/ic_at_clinic.png";
+  String get ic_telemedicine => "lib/res/drawables/ic_telemedicine.png";
+  String get ic_ellipse => "lib/res/drawables/ic_ellipse.png";
+  String get ic_map_marker => "lib/res/drawables/ic_map_marker.png";
+  String get online_consulting => "lib/res/drawables/online_consulting.png";
+  String get offline_consulting => "lib/res/drawables/offline_consulting.png";
 }

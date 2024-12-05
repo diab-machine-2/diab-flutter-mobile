@@ -1175,4 +1175,10 @@ class Strings {
   String get confirm_change_schedule => 'confirm_change_schedule';
   String get confirm_change_schedule_content => 'confirm_change_schedule_content';
   String get join_now => 'join_now';
+  String get health_consulting => 'health_consulting';
+  String get consulting_history => 'consulting_history';
+  String get consult_at_clinic => 'consult_at_clinic';
+  String get consult_online => 'consult_online';
+  String get requested => 'requested';
+  String get rejected => 'rejected';
 }

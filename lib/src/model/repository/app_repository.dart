@@ -1,4 +1,5 @@
 import 'package:medical/src/modal/exercrises/exercises_intensity.dart';
+import 'package:medical/src/model/docosan_api.dart';
 import 'package:medical/src/model/request/booking_success_request.dart';
 import 'package:medical/src/model/request/complete_exercise_request.dart';
 import 'package:medical/src/model/request/complete_smart_goal_request.dart';
@@ -8,6 +9,7 @@ import 'package:medical/src/model/request/create_smart_goal_request.dart';
 import 'package:medical/src/model/request/delete_calendar_request.dart';
 import 'package:medical/src/model/request/exercise_feedback_request.dart';
 import 'package:medical/src/model/request/food_change_request.dart';
+import 'package:medical/src/model/request/get_dsmes_appointment_request.dart';
 import 'package:medical/src/model/request/ios_receipt_request.dart';
 import 'package:medical/src/model/request/lesson_filter_request.dart';
 import 'package:medical/src/model/request/make_comment_request.dart';
@@ -36,6 +38,7 @@ import 'package:medical/src/model/response/exercise_movement_response.dart';
 import 'package:medical/src/model/response/expert_comment_list_response.dart';
 import 'package:medical/src/model/response/filter_data_response.dart';
 import 'package:medical/src/model/response/food_suggest_response.dart';
+import 'package:medical/src/model/response/get_dsmes_appointment_response.dart';
 import 'package:medical/src/model/response/latest_hba1c_input_response.dart';
 import 'package:medical/src/model/response/learning_post_response.dart';
 import 'package:medical/src/model/response/lesson_module_response.dart';
@@ -64,6 +67,7 @@ import 'package:medical/src/model/response/user_info_response.dart';
 import 'package:medical/src/model/response/week_states_response.dart';
 import 'package:medical/src/model/response/zoom_token_response.dart';
 import 'package:medical/src/model/service/api_result.dart';
+import 'package:medical/src/model/service/docosan_client.dart';
 import 'package:medical/src/model/service/network_exceptions.dart';
 import 'package:medical/src/widget/calendar/calendar_model.dart';
 
@@ -77,6 +81,7 @@ import '../response/expert_comment_response.dart';
 import '../service/app_client.dart';
 
 late AppApi appClient;
+late DocosanApi docosanClient;
 
 class AppRepository {
   /// Package flow
@@ -235,6 +240,7 @@ class AppRepository {
 
   Future<ApiResult<List<AppVersionResponse>>> getAppVersion() async {
     appClient = AppClient().appClient;
+    docosanClient = DocosanClient().docosanClient;
     try {
       final List<AppVersionResponse> response = await appClient.getAppVersion();
       return ApiResult.success(data: response);
@@ -923,6 +929,19 @@ class AppRepository {
     try {
       await appClient.updateDoneInterview(id);
       return ApiResult.success(data: CommonResponse(statusCode: 200));
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
+  // Dsmes booking center
+  Future<ApiResult<GetDsmesAppointmentResponse>> getDsmesAppointmentList(
+      {int page = 1}) async {
+    try {
+      final response = await docosanClient.getListDsmesAppointment(
+        GetDsmesAppointmentRequest(page: page),
+      );
+      return ApiResult.success(data: response);
     } catch (e) {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));
     }

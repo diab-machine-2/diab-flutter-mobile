@@ -149,4 +149,11 @@ class Colors {
   Color get color0xff004ED5 => Color(0xff004ED5);
   Color get color0xff52525B => Color(0xff52525B);
   Color get color0xffBE8B0E => Color(0xffBE8B0E);
+  Color get color0xffECFFFD => Color(0xffECFFFD);
+  Color get color0xffA4E3DD => Color(0xffA4E3DD);
+  Color get color0xff239A90 => Color(0xff239A90);
+  Color get color0xffC34040 => Color(0xffC34040);
+  Color get color0xffE0E4EA => Color(0xffE0E4EA);
+  Color get color0xffDC0000 => Color(0xffDC0000);
+  Color get color0xffD59200 => Color(0xffD59200);
 }

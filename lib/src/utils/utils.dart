@@ -417,6 +417,14 @@ class Utils {
     }
   }
 
+  static String getHostDocosanUrl() {
+    if (AppSettings.environment == "product") {
+      return Const.HOST_DOCOSAN_URL;
+    } else {
+      return Const.HOST_DOCOSAN_URL_STAGING;
+    }
+  }
+
   static String showValue(double number) {
     if (number == number.toInt()) {
       return number.toInt().toString();

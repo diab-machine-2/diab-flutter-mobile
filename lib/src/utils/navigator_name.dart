@@ -85,4 +85,8 @@ class NavigatorName {
   static const String test_ocr_camera = '/test_ocr_camera';
   static const String test_ocr_gallery = '/test_ocr_gallery';
   static const String test_ocr_result = '/test_ocr_result';
+
+  // DSMES BOOKING CENTER
+  static const String dsmes_booking = '/dsmes_booking';
+  static const String dsmes_booking_history = '/dsmes_booking_history';
 }

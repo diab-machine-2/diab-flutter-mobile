@@ -1,0 +1,264 @@
+class DsmesAppointment {
+  final int id;
+  final String? prefix;
+  final int? groupId;
+  final int doctorId;
+  final String requester;
+  final int patientId;
+  final String? patientAddress;
+  final int clinicId;
+  final String? diagnoses;
+  final String symptom;
+  final String startTime;
+  final String endTime;
+  final int appointmentTime;
+  final String requestByProviders;
+  final String? forChild;
+  final String status;
+  final String? memo;
+  final String isShow;
+  final String? repeatId;
+  final String extraInfo;
+  final int campaignId;
+  final String? promotionCode;
+  final String? affPartner;
+  final String mode;
+  final String type;
+  final String chatWithDoctor;
+  final String createdAt;
+  final String updatedAt;
+  final String? rescheduledAt;
+  final int guestDoctor;
+  final int doctorFeePayment;
+  final dynamic mppFinance;
+  final String contractType;
+  final String? fromSource;
+  final int showOnCalendar;
+  final int? ratingId;
+  final int showChat;
+  final int showPayExtraService;
+  final int showReschedule;
+  final int showJoinCall;
+  final int showCancel;
+  final int showEditReview;
+  final int showAddReview;
+  final int showBookAgain;
+  final int showChatWithDoctor;
+  final int canReview;
+  final int alreadyReview;
+  final List<dynamic> doctor;
+  final ClinicInfo clinic;
+  // final List<dynamic> teleMedicine;
+  final int hasAttachment;
+  final int newAttachments;
+  final int hasNewNote;
+  final int hasNote;
+  final PatientInfo patientInfo;
+
+  DsmesAppointment({
+    required this.id,
+    this.prefix,
+    this.groupId,
+    required this.doctorId,
+    required this.requester,
+    required this.patientId,
+    this.patientAddress,
+    required this.clinicId,
+    this.diagnoses,
+    required this.symptom,
+    required this.startTime,
+    required this.endTime,
+    required this.appointmentTime,
+    required this.requestByProviders,
+    this.forChild,
+    required this.status,
+    this.memo,
+    required this.isShow,
+    this.repeatId,
+    required this.extraInfo,
+    required this.campaignId,
+    this.promotionCode,
+    this.affPartner,
+    required this.mode,
+    required this.type,
+    required this.chatWithDoctor,
+    required this.createdAt,
+    required this.updatedAt,
+    this.rescheduledAt,
+    required this.guestDoctor,
+    required this.doctorFeePayment,
+    this.mppFinance,
+    required this.contractType,
+    this.fromSource,
+    required this.showOnCalendar,
+    this.ratingId,
+    required this.showChat,
+    required this.showPayExtraService,
+    required this.showReschedule,
+    required this.showJoinCall,
+    required this.showCancel,
+    required this.showEditReview,
+    required this.showAddReview,
+    required this.showBookAgain,
+    required this.showChatWithDoctor,
+    required this.canReview,
+    required this.alreadyReview,
+    required this.doctor,
+    required this.clinic,
+    // required this.teleMedicine,
+    required this.hasAttachment,
+    required this.newAttachments,
+    required this.hasNewNote,
+    required this.hasNote,
+    required this.patientInfo,
+  });
+
+  factory DsmesAppointment.fromJson(Map<String, dynamic> json) {
+    return DsmesAppointment(
+      id: json['id'] ?? 0,
+      prefix: json['prefix'],
+      groupId: json['group_id'],
+      doctorId: json['doctor_id'] ?? 0,
+      requester: json['requester'] ?? '',
+      patientId: json['patient_id'] ?? 0,
+      patientAddress: json['patient_address'],
+      clinicId: json['clinic_id'] ?? 0,
+      diagnoses: json['diagnoses'],
+      symptom: json['symptom'] ?? '',
+      startTime: json['start_time'] ?? '',
+      endTime: json['end_time'] ?? '',
+      appointmentTime: json['appointment_time'] ?? 0,
+      requestByProviders: json['request_by_providers'] ?? '',
+      forChild: json['for_child'],
+      status: json['status'] ?? '',
+      memo: json['memo'],
+      isShow: json['is_show'] ?? '',
+      repeatId: json['repeat_id'],
+      extraInfo: json['extra_info'] ?? '',
+      campaignId: json['campaign_id'] ?? 0,
+      promotionCode: json['promotion_code'],
+      affPartner: json['aff_partner'],
+      mode: json['mode'] ?? '',
+      type: json['type'] ?? '',
+      chatWithDoctor: json['chat_with_doctor'] ?? '',
+      createdAt: json['created_at'] ?? '',
+      updatedAt: json['updated_at'] ?? '',
+      rescheduledAt: json['rescheduled_at'],
+      guestDoctor: json['guest_doctor'] ?? 0,
+      doctorFeePayment: json['doctor_fee_payment'] ?? 0,
+      mppFinance: json['mpp_finance'],
+      contractType: json['contract_type'] ?? '',
+      fromSource: json['from_source'],
+      showOnCalendar: json['show_on_calendar'] ?? 0,
+      ratingId: json['rating_id'],
+      showChat: json['show_chat'] ?? 0,
+      showPayExtraService: json['show_pay_extra_service'] ?? 0,
+      showReschedule: json['show_reschedule'] ?? 0,
+      showJoinCall: json['show_join_call'] ?? 0,
+      showCancel: json['show_cancel'] ?? 0,
+      showEditReview: json['show_edit_review'] ?? 0,
+      showAddReview: json['show_add_review'] ?? 0,
+      showBookAgain: json['show_book_again'] ?? 0,
+      showChatWithDoctor: json['show_chat_with_doctor'] ?? 0,
+      canReview: json['can_review'] ?? 0,
+      alreadyReview: json['already_review'] ?? 0,
+      doctor: json['doctor'] ?? [],
+      clinic: ClinicInfo.fromJson(json['clinic'] ?? {}),
+      // teleMedicine: json['teleMedicine'] ?? [],
+      hasAttachment: json['has_attachment'] ?? 0,
+      newAttachments: json['new_attachments'] ?? 0,
+      hasNewNote: json['has_new_note'] ?? 0,
+      hasNote: json['has_note'] ?? 0,
+      patientInfo: PatientInfo.fromJson(json['patient_info'] ?? {}),
+    );
+  }
+}
+
+class ClinicInfo {
+  final String name;
+  final int id;
+  final String lat;
+  final String lng;
+  final String address;
+  final String avatar;
+
+  ClinicInfo({
+    required this.name,
+    required this.id,
+    required this.lat,
+    required this.lng,
+    required this.address,
+    required this.avatar,
+  });
+
+  factory ClinicInfo.fromJson(Map<String, dynamic> json) {
+    return ClinicInfo(
+      name: json['name'] ?? '',
+      id: json['id'] ?? 0,
+      lat: json['lat'] ?? '',
+      lng: json['lng'] ?? '',
+      address: json['address'] ?? '',
+      avatar: json['avatar'] ?? '',
+    );
+  }
+}
+
+class PatientInfo {
+  final int id;
+  final String? avatar;
+  final String displayName;
+  final String gender;
+  final String birthday;
+  final int age;
+
+  PatientInfo({
+    required this.id,
+    this.avatar,
+    required this.displayName,
+    required this.gender,
+    required this.birthday,
+    required this.age,
+  });
+
+  factory PatientInfo.fromJson(Map<String, dynamic> json) {
+    return PatientInfo(
+      id: json['id'] ?? 0,
+      avatar: json['avatar'],
+      displayName: json['display_name'] ?? '',
+      gender: json['gender'] ?? '',
+      birthday: json['birthday'] ?? '',
+      age: json['age'] ?? 0,
+    );
+  }
+}
+
+enum DsmesAppointmentMode {
+  telemedicine,
+  atClinic;
+
+  static DsmesAppointmentMode fromString(String value) {
+    switch (value.toLowerCase()) {
+      case 'telemedicine':
+        return DsmesAppointmentMode.telemedicine;
+      case 'at_clinic':
+        return DsmesAppointmentMode.atClinic;
+      default:
+        throw ArgumentError('Invalid DsmesAppointmentMode value: $value');
+    }
+  }
+
+  String toString() {
+    switch (this) {
+      case DsmesAppointmentMode.telemedicine:
+        return 'telemedicine';
+      case DsmesAppointmentMode.atClinic:
+        return 'at_clinic';
+    }
+  }
+}
+
+// DSMES Appointment Status
+const String DSMES_STATUS_APPROVE = 'approve';
+const String DSMES_STATUS_REJECT = 'reject';
+const String DSMES_STATUS_REQUEST = 'request';
+const String DSMES_STATUS_ON_HOLD = 'on-hold';
