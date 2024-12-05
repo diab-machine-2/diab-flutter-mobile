@@ -62,7 +62,7 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   // config health
-  Health().configure(useHealthConnectIfAvailable: true);
+  Health().configure();
 
   if (Platform.isAndroid) {
     await AndroidInAppWebViewController.setWebContentsDebuggingEnabled(false);
@@ -107,13 +107,14 @@ Future<void> main() async {
   await EasyLocalization.ensureInitialized();
   await Firebase.initializeApp();
 
+  await FlutterBranchSdk.init(enableLogging: false, disableTracking: false);
+
   // var zoom = ZoomVideoSdk();
   // InitConfig initConfig = InitConfig(
   //   domain: "zoom.us",
   //   enableLog: true,
   // );
   // zoom.initSdk(initConfig);
-  await FlutterBranchSdk.init(enableLogging: false, disableTracking: false);
 
   SystemChrome.setPreferredOrientations(
       [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]).then((_) {

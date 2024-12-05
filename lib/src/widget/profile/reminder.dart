@@ -20,7 +20,7 @@ class ReminderController extends StatefulWidget {
   _ReminderControllerState createState() => _ReminderControllerState();
 }
 
-class _ReminderControllerState extends State<ReminderController> with Observer  {
+class _ReminderControllerState extends State<ReminderController> with Observer {
   List<ScheduleReminderModel>? models;
 
   bool isLoading = false;
@@ -40,10 +40,8 @@ class _ReminderControllerState extends State<ReminderController> with Observer  
   }
 
   Future firebaseSetup() async {
-    await TrackingManager.analytics.logScreenView(
-      screenName: "remind", 
-      screenClass: "ReminderController"
-    );
+    await TrackingManager.analytics
+        .logScreenView(screenName: "remind", screenClass: "ReminderController");
     AppSettings.currentScreenName = 'remind';
   }
 
@@ -61,7 +59,6 @@ class _ReminderControllerState extends State<ReminderController> with Observer  
     setState(() {});
     return true;
   }
-
 
   @override
   void dispose() {
@@ -101,8 +98,8 @@ class _ReminderControllerState extends State<ReminderController> with Observer  
                       highlightColor: R.color.transparent,
                       icon: Icon(Icons.arrow_back, color: R.color.textDark),
                       onPressed: () {
-                        Observable.instance
-                            .notifyObservers([], notifyName: "refresh_home_activity");
+                        Observable.instance.notifyObservers([],
+                            notifyName: "refresh_home_activity");
                         Navigator.pop(context);
                       }),
                 ),
@@ -116,47 +113,43 @@ class _ReminderControllerState extends State<ReminderController> with Observer  
                               : ListView(
                                   padding: EdgeInsets.all(0),
                                   keyboardDismissBehavior:
-                                      ScrollViewKeyboardDismissBehavior
-                                          .onDrag,
+                                      ScrollViewKeyboardDismissBehavior.onDrag,
                                   children: [
-                                    Column(
-                                      children: [
-                                        Image.asset(
-                                            R.drawable.img_reminder,
-                                            height: 113),
-                                        Padding(
-                                          padding: EdgeInsets.only(
-                                              left: 16,
-                                              right: 16,
-                                              top: 32,
-                                              bottom: 32),
-                                          child: Text(
-                                              R.string.let_diab_remind_you.tr(),
-                                              style:
-                                                  TextStyle(fontSize: 16),
-                                              textAlign: TextAlign.center),
-                                        )
-                                      ],
-                                    ),
-                                    ListView.separated(
-                                      padding: EdgeInsets.all(0),
-                                      physics:
-                                          NeverScrollableScrollPhysics(),
-                                      shrinkWrap: true,
-                                      itemCount: models!.length,
-                                      separatorBuilder:
-                                          (BuildContext context,
-                                              int index) {
-                                        return Container(
-                                            height: 1,
-                                            color: R.color.color0xffE5E5E5);
-                                      },
-                                      itemBuilder: (BuildContext context,
-                                          int index) {
-                                        return buildItem(index);
-                                      },
-                                    )
-                                  ]),
+                                      Column(
+                                        children: [
+                                          Image.asset(R.drawable.img_reminder,
+                                              height: 113),
+                                          Padding(
+                                            padding: EdgeInsets.only(
+                                                left: 16,
+                                                right: 16,
+                                                top: 32,
+                                                bottom: 32),
+                                            child: Text(
+                                                R.string.let_diab_remind_you
+                                                    .tr(),
+                                                style: TextStyle(fontSize: 16),
+                                                textAlign: TextAlign.center),
+                                          )
+                                        ],
+                                      ),
+                                      ListView.separated(
+                                        padding: EdgeInsets.all(0),
+                                        physics: NeverScrollableScrollPhysics(),
+                                        shrinkWrap: true,
+                                        itemCount: models!.length,
+                                        separatorBuilder:
+                                            (BuildContext context, int index) {
+                                          return Container(
+                                              height: 1,
+                                              color: R.color.color0xffE5E5E5);
+                                        },
+                                        itemBuilder:
+                                            (BuildContext context, int index) {
+                                          return buildItem(index);
+                                        },
+                                      )
+                                    ]),
                         ))),
                 SizedBox(height: 32)
               ])),
@@ -172,8 +165,8 @@ class _ReminderControllerState extends State<ReminderController> with Observer  
               Navigator.pushNamed(context, NavigatorName.add_reminder,
                   arguments: {'type': 'input'});
             },
-            child: Image.asset(R.drawable.ic_button_plus,
-                width: 80, height: 80),
+            child:
+                Image.asset(R.drawable.ic_button_plus, width: 80, height: 80),
           )),
     );
   }
@@ -191,8 +184,7 @@ class _ReminderControllerState extends State<ReminderController> with Observer  
             color: R.color.color0xffFF5552,
             iconWidget:
                 Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-              Image.asset(R.drawable.ic_trash2,
-                  width: 24, height: 24),
+              Image.asset(R.drawable.ic_trash2, width: 24, height: 24),
               SizedBox(height: 4),
               Text(R.string.detele_notificaiton.tr(),
                   style: TextStyle(
@@ -212,11 +204,13 @@ class _ReminderControllerState extends State<ReminderController> with Observer  
             child:
                 Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                Text(models![index].name ?? "",
-                    style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600)),
+                Expanded(
+                  child: Text(models![index].name ?? "",
+                      style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600)),
+                ),
                 CupertinoSwitch(
                   activeColor: R.color.greenGradientBottom,
                   value: models![index].isActive!,
@@ -225,7 +219,8 @@ class _ReminderControllerState extends State<ReminderController> with Observer  
                       name: 'component_clicked',
                       parameters: {
                         "screen_name": 'remind',
-                        'component_name': 'switcher_remind_${value ? "on" : "off"}',
+                        'component_name':
+                            'switcher_remind_${value ? "on" : "off"}',
                         'object_title': models![index].name ?? "",
                         'object_index': index,
                       },
@@ -246,8 +241,7 @@ class _ReminderControllerState extends State<ReminderController> with Observer  
                     ),
               SizedBox(height: 8),
               Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                Image.asset(R.drawable.ic_stopwatch,
-                    width: 24, height: 24),
+                Image.asset(R.drawable.ic_stopwatch, width: 24, height: 24),
                 SizedBox(width: 4),
                 Expanded(
                   child: Text(
@@ -306,7 +300,7 @@ class _ReminderControllerState extends State<ReminderController> with Observer  
     try {
       BotToast.showLoading();
       await UserClient().deleteScheduleReminder(model.id);
-      loadData();
+      Observable.instance.notifyObservers([], notifyName: "schedule_change");
       BotToast.closeAllLoading();
     } catch (e, _) {
       BotToast.closeAllLoading();
@@ -331,8 +325,7 @@ class _ReminderControllerState extends State<ReminderController> with Observer  
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Image.asset(R.drawable.ic_earse,
-                          width: 64, height: 64),
+                      Image.asset(R.drawable.ic_earse, width: 64, height: 64),
                       Padding(
                         padding: const EdgeInsets.only(top: 16.0),
                         child: Text(R.string.mes_detele_notificaiton.tr(),

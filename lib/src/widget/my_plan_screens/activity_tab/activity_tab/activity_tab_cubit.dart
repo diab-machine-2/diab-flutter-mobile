@@ -62,20 +62,53 @@ class ActivityTabCubit extends Cubit<ActivityTabState> {
   int? get currentDay {
     if (isChangeNewWeek && user.ownPackage?.endDateFirst != null) {
       if (currentWeek == currentWeekStudying) {
-        return DateUtil.getCurrentDayInMillis();
+        DateTime dateTime0 = DateTime.utc(DateTime.now().year,
+            DateTime.now().month, DateTime.now().day, 0, 0, 0);
+        final localDateTime = dateTime0.toLocal();
+        int current = (localDateTime.millisecondsSinceEpoch ~/ 1000).toInt();
+        return current;
       } else if (currentWeek == 0) {
         return user.ownPackage?.activationDate ??
             DateUtil.getCurrentDayInMillis();
       } else {
         DateTime dateTime =
             DateUtil.parseTimespanToDateTime(user.ownPackage!.endDateFirst!);
+
+        dateTime =
+            DateTime.utc(dateTime.year, dateTime.month, dateTime.day, 0, 0, 0);
+        if (dateTime.weekday == DateTime.sunday) {
+          dateTime = dateTime.add(const Duration(days: 1));
+        } //Because endDateFirst is Sunday so we add 1 day
+
         dateTime = dateTime.add(Duration(days: (currentWeek! - 1) * 7));
-        return DateUtil.getDayInMillis(dateTime);
+        dateTime = dateTime.toLocal();
+
+        final utcDatetime = DateTime.utc(dateTime.year, dateTime.month,
+            dateTime.day, dateTime.hour, dateTime.minute, dateTime.second);
+        final localDatetime = utcDatetime.toLocal();
+
+        return DateUtil.getDayInMillis(localDatetime);
       }
     } else {
       if (dayStatesList.isEmpty) {
-        return currentDate;
+        DateTime dateTime0 = DateTime.utc(DateTime.now().year,
+            DateTime.now().month, DateTime.now().day, 0, 0, 0);
+        dateTime0 = dateTime0.toLocal();
+        int currentTimestamp =
+            (dateTime0.millisecondsSinceEpoch ~/ 1000).toInt();
+        return currentTimestamp;
       } else {
+        if (user.ownPackage == null) {
+          // TODO: Need backend handle this case, basic account daysInCurrentWeek timestamp not match as package account
+          DateTime dateTime = DateUtil.parseTimespanToDateTime(
+            dayStatesList[currentDayIndex]?.day ?? currentDate!,
+          );
+          dateTime = dateTime.toLocal();
+          final utcDatetime = DateTime.utc(dateTime.year, dateTime.month,
+              dateTime.day, dateTime.hour, dateTime.minute, dateTime.second);
+          final localDatetime = utcDatetime.toLocal();
+          return DateUtil.getDayInMillis(localDatetime);
+        }
         return dayStatesList[currentDayIndex]?.day;
       }
     }

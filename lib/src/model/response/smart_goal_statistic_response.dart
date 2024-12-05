@@ -77,17 +77,17 @@ class SmartGoalStatisticResponseData {
   List<DayInWeekData> get dayInWeekList {
     if (daysInCurrentWeek?.isNotEmpty != true) return [];
     final List<DayInWeekData> dayInWeekList = [];
-    int dayIndex = 7;
+    // int dayIndex = 7;
     for (int index = (daysInCurrentWeek?.length ?? 0) - 1; index >= 0; index--) {
-      if (dayIndex - 1 >= 0) {
-        dayIndex -= 1;
-      } else {
-        dayIndex = 6;
-      }
+      // if (dayIndex - 1 >= 0) {
+      //   dayIndex -= 1;
+      // } else {
+      //   dayIndex = 6;
+      // }
       dayInWeekList.insert(
         0,
         DayInWeekData(
-          title: Utils.getDayInWeekTitle(dayIndex),
+          title: Utils.getDayInWeekTitleFromTimestamp(daysInCurrentWeek?[index]?.day),
           dayStatus: daysInCurrentWeek?[index]?.completionStatus ?? CompletionStatus.not_start_yet,
           dateTime: daysInCurrentWeek?[index]?.day,
         ),

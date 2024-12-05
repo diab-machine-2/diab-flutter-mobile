@@ -26,7 +26,8 @@ class HbA1CDetailState extends State<HbA1CDetail>
 
   @override
   void initState() {
-    periodFilterType = Hba1cDetailTabbarController.of(context)!.periodFilterType;
+    periodFilterType =
+        Hba1cDetailTabbarController.of(context)!.periodFilterType;
     super.initState();
   }
 
@@ -160,67 +161,67 @@ class HbA1CDetailState extends State<HbA1CDetail>
                                                         FontWeight.w600)),
                                           ))
                                 ]),
-                            SizedBox(height: 14),
-                            Stack(
-                                alignment: AlignmentDirectional.bottomEnd,
-                                children: [
-                                  Container(
-                                      padding: EdgeInsets.only(
-                                          top: 16, right: 16, left: 16),
-                                      decoration: BoxDecoration(
-                                        color: R.color.white,
-                                        borderRadius: BorderRadius.circular(16),
-                                      ),
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.end,
-                                        children: [
-                                          Expanded(
-                                            child: Row(
-                                              children: [
-                                                Expanded(
-                                                  child: Column(
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .start,
-                                                    // mainAxisAlignment:
-                                                    //     MainAxisAlignment.spaceBetween,
-                                                    children: [
-                                                      Text(R.string.detail.tr(),
-                                                          style: TextStyle(
-                                                              color:
-                                                                  R.color.black,
-                                                              fontSize: 16,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w700)),
-                                                      SizedBox(height: 8),
-                                                      Text(model.description!,
-                                                          style: TextStyle(
-                                                              color: R.color.textDark,
-                                                              fontSize: 15,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w400)),
-                                                      SizedBox(height: 16)
-                                                    ],
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                          SizedBox(width: 115),
-                                        ],
-                                      )),
-                                  Padding(
-                                      padding: EdgeInsets.only(right: 16),
-                                      child: model.imageUrl == null
-                                          ? SizedBox()
-                                          : NetWorkImageWidget(imageUrl: model.imageUrl!.url!,
-                                              fit: BoxFit.fill))
-                                ]),
+                            // SizedBox(height: ư14),
+                            // Stack(
+                            //     alignment: AlignmentDirectional.bottomEnd,
+                            //     children: [
+                            //       Container(
+                            //           padding: EdgeInsets.only(
+                            //               top: 16, right: 16, left: 16),
+                            //           decoration: BoxDecoration(
+                            //             color: R.color.white,
+                            //             borderRadius: BorderRadius.circular(16),
+                            //           ),
+                            //           child: Row(
+                            //             mainAxisAlignment:
+                            //                 MainAxisAlignment.spaceBetween,
+                            //             crossAxisAlignment:
+                            //                 CrossAxisAlignment.end,
+                            //             children: [
+                            //               Expanded(
+                            //                 child: Row(
+                            //                   children: [
+                            //                     Expanded(
+                            //                       child: Column(
+                            //                         crossAxisAlignment:
+                            //                             CrossAxisAlignment
+                            //                                 .start,
+                            //                         // mainAxisAlignment:
+                            //                         //     MainAxisAlignment.spaceBetween,
+                            //                         children: [
+                            //                           Text(R.string.detail.tr(),
+                            //                               style: TextStyle(
+                            //                                   color:
+                            //                                       R.color.black,
+                            //                                   fontSize: 16,
+                            //                                   fontWeight:
+                            //                                       FontWeight
+                            //                                           .w700)),
+                            //                           SizedBox(height: 8),
+                            //                           Text(model.description!,
+                            //                               style: TextStyle(
+                            //                                   color: R.color.textDark,
+                            //                                   fontSize: 15,
+                            //                                   fontWeight:
+                            //                                       FontWeight
+                            //                                           .w400)),
+                            //                           SizedBox(height: 16)
+                            //                         ],
+                            //                       ),
+                            //                     ),
+                            //                   ],
+                            //                 ),
+                            //               ),
+                            //               SizedBox(width: 115),
+                            //             ],
+                            //           )),
+                            //       Padding(
+                            //           padding: EdgeInsets.only(right: 16),
+                            //           child: model.imageUrl == null
+                            //               ? SizedBox()
+                            //               : NetWorkImageWidget(imageUrl: model.imageUrl!.url!,
+                            //                   fit: BoxFit.fill))
+                            //     ]),
                           ]),
                         ),
                       ]),

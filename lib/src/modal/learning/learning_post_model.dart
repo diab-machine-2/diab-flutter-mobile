@@ -50,10 +50,12 @@ class LearningPostModel {
       createDatetime: json['createDatetime'],
       learningPostTagMappings: _learningPostTagMappings,
       imageUrl: ImagesModel.fromJson(json['imageUrl']),
-      imagePartnerUrl:
-          json['imagePartnerUrl'] != null ? ImagesModel.fromJson(json['imagePartnerUrl']) : null,
-      imageBannerUrl:
-          json['imageBannerUrl'] != null ? ImagesModel.fromJson(json['imageBannerUrl']) : null,
+      imagePartnerUrl: json['imagePartnerUrl'] != null
+          ? ImagesModel.fromJson(json['imagePartnerUrl'])
+          : null,
+      imageBannerUrl: json['imageBannerUrl'] != null
+          ? ImagesModel.fromJson(json['imageBannerUrl'])
+          : null,
     );
   }
 
@@ -63,6 +65,25 @@ class LearningPostModel {
 
   static LearningPostModel toItem(dynamic item) {
     return LearningPostModel.fromJson(item);
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'title': title,
+      'link': link,
+      'imageUrl': imageUrl.toJson(),
+      'imagePartnerUrl': imagePartnerUrl?.toJson(),
+      'imageBannerUrl': imageBannerUrl?.toJson(),
+      'status': status,
+      'enableLink': enableLink,
+      'content': content,
+      'partnerName': partnerName,
+      'createDatetime': createDatetime,
+      'learningPostTagMappings': learningPostTagMappings
+          .map((tag) => {'id': tag.id, 'name': tag.name, 'type': tag.type})
+          .toList(),
+    };
   }
 }
 

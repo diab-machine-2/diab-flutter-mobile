@@ -79,12 +79,14 @@ class CustomCalendarDatePicker extends StatefulWidget {
     required DateTime initialDate,
     required DateTime firstDate,
     required DateTime lastDate,
+    List<DateTime>? activeDates,
     DateTime? currentDate,
     required this.onDateChanged,
     this.onDisplayedMonthChanged,
     this.initialCalendarMode = DatePickerMode.day,
     this.selectableDayPredicate,
   })  : initialDate = utils.dateOnly(initialDate),
+        this.activeDates = activeDates,
         firstDate = utils.dateOnly(firstDate),
         lastDate = utils.dateOnly(lastDate),
         currentDate = utils.dateOnly(currentDate ?? DateTime.now()),
@@ -103,6 +105,8 @@ class CustomCalendarDatePicker extends StatefulWidget {
 
   /// The initially selected [DateTime] that the picker should display.
   final DateTime initialDate;
+
+  List<DateTime>? activeDates;
 
   /// The earliest allowable [DateTime] that the user can select.
   final DateTime firstDate;
@@ -246,6 +250,7 @@ class _CustomCalendarDatePickerState extends State<CustomCalendarDatePicker> {
     switch (_mode!) {
       case DatePickerMode.day:
         return _MonthPicker(
+          activeDates: widget.activeDates,
           key: _monthPickerKey,
           mode: _mode,
           currentDisplayedMonthDate: _currentDisplayedMonthDate,
@@ -282,7 +287,9 @@ class _CustomCalendarDatePickerState extends State<CustomCalendarDatePicker> {
     return Stack(
       children: <Widget>[
         SizedBox(
-          height: _subHeaderHeight + _maxDayPickerHeight,
+          height: _subHeaderHeight +
+              _maxDayPickerHeight +
+              (widget.activeDates != null ? 20 : 0),
           child: _buildPicker(),
         ),
         // Put the mode toggle button on top so that it won't be covered up by the _MonthPicker
@@ -432,12 +439,15 @@ class _MonthPicker extends StatefulWidget {
     required this.onChanged,
     required this.onDisplayedMonthChanged,
     this.selectableDayPredicate,
+    this.activeDates,
   })  : assert(!firstDate.isAfter(lastDate)),
         assert(!selectedDate.isBefore(firstDate)),
         assert(!selectedDate.isAfter(lastDate)),
         super(key: key);
 
   final DatePickerMode? mode;
+
+  final List<DateTime>? activeDates;
 
   final DateTime? currentDisplayedMonthDate;
 
@@ -731,6 +741,7 @@ class _MonthPickerState extends State<_MonthPicker> {
   Widget _buildItems(BuildContext context, int index) {
     final DateTime month = utils.addMonthsToMonthDate(widget.firstDate, index);
     return _DayPicker(
+      activeDates: widget.activeDates,
       key: ValueKey<DateTime>(month),
       selectedDate: widget.selectedDate,
       currentDate: widget.currentDate,
@@ -750,70 +761,110 @@ class _MonthPickerState extends State<_MonthPicker> {
         '${_localizations.nextMonthTooltip} ${_localizations.formatMonthYear(_nextMonthDate)}';
     final Color controlColor = R.color.mainColor; //.withOpacity(0.60);
 
+    final bool isContainActiveDay =
+        widget.activeDates != null && widget.activeDates!.length > 0;
     return Semantics(
       child: Column(
         children: <Widget>[
-          Container(
-            //padding: const EdgeInsetsDirectional.only(start: 16, end: 4),
-            height: _subHeaderHeight,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                //const Spacer(),
-                IconButton(
-                  icon: const Icon(Icons.chevron_left),
-                  color: controlColor,
-                  tooltip: _isDisplayingFirstMonth ? null : previousTooltipText,
-                  onPressed:
-                      _isDisplayingFirstMonth ? null : _handlePreviousMonth,
+          isContainActiveDay
+              ? Container(
+                  //padding: const EdgeInsetsDirectional.only(start: 16, end: 4),
+                  height: _subHeaderHeight,
+                  // color: R.color.red,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text(
+                        formatDate(widget
+                            .currentDisplayedMonthDate!.millisecondsSinceEpoch),
+                        style: TextStyle(
+                          color: R.color.mainColor,
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      Row(
+                        children: [
+                          IconButton(
+                            icon: const Icon(Icons.chevron_left),
+                            color: controlColor,
+                            iconSize: 30,
+                            tooltip: _isDisplayingFirstMonth
+                                ? null
+                                : previousTooltipText,
+                            onPressed: _isDisplayingFirstMonth
+                                ? null
+                                : _handlePreviousMonth,
+                          ),
+                          IconButton(
+                            icon: const Icon(Icons.chevron_right),
+                            iconSize: 30,
+                            color: controlColor,
+                            tooltip:
+                                _isDisplayingLastMonth ? null : nextTooltipText,
+                            onPressed: _isDisplayingLastMonth
+                                ? null
+                                : _handleNextMonth,
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                )
+              : Container(
+                  //padding: const EdgeInsetsDirectional.only(start: 16, end: 4),
+                  height: _subHeaderHeight,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      //const Spacer(),
+                      IconButton(
+                        icon: const Icon(Icons.chevron_left),
+                        color: controlColor,
+                        tooltip: _isDisplayingFirstMonth
+                            ? null
+                            : previousTooltipText,
+                        onPressed: _isDisplayingFirstMonth
+                            ? null
+                            : _handlePreviousMonth,
+                      ),
+                      Text(
+                          formatDate(widget.currentDisplayedMonthDate!
+                              .millisecondsSinceEpoch),
+                          style: TextStyle(
+                              color: R.color.black,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w700)),
+                      IconButton(
+                        icon: const Icon(Icons.chevron_right),
+                        color: controlColor,
+                        tooltip:
+                            _isDisplayingLastMonth ? null : nextTooltipText,
+                        onPressed:
+                            _isDisplayingLastMonth ? null : _handleNextMonth,
+                      ),
+                    ],
+                  ),
                 ),
-                Text(
-                    formatDate(widget
-                        .currentDisplayedMonthDate!.millisecondsSinceEpoch),
-                    style: TextStyle(
-                        color: R.color.black,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w700)),
-                // Expanded(
-                //   child: Center(
-                //     child: _DatePickerModeToggleButton(
-                //       mode: widget.mode,
-                //       title: _localizations
-                //           .formatMonthYear(widget.currentDisplayedMonthDate),
-                //       onTitlePressed: () {
-                //         // Toggle the day/year mode.
-                //         _handleModeChanged(widget.mode == DatePickerMode.day
-                //             ? DatePickerMode.year
-                //             : DatePickerMode.day);
-                //       },
-                //     ),
-                //   ),
-                // ),
-                IconButton(
-                  icon: const Icon(Icons.chevron_right),
-                  color: controlColor,
-                  tooltip: _isDisplayingLastMonth ? null : nextTooltipText,
-                  onPressed: _isDisplayingLastMonth ? null : _handleNextMonth,
-                ),
-              ],
-            ),
-          ),
           Expanded(
-            child: FocusableActionDetector(
-              shortcuts: _shortcutMap,
-              actions: _actionMap,
-              focusNode: _dayGridFocus,
-              onFocusChange: _handleGridFocusChange,
-              child: _FocusedDate(
-                date: _dayGridFocus!.hasFocus ? _focusedDay : null,
-                child: PageView.builder(
-                  key: _pageViewKey,
-                  controller: _pageController,
-                  itemBuilder: _buildItems,
-                  itemCount:
-                      utils.monthDelta(widget.firstDate, widget.lastDate) + 1,
-                  scrollDirection: Axis.horizontal,
-                  onPageChanged: _handleMonthPageChanged,
+            child: Container(
+              child: FocusableActionDetector(
+                shortcuts: _shortcutMap,
+                actions: _actionMap,
+                focusNode: _dayGridFocus,
+                onFocusChange: _handleGridFocusChange,
+                child: _FocusedDate(
+                  date: _dayGridFocus!.hasFocus ? _focusedDay : null,
+                  child: PageView.builder(
+                    key: _pageViewKey,
+                    controller: _pageController,
+                    itemBuilder: _buildItems,
+                    itemCount:
+                        utils.monthDelta(widget.firstDate, widget.lastDate) + 1,
+                    scrollDirection: Axis.horizontal,
+                    onPageChanged: _handleMonthPageChanged,
+                  ),
                 ),
               ),
             ),
@@ -826,7 +877,9 @@ class _MonthPickerState extends State<_MonthPicker> {
   String formatDate(int timeStamp) {
     final date = DateTime.fromMillisecondsSinceEpoch(timeStamp);
     late String stringValue = Utils.getValueOfMonth(date.month);
-
+    if (widget.activeDates != null && widget.activeDates!.length > 0) {
+      return "Tháng" + ' ${date.month}, ${date.year}';
+    }
     return stringValue + ' ${date.month}, ${date.year}';
   }
 }
@@ -868,6 +921,7 @@ class _DayPicker extends StatefulWidget {
     required this.selectedDate,
     required this.onChanged,
     this.selectableDayPredicate,
+    this.activeDates,
   })  : assert(!firstDate.isAfter(lastDate)),
         assert(!selectedDate.isBefore(firstDate)),
         assert(!selectedDate.isAfter(lastDate)),
@@ -877,6 +931,8 @@ class _DayPicker extends StatefulWidget {
   ///
   /// This date is highlighted in the picker.
   final DateTime selectedDate;
+
+  final List<DateTime>? activeDates;
 
   /// The current date at the time the picker is displayed.
   final DateTime currentDate;
@@ -1018,10 +1074,17 @@ class _DayPickerState extends State<_DayPicker> {
                 !widget.selectableDayPredicate!(dayToBuild));
         final bool isSelectedDay =
             utils.isSameDay(widget.selectedDate, dayToBuild);
+
+        final bool isActiveDay = (widget.activeDates != null &&
+            widget.activeDates!
+                .any((date) => utils.isSameDay(date, dayToBuild)));
         final bool isToday = utils.isSameDay(widget.currentDate, dayToBuild);
 
         BoxDecoration? decoration;
         Color dayColor = enabledDayColor;
+        if (isActiveDay) {
+          dayColor = R.color.mainColor;
+        }
         if (isSelectedDay) {
           // The selected day gets a circle background highlight, and a
           // contrasting text color.
@@ -1030,7 +1093,7 @@ class _DayPickerState extends State<_DayPicker> {
             color: selectedDayBackground,
             shape: BoxShape.circle,
           );
-        } else if (isDisabled) {
+        } else if (isDisabled || (widget.activeDates != null && !isActiveDay)) {
           dayColor = disabledDayColor;
         } else if (isToday) {
           // The current day gets a different text color and a circle stroke
@@ -1050,7 +1113,7 @@ class _DayPickerState extends State<_DayPicker> {
           ),
         );
 
-        if (isDisabled) {
+        if (isDisabled || (widget.activeDates != null && !isActiveDay)) {
           dayWidget = ExcludeSemantics(
             child: dayWidget,
           );
@@ -1081,18 +1144,26 @@ class _DayPickerState extends State<_DayPicker> {
     }
 
     return Padding(
-      padding: const EdgeInsets.symmetric(
-        horizontal: _monthPickerHorizontalPadding,
-      ),
-      child: GridView.custom(
-        physics: const ClampingScrollPhysics(),
-        gridDelegate: _dayPickerGridDelegate,
-        childrenDelegate: SliverChildListDelegate(
-          dayItems,
-          addRepaintBoundaries: false,
+        padding: const EdgeInsets.symmetric(
+          horizontal: _monthPickerHorizontalPadding,
         ),
-      ),
-    );
+        child: widget.activeDates != null
+            ? GridView.count(
+                padding: EdgeInsets.zero,
+                shrinkWrap: true,
+                crossAxisCount: 7,
+                children: dayItems,
+                physics: const NeverScrollableScrollPhysics(),
+              )
+            : GridView.custom(
+                physics: const ClampingScrollPhysics(),
+                gridDelegate: _dayPickerGridDelegate,
+                childrenDelegate: SliverChildListDelegate(
+                  dayItems,
+                  addRepaintBoundaries: false,
+                ),
+              ));
+    ;
   }
 }
 

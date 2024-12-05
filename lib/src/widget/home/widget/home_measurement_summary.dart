@@ -71,7 +71,7 @@ class MeasurementSummary extends StatelessWidget {
                   ),
                 ),
 
-                const SizedBox(height: 12.0),
+                const SizedBox(height: 20.0),
               ],
             ),
           ),
@@ -179,7 +179,8 @@ class MeasurementSummary extends StatelessWidget {
     } else {
       valueWidget = Text(
         data.value1 != null
-            ? (double.tryParse(data.value1!)?.toPrecision(2) ?? data.value1!).toString()
+            ? (double.tryParse(data.value1!)?.toPrecision(2) ?? data.value1!)
+                .toString()
             : "--",
         style: TextStyle(
             color: Color(data.value1Color),
@@ -262,7 +263,13 @@ class MeasurementSummary extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(16.0),
-          color: Color(0xFF01857A),
+          color: R.color.burntSienna,
+          border: Border.all(
+            width: 8,
+            color: Color(0xffD8D8D8),
+            style: BorderStyle.solid,
+            strokeAlign: BorderSide.strokeAlignOutside,
+          ),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,

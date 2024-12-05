@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/bloc/glucose/glucose_bloc.dart';
 import 'package:medical/src/modal/glucose/glucose_comparer.dart';
 import 'package:medical/src/utils/navigator_name.dart';
@@ -123,7 +124,15 @@ class BloodSugarCompareChartState extends State<BloodSugarCompareChart>
                                         "screen_name": 'kpi_glycemic',
                                         'cta_button_name': 'cta_add_glycemic_2',
                                       });
-                                  BloodSugarFunctions.showModalAddData(context);
+                                  if (AppSettings.isUS) {
+                                    Navigator.pushNamed(context,
+                                        NavigatorName.add_blood_sugar_new,
+                                        arguments: {'type': 'input'});
+                                  } else {
+                                    BloodSugarFunctions.showModalAddData(
+                                        context);
+                                  }
+                                  // BloodSugarFunctions.showModalAddData(context);
                                   // Navigator.pushNamed(
                                   //     context, NavigatorName.add_blood_sugar,
                                   //     arguments: {'type': 'input', 'id': null});
@@ -320,13 +329,13 @@ class BloodSugarCompareChartState extends State<BloodSugarCompareChart>
           SizedBox(height: 16),
           GestureDetector(
             onTap: () => Navigator.pushNamed(
-                  context, NavigatorName.blood_sugar_compare_table,
-                  arguments: {
-                    'model': model,
-                    'title': name,
-                    'comparerType': comparerType,
-                    'periodFilterType': periodFilterType,
-                  }),
+                context, NavigatorName.blood_sugar_compare_table,
+                arguments: {
+                  'model': model,
+                  'title': name,
+                  'comparerType': comparerType,
+                  'periodFilterType': periodFilterType,
+                }),
             child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
               Text(R.string.xem_chi_tiet.tr(),
                   style: TextStyle(color: R.color.mainColor)),

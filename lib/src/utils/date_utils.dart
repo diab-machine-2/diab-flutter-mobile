@@ -82,7 +82,8 @@ class DateUtil {
   }
 
   static DateTime parseTimespanToDateTime(int timestamp) {
-    DateTime date = DateTime.fromMillisecondsSinceEpoch(timestamp * 1000);
+    DateTime date =
+        DateTime.fromMillisecondsSinceEpoch(timestamp * 1000, isUtc: true);
     return date;
   }
 
@@ -181,5 +182,35 @@ class DateUtil {
                 .format(dateConverted)
                 .toString()
             : DateFormat('dd/MM/yyyy').format(dateConverted).toString();
+  }
+
+  static String weekDayToString(DateTime date) {
+    String dayLabel;
+    switch (date.weekday) {
+      case DateTime.monday:
+        dayLabel = 'T2';
+        break;
+      case DateTime.tuesday:
+        dayLabel = 'T3';
+        break;
+      case DateTime.wednesday:
+        dayLabel = 'T4';
+        break;
+      case DateTime.thursday:
+        dayLabel = 'T5';
+        break;
+      case DateTime.friday:
+        dayLabel = 'T6';
+        break;
+      case DateTime.saturday:
+        dayLabel = 'T7';
+        break;
+      case DateTime.sunday:
+        dayLabel = 'CN';
+        break;
+      default:
+        dayLabel = '';
+    }
+    return dayLabel;
   }
 }
