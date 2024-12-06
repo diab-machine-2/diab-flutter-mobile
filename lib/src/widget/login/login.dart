@@ -278,7 +278,9 @@ class _LoginControllerState extends State<LoginController> {
         setState(() {
           isLogin = true;
         });
-        FocusScope.of(context).requestFocus(passwordFocusNode);
+        Future.delayed(Duration(milliseconds: 100), () {
+          FocusScope.of(context).requestFocus(passwordFocusNode);
+        });
       } else if (isExistAccount && !isActive) {
         phoneKey.currentState!.validate(R.string.tai_khoan_het_hieu_luc.tr());
       } else {
@@ -362,8 +364,7 @@ class _LoginControllerState extends State<LoginController> {
           "screen_name": 'login',
           'status': 'success',
         });
-        await TrackingManager.analytics
-            .logEvent(name: 'login', parameters: {
+        await TrackingManager.analytics.logEvent(name: 'login', parameters: {
           "screen_name": 'welcome',
           'method': 'phone',
         });
