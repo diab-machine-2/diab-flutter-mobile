@@ -952,9 +952,16 @@ class AppRepository {
   Future<ApiResult<DsmesClinicDetailResponse>> getClinicDetail(
       {required int id}) async {
     try {
-      final response = await docosanClient.getClinicDetail(
-        816,
-      );
+      final response = await docosanClient.getClinicDetail(id);
+      return ApiResult.success(data: response);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
+  Future<ApiResult<DsmesClinicListResponse>> getClinicList() async {
+    try {
+      final response = await docosanClient.getClinicList();
       return ApiResult.success(data: response);
     } catch (e) {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));

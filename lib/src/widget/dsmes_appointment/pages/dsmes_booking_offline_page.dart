@@ -5,7 +5,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
+import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigator_name.dart';
+import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/dsmes_appointment/dsmes_appointment_cubit.dart';
 import 'package:medical/src/widget/dsmes_appointment/model/dsmes_appointment_model.dart';
@@ -32,7 +34,7 @@ class _DsmesBookingOfflinePageState extends State<DsmesBookingOfflinePage> {
     super.initState();
     final AppRepository repository = AppRepository();
     _cubit = DsmesAppointmentCubit(repository);
-    _cubit.getClinicDetail(id: 861);
+    _cubit.getClinicList();
   }
 
   @override
@@ -150,8 +152,7 @@ class _DsmesBookingOfflinePageState extends State<DsmesBookingOfflinePage> {
         Expanded(
           child: SmartRefresher(
             controller: _controller,
-            onRefresh: () =>
-                _cubit.getDsmesAppointmentList(isRefresh: true, page: 1),
+            onRefresh: () => _cubit.getClinicList(),
             child: SingleChildScrollView(
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
@@ -167,9 +168,7 @@ class _DsmesBookingOfflinePageState extends State<DsmesBookingOfflinePage> {
                       ),
                       itemBuilder: (context, index) {
                         DsmesClinicModel data = _cubit.listClinic[index];
-                        return Container(
-                          child: Text(data.name),
-                        );
+                        return _buildClinicItem(data);
                       },
                     ),
                     SizedBox(
@@ -182,6 +181,72 @@ class _DsmesBookingOfflinePageState extends State<DsmesBookingOfflinePage> {
           ),
         ),
       ],
+    );
+  }
+
+  _buildClinicItem(DsmesClinicModel data) {
+    return Container(
+      padding: EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: R.color.white,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Container(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                SizedBox(
+                    width: 72,
+                    child: Image.network(
+                        "${Utils.getHostDocosanUrl()}${data.avatar}")),
+                SizedBox(
+                  width: 12,
+                ),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        data.name,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                      SizedBox(height: 10),
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Image.asset(R.drawable.ic_map_marker,
+                              width: 12, height: 12),
+                          SizedBox(width: 5),
+                          Flexible(
+                            child: Text(
+                              data.address,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                fontSize: 11,
+                                fontWeight: FontWeight.w400,
+                                color: R.color.color0xff777E90,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
