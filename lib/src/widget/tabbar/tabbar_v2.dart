@@ -41,7 +41,8 @@ import 'package:package_info/package_info.dart';
 import 'package:store_redirect/store_redirect.dart';
 
 class TabbarController extends StatefulWidget {
-  const TabbarController({this.sharedCode, this.isRedirectFromNotification = false});
+  const TabbarController(
+      {this.sharedCode, this.isRedirectFromNotification = false});
   final String? sharedCode;
   final bool isRedirectFromNotification;
 
@@ -75,6 +76,7 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
   }
 
   void initData() async {
+    _trackUserVisit();
     tabs = [
       HomeController(sharedCode: widget.sharedCode),
       _buildProgramTab(),
@@ -107,6 +109,18 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
     BranchioLinkConfig.instance.tryNavigateBooking(initial: true);
   }
 
+  void _trackUserVisit() async {
+    final clickedBranchLink = await AppSettings.getClickedBranchLink();
+    
+    FirebaseAnalytics.instance.logEvent(
+      name: 'home_app_open',
+      parameters: {
+        "screen_name": 'home',
+        'source': clickedBranchLink == true ? 'deeplink' : 'organic',
+      },
+    );
+  }
+
   void _onBottomNavigationBarTap(int index) {
     if (index == TabBarType.store.index) {
       BotToast.showLoading();
@@ -131,7 +145,8 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
     final String? meetingId = BranchioLinkConfig.instance.meetingId;
     if (meetingId != null) {
       await Future.delayed(Duration(seconds: 1));
-      ZoomService().launchZoomMeeting(meetingId, BranchioLinkConfig.instance.meetingPassword!);
+      ZoomService().launchZoomMeeting(
+          meetingId, BranchioLinkConfig.instance.meetingPassword!);
     }
   }
 
@@ -158,18 +173,20 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
   }
 
   @override
-  Future<void> update(Observable observable, String? notifyName, Map<dynamic, dynamic>? map) async {
+  Future<void> update(Observable observable, String? notifyName,
+      Map<dynamic, dynamic>? map) async {
     if (notifyName == 'unauthorized') {
       await TrackingManager.analytics.logEvent(
         name: 'login_session_end',
         parameters: {
           "screen_name": AppSettings.currentScreenName,
-          'error_message': R.string.phien_dang_nhap_het_han_vui_long_dang_nhap_lai.tr(),
+          'error_message':
+              R.string.phien_dang_nhap_het_han_vui_long_dang_nhap_lai.tr(),
         },
       );
       if (!isNavigateToStepList) {
-        Message.showToastMessage(
-            context, R.string.phien_dang_nhap_het_han_vui_long_dang_nhap_lai.tr());
+        Message.showToastMessage(context,
+            R.string.phien_dang_nhap_het_han_vui_long_dang_nhap_lai.tr());
         AppSettings.logout();
         isNavigateToStepList = true;
       }
@@ -191,9 +208,11 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
         );
 
         if (position == 1) {
-          Observable.instance.notifyObservers([], notifyName: Const.NAVIGATE_TO_LESSON_TAB);
+          Observable.instance
+              .notifyObservers([], notifyName: Const.NAVIGATE_TO_LESSON_TAB);
         } else if (position == 2) {
-          Observable.instance.notifyObservers([], notifyName: Const.NAVIGATE_TO_EXERCISE_TAB);
+          Observable.instance
+              .notifyObservers([], notifyName: Const.NAVIGATE_TO_EXERCISE_TAB);
         }
       }
     }
@@ -290,7 +309,8 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
   Widget _buildStoreTab() {
     if (FirebaseRemoteSetting.instance.storeNavigationUrl.isNotEmpty) {
       return WebviewStore(
-          urlStore: FirebaseRemoteSetting.instance.storeNavigationUrl, rootPage: true);
+          urlStore: FirebaseRemoteSetting.instance.storeNavigationUrl,
+          rootPage: true);
     } else {
       return SizedBox();
     }
@@ -305,14 +325,16 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
     } else if (Platform.isIOS) {
       storeVersion = FirebaseRemoteSetting.instance.appStoreVersion;
     }
-    bool hasNewVersion = _stringToInt(storeVersion) > _stringToInt(_currentVersion);
+    bool hasNewVersion =
+        _stringToInt(storeVersion) > _stringToInt(_currentVersion);
     if (hasNewVersion) {
       showDialog(
         context: context,
         barrierDismissible: false,
         builder: (BuildContext context) => CupertinoAlertDialog(
           title: Text(R.string.cap_nhat.tr()),
-          content: Text(R.string.mes_new_version_available.tr(args: ['$storeVersion']),
+          content: Text(
+              R.string.mes_new_version_available.tr(args: ['$storeVersion']),
               textAlign: TextAlign.center),
           actions: <Widget>[
             CupertinoDialogAction(
@@ -340,10 +362,11 @@ void showPopupWeight({String? nextRoute, dynamic args}) {
             BotToast.showLoading();
             UserModel userInfo = AppSettings.userInfo!;
             userInfo = userInfo.copyWith(weight: number?.toDouble());
-            await UserClient().updateUserInfo(AppSettings.userInfo!.id, userInfo);
+            await UserClient()
+                .updateUserInfo(AppSettings.userInfo!.id, userInfo);
             await UserClient().fetchUser();
-            Navigator.pushNamed(
-                navigatorKey.currentContext!, nextRoute ?? NavigatorName.add_exercrises,
+            Navigator.pushNamed(navigatorKey.currentContext!,
+                nextRoute ?? NavigatorName.add_exercrises,
                 arguments: args ?? {'type': 'input'});
             BotToast.closeAllLoading();
           } catch (e, _) {
@@ -351,7 +374,8 @@ void showPopupWeight({String? nextRoute, dynamic args}) {
             if (e is Error) {
               Message.showToastMessage(navigatorKey.currentContext!, e.message);
             } else {
-              Message.showToastMessage(navigatorKey.currentContext!, e.toString());
+              Message.showToastMessage(
+                  navigatorKey.currentContext!, e.toString());
             }
           }
         },

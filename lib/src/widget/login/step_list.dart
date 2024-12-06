@@ -193,13 +193,14 @@ class _StepListControllerState extends State<StepListController>
   checkReferralCode() async {
     final String? referalCode = BranchioLinkConfig.instance.referalCode;
     if (referalCode != null) {
-      await Navigator.pushNamed(
-        context,
-        NavigatorName.register,
-        arguments: {
-          'referalCode': referalCode,
-        },
-      );
+      print('[QR] checkReferralCode: $referalCode');
+      // await Navigator.pushNamed(
+      //   context,
+      //   NavigatorName.register,
+      //   arguments: {
+      //     'referalCode': referalCode,
+      //   },
+      // );
     }
   }
 

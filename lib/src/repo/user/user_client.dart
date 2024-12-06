@@ -185,8 +185,8 @@ class UserClient extends FetchClient {
           }
         });
 
-        DateTime dateOfBirth =
-            DateTime.fromMillisecondsSinceEpoch(user.dateOfBirth! * 1000);
+        // DateTime dateOfBirth =
+        //     DateTime.fromMillisecondsSinceEpoch(user.dateOfBirth! * 1000);
 
         DateTime diabetesDate =
             DateTime.fromMillisecondsSinceEpoch(user.diabetes!.date! * 1000);
@@ -196,13 +196,13 @@ class UserClient extends FetchClient {
             .setUserProperty(name: 'gender', value: user.gender);
         TrackingManager.analytics
             .setUserProperty(name: 'referral_code', value: user.shareRefCode);
-        TrackingManager.analytics.setUserProperty(
-            name: 'interest', value: interestNameList.join('_'));
+        // TrackingManager.analytics.setUserProperty(
+        //     name: 'interest', value: interestNameList.join('_'));
         TrackingManager.analytics
             .setUserProperty(name: 'age', value: "${user.age}");
-        TrackingManager.analytics.setUserProperty(
-            name: 'date_of_birth',
-            value: DateFormat('dd/MM/yyyy').format(dateOfBirth));
+        // TrackingManager.analytics.setUserProperty(
+        //     name: 'date_of_birth',
+        //     value: DateFormat('dd/MM/yyyy').format(dateOfBirth));
         TrackingManager.analytics.setUserProperty(
             name: 'pathological', value: levelOfDiabetesRuleList.text);
         TrackingManager.analytics.setUserProperty(
@@ -210,12 +210,21 @@ class UserClient extends FetchClient {
             value: DateFormat('yyyy').format(diabetesDate));
         TrackingManager.analytics
             .setUserProperty(name: 'membership', value: user.packageName);
+        // TrackingManager.analytics.setUserProperty(
+        //     name: 'referral_agency',
+        //     value: user.nameOfAgency ?? user.nameOfDoctor);
+        // TrackingManager.analytics.setUserProperty(
+        //     name: 'google_connected',
+        //     value: user.isLinkedGoogle == true ? "Connected" : "None");
         TrackingManager.analytics.setUserProperty(
-            name: 'referral_agency',
-            value: user.nameOfAgency ?? user.nameOfDoctor);
-        TrackingManager.analytics.setUserProperty(
-            name: 'google_connected',
-            value: user.isLinkedGoogle == true ? "Connected" : "None");
+            name: 'login_method',
+            value: user.isLinkedFacebook == true
+                ? 'facebook'
+                : user.isLinkedGoogle == true
+                    ? 'google'
+                    : user.isMobileAccount == true
+                        ? 'phone'
+                        : 'zalo');
       } catch (error) {}
     }
     return user;

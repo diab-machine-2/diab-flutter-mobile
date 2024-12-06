@@ -116,6 +116,8 @@ class _FlashScreenControllerState extends State<FlashScreenController> {
     }
     try {
       final token = await AppSettings.getToken();
+      final clickedBranchLink = await AppSettings.getClickedBranchLink();
+      print('flashScreen clickedBranchLink: $clickedBranchLink');
       AppSettings.environment = await AppSettings.getEnvironment();
       if (token.isNotEmpty) {
         // final refreshToken = await AppSettings.getRefreshToken();

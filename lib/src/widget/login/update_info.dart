@@ -97,31 +97,31 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
     nameFocusNode.addListener(() async {
       String nameValue = nameController.text;
       if (nameFocusNode.hasFocus) {
-        await TrackingManager.analytics.logEvent(
-          name: 'text_field_focus',
-          parameters: {
-            "screen_name": 'register_information',
-            'text_field_name': 'text_field_register_infor_name',
-            'object_value': nameValue
-          },
-        );
+        // await TrackingManager.analytics.logEvent(
+        //   name: 'text_field_focus',
+        //   parameters: {
+        //     "screen_name": 'register_information',
+        //     'text_field_name': 'text_field_register_infor_name',
+        //     'object_value': nameValue
+        //   },
+        // );
       } else {
-        String validateState = 'pass';
-        String errorMessage = 'none';
-        if (nameValue.isEmpty) {
-          validateState = 'fail';
-          errorMessage = R.string.ban_chua_nhap_ho_ten.tr();
-        }
-        await TrackingManager.analytics.logEvent(
-          name: 'text_field_input',
-          parameters: {
-            "screen_name": 'register_information',
-            'text_field_name': 'text_field_register_infor_name',
-            'object_value': nameValue,
-            'validate_state': validateState,
-            'error_message': errorMessage,
-          },
-        );
+        // String validateState = 'pass';
+        // String errorMessage = 'none';
+        // if (nameValue.isEmpty) {
+        //   validateState = 'fail';
+        //   errorMessage = R.string.ban_chua_nhap_ho_ten.tr();
+        // }
+        // await TrackingManager.analytics.logEvent(
+        //   name: 'text_field_input',
+        //   parameters: {
+        //     "screen_name": 'register_information',
+        //     'text_field_name': 'text_field_register_infor_name',
+        //     'object_value': nameValue,
+        //     'validate_state': validateState,
+        //     'error_message': errorMessage,
+        //   },
+        // );
       }
     });
   }
@@ -270,7 +270,7 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
                             GestureDetector(
                               onTap: () async {
                                 nameFocusNode.unfocus();
-                                FirebaseTracking.onClickBirthDay(selectedDate);
+                                // FirebaseTracking.onClickBirthDay(selectedDate);
                                 _showDatePicker(context);
                               },
                               child: Container(
@@ -467,7 +467,7 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
         minTime: DateTime.parse('1900-01-01 00:00:00.000Z'),
         showTitleActions: true,
         onChanged: (date) {}, onConfirm: (date) async {
-      FirebaseTracking.onSelectBirthDay(date);
+      // FirebaseTracking.onSelectBirthDay(date);
       setState(() {
         selectedDate = date;
       });

@@ -129,39 +129,39 @@ class _RegisterControllerState extends State<RegisterController> {
     //     );
     //   }
     // });
-    confirmPasswordFocusNode.addListener(() async {
-      if (passwordFocusNode.hasFocus) {
-        await TrackingManager.analytics.logEvent(
-          name: 'text_field_focus',
-          parameters: {
-            "screen_name": 'sign_up',
-            'text_field_name': 'text_field_sign_up_confirm',
-            'object_value': confirmPassword
-          },
-        );
-      } else {
-        String validateState = 'pass';
-        String errorMessage = 'none';
-        if (confirmPassword.isEmpty) {
-          errorMessage = R.string.ban_chua_nhap_lai_mat_khau.tr();
-          validateState = 'fail';
-        }
-        if (confirmPassword != password) {
-          errorMessage = R.string.nhap_lai_mat_khau_khong_chinh_xac.tr();
-          validateState = 'fail';
-        }
-        await TrackingManager.analytics.logEvent(
-          name: 'text_field_input',
-          parameters: {
-            "screen_name": 'sign_up',
-            'text_field_name': 'text_field_sign_up_confirm',
-            'object_value': confirmPassword.length,
-            'validate_state': validateState,
-            'error_message': errorMessage
-          },
-        );
-      }
-    });
+    // confirmPasswordFocusNode.addListener(() async {
+    //   if (passwordFocusNode.hasFocus) {
+    //     await TrackingManager.analytics.logEvent(
+    //       name: 'text_field_focus',
+    //       parameters: {
+    //         "screen_name": 'sign_up',
+    //         'text_field_name': 'text_field_sign_up_confirm',
+    //         'object_value': confirmPassword
+    //       },
+    //     );
+    //   } else {
+    //     String validateState = 'pass';
+    //     String errorMessage = 'none';
+    //     if (confirmPassword.isEmpty) {
+    //       errorMessage = R.string.ban_chua_nhap_lai_mat_khau.tr();
+    //       validateState = 'fail';
+    //     }
+    //     if (confirmPassword != password) {
+    //       errorMessage = R.string.nhap_lai_mat_khau_khong_chinh_xac.tr();
+    //       validateState = 'fail';
+    //     }
+    // await TrackingManager.analytics.logEvent(
+    //   name: 'text_field_input',
+    //   parameters: {
+    //     "screen_name": 'sign_up',
+    //     'text_field_name': 'text_field_sign_up_confirm',
+    //     'object_value': confirmPassword.length,
+    //     'validate_state': validateState,
+    //     'error_message': errorMessage
+    //   },
+    // );
+    //   }
+    // });
     // referralCodeFocusNode.addListener(() async {
     //   if (passwordFocusNode.hasFocus) {
     //     await TrackingManager.analytics.logEvent(
@@ -349,6 +349,7 @@ class _RegisterControllerState extends State<RegisterController> {
     try {
       final result = await LoginClient()
           .submitUpdatePasswordRegister(phone: phone, password: password);
+      print('[QR] submitUpdatePasswordRegister result: ${result.toString()}');
       if (result) {
         await TrackingManager.analytics.logEvent(
           name: 'sign_up_start',
@@ -360,6 +361,7 @@ class _RegisterControllerState extends State<RegisterController> {
         getToken();
       }
     } catch (e, _) {
+      print('[QR] error register: ${e.toString()}');
       await TrackingManager.analytics.logEvent(
         name: 'sign_up_start',
         parameters: {
@@ -392,6 +394,7 @@ class _RegisterControllerState extends State<RegisterController> {
       "password": password,
       "phone_number": widget.phone
     });
+    print('[QR] result getToken: $result');
     BotToast.closeAllLoading();
     Navigator.pushReplacementNamed(context, NavigatorName.update_info,
         arguments: {

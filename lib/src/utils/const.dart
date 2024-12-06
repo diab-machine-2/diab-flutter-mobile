@@ -194,4 +194,5 @@ class Const {
   static const String ZALO_OA_TECHNICAL_SUPPORT_LINK =
       'https://zalo.me/4592543430802584018';
   static const int MAX_DAY_RANGE_PRIMARY_SCREENING = 14;
+  static const String CLICKED_BRANCH_LINK = 'clicked_branch_link';
 }

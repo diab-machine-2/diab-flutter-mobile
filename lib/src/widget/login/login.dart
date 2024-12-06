@@ -65,55 +65,55 @@ class _LoginControllerState extends State<LoginController> {
     await TrackingManager.analytics
         .logScreenView(screenName: "login", screenClass: "LoginController");
     AppSettings.currentScreenName = 'login';
-    phoneFocusNode.addListener(() async {
-      if (phoneFocusNode.hasFocus) {
-        await TrackingManager.analytics.logEvent(
-          name: 'text_field_focus',
-          parameters: {
-            "screen_name": 'login',
-            'text_field_name': 'text_field_login_phone',
-            'object_value': phone
-          },
-        );
-      } else {
-        bool isValid = phone.length == 9 || phone.length == 10;
-        await TrackingManager.analytics.logEvent(
-          name: 'text_field_input',
-          parameters: {
-            "screen_name": 'login',
-            'text_field_name': 'text_field_login_phone',
-            'object_value': phone,
-            'validate_state': isValid ? 'pass' : 'fail',
-            'error_message': isValid ? 'none' : R.string.phone_not_valid.tr(),
-          },
-        );
-      }
-    });
-    passwordFocusNode.addListener(() async {
-      if (passwordFocusNode.hasFocus) {
-        await TrackingManager.analytics.logEvent(
-          name: 'text_field_focus',
-          parameters: {
-            "screen_name": 'login',
-            'text_field_name': 'text_field_login_password',
-            'object_value': password
-          },
-        );
-      } else {
-        bool isValid = password.length >= 6;
-        await TrackingManager.analytics.logEvent(
-          name: 'text_field_input',
-          parameters: {
-            "screen_name": 'login',
-            'text_field_name': 'text_field_login_password',
-            'object_value': password.length,
-            'validate_state': isValid ? 'pass' : 'fail',
-            'error_message':
-                isValid ? 'none' : R.string.password_least_character.tr()
-          },
-        );
-      }
-    });
+    // phoneFocusNode.addListener(() async {
+    //   if (phoneFocusNode.hasFocus) {
+    //     await TrackingManager.analytics.logEvent(
+    //       name: 'text_field_focus',
+    //       parameters: {
+    //         "screen_name": 'login',
+    //         'text_field_name': 'text_field_login_phone',
+    //         'object_value': phone
+    //       },
+    //     );
+    //   } else {
+    //     bool isValid = phone.length == 9 || phone.length == 10;
+    //     await TrackingManager.analytics.logEvent(
+    //       name: 'text_field_input',
+    //       parameters: {
+    //         "screen_name": 'login',
+    //         'text_field_name': 'text_field_login_phone',
+    //         'object_value': phone,
+    //         'validate_state': isValid ? 'pass' : 'fail',
+    //         'error_message': isValid ? 'none' : R.string.phone_not_valid.tr(),
+    //       },
+    //     );
+    //   }
+    // });
+    // passwordFocusNode.addListener(() async {
+    //   if (passwordFocusNode.hasFocus) {
+    //     await TrackingManager.analytics.logEvent(
+    //       name: 'text_field_focus',
+    //       parameters: {
+    //         "screen_name": 'login',
+    //         'text_field_name': 'text_field_login_password',
+    //         'object_value': password
+    //       },
+    //     );
+    //   } else {
+    //     bool isValid = password.length >= 6;
+    //     await TrackingManager.analytics.logEvent(
+    //       name: 'text_field_input',
+    //       parameters: {
+    //         "screen_name": 'login',
+    //         'text_field_name': 'text_field_login_password',
+    //         'object_value': password.length,
+    //         'validate_state': isValid ? 'pass' : 'fail',
+    //         'error_message':
+    //             isValid ? 'none' : R.string.password_least_character.tr()
+    //       },
+    //     );
+    //   }
+    // });
   }
 
   @override

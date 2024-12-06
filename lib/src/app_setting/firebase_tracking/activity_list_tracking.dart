@@ -63,16 +63,16 @@ class ActivityListTracking {
     required String? objectId,
     required String? objectTitle,
   }) async {
-    await TrackingManager.analytics.logEvent(
-      name: 'component_clicked',
-      parameters: {
-        'object_id': objectId,
-        "screen_name": screenName,
-        'object_index': objectIndex,
-        'object_title': objectTitle,
-        'component_name': 'list_lesson_item',
-      },
-    );
+    // await TrackingManager.analytics.logEvent(
+    //   name: 'component_clicked',
+    //   parameters: {
+    //     'object_id': objectId,
+    //     "screen_name": screenName,
+    //     'object_index': objectIndex,
+    //     'object_title': objectTitle,
+    //     'component_name': 'list_lesson_item',
+    //   },
+    // );
 
     await TrackingManager.analytics.logEvent(
       name: 'select_content',
