@@ -118,6 +118,7 @@ class Colors {
   Color get color0xffA1A3A6 => Color(0xffA1A3A6);
   Color get color0xff27272A => Color(0xff27272A);
   Color get color0xffE1FAF8 => Color(0xffE1FAF8);
+  Color get color0xffF2F6F9 => Color(0xffF2F6F9);
   Color get burntOrange => Color(0xffA4722F);
   Color get burntSienna => Color(0xff8E6023);
   Color get blood_pressure_color => Color(0xffD04D4C);

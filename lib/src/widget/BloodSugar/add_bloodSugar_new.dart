@@ -28,7 +28,6 @@ import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/home/fliter_enum.dart';
 import 'package:medical/src/widget/nipro/roche_connection/roche_connection_view.dart';
-import 'package:medical/src/widgets/btn_add_photo.dart';
 import 'package:medical/src/widgets/custom_checkbox_widget.dart';
 import 'package:medical/src/widgets/spacing_row.dart';
 import 'package:medical/src/widgets/toggle_buttons.dart';
@@ -519,10 +518,6 @@ class _AddBloodSugarControllerNewState
 
     if (number == 0) {
       Message.showToastMessage(context, R.string.mes_blood_sugar_empty.tr());
-      return;
-    }
-    if (selectedDate == null) {
-      Message.showToastMessage(context, R.string.ban_chua_nhap_thoi_gian.tr());
       return;
     }
     if (selectedTimeFrame == null) {

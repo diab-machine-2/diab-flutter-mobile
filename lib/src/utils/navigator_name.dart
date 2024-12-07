@@ -18,6 +18,7 @@ class NavigatorName {
   static const String hba1c_tabble = '/hba1c_tabble';
   static const String add_blood_sugar = '/add_blood_sugar';
   static const String add_blood_sugar_new = '/add_blood_sugar_new';
+  static const String add_blood_sugar_result = '/add_blood_sugar_result';
   static const String add_exercrises = '/add_exercrises';
   static const String search_exercrises = '/search_exercrises';
   static const String add_blood_pressure = '/add_blood_pressure';

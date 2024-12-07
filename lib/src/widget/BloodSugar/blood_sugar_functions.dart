@@ -124,7 +124,9 @@ class BloodSugarFunctions {
                     R.drawable.im_glucose_input_device,
                     () {
                       Navigator.pop(context);
-                      BlocProvider.of<NiproBloc>(context).tryAutoConnect();
+                      // BlocProvider.of<NiproBloc>(context).tryAutoConnect();
+                      Navigator.pushNamed(context, NavigatorName.add_blood_sugar_result,
+                          arguments: DateTime.now());
                     },
                   ),
                   const SizedBox(height: 16),
