@@ -14,51 +14,54 @@ class BloodSugarFunctions {
   static void showModalAddData(BuildContext context) {
     Widget buildContentItem(
         String title, String subtitle, String iconPath, VoidCallback onPressed) {
-      return Container(
-        padding: EdgeInsets.symmetric(horizontal: 12, vertical: 20),
-        decoration: BoxDecoration(
-          color: Color(0xFFF2F6F9),
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Image.asset(iconPath, width: 72, height: 72),
-            SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    title,
-                    maxLines: 2,
-                    textAlign: TextAlign.left,
-                    style: TextStyle(
-                      fontSize: 15,
-                      height: 24 / 15,
-                      color: R.color.textDark,
-                      fontWeight: FontWeight.w600,
+      return InkWell(
+        onTap: onPressed,
+        child: Container(
+          padding: EdgeInsets.symmetric(horizontal: 12, vertical: 20),
+          decoration: BoxDecoration(
+            color: Color(0xFFF2F6F9),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Image.asset(iconPath, width: 72, height: 72),
+              SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      title,
+                      maxLines: 2,
+                      textAlign: TextAlign.left,
+                      style: TextStyle(
+                        fontSize: 15,
+                        height: 24 / 15,
+                        color: R.color.textDark,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    subtitle,
-                    textAlign: TextAlign.left,
-                    maxLines: 3,
-                    style: TextStyle(
-                      fontSize: 14,
-                      height: 20 / 14,
-                      color: R.color.primaryGreyColor,
-                      fontWeight: FontWeight.w400,
+                    const SizedBox(height: 4),
+                    Text(
+                      subtitle,
+                      textAlign: TextAlign.left,
+                      maxLines: 3,
+                      style: TextStyle(
+                        fontSize: 14,
+                        height: 20 / 14,
+                        color: R.color.primaryGreyColor,
+                        fontWeight: FontWeight.w400,
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-            const SizedBox(width: 12),
-            Icon(Icons.chevron_right, size: 24, color: R.color.primaryGreyColor),
-          ],
+              const SizedBox(width: 12),
+              Icon(Icons.chevron_right, size: 24, color: R.color.primaryGreyColor),
+            ],
+          ),
         ),
       );
     }
@@ -118,7 +121,7 @@ class BloodSugarFunctions {
                   buildContentItem(
                     'Kết nối máy đo đường huyết',
                     'Tự động nhập chỉ số một cách nhanh chóng và chính xác.',
-                    R.drawable.im_guide_connectdevice,
+                    R.drawable.im_glucose_input_device,
                     () {
                       Navigator.pop(context);
                       BlocProvider.of<NiproBloc>(context).tryAutoConnect();

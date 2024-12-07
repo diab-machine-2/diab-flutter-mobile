@@ -1,7 +1,10 @@
 import 'dart:io';
+import 'dart:math';
+
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_observer/Observable.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/modal/HbA1C/short_gui.dart';
@@ -28,6 +31,7 @@ import 'package:medical/src/widget/nipro/roche_connection/roche_connection_view.
 import 'package:medical/src/widgets/btn_add_photo.dart';
 import 'package:medical/src/widgets/custom_checkbox_widget.dart';
 import 'package:medical/src/widgets/spacing_row.dart';
+import 'package:medical/src/widgets/toggle_buttons.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:image_picker/image_picker.dart';
@@ -78,6 +82,9 @@ class _AddBloodSugarControllerNewState
   double mmollToMgdlFactor = 18.018;
   bool fromNipro = false;
   bool isMgPerDl = false;
+  int _lastUnitIndex = 0;
+  int _lastTimeFrameIndex = 0;
+
   bool isPregnancy = false;
   int clickTime = 0;
 
@@ -98,6 +105,7 @@ class _AddBloodSugarControllerNewState
       await _loadConfig();
     }
     isMgPerDl = AppSettings.userInfo!.glucoseUnit == 1;
+    _lastUnitIndex = isMgPerDl ? 0 : 1;
     List<int> valueOfClickTime = await AppSettings.getValueOfClickShortGuide();
     clickTime = valueOfClickTime[ScreenList.BLOOD_SUGAR.index];
     loadDescription();
@@ -144,7 +152,7 @@ class _AddBloodSugarControllerNewState
     }
   }
 
-  loadDetail() async {
+  void loadDetail() async {
     try {
       BotToast.showLoading();
       model = await GlucoseClient().fetchDetail(widget.id);
@@ -199,7 +207,7 @@ class _AddBloodSugarControllerNewState
     setState(() {});
   }
 
-  loadDescription() async {
+  void loadDescription() async {
     des = await HbA1CClient().fetchShortGuide(1);
     setState(() {});
   }
@@ -210,11 +218,11 @@ class _AddBloodSugarControllerNewState
       onTap: () {
         FocusScope.of(context).unfocus();
       },
-      child: WillPopScope(
-        onWillPop: () async {
+      child: PopScope(
+        onPopInvoked: (bool didPop) async {
           _showDialogSave();
-          return false;
         },
+        canPop: false,
         child: Scaffold(
           backgroundColor: R.color.backgroundColor,
           body: Container(
@@ -237,18 +245,21 @@ class _AddBloodSugarControllerNewState
                           borderRadius: BorderRadius.circular(16),
                         ),
                         padding: EdgeInsets.all(20),
-                        child: SpacingColumn(
-                          spacing: 25,
+                        child: Column(
                           children: [
+                            _dateTimeSectionV2(),
+                            const SizedBox(height: 16),
                             _inputSection(),
+                            const SizedBox(height: 30),
                             _bloodSugarRange(),
-                            _dateTimeSection(),
-                            _dateTimeFrame(),
+                            const SizedBox(height: 16),
+                            _dateTimeFrameV2(),
                           ],
                         ),
                       ),
                       _selectImageSection(),
-                      if (!AppSettings.isUS) _connectMachine(),
+                      if (!AppSettings.isUS) _connectMachine(context),
+                      const SizedBox(height: 16),
                     ]),
                   ),
                 ),
@@ -338,7 +349,7 @@ class _AddBloodSugarControllerNewState
                                 ),
                                 child: Center(
                                   child: Text(
-                                    R.string.save.tr(),
+                                    R.string.confirm.tr(),
                                     style: TextStyle(
                                       color: R.color.white,
                                       fontWeight: FontWeight.w600,
@@ -408,6 +419,7 @@ class _AddBloodSugarControllerNewState
                                   ),
                                 ])),
                       ),
+                SizedBox(height: 8),
               ],
             ),
           ),
@@ -416,7 +428,7 @@ class _AddBloodSugarControllerNewState
     );
   }
 
-  deleteData() async {
+  void deleteData() async {
     try {
       BotToast.showLoading();
       final result = await GlucoseClient().deleteIndexGlucose(widget.id);
@@ -438,7 +450,7 @@ class _AddBloodSugarControllerNewState
     }
   }
 
-  editData() async {
+  void editData() async {
     FocusScope.of(context).unfocus();
     final note = _controllerNote.text;
     final numberInput = _controller.text;
@@ -494,7 +506,7 @@ class _AddBloodSugarControllerNewState
     }
   }
 
-  _submitData() async {
+  void _submitData() async {
     await TrackingManager.analytics.logEvent(
       name: 'cta_button_clicked',
       parameters: {
@@ -559,7 +571,7 @@ class _AddBloodSugarControllerNewState
     }
   }
 
-  changeUnit() async {
+  Future<void> _changeUnit() async {
     try {
       BotToast.showLoading();
       ScheduleGlucoseTimeModel timeModel =
@@ -908,7 +920,7 @@ class _AddBloodSugarControllerNewState
     );
   }
 
-  showActionFilter(BuildContext context) {
+  void showActionFilter(BuildContext context) {
     showModalBottomSheet(
       shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(top: Radius.circular(15))),
@@ -982,7 +994,7 @@ class _AddBloodSugarControllerNewState
     }
   }
 
-  _openCamera(BuildContext context) async {
+  void _openCamera(BuildContext context) async {
     try {
       final picker = ImagePicker();
       final pickedFile = await picker.getImage(
@@ -1089,7 +1101,7 @@ class _AddBloodSugarControllerNewState
             child: isClicked
                 ? Image.asset(R.drawable.ic_help_circle_active,
                     width: 24, height: 24)
-                : Image.asset(R.drawable.ic_help_circle, width: 24, height: 24),
+                : Image.asset(R.drawable.ic_help_outlined, width: 24, height: 24),
           ),
         ),
       ],
@@ -1109,148 +1121,175 @@ class _AddBloodSugarControllerNewState
   }
 
   Widget _inputSection() {
-    return SpacingColumn(
-      spacing: 20,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        SpacingRow(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            Flexible(child: SizedBox(width: 80)),
-            Container(
-              width: 150,
-              decoration: BoxDecoration(
-                  border: Border(
-                      bottom: BorderSide(color: R.color.color0xffE5E5E5))),
-              child: TextField(
-                focusNode: _focusNodeKPI,
-                controller: _controller,
-                maxLength: isMgPerDl ? 3 : 4,
-                autofocus: true,
-                textAlign: TextAlign.center,
-                keyboardType: TextInputType.numberWithOptions(decimal: true),
-                style: TextStyle(
-                    color: R.color.black,
-                    fontSize: 48,
+    return Container(
+      height: 80,
+      width: double.infinity,
+      child: Stack(
+        children: [
+          // bottom line
+          Positioned(
+            bottom: 0,
+            left: 0,
+            right: 0,
+            child: Container(height: 1, color: R.color.color0xffE5E5E5),
+          ),
+          // text field
+          Positioned.fill(
+            child: TextField(
+              focusNode: _focusNodeKPI,
+              controller: _controller,
+              maxLength: isMgPerDl ? 3 : 4,
+              autofocus: true,
+              textAlign: TextAlign.center,
+              keyboardType: TextInputType.numberWithOptions(decimal: true),
+              style: TextStyle(
+                  color: R.color.black,
+                  fontSize: 48,
+                  fontFamily: 'Viga',
+                  fontWeight: FontWeight.w500),
+              decoration: InputDecoration(
+                counterText: '',
+                hintText: '0.0',
+                contentPadding: EdgeInsets.only(bottom: 8),
+                border: InputBorder.none,
+                hintStyle: TextStyle(
                     fontFamily: 'Viga',
-                    fontWeight: FontWeight.w500),
-                decoration: InputDecoration(
-                  counterText: '',
-                  hintText: '0.0',
-                  contentPadding: EdgeInsets.only(bottom: 8),
-                  border: InputBorder.none,
-                  hintStyle: TextStyle(
-                      fontFamily: 'Viga',
-                      color: Color(0xffDDDDDD),
-                      fontSize: 48,
-                      fontWeight: FontWeight.w700),
-                ),
-                onChanged: (value) {
-                  fromNipro = false;
-                  final newValue = value.split(',').join('.');
-                  number = newValue.isEmpty ? 0 : double.parse(newValue);
-                  setState(() {});
+                    color: Color(0xffDDDDDD),
+                    fontSize: 48,
+                    fontWeight: FontWeight.w700),
+              ),
+              onChanged: (value) {
+                fromNipro = false;
+                final newValue = value.split(',').join('.');
+                number = newValue.isEmpty ? 0 : double.parse(newValue);
+                setState(() {});
+              },
+            ),
+          ),
+          // buttons
+          Align(
+            alignment: Alignment.centerRight,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8),
+              child: ToggleButtonsVertical(
+                names: [R.string.mg_dl, R.string.mmol_l],
+                backgroundColor: Color(0xFFF2F6F9),
+                width: 65,
+                selectedIndex: _lastUnitIndex,
+                onChange: (index) async {
+                  if (index == _lastUnitIndex) return;
+                  _lastUnitIndex = index;
+                  await _changeUnit();
+              
+                  final glucose = roundAsFixed(
+                      AppSettings.userInfo!.glucoseUnit == 1
+                          ? number! * mmollToMgdlFactor
+                          : number! / mmollToMgdlFactor);
+                  number = glucose;
+                  if (_controller.text != "") {
+                    _controller.text = glucose.toString();
+                  }
+                  setState(() {
+                    isMgPerDl = index == 0;
+                  });
                 },
               ),
             ),
-            InkWell(
-              onTap: () async {
-                await changeUnit();
-
-                final glucose = roundAsFixed(
-                    AppSettings.userInfo!.glucoseUnit == 1
-                        ? number! * mmollToMgdlFactor
-                        : number! / mmollToMgdlFactor);
-                number = glucose;
-                if (_controller.text != "") {
-                  _controller.text = glucose.toString();
-                }
-                setState(() {
-                  isMgPerDl = !isMgPerDl;
-                });
-              },
-              child: Container(
-                padding: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
-                color: Colors.white,
-                child: SpacingRow(
-                  spacing: 10,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Text(
-                      AppSettings.userInfo!.glucoseUnit == 1
-                          ? R.string.mg_dl.tr()
-                          : R.string.mmol_l.tr(),
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: R.color.captionColorGray,
-                      ),
-                    ),
-                    Image.asset(R.drawable.ic_change_unit, height: 16)
-                  ],
-                ),
-              ),
-            )
-          ],
-        ),
-      ],
+          ),
+        ],
+      ),
     );
   }
 
-  Widget _dateTimeSection() {
-    return Column(
-      children: [
-        GestureDetector(
-          onTap: () async {
-            await TrackingManager.analytics
-                .logEvent(name: 'component_clicked', parameters: {
-              "screen_name": 'kpi_glycemic_add',
-              'component_name': 'date_picker_glycemic',
-            });
-
-            showDialog(
-              barrierColor: R.color.color0xff003F38.withOpacity(0.5),
-              context: context,
-              builder: (_) => DateMultiPicker(
-                initDate: selectedDate,
-                callback: (date) {
-                  setState(() {
-                    selectedDate = date ?? DateTime.now();
-                  });
-                  _loadConfig();
-                },
-              ),
-            );
-          },
-          child: Container(
-            color: R.color.transparent,
-            child: Column(children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    convertToUTC(selectedDate.millisecondsSinceEpoch ~/ 1000,
-                        'HH:mm - dd/MM/yyyy'),
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w400),
-                  ),
-                  SizedBox(width: 8),
-                  Text(
-                    'Chỉnh sửa',
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: R.color.accentColor,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  )
-                ],
-              ),
-              SizedBox(height: 16),
-              Container(height: 1, color: R.color.color0xffE5E5E5),
-              SizedBox(height: 8),
-            ]),
+  Widget _dateTimeSectionV2() {
+    return Center(
+      child: InkWell(
+        onTap: _onTapDateTime,
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            color: R.color.white,
+            borderRadius: BorderRadius.circular(18),
+            border: Border.all(color: R.color.color0xffE5E5E5),
           ),
-        )
-      ],
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  convertToUTC(selectedDate.millisecondsSinceEpoch ~/ 1000,
+                      'HH:mm - dd/MM/yyyy'),
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w400,
+                    color: R.color.textDark,
+                  ),
+                ),
+                const SizedBox(width: 4),
+                Icon(
+                  Icons.keyboard_arrow_down,
+                  color: R.color.textDark,
+                  size: 20,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  // Widget _dateTimeSection() {
+  //   return Column(
+  //     children: [
+  //       GestureDetector(
+  //         onTap: _onTapDateTime,
+  //         child: Container(
+  //           color: R.color.transparent,
+  //           child: Column(children: [
+  //             Row(
+  //               mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  //               children: [
+  //                 Text(
+  //                   convertToUTC(selectedDate.millisecondsSinceEpoch ~/ 1000,
+  //                       'HH:mm - dd/MM/yyyy'),
+  //                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.w400),
+  //                 ),
+  //                 SizedBox(width: 8),
+  //                 Text(
+  //                   'Chỉnh sửa',
+  //                   style: TextStyle(
+  //                     fontSize: 16,
+  //                     color: R.color.accentColor,
+  //                     fontWeight: FontWeight.w600,
+  //                   ),
+  //                 )
+  //               ],
+  //             ),
+  //             SizedBox(height: 16),
+  //             Container(height: 1, color: R.color.color0xffE5E5E5),
+  //             SizedBox(height: 8),
+  //           ]),
+  //         ),
+  //       )
+  //     ],
+  //   );
+  // }
+
+  Widget _dateTimeFrameV2() {
+    return Container(
+      width: double.infinity,
+      height: 32.h,
+      child: ToggleButtonsHorizontal(
+        names: ['Đường huyết đói', 'Sau ăn', 'Trước ăn'],
+        backgroundColor: Color(0xFFF2F6F9),
+        selectedIndex: _lastTimeFrameIndex,
+        onChange: (index) {
+          _lastTimeFrameIndex = index;
+          setState(() {});
+        },
+        height: 32.h,
+      ),
     );
   }
 
@@ -1300,72 +1339,78 @@ class _AddBloodSugarControllerNewState
     );
   }
 
-  Widget _connectMachine() {
-    return GestureDetector(
-      onTap: () async {
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (BuildContext context) => RocheConnectionView()));
-      },
+  Widget _connectMachine(BuildContext context) {
+    final action = () async {
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (BuildContext context) => RocheConnectionView()));
+    };
+    final connectMachineW = InkWell(
+      onTap: action,
       child: Container(
-          margin: EdgeInsets.only(bottom: 16, left: 16, right: 16),
-          padding: EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: R.color.white,
-            borderRadius: BorderRadius.circular(16),
-          ),
-          child: Row(
-            children: [
-              Container(
-                width: 58,
-                height: 58,
-                padding: EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color: Color(0xFFDDF4F2),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                alignment: Alignment.center,
-                child: Image.asset(
-                  R.drawable.ic_sugar_blood,
-                  width: 24,
-                  height: 24,
+        padding: EdgeInsets.symmetric(vertical: 12, horizontal: 12),
+        decoration: BoxDecoration(
+          color: R.color.white,
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Image.asset(R.drawable.im_glucose_input_device, width: 40, height: 40),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                'Kết nối máy đo đường huyết',
+                style: TextStyle(
+                  fontSize: 15,
+                  color: R.color.dark,
                 ),
               ),
-              SizedBox(width: 15),
-              SpacingColumn(
-                spacing: 10,
-                crossAxisAlignment: CrossAxisAlignment.start,
+            ),
+            const SizedBox(width: 12),
+            Icon(
+              Icons.chevron_right,
+              color: R.color.primaryGreyColor,
+              size: 24,
+            ),
+          ],
+        ),
+      ),
+    );
+
+    final height = MediaQuery.of(context).size.height;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+          children: [
+            // TODO: Enhance this
+            // magic number follow sum on design or edit 1by1 :D
+            SizedBox(height: max(height - 688 - (files.length > 0 ? 76 : 0), 12)),
+            Container(
+              width: 235,
+              height: 20,
+              alignment: Alignment.center,
+              child: Row(
                 children: [
+                  Expanded(child: Container(height: 1, color: R.color.greenGradientBottom)),
                   Text(
-                    'Kết nối thiết bị và app',
+                    '   Hoặc   ',
                     style: TextStyle(
-                      fontSize: 18,
+                      fontSize: 14,
+                      color: R.color.greenGradientBottom,
                     ),
                   ),
-                  SpacingRow(
-                    spacing: 10,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Text(
-                        'Kết nối',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w700,
-                          color: R.color.accentColor,
-                        ),
-                      ),
-                      Icon(
-                        Icons.arrow_forward_ios_outlined,
-                        color: R.color.accentColor,
-                        size: 16,
-                      ),
-                    ],
-                  ),
+                  Expanded(child: Container(height: 1, color: R.color.greenGradientBottom)),
                 ],
               ),
-            ],
-          )),
+            ),
+            const SizedBox(height: 12),
+            connectMachineW,
+          ],
+        ),
     );
   }
 
@@ -1400,14 +1445,28 @@ class _AddBloodSugarControllerNewState
                   fontWeight: FontWeight.w400,
                   color: R.color.primaryGreyColor,
                 ),
+                suffixIcon: GestureDetector(
+                  onTap: () {
+                    showActionSheet(context);
+                  },
+                  child: Image.asset(R.drawable.ic_pick_photo, width: 24, height: 24),
+                ),
+                suffixIconConstraints: BoxConstraints(
+                  maxHeight: 24,
+                  maxWidth: 24,
+                ),
               ),
+              // trailing action
+
             ),
           ),
           Container(height: 1, color: R.color.color0xffE5E5E5),
-          GridView.builder(
+          if (files.isNotEmpty) ...[
+            const SizedBox(height: 16),
+            GridView.builder(
               physics: NeverScrollableScrollPhysics(),
               shrinkWrap: true,
-              itemCount: files.length + 1,
+              itemCount: files.length,
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 3,
                   childAspectRatio: 1,
@@ -1415,46 +1474,48 @@ class _AddBloodSugarControllerNewState
                   mainAxisSpacing: 16),
               itemBuilder: (BuildContext context, int index) {
                 return GestureDetector(
-                    onTap: () {
-                      if (index == files.length) {
-                        showActionSheet(context);
-                      }
-                    },
-                    child: index == files.length
-                        ? ButtonAddPhoto()
-                        : GestureDetector(
-                            onTap: () {
-                              Navigator.pushNamed(context, '/photo_view',
-                                  arguments: {'files': files, 'index': index});
-                            },
-                            child: Stack(
-                                alignment: AlignmentDirectional.topEnd,
-                                children: [
-                                  Positioned.fill(
-                                    child: files[index] is PickedFile
-                                        ? Image.file(
-                                            File(files[index].path),
-                                            fit: BoxFit.cover,
-                                          )
-                                        : NetWorkImageWidget(
-                                            imageUrl: files[index].url,
-                                            fit: BoxFit.cover),
+                        onTap: () {
+                          Navigator.pushNamed(context, '/photo_view',
+                              arguments: {'files': files, 'index': index});
+                        },
+                        child: Stack(
+                            alignment: AlignmentDirectional.topEnd,
+                            children: [
+                              Positioned.fill(
+                                top: 4,
+                                right: 4,
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(8),
                                   ),
-                                  IconButton(
-                                      icon: Image.asset(R.drawable.ic_trash),
-                                      onPressed: () {
-                                        setState(() {
-                                          if (files[index] is PickedFile) {
-                                            files.removeAt(index);
-                                          } else {
-                                            removeIDs.add(files[index].id);
-                                            files.removeAt(index);
-                                          }
-                                        });
-                                      })
-                                ]),
-                          ));
+                                  clipBehavior: Clip.hardEdge,
+                                  child: files[index] is PickedFile
+                                    ? Image.file(
+                                        File(files[index].path),
+                                        fit: BoxFit.cover,
+                                      )
+                                    : NetWorkImageWidget(
+                                        imageUrl: files[index].url,
+                                        fit: BoxFit.cover),
+                                ),
+                              ),
+                              GestureDetector(
+                                onTap: () {
+                                  setState(() {
+                                    if (files[index] is PickedFile) {
+                                      files.removeAt(index);
+                                    } else {
+                                      removeIDs.add(files[index].id);
+                                      files.removeAt(index);
+                                    }
+                                  });
+                                },
+                                child: Image.asset(R.drawable.ic_close_circle_red, width: 24, height: 24),
+                              ),
+                            ]),
+                      );
               }),
+          ],
         ]),
       ),
     );
@@ -1486,7 +1547,7 @@ class _AddBloodSugarControllerNewState
     int index = -1;
     int indexRange = findIndexInRanges(_number, _rangeValue);
     num widthRange = (AppMediaQuery.deviceWidth - 72) / (_rangeValue.length);
-    print('hihi widthRange: $widthRange');
+    // print('hihi widthRange: $widthRange');
     num width = _number == 0 ? 0 : widthRange * (indexRange);
 
     // lấy pxPerValue = max - min => 55 - 0
@@ -1497,20 +1558,20 @@ class _AddBloodSugarControllerNewState
         _number = _number * mmollToMgdlFactor;
       }
       num min = _rangeValue[indexRange];
-      print('hihi min: $min');
+      // print('hihi min: $min');
       num max = indexRange + 1 >= _rangeValue.length
           ? _rangeValue[indexRange] + min
           : _rangeValue[indexRange + 1];
-      print('hihi max: $max');
+      // print('hihi max: $max');
       // giá trị từ 0 -> 55 sẽ nằm ở mức 0
 
       // sau đó tính toán mỗi px trên 1 mức value
       num maximumValue = max - min;
-      print('hihi maximumValue: $maximumValue');
+      // print('hihi maximumValue: $maximumValue');
       num pxPerValue = widthRange / maximumValue;
-      print('hihi pxPerValue: $pxPerValue');
+      // print('hihi pxPerValue: $pxPerValue');
       num widthPlus = pxPerValue * (_number - min);
-      print('hihi widthPlus: $widthPlus');
+      // print('hihi widthPlus: $widthPlus');
       width += widthPlus;
 
       width = width > (widthRange * _rangeValue.length)
@@ -1619,6 +1680,28 @@ class _AddBloodSugarControllerNewState
           ],
         ),
       ],
+    );
+  }
+
+  void _onTapDateTime() async {
+    await TrackingManager.analytics
+        .logEvent(name: 'component_clicked', parameters: {
+      "screen_name": 'kpi_glycemic_add',
+      'component_name': 'date_picker_glycemic',
+    });
+
+    showDialog(
+      barrierColor: R.color.color0xff003F38.withOpacity(0.5),
+      context: context,
+      builder: (_) => DateMultiPicker(
+        initDate: selectedDate,
+        callback: (date) {
+          setState(() {
+            selectedDate = date ?? DateTime.now();
+          });
+          _loadConfig();
+        },
+      ),
     );
   }
 }

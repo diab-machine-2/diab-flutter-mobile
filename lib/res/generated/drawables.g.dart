@@ -135,6 +135,7 @@ class Drawables {
   String get ic_clock => "lib/res/drawables/ic_clock.png";
   String get ic_clock_exe => "lib/res/drawables/ic_clock_exe.png";
   String get ic_close => "lib/res/drawables/ic_close.png";
+  String get ic_close_circle_red => "lib/res/drawables/ic_close_circle_red.png";
   String get ic_close_border => "lib/res/drawables/ic_close_border.png";
   String get ic_coin => "lib/res/drawables/ic_coin.png";
   String get ic_comment_checked => "lib/res/drawables/ic_comment_checked.png";
@@ -189,6 +190,7 @@ class Drawables {
   String get ic_heart_presse => "lib/res/drawables/ic_heart_presse.png";
   String get ic_heart_rate => "lib/res/drawables/ic_heart_rate.png";
   String get ic_help_circle => "lib/res/drawables/ic_help_circle.png";
+  String get ic_help_outlined => "lib/res/drawables/ic_help_outlined.png";
   String get ic_help_circle_active =>
       "lib/res/drawables/ic_help_circle_active.png";
   String get ic_home => "lib/res/drawables/ic_home.png";
@@ -458,6 +460,8 @@ class Drawables {
   String get ic_heart_connect => "lib/res/drawables/ic_heart_connect.png";
   String get voucher_reward => "lib/res/drawables/voucher_reward.jpg";
   String get share_app_detail => "lib/res/drawables/share_app_detail.jpg";
+
+  String get ic_pick_photo => "lib/res/drawables/ic_pick_photo.png";
 
   String get im_glucose_intro => "lib/res/drawables/glucose/im_glucose_intro.png";
   String get im_guide_connectdevice => "lib/res/drawables/glucose/im_guide_connectdevice.png";
