@@ -1,18 +1,24 @@
+import 'dart:io';
+
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
+import 'package:medical/src/widgets/network_image_widget.dart';
 import 'package:syncfusion_flutter_gauges/gauges.dart';
 
-class AddBloodSugarResult extends StatefulWidget {
-  const AddBloodSugarResult({super.key, required this.dateTime});
+class PageAddBloodSugarResult extends StatefulWidget {
+  const PageAddBloodSugarResult({super.key, required this.dateTime});
   final DateTime dateTime;
 
   @override
-  State<AddBloodSugarResult> createState() => _AddBloodSugarResultState();
+  State<PageAddBloodSugarResult> createState() => _PageAddBloodSugarResultState();
 }
 
-class _AddBloodSugarResultState extends State<AddBloodSugarResult> {
+class _PageAddBloodSugarResultState extends State<PageAddBloodSugarResult> {
+  List<dynamic> _files = [];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -159,10 +165,86 @@ class _AddBloodSugarResultState extends State<AddBloodSugarResult> {
   }
 
   Widget _buildNoteOrAddNoteSection() {
-    // TODO: show note if have
+    if (true) {
+      // Section show note
+      return Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        decoration: BoxDecoration(
+          color: R.color.color0xffF2F6F9,
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Text(
+                  R.string.ghi_chu.tr(),
+                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: R.color.textDark),
+                ),
+                Expanded(child: SizedBox()),
+                GestureDetector(
+                  onTap: () {
+                    // TODO: show dialog edit note
+                  },
+                  child: Image.asset(R.drawable.ic_edit, width: 24, height: 24),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Mức đường huyết sau ăn của bạn lúc 12h hôm nay là 280 mg/dL, cao hơn mức bình thường. Đổi với người mắc bệnh đái tháo đường, mức đường huyết sau ăn thường nên ở dưới 180 mg/dL để đảm bảo kiểm soát tốt bệnh và ngẫn ngừa các biến chứng.',
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w400,
+                color: R.color.primaryGreyColor,
+                height: 16 / 12,
+              ),
+            ),
+            const SizedBox(height: 16),
+            // images
+            if (_files.isNotEmpty) ...[
+              const SizedBox(height: 16),
+              Wrap(
+                spacing: 16,
+                runSpacing: 16,
+                children: _files.map((e) {
+                  final index = _files.indexOf(e);
+                  return GestureDetector(
+                    onTap: () {
+                      Navigator.pushNamed(context, '/photo_view',
+                          arguments: {'files': _files, 'index': index});
+                    },
+                    child: SizedBox(
+                      width: 56,
+                      height: 56,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        width: 56,
+                        height: 56,
+                        clipBehavior: Clip.hardEdge,
+                        child: _files[index] is PickedFile
+                            ? Image.file(
+                                File(_files[index].path),
+                                fit: BoxFit.cover,
+                              )
+                            : NetWorkImageWidget(imageUrl: _files[index].url, fit: BoxFit.cover),
+                      ),
+                    ),
+                  );
+                }).toList(),
+              ),
+            ],
+          ],
+        ),
+      );
+    }
     return ElevatedButton(
       onPressed: () {
         // TODO: show dialog add note
+        Navigator.pushNamed(context, NavigatorName.add_blood_sugar_result_note);
       },
       child: Text(
         R.string.them_ghi_chu.tr(),

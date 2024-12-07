@@ -5,6 +5,8 @@ import 'package:medical/src/widget/my_plan_screens/activity_tab/create_goal/crea
 import 'package:medical/src/widget/utilities/utilities_page.dart';
 
 import 'utils/navigator_name.dart';
+import 'widget/BloodSugar/add_bloodSugar_result.dart';
+import 'widget/BloodSugar/add_bloodSugar_result_note.dart';
 import 'widget/Food/daily_nutrition/daily_nutrition.dart';
 import 'widget/food_menu_screens/food_menu/food_menu.dart';
 import 'widget/home/schema/home_schema.dart';
@@ -60,6 +62,21 @@ class AppRoutes {
           page = MeetingPreparePage();
           break;
         }
+      case NavigatorName.add_blood_sugar_result:
+        page = PageAddBloodSugarResult(dateTime: settings.arguments as DateTime);
+        break;
+      case NavigatorName.add_blood_sugar_result_note:
+        return PageRouteBuilder(
+          pageBuilder: (context, animation, secondaryAnimation) => PageAddBloodSugarResultNote(),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) => SlideTransition(
+            position: Tween<Offset>(
+              begin: const Offset(0, 1),
+              end: Offset.zero,
+            ).animate(animation),
+            child: child,
+          ),
+          fullscreenDialog: true,
+        );
       default:
         break;
     }

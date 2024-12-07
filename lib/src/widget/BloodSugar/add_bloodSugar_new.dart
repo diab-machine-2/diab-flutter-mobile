@@ -40,6 +40,7 @@ import '../../widgets/CalendarPicker/custom_date_picker.dart';
 import '../../widgets/network_image_widget.dart';
 import '../my_plan_screens/activity_tab/activity_tab/models/schedule_type.dart';
 import 'widget/level_off_diabetes_rule_picker.dart';
+import 'widget/section_add_note.dart';
 
 class AddBloodSugarControllerNew extends StatefulWidget {
   final String? type;
@@ -58,7 +59,7 @@ class _AddBloodSugarControllerNewState
     with SingleTickerProviderStateMixin {
   TextEditingController _controller = TextEditingController();
   TextEditingController _controllerNote = TextEditingController();
-  int maxMedia = 5;
+  final GlobalKey<SectionAddNoteState> _sectionAddNoteKey = GlobalKey<SectionAddNoteState>();
   List<dynamic> files = [];
   DateTime selectedDate = DateTime.now();
   bool isClicked = false;
@@ -506,6 +507,13 @@ class _AddBloodSugarControllerNewState
   }
 
   void _submitData() async {
+    final data = _sectionAddNoteKey.currentState?.getNote();
+    if (data != null) {
+      files.clear();
+      files.addAll(data.files);
+      removeIDs.clear();
+      removeIDs.addAll(data.removeIDs);
+    }
     await TrackingManager.analytics.logEvent(
       name: 'cta_button_clicked',
       parameters: {
@@ -591,7 +599,7 @@ class _AddBloodSugarControllerNewState
     }
   }
 
-  _showDialogDelete(BuildContext context) {
+  void _showDialogDelete(BuildContext context) {
     showDialog(
       context: context,
       builder: (context) {
@@ -688,7 +696,7 @@ class _AddBloodSugarControllerNewState
     );
   }
 
-  _showDialogSave() {
+  void _showDialogSave() {
     final note = _controllerNote.text;
     final numberInput = _controller.text;
 
@@ -809,7 +817,7 @@ class _AddBloodSugarControllerNewState
     );
   }
 
-  _showDialogWarning({required Function onConfirm, required int range}) {
+  void _showDialogWarning({required Function onConfirm, required int range}) {
     showDialog(
       context: context,
       builder: (context) {
@@ -932,133 +940,12 @@ class _AddBloodSugarControllerNewState
     );
   }
 
-  showActionSheet(BuildContext context) {
-    FocusScope.of(context).unfocus();
-    if (files.length < maxMedia) {
-      final action = CupertinoActionSheet(
-        actions: <Widget>[
-          CupertinoActionSheetAction(
-            child: Padding(
-              padding: EdgeInsets.only(left: 8, right: 8),
-              child: Row(
-                children: [
-                  Image.asset(R.drawable.ic_photo, width: 24, height: 24),
-                  SizedBox(width: 16),
-                  Text(R.string.chon_trong_thu_vien.tr(),
-                      style: TextStyle(
-                          color: R.color.color0xff333333, fontSize: 14)),
-                ],
-              ),
-            ),
-            onPressed: () {
-              _openGallery(context);
-              Navigator.pop(context);
-            },
-          ),
-          CupertinoActionSheetAction(
-            child: Padding(
-              padding: EdgeInsets.only(left: 8, right: 8),
-              child: Row(
-                children: [
-                  Image.asset(R.drawable.ic_camera_black,
-                      width: 24, height: 24),
-                  SizedBox(width: 16),
-                  Text(R.string.chup_anh.tr(),
-                      style: TextStyle(
-                          color: R.color.color0xff333333, fontSize: 14)),
-                ],
-              ),
-            ),
-            onPressed: () {
-              _openCamera(context);
-              Navigator.pop(context);
-            },
-          )
-        ],
-        cancelButton: CupertinoActionSheetAction(
-          child: Text(R.string.cancel.tr(),
-              style: TextStyle(color: R.color.color0xff333333, fontSize: 14)),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
-      );
-      showCupertinoModalPopup(context: context, builder: (context) => action);
-    } else {
-      //Message.showToastMessage(context, R.string.max_image_select.tr());
-    }
-  }
-
-  void _openCamera(BuildContext context) async {
-    try {
-      final picker = ImagePicker();
-      final pickedFile = await picker.getImage(
-          maxWidth: 512,
-          maxHeight: 512,
-          source: ImageSource.camera,
-          preferredCameraDevice: CameraDevice.rear);
-      if (pickedFile != null) {
-        files.add(pickedFile);
-
-        setState(() {});
-      }
-    } catch (_) {
-      showAlertDialog(context);
-    }
-  }
-
-  _openGallery(BuildContext context) async {
-    try {
-      final picker = ImagePicker();
-      final pickedFile = await picker.getImage(
-          maxWidth: 512, maxHeight: 512, source: ImageSource.gallery);
-      if (pickedFile != null) {
-        files.add(pickedFile);
-
-        setState(() {});
-      }
-    } catch (_) {
-      showAlertDialog(context);
-    }
-  }
-
-  showGuide(BuildContext context) async {
+  Future<void> showGuide(BuildContext context) async {
     Description.showTooltip(context,
         data: des!, title: R.string.blood_sugar_for_diabetes.tr());
     clickTime = clickTime + 1;
     await AppSettings.setValueOfClickShortGuideIndex(
         ScreenList.BLOOD_SUGAR.index, clickTime);
-  }
-
-  showAlertDialog(BuildContext context) {
-    Widget cancelButton = TextButton(
-      child: Text(R.string.cancel.tr()),
-      onPressed: () {
-        Navigator.pop(context);
-      },
-    );
-    Widget continueButton = TextButton(
-      child: Text(R.string.allowed.tr()),
-      onPressed: () {
-        Navigator.pop(context);
-        openAppSettings();
-      },
-    );
-
-    AlertDialog alert = AlertDialog(
-      title: Text(R.string.notification.tr()),
-      content: Text(R.string.ask_for_permission.tr()),
-      actions: [
-        cancelButton,
-        continueButton,
-      ],
-    );
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return alert;
-      },
-    );
   }
 
   Widget _appBarSection() {
@@ -1411,107 +1298,13 @@ class _AddBloodSugarControllerNewState
 
   Widget _selectImageSection() {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 16, left: 16, right: 16),
-      child: Container(
-        decoration: BoxDecoration(
-          color: R.color.white,
-          borderRadius: BorderRadius.circular(16),
-        ),
-        padding: EdgeInsets.all(16),
-        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          InkWell(
-            splashColor: Colors.transparent,
-            onTap: () {
-              FocusScope.of(context).requestFocus(FocusNode());
-            },
-            child: TextField(
-              focusNode: _focusNode,
-              controller: _controllerNote,
-              style: TextStyle(
-                  color: R.color.black,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w400),
-              decoration: InputDecoration(
-                hintText: R.string.nhap_ghi_chu_cua_ban.tr(),
-                contentPadding: EdgeInsets.only(bottom: 8),
-                border: InputBorder.none,
-                hintStyle: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w400,
-                  color: R.color.primaryGreyColor,
-                ),
-                suffixIcon: GestureDetector(
-                  onTap: () {
-                    showActionSheet(context);
-                  },
-                  child: Image.asset(R.drawable.ic_pick_photo, width: 24, height: 24),
-                ),
-                suffixIconConstraints: BoxConstraints(
-                  maxHeight: 24,
-                  maxWidth: 24,
-                ),
-              ),
-              // trailing action
-
-            ),
-          ),
-          Container(height: 1, color: R.color.color0xffE5E5E5),
-          if (files.isNotEmpty) ...[
-            const SizedBox(height: 16),
-            GridView.builder(
-              physics: NeverScrollableScrollPhysics(),
-              shrinkWrap: true,
-              itemCount: files.length,
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 3,
-                  childAspectRatio: 1,
-                  crossAxisSpacing: 16,
-                  mainAxisSpacing: 16),
-              itemBuilder: (BuildContext context, int index) {
-                return GestureDetector(
-                        onTap: () {
-                          Navigator.pushNamed(context, '/photo_view',
-                              arguments: {'files': files, 'index': index});
-                        },
-                        child: Stack(
-                            alignment: AlignmentDirectional.topEnd,
-                            children: [
-                              Positioned.fill(
-                                top: 4,
-                                right: 4,
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                  clipBehavior: Clip.hardEdge,
-                                  child: files[index] is PickedFile
-                                    ? Image.file(
-                                        File(files[index].path),
-                                        fit: BoxFit.cover,
-                                      )
-                                    : NetWorkImageWidget(
-                                        imageUrl: files[index].url,
-                                        fit: BoxFit.cover),
-                                ),
-                              ),
-                              GestureDetector(
-                                onTap: () {
-                                  setState(() {
-                                    if (files[index] is PickedFile) {
-                                      files.removeAt(index);
-                                    } else {
-                                      removeIDs.add(files[index].id);
-                                      files.removeAt(index);
-                                    }
-                                  });
-                                },
-                                child: Image.asset(R.drawable.ic_close_circle_red, width: 24, height: 24),
-                              ),
-                            ]),
-                      );
-              }),
-          ],
-        ]),
+      padding: const EdgeInsets.symmetric(horizontal: 12),
+      child: SectionAddNote(
+        focusNode: _focusNode,
+        controllerNote: _controllerNote,
+        maxMedia: 5,
+        key: _sectionAddNoteKey,
+        files: files,
       ),
     );
   }

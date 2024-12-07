@@ -790,6 +790,7 @@ class Strings {
   String get chon_khung_gio => 'chon_khung_gio';
   String get ghi_chu => 'ghi_chu';
   String get them_ghi_chu => 'them_ghi_chu';
+  String get luu_ghi_chu => 'luu_ghi_chu';
   String get nhap_ghi_chu_cua_ban => 'nhap_ghi_chu_cua_ban';
   String get xoa_du_lieu => 'xoa_du_lieu';
   String get xoa_thanh_cong => 'xoa_thanh_cong';
