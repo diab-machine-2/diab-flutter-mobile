@@ -425,6 +425,7 @@ class _HomeControllerState extends State<HomeController>
 
           Widget activitiesW = HomeActivity(
             activities: stateLoaded?.activities ?? [],
+            hasReminder: (stateLoaded?.reminders ?? []).isNotEmpty,
             expanded: _isActivityReminerExpanded,
             loading: stateLoaded?.activityLoading ?? false,
             onExpand: () {

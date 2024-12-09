@@ -19,12 +19,14 @@ class HomeActivity extends StatelessWidget {
     required this.onActivityTap,
     this.expanded = false,
     this.loading = false,
+    this.hasReminder = false,
   });
 
   final bool loading;
 
   final List<HomeActivityData> activities;
   final bool expanded;
+  final bool hasReminder;
 
   final VoidCallback onViewMore;
   final VoidCallback onExpand;
@@ -43,7 +45,7 @@ class HomeActivity extends StatelessWidget {
       children: [
         // const SizedBox(height: 16.0),
 
-        if (!loading && (isFinishedAll || isEmpty))
+        if (!loading && (isFinishedAll || isEmpty) && !hasReminder)
           Center(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
