@@ -15,6 +15,7 @@ import 'package:medical/src/widget/dsmes_appointment/dsmes_appointment_state.dar
 import 'package:medical/src/widget/dsmes_appointment/model/dsmes_clinic_model.dart';
 import 'package:medical/src/widget/dsmes_appointment/widgets/dsmes_appointment_item.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
+import 'package:medical/src/widgets/gap_widget.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class DsmesBookingOfflinePage extends StatefulWidget {
@@ -120,9 +121,7 @@ class _DsmesBookingOfflinePageState extends State<DsmesBookingOfflinePage> {
                       color: R.color.color0xff239A90,
                       fit: BoxFit.scaleDown,
                     ),
-                    SizedBox(
-                      width: 4,
-                    ),
+                    GapW(4),
                     Text(
                       R.string.consulting_history.tr(),
                       style: TextStyle(
@@ -163,17 +162,13 @@ class _DsmesBookingOfflinePageState extends State<DsmesBookingOfflinePage> {
                       padding: EdgeInsets.zero,
                       shrinkWrap: true,
                       itemCount: _cubit.listClinic.length,
-                      separatorBuilder: (context, index) => SizedBox(
-                        height: 16,
-                      ),
+                      separatorBuilder: (context, index) => GapH(16),
                       itemBuilder: (context, index) {
                         DsmesClinicModel data = _cubit.listClinic[index];
                         return _buildClinicItem(data);
                       },
                     ),
-                    SizedBox(
-                      height: 20,
-                    ),
+                    GapH(20),
                   ],
                 ),
               ),
@@ -202,9 +197,7 @@ class _DsmesBookingOfflinePageState extends State<DsmesBookingOfflinePage> {
                     width: 72,
                     child: Image.network(
                         "${Utils.getHostDocosanUrl()}${data.avatar}")),
-                SizedBox(
-                  width: 12,
-                ),
+                GapW(12),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -218,13 +211,13 @@ class _DsmesBookingOfflinePageState extends State<DsmesBookingOfflinePage> {
                           fontWeight: FontWeight.w700,
                         ),
                       ),
-                      SizedBox(height: 10),
+                      GapH(10),
                       Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Image.asset(R.drawable.ic_map_marker,
                               width: 12, height: 12),
-                          SizedBox(width: 5),
+                          GapW(5),
                           Flexible(
                             child: Text(
                               data.address,
@@ -240,6 +233,106 @@ class _DsmesBookingOfflinePageState extends State<DsmesBookingOfflinePage> {
                         ],
                       ),
                     ],
+                  ),
+                ),
+              ],
+            ),
+            GapH(12),
+            Container(
+              width: double.infinity,
+              child: Wrap(
+                spacing: 6,
+                runSpacing: 6,
+                children: data.specialty.map((e) {
+                  return Container(
+                      height: 20,
+                      padding: EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                      decoration: BoxDecoration(
+                        color: R.color.color0xffFAF0D2,
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                      child: Text(
+                        e.info.name,
+                        style: TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w400,
+                          color: R.color.color0xffA36E2A,
+                        ),
+                      ));
+                }).toList(),
+              ),
+            ),
+            GapH(16),
+            Row(
+              children: [
+                Expanded(
+                  child: Container(
+                    height: 40,
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: InkWell(
+                            onTap: () {
+                              //TODO: handle navigate to create online booking page
+                            },
+                            child: Container(
+                              alignment: Alignment.center,
+                              padding: EdgeInsets.all(10),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(200),
+                              ),
+                              child: Text(
+                                R.string.consult_online.tr(),
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w700,
+                                  color: R.color.greenGradientBottom,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                Expanded(
+                  child: Container(
+                    height: 40,
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: InkWell(
+                            onTap: () {
+                              //TODO: Handle navigate to create booking offline page
+                            },
+                            child: Container(
+                              alignment: Alignment.center,
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  begin: Alignment.topCenter,
+                                  end: Alignment.bottomCenter,
+                                  colors: [
+                                    R.color.greenGradientTop02,
+                                    R.color.color0xff008479
+                                  ],
+                                ),
+                                borderRadius: BorderRadius.circular(200),
+                              ),
+                              padding: EdgeInsets.all(10),
+                              child: Text(
+                                R.string.consult_at_clinic.tr(),
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w700,
+                                  color: R.color.white,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ],
