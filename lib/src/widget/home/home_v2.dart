@@ -452,7 +452,11 @@ class _HomeControllerState extends State<HomeController>
               Navigator.pushNamed(context, NavigatorName.add_reminder,
                   arguments: {'type': 'input'});
             },
-            onItemTap: (reminder) {
+            onItemTap: (reminder) async {
+              final String eventName = "home_select_activity";
+              TrackingManager.trackEvent(eventName, _screenName, params: {
+                "object_title": reminder.title,
+              });
               Navigator.pushNamed(context, NavigatorName.add_reminder,
                   arguments: {'type': 'update', 'id': reminder.id});
             },
@@ -648,6 +652,15 @@ class _HomeControllerState extends State<HomeController>
                                       if (bannerLinks[index].isEmpty) {
                                         return;
                                       }
+
+                                      await TrackingManager.trackEvent(
+                                          'home_select_banner', _screenName,
+                                          params: {
+                                            "object_title": stateLoaded
+                                                    ?.banners?[index].title ??
+                                                '',
+                                            "index": index,
+                                          });
 
                                       final launchUri =
                                           Uri.parse(bannerLinks[index]);
@@ -875,7 +888,14 @@ class _HomeControllerState extends State<HomeController>
                             child: HomeNews(
                               items: stateLoaded?.news ?? [],
                               onViewMore: () {},
-                              onNewsTap: (news) {
+                              onNewsTap: (news) async {
+                                await TrackingManager.trackEvent(
+                                    'home_select_news', _screenName,
+                                    params: {
+                                      "object_title": news.title,
+                                      "index": stateLoaded?.news?.indexWhere(
+                                          (element) => element.id == news.id),
+                                    });
                                 if (news.enableLink) {
                                   _launchInBrowser(news.link!);
                                 } else {

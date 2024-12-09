@@ -581,14 +581,14 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController>
                               child: Column(children: [
                                 GestureDetector(
                                   onTap: () async {
-                                    await TrackingManager.analytics.logEvent(
-                                      name: 'component_clicked',
-                                      parameters: {
-                                        "screen_name": 'kpi_glycemic_add',
-                                        'component_name':
-                                            'time_section_glycemic',
-                                      },
-                                    );
+                                    // await TrackingManager.analytics.logEvent(
+                                    //   name: 'component_clicked',
+                                    //   parameters: {
+                                    //     "screen_name": 'kpi_glycemic_add',
+                                    //     'component_name':
+                                    //         'time_section_glycemic',
+                                    //   },
+                                    // );
                                     showActionFilter(context);
                                   },
                                   child: Container(

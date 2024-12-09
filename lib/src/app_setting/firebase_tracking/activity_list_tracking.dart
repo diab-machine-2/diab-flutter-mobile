@@ -63,25 +63,19 @@ class ActivityListTracking {
     required String? objectId,
     required String? objectTitle,
   }) async {
-    // await TrackingManager.analytics.logEvent(
-    //   name: 'component_clicked',
-    //   parameters: {
-    //     'object_id': objectId,
-    //     "screen_name": screenName,
-    //     'object_index': objectIndex,
-    //     'object_title': objectTitle,
-    //     'component_name': 'list_lesson_item',
-    //   },
-    // );
+    await TrackingManager.trackEvent('home_select_lesson', "home", params: {
+      "object_title": objectTitle,
+      "index": objectIndex,
+    });
 
-    await TrackingManager.analytics.logEvent(
-      name: 'select_content',
-      parameters: {
-        'item_id': objectId,
+    await TrackingManager.trackEvent(
+      'select_content',
+      "library",
+      params: {
+        'content_id': objectId,
         'index': objectIndex,
         'content_type': 'lesson',
-        'item_name': objectTitle,
-        "screen_name": screenName,
+        'object_title': objectTitle,
       },
     );
   }

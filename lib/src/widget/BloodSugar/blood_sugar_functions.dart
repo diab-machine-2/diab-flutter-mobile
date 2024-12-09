@@ -67,13 +67,6 @@ class BloodSugarFunctions {
                         textColor: Color(0xff249B92),
                         title: healthTitle,
                         onPressed: () async {
-                          await TrackingManager.analytics.logEvent(
-                            name: 'glucose_select_method',
-                            parameters: {
-                              "screen_name": 'kpi_glucose',
-                              'method': 'device',
-                            },
-                          );
                           RequestHealthConnect.showModal(context,
                               callback: () => Navigator.pop(context));
                         }),
@@ -83,7 +76,14 @@ class BloodSugarFunctions {
                     backgroundColor: Color(0xFFE4FCF3),
                     textColor: Color(0xff249B92),
                     title: 'Kết nối từ thiết bị',
-                    onPressed: () {
+                    onPressed: () async {
+                      await TrackingManager.analytics.logEvent(
+                        name: 'glucose_select_method',
+                        parameters: {
+                          "screen_name": 'kpi_glucose',
+                          'method': 'device',
+                        },
+                      );
                       Navigator.pop(context);
                       BlocProvider.of<NiproBloc>(context).tryAutoConnect();
                     },

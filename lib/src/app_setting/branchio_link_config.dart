@@ -37,9 +37,8 @@ class BranchioLinkConfig {
   void setUpHandleDeepLink() {
     _subLink = FlutterBranchSdk.listSession().listen((data) async {
       print('listenDynamicLinks - DeepLink Data: $data');
-      if (data['+clicked_branch_link'] == true) {
-        AppSettings.saveClickedBranchLink(data['+clicked_branch_link']);
-      }
+      AppSettings.saveClickedBranchLink(data['+clicked_branch_link']);
+
       if (data['+clicked_branch_link'] == true &&
           data.containsKey("\$course")) {
         _processBookingCourseLink(

@@ -188,20 +188,21 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
       Navigator.pushNamed(context, NavigatorName.detail_blood_sugar);
       Message.showToastMessage(
           context, "Đồng bộ chỉ số đường huyết thành công!");
+      Set<String> uniqueDays = selectedGlucose.map((e) => e['date']!).toSet();
       await TrackingManager.analytics.logEvent(
         name: 'glucose_sync',
         parameters: {
           "screen_name": 'kpi_glucose_sync',
+          'device_day': uniqueDays.length,
           'device_record': selectedGlucose.length,
           'status': 'success',
         },
       );
       await TrackingManager.analytics.logEvent(
-        name: 'glucose_complete',
-        parameters: {
-          "screen_name": 'kpi_glucose_sync',
-        },
+        name: 'glucose_add',
+        parameters: {"index_time": 'Kết nối máy', 'method': 'device'},
       );
+
       Future.delayed(Duration(seconds: 2)).then((value) => Observable.instance
           .notifyObservers([],
               notifyName: "glucose_change_data", map: {'index': 1}));
@@ -604,14 +605,6 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
     } catch (e, s) {
       deviceFound = false;
       appStatus = AppStatus.isNoDeviceFound;
-      await TrackingManager.analytics.logEvent(
-        name: 'glucose_pair',
-        parameters: {
-          "screen_name": 'kpi_glucose_device',
-          'status': 'fail',
-          'error_message': e.toString(),
-        },
-      );
       TrackingManager.recordError(e, s);
     }
   }
@@ -663,14 +656,6 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
     // Bật noti cho 0x2A18
     await charGlucoseMeasurement.setNotifyValue(true);
     appStatus = AppStatus.isConnected;
-
-    await TrackingManager.analytics.logEvent(
-      name: 'glucose_pair',
-      parameters: {
-        "screen_name": 'kpi_glucose_device',
-        'status': 'success',
-      },
-    );
 
     BluetoothService rocheService = services.firstWhere((service) {
       return service.serviceUuid.str128 ==
@@ -730,6 +715,13 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
         List<int> requestData = [0x01, 0x01];
         await characteristic.write(requestData);
         await Future.delayed(Duration(seconds: 5));
+        await TrackingManager.analytics.logEvent(
+          name: 'glucose_pair',
+          parameters: {
+            "screen_name": 'kpi_glucose_device',
+            'status': 'success',
+          },
+        );
         startCheckingData();
       }
     }

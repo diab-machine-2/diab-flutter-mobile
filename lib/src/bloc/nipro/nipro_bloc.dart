@@ -62,13 +62,6 @@ class NiproBloc extends Bloc<NiproEvent, NiproState> {
       _channel.invokeMethod('stop_scan');
       yield NiproStateListDevice(devices: _devices, isScanning: false);
     } else if (event is NiproEventConnectDevice) {
-      await TrackingManager.analytics.logEvent(
-        name: 'glucose_pair',
-        parameters: {
-          "screen_name": 'kpi_glucose_device',
-          'status': 'success',
-        },
-      );
       _connectedDevice = event.device;
       _connectOnly = event.connectOnly;
       _channel.invokeMethod('connect', event.device.address);

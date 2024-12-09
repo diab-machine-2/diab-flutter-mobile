@@ -111,7 +111,7 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
 
   void _trackUserVisit() async {
     final clickedBranchLink = await AppSettings.getClickedBranchLink();
-    
+    print('[TRACKING] ${clickedBranchLink == true ? 'deeplink' : 'organic'}');
     FirebaseAnalytics.instance.logEvent(
       name: 'home_app_open',
       parameters: {

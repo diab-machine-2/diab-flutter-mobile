@@ -537,7 +537,6 @@ class _AddBloodSugarControllerNewState
           name: 'glucose_add',
           parameters: {
             "screen_name": 'kpi_glucose_add',
-            'index_range': _rangeValue.join(', '),
             'index_time': selectedTimeFrame?.name,
             'method':  fromNipro ? 'device' : 'manual',
           },
@@ -1260,13 +1259,13 @@ class _AddBloodSugarControllerNewState
       children: [
         GestureDetector(
           onTap: () async {
-            await TrackingManager.analytics.logEvent(
-              name: 'component_clicked',
-              parameters: {
-                "screen_name": 'kpi_glycemic_add',
-                'component_name': 'time_section_glycemic',
-              },
-            );
+            // await TrackingManager.analytics.logEvent(
+            //   name: 'component_clicked',
+            //   parameters: {
+            //     "screen_name": 'kpi_glycemic_add',
+            //     'component_name': 'time_section_glycemic',
+            //   },
+            // );
             showActionFilter(context);
           },
           child: Container(
