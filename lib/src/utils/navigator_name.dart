@@ -90,4 +90,5 @@ class NavigatorName {
 
   // New Glucose
   static const String glucose_intro = '/glucose-intro';
+  static const String glucose_intro_2nd_page = '/glucose-intro-2nd-page';
 }

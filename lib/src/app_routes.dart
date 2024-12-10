@@ -9,6 +9,8 @@ import 'widget/BloodSugar/add_bloodSugar_result.dart';
 import 'widget/BloodSugar/add_bloodSugar_result_note.dart';
 import 'widget/Food/daily_nutrition/daily_nutrition.dart';
 import 'widget/food_menu_screens/food_menu/food_menu.dart';
+import 'widget/glucose_intro/glucose_intro_1st_page.dart';
+import 'widget/glucose_intro/glucose_intro_2nd_page.dart';
 import 'widget/home/schema/home_schema.dart';
 import 'widget/tabbar/tabbar_v2.dart';
 
@@ -77,6 +79,12 @@ class AppRoutes {
           ),
           fullscreenDialog: true,
         );
+      case NavigatorName.glucose_intro:
+        page = GlucoseIntro1stPage();
+        break;
+      case NavigatorName.glucose_intro_2nd_page:
+        page = GlucoseIntro2ndPage();
+        break;
       default:
         break;
     }
