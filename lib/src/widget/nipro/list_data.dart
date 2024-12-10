@@ -244,18 +244,19 @@ class ListDataState extends State<ListData> {
             1000;
       }).toSet();
 
-      await TrackingManager.analytics.logEvent(
-        name: 'glucose_sync',
-        parameters: {
-          "screen_name": 'kpi_glucose_sync',
+      await TrackingManager.trackEvent(
+        'glucose_sync',
+        'kpi_glucose_sync',
+        params: {
           'device_day': uniqueDays.length,
           'device_record': selectedGlucose.length,
           'status': 'success',
         },
       );
-      await TrackingManager.analytics.logEvent(
-        name: 'glucose_add',
-        parameters: {"index_time": 'Kết nối máy', 'method': 'device'},
+      await TrackingManager.trackEvent(
+        'glucose_add',
+        'kpi_glucose_add',
+        params: {"index_time": 'Kết nối máy', 'method': 'device'},
       );
       _showPopupSuccess();
     } catch (e) {

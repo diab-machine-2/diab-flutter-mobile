@@ -189,28 +189,29 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
       Message.showToastMessage(
           context, "Đồng bộ chỉ số đường huyết thành công!");
       Set<String> uniqueDays = selectedGlucose.map((e) => e['date']!).toSet();
-      await TrackingManager.analytics.logEvent(
-        name: 'glucose_sync',
-        parameters: {
-          "screen_name": 'kpi_glucose_sync',
+      await TrackingManager.trackEvent(
+        'glucose_sync',
+        'kpi_glucose_sync',
+        params: {
           'device_day': uniqueDays.length,
           'device_record': selectedGlucose.length,
           'status': 'success',
         },
       );
-      await TrackingManager.analytics.logEvent(
-        name: 'glucose_add',
-        parameters: {"index_time": 'Kết nối máy', 'method': 'device'},
+      await TrackingManager.trackEvent(
+        'glucose_add',
+        'kpi_glucose_add',
+        params: {"index_time": 'Kết nối máy', 'method': 'device'},
       );
 
       Future.delayed(Duration(seconds: 2)).then((value) => Observable.instance
           .notifyObservers([],
               notifyName: "glucose_change_data", map: {'index': 1}));
     } else {
-      await TrackingManager.analytics.logEvent(
-        name: 'glucose_sync',
-        parameters: {
-          "screen_name": 'kpi_glucose_sync',
+      await TrackingManager.trackEvent(
+        'glucose_sync',
+        'kpi_glucose_sync',
+        params: {
           'device_record': selectedGlucose.length,
           'status': 'fail',
           'error_message': 'Không thể đồng bộ dữ liệu.',
@@ -715,10 +716,10 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
         List<int> requestData = [0x01, 0x01];
         await characteristic.write(requestData);
         await Future.delayed(Duration(seconds: 5));
-        await TrackingManager.analytics.logEvent(
-          name: 'glucose_pair',
-          parameters: {
-            "screen_name": 'kpi_glucose_device',
+        await TrackingManager.trackEvent(
+          'glucose_pair',
+          'kpi_glucose_device',
+          params: {
             'status': 'success',
           },
         );

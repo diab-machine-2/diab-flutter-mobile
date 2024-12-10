@@ -118,12 +118,12 @@ class BloodSugarCompareChartState extends State<BloodSugarCompareChart>
                             ? EmptyDataBox(
                                 text: "chỉ số đường huyết",
                                 onTap: () async {
-                                  await TrackingManager.analytics.logEvent(
-                                      name: 'cta_button_clicked',
-                                      parameters: {
-                                        "screen_name": 'kpi_glycemic',
-                                        'cta_button_name': 'cta_add_glycemic_2',
-                                      });
+                                  // await TrackingManager.analytics.logEvent(
+                                  //     name: 'cta_button_clicked',
+                                  //     parameters: {
+                                  //       "screen_name": 'kpi_glycemic',
+                                  //       'cta_button_name': 'cta_add_glycemic_2',
+                                  //     });
                                   if (AppSettings.isUS) {
                                     Navigator.pushNamed(context,
                                         NavigatorName.add_blood_sugar_new,

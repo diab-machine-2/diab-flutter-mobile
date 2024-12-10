@@ -533,12 +533,12 @@ class _AddBloodSugarControllerNewState
           fromNipro,
           paths);
       if (result == true) {
-        await TrackingManager.analytics.logEvent(
-          name: 'glucose_add',
-          parameters: {
-            "screen_name": 'kpi_glucose_add',
+        await TrackingManager.trackEvent(
+          'glucose_add',
+          'kpi_glucose_add',
+          params: {
             'index_time': selectedTimeFrame?.name,
-            'method':  fromNipro ? 'device' : 'manual',
+            'method': fromNipro ? 'device' : 'manual',
           },
         );
         await HomeClient().completeSmartGoal(selectedDate, widget.goalId ?? '',

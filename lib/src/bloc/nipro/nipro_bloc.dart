@@ -229,7 +229,14 @@ class NiproBloc extends Bloc<NiproEvent, NiproState> {
         .postGlucoseInputs(input.map((e) => e.toJson()).toList());
   }
 
-  void showListData(BuildContext context, List<GlucoseData> glucoseData) {
+  void showListData(BuildContext context, List<GlucoseData> glucoseData) async {
+    await TrackingManager.trackEvent(
+      'glucose_pair',
+      'kpi_glucose_device',
+      params: {
+        'status': 'success',
+      },
+    );
     showModalBottomSheet(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(15)),

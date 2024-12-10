@@ -22,10 +22,10 @@ class DeviceItemWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () async {
-        await TrackingManager.analytics.logEvent(
-          name: 'glucose_select_device',
-          parameters: {
-            "screen_name": 'kpi_glucose_device',
+        await TrackingManager.trackEvent(
+          'glucose_select_device',
+          'kpi_glucose_device',
+          params: {
             'object_title': deviceInfo.name,
           },
         );

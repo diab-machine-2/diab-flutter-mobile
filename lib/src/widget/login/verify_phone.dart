@@ -258,11 +258,9 @@ class _VerifyPhoneControllerState extends State<VerifyPhoneController> {
                               SizedBox(height: 8),
                               GestureDetector(
                                 onTap: () async {
-                                  await TrackingManager.analytics.logEvent(
-                                    name: 'verify_change_phone',
-                                    parameters: {
-                                      "screen_name": 'otp_verify',
-                                    },
+                                  await TrackingManager.trackEvent(
+                                    'verify_change_phone',
+                                    'otp_verify',
                                   );
                                   Navigator.pop(context);
                                 },
@@ -363,11 +361,9 @@ class _VerifyPhoneControllerState extends State<VerifyPhoneController> {
         });
         final result = await LoginClient().createPatient(widget.userInfo);
         if (result == true) {
-          await TrackingManager.analytics.logEvent(
-            name: 'sign_up',
-            parameters: {
-              "screen_name": 'otp_verify',
-            },
+          await TrackingManager.trackEvent(
+            'sign_up',
+            'otp_verify',
           );
           final user = await UserClient().fetchUser();
           BotToast.closeAllLoading();
@@ -385,11 +381,9 @@ class _VerifyPhoneControllerState extends State<VerifyPhoneController> {
         });
         final result = await LoginClient().createPatient(widget.userInfo);
         if (result == true) {
-          await TrackingManager.analytics.logEvent(
-            name: 'sign_up',
-            parameters: {
-              "screen_name": 'otp_verify',
-            },
+          await TrackingManager.trackEvent(
+            'sign_up',
+            'otp_verify',
           );
           final user = await UserClient().fetchUser();
           BotToast.closeAllLoading();
@@ -476,8 +470,7 @@ class _VerifyPhoneControllerState extends State<VerifyPhoneController> {
         // getToken();
       }
     } catch (e, _) {
-      await TrackingManager.analytics.logEvent(name: 'verify_otp', parameters: {
-        "screen_name": 'otp_verify',
+      await TrackingManager.trackEvent('verify_otp', 'otp_verify', params: {
         'status': 'fail',
       });
       setState(() {
@@ -528,11 +521,9 @@ class _VerifyPhoneControllerState extends State<VerifyPhoneController> {
   }
 
   resendOTP() async {
-    await TrackingManager.analytics.logEvent(
-      name: 'verify_resend',
-      parameters: {
-        "screen_name": 'otp_verify',
-      },
+    await TrackingManager.trackEvent(
+      'verify_resend',
+      'otp_verify',
     );
     if (timeCount > 0 || otpCount == null) {
       return;

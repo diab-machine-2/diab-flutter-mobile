@@ -122,11 +122,9 @@ class _ForgotPasswordControllerState extends State<ForgotPasswordController> {
   }
 
   verify(BuildContext context) async {
-    await TrackingManager.analytics.logEvent(
-      name: 'password_submit',
-      parameters: {
-        "screen_name": 'forget_password',
-      },
+    await TrackingManager.trackEvent(
+      'password_submit',
+      'forget_password',
     );
     FocusScope.of(context).unfocus();
     if (phone.isEmpty) {

@@ -351,10 +351,10 @@ class _RegisterControllerState extends State<RegisterController> {
           .submitUpdatePasswordRegister(phone: phone, password: password);
       print('[QR] submitUpdatePasswordRegister result: ${result.toString()}');
       if (result) {
-        await TrackingManager.analytics.logEvent(
-          name: 'sign_up_start',
-          parameters: {
-            "screen_name": 'sign_up',
+        await TrackingManager.trackEvent(
+          'sign_up_start',
+          'sign_up',
+          params: {
             'status': 'success',
           },
         );
@@ -362,10 +362,10 @@ class _RegisterControllerState extends State<RegisterController> {
       }
     } catch (e, _) {
       print('[QR] error register: ${e.toString()}');
-      await TrackingManager.analytics.logEvent(
-        name: 'sign_up_start',
-        parameters: {
-          "screen_name": 'sign_up',
+      await TrackingManager.trackEvent(
+        'sign_up_start',
+        'sign_up',
+        params: {
           'status': 'fail',
         },
       );

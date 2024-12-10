@@ -328,10 +328,10 @@ class _ConnectionInstructionsControllerState
   }
 
   void _showDialogConnectFaild(BuildContext context) async {
-    await TrackingManager.analytics.logEvent(
-      name: 'glucose_pair',
-      parameters: {
-        "screen_name": 'kpi_glucose_device',
+    await TrackingManager.trackEvent(
+      'glucose_pair',
+      'kpi_glucose_device',
+      params: {
         'status': 'fail',
         'error_message': 'device not connect',
       },

@@ -4,6 +4,7 @@ import 'package:medical/res/R.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:medical/src/bloc/nipro/model/nipro_device.dart';
 import 'package:medical/src/bloc/nipro/nipro_bloc.dart';
+import 'package:medical/src/widget/helper/tracking_manager.dart';
 
 class ListDevices extends StatelessWidget {
   final VoidCallback request;
@@ -25,7 +26,8 @@ class ListDevices extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text('Chọn thiết bị để kết nối',
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700)),
+                    style:
+                        TextStyle(fontSize: 20, fontWeight: FontWeight.w700)),
                 GestureDetector(
                   onTap: () {
                     Navigator.pop(context);
@@ -46,31 +48,37 @@ class ListDevices extends StatelessWidget {
                 bool isScanning = true;
                 if (state is NiproStateListDevice) {
                   isScanning = state.isScanning;
-                  savedDevices = state.devices.where((element) => element.saved).toList();
-                  devices = state.devices.where((element) => !element.saved).toList();
+                  savedDevices =
+                      state.devices.where((element) => element.saved).toList();
+                  devices =
+                      state.devices.where((element) => !element.saved).toList();
                 } else if (state is NiproStateFailure) {
                   isScanning = false;
                 }
-                return !isScanning && (savedDevices.length + devices.length == 0)
+                return !isScanning &&
+                        (savedDevices.length + devices.length == 0)
                     ? SingleChildScrollView(
                         child: Column(children: [
                           SizedBox(height: 32),
                           Image.asset(R.drawable.ic_no_device, height: 110),
                           SizedBox(height: 24),
                           Text('Không tìm thấy thiết bị',
-                              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                              style: TextStyle(
+                                  fontSize: 20, fontWeight: FontWeight.bold)),
                           SizedBox(height: 18),
                           Text(
                               'DiaB không tìm thấy thiết bị nào gần đây. Vui lòng kiểm tra lại thiết bị đã được bật chưa?',
                               textAlign: TextAlign.center,
-                              style: TextStyle(fontSize: 16, color: Color(0xff8E8E8E))),
+                              style: TextStyle(
+                                  fontSize: 16, color: Color(0xff8E8E8E))),
                           // Buttons
                           SafeArea(
                             top: false,
                             child: Container(
                                 margin: EdgeInsets.all(16),
                                 child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
                                     children: [
                                       GestureDetector(
                                         onTap: () {
@@ -81,14 +89,16 @@ class ListDevices extends StatelessWidget {
                                             width: 164,
                                             decoration: BoxDecoration(
                                               color: R.color.grayBorder,
-                                              borderRadius: BorderRadius.circular(200),
+                                              borderRadius:
+                                                  BorderRadius.circular(200),
                                             ),
                                             child: Center(
                                               child: Text('Hủy',
                                                   style: TextStyle(
                                                       color: R.color.black,
                                                       fontSize: 16,
-                                                      fontWeight: FontWeight.w600)),
+                                                      fontWeight:
+                                                          FontWeight.w600)),
                                             )),
                                       ),
                                       GestureDetector(
@@ -100,7 +110,8 @@ class ListDevices extends StatelessWidget {
                                           width: 164,
                                           decoration: BoxDecoration(
                                               color: R.color.mainColor,
-                                              borderRadius: BorderRadius.circular(200),
+                                              borderRadius:
+                                                  BorderRadius.circular(200),
                                               gradient: LinearGradient(
                                                   begin: Alignment.topLeft,
                                                   end: Alignment.centerRight,
@@ -113,7 +124,8 @@ class ListDevices extends StatelessWidget {
                                                 style: TextStyle(
                                                     color: R.color.white,
                                                     fontSize: 16,
-                                                    fontWeight: FontWeight.w600)),
+                                                    fontWeight:
+                                                        FontWeight.w600)),
                                           ),
                                         ),
                                       ),
@@ -129,21 +141,24 @@ class ListDevices extends StatelessWidget {
                                 physics: NeverScrollableScrollPhysics(),
                                 padding: EdgeInsets.all(0),
                                 itemCount: savedDevices.length,
-                                separatorBuilder: (context, index) =>
-                                    Container(height: 1, color: R.color.grayBorder),
+                                separatorBuilder: (context, index) => Container(
+                                    height: 1, color: R.color.grayBorder),
                                 itemBuilder: (BuildContext context, int index) {
                                   final device = savedDevices[index];
                                   return Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       index == 0 && savedDevices.length != 0
                                           ? Padding(
-                                              padding: EdgeInsets.only(bottom: 16),
+                                              padding:
+                                                  EdgeInsets.only(bottom: 16),
                                               child: Text('Máy đã kết nối',
                                                   style: TextStyle(
                                                       fontSize: 14,
                                                       color: Color(0xff8E8E8E),
-                                                      fontWeight: FontWeight.w700)),
+                                                      fontWeight:
+                                                          FontWeight.w700)),
                                             )
                                           : SizedBox(),
                                       buildItem(context, device)
@@ -161,21 +176,25 @@ class ListDevices extends StatelessWidget {
                                 physics: NeverScrollableScrollPhysics(),
                                 padding: EdgeInsets.all(0),
                                 itemCount: devices.length,
-                                separatorBuilder: (context, index) =>
-                                    Container(height: 1, color: R.color.grayBorder),
+                                separatorBuilder: (context, index) => Container(
+                                    height: 1, color: R.color.grayBorder),
                                 itemBuilder: (BuildContext context, int index) {
                                   final device = devices[index];
                                   return Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       index == 0 && devices.length != 0
                                           ? Padding(
-                                              padding: EdgeInsets.only(bottom: 16),
-                                              child: Text('Danh sách thiết bị khác',
+                                              padding:
+                                                  EdgeInsets.only(bottom: 16),
+                                              child: Text(
+                                                  'Danh sách thiết bị khác',
                                                   style: TextStyle(
                                                       fontSize: 14,
                                                       color: Color(0xff8E8E8E),
-                                                      fontWeight: FontWeight.w700)),
+                                                      fontWeight:
+                                                          FontWeight.w700)),
                                             )
                                           : SizedBox(),
                                       buildItem(context, device),
@@ -201,7 +220,14 @@ class ListDevices extends StatelessWidget {
 
   Widget buildItem(BuildContext context, NiproDevice device) {
     return GestureDetector(
-      onTap: () {
+      onTap: () async {
+        await TrackingManager.trackEvent(
+          'glucose_pair_start',
+          'kpi_glucose_device',
+          params: {
+            'object_title': device.name,
+          },
+        );
         Navigator.of(context).pop(device);
       },
       child: Container(
@@ -212,10 +238,14 @@ class ListDevices extends StatelessWidget {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(device.name, style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
+                  Text(device.name,
+                      style:
+                          TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
                   Text(device.address,
                       style: TextStyle(
-                          color: R.color.grayCaption, fontSize: 14, fontWeight: FontWeight.w400))
+                          color: R.color.grayCaption,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w400))
                 ],
               ),
             ],

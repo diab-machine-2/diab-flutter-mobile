@@ -61,10 +61,10 @@ class _SocialLoginSectionState extends State<SocialLoginSection> {
               if (Platform.isIOS)
                 GestureDetector(
                   onTap: () async {
-                    await TrackingManager.analytics.logEvent(
-                      name: 'login_select',
-                      parameters: {
-                        "screen_name": 'welcome',
+                    await TrackingManager.trackEvent(
+                      'login_select',
+                      'welcome',
+                      params: {
                         'method': 'apple',
                       },
                     );
@@ -90,10 +90,10 @@ class _SocialLoginSectionState extends State<SocialLoginSection> {
                 const SizedBox(),
               GestureDetector(
                 onTap: () async {
-                  await TrackingManager.analytics.logEvent(
-                    name: 'login_select',
-                    parameters: {
-                      "screen_name": 'welcome',
+                  await TrackingManager.trackEvent(
+                    'login_select',
+                    'welcome',
+                    params: {
                       'method': 'google',
                     },
                   );
@@ -162,10 +162,10 @@ class _SocialLoginSectionState extends State<SocialLoginSection> {
             googleAccount: null,
             appleCredential: credential);
       } else {
-        await TrackingManager.analytics.logEvent(
-          name: 'login',
-          parameters: {
-            "screen_name": 'welcome',
+        await TrackingManager.trackEvent(
+          'login',
+          'welcome',
+          params: {
             'method': 'apple',
           },
         );
@@ -246,10 +246,10 @@ class _SocialLoginSectionState extends State<SocialLoginSection> {
         // Navigator.pushReplacementNamed(context, NavigatorName.update_info,
         //     arguments: {'type': 'google', 'googleAccount': account});
       } else {
-        await TrackingManager.analytics.logEvent(
-          name: 'login',
-          parameters: {
-            "screen_name": 'welcome',
+        await TrackingManager.trackEvent(
+          'login',
+          'welcome',
+          params: {
             'method': 'google',
           },
         );

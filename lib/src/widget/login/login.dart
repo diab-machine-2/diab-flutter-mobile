@@ -184,10 +184,10 @@ class _LoginControllerState extends State<LoginController> {
                         color: R.color.transparent,
                         child: InkWell(
                           onTap: () async {
-                            await TrackingManager.analytics.logEvent(
-                              name: 'login_forget_password',
-                              parameters: {
-                                "screen_name": 'login',
+                            await TrackingManager.trackEvent(
+                              'login_forget_password',
+                              'login',
+                              params: {
                                 'cta_button_name': 'cta_login_forget_password',
                               },
                             );
@@ -210,12 +210,9 @@ class _LoginControllerState extends State<LoginController> {
                         if (isLogin) {
                           login();
                         } else {
-                          await TrackingManager.analytics.logEvent(
-                            name: 'login_phone_start',
-                            parameters: {
-                              "screen_name": 'login',
-                              'cta_button_name': 'cta_login_login',
-                            },
+                          await TrackingManager.trackEvent(
+                            'login_phone_start',
+                            'login',
                           );
                           checkExistPhoneNumber();
                         }
@@ -364,16 +361,13 @@ class _LoginControllerState extends State<LoginController> {
           "screen_name": 'login',
           'status': 'success',
         });
-        await TrackingManager.analytics.logEvent(name: 'login', parameters: {
-          "screen_name": 'welcome',
+        await TrackingManager.trackEvent('login', 'welcome', params: {
           'method': 'phone',
         });
         LoginRouting().navigateToHome(context, arguments: widget.sharedCode);
       }
     } catch (e, _) {
-      await TrackingManager.analytics
-          .logEvent(name: 'login_phone', parameters: {
-        "screen_name": 'login',
+      await TrackingManager.trackEvent('login_phone', 'login', params: {
         'status': 'fail',
       });
       BotToast.closeAllLoading();
@@ -474,10 +468,10 @@ class _LoginControllerState extends State<LoginController> {
     Future.delayed(Duration(milliseconds: 300), () async {
       Observable.instance.notifyObservers([], notifyName: "refresh_home");
     });
-    await TrackingManager.analytics.logEvent(
-      name: 'login',
-      parameters: {
-        "screen_name": 'login',
+    await TrackingManager.trackEvent(
+      'login',
+      'login',
+      params: {
         'method': loginFrom.toLowerCase(),
       },
     );

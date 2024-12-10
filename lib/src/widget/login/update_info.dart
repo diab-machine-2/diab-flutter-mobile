@@ -583,10 +583,10 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
 
       final result = await LoginClient().createPatient(params);
       if (result == true) {
-        await TrackingManager.analytics.logEvent(
-          name: 'sign_up',
-          parameters: {
-            "screen_name": 'sign_up',
+        await TrackingManager.trackEvent(
+          'sign_up',
+          'sign_up',
+          params: {
             'method': widget.type?.toLowerCase(),
           },
         );

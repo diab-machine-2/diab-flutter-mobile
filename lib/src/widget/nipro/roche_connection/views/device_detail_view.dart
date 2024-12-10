@@ -25,10 +25,10 @@ class DeviceDetailView extends StatelessWidget {
           child: ButtonWidget(
               title: 'Kết nối thiết bị',
               onPressed: () async {
-                await TrackingManager.analytics.logEvent(
-                  name: 'glucose_pair_start',
-                  parameters: {
-                    "screen_name": 'kpi_glucose_device',
+                await TrackingManager.trackEvent(
+                  'glucose_pair_start',
+                  'kpi_glucose_device',
+                  params: {
                     'object_title': cubit.deviceInfo?.name,
                   },
                 );
