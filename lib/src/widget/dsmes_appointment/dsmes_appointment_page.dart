@@ -1,5 +1,6 @@
 import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
@@ -10,6 +11,10 @@ import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/dsmes_appointment/dsmes_appointment_cubit.dart';
 import 'package:medical/src/widget/dsmes_appointment/model/dsmes_appointment_model.dart';
 import 'package:medical/src/widget/dsmes_appointment/dsmes_appointment_state.dart';
+import 'package:medical/src/widget/dsmes_appointment/pages/dsmes_appointment_history_page.dart';
+import 'package:medical/src/widget/dsmes_appointment/pages/dsmes_booking_offline_page.dart';
+import 'package:medical/src/widget/dsmes_appointment/pages/dsmes_booking_select_datetime.dart';
+import 'package:medical/src/widget/dsmes_appointment/pages/dsmes_navigation_mixin.dart';
 import 'package:medical/src/widget/dsmes_appointment/widgets/dsmes_appointment_item.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
@@ -50,27 +55,65 @@ class _DsmesAppointmentPageState extends State<DsmesAppointmentPage> {
         ),
         child: BlocProvider(
           create: (context) => _cubit,
-          child: BlocConsumer<DsmesAppointmentCubit, DsmesAppointmentState>(
-            listener: (context, state) {
-              if (state is DsmesAppointmentFailure) {
-                Message.showToastMessage(context, state.error);
+          child: Navigator(
+            key: DsmesNavigationMixin.navigationKey,
+            onGenerateRoute: (settings) {
+              switch (settings.name) {
+                case '/':
+                  return MaterialPageRoute(
+                    builder: (_) => _buildMainContent(context),
+                  );
+                case NavigatorName.dsmes_booking_history:
+                  return _buildRoute(
+                    settings,
+                    DsmesAppointmentHistoryPage(),
+                  );
+                case NavigatorName.dsmes_booking_offline:
+                  return _buildRoute(
+                    settings,
+                    DsmesBookingOfflinePage(),
+                  );
+                case NavigatorName.dsmes_booking_select_date:
+                  {
+                    Map<String, dynamic>? args =
+                        settings.arguments as Map<String, dynamic>?;
+                    return _buildRoute(
+                      settings,
+                      DsmesCalendarSection(
+                        serviceType: args!["serviceType"],
+                        onDateChanged: args["onDateChanged"],
+                      ),
+                    );
+                  }
+                default:
+                  return null;
               }
-            },
-            builder: (
-              BuildContext context,
-              DsmesAppointmentState state,
-            ) {
-              if (state is DsmesAppointmentLoading) {
-                BotToast.showLoading();
-              } else {
-                BotToast.closeAllLoading();
-                _controller.refreshCompleted();
-              }
-              return _buildPage(context, state);
             },
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildMainContent(BuildContext context) {
+    return BlocConsumer<DsmesAppointmentCubit, DsmesAppointmentState>(
+      listener: (context, state) {
+        if (state is DsmesAppointmentFailure) {
+          Message.showToastMessage(context, state.error);
+        }
+      },
+      builder: (
+        BuildContext context,
+        DsmesAppointmentState state,
+      ) {
+        if (state is DsmesAppointmentLoading) {
+          BotToast.showLoading();
+        } else {
+          BotToast.closeAllLoading();
+          _controller.refreshCompleted();
+        }
+        return _buildPage(context, state);
+      },
     );
   }
 
@@ -90,8 +133,8 @@ class _DsmesAppointmentPageState extends State<DsmesAppointmentPage> {
           actions: [
             GestureDetector(
               onTap: () async {
-                Navigator.pushNamed(
-                    context, NavigatorName.dsmes_booking_history);
+                DsmesNavigationMixin.navigationKey.currentState
+                    ?.pushNamed(NavigatorName.dsmes_booking_history);
               },
               child: Container(
                 width: 130,
@@ -187,10 +230,9 @@ class _DsmesAppointmentPageState extends State<DsmesAppointmentPage> {
                       height: 20,
                     ),
                     GestureDetector(
-                       onTap: () {
-                        // TODO: Handle create booking offline
-                        Navigator.pushNamed(
-                            context, NavigatorName.dsmes_booking_offline);
+                      onTap: () {
+                        DsmesNavigationMixin.navigationKey.currentState
+                            ?.pushNamed(NavigatorName.dsmes_booking_offline);
                       },
                       child: Image.asset(R.drawable.offline_consulting),
                     ),
@@ -210,5 +252,20 @@ class _DsmesAppointmentPageState extends State<DsmesAppointmentPage> {
         ),
       ],
     );
+  }
+
+  PageRoute _buildRoute(RouteSettings settings, Widget builder,
+      {bool isPresent = false}) {
+    if (isPresent) {
+      return CupertinoPageRoute(
+          settings: settings,
+          fullscreenDialog: true,
+          builder: (context) => builder);
+    } else {
+      return MaterialPageRoute(
+        settings: settings,
+        builder: (ctx) => builder,
+      );
+    }
   }
 }

@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medical/res/R.dart';
-import 'package:medical/src/model/response/create_calendar_response.dart';
 import 'package:medical/src/app_routes.dart';
 import 'package:medical/src/bloc/nipro/nipro_bloc.dart';
 import 'package:medical/src/service/zoom_service.dart';
@@ -38,12 +37,9 @@ import 'package:medical/src/widget/HbA1C/hba1c_detail_tabbar.dart';
 import 'package:medical/src/widget/HbA1C/hba1c_tabble.dart';
 import 'package:medical/src/widget/base/base_state.dart';
 import 'package:medical/src/widget/calendar/calendar_booking_page.dart';
-import 'package:medical/src/widget/calendar/calendar_model.dart';
 import 'package:medical/src/widget/calendar/calendar_page.dart';
 import 'package:medical/src/widget/calendar/interview_success.dart';
 import 'package:medical/src/widget/dsmes_appointment/dsmes_appointment_page.dart';
-import 'package:medical/src/widget/dsmes_appointment/pages/dsmes_appointment_history_page.dart';
-import 'package:medical/src/widget/dsmes_appointment/pages/dsmes_booking_offline_page.dart';
 import 'package:medical/src/widget/flash_screen/flash_screen.dart';
 import 'package:medical/src/widget/home/widget/sync_loading.dart';
 import 'package:medical/src/widget/login/change_password.dart';
@@ -56,7 +52,6 @@ import 'package:medical/src/widget/login/register_success.dart';
 import 'package:medical/src/widget/login/step_list.dart';
 import 'package:medical/src/widget/login/update_info.dart';
 import 'package:medical/src/widget/login/verify_phone.dart';
-import 'package:medical/src/widget/meeting/meeting_cubit.dart';
 import 'package:medical/src/widget/meeting/meeting_page.dart';
 import 'package:medical/src/widget/nipro/connect_device_app.dart';
 import 'package:medical/src/widget/nipro/connection_instructions.dart';
@@ -672,18 +667,6 @@ class App extends StatelessWidget {
                     return _buildRoute(
                       settings,
                       DsmesAppointmentPage(),
-                    );
-                  case NavigatorName.dsmes_booking_history:
-                    final args = settings.arguments as Map<String, dynamic>;
-                    return _buildRoute(
-                      settings,
-                      DsmesAppointmentHistoryPage(),
-                    );
-                  case NavigatorName.dsmes_booking_offline:
-                    final args = settings.arguments as Map<String, dynamic>;
-                    return _buildRoute(
-                      settings,
-                      DsmesBookingOfflinePage(),
                     );
 
                   default:

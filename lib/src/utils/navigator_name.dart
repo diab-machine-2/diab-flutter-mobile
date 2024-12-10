@@ -90,5 +90,8 @@ class NavigatorName {
   static const String dsmes_booking = '/dsmes_booking';
   static const String dsmes_booking_history = '/dsmes_booking_history';
   static const String dsmes_booking_offline = '/dsmes_booking_offline';
-  static const String dsmes_booking_offline_detail = '/dsmes_booking_offline_detail';
+  static const String dsmes_booking_offline_detail =
+      '/dsmes_booking_offline_detail';
+  static const String dsmes_booking_select_date =
+      '/dsmes_booking_select_date';
 }

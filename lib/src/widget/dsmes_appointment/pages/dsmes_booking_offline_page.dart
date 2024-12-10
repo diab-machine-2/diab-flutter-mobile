@@ -5,15 +5,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
-import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/dsmes_appointment/dsmes_appointment_cubit.dart';
-import 'package:medical/src/widget/dsmes_appointment/model/dsmes_appointment_model.dart';
 import 'package:medical/src/widget/dsmes_appointment/dsmes_appointment_state.dart';
 import 'package:medical/src/widget/dsmes_appointment/model/dsmes_clinic_model.dart';
-import 'package:medical/src/widget/dsmes_appointment/widgets/dsmes_appointment_item.dart';
+import 'package:medical/src/widget/dsmes_appointment/pages/dsmes_navigation_mixin.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widgets/gap_widget.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
@@ -33,8 +31,7 @@ class _DsmesBookingOfflinePageState extends State<DsmesBookingOfflinePage> {
   @override
   void initState() {
     super.initState();
-    final AppRepository repository = AppRepository();
-    _cubit = DsmesAppointmentCubit(repository);
+    _cubit = context.read<DsmesAppointmentCubit>();
     _cubit.getClinicList();
   }
 
@@ -95,8 +92,8 @@ class _DsmesBookingOfflinePageState extends State<DsmesBookingOfflinePage> {
           actions: [
             GestureDetector(
               onTap: () async {
-                Navigator.pushNamed(
-                    context, NavigatorName.dsmes_booking_history);
+                DsmesNavigationMixin.navigationKey.currentState
+                    ?.pushNamed(NavigatorName.dsmes_booking_history);
               },
               child: Container(
                 width: 130,
@@ -144,7 +141,7 @@ class _DsmesBookingOfflinePageState extends State<DsmesBookingOfflinePage> {
               color: R.color.textDark,
             ),
             onPressed: () {
-              Navigator.pop(context);
+              DsmesNavigationMixin.navigationKey.currentState?.pop(context);
             },
           ),
         ),
@@ -303,8 +300,19 @@ class _DsmesBookingOfflinePageState extends State<DsmesBookingOfflinePage> {
                       children: [
                         Expanded(
                           child: InkWell(
-                            onTap: () {
-                              //TODO: Handle navigate to create booking offline page
+                            onTap: () async {
+                              _cubit.setSelectedClinic(data);
+                              _cubit.initCreateDsmesBookingRequest();
+                              await DsmesNavigationMixin
+                                  .navigationKey.currentState
+                                  ?.pushNamed(
+                                      NavigatorName.dsmes_booking_select_date,
+                                      arguments: {
+                                    'serviceType': 'offline',
+                                    'onDateChanged': (date) {
+                                      _cubit.setSelectedDate(date);
+                                    },
+                                  });
                             },
                             child: Container(
                               alignment: Alignment.center,

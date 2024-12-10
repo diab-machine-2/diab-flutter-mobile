@@ -3,7 +3,9 @@ import 'dart:ui';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
+import 'package:medical/src/model/request/create_dsmes_booking_request.dart';
 import 'package:medical/src/model/response/dsmes_clinic_detail_response.dart';
 import 'package:medical/src/model/response/dsmes_clinic_list_response.dart';
 import 'package:medical/src/model/response/get_dsmes_appointment_response.dart';
@@ -16,14 +18,17 @@ import 'package:medical/src/widget/dsmes_appointment/model/dsmes_clinic_model.da
 class DsmesAppointmentCubit extends Cubit<DsmesAppointmentState> {
   final AppRepository appRepository;
 
-  late List<DsmesAppointment> listData = [];
+  late List<DsmesAppointment> myAppointments = [];
   late List<DsmesAppointment> listFilteredData = [];
   late List<DsmesClinicModel> listClinic = [];
 
+  DsmesClinicModel? selectedClinic;
+  DsmesAppointment? currentDsmesAppointment;
+
+  CreateDsmesBookingRequest? createDsmesBookingRequest;
+
   int currentPage = 1;
   bool hasMore = true;
-
-  static DsmesAppointment? currentDsmesAppointment;
 
   DsmesAppointmentCubit(this.appRepository)
       : super(InitialDsmesAppointmentState());
@@ -31,7 +36,7 @@ class DsmesAppointmentCubit extends Cubit<DsmesAppointmentState> {
   Future<void> getDsmesAppointmentList(
       {int page = 1, bool isRefresh = false}) async {
     if (isRefresh) {
-      // listData.clear();
+      // myAppointments.clear();
       currentPage = 1;
       hasMore = true;
     }
@@ -47,10 +52,10 @@ class DsmesAppointmentCubit extends Cubit<DsmesAppointmentState> {
       hasMore = response.hasMore;
 
       if (isRefresh) {
-        listData = response.data;
+        myAppointments = response.data;
         listFilteredData = _getFilteredData();
       } else {
-        listData.addAll(response.data);
+        myAppointments.addAll(response.data);
         listFilteredData = _getFilteredData();
       }
       emit(DsmesAppointmentLoaded());
@@ -86,7 +91,7 @@ class DsmesAppointmentCubit extends Cubit<DsmesAppointmentState> {
   }
 
   _getFilteredData() {
-    List<DsmesAppointment> filteredData = listData.where((data) {
+    List<DsmesAppointment> filteredData = myAppointments.where((data) {
       DateTime startTime =
           DateFormat('yyyy-MM-dd HH:mm:ss').parse(data.startTime);
       DateTime now = DateTime.now();
@@ -100,6 +105,37 @@ class DsmesAppointmentCubit extends Cubit<DsmesAppointmentState> {
               data.status == DSMES_STATUS_APPROVE);
     }).toList();
     return filteredData;
+  }
+
+  initCreateDsmesBookingRequest() {
+    createDsmesBookingRequest = CreateDsmesBookingRequest(
+      startTime: '',
+      endTime: '',
+      clinicId: selectedClinic!.clinicId,
+      doctorId: 0,
+      patientPhoneNumber: AppSettings.userInfo?.phoneNumber ?? '',
+      patientName: AppSettings.userInfo?.fullName ?? '',
+      birthday: DateFormat('yyyy-MM-dd').format(
+          DateTime.fromMillisecondsSinceEpoch(
+              AppSettings.userInfo!.dateOfBirth! ~/ 1000)),
+      patientGender: AppSettings.userInfo?.gender == 'Nam' ? 1 : 0,
+      patientEmail: AppSettings.userInfo?.email ?? '',
+      bookingForClinic: 1, // 1: Booking phòng khám, 2: Booking bác sĩ
+      language: 'en',
+    );
+  }
+
+  setSelectedClinic(DsmesClinicModel? clinic) {
+    selectedClinic = clinic;
+  }
+
+  setSelectedDate(DateTime date) {
+    final startDateTime = DateFormat('yyyy-MM-dd HH:mm:ss').format(date);
+    final duration = int.tryParse(selectedClinic?.aptInterval ?? '30') ?? 30;
+    final endDateTime = DateFormat('yyyy-MM-dd HH:mm:ss')
+        .format(date.add(Duration(minutes: duration)));
+    createDsmesBookingRequest = createDsmesBookingRequest?.copyWith(
+        startTime: startDateTime, endTime: endDateTime);
   }
 
   String getItemTitle(DsmesAppointmentMode mode) {
