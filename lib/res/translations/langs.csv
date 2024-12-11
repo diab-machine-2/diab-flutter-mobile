@@ -1155,4 +1155,5 @@ consult_at_clinic,"Tư vấn tại trung tâm","Consulting at clinic",
 consult_online,"Tư vấn trực tuyến","Consulting online",
 requested,"Đã yêu cầu","Requested",
 rejected,"Đã huỷ","Rejected",
-choose_center,"Chọn trung tâm","Choose center"
+choose_center,"Chọn trung tâm","Choose center",
+vui_long_chon_gio_kham,"Vui lòng chọn giờ hẹn","Please choose a time"

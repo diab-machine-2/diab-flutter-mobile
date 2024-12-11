@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/app.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
@@ -81,7 +82,7 @@ class _DsmesAppointmentPageState extends State<DsmesAppointmentPage> {
                       settings,
                       DsmesCalendarSection(
                         serviceType: args!["serviceType"],
-                        onDateChanged: args["onDateChanged"],
+                        
                       ),
                     );
                   }
@@ -184,7 +185,7 @@ class _DsmesAppointmentPageState extends State<DsmesAppointmentPage> {
               color: R.color.textDark,
             ),
             onPressed: () {
-              Navigator.pop(context);
+              Navigator.of(context, rootNavigator: true).pop();
             },
           ),
         ),

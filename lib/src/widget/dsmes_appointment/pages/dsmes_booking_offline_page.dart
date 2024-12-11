@@ -301,7 +301,8 @@ class _DsmesBookingOfflinePageState extends State<DsmesBookingOfflinePage> {
                         Expanded(
                           child: InkWell(
                             onTap: () async {
-                              _cubit.setSelectedClinic(data);
+                              await _cubit.getClinicDetail(id: data.id);
+                              if (_cubit.selectedClinic == null) return;
                               _cubit.initCreateDsmesBookingRequest();
                               await DsmesNavigationMixin
                                   .navigationKey.currentState
@@ -309,9 +310,6 @@ class _DsmesBookingOfflinePageState extends State<DsmesBookingOfflinePage> {
                                       NavigatorName.dsmes_booking_select_date,
                                       arguments: {
                                     'serviceType': 'offline',
-                                    'onDateChanged': (date) {
-                                      _cubit.setSelectedDate(date);
-                                    },
                                   });
                             },
                             child: Container(

@@ -1,3 +1,5 @@
+import 'package:easy_localization/easy_localization.dart';
+
 class DsmesClinicModel {
   final int id;
   final String name;
@@ -60,8 +62,9 @@ class DsmesClinicModel {
       phone: json['phone'] ?? '',
       introduction: json['introduction'] ?? '',
       specialty: (json['specialty'] as List?)
-          ?.map((e) => SpecialtyDetail.fromJson(e))
-          .toList() ?? [],
+              ?.map((e) => SpecialtyDetail.fromJson(e))
+              .toList() ??
+          [],
       avatar: json['avatar'] ?? '',
       lat: json['lat'] ?? '',
       lng: json['lng'] ?? '',
@@ -73,39 +76,45 @@ class DsmesClinicModel {
       tagLine: json['tag_line'] ?? '',
       showGoodAt: Map<String, int>.from(json['show_good_at'] ?? {}),
       goodAt: (json['good_at'] as Map<String, dynamic>?)?.map(
-        (key, value) => MapEntry(
-          key,
-          (value as List).map((e) => GoodAt.fromJson(e)).toList(),
-        ),
-      ) ?? {},
+            (key, value) => MapEntry(
+              key,
+              (value as List).map((e) => GoodAt.fromJson(e)).toList(),
+            ),
+          ) ??
+          {},
       defaultGoodAt: (json['default_good_at'] as List?)
-          ?.map((e) => GoodAt.fromJson(e))
-          .toList() ?? [],
+              ?.map((e) => GoodAt.fromJson(e))
+              .toList() ??
+          [],
       clinicId: json['clinic_id'] ?? 0,
       serviceType: json['service_type'] ?? [],
       serviceList: ServiceList.fromJson(json['service_list'] ?? {}),
       schedule: (json['schedule'] as Map<String, dynamic>?)?.map(
-        (date, slots) => MapEntry(
-          date,
-          (slots as Map<String, dynamic>).map(
-            (time, status) => MapEntry(time, status as int),
-          ),
-        ),
-      ) ?? {},
+            (date, slots) => MapEntry(
+              date,
+              (slots as Map<String, dynamic>).map(
+                (time, status) => MapEntry(time, status as int),
+              ),
+            ),
+          ) ??
+          {},
       aptInterval: json['apt_interval'] ?? '',
     );
   }
 
   List<BookingSchedule> getBookingSchedules() {
     List<BookingSchedule> bookingSchedules = [];
-    
+
     schedule.forEach((date, slots) {
       slots.forEach((time, status) {
-        final startDateTime = "$date ${time.split('.')[0]}:${time.split('.')[1]}0";
-        final endDateTime = DateTime.parse(startDateTime.replaceAll(' ', 'T'))
+        final startDateTime = DateFormat('yyyy-MM-dd HH:mm')
+            .parse("$date ${time.split('.')[0]}:${time.split('.')[1]}0")
+            .toString()
+            .substring(0, 16);
+        final endDateTime = DateFormat('yyyy-MM-dd HH:mm')
+            .parse(startDateTime)
             .add(Duration(minutes: int.parse(aptInterval)))
             .toString()
-            .replaceAll('T', ' ')
             .substring(0, 16);
 
         bookingSchedules.add(
@@ -213,8 +222,9 @@ class ServiceList {
       name: json['name'] ?? '',
       id: json['id'] ?? 0,
       categories: (json['categories'] as List?)
-          ?.map((e) => ServiceCategory.fromJson(e))
-          .toList() ?? [],
+              ?.map((e) => ServiceCategory.fromJson(e))
+              .toList() ??
+          [],
     );
   }
 }
@@ -238,8 +248,9 @@ class ServiceCategory {
       id: json['id'] ?? 0,
       type: json['type'] ?? '',
       data: (json['data'] as List?)
-          ?.map((e) => ServiceData.fromJson(e))
-          .toList() ?? [],
+              ?.map((e) => ServiceData.fromJson(e))
+              .toList() ??
+          [],
     );
   }
 }

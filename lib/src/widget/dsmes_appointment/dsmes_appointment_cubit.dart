@@ -64,12 +64,12 @@ class DsmesAppointmentCubit extends Cubit<DsmesAppointmentState> {
     });
   }
 
-  Future<void> getClinicDetail({required int id}) async {
+  Future<void> getClinicList() async {
     emit(DsmesAppointmentLoading());
-    ApiResult<DsmesClinicDetailResponse> apiResult =
-        await appRepository.getClinicDetail(id: id);
-    apiResult.when(success: (DsmesClinicDetailResponse response) {
-      listClinic = [response.data];
+    ApiResult<DsmesClinicListResponse> apiResult =
+        await appRepository.getClinicList();
+    apiResult.when(success: (DsmesClinicListResponse response) {
+      listClinic = response.data;
 
       emit(DsmesAppointmentLoaded());
     }, failure: (NetworkExceptions error) {
@@ -77,12 +77,12 @@ class DsmesAppointmentCubit extends Cubit<DsmesAppointmentState> {
     });
   }
 
-  Future<void> getClinicList() async {
+  Future<void> getClinicDetail({required int id}) async {
     emit(DsmesAppointmentLoading());
-    ApiResult<DsmesClinicListResponse> apiResult =
-        await appRepository.getClinicList();
-    apiResult.when(success: (DsmesClinicListResponse response) {
-      listClinic = response.data;
+    ApiResult<DsmesClinicDetailResponse> apiResult =
+        await appRepository.getClinicDetail(id: id);
+    apiResult.when(success: (DsmesClinicDetailResponse response) {
+      setSelectedClinic(response.data);
 
       emit(DsmesAppointmentLoaded());
     }, failure: (NetworkExceptions error) {
@@ -111,7 +111,7 @@ class DsmesAppointmentCubit extends Cubit<DsmesAppointmentState> {
     createDsmesBookingRequest = CreateDsmesBookingRequest(
       startTime: '',
       endTime: '',
-      clinicId: selectedClinic!.clinicId,
+      clinicId: selectedClinic!.id,
       doctorId: 0,
       patientPhoneNumber: AppSettings.userInfo?.phoneNumber ?? '',
       patientName: AppSettings.userInfo?.fullName ?? '',
@@ -129,13 +129,10 @@ class DsmesAppointmentCubit extends Cubit<DsmesAppointmentState> {
     selectedClinic = clinic;
   }
 
-  setSelectedDate(DateTime date) {
-    final startDateTime = DateFormat('yyyy-MM-dd HH:mm:ss').format(date);
-    final duration = int.tryParse(selectedClinic?.aptInterval ?? '30') ?? 30;
-    final endDateTime = DateFormat('yyyy-MM-dd HH:mm:ss')
-        .format(date.add(Duration(minutes: duration)));
+  updateCreateDsmesBookingRequestTime(
+      {required String startTime, required String endTime}) {
     createDsmesBookingRequest = createDsmesBookingRequest?.copyWith(
-        startTime: startDateTime, endTime: endDateTime);
+        startTime: startTime, endTime: endTime);
   }
 
   String getItemTitle(DsmesAppointmentMode mode) {

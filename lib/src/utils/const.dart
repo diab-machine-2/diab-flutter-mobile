@@ -201,4 +201,5 @@ class Const {
       'https://zalo.me/4592543430802584018';
   static const int MAX_DAY_RANGE_PRIMARY_SCREENING = 14;
   static const DOCOSAN_TOKEN = 'docosan_token';
+  static const int MAX_DAY_RANGE_DSMES_BOOKING = 30;
 }

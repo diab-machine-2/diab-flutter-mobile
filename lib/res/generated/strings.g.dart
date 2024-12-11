@@ -1182,4 +1182,5 @@ class Strings {
   String get requested => 'requested';
   String get rejected => 'rejected';
   String get choose_center => 'choose_center';
+  String get vui_long_chon_gio_kham => 'vui_long_chon_gio_kham';
 }
