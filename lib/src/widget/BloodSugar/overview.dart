@@ -95,7 +95,10 @@ class BloodSugarOverviewControllerState
                   child: BloodSugarDetail(key: sugarDetailKey),
                 ),
                 BloodSugarChart(key: sugarChartKey),
-                BloodSugarCompareChart(key: sugarCompareKey),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: BloodSugarCompareChart(key: sugarCompareKey),
+                ),
                 CourseSuggest(position: 2),
                 SizedBox(height: 36),
               ],

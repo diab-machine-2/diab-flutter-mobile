@@ -423,8 +423,6 @@ class BloodSugarChartState extends State<BloodSugarChart>
                                 return '';
                               }
                               final date = dates[value.toInt()];
-                              print(
-                                  'duc2111 previousDate = $previousDate date = $date');
                               if (previousDate == date) return '';
                               previousDate = date;
                               if (date == null) {
