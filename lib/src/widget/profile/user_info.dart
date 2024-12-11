@@ -25,6 +25,7 @@ import 'package:medical/src/widget/Bmi/widget/add_bmi.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
+import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/profile/address.dart';
 import 'package:medical/src/widgets/select_bottom_sheet_widget.dart';
 import 'package:medical/src/widgets/user_icon_widget.dart';
@@ -47,8 +48,8 @@ class ProfileInfoController extends StatefulWidget {
       {bool isUpdateDiabetes = false}) async {
     try {
       BotToast.showLoading();
-      await UserClient()
-          .updateUserInfo(AppSettings.userInfo!.id, user, isUpdateDiabetes: isUpdateDiabetes);
+      await UserClient().updateUserInfo(AppSettings.userInfo!.id, user,
+          isUpdateDiabetes: isUpdateDiabetes);
       await UserClient().fetchUser();
       BotToast.closeAllLoading();
     } catch (e, _) {
@@ -65,7 +66,8 @@ class ProfileInfoController extends StatefulWidget {
   _ProfileInfoControllerState createState() => _ProfileInfoControllerState();
 }
 
-class _ProfileInfoControllerState extends State<ProfileInfoController> with Observer {
+class _ProfileInfoControllerState extends State<ProfileInfoController>
+    with Observer {
   MotivationModel? motivation;
   bool isHasRoadMap = false;
   var user = AppSettings.userInfo!;
@@ -104,7 +106,8 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
   }
 
   @override
-  void update(Observable observable, String? notifyName, Map<dynamic, dynamic>? map) {
+  void update(
+      Observable observable, String? notifyName, Map<dynamic, dynamic>? map) {
     if (notifyName == 'motivation_change') {
       //   loadMotivation();
     }
@@ -122,12 +125,15 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
   @override
   Widget build(BuildContext context) {
     user = AppSettings.userInfo!;
-    user = user.copyWith(diabetesName: diabetesName, diabetesStatus: diabetesStatus);
+    user = user.copyWith(
+        diabetesName: diabetesName, diabetesStatus: diabetesStatus);
     AppSettings.userInfo = user;
 
     selectedLessonTagList = user.lessonTagList == null
         ? []
-        : user.lessonTagList!.where((element) => element.selected ?? false).toList();
+        : user.lessonTagList!
+            .where((element) => element.selected ?? false)
+            .toList();
 
     return GestureDetector(
         onTap: () {
@@ -151,7 +157,9 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                 backgroundColor: R.color.transparent,
                 title: Text(R.string.personal_info.tr(),
                     style: TextStyle(
-                        fontSize: 18, fontWeight: FontWeight.w600, color: R.color.textDark)),
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
+                        color: R.color.textDark)),
                 leadingIcon: IconButton(
                     splashColor: R.color.transparent,
                     highlightColor: R.color.transparent,
@@ -164,8 +172,10 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                 child: SafeArea(
                   top: false,
                   child: ListView(
-                      padding: const EdgeInsets.only(bottom: 16, left: 16, right: 16),
-                      keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+                      padding: const EdgeInsets.only(
+                          bottom: 16, left: 16, right: 16),
+                      keyboardDismissBehavior:
+                          ScrollViewKeyboardDismissBehavior.onDrag,
                       children: [
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -176,30 +186,39 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                               },
                               child: Container(
                                 color: R.color.transparent,
-                                child: Stack(alignment: AlignmentDirectional.bottomEnd, children: [
-                                  Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Container(
-                                      clipBehavior: Clip.hardEdge,
-                                      decoration: BoxDecoration(
-                                          color: R.color.mainColor,
-                                          borderRadius: BorderRadius.circular(80)),
-                                      child: user.imageUrl!.url == null
-                                          ? Icon(Icons.person, size: 160, color: R.color.white)
-                                          : Image.network(
-                                              user.imageUrl!.url!,
-                                              width: 160,
-                                              height: 160,
-                                              errorBuilder: (BuildContext context, Object error,
-                                                  StackTrace? stackTrace) {
-                                                return Icon(Icons.person,
-                                                    size: 160, color: R.color.white);
-                                              },
-                                            ),
-                                    ),
-                                  ),
-                                  Image.asset(R.drawable.ic_camera_picker, width: 50, height: 50)
-                                ]),
+                                child: Stack(
+                                    alignment: AlignmentDirectional.bottomEnd,
+                                    children: [
+                                      Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: Container(
+                                          clipBehavior: Clip.hardEdge,
+                                          decoration: BoxDecoration(
+                                              color: R.color.mainColor,
+                                              borderRadius:
+                                                  BorderRadius.circular(80)),
+                                          child: user.imageUrl!.url == null
+                                              ? Icon(Icons.person,
+                                                  size: 160,
+                                                  color: R.color.white)
+                                              : Image.network(
+                                                  user.imageUrl!.url!,
+                                                  width: 160,
+                                                  height: 160,
+                                                  errorBuilder: (BuildContext
+                                                          context,
+                                                      Object error,
+                                                      StackTrace? stackTrace) {
+                                                    return Icon(Icons.person,
+                                                        size: 160,
+                                                        color: R.color.white);
+                                                  },
+                                                ),
+                                        ),
+                                      ),
+                                      Image.asset(R.drawable.ic_camera_picker,
+                                          width: 50, height: 50)
+                                    ]),
                               ),
                             ),
                           ],
@@ -208,35 +227,48 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                         if (motivation != null)
                           Container(
                               decoration: BoxDecoration(
-                                  color: R.color.white, borderRadius: BorderRadius.circular(10)),
+                                  color: R.color.white,
+                                  borderRadius: BorderRadius.circular(10)),
                               child: Column(
                                 children: [
                                   Padding(
-                                    padding: const EdgeInsets.only(top: 16, left: 16, right: 16),
+                                    padding: const EdgeInsets.only(
+                                        top: 16, left: 16, right: 16),
                                     child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
                                         children: [
                                           Row(
-                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
                                               children: [
-                                                Text(R.string.my_motivation.tr(),
+                                                Text(
+                                                    R.string.my_motivation.tr(),
                                                     style: TextStyle(
                                                         color: R.color.black,
-                                                        fontWeight: FontWeight.w700,
+                                                        fontWeight:
+                                                            FontWeight.w700,
                                                         fontSize: 16)),
                                                 GestureDetector(
                                                   onTap: () {
-                                                    _showDialogUpdateMotivation(motivation);
+                                                    _showDialogUpdateMotivation(
+                                                        motivation);
                                                   },
                                                   child: Container(
                                                     color: R.color.transparent,
                                                     child: Row(children: [
-                                                      Image.asset(R.drawable.ic_edit,
-                                                          width: 16, height: 16),
+                                                      Image.asset(
+                                                          R.drawable.ic_edit,
+                                                          width: 16,
+                                                          height: 16),
                                                       const SizedBox(width: 4),
-                                                      Text(R.string.chinh_sua.tr(),
+                                                      Text(
+                                                          R.string.chinh_sua
+                                                              .tr(),
                                                           style: TextStyle(
-                                                              color: R.color.mainColor,
+                                                              color: R.color
+                                                                  .mainColor,
                                                               fontSize: 16))
                                                     ]),
                                                   ),
@@ -251,40 +283,56 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                                         ]),
                                   ),
                                   const SizedBox(height: 16),
-                                  Container(height: 1, color: R.color.color0xffE5E5E5),
-                                  Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                                    Expanded(
-                                      child: GestureDetector(
-                                        onTap: () {
-                                          Navigator.pushNamed(context, NavigatorName.motivation);
-                                        },
-                                        child: Container(
-                                          color: R.color.transparent,
-                                          child: Center(
-                                            child: Text(R.string.view_log.tr(),
-                                                style: TextStyle(
-                                                    color: R.color.mainColor, fontSize: 16)),
+                                  Container(
+                                      height: 1,
+                                      color: R.color.color0xffE5E5E5),
+                                  Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Expanded(
+                                          child: GestureDetector(
+                                            onTap: () {
+                                              Navigator.pushNamed(context,
+                                                  NavigatorName.motivation);
+                                            },
+                                            child: Container(
+                                              color: R.color.transparent,
+                                              child: Center(
+                                                child: Text(
+                                                    R.string.view_log.tr(),
+                                                    style: TextStyle(
+                                                        color:
+                                                            R.color.mainColor,
+                                                        fontSize: 16)),
+                                              ),
+                                            ),
                                           ),
                                         ),
-                                      ),
-                                    ),
-                                    Container(height: 46, width: 1, color: R.color.color0xffE5E5E5),
-                                    Expanded(
-                                      child: GestureDetector(
-                                        onTap: () {
-                                          _showDialogUpdateMotivation(null);
-                                        },
-                                        child: Container(
-                                          color: R.color.transparent,
-                                          child: Center(
-                                            child: Text(R.string.new_motivation.tr(),
-                                                style: TextStyle(
-                                                    color: R.color.mainColor, fontSize: 16)),
+                                        Container(
+                                            height: 46,
+                                            width: 1,
+                                            color: R.color.color0xffE5E5E5),
+                                        Expanded(
+                                          child: GestureDetector(
+                                            onTap: () {
+                                              _showDialogUpdateMotivation(null);
+                                            },
+                                            child: Container(
+                                              color: R.color.transparent,
+                                              child: Center(
+                                                child: Text(
+                                                    R.string.new_motivation
+                                                        .tr(),
+                                                    style: TextStyle(
+                                                        color:
+                                                            R.color.mainColor,
+                                                        fontSize: 16)),
+                                              ),
+                                            ),
                                           ),
-                                        ),
-                                      ),
-                                    )
-                                  ])
+                                        )
+                                      ])
                                 ],
                               ))
                         else
@@ -296,137 +344,176 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                               decoration: BoxDecoration(
                                 color: R.color.transparent,
                                 image: DecorationImage(
-                                    image: AssetImage(R.drawable.bg_dong_luc), fit: BoxFit.fill),
+                                    image: AssetImage(R.drawable.bg_dong_luc),
+                                    fit: BoxFit.fill),
                               ),
                               padding: const EdgeInsets.all(16),
-                              child:
-                                  Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                                Text(R.string.my_motivation.tr(),
-                                    style: TextStyle(
-                                        color: R.color.white,
-                                        fontWeight: FontWeight.w700,
-                                        fontSize: 16)),
-                                const SizedBox(height: 8),
-                                Text(R.string.new_motivaiton_suggest.tr(),
-                                    style: TextStyle(
-                                        color: R.color.white,
-                                        fontWeight: FontWeight.w400,
-                                        fontSize: 16)),
-                                Padding(
-                                  padding: const EdgeInsets.only(top: 16, bottom: 8),
-                                  child:
-                                      Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                                    Container(
-                                      height: 40,
-                                      padding: const EdgeInsets.only(left: 16, right: 16),
-                                      decoration: BoxDecoration(
-                                          border: Border.all(color: R.color.white, width: 2),
-                                          borderRadius: BorderRadius.circular(20)),
+                              child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(R.string.my_motivation.tr(),
+                                        style: TextStyle(
+                                            color: R.color.white,
+                                            fontWeight: FontWeight.w700,
+                                            fontSize: 16)),
+                                    const SizedBox(height: 8),
+                                    Text(R.string.new_motivaiton_suggest.tr(),
+                                        style: TextStyle(
+                                            color: R.color.white,
+                                            fontWeight: FontWeight.w400,
+                                            fontSize: 16)),
+                                    Padding(
+                                      padding: const EdgeInsets.only(
+                                          top: 16, bottom: 8),
                                       child: Row(
-                                        children: [
-                                          Icon(Icons.add, color: R.color.white, size: 28),
-                                          const SizedBox(width: 8),
-                                          Text('${R.string.enter_motivation.tr()}  ',
-                                              style: TextStyle(
-                                                  color: R.color.white,
-                                                  fontWeight: FontWeight.w700,
-                                                  fontSize: 16)),
-                                        ],
-                                      ),
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            Container(
+                                              height: 40,
+                                              padding: const EdgeInsets.only(
+                                                  left: 16, right: 16),
+                                              decoration: BoxDecoration(
+                                                  border: Border.all(
+                                                      color: R.color.white,
+                                                      width: 2),
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          20)),
+                                              child: Row(
+                                                children: [
+                                                  Icon(Icons.add,
+                                                      color: R.color.white,
+                                                      size: 28),
+                                                  const SizedBox(width: 8),
+                                                  Text(
+                                                      '${R.string.enter_motivation.tr()}  ',
+                                                      style: TextStyle(
+                                                          color: R.color.white,
+                                                          fontWeight:
+                                                              FontWeight.w700,
+                                                          fontSize: 16)),
+                                                ],
+                                              ),
+                                            )
+                                          ]),
                                     )
                                   ]),
-                                )
-                              ]),
                             ),
                           ),
-                        _buildCardLayout(title: R.string.general_info.tr(), children: [
-                          _buildItemProfile(
-                            image: R.drawable.ic_person,
-                            title: user.fullName!,
-                            isTitleFromSelectedCategory: false,
-                            subTitle: R.string.last_name_and_first_name.tr(),
-                            subIcon: Image.asset(R.drawable.ic_right, width: 18, height: 18),
-                            callback: (selectedIndexList) {
-                              _showDialogUpdateName();
-                            },
-                          ),
-                          _buildItemProfile(
-                            image: R.drawable.ic_birthday,
-                            title: convertToUTC(user.dateOfBirth!, 'dd/MM/yyyy'),
-                            subTitle: R.string.ngay_sinh.tr(),
-                            isTitleFromSelectedCategory: false,
-                            subIcon: Image.asset(R.drawable.ic_right, width: 18, height: 18),
-                            callback: (selectedIndexList) {
-                              _showDialogUpdateBirthday();
-                            },
-                          ),
-                          _buildItemProfile(
-                            image: R.drawable.ic_gender,
-                            title: user.gender == null || user.gender!.isEmpty
-                                ? R.string.other.tr()
-                                : user.gender!,
-                            subTitle: R.string.gioi_tinh.tr(),
-                            isTitleFromSelectedCategory: false,
-                            subIcon: Image.asset(R.drawable.ic_right, width: 18, height: 18),
-                            callback: (selectedIndexList) {
-                              _showDialogUpdateGender();
-                            },
-                          ),
-                          _buildItemProfile(
-                            icon: R.drawable.ic_user_job,
-                            title: 'Giáo viên',
-                            subTitle: R.string.occupation.tr(),
-                            subIcon: Image.asset(R.drawable.ic_right, width: 18, height: 18),
-                            elementList: user.jobList!.map((e) => e.text ?? '').toList(),
-                            selectedList: user.jobList!
-                                .where((e) => e.selected ?? false)
-                                .map((e) => e.text ?? '')
-                                .toList(),
-                            selectedDialogTitle: R.string.select_occupation.tr(),
-                            isShowSelectedDialog: true,
-                            callback: (selectedIndexList) {
-                              updateCategoryUser(
-                                  user.jobList!, selectedIndexList, CategoryType.JOB_TYPE, false);
-                            },
-                          ),
-                          _buildItemProfile(
-                            icon: R.drawable.ic_user_education,
-                            title: 'Đại học',
-                            subTitle: R.string.education.tr(),
-                            subIcon: Image.asset(R.drawable.ic_right, width: 18, height: 18),
-                            elementList: user.educationLevelList!.map((e) => e.text ?? '').toList(),
-                            selectedList: user.educationLevelList!
-                                .where((e) => e.selected ?? false)
-                                .map((e) => e.text ?? '')
-                                .toList(),
-                            selectedDialogTitle: R.string.select_education.tr(),
-                            isShowSelectedDialog: true,
-                            callback: (selectedIndexList) {
-                              updateCategoryUser(user.educationLevelList!, selectedIndexList,
-                                  CategoryType.EDUCATION_LEVEL_TYPE, false);
-                            },
-                          ),
-                        ]),
-                        _buildCardLayout(title: R.string.pathological_info.tr(), children: [
-                          _buildItemProfile(
-                            image: R.drawable.ic_folder,
-                            title: getSelectedDiabetes(),
-                            subTitle: R.string.loai_benh.tr(),
-                            isTitleFromSelectedCategory: false,
-                            callback: (selectedIndexList) {
-                              _showDialogUpdateDiabetesStatus();
-                            },
-                          ),
-                          _buildItemProfile(
-                            image: R.drawable.ic_year,
-                            title: convertToUTC(user.diabetesDate ?? 0, 'yyyy'),
-                            subTitle: R.string.year_illness_start.tr(),
-                            isTitleFromSelectedCategory: false,
-                            callback: (selectedIndexList) {
-                              _showDialogUpdateDiabetesStatusDate();
-                            },
-                          )
-                        ]),
+                        _buildCardLayout(
+                            title: R.string.general_info.tr(),
+                            children: [
+                              _buildItemProfile(
+                                image: R.drawable.ic_person,
+                                title: user.fullName!,
+                                isTitleFromSelectedCategory: false,
+                                subTitle:
+                                    R.string.last_name_and_first_name.tr(),
+                                subIcon: Image.asset(R.drawable.ic_right,
+                                    width: 18, height: 18),
+                                callback: (selectedIndexList) {
+                                  _showDialogUpdateName();
+                                },
+                              ),
+                              _buildItemProfile(
+                                image: R.drawable.ic_birthday,
+                                title: convertToUTC(
+                                    user.dateOfBirth!, 'dd/MM/yyyy'),
+                                subTitle: R.string.ngay_sinh.tr(),
+                                isTitleFromSelectedCategory: false,
+                                subIcon: Image.asset(R.drawable.ic_right,
+                                    width: 18, height: 18),
+                                callback: (selectedIndexList) {
+                                  _showDialogUpdateBirthday();
+                                },
+                              ),
+                              _buildItemProfile(
+                                image: R.drawable.ic_gender,
+                                title:
+                                    user.gender == null || user.gender!.isEmpty
+                                        ? R.string.other.tr()
+                                        : user.gender!,
+                                subTitle: R.string.gioi_tinh.tr(),
+                                isTitleFromSelectedCategory: false,
+                                subIcon: Image.asset(R.drawable.ic_right,
+                                    width: 18, height: 18),
+                                callback: (selectedIndexList) {
+                                  _showDialogUpdateGender();
+                                },
+                              ),
+                              _buildItemProfile(
+                                icon: R.drawable.ic_user_job,
+                                title: 'Giáo viên',
+                                subTitle: R.string.occupation.tr(),
+                                subIcon: Image.asset(R.drawable.ic_right,
+                                    width: 18, height: 18),
+                                elementList: user.jobList!
+                                    .map((e) => e.text ?? '')
+                                    .toList(),
+                                selectedList: user.jobList!
+                                    .where((e) => e.selected ?? false)
+                                    .map((e) => e.text ?? '')
+                                    .toList(),
+                                selectedDialogTitle:
+                                    R.string.select_occupation.tr(),
+                                isShowSelectedDialog: true,
+                                callback: (selectedIndexList) {
+                                  updateCategoryUser(
+                                      user.jobList!,
+                                      selectedIndexList,
+                                      CategoryType.JOB_TYPE,
+                                      false);
+                                },
+                              ),
+                              _buildItemProfile(
+                                icon: R.drawable.ic_user_education,
+                                title: 'Đại học',
+                                subTitle: R.string.education.tr(),
+                                subIcon: Image.asset(R.drawable.ic_right,
+                                    width: 18, height: 18),
+                                elementList: user.educationLevelList!
+                                    .map((e) => e.text ?? '')
+                                    .toList(),
+                                selectedList: user.educationLevelList!
+                                    .where((e) => e.selected ?? false)
+                                    .map((e) => e.text ?? '')
+                                    .toList(),
+                                selectedDialogTitle:
+                                    R.string.select_education.tr(),
+                                isShowSelectedDialog: true,
+                                callback: (selectedIndexList) {
+                                  updateCategoryUser(
+                                      user.educationLevelList!,
+                                      selectedIndexList,
+                                      CategoryType.EDUCATION_LEVEL_TYPE,
+                                      false);
+                                },
+                              ),
+                            ]),
+                        _buildCardLayout(
+                            title: R.string.pathological_info.tr(),
+                            children: [
+                              _buildItemProfile(
+                                image: R.drawable.ic_folder,
+                                title: getSelectedDiabetes(),
+                                subTitle: R.string.loai_benh.tr(),
+                                isTitleFromSelectedCategory: false,
+                                callback: (selectedIndexList) {
+                                  _showDialogUpdateDiabetesStatus();
+                                },
+                              ),
+                              _buildItemProfile(
+                                image: R.drawable.ic_year,
+                                title: convertToUTC(
+                                    user.diabetesDate ?? 0, 'yyyy'),
+                                subTitle: R.string.year_illness_start.tr(),
+                                isTitleFromSelectedCategory: false,
+                                callback: (selectedIndexList) {
+                                  _showDialogUpdateDiabetesStatusDate();
+                                },
+                              )
+                            ]),
                         _buildCardLayout(
                           title: R.string.body_info.tr(),
                           children: [
@@ -457,7 +544,8 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                               title: user.height == null
                                   ? R.string.not_updated_yet.tr()
                                   : Utils.getBMI(
-                                      height: user.height ?? 0, weight: user.weight ?? 0),
+                                      height: user.height ?? 0,
+                                      weight: user.weight ?? 0),
                               subTitle: 'BMI',
                               isTitleFromSelectedCategory: false,
                               callback: (selectedIndexList) {},
@@ -475,8 +563,9 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                                   builder: (context) {
                                     return SelectInterestsBottomSheetWidget(
                                       title: 'Chọn chủ đề quan tâm',
-                                      elementList:
-                                          user.lessonTagList!.map((e) => e.text ?? '').toList(),
+                                      elementList: user.lessonTagList!
+                                          .map((e) => e.text ?? '')
+                                          .toList(),
                                       selectedList: user.lessonTagList!
                                           .where((e) => e.selected ?? false)
                                           .map((e) => e.text ?? '')
@@ -484,14 +573,22 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                                       isMultipleChoice: true,
                                       isRequiredSelection: false,
                                       onSelected: (typeList) {
-                                        var selectedIndexList = getSelectedIndexList(
-                                            user.lessonTagList!.map((e) => e.text ?? '').toList(),
-                                            typeList);
-                                        selectedLessonTagList = getSelectedCategoryList(
-                                            user.lessonTagList!, selectedIndexList);
+                                        var selectedIndexList =
+                                            getSelectedIndexList(
+                                                user.lessonTagList!
+                                                    .map((e) => e.text ?? '')
+                                                    .toList(),
+                                                typeList);
+                                        selectedLessonTagList =
+                                            getSelectedCategoryList(
+                                                user.lessonTagList!,
+                                                selectedIndexList);
                                         //    setState(() {});
-                                        updateCategoryUser(user.lessonTagList!, selectedIndexList,
-                                            CategoryType.LESSON_TAG_TYPE, true);
+                                        updateCategoryUser(
+                                            user.lessonTagList!,
+                                            selectedIndexList,
+                                            CategoryType.LESSON_TAG_TYPE,
+                                            true);
                                       },
                                     );
                                   });
@@ -517,9 +614,11 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                                 image: R.drawable.ic_person,
                                 title: 'Hướng ngoại',
                                 subTitle: R.string.persionality.tr(),
-                                subIcon: Image.asset(R.drawable.ic_right, width: 18, height: 18),
-                                elementList:
-                                    user.personalityRuleList!.map((e) => e.text ?? '').toList(),
+                                subIcon: Image.asset(R.drawable.ic_right,
+                                    width: 18, height: 18),
+                                elementList: user.personalityRuleList!
+                                    .map((e) => e.text ?? '')
+                                    .toList(),
                                 selectedList: user.personalityRuleList!
                                     .where((e) => e.selected ?? false)
                                     .map((e) => e.text ?? '')
@@ -528,17 +627,22 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                                 isShowSelectedDialog: true,
                                 isRequiredSelection: false,
                                 callback: (selectedIndexList) {
-                                  updateCategoryUser(user.personalityRuleList!, selectedIndexList,
-                                      CategoryType.PERSONALITY_TYPE, false);
+                                  updateCategoryUser(
+                                      user.personalityRuleList!,
+                                      selectedIndexList,
+                                      CategoryType.PERSONALITY_TYPE,
+                                      false);
                                 },
                               ),
                               _buildItemProfile(
                                 icon: R.drawable.ic_user_habit,
                                 title: 'Chơi game, đọc sách',
                                 subTitle: 'Sở thích cá nhân',
-                                subIcon: Image.asset(R.drawable.ic_right, width: 18, height: 18),
-                                elementList:
-                                    user.interestRuleList!.map((e) => e.text ?? '').toList(),
+                                subIcon: Image.asset(R.drawable.ic_right,
+                                    width: 18, height: 18),
+                                elementList: user.interestRuleList!
+                                    .map((e) => e.text ?? '')
+                                    .toList(),
                                 selectedList: user.interestRuleList!
                                     .where((e) => e.selected ?? false)
                                     .map((e) => e.text ?? '')
@@ -548,39 +652,50 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                                 isRequiredSelection: false,
                                 selectedDialogTitle: "Chọn sở thích",
                                 callback: (selectedIndexList) {
-                                  updateCategoryUser(user.interestRuleList!, selectedIndexList,
-                                      CategoryType.INTERESTS_TYPE, true);
+                                  updateCategoryUser(
+                                      user.interestRuleList!,
+                                      selectedIndexList,
+                                      CategoryType.INTERESTS_TYPE,
+                                      true);
                                 },
                               ),
                               _buildItemProfile(
                                 icon: R.drawable.ic_user_exercise,
                                 title: 'Cầu lông, xe đạp',
                                 subTitle: R.string.favorite_sports.tr(),
-                                subIcon: Image.asset(R.drawable.ic_right, width: 18, height: 18),
-                                elementList:
-                                    user.favouriteSportRuleList!.map((e) => e.text ?? '').toList(),
+                                subIcon: Image.asset(R.drawable.ic_right,
+                                    width: 18, height: 18),
+                                elementList: user.favouriteSportRuleList!
+                                    .map((e) => e.text ?? '')
+                                    .toList(),
                                 selectedList: user.favouriteSportRuleList!
                                     .where((e) => e.selected ?? false)
                                     .map((e) => e.text ?? '')
                                     .toList(),
-                                selectedDialogTitle: R.string.choose_sports.tr(),
+                                selectedDialogTitle:
+                                    R.string.choose_sports.tr(),
                                 isShowSelectedDialog: true,
                                 isRequiredSelection: false,
                                 isMultipleChoice: true,
                                 callback: (selectedIndexList) {
-                                  updateCategoryUser(user.favouriteSportRuleList!,
-                                      selectedIndexList, CategoryType.FAVORITE_SPORT_TYPE, true);
+                                  updateCategoryUser(
+                                      user.favouriteSportRuleList!,
+                                      selectedIndexList,
+                                      CategoryType.FAVORITE_SPORT_TYPE,
+                                      true);
                                 },
                               ),
                               _buildItemProfile(
                                 icon: R.drawable.ic_user_mental_exercise,
                                 title: 'Không',
                                 subTitle: R.string.mindfulness_practices.tr(),
-                                subIcon: Image.asset(R.drawable.ic_right, width: 18, height: 18),
+                                subIcon: Image.asset(R.drawable.ic_right,
+                                    width: 18, height: 18),
                                 elementList: user.consciousnessPracticeRuleList!
                                     .map((e) => e.text ?? '')
                                     .toList(),
-                                selectedList: user.consciousnessPracticeRuleList!
+                                selectedList: user
+                                    .consciousnessPracticeRuleList!
                                     .where((e) => e.selected ?? false)
                                     .map((e) => e.text ?? '')
                                     .toList(),
@@ -599,9 +714,11 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                                 icon: R.drawable.ic_user_religion,
                                 title: 'Không',
                                 subTitle: R.string.religions.tr(),
-                                subIcon: Image.asset(R.drawable.ic_right, width: 18, height: 18),
-                                elementList:
-                                    user.religionRuleList!.map((e) => e.text ?? '').toList(),
+                                subIcon: Image.asset(R.drawable.ic_right,
+                                    width: 18, height: 18),
+                                elementList: user.religionRuleList!
+                                    .map((e) => e.text ?? '')
+                                    .toList(),
                                 selectedList: user.religionRuleList!
                                     .where((e) => e.selected ?? false)
                                     .map((e) => e.text ?? '')
@@ -610,17 +727,22 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                                 isRequiredSelection: false,
                                 selectedDialogTitle: "Chọn tôn giáo",
                                 callback: (selectedIndexList) {
-                                  updateCategoryUser(user.religionRuleList!, selectedIndexList,
-                                      CategoryType.RELIGION_TYPE, false);
+                                  updateCategoryUser(
+                                      user.religionRuleList!,
+                                      selectedIndexList,
+                                      CategoryType.RELIGION_TYPE,
+                                      false);
                                 },
                               ),
                               _buildItemProfile(
                                 icon: R.drawable.ic_user_in_diet,
                                 title: 'Không',
                                 subTitle: R.string.vegan.tr(),
-                                subIcon: Image.asset(R.drawable.ic_right, width: 18, height: 18),
-                                elementList:
-                                    user.vegetarianRuleList!.map((e) => e.text ?? '').toList(),
+                                subIcon: Image.asset(R.drawable.ic_right,
+                                    width: 18, height: 18),
+                                elementList: user.vegetarianRuleList!
+                                    .map((e) => e.text ?? '')
+                                    .toList(),
                                 selectedList: user.vegetarianRuleList!
                                     .where((e) => e.selected ?? false)
                                     .map((e) => e.text ?? '')
@@ -629,28 +751,37 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                                 isRequiredSelection: false,
                                 selectedDialogTitle: "Chọn ăn chay",
                                 callback: (selectedIndexList) {
-                                  updateCategoryUser(user.vegetarianRuleList!, selectedIndexList,
-                                      CategoryType.VEGETERIAN_TYPE, false);
+                                  updateCategoryUser(
+                                      user.vegetarianRuleList!,
+                                      selectedIndexList,
+                                      CategoryType.VEGETERIAN_TYPE,
+                                      false);
                                 },
                               ),
                               _buildItemProfile(
                                 icon: R.drawable.ic_user_schedule,
                                 title: 'Buổi sáng; Bao gồm thứ 7',
                                 subTitle: R.string.available_time_slot.tr(),
-                                subIcon: Image.asset(R.drawable.ic_right, width: 18, height: 18),
-                                elementList:
-                                    user.workingHourRuleList!.map((e) => e.text ?? '').toList(),
+                                subIcon: Image.asset(R.drawable.ic_right,
+                                    width: 18, height: 18),
+                                elementList: user.workingHourRuleList!
+                                    .map((e) => e.text ?? '')
+                                    .toList(),
                                 selectedList: user.workingHourRuleList!
                                     .where((e) => e.selected ?? false)
                                     .map((e) => e.text ?? '')
                                     .toList(),
-                                selectedDialogTitle: "Chọn khung giờ trao đổi với coach ưa thích",
+                                selectedDialogTitle:
+                                    "Chọn khung giờ trao đổi với coach ưa thích",
                                 isShowSelectedDialog: true,
                                 isMultipleChoice: true,
                                 isRequiredSelection: false,
                                 callback: (selectedIndexList) {
-                                  updateCategoryUser(user.workingHourRuleList!, selectedIndexList,
-                                      CategoryType.WORKING_HOURS_TYPE, true);
+                                  updateCategoryUser(
+                                      user.workingHourRuleList!,
+                                      selectedIndexList,
+                                      CategoryType.WORKING_HOURS_TYPE,
+                                      true);
                                 },
                               ),
                             ],
@@ -660,14 +791,16 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                           children: [
                             _buildItemProfile(
                               icon: R.drawable.ic_user_hospital,
-                              title: user.nameOfAgency ?? R.string.not_updated_yet.tr(),
+                              title: user.nameOfAgency ??
+                                  R.string.not_updated_yet.tr(),
                               subTitle: R.string.hospitals_clinics.tr(),
                               isTitleFromSelectedCategory: false,
                               callback: (selectedIndexList) {},
                             ),
                             _buildItemProfile(
                               icon: R.drawable.ic_user_doctor,
-                              title: user.nameOfDoctor ?? R.string.not_updated_yet.tr(),
+                              title: user.nameOfDoctor ??
+                                  R.string.not_updated_yet.tr(),
                               subTitle: R.string.doctors.tr(),
                               isTitleFromSelectedCategory: false,
                               callback: (selectedIndexList) {},
@@ -679,25 +812,29 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                           children: [
                             _buildItemProfile(
                               image: R.drawable.ic_phone_info,
-                              title: user.phoneNumber == null || user.phoneNumber!.isEmpty
+                              title: user.phoneNumber == null ||
+                                      user.phoneNumber!.isEmpty
                                   ? R.string.not_updated_yet.tr()
                                   : user.phoneNumber!,
                               subTitle: R.string.phone_number_1.tr(),
                               isTitleFromSelectedCategory: false,
-                              subIcon: user.phoneNumber != null && user.phoneNumber != ""
-                                  ? Image.asset(R.drawable.ic_ok, width: 24, height: 24)
+                              subIcon: user.phoneNumber != null &&
+                                      user.phoneNumber != ""
+                                  ? Image.asset(R.drawable.ic_ok,
+                                      width: 24, height: 24)
                                   : null,
                               callback: (selectedIndexList) {
-                                if (user.phoneNumber == null || user.phoneNumber == "")
+                                if (user.phoneNumber == null ||
+                                    user.phoneNumber == "")
                                   _showDialogUpdatePhone();
                               },
                             ),
                             _buildItemProfile(
                               image: R.drawable.ic_phone_info,
-                              title:
-                                  user.secondPhoneNumber == null || user.secondPhoneNumber!.isEmpty
-                                      ? R.string.not_updated_yet.tr()
-                                      : user.secondPhoneNumber!,
+                              title: user.secondPhoneNumber == null ||
+                                      user.secondPhoneNumber!.isEmpty
+                                  ? R.string.not_updated_yet.tr()
+                                  : user.secondPhoneNumber!,
                               subTitle: R.string.phone_number_2.tr(),
                               isTitleFromSelectedCategory: false,
                               callback: (selectedIndexList) {
@@ -707,7 +844,8 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                             _buildItemProfile(
                               image: R.drawable.ic_email,
                               title: user.isLinkedGoogle == true
-                                  ? (user.googleEmail == null || user.googleEmail!.isEmpty
+                                  ? (user.googleEmail == null ||
+                                          user.googleEmail!.isEmpty
                                       ? R.string.not_updated_yet.tr()
                                       : user.googleEmail!)
                                   : (user.email == null || user.email!.isEmpty
@@ -725,33 +863,51 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                             _buildItemProfile(
                                 image: R.drawable.ic_location,
                                 title: ((user.address ?? '') +
-                                            (user.address == null || user.address!.isEmpty
+                                            (user.address == null ||
+                                                    user.address!.isEmpty
                                                 ? ''
                                                 : ', ') +
-                                            (user.ward == null ? '' : user.ward!.name!) +
-                                            (user.ward == null || user.ward!.name!.isEmpty
+                                            (user.ward == null
+                                                ? ''
+                                                : user.ward!.name!) +
+                                            (user.ward == null ||
+                                                    user.ward!.name!.isEmpty
                                                 ? ''
                                                 : ', ') +
-                                            (user.district == null ? '' : user.district!.name!) +
-                                            (user.district == null || user.district!.name!.isEmpty
+                                            (user.district == null
+                                                ? ''
+                                                : user.district!.name!) +
+                                            (user.district == null ||
+                                                    user.district!.name!.isEmpty
                                                 ? ''
                                                 : ', ') +
-                                            (user.province == null ? '' : user.province!.name!))
+                                            (user.province == null
+                                                ? ''
+                                                : user.province!.name!))
                                         .isEmpty
                                     ? R.string.not_updated_yet.tr()
                                     : ((user.address ?? '') +
-                                        (user.address == null || user.address!.isEmpty
+                                        (user.address == null ||
+                                                user.address!.isEmpty
                                             ? ''
                                             : ', ') +
-                                        (user.ward == null ? '' : user.ward!.name!) +
-                                        (user.ward == null || user.ward!.name!.isEmpty
+                                        (user.ward == null
+                                            ? ''
+                                            : user.ward!.name!) +
+                                        (user.ward == null ||
+                                                user.ward!.name!.isEmpty
                                             ? ''
                                             : ', ') +
-                                        (user.district == null ? '' : user.district!.name!) +
-                                        (user.district == null || user.district!.name!.isEmpty
+                                        (user.district == null
+                                            ? ''
+                                            : user.district!.name!) +
+                                        (user.district == null ||
+                                                user.district!.name!.isEmpty
                                             ? ''
                                             : ', ') +
-                                        (user.province == null ? '' : user.province!.name!)),
+                                        (user.province == null
+                                            ? ''
+                                            : user.province!.name!)),
                                 subTitle: R.string.address.tr(),
                                 isTitleFromSelectedCategory: false,
                                 callback: (selectedIndexList) {
@@ -759,7 +915,8 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                                 }),
                             _buildItemProfile(
                               image: R.drawable.ic_google,
-                              title: user.isLinkedGoogle == null || !user.isLinkedGoogle!
+                              title: user.isLinkedGoogle == null ||
+                                      !user.isLinkedGoogle!
                                   ? R.string.not_connected_yet.tr()
                                   : user.fullName!,
                               subTitle: 'Google',
@@ -781,10 +938,12 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                           },
                           child: Container(
                               decoration: BoxDecoration(
-                                  color: R.color.white, borderRadius: BorderRadius.circular(10)),
+                                  color: R.color.white,
+                                  borderRadius: BorderRadius.circular(10)),
                               padding: const EdgeInsets.all(16),
                               child: Row(children: [
-                                Image.asset(R.drawable.ic_logout, width: 33, height: 33),
+                                Image.asset(R.drawable.ic_logout,
+                                    width: 33, height: 33),
                                 const SizedBox(width: 12),
                                 Text(
                                   R.string.logout.tr(),
@@ -799,14 +958,17 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                         const SizedBox(height: 16),
                         GestureDetector(
                           onTap: () {
-                            Navigator.pushNamed(context, NavigatorName.delete_account);
+                            Navigator.pushNamed(
+                                context, NavigatorName.delete_account);
                           },
                           child: Container(
                               decoration: BoxDecoration(
-                                  color: R.color.white, borderRadius: BorderRadius.circular(10)),
+                                  color: R.color.white,
+                                  borderRadius: BorderRadius.circular(10)),
                               padding: const EdgeInsets.all(16),
                               child: Row(children: [
-                                Image.asset(R.drawable.ic_delete_account, width: 33, height: 33),
+                                Image.asset(R.drawable.ic_delete_account,
+                                    width: 33, height: 33),
                                 const SizedBox(width: 12),
                                 Text(
                                   'Yêu cầu xoá tài khoản',
@@ -876,7 +1038,8 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
               if (showIcon)
                 Padding(
                   padding: const EdgeInsets.only(left: 8),
-                  child: Image.asset(R.drawable.ic_right, width: 18, height: 18),
+                  child:
+                      Image.asset(R.drawable.ic_right, width: 18, height: 18),
                 )
             ],
           ),
@@ -912,7 +1075,8 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                 Image.asset(R.drawable.ic_photo, width: 24, height: 24),
                 const SizedBox(width: 16),
                 Text(R.string.chon_trong_thu_vien.tr(),
-                    style: TextStyle(color: R.color.color0xff333333, fontSize: 14)),
+                    style: TextStyle(
+                        color: R.color.color0xff333333, fontSize: 14)),
               ],
             ),
           ),
@@ -929,7 +1093,8 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                 Image.asset(R.drawable.ic_camera_black, width: 24, height: 24),
                 const SizedBox(width: 16),
                 Text(R.string.chup_anh.tr(),
-                    style: TextStyle(color: R.color.color0xff333333, fontSize: 14)),
+                    style: TextStyle(
+                        color: R.color.color0xff333333, fontSize: 14)),
               ],
             ),
           ),
@@ -969,8 +1134,8 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
   showGallery() async {
     try {
       final picker = ImagePicker();
-      final pickedFile =
-          await picker.getImage(maxWidth: 1024, maxHeight: 1024, source: ImageSource.gallery);
+      final pickedFile = await picker.getImage(
+          maxWidth: 1024, maxHeight: 1024, source: ImageSource.gallery);
       if (pickedFile != null) {
         await _cropImage(pickedFile.path);
       }
@@ -1055,7 +1220,8 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
   }
 
   void updateUserInfo(UserModel user, {bool isUpdateDiabetes = false}) async {
-    ProfileInfoController.updateUserInfo(context, user, isUpdateDiabetes: isUpdateDiabetes);
+    ProfileInfoController.updateUserInfo(context, user,
+        isUpdateDiabetes: isUpdateDiabetes);
   }
 
   updateCategoryUser(
@@ -1144,8 +1310,11 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
       await _googleSignIn.signOut();
       final GoogleSignInAccount? account = await _googleSignIn.signIn();
       if (account == null) BotToast.closeAllLoading();
-      final result = await LoginClient().linkedAccountOTP(
-          {'providerName': 'Google', 'providerKey': account?.id, 'phoneNumber': user.phoneNumber});
+      final result = await LoginClient().linkedAccountOTP({
+        'providerName': 'Google',
+        'providerKey': account?.id,
+        'phoneNumber': user.phoneNumber
+      });
       BotToast.closeAllLoading();
       if (result.isSuccess != true) {
         _showDialogError(user.phoneNumber);
@@ -1214,7 +1383,8 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
           BotToast.closeAllLoading();
           if (e is Error) {
             if (e.code == 'USER002') {
-              Message.showToastMessage(context, R.string.account_already_used.tr());
+              Message.showToastMessage(
+                  context, R.string.account_already_used.tr());
             } else {
               Message.showToastMessage(context, e.message);
             }
@@ -1293,14 +1463,17 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                 textAlign: TextAlign.center,
                 text: TextSpan(
                   text: '${R.string.da_gui_otp_5_lan_cho_so_dien_thoai} ',
-                  style: const TextStyle(color: Color(0xff172823), fontSize: 16),
+                  style:
+                      const TextStyle(color: Color(0xff172823), fontSize: 16),
                   children: <TextSpan>[
                     TextSpan(
                         text: phone,
-                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                        style: const TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 16)),
                     TextSpan(
                         text: ".\n${R.string.dang_ky_lai_hom_sau}",
-                        style: TextStyle(color: Color(0xff172823), fontSize: 16)),
+                        style:
+                            TextStyle(color: Color(0xff172823), fontSize: 16)),
                   ],
                 ),
               )
@@ -1345,65 +1518,76 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                       child: Text(R.string.confirm_logout.tr(),
                           textAlign: TextAlign.center,
                           style: TextStyle(
-                              color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w600)),
+                              color: R.color.textDark,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600)),
                     ),
                     Padding(
                       padding: const EdgeInsets.only(top: 16.0),
                       child: Text(R.string.confirm_logout_description.tr(),
-                          textAlign: TextAlign.center, style: R.style.normalTextStyle),
+                          textAlign: TextAlign.center,
+                          style: R.style.normalTextStyle),
                     ),
                     Container(
                       margin: const EdgeInsets.only(top: 16),
-                      child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                        Expanded(
-                          child: GestureDetector(
-                            onTap: () {
-                              Navigator.pop(context);
-                            },
-                            child: Container(
-                                height: 43,
-                                decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(200),
-                                    color: R.color.grayBorder),
-                                child: Center(
-                                  child: Text(R.string.van_o_lai.tr(),
-                                      style: TextStyle(
-                                          color: R.color.textDark,
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w600)),
-                                )),
-                          ),
-                        ),
-                        const SizedBox(width: 14),
-                        Expanded(
-                          child: GestureDetector(
-                            onTap: () {
-                              Observable.instance.notifyObservers([], notifyName: "logout");
-                              AppSettings.logout();
-                            },
-                            child: Container(
-                              height: 43,
-                              decoration: BoxDecoration(
-                                  color: R.color.red,
-                                  borderRadius: BorderRadius.circular(200),
-                                  gradient: LinearGradient(
-                                      begin: Alignment.topLeft,
-                                      end: Alignment.centerRight,
-                                      colors: [
-                                        R.color.greenGradientTop,
-                                        R.color.greenGradientBottom
-                                      ])),
-                              child: Center(
-                                child: Text(R.string.logout.tr(),
-                                    style: TextStyle(
-                                        color: R.color.white,
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w600)),
+                      child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Expanded(
+                              child: GestureDetector(
+                                onTap: () {
+                                  Navigator.pop(context);
+                                },
+                                child: Container(
+                                    height: 43,
+                                    decoration: BoxDecoration(
+                                        borderRadius:
+                                            BorderRadius.circular(200),
+                                        color: R.color.grayBorder),
+                                    child: Center(
+                                      child: Text(R.string.van_o_lai.tr(),
+                                          style: TextStyle(
+                                              color: R.color.textDark,
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w600)),
+                                    )),
                               ),
                             ),
-                          ),
-                        ),
-                      ]),
+                            const SizedBox(width: 14),
+                            Expanded(
+                              child: GestureDetector(
+                                onTap: () async {
+                                  Observable.instance.notifyObservers([],
+                                      notifyName: "logout");
+                                  await TrackingManager.trackEvent(
+                                    'logout',
+                                    'profile',
+                                  );
+                                  AppSettings.logout();
+                                },
+                                child: Container(
+                                  height: 43,
+                                  decoration: BoxDecoration(
+                                      color: R.color.red,
+                                      borderRadius: BorderRadius.circular(200),
+                                      gradient: LinearGradient(
+                                          begin: Alignment.topLeft,
+                                          end: Alignment.centerRight,
+                                          colors: [
+                                            R.color.greenGradientTop,
+                                            R.color.greenGradientBottom
+                                          ])),
+                                  child: Center(
+                                    child: Text(R.string.logout.tr(),
+                                        style: TextStyle(
+                                            color: R.color.white,
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w600)),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ]),
                     ),
                   ],
                 ),
@@ -1422,16 +1606,21 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                  Text(R.string.last_name_and_first_name.tr(),
-                      style: TextStyle(
-                          color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w600)),
-                  GestureDetector(
-                      child: Icon(Icons.close, color: R.color.color0xffBEC0C8),
-                      onTap: () {
-                        Navigator.pop(context);
-                      })
-                ]),
+                Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(R.string.last_name_and_first_name.tr(),
+                          style: TextStyle(
+                              color: R.color.textDark,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600)),
+                      GestureDetector(
+                          child:
+                              Icon(Icons.close, color: R.color.color0xffBEC0C8),
+                          onTap: () {
+                            Navigator.pop(context);
+                          })
+                    ]),
                 Container(
                   height: 64,
                   width: width - 36,
@@ -1448,14 +1637,17 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                         fillColor: R.color.textDark,
                         counterText: '',
                         enabledBorder: OutlineInputBorder(
-                          borderSide: BorderSide(color: R.color.grayComponentBorder, width: 1.0),
+                          borderSide: BorderSide(
+                              color: R.color.grayComponentBorder, width: 1.0),
                           borderRadius: BorderRadius.circular(10),
                         ),
                         focusedBorder: OutlineInputBorder(
-                          borderSide: BorderSide(color: R.color.mainColor, width: 1.0),
+                          borderSide:
+                              BorderSide(color: R.color.mainColor, width: 1.0),
                           borderRadius: BorderRadius.circular(10),
                         ),
-                        contentPadding: const EdgeInsets.only(top: 0, left: 16, right: 16),
+                        contentPadding:
+                            const EdgeInsets.only(top: 0, left: 16, right: 16),
                         hintText: R.string.enter_first_name_and_last_name.tr()),
                     onChanged: (value) {},
                   ),
@@ -1463,68 +1655,75 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                 const SizedBox(height: 16),
                 Container(
                   margin: const EdgeInsets.only(top: 16),
-                  child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                    Expanded(
-                      flex: 1,
-                      child: GestureDetector(
-                        onTap: () {
-                          Navigator.pop(context);
-                        },
-                        child: Container(
-                            height: 48,
-                            width: 119,
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(200),
-                                color: R.color.grayBorder),
-                            child: Center(
-                              child: Text(R.string.cancel.tr(),
-                                  style: TextStyle(
-                                      color: R.color.textDark,
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600)),
-                            )),
-                      ),
-                    ),
-                    SizedBox(width: 8),
-                    Expanded(
-                      flex: 1,
-                      child: GestureDetector(
-                        onTap: () {
-                          final name = textEditingController.text;
-                          if (name.isEmpty) {
-                            Message.showToastMessage(context, R.string.mes_name_empty.tr());
-                            return;
-                          } else {
-                            final UserModel userInfo = AppSettings.userInfo!;
-                            updateUserInfo(
-                              userInfo.copyWith(
-                                fullName: name,
-                              ),
-                            );
-                            Navigator.pop(context);
-                          }
-                        },
-                        child: Container(
-                          height: 48,
-                          width: 119,
-                          decoration: BoxDecoration(
-                              color: R.color.red,
-                              borderRadius: BorderRadius.circular(200),
-                              gradient: LinearGradient(
-                                  begin: Alignment.topLeft,
-                                  end: Alignment.centerRight,
-                                  colors: [R.color.greenGradientTop, R.color.greenGradientBottom])),
-                          child: Center(
-                            child: Text(R.string.save.tr(),
-                                style: TextStyle(
-                                    color: R.color.white,
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w600)),
+                  child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          flex: 1,
+                          child: GestureDetector(
+                            onTap: () {
+                              Navigator.pop(context);
+                            },
+                            child: Container(
+                                height: 48,
+                                width: 119,
+                                decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(200),
+                                    color: R.color.grayBorder),
+                                child: Center(
+                                  child: Text(R.string.cancel.tr(),
+                                      style: TextStyle(
+                                          color: R.color.textDark,
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w600)),
+                                )),
                           ),
                         ),
-                      ),
-                    ),
-                  ]),
+                        SizedBox(width: 8),
+                        Expanded(
+                          flex: 1,
+                          child: GestureDetector(
+                            onTap: () {
+                              final name = textEditingController.text;
+                              if (name.isEmpty) {
+                                Message.showToastMessage(
+                                    context, R.string.mes_name_empty.tr());
+                                return;
+                              } else {
+                                final UserModel userInfo =
+                                    AppSettings.userInfo!;
+                                updateUserInfo(
+                                  userInfo.copyWith(
+                                    fullName: name,
+                                  ),
+                                );
+                                Navigator.pop(context);
+                              }
+                            },
+                            child: Container(
+                              height: 48,
+                              width: 119,
+                              decoration: BoxDecoration(
+                                  color: R.color.red,
+                                  borderRadius: BorderRadius.circular(200),
+                                  gradient: LinearGradient(
+                                      begin: Alignment.topLeft,
+                                      end: Alignment.centerRight,
+                                      colors: [
+                                        R.color.greenGradientTop,
+                                        R.color.greenGradientBottom
+                                      ])),
+                              child: Center(
+                                child: Text(R.string.save.tr(),
+                                    style: TextStyle(
+                                        color: R.color.white,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w600)),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ]),
                 ),
               ],
             )));
@@ -1546,16 +1745,21 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                  Text(R.string.ngay_sinh.tr(),
-                      style: TextStyle(
-                          color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w600)),
-                  GestureDetector(
-                      child: Icon(Icons.close, color: R.color.color0xffBEC0C8),
-                      onTap: () {
-                        Navigator.pop(context);
-                      })
-                ]),
+                Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(R.string.ngay_sinh.tr(),
+                          style: TextStyle(
+                              color: R.color.textDark,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600)),
+                      GestureDetector(
+                          child:
+                              Icon(Icons.close, color: R.color.color0xffBEC0C8),
+                          onTap: () {
+                            Navigator.pop(context);
+                          })
+                    ]),
                 const SizedBox(height: 16),
                 Container(
                     height: 250,
@@ -1568,62 +1772,69 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                     )),
                 Container(
                   margin: const EdgeInsets.only(top: 16),
-                  child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                    Expanded(
-                      flex: 1,
-                      child: GestureDetector(
-                        onTap: () {
-                          Navigator.pop(context);
-                        },
-                        child: Container(
-                            height: 48,
-                            width: 119,
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(200),
-                                color: R.color.grayBorder),
-                            child: Center(
-                              child: Text(R.string.cancel.tr(),
-                                  style: TextStyle(
-                                      color: R.color.textDark,
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600)),
-                            )),
-                      ),
-                    ),
-                    SizedBox(width: 8),
-                    Expanded(
-                      flex: 1,
-                      child: GestureDetector(
-                        onTap: () {
-                          final UserModel userInfo = AppSettings.userInfo!;
-                          updateUserInfo(
-                            userInfo.copyWith(
-                              dateOfBirth: selectedDate.millisecondsSinceEpoch ~/ 1000,
-                            ),
-                          );
-                          Navigator.pop(context);
-                        },
-                        child: Container(
-                          height: 48,
-                          width: 119,
-                          decoration: BoxDecoration(
-                              color: R.color.red,
-                              borderRadius: BorderRadius.circular(200),
-                              gradient: LinearGradient(
-                                  begin: Alignment.topLeft,
-                                  end: Alignment.centerRight,
-                                  colors: [R.color.greenGradientTop, R.color.greenGradientBottom])),
-                          child: Center(
-                            child: Text(R.string.yes.tr(),
-                                style: TextStyle(
-                                    color: R.color.white,
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w600)),
+                  child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          flex: 1,
+                          child: GestureDetector(
+                            onTap: () {
+                              Navigator.pop(context);
+                            },
+                            child: Container(
+                                height: 48,
+                                width: 119,
+                                decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(200),
+                                    color: R.color.grayBorder),
+                                child: Center(
+                                  child: Text(R.string.cancel.tr(),
+                                      style: TextStyle(
+                                          color: R.color.textDark,
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w600)),
+                                )),
                           ),
                         ),
-                      ),
-                    ),
-                  ]),
+                        SizedBox(width: 8),
+                        Expanded(
+                          flex: 1,
+                          child: GestureDetector(
+                            onTap: () {
+                              final UserModel userInfo = AppSettings.userInfo!;
+                              updateUserInfo(
+                                userInfo.copyWith(
+                                  dateOfBirth:
+                                      selectedDate.millisecondsSinceEpoch ~/
+                                          1000,
+                                ),
+                              );
+                              Navigator.pop(context);
+                            },
+                            child: Container(
+                              height: 48,
+                              width: 119,
+                              decoration: BoxDecoration(
+                                  color: R.color.red,
+                                  borderRadius: BorderRadius.circular(200),
+                                  gradient: LinearGradient(
+                                      begin: Alignment.topLeft,
+                                      end: Alignment.centerRight,
+                                      colors: [
+                                        R.color.greenGradientTop,
+                                        R.color.greenGradientBottom
+                                      ])),
+                              child: Center(
+                                child: Text(R.string.yes.tr(),
+                                    style: TextStyle(
+                                        color: R.color.white,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w600)),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ]),
                 ),
               ],
             )));
@@ -1644,77 +1855,89 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                  Text(R.string.gioi_tinh.tr(),
-                      style: TextStyle(
-                          color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w600)),
-                  GestureDetector(
-                      child: Icon(Icons.close, color: R.color.color0xffBEC0C8),
-                      onTap: () {
-                        Navigator.pop(context);
-                      })
-                ]),
+                Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(R.string.gioi_tinh.tr(),
+                          style: TextStyle(
+                              color: R.color.textDark,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600)),
+                      GestureDetector(
+                          child:
+                              Icon(Icons.close, color: R.color.color0xffBEC0C8),
+                          onTap: () {
+                            Navigator.pop(context);
+                          })
+                    ]),
                 const SizedBox(height: 16),
                 Container(
-                    height: 150, width: width - 36, child: GenderPicker(controller: controller)),
+                    height: 150,
+                    width: width - 36,
+                    child: GenderPicker(controller: controller)),
                 Container(
                   margin: const EdgeInsets.only(top: 16),
-                  child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                    Expanded(
-                      flex: 1,
-                      child: GestureDetector(
-                        onTap: () {
-                          Navigator.pop(context);
-                        },
-                        child: Container(
-                            height: 48,
-                            width: 119,
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(200),
-                                color: R.color.grayBorder),
-                            child: Center(
-                              child: Text(R.string.cancel.tr(),
-                                  style: TextStyle(
-                                      color: R.color.textDark,
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600)),
-                            )),
-                      ),
-                    ),
-                    SizedBox(width: 8),
-                    Expanded(
-                      flex: 1,
-                      child: GestureDetector(
-                        onTap: () {
-                          final UserModel userInfo = AppSettings.userInfo!;
-                          updateUserInfo(
-                            userInfo.copyWith(
-                              genderType: controller.selectedItem + 1,
-                            ),
-                          );
-                          Navigator.pop(context);
-                        },
-                        child: Container(
-                          height: 48,
-                          width: 119,
-                          decoration: BoxDecoration(
-                              color: R.color.red,
-                              borderRadius: BorderRadius.circular(200),
-                              gradient: LinearGradient(
-                                  begin: Alignment.topLeft,
-                                  end: Alignment.centerRight,
-                                  colors: [R.color.greenGradientTop, R.color.greenGradientBottom])),
-                          child: Center(
-                            child: Text(R.string.yes.tr(),
-                                style: TextStyle(
-                                    color: R.color.white,
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w600)),
+                  child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          flex: 1,
+                          child: GestureDetector(
+                            onTap: () {
+                              Navigator.pop(context);
+                            },
+                            child: Container(
+                                height: 48,
+                                width: 119,
+                                decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(200),
+                                    color: R.color.grayBorder),
+                                child: Center(
+                                  child: Text(R.string.cancel.tr(),
+                                      style: TextStyle(
+                                          color: R.color.textDark,
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w600)),
+                                )),
                           ),
                         ),
-                      ),
-                    ),
-                  ]),
+                        SizedBox(width: 8),
+                        Expanded(
+                          flex: 1,
+                          child: GestureDetector(
+                            onTap: () {
+                              final UserModel userInfo = AppSettings.userInfo!;
+                              updateUserInfo(
+                                userInfo.copyWith(
+                                  genderType: controller.selectedItem + 1,
+                                ),
+                              );
+                              Navigator.pop(context);
+                            },
+                            child: Container(
+                              height: 48,
+                              width: 119,
+                              decoration: BoxDecoration(
+                                  color: R.color.red,
+                                  borderRadius: BorderRadius.circular(200),
+                                  gradient: LinearGradient(
+                                      begin: Alignment.topLeft,
+                                      end: Alignment.centerRight,
+                                      colors: [
+                                        R.color.greenGradientTop,
+                                        R.color.greenGradientBottom
+                                      ])),
+                              child: Center(
+                                child: Text(R.string.yes.tr(),
+                                    style: TextStyle(
+                                        color: R.color.white,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w600)),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ]),
                 ),
               ],
             )));
@@ -1730,16 +1953,21 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                  Text(R.string.loai_benh.tr(),
-                      style: TextStyle(
-                          color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w600)),
-                  GestureDetector(
-                      child: Icon(Icons.close, color: R.color.color0xffBEC0C8),
-                      onTap: () {
-                        Navigator.pop(context);
-                      })
-                ]),
+                Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(R.string.loai_benh.tr(),
+                          style: TextStyle(
+                              color: R.color.textDark,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600)),
+                      GestureDetector(
+                          child:
+                              Icon(Icons.close, color: R.color.color0xffBEC0C8),
+                          onTap: () {
+                            Navigator.pop(context);
+                          })
+                    ]),
                 const SizedBox(height: 16),
                 Container(
                     height: 150,
@@ -1753,71 +1981,80 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                     )),
                 Container(
                   margin: const EdgeInsets.only(top: 16),
-                  child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                    Expanded(
-                      flex: 1,
-                      child: GestureDetector(
-                        onTap: () {
-                          Navigator.pop(context);
-                        },
-                        child: Container(
-                            height: 48,
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(200),
-                                color: R.color.grayBorder),
-                            child: Center(
-                              child: Text(R.string.cancel.tr(),
-                                  style: TextStyle(
-                                      color: R.color.textDark,
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600)),
-                            )),
-                      ),
-                    ),
-                    SizedBox(width: 8),
-                    Expanded(
-                      flex: 1,
-                      child: GestureDetector(
-                        onTap: () {
-                          String diabetesNameTmp = '';
-                          for (int i = 0; i < user.levelOfDiabetesRuleList!.length; i++) {
-                            if (Utils.parseStringToInt(user.levelOfDiabetesRuleList![i].value!) ==
-                                diabetesStatus) {
-                              diabetesNameTmp = user.levelOfDiabetesRuleList![i].text!;
-                              break;
-                            }
-                          }
-                          if (diabetesNameTmp == 'Đái tháo đường thai kỳ') {
-                            DiabetesInformation.showModal(
-                              context,
-                              onSuccess: () {
-                                _handleDiabetesUpdate();
-                              },
-                            );
-                          } else {
-                            _handleDiabetesUpdate();
-                          }
-                        },
-                        child: Container(
-                          height: 48,
-                          decoration: BoxDecoration(
-                              color: R.color.red,
-                              borderRadius: BorderRadius.circular(200),
-                              gradient: LinearGradient(
-                                  begin: Alignment.topLeft,
-                                  end: Alignment.centerRight,
-                                  colors: [R.color.greenGradientTop, R.color.greenGradientBottom])),
-                          child: Center(
-                            child: Text(R.string.yes.tr(),
-                                style: TextStyle(
-                                    color: R.color.white,
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w600)),
+                  child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          flex: 1,
+                          child: GestureDetector(
+                            onTap: () {
+                              Navigator.pop(context);
+                            },
+                            child: Container(
+                                height: 48,
+                                decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(200),
+                                    color: R.color.grayBorder),
+                                child: Center(
+                                  child: Text(R.string.cancel.tr(),
+                                      style: TextStyle(
+                                          color: R.color.textDark,
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w600)),
+                                )),
                           ),
                         ),
-                      ),
-                    ),
-                  ]),
+                        SizedBox(width: 8),
+                        Expanded(
+                          flex: 1,
+                          child: GestureDetector(
+                            onTap: () {
+                              String diabetesNameTmp = '';
+                              for (int i = 0;
+                                  i < user.levelOfDiabetesRuleList!.length;
+                                  i++) {
+                                if (Utils.parseStringToInt(user
+                                        .levelOfDiabetesRuleList![i].value!) ==
+                                    diabetesStatus) {
+                                  diabetesNameTmp =
+                                      user.levelOfDiabetesRuleList![i].text!;
+                                  break;
+                                }
+                              }
+                              if (diabetesNameTmp == 'Đái tháo đường thai kỳ') {
+                                DiabetesInformation.showModal(
+                                  context,
+                                  onSuccess: () {
+                                    _handleDiabetesUpdate();
+                                  },
+                                );
+                              } else {
+                                _handleDiabetesUpdate();
+                              }
+                            },
+                            child: Container(
+                              height: 48,
+                              decoration: BoxDecoration(
+                                  color: R.color.red,
+                                  borderRadius: BorderRadius.circular(200),
+                                  gradient: LinearGradient(
+                                      begin: Alignment.topLeft,
+                                      end: Alignment.centerRight,
+                                      colors: [
+                                        R.color.greenGradientTop,
+                                        R.color.greenGradientBottom
+                                      ])),
+                              child: Center(
+                                child: Text(R.string.yes.tr(),
+                                    style: TextStyle(
+                                        color: R.color.white,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w600)),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ]),
                 ),
               ],
             )));
@@ -1846,83 +2083,97 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                  Text(R.string.nam_phat_hien_benh.tr(),
-                      style: TextStyle(
-                          color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w600)),
-                  GestureDetector(
-                      child: Icon(Icons.close, color: R.color.color0xffBEC0C8),
-                      onTap: () {
-                        Navigator.pop(context);
-                      })
-                ]),
+                Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(R.string.nam_phat_hien_benh.tr(),
+                          style: TextStyle(
+                              color: R.color.textDark,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600)),
+                      GestureDetector(
+                          child:
+                              Icon(Icons.close, color: R.color.color0xffBEC0C8),
+                          onTap: () {
+                            Navigator.pop(context);
+                          })
+                    ]),
                 const SizedBox(height: 16),
                 Container(
                     height: 150,
                     width: width - 36,
                     child: DiabetesStatusDatePicker(
-                      year: DateTime.fromMillisecondsSinceEpoch((year ?? 0) * 1000).year,
+                      year: DateTime.fromMillisecondsSinceEpoch(
+                              (year ?? 0) * 1000)
+                          .year,
                       onChanged: (data) {
                         year = data;
                       },
                     )),
                 Container(
                   margin: const EdgeInsets.only(top: 16),
-                  child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                    Expanded(
-                      flex: 1,
-                      child: GestureDetector(
-                        onTap: () {
-                          Navigator.pop(context);
-                        },
-                        child: Container(
-                            height: 48,
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(200),
-                                color: R.color.grayBorder),
-                            child: Center(
-                              child: Text(R.string.cancel.tr(),
-                                  style: TextStyle(
-                                      color: R.color.textDark,
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600)),
-                            )),
-                      ),
-                    ),
-                    SizedBox(width: 8),
-                    Expanded(
-                      flex: 1,
-                      child: GestureDetector(
-                        onTap: () {
-                          final UserModel userInfo = AppSettings.userInfo!;
-                          updateUserInfo(
-                            userInfo.copyWith(
-                              diabetesDate: DateTime.utc(year ?? 0).millisecondsSinceEpoch ~/ 1000,
-                            ),
-                            isUpdateDiabetes: true,
-                          );
-                          Navigator.pop(context);
-                        },
-                        child: Container(
-                          height: 48,
-                          decoration: BoxDecoration(
-                              color: R.color.red,
-                              borderRadius: BorderRadius.circular(200),
-                              gradient: LinearGradient(
-                                  begin: Alignment.topLeft,
-                                  end: Alignment.centerRight,
-                                  colors: [R.color.greenGradientTop, R.color.greenGradientBottom])),
-                          child: Center(
-                            child: Text(R.string.yes.tr(),
-                                style: TextStyle(
-                                    color: R.color.white,
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w600)),
+                  child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          flex: 1,
+                          child: GestureDetector(
+                            onTap: () {
+                              Navigator.pop(context);
+                            },
+                            child: Container(
+                                height: 48,
+                                decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(200),
+                                    color: R.color.grayBorder),
+                                child: Center(
+                                  child: Text(R.string.cancel.tr(),
+                                      style: TextStyle(
+                                          color: R.color.textDark,
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w600)),
+                                )),
                           ),
                         ),
-                      ),
-                    ),
-                  ]),
+                        SizedBox(width: 8),
+                        Expanded(
+                          flex: 1,
+                          child: GestureDetector(
+                            onTap: () {
+                              final UserModel userInfo = AppSettings.userInfo!;
+                              updateUserInfo(
+                                userInfo.copyWith(
+                                  diabetesDate: DateTime.utc(year ?? 0)
+                                          .millisecondsSinceEpoch ~/
+                                      1000,
+                                ),
+                                isUpdateDiabetes: true,
+                              );
+                              Navigator.pop(context);
+                            },
+                            child: Container(
+                              height: 48,
+                              decoration: BoxDecoration(
+                                  color: R.color.red,
+                                  borderRadius: BorderRadius.circular(200),
+                                  gradient: LinearGradient(
+                                      begin: Alignment.topLeft,
+                                      end: Alignment.centerRight,
+                                      colors: [
+                                        R.color.greenGradientTop,
+                                        R.color.greenGradientBottom
+                                      ])),
+                              child: Center(
+                                child: Text(R.string.yes.tr(),
+                                    style: TextStyle(
+                                        color: R.color.white,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w600)),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ]),
                 ),
               ],
             )));
@@ -1935,7 +2186,8 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
       builder: (_) => CustomWeightPicker(
           callback: (weight) {
             if (weight <= 0) {
-              Message.showToastMessage(context, R.string.mes_weight_must_greater_than_zero.tr());
+              Message.showToastMessage(
+                  context, R.string.mes_weight_must_greater_than_zero.tr());
               return;
             }
             final UserModel userInfo = AppSettings.userInfo!;
@@ -1947,7 +2199,8 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
           },
           title: R.string.enter_weight.tr(),
           max: 180,
-          numberDefault: (AppSettings.userInfo!.weight == null || AppSettings.userInfo!.weight == 0
+          numberDefault: (AppSettings.userInfo!.weight == null ||
+                      AppSettings.userInfo!.weight == 0
                   ? 50
                   : AppSettings.userInfo!.weight)!
               .toInt(),
@@ -1963,7 +2216,8 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
       builder: (_) => CustomNumPicker(
           callback: (data) {
             if (data == null || data <= 0) {
-              Message.showToastMessage(context, R.string.mes_height_must_greater_than_zero.tr());
+              Message.showToastMessage(
+                  context, R.string.mes_height_must_greater_than_zero.tr());
               return;
             }
             final UserModel userInfo = AppSettings.userInfo!;
@@ -1975,7 +2229,8 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
           },
           title: R.string.enter_height.tr(),
           max: 250,
-          numberDefault: (AppSettings.userInfo!.height == null || AppSettings.userInfo!.height == 0
+          numberDefault: (AppSettings.userInfo!.height == null ||
+                      AppSettings.userInfo!.height == 0
                   ? 150
                   : AppSettings.userInfo!.height)!
               .toInt(),
@@ -1987,7 +2242,8 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
     final width = MediaQuery.of(context).size.width;
     final TextEditingController textEditingController = TextEditingController();
     if (isPhoneNumber2) {
-      textEditingController.text = AppSettings.userInfo?.secondPhoneNumber ?? '';
+      textEditingController.text =
+          AppSettings.userInfo?.secondPhoneNumber ?? '';
     } else {
       textEditingController.text = AppSettings.userInfo?.phoneNumber ?? '';
     }
@@ -1999,16 +2255,24 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                  Text(isPhoneNumber2 ? R.string.phone_number_2.tr() : R.string.phone_number_1.tr(),
-                      style: TextStyle(
-                          color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w600)),
-                  GestureDetector(
-                      child: Icon(Icons.close, color: R.color.color0xffBEC0C8),
-                      onTap: () {
-                        Navigator.pop(context);
-                      })
-                ]),
+                Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                          isPhoneNumber2
+                              ? R.string.phone_number_2.tr()
+                              : R.string.phone_number_1.tr(),
+                          style: TextStyle(
+                              color: R.color.textDark,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600)),
+                      GestureDetector(
+                          child:
+                              Icon(Icons.close, color: R.color.color0xffBEC0C8),
+                          onTap: () {
+                            Navigator.pop(context);
+                          })
+                    ]),
                 const SizedBox(height: 16),
                 Container(
                     height: 54,
@@ -2023,14 +2287,17 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                           fillColor: R.color.textDark,
                           counterText: '',
                           enabledBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: R.color.grayComponentBorder, width: 1.0),
+                            borderSide: BorderSide(
+                                color: R.color.grayComponentBorder, width: 1.0),
                             borderRadius: BorderRadius.circular(10),
                           ),
                           focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: R.color.mainColor, width: 1.0),
+                            borderSide: BorderSide(
+                                color: R.color.mainColor, width: 1.0),
                             borderRadius: BorderRadius.circular(10),
                           ),
-                          contentPadding: const EdgeInsets.only(top: 0, left: 16, right: 16),
+                          contentPadding: const EdgeInsets.only(
+                              top: 0, left: 16, right: 16),
                           hintText: isPhoneNumber2
                               ? R.string.enter_phone_number_2.tr()
                               : R.string.enter_phone_number_1.tr(),
@@ -2038,78 +2305,84 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                         onChanged: (value) {})),
                 Container(
                   margin: const EdgeInsets.only(top: 16),
-                  child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                    Expanded(
-                      flex: 1,
-                      child: GestureDetector(
-                        onTap: () {
-                          Navigator.pop(context);
-                        },
-                        child: Container(
-                            height: 48,
-                            width: 119,
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(200),
-                                color: R.color.grayBorder),
-                            child: Center(
-                              child: Text(R.string.cancel.tr(),
-                                  style: TextStyle(
-                                      color: R.color.textDark,
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600)),
-                            )),
-                      ),
-                    ),
-                    SizedBox(width: 8),
-                    Expanded(
-                      flex: 1,
-                      child: GestureDetector(
-                        onTap: () {
-                          final phone = textEditingController.text;
-                          if (phone.isEmpty) {
-                            Message.showToastMessage(
-                                context, R.string.ban_chua_nhap_so_dien_thoai.tr());
-                            return;
-                          } else {
-                            final UserModel userInfo = AppSettings.userInfo!;
-                            if (isPhoneNumber2) {
-                              updateUserInfo(
-                                userInfo.copyWith(
-                                  secondPhoneNumber: phone,
-                                ),
-                              );
-                            } else {
-                              updateUserInfo(
-                                userInfo.copyWith(
-                                  phoneNumber: phone,
-                                ),
-                              );
-                            }
-
-                            Navigator.pop(context);
-                          }
-                        },
-                        child: Container(
-                          height: 48,
-                          width: 119,
-                          decoration: BoxDecoration(
-                              color: R.color.red,
-                              borderRadius: BorderRadius.circular(200),
-                              gradient: LinearGradient(
-                                  begin: Alignment.topLeft,
-                                  end: Alignment.centerRight,
-                                  colors: [R.color.greenGradientTop, R.color.greenGradientBottom])),
-                          child: Center(
-                            child: Text(R.string.save.tr(),
-                                style: TextStyle(
-                                    color: R.color.white,
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w600)),
+                  child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          flex: 1,
+                          child: GestureDetector(
+                            onTap: () {
+                              Navigator.pop(context);
+                            },
+                            child: Container(
+                                height: 48,
+                                width: 119,
+                                decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(200),
+                                    color: R.color.grayBorder),
+                                child: Center(
+                                  child: Text(R.string.cancel.tr(),
+                                      style: TextStyle(
+                                          color: R.color.textDark,
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w600)),
+                                )),
                           ),
                         ),
-                      ),
-                    ),
-                  ]),
+                        SizedBox(width: 8),
+                        Expanded(
+                          flex: 1,
+                          child: GestureDetector(
+                            onTap: () {
+                              final phone = textEditingController.text;
+                              if (phone.isEmpty) {
+                                Message.showToastMessage(context,
+                                    R.string.ban_chua_nhap_so_dien_thoai.tr());
+                                return;
+                              } else {
+                                final UserModel userInfo =
+                                    AppSettings.userInfo!;
+                                if (isPhoneNumber2) {
+                                  updateUserInfo(
+                                    userInfo.copyWith(
+                                      secondPhoneNumber: phone,
+                                    ),
+                                  );
+                                } else {
+                                  updateUserInfo(
+                                    userInfo.copyWith(
+                                      phoneNumber: phone,
+                                    ),
+                                  );
+                                }
+
+                                Navigator.pop(context);
+                              }
+                            },
+                            child: Container(
+                              height: 48,
+                              width: 119,
+                              decoration: BoxDecoration(
+                                  color: R.color.red,
+                                  borderRadius: BorderRadius.circular(200),
+                                  gradient: LinearGradient(
+                                      begin: Alignment.topLeft,
+                                      end: Alignment.centerRight,
+                                      colors: [
+                                        R.color.greenGradientTop,
+                                        R.color.greenGradientBottom
+                                      ])),
+                              child: Center(
+                                child: Text(R.string.save.tr(),
+                                    style: TextStyle(
+                                        color: R.color.white,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w600)),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ]),
                 ),
               ],
             )));
@@ -2161,7 +2434,8 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
   }
 
   showActionFilter(
-      {required BuildContext context, required Widget Function(BuildContext) builder}) {
+      {required BuildContext context,
+      required Widget Function(BuildContext) builder}) {
     showModalBottomSheet(
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(
@@ -2190,7 +2464,9 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
     bool isTitleFromSelectedCategory = true,
     bool isRequiredSelection = true,
   }) {
-    title = isTitleFromSelectedCategory ? getTitleFromSelectedList(selectedList) : title;
+    title = isTitleFromSelectedCategory
+        ? getTitleFromSelectedList(selectedList)
+        : title;
     return GestureDetector(
       onTap: () {
         if (isShowSelectedDialog) {
@@ -2205,7 +2481,8 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                   isMultipleChoice: isMultipleChoice,
                   onSelected: (typeList) {
                     selectedList = typeList;
-                    var selectedIndexList = getSelectedIndexList(elementList, typeList);
+                    var selectedIndexList =
+                        getSelectedIndexList(elementList, typeList);
                     title = getTitleFromSelectedList(typeList);
                     //  setState(() {});
 
@@ -2224,7 +2501,8 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
       child: Container(
         color: R.color.transparent,
         padding: const EdgeInsets.only(top: 8, bottom: 8),
-        child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+        child:
+            Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
           Expanded(
             child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
               if (image != null)
@@ -2235,22 +2513,26 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                 ),
               const SizedBox(width: 12),
               Expanded(
-                child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                  Text(
-                    title,
-                    style:
-                        TextStyle(color: R.color.black, fontSize: 16, fontWeight: FontWeight.w400),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    subTitle,
-                    style: TextStyle(
-                      color: R.color.captionColorGray,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w400,
-                    ),
-                  )
-                ]),
+                child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        title,
+                        style: TextStyle(
+                            color: R.color.black,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w400),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        subTitle,
+                        style: TextStyle(
+                          color: R.color.captionColorGray,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w400,
+                        ),
+                      )
+                    ]),
               )
             ]),
           ),
@@ -2287,7 +2569,8 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
     return selectedValueList;
   }
 
-  List<int> getSelectedIndexList(List<String> elementList, List<String> selectedList) {
+  List<int> getSelectedIndexList(
+      List<String> elementList, List<String> selectedList) {
     List<int> selectedIndexList = [];
     for (var selectedItem in selectedList) {
       for (int j = 0; j < elementList.length; j++) {
@@ -2314,7 +2597,9 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
   int? getSelectedIndexDiabetes() {
     var user = AppSettings.userInfo;
     if (user?.accountRule?.accountRuleTypeMappings != null) {
-      for (int i = 0; i < user!.accountRule!.accountRuleTypeMappings!.length; i++) {
+      for (int i = 0;
+          i < user!.accountRule!.accountRuleTypeMappings!.length;
+          i++) {
         if (user.accountRule!.accountRuleTypeMappings![i].ruleType == 10) {
           return (user.accountRule!.accountRuleTypeMappings![i].value ?? 0);
         }

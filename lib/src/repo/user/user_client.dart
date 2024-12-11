@@ -162,6 +162,7 @@ class UserClient extends FetchClient {
     try {
       var json = jsonEncode(userModel.toJson());
       prefs.setString('user', json);
+      _setUserProperties(userModel);
     } catch (error) {}
   }
 
@@ -174,51 +175,69 @@ class UserClient extends FetchClient {
     if (userJson != null) {
       try {
         user = UserModel.fromJson(jsonDecode(userJson));
-        final CategoryItemUserModel levelOfDiabetesRuleList =
-            user.levelOfDiabetesRuleList!.firstWhere(
-                (element) => element.value == "${user?.diabetes?.status}");
-        List<String> interestNameList = [];
-
-        user.interestRuleList!.forEach((element) {
-          if (element.selected == true) {
-            interestNameList.add(element.text ?? "");
-          }
-        });
-
-        DateTime dateOfBirth =
-            DateTime.fromMillisecondsSinceEpoch(user.dateOfBirth! * 1000);
-
-        DateTime diabetesDate =
-            DateTime.fromMillisecondsSinceEpoch(user.diabetes!.date! * 1000);
-
-        TrackingManager.analytics.setUserId(id: user.id);
-        TrackingManager.analytics
-            .setUserProperty(name: 'gender', value: user.gender);
-        TrackingManager.analytics
-            .setUserProperty(name: 'referral_code', value: user.shareRefCode);
-        TrackingManager.analytics.setUserProperty(
-            name: 'interest', value: interestNameList.join('_'));
-        TrackingManager.analytics
-            .setUserProperty(name: 'age', value: "${user.age}");
-        TrackingManager.analytics.setUserProperty(
-            name: 'date_of_birth',
-            value: DateFormat('dd/MM/yyyy').format(dateOfBirth));
-        TrackingManager.analytics.setUserProperty(
-            name: 'pathological', value: levelOfDiabetesRuleList.text);
-        TrackingManager.analytics.setUserProperty(
-            name: 'pathological_year',
-            value: DateFormat('yyyy').format(diabetesDate));
-        TrackingManager.analytics
-            .setUserProperty(name: 'membership', value: user.packageName);
-        TrackingManager.analytics.setUserProperty(
-            name: 'referral_agency',
-            value: user.nameOfAgency ?? user.nameOfDoctor);
-        TrackingManager.analytics.setUserProperty(
-            name: 'google_connected',
-            value: user.isLinkedGoogle == true ? "Connected" : "None");
       } catch (error) {}
     }
+
     return user;
+  }
+
+  _setUserProperties(UserModel user) async {
+    final storageUser = await getUserPreferences();
+    if (storageUser.hashCode == user.hashCode) return;
+
+    try {
+      final CategoryItemUserModel levelOfDiabetesRuleList = user
+          .levelOfDiabetesRuleList!
+          .firstWhere((element) => element.value == "${user.diabetes?.status}");
+      List<String> interestNameList = [];
+
+      user.interestRuleList!.forEach((element) {
+        if (element.selected == true) {
+          interestNameList.add(element.text ?? "");
+        }
+      });
+
+      // DateTime dateOfBirth =
+      //     DateTime.fromMillisecondsSinceEpoch(user.dateOfBirth! * 1000);
+
+      DateTime diabetesDate =
+          DateTime.fromMillisecondsSinceEpoch(user.diabetes!.date! * 1000);
+
+      TrackingManager.setUserId(user.id!);
+      TrackingManager
+          .setUserProperty(name: 'gender', value: user.gender ?? '');
+      TrackingManager
+          .setUserProperty(name: 'referral_code', value: user.shareRefCode ?? '');
+      // TrackingManager.setUserProperty(
+      //     name: 'interest', value: interestNameList.join('_'));
+      TrackingManager
+          .setUserProperty(name: 'age', value: "${user.age}");
+      // TrackingManager.setUserProperty(
+      //     name: 'date_of_birth',
+      //     value: DateFormat('dd/MM/yyyy').format(dateOfBirth));
+      TrackingManager.setUserProperty(
+          name: 'pathological', value: levelOfDiabetesRuleList.text ?? 'None');
+      TrackingManager.setUserProperty(
+          name: 'pathological_year',
+          value: DateFormat('yyyy').format(diabetesDate));
+      TrackingManager
+          .setUserProperty(name: 'membership', value: user.packageName ?? 'Free');
+      // TrackingManager.setUserProperty(
+      //     name: 'referral_agency',
+      //     value: user.nameOfAgency ?? user.nameOfDoctor);
+      // TrackingManager.setUserProperty(
+      //     name: 'google_connected',
+      //     value: user.isLinkedGoogle == true ? "Connected" : "None");
+      TrackingManager.setUserProperty(
+          name: 'login_method',
+          value: user.isLinkedFacebook == true
+              ? 'facebook'
+              : user.isLinkedGoogle == true
+                  ? 'google'
+                  : user.isMobileAccount == true
+                      ? 'phone'
+                      : 'zalo');
+    } catch (error) {}
   }
 
   // Future<CategoryUserModel?> fetchCategoryItems() async {

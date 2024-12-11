@@ -21,10 +21,12 @@ class ConnectionInstructionsController extends StatefulWidget {
   final bool? connectOnly;
   ConnectionInstructionsController({@required this.connectOnly});
   @override
-  State<ConnectionInstructionsController> createState() => _ConnectionInstructionsControllerState();
+  State<ConnectionInstructionsController> createState() =>
+      _ConnectionInstructionsControllerState();
 }
 
-class _ConnectionInstructionsControllerState extends State<ConnectionInstructionsController> {
+class _ConnectionInstructionsControllerState
+    extends State<ConnectionInstructionsController> {
   String userManual = '';
 
   Timer? _timer;
@@ -40,7 +42,7 @@ class _ConnectionInstructionsControllerState extends State<ConnectionInstruction
   void _initSDK() async {
     // listen failed connect
     final bloc = BlocProvider.of<NiproBloc>(context);
-    _subscription = bloc.stream.listen((state) {
+    _subscription = bloc.stream.listen((state) async {
       if (state is NiproStateFailure) {
         BotToast.closeAllLoading();
         _showDialogConnectFaild(context);
@@ -103,14 +105,17 @@ class _ConnectionInstructionsControllerState extends State<ConnectionInstruction
       backgroundColor: R.color.backgroundColor,
       body: Container(
         decoration: BoxDecoration(
-            image: DecorationImage(image: AssetImage(R.drawable.bg_splash), fit: BoxFit.cover)),
+            image: DecorationImage(
+                image: AssetImage(R.drawable.bg_splash), fit: BoxFit.cover)),
         child: Column(
           children: [
             CustomAppBar(
                 backgroundColor: R.color.transparent,
                 title: Text('Hướng dẫn kết nối',
                     style: TextStyle(
-                        fontSize: 18, fontWeight: FontWeight.w600, color: R.color.textDark)),
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
+                        color: R.color.textDark)),
                 leadingIcon: IconButton(
                     splashColor: R.color.transparent,
                     highlightColor: R.color.transparent,
@@ -120,7 +125,8 @@ class _ConnectionInstructionsControllerState extends State<ConnectionInstruction
                     })),
             Expanded(
               child: ListView(
-                  keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+                  keyboardDismissBehavior:
+                      ScrollViewKeyboardDismissBehavior.onDrag,
                   padding: EdgeInsets.only(top: 16),
                   children: [
                     Timeline.tileBuilder(
@@ -131,7 +137,8 @@ class _ConnectionInstructionsControllerState extends State<ConnectionInstruction
                           itemCount: 3,
                           contentsBuilder: (context, index) {
                             return Padding(
-                              padding: EdgeInsets.only(left: 10, bottom: index != 2 ? 32 : 0),
+                              padding: EdgeInsets.only(
+                                  left: 10, bottom: index != 2 ? 32 : 0),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 mainAxisAlignment: MainAxisAlignment.center,
@@ -153,7 +160,9 @@ class _ConnectionInstructionsControllerState extends State<ConnectionInstruction
                                           : index == 1
                                               ? 'Để ứng dụng DiaB có thể nhận dạng và kết nối máy.'
                                               : 'Sau khi bấm “Kết Nối” app DiaB sẽ hiển thị danh sách các thiết bị xung quanh có bật Bluetooth. Vui lòng chọn thiết bị đo đường huyết bạn muốn kết nối.',
-                                      style: TextStyle(color: Color(0xff8E8E8E), fontSize: 14)),
+                                      style: TextStyle(
+                                          color: Color(0xff8E8E8E),
+                                          fontSize: 14)),
                                   index != 0
                                       ? SizedBox()
                                       : Padding(
@@ -161,22 +170,30 @@ class _ConnectionInstructionsControllerState extends State<ConnectionInstruction
                                           child: GestureDetector(
                                             onTap: () async {
                                               String blueToothPermission =
-                                                  await BlocProvider.of<NiproBloc>(context)
+                                                  await BlocProvider.of<
+                                                          NiproBloc>(context)
                                                       .requestPermission();
 
-                                              if (blueToothPermission == 'ble_already') {
+                                              if (blueToothPermission ==
+                                                  'ble_already') {
                                                 Message.showToastMessage(
-                                                    context, 'Bluetooth đã được bật');
+                                                    context,
+                                                    'Bluetooth đã được bật');
                                               } else {
-                                                Settings.AppSettings.openAppSettings(
-                                                    type: Settings.AppSettingsType.bluetooth);
+                                                Settings.AppSettings
+                                                    .openAppSettings(
+                                                        type: Settings
+                                                            .AppSettingsType
+                                                            .bluetooth);
                                               }
                                             },
                                             child: Text('Bật Bluetooth',
                                                 style: TextStyle(
-                                                    color: R.color.greenGradientTop,
+                                                    color: R
+                                                        .color.greenGradientTop,
                                                     fontSize: 14,
-                                                    fontWeight: FontWeight.bold)),
+                                                    fontWeight:
+                                                        FontWeight.bold)),
                                           ),
                                         )
                                 ],
@@ -201,7 +218,8 @@ class _ConnectionInstructionsControllerState extends State<ConnectionInstruction
                           //itemExtentBuilder: (_, __) => 80,
                           connectorBuilder: (_, index, __) {
                             return SolidLineConnector(
-                                color: R.color.greenGradientTop, thickness: 0.75);
+                                color: R.color.greenGradientTop,
+                                thickness: 0.75);
                           }),
                     ),
                     SizedBox(height: 32),
@@ -209,38 +227,45 @@ class _ConnectionInstructionsControllerState extends State<ConnectionInstruction
                       padding: EdgeInsets.all(12),
                       margin: EdgeInsets.only(left: 16, right: 16),
                       decoration: BoxDecoration(
-                          color: Colors.white, borderRadius: BorderRadius.circular(8)),
-                      child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                        Image.asset(R.drawable.ic_lamp_charge, height: 24),
-                        SizedBox(width: 10),
-                        Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                          Text('Bạn chưa biết cách bật Bluetooth?',
-                              style: TextStyle(color: Colors.black, fontSize: 16)),
-                          SizedBox(height: 8),
-                          GestureDetector(
-                            onTap: () async {
-                              showDialog(
-                                barrierColor: R.color.color0xff003F38.withOpacity(0.8),
-                                useSafeArea: false,
-                                context: context,
-                                builder: (_) => DetailDescription(
-                                    input: true,
-                                    data: ShortGuiModel(
-                                        content1: userManual,
-                                        content2: userManual,
-                                        content3: userManual,
-                                        content4: userManual),
-                                    title: 'Hướng dẫn bật Bluetooth'),
-                              );
-                            },
-                            child: Text('Hướng dẫn',
-                                style: TextStyle(
-                                    color: R.color.greenGradientTop,
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.bold)),
-                          )
-                        ])
-                      ]),
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(8)),
+                      child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Image.asset(R.drawable.ic_lamp_charge, height: 24),
+                            SizedBox(width: 10),
+                            Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text('Bạn chưa biết cách bật Bluetooth?',
+                                      style: TextStyle(
+                                          color: Colors.black, fontSize: 16)),
+                                  SizedBox(height: 8),
+                                  GestureDetector(
+                                    onTap: () async {
+                                      showDialog(
+                                        barrierColor: R.color.color0xff003F38
+                                            .withOpacity(0.8),
+                                        useSafeArea: false,
+                                        context: context,
+                                        builder: (_) => DetailDescription(
+                                            input: true,
+                                            data: ShortGuiModel(
+                                                content1: userManual,
+                                                content2: userManual,
+                                                content3: userManual,
+                                                content4: userManual),
+                                            title: 'Hướng dẫn bật Bluetooth'),
+                                      );
+                                    },
+                                    child: Text('Hướng dẫn',
+                                        style: TextStyle(
+                                            color: R.color.greenGradientTop,
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.bold)),
+                                  )
+                                ])
+                          ]),
                     )
                   ]),
             ),
@@ -257,11 +282,16 @@ class _ConnectionInstructionsControllerState extends State<ConnectionInstruction
                         gradient: LinearGradient(
                             begin: Alignment.topLeft,
                             end: Alignment.centerRight,
-                            colors: [R.color.greenGradientTop, R.color.greenGradientBottom])),
+                            colors: [
+                              R.color.greenGradientTop,
+                              R.color.greenGradientBottom
+                            ])),
                     child: Center(
                         child: Text('Kết nối',
                             style: TextStyle(
-                                color: R.color.white, fontWeight: FontWeight.w600, fontSize: 16)))),
+                                color: R.color.white,
+                                fontWeight: FontWeight.w600,
+                                fontSize: 16)))),
               ),
             ),
           ],
@@ -271,7 +301,8 @@ class _ConnectionInstructionsControllerState extends State<ConnectionInstruction
   }
 
   void _showPopupStartScan() async {
-    String? anyError = await BlocProvider.of<NiproBloc>(context).checkAndRequestPermission();
+    String? anyError =
+        await BlocProvider.of<NiproBloc>(context).checkAndRequestPermission();
 
     if (anyError != null) {
       Message.showToastMessage(context, anyError);
@@ -290,20 +321,29 @@ class _ConnectionInstructionsControllerState extends State<ConnectionInstruction
     );
     if (result != null && result is NiproDevice) {
       BotToast.showLoading();
-      BlocProvider.of<NiproBloc>(context)
-          .add(NiproEventConnectDevice(device: result, connectOnly: widget.connectOnly!));
+      BlocProvider.of<NiproBloc>(context).add(NiproEventConnectDevice(
+          device: result, connectOnly: widget.connectOnly!));
     }
     _stopScan();
   }
 
-  void _showDialogConnectFaild(BuildContext context) {
+  void _showDialogConnectFaild(BuildContext context) async {
+    await TrackingManager.trackEvent(
+      'glucose_pair',
+      'kpi_glucose_device',
+      params: {
+        'status': 'fail',
+        'error_message': 'device not connect',
+      },
+    );
     showDialog(
       context: context,
       builder: (context) {
         return Container(
           child: AlertDialog(
               contentPadding: EdgeInsets.all(0),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(10))),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(10))),
               content: Container(
                 padding: EdgeInsets.all(16),
                 child: Column(
@@ -315,13 +355,17 @@ class _ConnectionInstructionsControllerState extends State<ConnectionInstruction
                       child: Text('Kết nối thất bại',
                           textAlign: TextAlign.center,
                           style: TextStyle(
-                              color: R.color.textDark, fontSize: 20, fontWeight: FontWeight.w700)),
+                              color: R.color.textDark,
+                              fontSize: 20,
+                              fontWeight: FontWeight.w700)),
                     ),
                     Padding(
                       padding: const EdgeInsets.only(top: 16.0),
-                      child: Text('Bạn vui lòng bật Bluetooth của thiết bị lên để kết nối.',
+                      child: Text(
+                          'Bạn vui lòng bật Bluetooth của thiết bị lên để kết nối.',
                           textAlign: TextAlign.center,
-                          style: TextStyle(color: Color(0xff8E8E8E), fontSize: 16)),
+                          style: TextStyle(
+                              color: Color(0xff8E8E8E), fontSize: 16)),
                     ),
                     GestureDetector(
                       onTap: () {
@@ -336,7 +380,10 @@ class _ConnectionInstructionsControllerState extends State<ConnectionInstruction
                               gradient: LinearGradient(
                                   begin: Alignment.topLeft,
                                   end: Alignment.centerRight,
-                                  colors: [R.color.greenGradientTop, R.color.greenGradientBottom])),
+                                  colors: [
+                                    R.color.greenGradientTop,
+                                    R.color.greenGradientBottom
+                                  ])),
                           child: Center(
                               child: Text('Đóng',
                                   style: TextStyle(

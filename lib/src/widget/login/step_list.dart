@@ -193,13 +193,14 @@ class _StepListControllerState extends State<StepListController>
   checkReferralCode() async {
     final String? referalCode = BranchioLinkConfig.instance.referalCode;
     if (referalCode != null) {
-      await Navigator.pushNamed(
-        context,
-        NavigatorName.register,
-        arguments: {
-          'referalCode': referalCode,
-        },
-      );
+      print('[QR] checkReferralCode: $referalCode');
+      // await Navigator.pushNamed(
+      //   context,
+      //   NavigatorName.register,
+      //   arguments: {
+      //     'referalCode': referalCode,
+      //   },
+      // );
     }
   }
 
@@ -256,15 +257,15 @@ class _StepListControllerState extends State<StepListController>
                       height: 290.h,
                       child: PageView.builder(
                           onPageChanged: (index) async {
-                            final name = data[index]['name']!;
-                            await TrackingManager.analytics.logEvent(
-                                name: 'component_clicked',
-                                parameters: {
-                                  "screen_name": 'welcome',
-                                  'object_index': index,
-                                  'object_title': name,
-                                  'component_name': 'slider_welcome',
-                                });
+                            // final name = data[index]['name']!;
+                            // await TrackingManager.analytics.logEvent(
+                            //     name: 'component_clicked',
+                            //     parameters: {
+                            //       "screen_name": 'welcome',
+                            //       'object_index': index,
+                            //       'object_title': name,
+                            //       'component_name': 'slider_welcome',
+                            //     });
                             setState(() {
                               currentPage = index;
                             });
@@ -318,7 +319,16 @@ class _StepListControllerState extends State<StepListController>
                                 borderRadius: BorderRadius.circular(200),
                               ),
                               child: GestureDetector(
-                                  onTap: () => loginZalo(),
+                                  onTap: () async {
+                                    await TrackingManager.trackEvent(
+                                      'login_select',
+                                      'welcome',
+                                      params: {
+                                        'method': 'zalo',
+                                      },
+                                    );
+                                    loginZalo();
+                                  },
                                   child: Row(
                                     children: [
                                       SvgPicture.asset(
@@ -388,11 +398,11 @@ class _StepListControllerState extends State<StepListController>
                                 //     arguments: {
                                 //       'phone': '0909202394',
                                 //     });
-                                await TrackingManager.analytics.logEvent(
-                                  name: 'cta_button_clicked',
-                                  parameters: {
-                                    "screen_name": 'welcome',
-                                    'cta_button_name': 'cta_welcome_login',
+                                await TrackingManager.trackEvent(
+                                  'login_select',
+                                  'welcome',
+                                  params: {
+                                    'method': 'phone',
                                   },
                                 );
 
@@ -489,10 +499,10 @@ class _StepListControllerState extends State<StepListController>
   }
 
   void _loginSuccess(String loginFrom) async {
-    await TrackingManager.analytics.logEvent(
-      name: 'login',
-      parameters: {
-        "screen_name": 'login',
+    await TrackingManager.trackEvent(
+      'login',
+      'login',
+      params: {
         'method': loginFrom.toLowerCase(),
       },
     );
@@ -553,6 +563,13 @@ class _StepListControllerState extends State<StepListController>
           zaloAccount: account,
         );
       } else {
+        await TrackingManager.trackEvent(
+          'login',
+          'welcome',
+          params: {
+            'method': 'zalo',
+          },
+        );
         _loginSuccess("Zalo");
         BotToast.closeAllLoading();
         LoginRouting().navigateToHome(context);

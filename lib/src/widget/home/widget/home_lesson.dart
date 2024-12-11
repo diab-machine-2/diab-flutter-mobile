@@ -66,7 +66,7 @@ class HomeLesson extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 4),
                   child: SizedBox(
                     height: 32,
                     child: Text(
@@ -82,8 +82,6 @@ class HomeLesson extends StatelessWidget {
                     ),
                   ),
                 ),
-
-                const SizedBox(height: 4.0),
 
                 // Category
                 Row(

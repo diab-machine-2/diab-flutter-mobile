@@ -122,14 +122,14 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController>
       screenName: "kpi_motion_add",
       screenClass: "AddExercrisesController",
     );
-    await TrackingManager.analytics.logEvent(
-      name: 'kpi_add_begin',
-      parameters: {
-        "screen_name": 'kpi_motion_add',
-        'object_type': 'kpi_motion',
-        'object_title': 'Chỉ số vận động'
-      },
-    );
+    // await TrackingManager.analytics.logEvent(
+    //   name: 'kpi_add_begin',
+    //   parameters: {
+    //     "screen_name": 'kpi_motion_add',
+    //     'object_type': 'kpi_motion',
+    //     'object_title': 'Chỉ số vận động'
+    //   },
+    // );
     AppSettings.currentScreenName = 'kpi_motion_add';
   }
 
@@ -1219,14 +1219,14 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController>
           selectedCategory,
           paths);
       if (result == true) {
-        await TrackingManager.analytics.logEvent(
-          name: 'kpi_add_success',
-          parameters: {
-            "screen_name": 'kpi_motion_add',
-            'object_type': 'kpi_motion',
-            'object_title': 'Chỉ số vận động'
-          },
-        );
+        // await TrackingManager.analytics.logEvent(
+        //   name: 'kpi_add_success',
+        //   parameters: {
+        //     "screen_name": 'kpi_motion_add',
+        //     'object_type': 'kpi_motion',
+        //     'object_title': 'Chỉ số vận động'
+        //   },
+        // );
         //  if(widget.goalId != null && widget.goalId?.isNotEmpty == true){
         // var totalDuration = 0.0;
         // for(var item in selectedCategory){
