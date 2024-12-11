@@ -23,7 +23,8 @@ part 'nipro_bloc_state.dart';
 
 class NiproBloc extends Bloc<NiproEvent, NiproState> {
   final MethodChannel _channel = const MethodChannel('iBleSdk');
-  final EventChannel _messageChannel = const EventChannel('eventChannelStreamiBle');
+  final EventChannel _messageChannel =
+      const EventChannel('eventChannelStreamiBle');
   StreamSubscription? _subscription;
   bool _initialized = false;
 
@@ -44,7 +45,8 @@ class NiproBloc extends Bloc<NiproEvent, NiproState> {
       final savedDevices = AppSettings.getNiproDevices();
       if (savedDevices.length > 0) {
         _savedDevices.addAll(savedDevices
-            .map((e) => NiproDevice(address: e['address']!, name: e['name']!, saved: true))
+            .map((e) => NiproDevice(
+                address: e['address']!, name: e['name']!, saved: true))
             .toList());
         _devices.addAll(_savedDevices);
         yield NiproStateListDevice(devices: _devices, isScanning: false);
@@ -96,7 +98,8 @@ class NiproBloc extends Bloc<NiproEvent, NiproState> {
     _initialized = true;
 
     // do init
-    _subscription = _messageChannel.receiveBroadcastStream().listen((result) async {
+    _subscription =
+        _messageChannel.receiveBroadcastStream().listen((result) async {
       final String event = result['event'];
       final mapData = result['data'];
       List<Map<String, String>> data = [];
@@ -122,14 +125,17 @@ class NiproBloc extends Bloc<NiproEvent, NiproState> {
               );
               if (index != -1) {
                 _isAutoConnectFoundDevice = true;
-                add(NiproEventConnectDevice(device: _savedDevices[index], connectOnly: false));
+                add(NiproEventConnectDevice(
+                    device: _savedDevices[index], connectOnly: false));
               }
             }
             return;
           }
           // parse to NiproDevice
           for (int i = 0; i < data.length; i++) {
-            if (_devices.indexWhere((element) => element.address == data[i]['address']) == -1) {
+            if (_devices.indexWhere(
+                    (element) => element.address == data[i]['address']) ==
+                -1) {
               _devices.add(NiproDevice(
                 address: data[i]['address']!,
                 name: data[i]['name']!,
@@ -150,11 +156,13 @@ class NiproBloc extends Bloc<NiproEvent, NiproState> {
           // store as saved device
           if (_connectedDevice != null) {
             final savedDevices = AppSettings.getNiproDevices();
-            if (savedDevices
-                    .indexWhere((element) => element['address'] == _connectedDevice!.address) ==
+            if (savedDevices.indexWhere((element) =>
+                    element['address'] == _connectedDevice!.address) ==
                 -1) {
-              savedDevices
-                  .add({'address': _connectedDevice!.address, 'name': _connectedDevice!.name});
+              savedDevices.add({
+                'address': _connectedDevice!.address,
+                'name': _connectedDevice!.name
+              });
               AppSettings.saveNiproDevices(savedDevices);
               _savedDevices.insert(0, _connectedDevice!);
             }
@@ -169,7 +177,8 @@ class NiproBloc extends Bloc<NiproEvent, NiproState> {
           }).toList();
           if (state is NiproStateDeviceData) {
             final currentData = (state as NiproStateDeviceData).glucoseData;
-            emit(NiproStateDeviceData(glucoseData: [...currentData, ...glucoseData]));
+            emit(NiproStateDeviceData(
+                glucoseData: [...currentData, ...glucoseData]));
           } else {
             emit(NiproStateDeviceData(glucoseData: glucoseData));
           }
@@ -216,10 +225,18 @@ class NiproBloc extends Bloc<NiproEvent, NiproState> {
   }
 
   Future<bool> submitData(List<GlucoseData> input) {
-    return GlucoseClient().postGlucoseInputs(input.map((e) => e.toJson()).toList());
+    return GlucoseClient()
+        .postGlucoseInputs(input.map((e) => e.toJson()).toList());
   }
 
-  void showListData(BuildContext context, List<GlucoseData> glucoseData) {
+  void showListData(BuildContext context, List<GlucoseData> glucoseData) async {
+    await TrackingManager.trackEvent(
+      'glucose_pair',
+      'kpi_glucose_device',
+      params: {
+        'status': 'success',
+      },
+    );
     showModalBottomSheet(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(15)),
@@ -280,7 +297,8 @@ class NiproBloc extends Bloc<NiproEvent, NiproState> {
           fallBackNavigate();
         } else if (state is NiproStateDeviceData) {
           haveDiscoverData = true;
-          niproBloc.showListData(navigatorKey.currentContext!, state.glucoseData);
+          niproBloc.showListData(
+              navigatorKey.currentContext!, state.glucoseData);
         }
       });
 

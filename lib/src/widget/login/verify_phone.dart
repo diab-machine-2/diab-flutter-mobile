@@ -258,13 +258,9 @@ class _VerifyPhoneControllerState extends State<VerifyPhoneController> {
                               SizedBox(height: 8),
                               GestureDetector(
                                 onTap: () async {
-                                  await TrackingManager.analytics.logEvent(
-                                    name: 'cta_button_clicked',
-                                    parameters: {
-                                      "screen_name": 'otp_verify',
-                                      'cta_button_name':
-                                          'cta_otp_verify_change_phone',
-                                    },
+                                  await TrackingManager.trackEvent(
+                                    'verify_change_phone',
+                                    'otp_verify',
                                   );
                                   Navigator.pop(context);
                                 },
@@ -365,11 +361,9 @@ class _VerifyPhoneControllerState extends State<VerifyPhoneController> {
         });
         final result = await LoginClient().createPatient(widget.userInfo);
         if (result == true) {
-          await TrackingManager.analytics.logEvent(
-            name: 'sign_up',
-            parameters: {
-              "screen_name": 'otp_verify',
-            },
+          await TrackingManager.trackEvent(
+            'sign_up',
+            'otp_verify',
           );
           final user = await UserClient().fetchUser();
           BotToast.closeAllLoading();
@@ -387,11 +381,9 @@ class _VerifyPhoneControllerState extends State<VerifyPhoneController> {
         });
         final result = await LoginClient().createPatient(widget.userInfo);
         if (result == true) {
-          await TrackingManager.analytics.logEvent(
-            name: 'sign_up',
-            parameters: {
-              "screen_name": 'otp_verify',
-            },
+          await TrackingManager.trackEvent(
+            'sign_up',
+            'otp_verify',
           );
           final user = await UserClient().fetchUser();
           BotToast.closeAllLoading();
@@ -448,16 +440,21 @@ class _VerifyPhoneControllerState extends State<VerifyPhoneController> {
             isSyncAccount: arguments.containsKey("syncAccount") &&
                 arguments["syncAccount"]);
         BotToast.closeAllLoading();
-        await TrackingManager.analytics.logEvent(
-          name: 'sign_up',
-          parameters: {
-            "screen_name": 'otp_verify',
-          },
-        );
+        // await TrackingManager.analytics.logEvent(
+        //   name: 'sign_up',
+        //   parameters: {
+        //     "screen_name": 'otp_verify',
+        //   },
+        // );
         if (arguments.containsKey("syncAccount")) {
           await handleSyncAccount();
         } else {
           if (result) {
+            await TrackingManager.analytics
+                .logEvent(name: 'verify_otp', parameters: {
+              "screen_name": 'otp_verify',
+              'status': 'success',
+            });
             Navigator.pushReplacementNamed(context, NavigatorName.register,
                 arguments: {
                   'phone': widget.phone,
@@ -473,6 +470,9 @@ class _VerifyPhoneControllerState extends State<VerifyPhoneController> {
         // getToken();
       }
     } catch (e, _) {
+      await TrackingManager.trackEvent('verify_otp', 'otp_verify', params: {
+        'status': 'fail',
+      });
       setState(() {
         error = true;
       });
@@ -521,12 +521,9 @@ class _VerifyPhoneControllerState extends State<VerifyPhoneController> {
   }
 
   resendOTP() async {
-    await TrackingManager.analytics.logEvent(
-      name: 'cta_button_clicked',
-      parameters: {
-        "screen_name": 'otp_verify',
-        'cta_button_name': 'cta_otp_verify_resend',
-      },
+    await TrackingManager.trackEvent(
+      'verify_resend',
+      'otp_verify',
     );
     if (timeCount > 0 || otpCount == null) {
       return;

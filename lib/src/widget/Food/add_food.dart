@@ -1004,14 +1004,14 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
               : selectedFoods,
           paths);
       if (result == true) {
-        await TrackingManager.analytics.logEvent(
-          name: 'kpi_add_success',
-          parameters: {
-            "screen_name": 'kpi_nutrition_add',
-            'object_type': 'kpi_nutrition',
-            'object_title': 'Chỉ số dinh dưỡng'
-          },
-        );
+        // await TrackingManager.analytics.logEvent(
+        //   name: 'kpi_add_success',
+        //   parameters: {
+        //     "screen_name": 'kpi_nutrition_add',
+        //     'object_type': 'kpi_nutrition',
+        //     'object_title': 'Chỉ số dinh dưỡng'
+        //   },
+        // );
         Observable.instance.notifyObservers([], notifyName: "food_change_data");
         // DartNotificationCenter.post(channel: 'food_change_data');
         Navigator.pop(context);

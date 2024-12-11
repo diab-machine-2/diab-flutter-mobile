@@ -17,15 +17,15 @@ class KpiMotionTracking {
 
   // Nhấn Tab Chi tiết bên trong 1 KPI
   static Future<void> clickDetailTab() async {
-    await TrackingManager.analytics.logEvent(
-      name: 'component_clicked',
-      parameters: {
-        "screen_name": screenName,
-        "component_name": 'tab_kpi_detail',
-        "object_type": screenName,
-        "object_title": kpiName,
-      },
-    );
+    // await TrackingManager.analytics.logEvent(
+    //   name: 'component_clicked',
+    //   parameters: {
+    //     "screen_name": screenName,
+    //     "component_name": 'tab_kpi_detail',
+    //     "object_type": screenName,
+    //     "object_title": kpiName,
+    //   },
+    // );
   }
 
   // Chọn 1 item KPI từ danh sách trong Tab Chi Tiết

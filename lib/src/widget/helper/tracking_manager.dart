@@ -40,7 +40,8 @@ class TrackingManager {
     } else {
       // Else only enable it in non-debug builds.
       // You could additionally extend this to allow users to opt-in.
-      await FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(!kDebugMode);
+      await FirebaseCrashlytics.instance
+          .setCrashlyticsCollectionEnabled(!kDebugMode);
     }
 
     await _guardUserInfoWritten();
@@ -69,12 +70,14 @@ class TrackingManager {
   }
 
   static void initializeMixpanel() async {
-    _mixpanel = await Mixpanel.init("457ac685ce1ba9f3d0ab636880de4c72", trackAutomaticEvents: true);
+    _mixpanel = await Mixpanel.init("457ac685ce1ba9f3d0ab636880de4c72",
+        trackAutomaticEvents: true);
   }
 
   static Future<void> _guardUserInfoWritten() async {
     if (AppSettings.userInfo != null && !_settedUserInfo) {
-      await FirebaseCrashlytics.instance.setUserIdentifier(AppSettings.userInfo!.id!);
+      await FirebaseCrashlytics.instance
+          .setUserIdentifier(AppSettings.userInfo!.id!);
       _settedUserInfo = true;
     }
   }
@@ -84,7 +87,8 @@ class TrackingManager {
     return FirebaseCrashlytics.instance.log(message);
   }
 
-  static Future<void> recordError(Object exception, StackTrace? stack, {bool fatal = false}) async {
+  static Future<void> recordError(Object exception, StackTrace? stack,
+      {bool fatal = false}) async {
     await _guardUserInfoWritten();
     final error = FlutterErrorDetails(
       exception: exception,
@@ -93,7 +97,8 @@ class TrackingManager {
     return FirebaseCrashlytics.instance.recordFlutterError(error, fatal: fatal);
   }
 
-  static Future<void> trackEvent(String name, String screenName, {Map<String, dynamic>? params}) {
+  static Future<void> trackEvent(String name, String screenName,
+      {Map<String, dynamic>? params}) {
     Map<String, dynamic> parameters = {
       'screen_name': screenName,
       ...(params ?? {}),
@@ -102,5 +107,16 @@ class TrackingManager {
     _mixpanel.track(name, properties: parameters);
 
     return analytics.logEvent(name: name, parameters: parameters);
+  }
+
+  static Future<void> setUserId(String id) {
+    _mixpanel.identify(id);
+    return analytics.setUserId(id: id);
+  }
+
+  static Future<void> setUserProperty(
+      {required String name, required String value}) {
+    _mixpanel.getPeople().set(name, value);
+    return analytics.setUserProperty(name: name, value: value);
   }
 }

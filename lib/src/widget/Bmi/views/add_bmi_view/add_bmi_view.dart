@@ -58,14 +58,14 @@ class _AddBmiViewState extends State<AddBmiView> {
       screenName: "kpi_body_weight_add",
       screenClass: "AddBmiController",
     );
-    await TrackingManager.analytics.logEvent(
-      name: 'kpi_add_begin',
-      parameters: {
-        "screen_name": 'kpi_body_weight_add',
-        'object_type': 'kpi_body_weight',
-        'object_title': 'Chỉ số cân nặng'
-      },
-    );
+    // await TrackingManager.analytics.logEvent(
+    //   name: 'kpi_add_begin',
+    //   parameters: {
+    //     "screen_name": 'kpi_body_weight_add',
+    //     'object_type': 'kpi_body_weight',
+    //     'object_title': 'Chỉ số cân nặng'
+    //   },
+    // );
     AppSettings.currentScreenName = 'kpi_body_weight_add';
   }
 

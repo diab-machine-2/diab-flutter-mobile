@@ -71,7 +71,7 @@ class _SyncLoadingControllerState extends State<SyncLoadingController> {
       AppSettings.isSyncSuccess = true;
       await AppSettings.setIsFirstDownload(false);
       await TrackingManager.analytics.logEvent(
-        name: 'zalo_sync_completed',
+        name: 'zalo_sync',
         parameters: {
           "screen_name": "Zalo Sync Completed",
         },

@@ -45,7 +45,8 @@ class ScanDeviceView extends StatefulWidget {
   State<ScanDeviceView> createState() => _ScanDeviceViewState();
 }
 
-class _ScanDeviceViewState extends State<ScanDeviceView> with SingleTickerProviderStateMixin {
+class _ScanDeviceViewState extends State<ScanDeviceView>
+    with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   List<ScanResult> resultList = [];
   BluetoothDevice? device;
@@ -169,24 +170,55 @@ class _ScanDeviceViewState extends State<ScanDeviceView> with SingleTickerProvid
     );
   }
 
-  Future<void> submitSyncDataNew(List<Map<String, String>> selectedGlucose) async {
+  Future<void> submitSyncDataNew(
+      List<Map<String, String>> selectedGlucose) async {
     setState(() {
       isLoading = true;
     });
-    bool result = await GlucoseClient()
-        .postGlucoseInputs(selectedGlucose, modelName: modelName, modelNumber: modelNumber);
+    bool result = await GlucoseClient().postGlucoseInputs(selectedGlucose,
+        modelName: modelName, modelNumber: modelNumber);
     setState(() {
       isLoading = false;
     });
     if (result) {
-      Observable.instance.notifyObservers([], notifyName: Const.NAVIGATE_TO_PROFILE_TAB);
-      Navigator.of(context).popUntil((route) => route.settings.name == NavigatorName.tabbar);
+      Observable.instance
+          .notifyObservers([], notifyName: Const.NAVIGATE_TO_PROFILE_TAB);
+      Navigator.of(context)
+          .popUntil((route) => route.settings.name == NavigatorName.tabbar);
       Navigator.pushNamed(context, NavigatorName.detail_blood_sugar);
-      Message.showToastMessage(context, "Đồng bộ chỉ số đường huyết thành công!");
+      Message.showToastMessage(
+          context, "Đồng bộ chỉ số đường huyết thành công!");
+      Set<String> uniqueDays = selectedGlucose.map((e) => e['date']!).toSet();
+      await TrackingManager.trackEvent(
+        'glucose_sync',
+        'kpi_glucose_sync',
+        params: {
+          'device_day': uniqueDays.length,
+          'device_record': selectedGlucose.length,
+          'status': 'success',
+        },
+      );
+      await TrackingManager.trackEvent(
+        'glucose_add',
+        'kpi_glucose_add',
+        params: {"index_time": 'Kết nối máy', 'method': 'device'},
+      );
+
       Future.delayed(Duration(seconds: 2)).then((value) => Observable.instance
-          .notifyObservers([], notifyName: "glucose_change_data", map: {'index': 1}));
+          .notifyObservers([],
+              notifyName: "glucose_change_data", map: {'index': 1}));
     } else {
-      Message.showToastMessage(context, 'Không thể đồng bộ dữ liệu, xin vui lòng thử lại sau.');
+      await TrackingManager.trackEvent(
+        'glucose_sync',
+        'kpi_glucose_sync',
+        params: {
+          'device_record': selectedGlucose.length,
+          'status': 'fail',
+          'error_message': 'Không thể đồng bộ dữ liệu.',
+        },
+      );
+      Message.showToastMessage(
+          context, 'Không thể đồng bộ dữ liệu, xin vui lòng thử lại sau.');
     }
   }
 
@@ -242,7 +274,8 @@ class _ScanDeviceViewState extends State<ScanDeviceView> with SingleTickerProvid
                         selectedGlucose.add(glucoseData);
                       }
                       setState(() {
-                        selectAllData = selectedGlucose.length == glucosedList.length;
+                        selectAllData =
+                            selectedGlucose.length == glucosedList.length;
                       });
                     },
                     glucoseUnits: glucoseUnits,
@@ -416,7 +449,8 @@ class _ScanDeviceViewState extends State<ScanDeviceView> with SingleTickerProvid
       children: [
         _btnClose(context),
         Container(
-          constraints: BoxConstraints(minHeight: AppMediaQuery.deviceHeigthAvailable - 100),
+          constraints: BoxConstraints(
+              minHeight: AppMediaQuery.deviceHeigthAvailable - 100),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
@@ -556,7 +590,8 @@ class _ScanDeviceViewState extends State<ScanDeviceView> with SingleTickerProvid
           Guid.fromString(GlucoseProfileConfiguration.ROCHE_SERVICE_UUID),
         ],
       );
-      final scanResultSub = FlutterBluePlus.scanResults.listen((scanResultList) {
+      final scanResultSub =
+          FlutterBluePlus.scanResults.listen((scanResultList) {
         if (!deviceFound && appStatus == AppStatus.isScanning) {
           connectToAvailableDevice(scanResultList);
         }
@@ -593,7 +628,8 @@ class _ScanDeviceViewState extends State<ScanDeviceView> with SingleTickerProvid
   bool isSelected(Map<String, String> glucose) {
     bool isSelected = false;
     selectedGlucose.forEach((element) {
-      if (element['glucose'] == glucose['glucose'] && element['date'] == glucose['date']) {
+      if (element['glucose'] == glucose['glucose'] &&
+          element['date'] == glucose['date']) {
         isSelected = true;
       }
     });
@@ -607,24 +643,28 @@ class _ScanDeviceViewState extends State<ScanDeviceView> with SingleTickerProvid
 
     // Tìm Service 0x1808
     BluetoothService serviceGlucoseMeasurement = services.firstWhere((service) {
-      return service.serviceUuid.str128 == GlucoseProfileConfiguration.GLUCOSE_SERVICE_UUID;
+      return service.serviceUuid.str128 ==
+          GlucoseProfileConfiguration.GLUCOSE_SERVICE_UUID;
     });
 
     // Tim Characteristic 0x2A18
-    BluetoothCharacteristic charGlucoseMeasurement = serviceGlucoseMeasurement.characteristics
-        .firstWhere((characteristic) =>
+    BluetoothCharacteristic charGlucoseMeasurement =
+        serviceGlucoseMeasurement.characteristics.firstWhere((characteristic) =>
             characteristic.characteristicUuid.str128 ==
-            GlucoseProfileConfiguration.GLUCOSE_MEASUREMENT_CHARACTERISTIC_UUID);
+            GlucoseProfileConfiguration
+                .GLUCOSE_MEASUREMENT_CHARACTERISTIC_UUID);
 
     // Bật noti cho 0x2A18
     await charGlucoseMeasurement.setNotifyValue(true);
     appStatus = AppStatus.isConnected;
 
     BluetoothService rocheService = services.firstWhere((service) {
-      return service.serviceUuid.str128 == GlucoseProfileConfiguration.ROCHE_SERVICE_UUID;
+      return service.serviceUuid.str128 ==
+          GlucoseProfileConfiguration.ROCHE_SERVICE_UUID;
     });
 
-    for (BluetoothCharacteristic rocheCharacteristic in rocheService.characteristics) {
+    for (BluetoothCharacteristic rocheCharacteristic
+        in rocheService.characteristics) {
       if (rocheCharacteristic.characteristicUuid.str128 ==
           GlucoseProfileConfiguration.MODEL_NUMBER_STRING_UUID) {
         List<int> modelNumberStringValue = await rocheCharacteristic.read();
@@ -641,11 +681,13 @@ class _ScanDeviceViewState extends State<ScanDeviceView> with SingleTickerProvid
             return;
           }
         });
-        updateGlucoseUnit(glucoseUnits, modelNameParam: modelName, modelNoParam: modelNo);
+        updateGlucoseUnit(glucoseUnits,
+            modelNameParam: modelName, modelNoParam: modelNo);
       }
     }
 
-    for (BluetoothCharacteristic characteristic in serviceGlucoseMeasurement.characteristics) {
+    for (BluetoothCharacteristic characteristic
+        in serviceGlucoseMeasurement.characteristics) {
       // Tim Characteristic 0x2A18
       if (characteristic.characteristicUuid.str128 ==
           GlucoseProfileConfiguration.GLUCOSE_MEASUREMENT_CHARACTERISTIC_UUID) {
@@ -653,7 +695,8 @@ class _ScanDeviceViewState extends State<ScanDeviceView> with SingleTickerProvid
         appStatus = AppStatus.isSyncing;
         previousDataCount = 0;
         glucoseMeasurementRecordList.clear();
-        characteristicListener = characteristic.lastValueStream.listen((data) async {
+        characteristicListener =
+            characteristic.lastValueStream.listen((data) async {
           if (data.isEmpty) {
             return;
           }
@@ -667,11 +710,19 @@ class _ScanDeviceViewState extends State<ScanDeviceView> with SingleTickerProvid
 
       // Tim Characteristic 0x2A52
       if (characteristic.characteristicUuid.str128 ==
-          GlucoseProfileConfiguration.RECORD_ACCESS_CONTROL_POINT_CHARACTERISTIC_UUID) {
+          GlucoseProfileConfiguration
+              .RECORD_ACCESS_CONTROL_POINT_CHARACTERISTIC_UUID) {
         await characteristic.setNotifyValue(true);
         List<int> requestData = [0x01, 0x01];
         await characteristic.write(requestData);
         await Future.delayed(Duration(seconds: 5));
+        await TrackingManager.trackEvent(
+          'glucose_pair',
+          'kpi_glucose_device',
+          params: {
+            'status': 'success',
+          },
+        );
         startCheckingData();
       }
     }
@@ -680,8 +731,10 @@ class _ScanDeviceViewState extends State<ScanDeviceView> with SingleTickerProvid
   Future<void> updateGlucoseUnit(GlucoseUnitsFlag glucoseUnitsFlag,
       {String? modelNameParam, String? modelNoParam}) async {
     bool isMilligramPerDeciliter = AppSettings.userInfo!.glucoseUnit == 1;
-    if (glucoseUnitsFlag == GlucoseUnitsFlag.mgPerDL && !isMilligramPerDeciliter) {
-      ScheduleGlucoseTimeModel timeModel = await UserClient().fetchScheduleGlucoseSetting();
+    if (glucoseUnitsFlag == GlucoseUnitsFlag.mgPerDL &&
+        !isMilligramPerDeciliter) {
+      ScheduleGlucoseTimeModel timeModel =
+          await UserClient().fetchScheduleGlucoseSetting();
       await UserClient().updateScheduleGlucoseSetting(ScheduleGlucoseTimeModel(
         beforeEat: timeModel.beforeEat,
         afterEat: timeModel.afterEat,
@@ -690,8 +743,10 @@ class _ScanDeviceViewState extends State<ScanDeviceView> with SingleTickerProvid
       ));
       await UserClient().fetchUser();
       Observable.instance.notifyObservers([], notifyName: "refresh_home");
-    } else if (glucoseUnitsFlag == GlucoseUnitsFlag.mmolPerL && isMilligramPerDeciliter) {
-      ScheduleGlucoseTimeModel timeModel = await UserClient().fetchScheduleGlucoseSetting();
+    } else if (glucoseUnitsFlag == GlucoseUnitsFlag.mmolPerL &&
+        isMilligramPerDeciliter) {
+      ScheduleGlucoseTimeModel timeModel =
+          await UserClient().fetchScheduleGlucoseSetting();
       await UserClient().updateScheduleGlucoseSetting(ScheduleGlucoseTimeModel(
         beforeEat: timeModel.beforeEat,
         afterEat: timeModel.afterEat,
@@ -727,8 +782,8 @@ class _ScanDeviceViewState extends State<ScanDeviceView> with SingleTickerProvid
 
     if (glucoseMeasurementRecordList.isNotEmpty) {
       glucoseMeasurementRecordList.forEach((element) {
-        final glucose = roundAsFixed(
-            roundDouble(element.convertGlucoseConcentrationValueToMilligramsPerDeciliter()));
+        final glucose = roundAsFixed(roundDouble(element
+            .convertGlucoseConcentrationValueToMilligramsPerDeciliter()));
 
         if (!uniqueValues.contains(element.calendar)) {
           glucoseDataRequest.add(GlucoseData(
@@ -739,11 +794,14 @@ class _ScanDeviceViewState extends State<ScanDeviceView> with SingleTickerProvid
         }
       });
 
-      final result = await GlucoseClient().fetchGlucoseInputNotExist(glucoseDataRequest);
+      final result =
+          await GlucoseClient().fetchGlucoseInputNotExist(glucoseDataRequest);
 
       result.forEach((element) {
-        glucoseDataList.add(
-            {'glucose': element['glucose'].toString(), 'date': element['createDate'].toString()});
+        glucoseDataList.add({
+          'glucose': element['glucose'].toString(),
+          'date': element['createDate'].toString()
+        });
       });
 
       selectAllData = true;
