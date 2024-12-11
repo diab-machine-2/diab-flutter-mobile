@@ -7,6 +7,7 @@ import 'package:medical/src/bloc/nipro/model/glucose_data.dart';
 import 'package:medical/src/bloc/nipro/nipro_bloc.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
+import 'package:medical/src/widget/helper/tracking_manager.dart';
 
 class ListData extends StatefulWidget {
   final List<GlucoseData> glucoseData;
@@ -31,7 +32,8 @@ class ListDataState extends State<ListData> {
     glucoseData = [];
     try {
       BotToast.showLoading();
-      final result = await BlocProvider.of<NiproBloc>(context).removeSyncedData(widget.glucoseData);
+      final result = await BlocProvider.of<NiproBloc>(context)
+          .removeSyncedData(widget.glucoseData);
 
       glucoseData = result;
       selectedGlucose = [...glucoseData];
@@ -152,17 +154,14 @@ class ListDataState extends State<ListData> {
                                               CrossAxisAlignment.start,
                                           children: [
                                             Text(
-                                                data.glucose
-                                                    .round()
-                                                    .toString(),
+                                                data.glucose.round().toString(),
                                                 style: TextStyle(
                                                     fontSize: 24,
                                                     fontWeight:
                                                         FontWeight.bold)),
                                             SizedBox(height: 8),
                                             Text(
-                                                convertToUTC(
-                                                    data.date,
+                                                convertToUTC(data.date,
                                                     'HH:mm - dd-MM-yyyy'),
                                                 style: TextStyle(
                                                     color: R.color.grayCaption,
@@ -226,8 +225,7 @@ class ListDataState extends State<ListData> {
   bool isSelected(GlucoseData that) {
     bool isSelected = false;
     selectedGlucose.forEach((e) {
-      if (e.glucose == that.glucose &&
-          e.date == that.date) {
+      if (e.glucose == that.glucose && e.date == that.date) {
         isSelected = true;
       }
     });
@@ -239,6 +237,27 @@ class ListDataState extends State<ListData> {
       BotToast.showLoading();
       await BlocProvider.of<NiproBloc>(context).submitData(selectedGlucose);
       BotToast.closeAllLoading();
+      Set<int> uniqueDays = selectedGlucose.map((e) {
+        final date = DateTime.fromMillisecondsSinceEpoch(e.date * 1000);
+        return DateTime(date.year, date.month, date.day)
+                .millisecondsSinceEpoch ~/
+            1000;
+      }).toSet();
+
+      await TrackingManager.trackEvent(
+        'glucose_sync',
+        'kpi_glucose_sync',
+        params: {
+          'device_day': uniqueDays.length,
+          'device_record': selectedGlucose.length,
+          'status': 'success',
+        },
+      );
+      await TrackingManager.trackEvent(
+        'glucose_add',
+        'kpi_glucose_add',
+        params: {"index_time": 'Kết nối máy', 'method': 'device'},
+      );
       _showPopupSuccess();
     } catch (e) {
       BotToast.closeAllLoading();

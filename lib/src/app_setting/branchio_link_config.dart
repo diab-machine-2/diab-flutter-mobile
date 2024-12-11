@@ -37,6 +37,8 @@ class BranchioLinkConfig {
   void setUpHandleDeepLink() {
     _subLink = FlutterBranchSdk.listSession().listen((data) async {
       print('listenDynamicLinks - DeepLink Data: $data');
+      AppSettings.saveClickedBranchLink(data['+clicked_branch_link']);
+
       if (data['+clicked_branch_link'] == true &&
           data.containsKey("\$course")) {
         _processBookingCourseLink(
@@ -63,6 +65,17 @@ class BranchioLinkConfig {
           data.containsKey("\$referral_code")) {
         _referalCode = data['\$referral_code'] as String;
         return;
+      }
+
+      //Handle old dynamic link referral code
+      if (data['+non_branch_link'] != null) {
+        final urlString = data['+non_branch_link'] as String;
+        AppSettings.saveClickedBranchLink(urlString.isNotEmpty);
+        if (urlString.isNotEmpty) {
+          List<String> separatedString = urlString.split('referralCode=');
+          _referalCode = separatedString[1].substring(0, 6);
+          return;
+        }
       }
     }, onError: (error) {
       if (error is PlatformException) {

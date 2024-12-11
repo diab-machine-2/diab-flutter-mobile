@@ -202,4 +202,5 @@ class Const {
   static const int MAX_DAY_RANGE_PRIMARY_SCREENING = 14;
   static const DOCOSAN_TOKEN = 'docosan_token';
   static const int MAX_DAY_RANGE_DSMES_BOOKING = 30;
+  static const String CLICKED_BRANCH_LINK = 'clicked_branch_link';
 }

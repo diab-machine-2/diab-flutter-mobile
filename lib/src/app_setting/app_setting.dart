@@ -197,6 +197,18 @@ class AppSettings {
     return token;
   }
 
+  static Future<bool> saveClickedBranchLink(bool? clickedBranchLink) async {
+    Console.log("saveClickedBranchLink", clickedBranchLink);
+    appPreference.setData(Const.CLICKED_BRANCH_LINK, clickedBranchLink.toString());
+    return true;
+  }
+
+  static Future<bool> getClickedBranchLink() async {
+    final clickedBranchLink = appPreference.getData(Const.CLICKED_BRANCH_LINK) ?? '';
+    Console.log("getClickedBranchLink", clickedBranchLink);
+    return clickedBranchLink == 'true';
+  }
+
   static HomeModel? _precachedHome;
   static Future<void> loadPrecachedHome() async {
     _precachedHome = await getHome();

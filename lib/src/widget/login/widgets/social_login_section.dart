@@ -11,6 +11,7 @@ import 'package:medical/src/repo/user/user_client.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
+import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/login/routing.dart';
 import 'package:medical/src/widgets/spacing_row.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
@@ -59,7 +60,14 @@ class _SocialLoginSectionState extends State<SocialLoginSection> {
             children: [
               if (Platform.isIOS)
                 GestureDetector(
-                  onTap: () {
+                  onTap: () async {
+                    await TrackingManager.trackEvent(
+                      'login_select',
+                      'welcome',
+                      params: {
+                        'method': 'apple',
+                      },
+                    );
                     loginApple();
                   },
                   child: Padding(
@@ -81,7 +89,14 @@ class _SocialLoginSectionState extends State<SocialLoginSection> {
               else
                 const SizedBox(),
               GestureDetector(
-                onTap: () {
+                onTap: () async {
+                  await TrackingManager.trackEvent(
+                    'login_select',
+                    'welcome',
+                    params: {
+                      'method': 'google',
+                    },
+                  );
                   loginGG();
                 },
                 child: Padding(
@@ -147,7 +162,14 @@ class _SocialLoginSectionState extends State<SocialLoginSection> {
             googleAccount: null,
             appleCredential: credential);
       } else {
-       LoginRouting().navigateToHome(context);
+        await TrackingManager.trackEvent(
+          'login',
+          'welcome',
+          params: {
+            'method': 'apple',
+          },
+        );
+        LoginRouting().navigateToHome(context);
       }
     } catch (error) {
       BotToast.closeAllLoading();
@@ -224,6 +246,13 @@ class _SocialLoginSectionState extends State<SocialLoginSection> {
         // Navigator.pushReplacementNamed(context, NavigatorName.update_info,
         //     arguments: {'type': 'google', 'googleAccount': account});
       } else {
+        await TrackingManager.trackEvent(
+          'login',
+          'welcome',
+          params: {
+            'method': 'google',
+          },
+        );
         LoginRouting().navigateToHome(context);
       }
     } catch (error) {

@@ -109,14 +109,14 @@ class _AddBloodSugarControllerNewState
         screenName: "kpi_glycemic_add",
         screenClass: "BloodSugarDetailController");
     AppSettings.currentScreenName = 'kpi_glycemic_add';
-    await TrackingManager.analytics.logEvent(
-      name: 'kpi_add_begin',
-      parameters: {
-        "screen_name": 'kpi_glycemic_add',
-        'object_type': 'kpi_glycemic',
-        'object_title': 'Chỉ số đường huyết'
-      },
-    );
+    // await TrackingManager.analytics.logEvent(
+    //   name: 'kpi_add_begin',
+    //   parameters: {
+    //     "screen_name": 'kpi_glycemic_add',
+    //     'object_type': 'kpi_glycemic',
+    //     'object_title': 'Chỉ số đường huyết'
+    //   },
+    // );
   }
 
   @override
@@ -495,13 +495,13 @@ class _AddBloodSugarControllerNewState
   }
 
   _submitData() async {
-    await TrackingManager.analytics.logEvent(
-      name: 'cta_button_clicked',
-      parameters: {
-        "screen_name": 'kpi_glycemic_add',
-        'cta_button_name': 'cta_save_glycemic',
-      },
-    );
+    // await TrackingManager.analytics.logEvent(
+    //   name: 'cta_button_clicked',
+    //   parameters: {
+    //     "screen_name": 'kpi_glycemic_add',
+    //     'cta_button_name': 'cta_save_glycemic',
+    //   },
+    // );
     FocusScope.of(context).unfocus();
     final note = _controllerNote.text;
 
@@ -533,12 +533,12 @@ class _AddBloodSugarControllerNewState
           fromNipro,
           paths);
       if (result == true) {
-        await TrackingManager.analytics.logEvent(
-          name: 'kpi_add_success',
-          parameters: {
-            "screen_name": 'kpi_glycemic_add',
-            'object_type': 'kpi_glycemic',
-            'object_title': 'Chỉ số đường huyết'
+        await TrackingManager.trackEvent(
+          'glucose_add',
+          'kpi_glucose_add',
+          params: {
+            'index_time': selectedTimeFrame?.name,
+            'method': fromNipro ? 'device' : 'manual',
           },
         );
         await HomeClient().completeSmartGoal(selectedDate, widget.goalId ?? '',
@@ -1202,11 +1202,11 @@ class _AddBloodSugarControllerNewState
       children: [
         GestureDetector(
           onTap: () async {
-            await TrackingManager.analytics
-                .logEvent(name: 'component_clicked', parameters: {
-              "screen_name": 'kpi_glycemic_add',
-              'component_name': 'date_picker_glycemic',
-            });
+            // await TrackingManager.analytics
+            //     .logEvent(name: 'component_clicked', parameters: {
+            //   "screen_name": 'kpi_glycemic_add',
+            //   'component_name': 'date_picker_glycemic',
+            // });
 
             showDialog(
               barrierColor: R.color.color0xff003F38.withOpacity(0.5),
@@ -1259,13 +1259,13 @@ class _AddBloodSugarControllerNewState
       children: [
         GestureDetector(
           onTap: () async {
-            await TrackingManager.analytics.logEvent(
-              name: 'component_clicked',
-              parameters: {
-                "screen_name": 'kpi_glycemic_add',
-                'component_name': 'time_section_glycemic',
-              },
-            );
+            // await TrackingManager.analytics.logEvent(
+            //   name: 'component_clicked',
+            //   parameters: {
+            //     "screen_name": 'kpi_glycemic_add',
+            //     'component_name': 'time_section_glycemic',
+            //   },
+            // );
             showActionFilter(context);
           },
           child: Container(
@@ -1650,13 +1650,13 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
   }
 
   Future firebaseSetup() async {
-    await TrackingManager.analytics.logEvent(
-      name: 'component_displayed',
-      parameters: {
-        "screen_name": 'kpi_glycemic_add',
-        'component_name': 'date_picker_glycemic',
-      },
-    );
+    // await TrackingManager.analytics.logEvent(
+    //   name: 'component_displayed',
+    //   parameters: {
+    //     "screen_name": 'kpi_glycemic_add',
+    //     'component_name': 'date_picker_glycemic',
+    //   },
+    // );
   }
 
   @override
@@ -1694,13 +1694,13 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
                                 icon: Icon(Icons.close,
                                     color: R.color.color0xffBEC0C8),
                                 onPressed: () async {
-                                  await TrackingManager.analytics.logEvent(
-                                    name: 'cta_button_clicked',
-                                    parameters: {
-                                      "screen_name": 'date_picker_glycemic',
-                                      'cta_button_name': 'cate_cancel',
-                                    },
-                                  );
+                                  // await TrackingManager.analytics.logEvent(
+                                  //   name: 'cta_button_clicked',
+                                  //   parameters: {
+                                  //     "screen_name": 'date_picker_glycemic',
+                                  //     'cta_button_name': 'cate_cancel',
+                                  //   },
+                                  // );
                                   Navigator.pop(context);
                                 })
                           ]),
@@ -1712,13 +1712,13 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
                         firstDate: DateTime.parse("1969-07-20 20:18:04Z"),
                         lastDate: DateTime.now(),
                         onDateChanged: (datetime) async {
-                          await TrackingManager.analytics.logEvent(
-                            name: 'component_clicked',
-                            parameters: {
-                              "screen_name": 'date_picker_glycemic',
-                              'component_name': 'time_section_glycemic',
-                            },
-                          );
+                          // await TrackingManager.analytics.logEvent(
+                          //   name: 'component_clicked',
+                          //   parameters: {
+                          //     "screen_name": 'date_picker_glycemic',
+                          //     'component_name': 'time_section_glycemic',
+                          //   },
+                          // );
                           selectedDate = datetime ?? DateTime.now();
                         }),
                     Row(
@@ -1738,13 +1738,13 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
                         selectedHour: selectedHour,
                         selectedMinute: selectedMinute,
                         callback: (hour, minute) async {
-                          await TrackingManager.analytics.logEvent(
-                            name: 'component_clicked',
-                            parameters: {
-                              "screen_name": 'date_picker_glycemic',
-                              'component_name': 'time_section_glycemic',
-                            },
-                          );
+                          // await TrackingManager.analytics.logEvent(
+                          //   name: 'component_clicked',
+                          //   parameters: {
+                          //     "screen_name": 'date_picker_glycemic',
+                          //     'component_name': 'time_section_glycemic',
+                          //   },
+                          // );
                           selectedHour = hour ?? selectedHour;
                           selectedMinute = minute ?? selectedMinute;
                         }),
@@ -1754,13 +1754,13 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
                       Expanded(
                         child: GestureDetector(
                           onTap: () async {
-                            await TrackingManager.analytics.logEvent(
-                              name: 'cta_button_clicked',
-                              parameters: {
-                                "screen_name": 'date_picker_glycemic',
-                                'cta_button_name': 'cate_cancel',
-                              },
-                            );
+                            // await TrackingManager.analytics.logEvent(
+                            //   name: 'cta_button_clicked',
+                            //   parameters: {
+                            //     "screen_name": 'date_picker_glycemic',
+                            //     'cta_button_name': 'cate_cancel',
+                            //   },
+                            // );
                             Navigator.pop(context);
                           },
                           child: Container(
@@ -1788,13 +1788,13 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
                                 selectedMinute);
 
                             widget.callback!(selectedDate);
-                            await TrackingManager.analytics.logEvent(
-                              name: 'cta_button_clicked',
-                              parameters: {
-                                "screen_name": 'date_picker_glycemic',
-                                'cta_button_name': 'cta_done',
-                              },
-                            );
+                            // await TrackingManager.analytics.logEvent(
+                            //   name: 'cta_button_clicked',
+                            //   parameters: {
+                            //     "screen_name": 'date_picker_glycemic',
+                            //     'cta_button_name': 'cta_done',
+                            //   },
+                            // );
 
                             Navigator.pop(context);
                           },

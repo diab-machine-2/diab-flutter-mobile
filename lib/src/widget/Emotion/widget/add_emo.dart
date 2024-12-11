@@ -55,14 +55,14 @@ class _AddEmoControllerState extends BaseState<AddEmoController> {
       screenName: "kpi_emotional_add",
       screenClass: "AddEmoController",
     );
-    await TrackingManager.analytics.logEvent(
-      name: 'kpi_add_begin',
-      parameters: {
-        "screen_name": 'kpi_emotional_add',
-        'object_type': 'kpi_emotional',
-        'object_title': 'Chỉ số cảm xúc'
-      },
-    );
+    // await TrackingManager.analytics.logEvent(
+    //   name: 'kpi_add_begin',
+    //   parameters: {
+    //     "screen_name": 'kpi_emotional_add',
+    //     'object_type': 'kpi_emotional',
+    //     'object_title': 'Chỉ số cảm xúc'
+    //   },
+    // );
     AppSettings.currentScreenName = 'kpi_emotional_add';
   }
 

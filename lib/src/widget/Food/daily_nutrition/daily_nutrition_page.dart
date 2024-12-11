@@ -92,14 +92,14 @@ class _DailyNutritionPageState extends State<DailyNutritionPage>
       screenName: "kpi_nutrition_add",
       screenClass: "DailyNutritionPage",
     );
-    await TrackingManager.analytics.logEvent(
-      name: 'kpi_add_begin',
-      parameters: {
-        "screen_name": 'kpi_nutrition_add',
-        'object_type': 'kpi_nutrition',
-        'object_title': 'Chỉ số dinh dưỡng'
-      },
-    );
+    // await TrackingManager.analytics.logEvent(
+    //   name: 'kpi_add_begin',
+    //   parameters: {
+    //     "screen_name": 'kpi_nutrition_add',
+    //     'object_type': 'kpi_nutrition',
+    //     'object_title': 'Chỉ số dinh dưỡng'
+    //   },
+    // );
     AppSettings.currentScreenName = 'kpi_add_begin';
   }
 
