@@ -90,7 +90,10 @@ class BloodSugarOverviewControllerState
               physics: ClampingScrollPhysics(),
               children: [
                 BloodGlucoseItem(key: latestDataKey),
-                BloodSugarDetail(key: sugarDetailKey),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: BloodSugarDetail(key: sugarDetailKey),
+                ),
                 BloodSugarChart(key: sugarChartKey),
                 BloodSugarCompareChart(key: sugarCompareKey),
                 CourseSuggest(position: 2),

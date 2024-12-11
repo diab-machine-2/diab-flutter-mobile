@@ -187,7 +187,7 @@ class GlucoseIntro2ndPage extends StatelessWidget {
                 ),
                 children: [
                   TextSpan(
-                    text: 'Nguồn tham khảo: Testing for Diabetes | Diabetes. (2024, May 15).' +
+                    text: 'Nguồn tham khảo:\nTesting for Diabetes | Diabetes. (2024, May 15).' +
                         ' CDC. Tham khảo ngày 21, Tháng 8, 2024, từ ',
                   ),
                   TextSpan(

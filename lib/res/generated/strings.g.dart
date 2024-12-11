@@ -174,6 +174,7 @@ class Strings {
   String get mm_hg => 'mm_hg';
   String get time_per_minute => 'time_per_minute';
   String get distribution_frequency => 'distribution_frequency';
+  String get over_100_distribution => 'over_100_distribution';
   String get grade_3_hypertension => 'grade_3_hypertension';
   String get grade_2_hypertension => 'grade_2_hypertension';
   String get grade_1_hypertension => 'grade_1_hypertension';
