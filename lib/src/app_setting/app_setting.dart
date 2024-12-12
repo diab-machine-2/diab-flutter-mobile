@@ -197,6 +197,18 @@ class AppSettings {
     return token;
   }
 
+  static Future<String> getDocosanToken() async {
+    final token = appPreference.getData(Const.DOCOSAN_TOKEN) ?? '';
+    Console.log("getDocosanToken", token);
+    return token;
+  }
+
+  static Future<bool> saveDocosanToken(String? token) async {
+    Console.log("saveDocosanToken", token);
+    appPreference.setData(Const.DOCOSAN_TOKEN, token);
+    return true;
+  }
+
   static Future<bool> saveClickedBranchLink(bool? clickedBranchLink) async {
     Console.log("saveClickedBranchLink", clickedBranchLink);
     appPreference.setData(Const.CLICKED_BRANCH_LINK, clickedBranchLink.toString());

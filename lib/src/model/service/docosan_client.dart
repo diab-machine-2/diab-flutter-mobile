@@ -46,7 +46,7 @@ class DocosanClient {
 
     _dio.interceptors
         .add(InterceptorsWrapper(onRequest: (options, handler) async {
-      final String? accessToken = appPreference.getData(Const.DOCOSAN_TOKEN) ?? "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL2FwaS5zdGFnaW5nLmRvY29zYW4uY29tL2FwaS92ZXJpZnktb3RwIiwiaWF0IjoxNzMzMTI2Mzc4LCJleHAiOjE3MzU3MTgzNzgsIm5iZiI6MTczMzEyNjM3OCwianRpIjoiMkRHbDhwd2toR0lVQm9GOCIsInN1YiI6NDAzMzgsInBydiI6IjIzYmQ1Yzg5NDlmNjAwYWRiMzllNzAxYzQwMDg3MmRiN2E1OTc2ZjcifQ.dxo69v73FL0F3IC0YC2t3k9Fgvqf5ZPL3Qr6AQYUz1I";
+      final String? accessToken = appPreference.getData(Const.DOCOSAN_TOKEN);
       if (!Utils.isEmpty(accessToken)) {
         options.headers["Authorization"] = "Bearer $accessToken";
       }

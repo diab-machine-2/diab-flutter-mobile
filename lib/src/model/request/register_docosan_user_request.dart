@@ -3,7 +3,7 @@ class RegisterDocosanUserRequest {
   final String type;
   final String displayName;
   final String gender;
-  final String language;
+  String? language;
   final int isGetCaresOrderInfo;
   final String phoneNumber;
 
@@ -12,7 +12,7 @@ class RegisterDocosanUserRequest {
     required this.type,
     required this.displayName,
     required this.gender,
-    required this.language,
+    this.language,
     required this.isGetCaresOrderInfo,
     required this.phoneNumber,
   });

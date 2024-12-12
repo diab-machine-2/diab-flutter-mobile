@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:medical/res/R.dart';
-import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
@@ -17,7 +16,11 @@ import 'package:medical/src/widgets/gap_widget.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class DsmesBookingOfflinePage extends StatefulWidget {
-  const DsmesBookingOfflinePage({Key? key}) : super(key: key);
+  final String serviceType;
+  const DsmesBookingOfflinePage({
+    Key? key,
+    required this.serviceType,
+  }) : super(key: key);
 
   @override
   _DsmesBookingOfflinePageState createState() =>
@@ -309,7 +312,7 @@ class _DsmesBookingOfflinePageState extends State<DsmesBookingOfflinePage> {
                                   ?.pushNamed(
                                       NavigatorName.dsmes_booking_select_date,
                                       arguments: {
-                                    'serviceType': 'offline',
+                                    'serviceType': widget.serviceType,
                                   });
                             },
                             child: Container(

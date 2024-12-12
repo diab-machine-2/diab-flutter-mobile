@@ -90,14 +90,14 @@ class _DocosanApi implements DocosanApi {
   }
 
   @override
-  Future<DsmesClinicDetailResponse> isExistDocosanUser(phoneNumber) async {
+  Future<IsExistDocosanUserResponse> isExistDocosanUser(phoneNumber) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{r'phone_number': phoneNumber};
     queryParameters.removeWhere((k, v) => v == null);
     final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
     final _result = await _dio.fetch<Map<String, dynamic>>(
-        _setStreamType<DsmesClinicDetailResponse>(Options(
+        _setStreamType<IsExistDocosanUserResponse>(Options(
       method: 'GET',
       headers: _headers,
       extra: _extra,
@@ -109,7 +109,7 @@ class _DocosanApi implements DocosanApi {
               data: _data,
             )
             .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
-    final value = DsmesClinicDetailResponse.fromJson(_result.data!);
+    final value = IsExistDocosanUserResponse.fromJson(_result.data!);
     return value;
   }
 
@@ -134,6 +134,31 @@ class _DocosanApi implements DocosanApi {
             )
             .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
     final value = RegisterDocosanUserResponse.fromJson(_result.data!);
+    return value;
+  }
+
+  @override
+  Future<CreateDsmesOfflineBookingResponse> createDsmesOfflineBooking(
+      request) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    _data.addAll(request.toJson());
+    final _result = await _dio.fetch<Map<String, dynamic>>(
+        _setStreamType<CreateDsmesOfflineBookingResponse>(Options(
+      method: 'POST',
+      headers: _headers,
+      extra: _extra,
+    )
+            .compose(
+              _dio.options,
+              'api/doctors/patient-appointments',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = CreateDsmesOfflineBookingResponse.fromJson(_result.data!);
     return value;
   }
 

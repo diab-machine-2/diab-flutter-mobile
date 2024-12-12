@@ -4,6 +4,7 @@ import 'package:medical/src/model/request/booking_success_request.dart';
 import 'package:medical/src/model/request/complete_exercise_request.dart';
 import 'package:medical/src/model/request/complete_smart_goal_request.dart';
 import 'package:medical/src/model/request/create_calendar_request.dart';
+import 'package:medical/src/model/request/create_dsmes_booking_request.dart';
 import 'package:medical/src/model/request/create_menu_request.dart';
 import 'package:medical/src/model/request/create_smart_goal_request.dart';
 import 'package:medical/src/model/request/delete_calendar_request.dart';
@@ -17,6 +18,7 @@ import 'package:medical/src/model/request/make_question_request.dart';
 import 'package:medical/src/model/request/mark_completed_target_request.dart';
 import 'package:medical/src/model/request/mark_share_request.dart';
 import 'package:medical/src/model/request/post_survey_request.dart';
+import 'package:medical/src/model/request/register_docosan_user_request.dart';
 import 'package:medical/src/model/request/send_feedback_course_request.dart';
 import 'package:medical/src/model/request/send_interest_request.dart';
 import 'package:medical/src/model/request/sync_index_from_zalo_request.dart';
@@ -28,6 +30,7 @@ import 'package:medical/src/model/response/blood_sugar_template_response.dart';
 import 'package:medical/src/model/response/branchio_generate_zoom_response.dart';
 import 'package:medical/src/model/response/common_response.dart';
 import 'package:medical/src/model/response/create_calendar_response.dart';
+import 'package:medical/src/model/response/create_dsmes_offline_booking_response.dart';
 import 'package:medical/src/model/response/create_menu_response.dart';
 import 'package:medical/src/model/response/create_smart_goal_response.dart';
 import 'package:medical/src/model/response/delete_smart_goal_reponse.dart';
@@ -41,6 +44,7 @@ import 'package:medical/src/model/response/expert_comment_list_response.dart';
 import 'package:medical/src/model/response/filter_data_response.dart';
 import 'package:medical/src/model/response/food_suggest_response.dart';
 import 'package:medical/src/model/response/get_dsmes_appointment_response.dart';
+import 'package:medical/src/model/response/is_exist_docosan_user_response.dart';
 import 'package:medical/src/model/response/latest_hba1c_input_response.dart';
 import 'package:medical/src/model/response/learning_post_response.dart';
 import 'package:medical/src/model/response/lesson_module_response.dart';
@@ -55,6 +59,7 @@ import 'package:medical/src/model/response/my_lesson_response.dart';
 import 'package:medical/src/model/response/my_progress_response.dart';
 import 'package:medical/src/model/response/patient_info_response.dart';
 import 'package:medical/src/model/response/question_answer_response.dart';
+import 'package:medical/src/model/response/register_docosan_user_response.dart';
 import 'package:medical/src/model/response/report_response.dart';
 import 'package:medical/src/model/response/save_survey_result_response.dart';
 import 'package:medical/src/model/response/smart_goal_detail_response.dart';
@@ -962,6 +967,36 @@ class AppRepository {
   Future<ApiResult<DsmesClinicListResponse>> getClinicList() async {
     try {
       final response = await docosanClient.getClinicList();
+      return ApiResult.success(data: response);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
+  Future<ApiResult<bool>> isExistDocosanUser(
+      {required String phoneNumber}) async {
+    try {
+      final response = await docosanClient.isExistDocosanUser(phoneNumber);
+      return ApiResult.success(data: response.isExists);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
+  Future<ApiResult<RegisterDocosanUserResponse>> registerDocosanUser(
+      {required RegisterDocosanUserRequest request}) async {
+    try {
+      final response = await docosanClient.registerDocosanUser(request);
+      return ApiResult.success(data: response);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
+  Future<ApiResult<CreateDsmesOfflineBookingResponse>> createDsmesOfflineBooking(
+      {required CreateDsmesBookingRequest request}) async {
+    try {
+      final response = await docosanClient.createDsmesOfflineBooking(request);
       return ApiResult.success(data: response);
     } catch (e) {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));

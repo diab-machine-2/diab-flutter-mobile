@@ -6,9 +6,13 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/request/create_dsmes_booking_request.dart';
+import 'package:medical/src/model/request/register_docosan_user_request.dart';
+import 'package:medical/src/model/response/create_dsmes_offline_booking_response.dart';
 import 'package:medical/src/model/response/dsmes_clinic_detail_response.dart';
 import 'package:medical/src/model/response/dsmes_clinic_list_response.dart';
 import 'package:medical/src/model/response/get_dsmes_appointment_response.dart';
+import 'package:medical/src/model/response/is_exist_docosan_user_response.dart';
+import 'package:medical/src/model/response/register_docosan_user_response.dart';
 import 'package:medical/src/model/service/api_result.dart';
 import 'package:medical/src/model/service/network_exceptions.dart';
 import 'package:medical/src/widget/dsmes_appointment/model/dsmes_appointment_model.dart';
@@ -32,6 +36,55 @@ class DsmesAppointmentCubit extends Cubit<DsmesAppointmentState> {
 
   DsmesAppointmentCubit(this.appRepository)
       : super(InitialDsmesAppointmentState());
+
+  Future<void> initDsmesBooking() async {
+    final isExist = await isExistDocosanUser();
+    if (isExist) {
+      await registerDocosanUser();
+      await getDsmesAppointmentList();
+    }
+  }
+
+  Future<bool> isExistDocosanUser() async {
+    final phoneNumber = AppSettings.userInfo?.phoneNumber;
+    if (phoneNumber == null) {
+      return false;
+    }
+    ApiResult<bool> apiResult =
+        await appRepository.isExistDocosanUser(phoneNumber: phoneNumber);
+    apiResult.when(success: (bool isExists) {
+      return isExists;
+    }, failure: (NetworkExceptions error) {
+      return false;
+    });
+    return false;
+  }
+
+  Future<void> registerDocosanUser() async {
+    final phoneNumber = AppSettings.userInfo?.phoneNumber;
+    if (phoneNumber == null) {
+      return;
+    }
+    final displayName = AppSettings.userInfo?.fullName ?? '';
+    final gender = AppSettings.userInfo?.gender == 'Nam' ? '1' : '0';
+    final email = AppSettings.userInfo?.email ?? '';
+    final request = RegisterDocosanUserRequest(
+      phoneNumber: phoneNumber,
+      displayName: displayName,
+      gender: gender,
+      isGetCaresOrderInfo: 0,
+      email: email,
+      type: 'patient',
+    );
+    ApiResult<RegisterDocosanUserResponse> apiResult =
+        await appRepository.registerDocosanUser(request: request);
+    apiResult.when(success: (RegisterDocosanUserResponse response) async {
+      await AppSettings.saveDocosanToken(response.accessToken);
+      return;
+    }, failure: (NetworkExceptions error) {
+      return;
+    });
+  }
 
   Future<void> getDsmesAppointmentList(
       {int page = 1, bool isRefresh = false}) async {
@@ -90,6 +143,21 @@ class DsmesAppointmentCubit extends Cubit<DsmesAppointmentState> {
     });
   }
 
+  Future<void> createDsmesBooking() async {
+    emit(DsmesAppointmentLoading());
+    ApiResult<CreateDsmesOfflineBookingResponse> apiResult =
+        await appRepository.createDsmesOfflineBooking(
+            request: createDsmesBookingRequest!);
+    apiResult.when(success: (CreateDsmesOfflineBookingResponse response) {
+      print('CreateDsmesOfflineBookingResponse: ${response.data}');
+      // TODO: handle register to get token -> show confirm dialog ->
+      // get appointment id in resp -> parsing id to navigator to information page
+      emit(DsmesAppointmentLoaded());
+    }, failure: (NetworkExceptions error) {
+      emit(DsmesAppointmentFailure(NetworkExceptions.getErrorMessage(error)));
+    });
+  }
+
   _getFilteredData() {
     List<DsmesAppointment> filteredData = myAppointments.where((data) {
       DateTime startTime =
@@ -133,6 +201,12 @@ class DsmesAppointmentCubit extends Cubit<DsmesAppointmentState> {
       {required String startTime, required String endTime}) {
     createDsmesBookingRequest = createDsmesBookingRequest?.copyWith(
         startTime: startTime, endTime: endTime);
+  }
+
+  updateCreateDsmesBookingRequestRequesterInfo(
+      {required String name, required String phone}) {
+    createDsmesBookingRequest = createDsmesBookingRequest?.copyWith(
+        patientName: name, patientPhoneNumber: phone);
   }
 
   String getItemTitle(DsmesAppointmentMode mode) {

@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/extention.dart';
+import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/dsmes_appointment/dsmes_appointment_cubit.dart';
 import 'package:medical/src/widget/dsmes_appointment/model/dsmes_clinic_model.dart';
@@ -150,6 +151,12 @@ class _DsmesCalendarSectionState extends State<DsmesCalendarSection> {
                         _cubit.updateCreateDsmesBookingRequestTime(
                             startTime: selectedBookingSchedule!.startTime,
                             endTime: selectedBookingSchedule!.endTime);
+
+                        DsmesNavigationMixin.navigationKey.currentState
+                            ?.pushNamed(NavigatorName.dsmes_confirm_information,
+                                arguments: {
+                              'serviceType': widget.serviceType
+                            });
                       }),
                     ),
                   ],
@@ -218,9 +225,7 @@ class _DsmesCalendarSectionState extends State<DsmesCalendarSection> {
             ),
           ),
           CustomHorizontalDatePicker(
-            initialDate: selectedDate == null
-                ? DateTime.now()
-                : selectedDate!,
+            initialDate: selectedDate == null ? DateTime.now() : selectedDate!,
             firstDate: DateTime.parse("1969-07-20 20:18:04Z"),
             activeDates: activeDates,
             lastDate: _getLastDate(),

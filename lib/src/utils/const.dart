@@ -7,7 +7,7 @@ class Const {
 
   // static const String DOMAIN = "api.preprod.diab.com.vn";
   static const String DOMAIN = "api.diab.com.vn";
-  static const String DOMAIN_STAGING = "0c2f-14-241-249-181.ngrok-free.app";
+  static const String DOMAIN_STAGING = "api.staging.diab.com.vn";
   static const String DOMAIN_DEV = "api.dev.diab.vn";
 
   static const String HOST_URL = "https://$DOMAIN/";

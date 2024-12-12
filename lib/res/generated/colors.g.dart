@@ -159,4 +159,5 @@ class Colors {
   Color get color0xffFAF0D2 => Color(0xffFAF0D2);
   Color get color0xffA36E2A => Color(0xffA36E2A);
   Color get greenGradientTop02 => Color(0xff0FB4A5);
+  Color get color0xffE6E8EC => Color(0xffE6E8EC);
 }

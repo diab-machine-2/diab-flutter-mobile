@@ -1156,4 +1156,12 @@ consult_online,"Tư vấn trực tuyến","Consulting online",
 requested,"Đã yêu cầu","Requested",
 rejected,"Đã huỷ","Rejected",
 choose_center,"Chọn trung tâm","Choose center",
-vui_long_chon_gio_kham,"Vui lòng chọn giờ hẹn","Please choose a time"
+vui_long_chon_gio_kham,"Vui lòng chọn giờ hẹn","Please choose a time",
+confirm_information,"Xác nhận thông tin","Confirm information",
+consult_information,"Thông tin tư vấn","Consult information",
+consult_direct,"Tư vấn trực tiếp","Consult directly",
+consult_time,"Thời gian tư vấn","Consult time",
+center_name,"Tên trung tâm","Center name",
+consult_demand,"Nhu cầu tư vấn","Consult demand",
+confirm_book_consult,"Xác nhận đặt tư vấn","Confirm booking",
+change_consult_info,"Thay đổi thông tin tư vấn","Change consulting information"

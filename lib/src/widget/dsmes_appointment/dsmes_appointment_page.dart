@@ -15,6 +15,7 @@ import 'package:medical/src/widget/dsmes_appointment/dsmes_appointment_state.dar
 import 'package:medical/src/widget/dsmes_appointment/pages/dsmes_appointment_history_page.dart';
 import 'package:medical/src/widget/dsmes_appointment/pages/dsmes_booking_offline_page.dart';
 import 'package:medical/src/widget/dsmes_appointment/pages/dsmes_booking_select_datetime.dart';
+import 'package:medical/src/widget/dsmes_appointment/pages/dsmes_confirm_create_information_page.dart';
 import 'package:medical/src/widget/dsmes_appointment/pages/dsmes_navigation_mixin.dart';
 import 'package:medical/src/widget/dsmes_appointment/widgets/dsmes_appointment_item.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
@@ -36,7 +37,8 @@ class _DsmesAppointmentPageState extends State<DsmesAppointmentPage> {
     super.initState();
     final AppRepository repository = AppRepository();
     _cubit = DsmesAppointmentCubit(repository);
-    _cubit.getDsmesAppointmentList();
+    // _cubit.getDsmesAppointmentList();
+    _cubit.initDsmesBooking();
   }
 
   @override
@@ -70,9 +72,13 @@ class _DsmesAppointmentPageState extends State<DsmesAppointmentPage> {
                     DsmesAppointmentHistoryPage(),
                   );
                 case NavigatorName.dsmes_booking_offline:
+                  Map<String, dynamic>? args =
+                      settings.arguments as Map<String, dynamic>?;
                   return _buildRoute(
                     settings,
-                    DsmesBookingOfflinePage(),
+                    DsmesBookingOfflinePage(
+                      serviceType: args!["serviceType"],
+                    ),
                   );
                 case NavigatorName.dsmes_booking_select_date:
                   {
@@ -82,7 +88,17 @@ class _DsmesAppointmentPageState extends State<DsmesAppointmentPage> {
                       settings,
                       DsmesCalendarSection(
                         serviceType: args!["serviceType"],
-                        
+                      ),
+                    );
+                  }
+                case NavigatorName.dsmes_confirm_information:
+                  {
+                    Map<String, dynamic>? args =
+                        settings.arguments as Map<String, dynamic>?;
+                    return _buildRoute(
+                      settings,
+                      DsmesConfirmCreateInformation(
+                        serviceType: args!["serviceType"],
                       ),
                     );
                   }
@@ -233,7 +249,8 @@ class _DsmesAppointmentPageState extends State<DsmesAppointmentPage> {
                     GestureDetector(
                       onTap: () {
                         DsmesNavigationMixin.navigationKey.currentState
-                            ?.pushNamed(NavigatorName.dsmes_booking_offline);
+                            ?.pushNamed(NavigatorName.dsmes_booking_offline,
+                                arguments: {'serviceType': 'offline'});
                       },
                       child: Image.asset(R.drawable.offline_consulting),
                     ),

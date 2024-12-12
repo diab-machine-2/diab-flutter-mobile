@@ -1183,4 +1183,12 @@ class Strings {
   String get rejected => 'rejected';
   String get choose_center => 'choose_center';
   String get vui_long_chon_gio_kham => 'vui_long_chon_gio_kham';
+  String get confirm_information => 'confirm_information';
+  String get consult_information => 'consult_information';
+  String get consult_direct => 'consult_direct';
+  String get consult_time => 'consult_time';
+  String get center_name => 'center_name';
+  String get consult_demand => 'consult_demand';
+  String get confirm_book_consult => 'confirm_book_consult';
+  String get change_consult_info => 'change_consult_info';
 }
