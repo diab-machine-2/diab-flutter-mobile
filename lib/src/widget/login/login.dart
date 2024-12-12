@@ -65,55 +65,55 @@ class _LoginControllerState extends State<LoginController> {
     await TrackingManager.analytics
         .logScreenView(screenName: "login", screenClass: "LoginController");
     AppSettings.currentScreenName = 'login';
-    phoneFocusNode.addListener(() async {
-      if (phoneFocusNode.hasFocus) {
-        await TrackingManager.analytics.logEvent(
-          name: 'text_field_focus',
-          parameters: {
-            "screen_name": 'login',
-            'text_field_name': 'text_field_login_phone',
-            'object_value': phone
-          },
-        );
-      } else {
-        bool isValid = phone.length == 9 || phone.length == 10;
-        await TrackingManager.analytics.logEvent(
-          name: 'text_field_input',
-          parameters: {
-            "screen_name": 'login',
-            'text_field_name': 'text_field_login_phone',
-            'object_value': phone,
-            'validate_state': isValid ? 'pass' : 'fail',
-            'error_message': isValid ? 'none' : R.string.phone_not_valid.tr(),
-          },
-        );
-      }
-    });
-    passwordFocusNode.addListener(() async {
-      if (passwordFocusNode.hasFocus) {
-        await TrackingManager.analytics.logEvent(
-          name: 'text_field_focus',
-          parameters: {
-            "screen_name": 'login',
-            'text_field_name': 'text_field_login_password',
-            'object_value': password
-          },
-        );
-      } else {
-        bool isValid = password.length >= 6;
-        await TrackingManager.analytics.logEvent(
-          name: 'text_field_input',
-          parameters: {
-            "screen_name": 'login',
-            'text_field_name': 'text_field_login_password',
-            'object_value': password.length,
-            'validate_state': isValid ? 'pass' : 'fail',
-            'error_message':
-                isValid ? 'none' : R.string.password_least_character.tr()
-          },
-        );
-      }
-    });
+    // phoneFocusNode.addListener(() async {
+    //   if (phoneFocusNode.hasFocus) {
+    //     await TrackingManager.analytics.logEvent(
+    //       name: 'text_field_focus',
+    //       parameters: {
+    //         "screen_name": 'login',
+    //         'text_field_name': 'text_field_login_phone',
+    //         'object_value': phone
+    //       },
+    //     );
+    //   } else {
+    //     bool isValid = phone.length == 9 || phone.length == 10;
+    //     await TrackingManager.analytics.logEvent(
+    //       name: 'text_field_input',
+    //       parameters: {
+    //         "screen_name": 'login',
+    //         'text_field_name': 'text_field_login_phone',
+    //         'object_value': phone,
+    //         'validate_state': isValid ? 'pass' : 'fail',
+    //         'error_message': isValid ? 'none' : R.string.phone_not_valid.tr(),
+    //       },
+    //     );
+    //   }
+    // });
+    // passwordFocusNode.addListener(() async {
+    //   if (passwordFocusNode.hasFocus) {
+    //     await TrackingManager.analytics.logEvent(
+    //       name: 'text_field_focus',
+    //       parameters: {
+    //         "screen_name": 'login',
+    //         'text_field_name': 'text_field_login_password',
+    //         'object_value': password
+    //       },
+    //     );
+    //   } else {
+    //     bool isValid = password.length >= 6;
+    //     await TrackingManager.analytics.logEvent(
+    //       name: 'text_field_input',
+    //       parameters: {
+    //         "screen_name": 'login',
+    //         'text_field_name': 'text_field_login_password',
+    //         'object_value': password.length,
+    //         'validate_state': isValid ? 'pass' : 'fail',
+    //         'error_message':
+    //             isValid ? 'none' : R.string.password_least_character.tr()
+    //       },
+    //     );
+    //   }
+    // });
   }
 
   @override
@@ -184,10 +184,10 @@ class _LoginControllerState extends State<LoginController> {
                         color: R.color.transparent,
                         child: InkWell(
                           onTap: () async {
-                            await TrackingManager.analytics.logEvent(
-                              name: 'cta_button_clicked',
-                              parameters: {
-                                "screen_name": 'login',
+                            await TrackingManager.trackEvent(
+                              'login_forget_password',
+                              'login',
+                              params: {
                                 'cta_button_name': 'cta_login_forget_password',
                               },
                             );
@@ -206,10 +206,14 @@ class _LoginControllerState extends State<LoginController> {
                       ),
                     ],
                     GestureDetector(
-                      onTap: () {
+                      onTap: () async {
                         if (isLogin) {
                           login();
                         } else {
+                          await TrackingManager.trackEvent(
+                            'login_phone_start',
+                            'login',
+                          );
                           checkExistPhoneNumber();
                         }
                       },
@@ -271,7 +275,9 @@ class _LoginControllerState extends State<LoginController> {
         setState(() {
           isLogin = true;
         });
-        FocusScope.of(context).requestFocus(passwordFocusNode);
+        Future.delayed(Duration(milliseconds: 100), () {
+          FocusScope.of(context).requestFocus(passwordFocusNode);
+        });
       } else if (isExistAccount && !isActive) {
         phoneKey.currentState!.validate(R.string.tai_khoan_het_hieu_luc.tr());
       } else {
@@ -324,11 +330,6 @@ class _LoginControllerState extends State<LoginController> {
   }
 
   login() async {
-    await TrackingManager.analytics
-        .logEvent(name: 'cta_button_clicked', parameters: {
-      "screen_name": 'login',
-      'cta_button_name': 'cta_login_phone',
-    });
     FocusScope.of(context).unfocus();
     if (phone.isEmpty) {
       phoneKey.currentState!
@@ -355,9 +356,20 @@ class _LoginControllerState extends State<LoginController> {
         Navigator.pushReplacementNamed(context, NavigatorName.update_info,
             arguments: {'type': 'phone', 'diabeteStates': diabeteStates});
       } else {
+        await TrackingManager.analytics
+            .logEvent(name: 'login_phone', parameters: {
+          "screen_name": 'login',
+          'status': 'success',
+        });
+        await TrackingManager.trackEvent('login', 'welcome', params: {
+          'method': 'phone',
+        });
         LoginRouting().navigateToHome(context, arguments: widget.sharedCode);
       }
     } catch (e, _) {
+      await TrackingManager.trackEvent('login_phone', 'login', params: {
+        'status': 'fail',
+      });
       BotToast.closeAllLoading();
       if (e is Error) {
         if (e.code == '1') {
@@ -456,10 +468,10 @@ class _LoginControllerState extends State<LoginController> {
     Future.delayed(Duration(milliseconds: 300), () async {
       Observable.instance.notifyObservers([], notifyName: "refresh_home");
     });
-    await TrackingManager.analytics.logEvent(
-      name: 'login',
-      parameters: {
-        "screen_name": 'login',
+    await TrackingManager.trackEvent(
+      'login',
+      'login',
+      params: {
         'method': loginFrom.toLowerCase(),
       },
     );

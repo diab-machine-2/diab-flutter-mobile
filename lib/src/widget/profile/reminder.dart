@@ -300,7 +300,7 @@ class _ReminderControllerState extends State<ReminderController> with Observer {
     try {
       BotToast.showLoading();
       await UserClient().deleteScheduleReminder(model.id);
-      loadData();
+      Observable.instance.notifyObservers([], notifyName: "schedule_change");
       BotToast.closeAllLoading();
     } catch (e, _) {
       BotToast.closeAllLoading();

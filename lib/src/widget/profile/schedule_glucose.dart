@@ -651,6 +651,8 @@ class _ScheduleGlucoseControllerState extends State<ScheduleGlucoseController>
       BotToast.closeAllLoading();
       Observable.instance
           .notifyObservers([], notifyName: "refresh_home_activity");
+      Observable.instance
+          .notifyObservers([], notifyName: "glucose_change_data");
       Navigator.pop(context);
     } catch (e, _) {
       BotToast.closeAllLoading();

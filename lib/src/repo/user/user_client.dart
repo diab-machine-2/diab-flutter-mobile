@@ -88,16 +88,28 @@ class UserClient extends FetchClient {
   }
 
   Future<List<CalendarCoachModel>?> fetchCalendarCoach(
-      String courseId, String endTime) async {
+      String courseId, String endTime,
+      {bool isAdd1Day = true}) async {
     try {
-      final targetTime = (DateTime.now()
-              .add(Duration(days: 1, hours: 7))
+      // final targetTime =
+      //     (DateTime.now().add(Duration(hours: 7)).millisecondsSinceEpoch ~/
+      //         1000);
+      final localTargetTime = DateTime.utc(
+                  DateTime.now().year,
+                  DateTime.now().month,
+                  DateTime.now().day,
+                  DateTime.now().hour,
+                  DateTime.now().minute,
+                  DateTime.now().second)
+              .toLocal()
+              .add(Duration(days: isAdd1Day ? 1 : 0))
               .millisecondsSinceEpoch ~/
-          1000);
+          1000;
+
       final Response response =
           await super.fetchData(url: '/App/CalendarCoach/', params: {
         "courseId": courseId,
-        "startTime": targetTime
+        "startTime": localTargetTime
             .toString(), // only booking calendar after currentday + 24h
         "endTime": endTime
       });
@@ -150,6 +162,7 @@ class UserClient extends FetchClient {
     try {
       var json = jsonEncode(userModel.toJson());
       prefs.setString('user', json);
+      _setUserProperties(userModel);
     } catch (error) {}
   }
 
@@ -162,51 +175,69 @@ class UserClient extends FetchClient {
     if (userJson != null) {
       try {
         user = UserModel.fromJson(jsonDecode(userJson));
-        final CategoryItemUserModel levelOfDiabetesRuleList =
-            user.levelOfDiabetesRuleList!.firstWhere(
-                (element) => element.value == "${user?.diabetes?.status}");
-        List<String> interestNameList = [];
-
-        user.interestRuleList!.forEach((element) {
-          if (element.selected == true) {
-            interestNameList.add(element.text ?? "");
-          }
-        });
-
-        DateTime dateOfBirth =
-            DateTime.fromMillisecondsSinceEpoch(user.dateOfBirth! * 1000);
-
-        DateTime diabetesDate =
-            DateTime.fromMillisecondsSinceEpoch(user.diabetes!.date! * 1000);
-
-        TrackingManager.analytics.setUserId(id: user.id);
-        TrackingManager.analytics
-            .setUserProperty(name: 'gender', value: user.gender);
-        TrackingManager.analytics
-            .setUserProperty(name: 'referral_code', value: user.shareRefCode);
-        TrackingManager.analytics.setUserProperty(
-            name: 'interest', value: interestNameList.join('_'));
-        TrackingManager.analytics
-            .setUserProperty(name: 'age', value: "${user.age}");
-        TrackingManager.analytics.setUserProperty(
-            name: 'date_of_birth',
-            value: DateFormat('dd/MM/yyyy').format(dateOfBirth));
-        TrackingManager.analytics.setUserProperty(
-            name: 'pathological', value: levelOfDiabetesRuleList.text);
-        TrackingManager.analytics.setUserProperty(
-            name: 'pathological_year',
-            value: DateFormat('yyyy').format(diabetesDate));
-        TrackingManager.analytics
-            .setUserProperty(name: 'membership', value: user.packageName);
-        TrackingManager.analytics.setUserProperty(
-            name: 'referral_agency',
-            value: user.nameOfAgency ?? user.nameOfDoctor);
-        TrackingManager.analytics.setUserProperty(
-            name: 'google_connected',
-            value: user.isLinkedGoogle == true ? "Connected" : "None");
       } catch (error) {}
     }
+
     return user;
+  }
+
+  _setUserProperties(UserModel user) async {
+    final storageUser = await getUserPreferences();
+    if (storageUser.hashCode == user.hashCode) return;
+
+    try {
+      final CategoryItemUserModel levelOfDiabetesRuleList = user
+          .levelOfDiabetesRuleList!
+          .firstWhere((element) => element.value == "${user.diabetes?.status}");
+      List<String> interestNameList = [];
+
+      user.interestRuleList!.forEach((element) {
+        if (element.selected == true) {
+          interestNameList.add(element.text ?? "");
+        }
+      });
+
+      // DateTime dateOfBirth =
+      //     DateTime.fromMillisecondsSinceEpoch(user.dateOfBirth! * 1000);
+
+      DateTime diabetesDate =
+          DateTime.fromMillisecondsSinceEpoch(user.diabetes!.date! * 1000);
+
+      TrackingManager.setUserId(user.id!);
+      TrackingManager
+          .setUserProperty(name: 'gender', value: user.gender ?? '');
+      TrackingManager
+          .setUserProperty(name: 'referral_code', value: user.shareRefCode ?? '');
+      // TrackingManager.setUserProperty(
+      //     name: 'interest', value: interestNameList.join('_'));
+      TrackingManager
+          .setUserProperty(name: 'age', value: "${user.age}");
+      // TrackingManager.setUserProperty(
+      //     name: 'date_of_birth',
+      //     value: DateFormat('dd/MM/yyyy').format(dateOfBirth));
+      TrackingManager.setUserProperty(
+          name: 'pathological', value: levelOfDiabetesRuleList.text ?? 'None');
+      TrackingManager.setUserProperty(
+          name: 'pathological_year',
+          value: DateFormat('yyyy').format(diabetesDate));
+      TrackingManager
+          .setUserProperty(name: 'membership', value: user.packageName ?? 'Free');
+      // TrackingManager.setUserProperty(
+      //     name: 'referral_agency',
+      //     value: user.nameOfAgency ?? user.nameOfDoctor);
+      // TrackingManager.setUserProperty(
+      //     name: 'google_connected',
+      //     value: user.isLinkedGoogle == true ? "Connected" : "None");
+      TrackingManager.setUserProperty(
+          name: 'login_method',
+          value: user.isLinkedFacebook == true
+              ? 'facebook'
+              : user.isLinkedGoogle == true
+                  ? 'google'
+                  : user.isMobileAccount == true
+                      ? 'phone'
+                      : 'zalo');
+    } catch (error) {}
   }
 
   // Future<CategoryUserModel?> fetchCategoryItems() async {

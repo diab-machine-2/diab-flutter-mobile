@@ -11,6 +11,7 @@ import 'package:medical/src/model/response/create_calendar_response.dart';
 import 'package:medical/src/model/service/api_result.dart';
 import 'package:medical/src/model/service/network_exceptions.dart';
 import 'package:medical/src/repo/user/user_client.dart';
+import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/widget/calendar/calendar_booking_state.dart';
 import 'package:medical/src/widget/calendar/calendar_model.dart';
 import 'package:intl/intl.dart';
@@ -29,12 +30,13 @@ class CalendarBookingCubit extends Cubit<CalendarBookingState> {
 
   Future<List<CalendarCoachModel>> getCalendarCoach(
       String courseId, String endTime,
-      {String? id}) async {
+      {String? id, bool isAdd1Day = true}) async {
     try {
       emit(CalendarBookingLoading());
 
-      List<CalendarCoachModel> data =
-          await UserClient().fetchCalendarCoach(courseId, endTime) ?? [];
+      List<CalendarCoachModel> data = await UserClient()
+              .fetchCalendarCoach(courseId, endTime, isAdd1Day: isAdd1Day) ??
+          [];
 
       // Filter based on status
       data = data
@@ -44,9 +46,23 @@ class CalendarBookingCubit extends Cubit<CalendarBookingState> {
                   e.startTime == myCalendar!.appointmentDate))
           .toList();
 
+      List<CalendarCoachModel> extendedData = data;
+      if (isAdd1Day == false) {
+        data = data.where((calendar) {
+          final now = DateTime.now();
+          final compareDate = DateTime.utc(now.year, now.month, now.day,
+                      now.hour, now.minute, now.second)
+                  .add(Duration(days: 1))
+                  .millisecondsSinceEpoch ~/
+              1000;
+          final validDate = calendar.startTime >= compareDate;
+          return validDate;
+        }).toList();
+      }
+
       calendarCoachs = data;
       emit(CalendarBookingSuccess());
-      return data;
+      return isAdd1Day == false ? extendedData : data;
     } catch (e) {
       emit(CalendarBookingFailure(
           "An error occurred while fetching calendar data."));
@@ -70,8 +86,9 @@ class CalendarBookingCubit extends Cubit<CalendarBookingState> {
     DateTime? startDate,
     DateTime? endDate,
   }) async {
-    startDate ??= DateTime.now().add(Duration(days: 1));
-    endDate ??= DateTime.now().add(Duration(days: 21));
+    startDate ??= DateTime.now().add(Duration(days: 0 ));
+    endDate ??= DateTime.now()
+        .add(Duration(days: Const.MAX_DAY_RANGE_PRIMARY_SCREENING));
     emit(CalendarBookingLoading());
 
     final request = CalendarFilter(
@@ -151,7 +168,7 @@ class CalendarBookingCubit extends Cubit<CalendarBookingState> {
     apiResult.when(success: (CommonResponse response) async {
       return;
     }, failure: (NetworkExceptions error) {
-      emit(CalendarBookingFailure("Lấy link Zoom thất bại"));
+      emit(CalendarBookingFailure("Xác nhận đặt lịch thất bại"));
     });
   }
 

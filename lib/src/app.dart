@@ -619,8 +619,12 @@ class App extends StatelessWidget {
                           settings.arguments as Map<String, dynamic>?;
                       return _buildRoute(
                           settings,
-                          CalendarController(args!["pickSlot"],
-                              args["courseId"], args["endTime"]));
+                          CalendarController(
+                            args!["pickSlot"],
+                            args["courseId"],
+                            args["endTime"],
+                            args["bookingQuantity"],
+                          ));
                     }
 
                   case NavigatorName.interview_success:
@@ -638,9 +642,10 @@ class App extends StatelessWidget {
                             providerKey: args['providerKey'],
                           ));
                     }
-                  case NavigatorName.meeting_prepare: {
-                    return _buildRoute(settings, MeetingPreparePage());
-                  }
+                  case NavigatorName.meeting_prepare:
+                    {
+                      return _buildRoute(settings, MeetingPreparePage());
+                    }
                   case NavigatorName.meeting:
                     {
                       // if (settings.arguments is MeetingCubit) {

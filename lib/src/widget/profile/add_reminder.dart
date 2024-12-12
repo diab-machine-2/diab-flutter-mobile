@@ -1,4 +1,3 @@
-
 import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
@@ -138,7 +137,8 @@ class _AddReminderControllerState extends BaseState<AddReminderController> {
                       }),
                 ),
                 Expanded(
-                  child: ListView(padding: EdgeInsets.all(16),
+                  child: ListView(
+                      padding: EdgeInsets.all(16),
                       // physics: NeverScrollableScrollPhysics(),
                       children: [
                         Container(
@@ -606,11 +606,13 @@ class _AddReminderControllerState extends BaseState<AddReminderController> {
 
   void edit() async {
     final title = titleController.text;
+    final des = descriptionController.text;
     if (title.isEmpty) {
       Message.showToastMessage(context, R.string.mes_reminder_name_empty.tr());
       return;
     }
-
+    model.name = title;
+    model.content = des;
     try {
       BotToast.showLoading();
       await UserClient().editScheduleReminder(model);

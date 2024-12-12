@@ -1499,14 +1499,14 @@ class _AddBloodPressureControllerState
           reason,
           paths);
       if (result == true) {
-        await TrackingManager.analytics.logEvent(
-          name: 'kpi_add_success',
-          parameters: {
-            "screen_name": 'kpi_blood_pressure_add',
-            'object_type': 'kpi_blood_pressure',
-            'object_title': 'Chỉ số huyết áp'
-          },
-        );
+        // await TrackingManager.analytics.logEvent(
+        //   name: 'kpi_add_success',
+        //   parameters: {
+        //     "screen_name": 'kpi_blood_pressure_add',
+        //     'object_type': 'kpi_blood_pressure',
+        //     'object_title': 'Chỉ số huyết áp'
+        //   },
+        // );
         // if(widget.goalId != null && widget.goalId?.isNotEmpty == true){
         await HomeClient().completeSmartGoal(selectedDate, widget.goalId ?? '',
             1, ScheduleType.blood_pressure.typeIndex);
