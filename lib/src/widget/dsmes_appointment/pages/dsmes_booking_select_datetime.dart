@@ -27,7 +27,7 @@ class DsmesCalendarSection extends StatefulWidget {
 
 class _DsmesCalendarSectionState extends State<DsmesCalendarSection> {
   late DsmesAppointmentCubit _cubit;
-  // DateTime? selectedDate;
+  DateTime? selectedDate;
   bool isMorningSelected = true;
   BookingSchedule? selectedBookingSchedule;
 
@@ -43,6 +43,7 @@ class _DsmesCalendarSectionState extends State<DsmesCalendarSection> {
       if (startTime.isNotEmpty && endTime.isNotEmpty) {
         selectedBookingSchedule = BookingSchedule(
             startTime: startTime, endTime: endTime, isAvailable: true);
+        selectedDate = DateTime.parse(startTime);
       }
       // Set initial morning/afternoon based on currentAppointment if exists
       if (selectedBookingSchedule != null) {
@@ -53,9 +54,9 @@ class _DsmesCalendarSectionState extends State<DsmesCalendarSection> {
     availableBookingSchedule = _getAvailableBookingSchedule();
   }
 
-  List<BookingSchedule> _getAvailableBookingSchedule({DateTime? selectedDate}) {
-    if (selectedDate == null) {
-      selectedDate = DateTime.now();
+  List<BookingSchedule> _getAvailableBookingSchedule({DateTime? bookingDate}) {
+    if (bookingDate == null) {
+      bookingDate = DateTime.now();
     }
     if (widget.serviceType == 'offline') {
       final scheduleDates = _cubit.selectedClinic?.getBookingSchedules() ?? [];
@@ -66,7 +67,7 @@ class _DsmesCalendarSectionState extends State<DsmesCalendarSection> {
           .where((schedule) =>
               schedule.isAvailable == true &&
               DateTime.parse(schedule.startTime)
-                  .isSameDayWith(selectedDate!)) // Only get available slots
+                  .isSameDayWith(bookingDate!)) // Only get available slots
           .toList();
     } else {
       // Handle case for online booking
@@ -217,9 +218,9 @@ class _DsmesCalendarSectionState extends State<DsmesCalendarSection> {
             ),
           ),
           CustomHorizontalDatePicker(
-            initialDate: selectedBookingSchedule == null
+            initialDate: selectedDate == null
                 ? DateTime.now()
-                : DateTime.parse(selectedBookingSchedule!.startTime),
+                : selectedDate!,
             firstDate: DateTime.parse("1969-07-20 20:18:04Z"),
             activeDates: activeDates,
             lastDate: _getLastDate(),
@@ -227,7 +228,7 @@ class _DsmesCalendarSectionState extends State<DsmesCalendarSection> {
             onDateChanged: (datetime) {
               if (datetime != null) {
                 var targets =
-                    _getAvailableBookingSchedule(selectedDate: datetime)
+                    _getAvailableBookingSchedule(bookingDate: datetime)
                         .where((schedule) =>
                             schedule.isAvailable == true &&
                             DateTime.parse(schedule.startTime).isSameDayWith(
@@ -235,7 +236,7 @@ class _DsmesCalendarSectionState extends State<DsmesCalendarSection> {
                         .toList();
                 setState(() {
                   availableBookingSchedule = targets;
-                  selectedBookingSchedule = targets.firstOrNull;
+                  selectedDate = datetime;
                   isMorningSelected = true;
                 });
               }

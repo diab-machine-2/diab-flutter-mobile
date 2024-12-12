@@ -1,8 +1,10 @@
 import 'package:dio/dio.dart';
 import 'package:medical/src/model/request/get_dsmes_appointment_request.dart';
+import 'package:medical/src/model/request/register_docosan_user_request.dart';
 import 'package:medical/src/model/response/dsmes_clinic_detail_response.dart';
 import 'package:medical/src/model/response/dsmes_clinic_list_response.dart';
 import 'package:medical/src/model/response/get_dsmes_appointment_response.dart';
+import 'package:medical/src/model/response/register_docosan_user_response.dart';
 import 'package:retrofit/http.dart';
 import 'package:retrofit/retrofit.dart';
 
@@ -25,4 +27,13 @@ abstract class DocosanApi {
 
   @GET("api/clinics/profile-clinic-diab")
   Future<DsmesClinicListResponse> getClinicList();
+
+  @GET("api/is-exist-user")
+  Future<DsmesClinicDetailResponse> isExistDocosanUser(
+    @Query('phone_number') String? phoneNumber,
+  );
+
+  @POST("api/register-internal")
+  Future<RegisterDocosanUserResponse> registerDocosanUser(
+      @Body() RegisterDocosanUserRequest request);
 }
