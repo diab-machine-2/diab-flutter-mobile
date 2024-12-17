@@ -4,7 +4,7 @@ class RegisterDocosanUserRequest {
   final String displayName;
   final String gender;
   String? language;
-  final int isGetCaresOrderInfo;
+  final String isGetCaresOrderInfo;
   final String phoneNumber;
 
   RegisterDocosanUserRequest({
@@ -24,7 +24,7 @@ class RegisterDocosanUserRequest {
       displayName: json['display_name'] ?? '',
       gender: json['gender'] ?? '',
       language: json['language'] ?? '',
-      isGetCaresOrderInfo: json['is_get_cares_order_info'] ?? 0,
+      isGetCaresOrderInfo: json['is_get_cares_order_info'] ?? '0',
       phoneNumber: json['phone_number'] ?? '',
     );
   }

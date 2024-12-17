@@ -130,4 +130,11 @@ class AppColors {
   static const color0xffA36E2A = Color(0xffA36E2A);
   static const greenGradientTop02 = Color(0xff0FB4A5);
   static const color0xffE6E8EC = Color(0xffE6E8EC);
+  static const color0xff636A6B = Color(0xff636A6B);
+  static const backgroundColorNew = Color(0xffEAF9F7);
+  static const color0xffD1E2FF = Color(0xffD1E2FF);
+  static const color0xffEAFFEC = Color(0xffEAFFEC);
+  static const color0xffFFE9E9 = Color(0xffFFE9E9);
+  static const color0xff111515 = Color(0xff111515);
+  static const color0xffDFE4E4 = Color(0xffDFE4E4);
 }

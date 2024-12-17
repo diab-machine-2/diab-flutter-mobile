@@ -13,6 +13,7 @@ import 'package:medical/src/widget/dsmes_appointment/dsmes_appointment_cubit.dar
 import 'package:medical/src/widget/dsmes_appointment/model/dsmes_appointment_model.dart';
 import 'package:medical/src/widget/dsmes_appointment/dsmes_appointment_state.dart';
 import 'package:medical/src/widget/dsmes_appointment/pages/dsmes_appointment_history_page.dart';
+import 'package:medical/src/widget/dsmes_appointment/pages/dsmes_booking_detail.dart';
 import 'package:medical/src/widget/dsmes_appointment/pages/dsmes_booking_offline_page.dart';
 import 'package:medical/src/widget/dsmes_appointment/pages/dsmes_booking_select_datetime.dart';
 import 'package:medical/src/widget/dsmes_appointment/pages/dsmes_confirm_create_information_page.dart';
@@ -46,15 +47,7 @@ class _DsmesAppointmentPageState extends State<DsmesAppointmentPage> {
     return Scaffold(
       body: Container(
         decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [
-              R.color.color0xFFFDC798.withOpacity(0.3),
-              R.color.greenbg.withOpacity(0.9),
-            ],
-            begin: FractionalOffset(1, 1),
-            end: FractionalOffset(0.9, 0.5),
-            stops: [0.0, 1.0],
-          ),
+          color: R.color.backgroundColorNew,
         ),
         child: BlocProvider(
           create: (context) => _cubit,
@@ -102,6 +95,18 @@ class _DsmesAppointmentPageState extends State<DsmesAppointmentPage> {
                       ),
                     );
                   }
+                case NavigatorName.dsmes_booking_detail:
+                  {
+                    Map<String, dynamic>? args =
+                        settings.arguments as Map<String, dynamic>?;
+                    return _buildRoute(
+                      settings,
+                      DsmesBookingDetail(
+                        serviceType: args!["serviceType"],
+                        appointment: args["appointment"],
+                      ),
+                    );
+                  }
                 default:
                   return null;
               }
@@ -116,6 +121,7 @@ class _DsmesAppointmentPageState extends State<DsmesAppointmentPage> {
     return BlocConsumer<DsmesAppointmentCubit, DsmesAppointmentState>(
       listener: (context, state) {
         if (state is DsmesAppointmentFailure) {
+          BotToast.closeAllLoading();
           Message.showToastMessage(context, state.error);
         }
       },
@@ -228,7 +234,15 @@ class _DsmesAppointmentPageState extends State<DsmesAppointmentPage> {
                         return DsmesAppointmentItem(
                           data: data,
                           onChooseService: () {
-                            // Handle on tap detail
+                            DsmesNavigationMixin.navigationKey.currentState
+                                ?.pushNamed(
+                              NavigatorName.dsmes_booking_detail,
+                              arguments: {
+                                'serviceType':
+                                    DsmesAppointmentMode.atClinic.toString(),
+                                'appointment': data
+                              },
+                            );
                           },
                           cubit: _cubit,
                         );
@@ -250,7 +264,10 @@ class _DsmesAppointmentPageState extends State<DsmesAppointmentPage> {
                       onTap: () {
                         DsmesNavigationMixin.navigationKey.currentState
                             ?.pushNamed(NavigatorName.dsmes_booking_offline,
-                                arguments: {'serviceType': 'offline'});
+                                arguments: {
+                              'serviceType':
+                                  DsmesAppointmentMode.atClinic.toString()
+                            });
                       },
                       child: Image.asset(R.drawable.offline_consulting),
                     ),

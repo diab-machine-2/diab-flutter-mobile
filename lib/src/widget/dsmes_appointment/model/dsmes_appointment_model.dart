@@ -54,6 +54,7 @@ class DsmesAppointment {
   final int hasNewNote;
   final int hasNote;
   final PatientInfo patientInfo;
+  final List<SymptomAttachment> symptomAttachment;
 
   DsmesAppointment({
     required this.id,
@@ -111,6 +112,7 @@ class DsmesAppointment {
     required this.hasNewNote,
     required this.hasNote,
     required this.patientInfo,
+    required this.symptomAttachment,
   });
 
   factory DsmesAppointment.fromJson(Map<String, dynamic> json) {
@@ -127,7 +129,11 @@ class DsmesAppointment {
       symptom: json['symptom'] ?? '',
       startTime: json['start_time'] ?? '',
       endTime: json['end_time'] ?? '',
-      appointmentTime: json['appointment_time'] ?? 0,
+      appointmentTime: json['appointment_time'] != null
+          ? (json['appointment_time'] is String
+              ? int.parse(json['appointment_time'])
+              : json['appointment_time'])
+          : 0,
       requestByProviders: json['request_by_providers'] ?? '',
       forChild: json['for_child'],
       status: json['status'] ?? '',
@@ -162,14 +168,18 @@ class DsmesAppointment {
       showChatWithDoctor: json['show_chat_with_doctor'] ?? 0,
       canReview: json['can_review'] ?? 0,
       alreadyReview: json['already_review'] ?? 0,
-      doctor: json['doctor'] ?? [],
-      clinic: ClinicInfo.fromJson(json['clinic'] ?? {}),
+      doctor: json['doctor_info'] ?? json['doctor'] ?? [],
+      clinic: ClinicInfo.fromJson(json['clinic_info'] ?? json['clinic'] ?? {}),
       // teleMedicine: json['teleMedicine'] ?? [],
       hasAttachment: json['has_attachment'] ?? 0,
       newAttachments: json['new_attachments'] ?? 0,
       hasNewNote: json['has_new_note'] ?? 0,
       hasNote: json['has_note'] ?? 0,
       patientInfo: PatientInfo.fromJson(json['patient_info'] ?? {}),
+      symptomAttachment: (json['symptom_attachment'] as List?)
+              ?.map((e) => SymptomAttachment.fromJson(e))
+              .toList() ??
+          [],
     );
   }
 }
@@ -204,30 +214,53 @@ class ClinicInfo {
 }
 
 class PatientInfo {
-  final int id;
+  final int userId;
   final String? avatar;
   final String displayName;
   final String gender;
   final String birthday;
-  final int age;
+  final String phone;
+  final String email;
 
   PatientInfo({
-    required this.id,
+    required this.userId,
     this.avatar,
     required this.displayName,
     required this.gender,
     required this.birthday,
-    required this.age,
+    required this.phone,
+    required this.email,
   });
 
   factory PatientInfo.fromJson(Map<String, dynamic> json) {
     return PatientInfo(
-      id: json['id'] ?? 0,
+      userId: json['user_id'] ?? 0,
       avatar: json['avatar'],
       displayName: json['display_name'] ?? '',
       gender: json['gender'] ?? '',
       birthday: json['birthday'] ?? '',
-      age: json['age'] ?? 0,
+      phone: json['phone_number'] ?? '',
+      email: json['email'] ?? '',
+    );
+  }
+}
+
+class SymptomAttachment {
+  final String name;
+  final String fileType;
+  final String filePath;
+
+  SymptomAttachment({
+    required this.name,
+    required this.fileType,
+    required this.filePath,
+  });
+
+  factory SymptomAttachment.fromJson(Map<String, dynamic> json) {
+    return SymptomAttachment(
+      name: json['name'] ?? '',
+      fileType: json['file_type'] ?? '',
+      filePath: json['file_path'] ?? '',
     );
   }
 }

@@ -160,4 +160,11 @@ class Colors {
   Color get color0xffA36E2A => Color(0xffA36E2A);
   Color get greenGradientTop02 => Color(0xff0FB4A5);
   Color get color0xffE6E8EC => Color(0xffE6E8EC);
+  Color get color0xff636A6B => Color(0xff636A6B);
+  Color get backgroundColorNew => Color(0xffEAF9F7);
+  Color get color0xffD1E2FF => Color(0xffD1E2FF);
+  Color get color0xffEAFFEC => Color(0xffEAFFEC);
+  Color get color0xffFFE9E9 => Color(0xffFFE9E9);
+  Color get color0xff111515 => Color(0xff111515);
+  Color get color0xffDFE4E4 => Color(0xffDFE4E4);
 }

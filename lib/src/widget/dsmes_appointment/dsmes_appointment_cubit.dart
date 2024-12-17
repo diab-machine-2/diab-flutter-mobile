@@ -10,11 +10,14 @@ import 'package:medical/src/model/request/register_docosan_user_request.dart';
 import 'package:medical/src/model/response/create_dsmes_offline_booking_response.dart';
 import 'package:medical/src/model/response/dsmes_clinic_detail_response.dart';
 import 'package:medical/src/model/response/dsmes_clinic_list_response.dart';
+import 'package:medical/src/model/response/get_dsmes_appointment_detail_response.dart';
 import 'package:medical/src/model/response/get_dsmes_appointment_response.dart';
 import 'package:medical/src/model/response/is_exist_docosan_user_response.dart';
 import 'package:medical/src/model/response/register_docosan_user_response.dart';
 import 'package:medical/src/model/service/api_result.dart';
+import 'package:medical/src/model/service/docosan_client.dart';
 import 'package:medical/src/model/service/network_exceptions.dart';
+import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/dsmes_appointment/model/dsmes_appointment_model.dart';
 import 'package:medical/src/widget/dsmes_appointment/dsmes_appointment_state.dart';
 import 'package:medical/src/widget/dsmes_appointment/model/dsmes_clinic_model.dart';
@@ -50,14 +53,9 @@ class DsmesAppointmentCubit extends Cubit<DsmesAppointmentState> {
     if (phoneNumber == null) {
       return false;
     }
-    ApiResult<bool> apiResult =
+    final isExist =
         await appRepository.isExistDocosanUser(phoneNumber: phoneNumber);
-    apiResult.when(success: (bool isExists) {
-      return isExists;
-    }, failure: (NetworkExceptions error) {
-      return false;
-    });
-    return false;
+    return isExist;
   }
 
   Future<void> registerDocosanUser() async {
@@ -72,18 +70,17 @@ class DsmesAppointmentCubit extends Cubit<DsmesAppointmentState> {
       phoneNumber: phoneNumber,
       displayName: displayName,
       gender: gender,
-      isGetCaresOrderInfo: 0,
+      isGetCaresOrderInfo: '0',
       email: email,
       type: 'patient',
+      language: '',
     );
-    ApiResult<RegisterDocosanUserResponse> apiResult =
-        await appRepository.registerDocosanUser(request: request);
-    apiResult.when(success: (RegisterDocosanUserResponse response) async {
-      await AppSettings.saveDocosanToken(response.accessToken);
+    final resp = await appRepository.registerDocosanUser(request: request);
+    if (resp != null) {
+      updateCreateDsmesBookingRequestLanguage(language: resp.data.language);
       return;
-    }, failure: (NetworkExceptions error) {
-      return;
-    });
+    }
+    return;
   }
 
   Future<void> getDsmesAppointmentList(
@@ -143,19 +140,37 @@ class DsmesAppointmentCubit extends Cubit<DsmesAppointmentState> {
     });
   }
 
-  Future<void> createDsmesBooking() async {
+  Future<DsmesAppointment?> createDsmesBooking() async {
     emit(DsmesAppointmentLoading());
-    ApiResult<CreateDsmesOfflineBookingResponse> apiResult =
-        await appRepository.createDsmesOfflineBooking(
-            request: createDsmesBookingRequest!);
+    DsmesAppointment? dsmesAppointment;
+    ApiResult<CreateDsmesOfflineBookingResponse> apiResult = await appRepository
+        .createDsmesOfflineBooking(request: createDsmesBookingRequest!);
     apiResult.when(success: (CreateDsmesOfflineBookingResponse response) {
-      print('CreateDsmesOfflineBookingResponse: ${response.data}');
-      // TODO: handle register to get token -> show confirm dialog ->
-      // get appointment id in resp -> parsing id to navigator to information page
+      print('CreateDsmesOfflineBookingResponse: ${response.data.toString()}');
       emit(DsmesAppointmentLoaded());
+      dsmesAppointment = response.data;
     }, failure: (NetworkExceptions error) {
       emit(DsmesAppointmentFailure(NetworkExceptions.getErrorMessage(error)));
+      dsmesAppointment = null;
     });
+    return dsmesAppointment;
+  }
+
+  Future<DsmesAppointment?> getDsmesAppointmentDetail(
+      {required int appointmentId}) async {
+    emit(DsmesAppointmentLoading());
+    DsmesAppointment? dsmesAppointment;
+    ApiResult<GetDsmesAppointmentDetailResponse> apiResult = await appRepository
+        .getDsmesAppointmentDetail(appointmentId: appointmentId);
+    apiResult.when(success: (GetDsmesAppointmentDetailResponse response) {
+      print('GetDsmesAppointmentDetailResponse: ${response.data}');
+      dsmesAppointment = response.data;
+      emit(DsmesAppointmentLoaded());
+    }, failure: (NetworkExceptions error) {
+      dsmesAppointment = null;
+      emit(DsmesAppointmentFailure(NetworkExceptions.getErrorMessage(error)));
+    });
+    return dsmesAppointment;
   }
 
   _getFilteredData() {
@@ -189,7 +204,9 @@ class DsmesAppointmentCubit extends Cubit<DsmesAppointmentState> {
       patientGender: AppSettings.userInfo?.gender == 'Nam' ? 1 : 0,
       patientEmail: AppSettings.userInfo?.email ?? '',
       bookingForClinic: 1, // 1: Booking phòng khám, 2: Booking bác sĩ
-      language: 'en',
+      language: 'vn',
+      symptom: '',
+      symptomAttachment: [],
     );
   }
 
@@ -207,6 +224,18 @@ class DsmesAppointmentCubit extends Cubit<DsmesAppointmentState> {
       {required String name, required String phone}) {
     createDsmesBookingRequest = createDsmesBookingRequest?.copyWith(
         patientName: name, patientPhoneNumber: phone);
+  }
+
+  updateCreateDsmesBookingRequestLanguage({required String language}) {
+    createDsmesBookingRequest = createDsmesBookingRequest?.copyWith(
+      language: language,
+    );
+  }
+
+  updateCreateDsmesBookingRequestSymptom({required String symptom}) {
+    createDsmesBookingRequest = createDsmesBookingRequest?.copyWith(
+      symptom: symptom,
+    );
   }
 
   String getItemTitle(DsmesAppointmentMode mode) {
@@ -245,6 +274,20 @@ class DsmesAppointmentCubit extends Cubit<DsmesAppointmentState> {
         return R.color.color0xffDC0000;
       default:
         return R.color.textDark;
+    }
+  }
+
+  Color getItemStatusContainerColor(String status, bool isPast) {
+    switch (status) {
+      case DSMES_STATUS_REQUEST:
+      case DSMES_STATUS_ON_HOLD:
+        return R.color.color0xffFAF0D2;
+      case DSMES_STATUS_APPROVE:
+        return isPast ? R.color.color0xffEAFFEC : R.color.color0xffD1E2FF;
+      case DSMES_STATUS_REJECT:
+        return R.color.color0xffFFE9E9;
+      default:
+        return R.color.white;
     }
   }
 }

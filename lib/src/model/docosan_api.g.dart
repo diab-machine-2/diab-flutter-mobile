@@ -90,54 +90,6 @@ class _DocosanApi implements DocosanApi {
   }
 
   @override
-  Future<IsExistDocosanUserResponse> isExistDocosanUser(phoneNumber) async {
-    const _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{r'phone_number': phoneNumber};
-    queryParameters.removeWhere((k, v) => v == null);
-    final _headers = <String, dynamic>{};
-    final _data = <String, dynamic>{};
-    final _result = await _dio.fetch<Map<String, dynamic>>(
-        _setStreamType<IsExistDocosanUserResponse>(Options(
-      method: 'GET',
-      headers: _headers,
-      extra: _extra,
-    )
-            .compose(
-              _dio.options,
-              'api/is-exist-user',
-              queryParameters: queryParameters,
-              data: _data,
-            )
-            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
-    final value = IsExistDocosanUserResponse.fromJson(_result.data!);
-    return value;
-  }
-
-  @override
-  Future<RegisterDocosanUserResponse> registerDocosanUser(request) async {
-    const _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{};
-    final _headers = <String, dynamic>{};
-    final _data = <String, dynamic>{};
-    _data.addAll(request.toJson());
-    final _result = await _dio.fetch<Map<String, dynamic>>(
-        _setStreamType<RegisterDocosanUserResponse>(Options(
-      method: 'POST',
-      headers: _headers,
-      extra: _extra,
-    )
-            .compose(
-              _dio.options,
-              'api/register-internal',
-              queryParameters: queryParameters,
-              data: _data,
-            )
-            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
-    final value = RegisterDocosanUserResponse.fromJson(_result.data!);
-    return value;
-  }
-
-  @override
   Future<CreateDsmesOfflineBookingResponse> createDsmesOfflineBooking(
       request) async {
     const _extra = <String, dynamic>{};
@@ -159,6 +111,31 @@ class _DocosanApi implements DocosanApi {
             )
             .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
     final value = CreateDsmesOfflineBookingResponse.fromJson(_result.data!);
+    return value;
+  }
+
+  @override
+  Future<GetDsmesAppointmentDetailResponse> getDsmesAppointmentDetail(
+      appointmentId) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{r'appointment_id': appointmentId};
+    queryParameters.removeWhere((k, v) => v == null);
+    final _headers = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    final _result = await _dio.fetch<Map<String, dynamic>>(
+        _setStreamType<GetDsmesAppointmentDetailResponse>(Options(
+      method: 'GET',
+      headers: _headers,
+      extra: _extra,
+    )
+            .compose(
+              _dio.options,
+              'api/patients/my-appointment-detail',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = GetDsmesAppointmentDetailResponse.fromJson(_result.data!);
     return value;
   }
 

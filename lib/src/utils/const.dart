@@ -203,4 +203,5 @@ class Const {
   static const DOCOSAN_TOKEN = 'docosan_token';
   static const int MAX_DAY_RANGE_DSMES_BOOKING = 30;
   static const String CLICKED_BRANCH_LINK = 'clicked_branch_link';
+  static const String ORGANIZATION_API_KEY = 'organization_api_key';
 }

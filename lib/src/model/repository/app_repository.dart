@@ -1,3 +1,4 @@
+import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/modal/exercrises/exercises_intensity.dart';
 import 'package:medical/src/model/docosan_api.dart';
 import 'package:medical/src/model/request/booking_success_request.dart';
@@ -43,6 +44,7 @@ import 'package:medical/src/model/response/exercise_movement_response.dart';
 import 'package:medical/src/model/response/expert_comment_list_response.dart';
 import 'package:medical/src/model/response/filter_data_response.dart';
 import 'package:medical/src/model/response/food_suggest_response.dart';
+import 'package:medical/src/model/response/get_dsmes_appointment_detail_response.dart';
 import 'package:medical/src/model/response/get_dsmes_appointment_response.dart';
 import 'package:medical/src/model/response/is_exist_docosan_user_response.dart';
 import 'package:medical/src/model/response/latest_hba1c_input_response.dart';
@@ -76,6 +78,7 @@ import 'package:medical/src/model/response/zoom_token_response.dart';
 import 'package:medical/src/model/service/api_result.dart';
 import 'package:medical/src/model/service/docosan_client.dart';
 import 'package:medical/src/model/service/network_exceptions.dart';
+import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/calendar/calendar_model.dart';
 
 import '../app_api.dart';
@@ -86,6 +89,9 @@ import '../response/calendar_training_response.dart';
 import '../response/content_welcome_response.dart';
 import '../response/expert_comment_response.dart';
 import '../service/app_client.dart';
+
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 late AppApi appClient;
 late DocosanApi docosanClient;
@@ -954,6 +960,17 @@ class AppRepository {
     }
   }
 
+  Future<ApiResult<GetDsmesAppointmentDetailResponse>>
+      getDsmesAppointmentDetail({required int appointmentId}) async {
+    try {
+      final response =
+          await docosanClient.getDsmesAppointmentDetail(appointmentId);
+      return ApiResult.success(data: response);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
   Future<ApiResult<DsmesClinicDetailResponse>> getClinicDetail(
       {required int id}) async {
     try {
@@ -973,28 +990,54 @@ class AppRepository {
     }
   }
 
-  Future<ApiResult<bool>> isExistDocosanUser(
-      {required String phoneNumber}) async {
-    try {
-      final response = await docosanClient.isExistDocosanUser(phoneNumber);
-      return ApiResult.success(data: response.isExists);
-    } catch (e) {
-      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+  Future<bool> isExistDocosanUser({String? phoneNumber}) async {
+    if (phoneNumber == null) {
+      return false;
     }
+    http.Response response = await http.get(
+      Uri.parse(
+        "${Utils.getHostDocosanUrl()}api/is-exist-user?phone_number=$phoneNumber",
+      ),
+      headers: {
+        'Content-Type': 'application/json; charset=UTF-8',
+        'User-Agent': 'Mobile',
+        'x-api-key': 'diab-heath-center-9a3cefac-136caaef',
+      },
+    );
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> dataJson = json.decode(response.body);
+      final data = IsExistDocosanUserResponse.fromJson(dataJson['data']);
+      return data.isExists;
+    }
+    return false;
   }
 
-  Future<ApiResult<RegisterDocosanUserResponse>> registerDocosanUser(
+  Future<RegisterDocosanUserResponse?> registerDocosanUser(
       {required RegisterDocosanUserRequest request}) async {
-    try {
-      final response = await docosanClient.registerDocosanUser(request);
-      return ApiResult.success(data: response);
-    } catch (e) {
-      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    http.Response response = await http.post(
+      Uri.parse(
+        "${Utils.getHostDocosanUrl()}api/register-internal",
+      ),
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'User-Agent': 'Mobile',
+        'x-api-key': 'diab-heath-center-9a3cefac-136caaef',
+      },
+      body: request.toJson(),
+    );
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> dataJson = json.decode(response.body);
+      final resp = RegisterDocosanUserResponse.fromJson(dataJson);
+      await AppSettings.saveDocosanToken(resp.data.accessToken);
+      docosanClient = DocosanClient().docosanClient;
+      return resp;
     }
+    return null;
   }
 
-  Future<ApiResult<CreateDsmesOfflineBookingResponse>> createDsmesOfflineBooking(
-      {required CreateDsmesBookingRequest request}) async {
+  Future<ApiResult<CreateDsmesOfflineBookingResponse>>
+      createDsmesOfflineBooking(
+          {required CreateDsmesBookingRequest request}) async {
     try {
       final response = await docosanClient.createDsmesOfflineBooking(request);
       return ApiResult.success(data: response);

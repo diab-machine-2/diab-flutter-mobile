@@ -1,4 +1,4 @@
-class RegisterDocosanUserResponse {
+class RegisterDocosanUserModel {
   final int id;
   final String prefix;
   final String email;
@@ -18,7 +18,7 @@ class RegisterDocosanUserResponse {
   final String accessToken;
   final String organize;
 
-  RegisterDocosanUserResponse({
+  RegisterDocosanUserModel({
     required this.id,
     required this.prefix,
     required this.email,
@@ -39,8 +39,8 @@ class RegisterDocosanUserResponse {
     required this.organize,
   });
 
-  factory RegisterDocosanUserResponse.fromJson(Map<String, dynamic> json) {
-    return RegisterDocosanUserResponse(
+  factory RegisterDocosanUserModel.fromJson(Map<String, dynamic> json) {
+    return RegisterDocosanUserModel(
       id: json['id'] ?? 0,
       prefix: json['prefix'] ?? '',
       email: json['email'] ?? '',
@@ -59,6 +59,23 @@ class RegisterDocosanUserResponse {
       googleId: json['google_id'],
       accessToken: json['access_token'] ?? '',
       organize: json['organize'] ?? '',
+    );
+  }
+}
+
+class RegisterDocosanUserResponse {
+  final int code;
+  final RegisterDocosanUserModel data;
+
+  RegisterDocosanUserResponse({
+    required this.code,
+    required this.data,
+  });
+
+  factory RegisterDocosanUserResponse.fromJson(Map<String, dynamic> json) {
+    return RegisterDocosanUserResponse(
+      code: json['code'] ?? 0,
+      data: RegisterDocosanUserModel.fromJson(json['data'] ?? {})
     );
   }
 }

@@ -11,6 +11,8 @@ class CreateDsmesBookingRequest {
   final String extraInfo;
   final int bookingForClinic;
   final String language;
+  final String symptom;
+  final List<String> symptomAttachment;
 
   CreateDsmesBookingRequest({
     required this.startTime,
@@ -25,6 +27,8 @@ class CreateDsmesBookingRequest {
     this.extraInfo = '',
     required this.bookingForClinic,
     required this.language,
+    required this.symptom,
+    required this.symptomAttachment,
   });
 
   factory CreateDsmesBookingRequest.fromJson(Map<String, dynamic> json) {
@@ -41,6 +45,8 @@ class CreateDsmesBookingRequest {
       extraInfo: json['extra_info'] as String? ?? '',
       bookingForClinic: json['booking_for_clinic'] as int,
       language: json['language'] as String,
+      symptom: json['symptom'] as String,
+      symptomAttachment: (json['symptom_attachment'] as List<String>?) ?? [],
     );
   }
 
@@ -58,6 +64,8 @@ class CreateDsmesBookingRequest {
       'extra_info': extraInfo,
       'booking_for_clinic': bookingForClinic,
       'language': language,
+      'symptom': symptom,
+      'symptom_attachment': symptomAttachment,
     };
   }
 
@@ -74,6 +82,8 @@ class CreateDsmesBookingRequest {
     String? extraInfo,
     int? bookingForClinic,
     String? language,
+    String? symptom,
+    List<String>? symptomAttachment,
   }) {
     return CreateDsmesBookingRequest(
       startTime: startTime ?? this.startTime,
@@ -88,6 +98,8 @@ class CreateDsmesBookingRequest {
       extraInfo: extraInfo ?? this.extraInfo,
       bookingForClinic: bookingForClinic ?? this.bookingForClinic,
       language: language ?? this.language,
+      symptom: symptom ?? this.symptom,
+      symptomAttachment: symptomAttachment ?? this.symptomAttachment,
     );
   }
 }

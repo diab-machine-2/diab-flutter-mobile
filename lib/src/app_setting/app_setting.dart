@@ -209,14 +209,33 @@ class AppSettings {
     return true;
   }
 
+  static Future<String> getOrganizationApiKey() async {
+    final apiKey = appPreference.getData(Const.ORGANIZATION_API_KEY) ?? '';
+    Console.log("getOrganizationApiKey", apiKey);
+    return apiKey;
+  }
+
+  static Future<bool> saveOrganizationApiKey(String? apiKey) async {
+    Console.log("saveOrganizationApiKey", apiKey);
+    appPreference.setData(Const.ORGANIZATION_API_KEY, apiKey);
+    return true;
+  }
+
+  static Future<bool> clearOrganizationApiKey() async {
+    appPreference.removeData(Const.ORGANIZATION_API_KEY);
+    return true;
+  }
+
   static Future<bool> saveClickedBranchLink(bool? clickedBranchLink) async {
     Console.log("saveClickedBranchLink", clickedBranchLink);
-    appPreference.setData(Const.CLICKED_BRANCH_LINK, clickedBranchLink.toString());
+    appPreference.setData(
+        Const.CLICKED_BRANCH_LINK, clickedBranchLink.toString());
     return true;
   }
 
   static Future<bool> getClickedBranchLink() async {
-    final clickedBranchLink = appPreference.getData(Const.CLICKED_BRANCH_LINK) ?? '';
+    final clickedBranchLink =
+        appPreference.getData(Const.CLICKED_BRANCH_LINK) ?? '';
     Console.log("getClickedBranchLink", clickedBranchLink);
     return clickedBranchLink == 'true';
   }
@@ -255,6 +274,7 @@ class AppSettings {
 
   static Future<bool> clearToken() async {
     appPreference.removeData(Const.TOKEN);
+    appPreference.removeData(Const.DOCOSAN_TOKEN);
     appPreference.removeData('healthAppPermission');
     return true;
   }

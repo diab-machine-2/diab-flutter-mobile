@@ -1173,7 +1173,8 @@ class Strings {
   String get confirm_schedule => 'confirm_schedule';
   String get confirm_schedule_content => 'confirm_schedule_content';
   String get confirm_change_schedule => 'confirm_change_schedule';
-  String get confirm_change_schedule_content => 'confirm_change_schedule_content';
+  String get confirm_change_schedule_content =>
+      'confirm_change_schedule_content';
   String get join_now => 'join_now';
   String get health_consulting => 'health_consulting';
   String get consulting_history => 'consulting_history';
@@ -1191,4 +1192,10 @@ class Strings {
   String get consult_demand => 'consult_demand';
   String get confirm_book_consult => 'confirm_book_consult';
   String get change_consult_info => 'change_consult_info';
+  String get congratulation_on => 'congratulation_on';
+  String get confirm_booking_subtitle => 'confirm_booking_subtitle';
+  String get recheck_information => 'recheck_information';
+  String get booking_success_dialog_title => 'booking_success_dialog_title';
+  String get notice_symptom => 'notice_symptom';
+  String get symptom => 'symptom';
 }

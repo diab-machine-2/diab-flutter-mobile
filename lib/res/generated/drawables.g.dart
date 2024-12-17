@@ -579,4 +579,5 @@ class Drawables {
   String get ic_map_marker => "lib/res/drawables/ic_map_marker.png";
   String get online_consulting => "lib/res/drawables/online_consulting.png";
   String get offline_consulting => "lib/res/drawables/offline_consulting.png";
+  String get ic_dialog_success => "lib/res/drawables/ic_dialog_success.png";
 }

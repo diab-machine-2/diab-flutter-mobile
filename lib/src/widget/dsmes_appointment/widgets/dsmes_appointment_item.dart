@@ -78,12 +78,17 @@ class DsmesAppointmentItem extends StatelessWidget {
             ),
           ],
         ),
-        Text(
-          cubit.getItemStatus(data.status, isPast),
-          style: TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w500,
-            color: cubit.getItemStatusTextColor(data.status, isPast),
+        Container(
+          color: cubit.getItemStatusContainerColor(
+              data.status, isPast),
+          padding: EdgeInsets.symmetric(vertical: 2, horizontal: 6),
+          child: Text(
+            cubit.getItemStatus(data.status, isPast),
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+              color: cubit.getItemStatusTextColor(data.status, isPast),
+            ),
           ),
         ),
       ],

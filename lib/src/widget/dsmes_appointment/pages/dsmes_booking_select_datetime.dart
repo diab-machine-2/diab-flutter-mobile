@@ -8,6 +8,7 @@ import 'package:medical/src/utils/extention.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/dsmes_appointment/dsmes_appointment_cubit.dart';
+import 'package:medical/src/widget/dsmes_appointment/model/dsmes_appointment_model.dart';
 import 'package:medical/src/widget/dsmes_appointment/model/dsmes_clinic_model.dart';
 import 'package:medical/src/widget/dsmes_appointment/pages/dsmes_navigation_mixin.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
@@ -59,7 +60,7 @@ class _DsmesCalendarSectionState extends State<DsmesCalendarSection> {
     if (bookingDate == null) {
       bookingDate = DateTime.now();
     }
-    if (widget.serviceType == 'offline') {
+    if (widget.serviceType == DsmesAppointmentMode.atClinic.toString()) {
       final scheduleDates = _cubit.selectedClinic?.getBookingSchedules() ?? [];
       if (scheduleDates.isEmpty) {
         return [];
@@ -81,15 +82,7 @@ class _DsmesCalendarSectionState extends State<DsmesCalendarSection> {
     return Scaffold(
       body: Container(
         decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [
-              R.color.color0xFFFDC798.withOpacity(0.3),
-              R.color.greenbg.withOpacity(0.9),
-            ],
-            begin: FractionalOffset(1, 1),
-            end: FractionalOffset(0.9, 0.5),
-            stops: [0.0, 1.0],
-          ),
+          color: R.color.backgroundColorNew,
         ),
         child: Stack(
           children: [
@@ -478,7 +471,7 @@ class _DsmesCalendarSectionState extends State<DsmesCalendarSection> {
   }
 
   List<DateTime> _getActiveDates() {
-    if (widget.serviceType == 'offline') {
+    if (widget.serviceType == DsmesAppointmentMode.atClinic.toString()) {
       final scheduleDates = _cubit.selectedClinic?.getBookingSchedules() ?? [];
       if (scheduleDates.isEmpty) {
         return [];

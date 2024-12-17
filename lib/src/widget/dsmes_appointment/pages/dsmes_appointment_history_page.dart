@@ -36,15 +36,7 @@ class _DsmesAppointmentHistoryPageState
     return Scaffold(
       body: Container(
         decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [
-              R.color.color0xFFFDC798.withOpacity(0.3),
-              R.color.greenbg.withOpacity(0.9),
-            ],
-            begin: FractionalOffset(1, 1),
-            end: FractionalOffset(0.9, 0.5),
-            stops: [0.0, 1.0],
-          ),
+          color: R.color.backgroundColorNew,
         ),
         child: BlocProvider(
           create: (context) => _cubit,
