@@ -20,7 +20,10 @@ import 'package:medical/src/widgets/empty_data_box.dart';
 import '../blood_sugar_functions.dart';
 
 class BloodSugarCompareChart extends StatefulWidget {
-  BloodSugarCompareChart({Key? key}) : super(key: key);
+  BloodSugarCompareChart({Key? key, required this.periodFilterType}) : super(key: key);
+
+  final int periodFilterType;
+
   @override
   BloodSugarCompareChartState createState() => BloodSugarCompareChartState();
 }
@@ -35,7 +38,8 @@ class BloodSugarCompareChartState extends State<BloodSugarCompareChart>
   int comparerType = 1;
   @override
   void initState() {
-    periodFilterType = BloodSugarDetailTabbarController.of(context)!.periodFilterType;
+    periodFilterType =
+        BloodSugarDetailTabbarController.of(context)?.periodFilterType ?? widget.periodFilterType;
     super.initState();
   }
 
@@ -73,7 +77,10 @@ class BloodSugarCompareChartState extends State<BloodSugarCompareChart>
                 : Container(
                     color: R.color.transparent,
                     padding: EdgeInsets.only(left: 12, right: 12),
-                    child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
                       const SizedBox(height: 20),
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.center,

@@ -16,7 +16,10 @@ import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widgets/empty_data_box.dart';
 
 class BloodSugarDetail extends StatefulWidget {
-  BloodSugarDetail({Key? key}) : super(key: key);
+  BloodSugarDetail({Key? key, required this.periodFilterType}) : super(key: key);
+
+  final int periodFilterType;
+
   @override
   BloodSugarDetailState createState() => BloodSugarDetailState();
 }
@@ -32,7 +35,7 @@ class BloodSugarDetailState extends State<BloodSugarDetail>
   int periodFilterType = 3;
   @override
   void initState() {
-    periodFilterType = BloodSugarDetailTabbarController.of(context)!.periodFilterType;
+    periodFilterType = BloodSugarDetailTabbarController.of(context)?.periodFilterType ?? widget.periodFilterType;
     super.initState();
   }
 
@@ -75,6 +78,7 @@ class BloodSugarDetailState extends State<BloodSugarDetail>
                 border: Border.all(color: R.color.gray_btn, width: 1),
               ),
               child: Column(
+                mainAxisSize: MainAxisSize.min,
                 children: [
                   const SizedBox(height: 20),
                   // Title
@@ -85,6 +89,7 @@ class BloodSugarDetailState extends State<BloodSugarDetail>
                       children: [
                         Expanded(
                           child: Column(
+                            mainAxisSize: MainAxisSize.min,
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
@@ -166,11 +171,11 @@ class BloodSugarDetailState extends State<BloodSugarDetail>
                       Expanded(
                         child: GestureDetector(
                           onTap: () async {
-                            BloodSugarDetailTabbarController.of(context)!
-                                .loadInputWithId(1, model.highestId);
+                            BloodSugarDetailTabbarController.of(context)?.loadInputWithId(1, model.highestId);
                           },
                           child: Center(
                             child: Column(
+                              mainAxisSize: MainAxisSize.min,
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
                                 Text(
@@ -218,11 +223,11 @@ class BloodSugarDetailState extends State<BloodSugarDetail>
                       Expanded(
                         child: GestureDetector(
                           onTap: () async {
-                            BloodSugarDetailTabbarController.of(context)!
-                                .loadInputWithId(1, model.lowestId);
+                            BloodSugarDetailTabbarController.of(context)?.loadInputWithId(1, model.lowestId);
                           },
                           child: Center(
                             child: Column(
+                              mainAxisSize: MainAxisSize.min,
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
                                 Text(
@@ -270,11 +275,11 @@ class BloodSugarDetailState extends State<BloodSugarDetail>
                       Expanded(
                         child: GestureDetector(
                           onTap: () async {
-                            BloodSugarDetailTabbarController.of(context)!
-                                .loadInputWithId(1, model.lowestId);
+                            BloodSugarDetailTabbarController.of(context)?.loadInputWithId(1, model.lowestId);
                           },
                           child: Center(
                             child: Column(
+                              mainAxisSize: MainAxisSize.min,
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
                                 Text(
@@ -383,6 +388,7 @@ class BloodSugarDetailState extends State<BloodSugarDetail>
             ),
           ),
           Column(
+            mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
