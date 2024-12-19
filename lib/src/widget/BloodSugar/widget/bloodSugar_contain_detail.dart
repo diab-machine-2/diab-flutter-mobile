@@ -134,6 +134,8 @@ class BloodSugarDetailState extends State<BloodSugarDetail>
                     ),
                   ),
 
+                  const SizedBox(height: 12),
+
                   model.totalCount == 0
                       ? EmptyDataBox(
                           text: "chỉ số đường huyết",
@@ -166,6 +168,7 @@ class BloodSugarDetailState extends State<BloodSugarDetail>
                   // Thấp nhất / Trung bình / Cao nhất
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const SizedBox(width: 16),
                       Expanded(
@@ -206,7 +209,7 @@ class BloodSugarDetailState extends State<BloodSugarDetail>
                                       TextSpan(
                                         text: ' mmol/L',
                                         style: TextStyle(
-                                          fontSize: 16,
+                                          fontSize: 14,
                                           fontWeight: FontWeight.w400,
                                           color: R.color.primaryGreyColor,
                                         ),
@@ -247,7 +250,7 @@ class BloodSugarDetailState extends State<BloodSugarDetail>
                                         text:
                                             model.average == 0 ? '--' : roundNumber(model.average!),
                                         style: TextStyle(
-                                          fontSize: 16,
+                                          fontSize: 14,
                                           fontWeight: FontWeight.bold,
                                           color: model.average == 0
                                               ? R.color.textDark
@@ -298,7 +301,7 @@ class BloodSugarDetailState extends State<BloodSugarDetail>
                                       TextSpan(
                                         text: model.lowest == 0 ? '--' : roundNumber(model.lowest!),
                                         style: TextStyle(
-                                          fontSize: 16,
+                                          fontSize: 14,
                                           fontWeight: FontWeight.bold,
                                           color: model.lowest == 0
                                               ? R.color.textDark
@@ -387,6 +390,7 @@ class BloodSugarDetailState extends State<BloodSugarDetail>
               ),
             ),
           ),
+          const SizedBox(width: 12),
           Column(
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.start,
@@ -477,7 +481,7 @@ class BloodSugarDetailState extends State<BloodSugarDetail>
             ],
           ),
           const SizedBox(
-            width: 28,
+            width: 28
           ),
         ],
       ),

@@ -160,6 +160,64 @@ class _BloodSugarDetailTabbarControllerState extends State<BloodSugarDetailTabba
                   periodFilterType: periodFilterType,
                 ),
               ),
+
+              const SizedBox(height: 32),
+
+              // Buttons
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: InkWell(
+                  onTap: () {
+                    // TODO:
+                  },
+                  child: Container(
+                    height: 48,
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      color: R.color.gray_btn,
+                      borderRadius: BorderRadius.circular(24),
+                    ),
+                    child: Center(
+                      child: Text(
+                        R.string.blood_sugar_schedule_single_line.tr(),
+                        style: TextStyle(
+                          color: R.color.dark,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: InkWell(
+                  onTap: () {
+                    // TODO:
+                  },
+                  child: Container(
+                    height: 48,
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      color: R.color.accentColor,
+                      borderRadius: BorderRadius.circular(24),
+                    ),
+                    child: Center(
+                      child: Text(
+                        R.string.blood_sugar_input.tr(),
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 32),
             ],
           ),
         ),
@@ -167,7 +225,6 @@ class _BloodSugarDetailTabbarControllerState extends State<BloodSugarDetailTabba
     );
   }
 
-  // TODO: move outside (parent scope)
   Widget _sectionFilter() {
     return Container(
       height: 36,

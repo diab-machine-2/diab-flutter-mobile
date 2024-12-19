@@ -577,6 +577,7 @@ class Strings {
   String get blood_sugar_schedule_single_line =>
       'blood_sugar_schedule_single_line';
   String get personal_info => 'personal_info';
+  String get blood_sugar_input => 'blood_sugar_input';
   String get information_security => 'information_security';
   String get update_phone_number => 'update_phone_number';
   String get let_diab_remind_you => 'let_diab_remind_you';
