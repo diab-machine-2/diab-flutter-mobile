@@ -11,7 +11,7 @@ import 'package:medical/src/widget/nipro/health_app/widgets/request_health_conne
 import 'package:medical/src/widgets/button_widget.dart';
 
 class BloodSugarFunctions {
-  static void showModalAddData(BuildContext context) {
+  static void showModalAddData(BuildContext context, {bool popPrevious = false}) {
     Widget buildContentItem(
         String title, String subtitle, String iconPath, VoidCallback onPressed) {
       return InkWell(
@@ -66,7 +66,7 @@ class BloodSugarFunctions {
       );
     }
 
-    showModalBottomSheet(
+     showModalBottomSheet(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(16))),
       backgroundColor: Colors.white,
       context: context,
@@ -124,6 +124,9 @@ class BloodSugarFunctions {
                     R.drawable.im_glucose_input_device,
                     () {
                       Navigator.pop(context);
+                      if (popPrevious) {
+                        Navigator.pop(context);
+                      }
                       BlocProvider.of<NiproBloc>(context).tryAutoConnect();
                     },
                   ),
@@ -134,6 +137,9 @@ class BloodSugarFunctions {
                     R.drawable.im_glucose_input_manual,
                     () {
                       Navigator.pop(context);
+                      if (popPrevious) {
+                        Navigator.pop(context);
+                      }
                       Navigator.pushNamed(context, NavigatorName.add_blood_sugar_new,
                           arguments: {'type': 'input'});
                     },

@@ -31,13 +31,11 @@ import 'package:medical/src/widget/nipro/roche_connection/roche_connection_view.
 import 'package:medical/src/widgets/custom_checkbox_widget.dart';
 import 'package:medical/src/widgets/spacing_row.dart';
 import 'package:medical/src/widgets/toggle_buttons.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:medical/src/modal/error/error_model.dart';
 import 'package:easy_localization/easy_localization.dart';
 import '../../widgets/CalendarPicker/custom_date_picker.dart';
-import '../../widgets/network_image_widget.dart';
 import '../my_plan_screens/activity_tab/activity_tab/models/schedule_type.dart';
 import 'widget/level_off_diabetes_rule_picker.dart';
 import 'widget/section_add_note.dart';
@@ -227,9 +225,8 @@ class _AddBloodSugarControllerNewState
           backgroundColor: R.color.backgroundColor,
           body: Container(
             decoration: BoxDecoration(
-                image: DecorationImage(
-                    image: AssetImage(R.drawable.bg_splash),
-                    fit: BoxFit.cover)),
+              image: DecorationImage(image: AssetImage(R.drawable.bg_glucose), fit: BoxFit.cover),
+            ),
             child: Column(
               children: [
                 _appBarSection(),

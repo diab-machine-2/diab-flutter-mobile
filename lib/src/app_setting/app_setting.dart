@@ -349,6 +349,15 @@ class AppSettings {
     return numberOfOpenHome;
   }
 
+  // Check to show 1st page
+  static Future<bool> hadOpenedGlucoseIntro() async {
+    bool hadOpenedGlucoseIntro = appPreference.getBoolData("hadOpenedGlucoseIntro");
+    return hadOpenedGlucoseIntro;
+  }
+  static void markOpenedGlucoseIntro() {
+    appPreference.setData("hadOpenedGlucoseIntro", true);
+  }
+
   static Future<bool> logout(
       {bool isNavigateToStepListScreen = true, bool isSync = false}) async {
     try {

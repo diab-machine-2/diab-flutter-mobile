@@ -7,6 +7,7 @@ import 'package:medical/src/app_setting/firebase_tracking/kpi_glycemic_tracking.
 import 'package:medical/src/modal/HbA1C/short_gui.dart';
 import 'package:medical/src/repo/HbA1C/HbA1C_client.dart';
 import 'package:medical/src/utils/navigation_util.dart';
+import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/HbA1C/widget/description/description.dart';
 import 'package:medical/src/widget/components/custom_action_descriptipn.dart';
 import 'package:medical/src/widget/home/fliter_enum.dart';
@@ -116,7 +117,7 @@ class _BloodSugarDetailTabbarControllerState extends State<BloodSugarDetailTabba
     return Scaffold(
       backgroundColor: Color(0xFFF4F4F5),
       body: CommonPage(
-        background: R.drawable.bg_lesson_detail,
+        background: R.drawable.bg_glucose,
         title: R.string.duong_huyet.tr(),
         appBarAction: GestureDetector(
           onTap: () {},
@@ -124,7 +125,7 @@ class _BloodSugarDetailTabbarControllerState extends State<BloodSugarDetailTabba
             padding: const EdgeInsets.only(right: 8),
             child: TextButton(
               onPressed: () {
-                // TODO:
+                Navigator.of(context).pushNamed(NavigatorName.glucose_intro_2nd_page);
               },
               child: Text(
                 R.string.huong_dan.tr(),

@@ -10,7 +10,7 @@ class GlucoseIntro2ndPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: CommonPage(
-        background: R.drawable.bg_lesson_detail,
+        background: R.drawable.bg_glucose,
         title: R.string.huong_dan.tr(),
         child: _composeLayout(),
       ),

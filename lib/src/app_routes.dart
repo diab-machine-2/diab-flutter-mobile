@@ -79,7 +79,7 @@ class AppRoutes {
           ),
           fullscreenDialog: true,
         );
-      case NavigatorName.glucose_intro:
+      case NavigatorName.glucose_intro_1st_page:
         page = GlucoseIntro1stPage();
         break;
       case NavigatorName.glucose_intro_2nd_page:

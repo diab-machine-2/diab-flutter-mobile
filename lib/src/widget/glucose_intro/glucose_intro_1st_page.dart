@@ -1,5 +1,12 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/app_setting/app_setting.dart';
+import 'package:medical/src/modal/glucose/glucose_lesson.dart';
+import 'package:medical/src/repo/glucose/glucose_client.dart';
+import 'package:medical/src/utils/navigator_name.dart';
+import 'package:medical/src/widget/BloodSugar/blood_sugar_functions.dart';
+import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widgets/common_page.dart';
 import 'package:medical/src/widgets/network_image_widget.dart';
 
@@ -16,12 +23,15 @@ class _GlucoseIntro1stPageState extends State<GlucoseIntro1stPage> {
   final ScrollController _scrollController = ScrollController();
   final double _lessonItemWidth = 338.0;
 
+  final List<GlucoseLesson> _pinedLessons = [];
+
   // seed
   final int _itemCount = 10;
 
   @override
   void initState() {
     super.initState();
+    _loadLessons();
     _scrollController.addListener(_onScroll);
   }
 
@@ -31,19 +41,41 @@ class _GlucoseIntro1stPageState extends State<GlucoseIntro1stPage> {
     super.dispose();
   }
 
+  void _loadLessons() async {
+    try {
+      _pinedLessons.clear();
+      final lessons = await GlucoseClient().fetchGlucoseLessons();
+      if (lessons != null) {
+        setState(() {
+          _pinedLessons.addAll(lessons);
+        });
+      }
+    } catch (e, s) {
+      TrackingManager.recordError(e, s);
+    }
+  }
+
+  void _navigateToInputSelection() {
+    if (AppSettings.isUS) {
+      Navigator.of(context).pop();
+      Navigator.of(context).pushNamed(NavigatorName.add_blood_sugar_new);
+    }
+    BloodSugarFunctions.showModalAddData(context, popPrevious: true);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: CommonPage(
-        background: R.drawable.bg_lesson_detail,
-        title: 'Đường huyết',
+        background: R.drawable.bg_glucose,
+        title: R.string.duong_huyet.tr(),
         child: _composeLayout(),
         appBarAction: Padding(
           padding: const EdgeInsets.only(right: 8),
           child: TextButton(
             onPressed: () {},
             child: Text(
-              'Hướng dẫn',
+              R.string.huong_dan.tr(),
               style: TextStyle(
                 color: R.color.mainColor,
                 fontSize: 13,
@@ -94,7 +126,7 @@ class _GlucoseIntro1stPageState extends State<GlucoseIntro1stPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Bạn có biết',
+                  R.string.did_you_know.tr(),
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w700,
@@ -102,7 +134,7 @@ class _GlucoseIntro1stPageState extends State<GlucoseIntro1stPage> {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  'Lợi ích của thói quen theo dõi đường huyết thường xuyên giúp làm giảm các biến chứng do tăng/hạ đường huyết.',
+                  R.string.glucose_benefit_observe.tr(),
                   style: TextStyle(
                     fontSize: 15,
                     height: 24 / 15,
@@ -112,7 +144,7 @@ class _GlucoseIntro1stPageState extends State<GlucoseIntro1stPage> {
                 ),
                 const SizedBox(height: 16),
                 ElevatedButton(
-                  onPressed: () {},
+                  onPressed: _navigateToInputSelection,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: R.color.mainColor,
                     shape: RoundedRectangleBorder(
@@ -121,7 +153,7 @@ class _GlucoseIntro1stPageState extends State<GlucoseIntro1stPage> {
                     minimumSize: Size.fromHeight(40),
                   ),
                   child: Text(
-                    'Nhập đường huyết',
+                    R.string.blood_sugar_input.tr(),
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 14,
@@ -147,7 +179,7 @@ class _GlucoseIntro1stPageState extends State<GlucoseIntro1stPage> {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Text(
-              'Bạn cần hỗ trợ gì?',
+              R.string.glucose_intro_help_title.tr(),
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w700,
@@ -157,29 +189,27 @@ class _GlucoseIntro1stPageState extends State<GlucoseIntro1stPage> {
             ),
           ),
           const SizedBox(height: 8),
-          Row(
-            children: [
-              Expanded(
-                  child: _buildFAQItem(
-                      'Hướng dẫn kết nối máy đo và app DiaB', R.drawable.im_guide_connectdevice)),
-              const SizedBox(width: 8),
-              Expanded(
-                  child: _buildFAQItem(
-                      'Hướng dẫn xem biểu đồ đường huyết', R.drawable.im_guide_viewchart)),
-            ],
-          ),
-          const SizedBox(height: 8),
-          Row(
-            children: [
-              Expanded(
-                  child: _buildFAQItem(
-                      'Hướng dẫn đặt lịch đo đường huyết', R.drawable.im_guide_schedule)),
-              const SizedBox(width: 8),
-              Expanded(
-                  child: _buildFAQItem(
-                      'Hướng dẫn xem bảng theo dõi đường huyết', R.drawable.im_guide_read_glucose)),
-            ],
-          ),
+          if (_pinedLessons.isNotEmpty) ...[
+            Row(
+              children: [
+                Expanded(child: _buildFAQItem(_pinedLessons[0])),
+                const SizedBox(width: 8),
+                Expanded(
+                    child: _pinedLessons.length > 1 ? _buildFAQItem(_pinedLessons[1]) : const SizedBox()),
+              ],
+            ),
+            const SizedBox(height: 8),
+          ],
+          if (_pinedLessons.isNotEmpty && _pinedLessons.length > 2) ...[
+            Row(
+              children: [
+                Expanded(child: _buildFAQItem(_pinedLessons[2])),
+                const SizedBox(width: 8),
+                Expanded(
+                    child: _pinedLessons.length > 3 ? _buildFAQItem(_pinedLessons[3]) : const SizedBox()),
+              ],
+            ),
+          ],
         ],
       ),
     );
@@ -254,8 +284,9 @@ class _GlucoseIntro1stPageState extends State<GlucoseIntro1stPage> {
     );
   }
 
-  Widget _buildFAQItem(String title, String iconPath) {
-    // just return content and padding itself
+  Widget _buildFAQItem(GlucoseLesson lesson) {
+    String title = lesson.name;
+    String? imageUrl = lesson.imageUrl;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
       decoration: BoxDecoration(
@@ -267,7 +298,12 @@ class _GlucoseIntro1stPageState extends State<GlucoseIntro1stPage> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Image.asset(iconPath, width: 72, height: 72),
+          NetWorkImageWidget(
+            imageUrl: imageUrl,
+            fit: BoxFit.cover,
+            width: 72,
+            height: 72,
+          ),
           const SizedBox(height: 8),
           Text(
             title,
