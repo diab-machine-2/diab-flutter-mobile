@@ -222,14 +222,14 @@ class _CalendarControllerState extends State<CalendarController> {
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(200),
                           border: Border.all(
-                            color: R.color.color0xff008479,
+                            color: R.color.greenGradientBottom,
                           ),
                         ),
                         child: Center(
                           child: Text(
                             R.string.change_booking.tr(),
                             style: TextStyle(
-                              color: R.color.color0xff008479,
+                              color: R.color.greenGradientBottom,
                               fontWeight: FontWeight.w700,
                               fontSize: 16,
                               fontFamily: 'sfpro',
@@ -258,7 +258,7 @@ class _CalendarControllerState extends State<CalendarController> {
                           child: Text(
                             R.string.back_home_page.tr(),
                             style: TextStyle(
-                              color: R.color.color0xff008479,
+                              color: R.color.greenGradientBottom,
                               fontWeight: FontWeight.w700,
                               fontSize: 16,
                               fontFamily: 'sfpro',

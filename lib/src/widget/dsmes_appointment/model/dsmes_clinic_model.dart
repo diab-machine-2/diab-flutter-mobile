@@ -15,7 +15,7 @@ class DsmesClinicModel {
   final String isSuper;
   final String status;
   final int serviceId;
-  final String insurance;
+  // final String insurance;
   final String tagLine;
   final Map<String, int> showGoodAt;
   final Map<String, List<GoodAt>> goodAt;
@@ -41,7 +41,7 @@ class DsmesClinicModel {
     required this.isSuper,
     required this.status,
     required this.serviceId,
-    required this.insurance,
+    // required this.insurance, // issue empty is String, but have data is List
     required this.tagLine,
     required this.showGoodAt,
     required this.goodAt,
@@ -72,7 +72,7 @@ class DsmesClinicModel {
       isSuper: json['is_super'] ?? '',
       status: json['status'] ?? '',
       serviceId: json['service_id'] ?? 0,
-      insurance: json['insurance'] ?? '',
+      // insurance: json['insurance'] ?? '',
       tagLine: json['tag_line'] ?? '',
       showGoodAt: Map<String, int>.from(json['show_good_at'] ?? {}),
       goodAt: (json['good_at'] as Map<String, dynamic>?)?.map(
@@ -89,18 +89,30 @@ class DsmesClinicModel {
       clinicId: json['clinic_id'] ?? 0,
       serviceType: json['service_type'] ?? [],
       serviceList: ServiceList.fromJson(json['service_list'] ?? {}),
-      schedule: (json['schedule'] as Map<String, dynamic>?)?.map(
-            (date, slots) => MapEntry(
-              date,
-              (slots as Map<String, dynamic>).map(
-                (time, status) => MapEntry(time, status as int),
-              ),
-            ),
-          ) ??
-          {},
+      schedule: _parseSchedule(json['schedule'] ?? {}),
       aptInterval: json['apt_interval'] ?? '',
     );
   }
+
+  static Map<String, Map<String, int>> _parseSchedule(Map<String, dynamic> json) {
+    Map<String, Map<String, int>> result = {};
+    json.forEach((key, value) {
+      if (value is Map) {
+        result[key] = Map<String, int>.from(value);
+      } else if (value is List) {
+        result[key] = {};
+      }
+    });
+    return result;
+  }
+
+  List<GoodAt> getGoodAtByLocale(String locale) {
+  if (goodAt.containsKey(locale)) {
+    return goodAt[locale] ?? [];
+  }
+  return defaultGoodAt;
+}
+
 
   List<BookingSchedule> getBookingSchedules() {
     List<BookingSchedule> bookingSchedules = [];
@@ -126,6 +138,8 @@ class DsmesClinicModel {
         );
       });
     });
+
+    bookingSchedules.sort((a, b) => a.startTime.compareTo(b.startTime));
 
     return bookingSchedules;
   }

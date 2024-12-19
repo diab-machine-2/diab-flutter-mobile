@@ -1,11 +1,14 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_observer/Observable.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:medical/res/R.dart';
-import 'package:medical/src/app_setting/app_setting.dart';
+import 'package:medical/src/model/request/create_dsmes_booking_request.dart';
+import 'package:medical/src/model/request/dsmes_cancel_booking_request.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/date_utils.dart';
+import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/dsmes_appointment/dsmes_appointment_cubit.dart';
 import 'package:medical/src/widget/dsmes_appointment/model/dsmes_appointment_model.dart';
@@ -34,6 +37,32 @@ class _DsmesBookingDetailState extends State<DsmesBookingDetail> {
   void initState() {
     super.initState();
     _cubit = context.read<DsmesAppointmentCubit>();
+  }
+
+  bool _shouldShowJoinButton() {
+    if (widget.appointment.status != DSMES_STATUS_APPROVE ||
+        widget.appointment.mode !=
+            DsmesAppointmentMode.telemedicine.toString()) {
+      return false;
+    }
+
+    final appointmentStart =
+        DateFormat('yyyy-MM-dd HH:mm').parse(widget.appointment.startTime);
+    final now = DateTime.now();
+
+    // 10 minutes before and after start time window
+    final windowStart = appointmentStart.subtract(Duration(minutes: 10));
+    final windowEnd = appointmentStart.add(Duration(minutes: 10));
+
+    return now.isAfter(windowStart) && now.isBefore(windowEnd);
+  }
+
+  bool isCompletedAppointment() {
+    final endDateTime =
+        DateFormat('yyyy-MM-dd HH:mm:ss').parse(widget.appointment.endTime);
+    final isPast = endDateTime.isBefore(DateTime.now());
+
+    return isPast && widget.appointment.status == DSMES_STATUS_APPROVE;
   }
 
   @override
@@ -121,7 +150,10 @@ class _DsmesBookingDetailState extends State<DsmesBookingDetail> {
                   color: R.color.textDark,
                 ),
                 onPressed: () {
-                  DsmesNavigationMixin.navigationKey.currentState?.pop(context);
+                  DsmesNavigationMixin.navigationKey.currentState
+                      ?.popUntil((route) => route.isFirst);
+                  Observable.instance.notifyObservers([],
+                      notifyName: "refresh_dsmes_appointment");
                 },
               ),
             ),
@@ -136,6 +168,8 @@ class _DsmesBookingDetailState extends State<DsmesBookingDetail> {
                       _buildConsultingInformation(),
                       GapH(12),
                       _buildNoticeSymptom(),
+                      GapH(12),
+                      _buildActionButtons(),
                     ],
                   ),
                 ),
@@ -147,48 +181,25 @@ class _DsmesBookingDetailState extends State<DsmesBookingDetail> {
           bottom: 0,
           left: 0,
           right: 0,
-          child: Container(
-            color: R.color.white,
-            child: Row(
-              children: [
-                Expanded(
-                  child: _buildButton(R.string.confirm_book_consult.tr(),
-                      () async {
-                    final token = await AppSettings.getDocosanToken();
-                    if (token.isEmpty) {
-                      await _cubit.registerDocosanUser();
-                      await AppSettings.clearOrganizationApiKey();
-                    }
-                    final resp = await _cubit.createDsmesBooking();
-                    if (resp == null) return;
-                    _showPopupBookingSuccess(
-                      title2: R.string.congratulation_on.tr(),
-                      title: R.string.booking_success.tr(),
-                      subtitle:
-                          R.string.confirm_booking_subtitle.tr(namedArgs: {
-                        'time': DateFormat('HH:mm').format(
-                            DateFormat('yyyy-MM-dd HH:mm:ss')
-                                .parse(resp.startTime)),
-                        'date': DateFormat('dd/MM/yyyy').format(
-                            DateFormat('yyyy-MM-dd HH:mm:ss')
-                                .parse(resp.startTime)),
-                      }),
-                      isShowImg: true,
-                      primaryButtonTitle: R.string.back_home_page.tr(),
-                      secondaryButtonTitle: R.string.recheck_information.tr(),
-                      onConfirm: () {
-                        // Back to homepage
-                        Navigator.of(context, rootNavigator: true).pop();
-                      },
-                      onCancel: () {
-                        // Navigate to booking detail
-                      },
-                    );
-                  }),
-                ),
-              ],
-            ),
-          ),
+          child: _shouldShowJoinButton()
+              ? Container(
+                  color: R.color.white,
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: _buildPrimaryButton(
+                          R.string.join_now.tr(),
+                          () async {
+                            // Handle join zoom action
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                )
+              : isCompletedAppointment()
+                  ? _builCompletedAppointmentActionButtons()
+                  : SizedBox.shrink(),
         ),
       ],
     );
@@ -493,7 +504,13 @@ class _DsmesBookingDetailState extends State<DsmesBookingDetail> {
                 maxLength: 250,
                 obscureText: false,
                 readOnly: true,
+                buildCounter: (context,
+                        {required currentLength,
+                        required isFocused,
+                        maxLength}) =>
+                    null,
                 decoration: InputDecoration(
+                  counterText: null,
                   fillColor: R.color.textDark,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
@@ -516,8 +533,7 @@ class _DsmesBookingDetailState extends State<DsmesBookingDetail> {
                       width: 1.0,
                     ),
                   ),
-                  contentPadding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  contentPadding: const EdgeInsets.all(12),
                   hintText: R.string.symptom.tr(),
                 ),
               ),
@@ -528,12 +544,231 @@ class _DsmesBookingDetailState extends State<DsmesBookingDetail> {
     );
   }
 
-  Widget _buildButton(String text, VoidCallback onTap) {
+  _buildActionButtons() {
+    final startTime = DateFormat('HH:mm').format(
+        DateFormat('yyyy-MM-dd HH:mm').parse(widget.appointment.startTime));
+    final isReschedule = widget.appointment.rescheduledAt != null;
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: [
+        Flexible(
+          flex: 1,
+          child: GestureDetector(
+            onTap: () {
+              _showPopupBookingAction(
+                title: R.string.confirm_cancel_schedule.tr(),
+                subtitle: R.string.confirm_cancel_schedule_content
+                    .tr(args: [startTime]),
+                onConfirm: () async {
+                  await _cubit.cancelDsmesAppointment(
+                    request: DsmesCancelBookingRequest(
+                      id: widget.appointment.id,
+                      reason: [],
+                    ),
+                  );
+
+                  Navigator.of(context).pop();
+
+                  DsmesNavigationMixin.navigationKey.currentState
+                      ?.popUntil((route) => route.isFirst);
+
+                  Observable.instance.notifyObservers([],
+                      notifyName: "refresh_dsmes_appointment");
+                },
+              );
+            },
+            child: Container(
+              height: 42,
+              // width: 170,
+              decoration: BoxDecoration(
+                color: R.color.color0xffFFE9E9,
+                borderRadius: BorderRadius.circular(200),
+                border: Border.all(
+                  color: R.color.color0xffDC0000,
+                ),
+              ),
+              child: Center(
+                child: Text(
+                  R.string.cancel_booking.tr(),
+                  style: TextStyle(
+                    color: R.color.color0xffDC0000,
+                    fontSize: 15,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+        if (!isReschedule) GapW(12),
+        if (!isReschedule)
+          Flexible(
+            flex: 1,
+            child: GestureDetector(
+              onTap: () {
+                _showPopupBookingAction(
+                    title: R.string.confirm_change_schedule.tr(),
+                    subtitle: R.string.confirm_change_booking_content.tr(),
+                    hasGradient: true,
+                    onConfirm: () {
+                      Navigator.of(context).pop(); // Close dialog
+
+                      if (_cubit.createDsmesBookingRequest == null) {
+                        _cubit.initCreateDsmesBookingRequest();
+                        final rescheduleRequest = CreateDsmesBookingRequest(
+                            startTime: widget.appointment.startTime,
+                            endTime: widget.appointment.endTime,
+                            clinicId: widget.appointment.clinicId,
+                            doctorId: widget.appointment.doctorId,
+                            patientPhoneNumber:
+                                widget.appointment.patientInfo.phone,
+                            patientName:
+                                widget.appointment.patientInfo.displayName,
+                            birthday: widget.appointment.patientInfo.birthday,
+                            patientGender: widget
+                                            .appointment.patientInfo.gender ==
+                                        'Nam' ||
+                                    widget.appointment.patientInfo.gender ==
+                                        'Male' ||
+                                    widget.appointment.patientInfo.gender == '1'
+                                ? 1
+                                : 0,
+                            patientEmail: widget.appointment.patientInfo.email,
+                            bookingForClinic: 1,
+                            language: 'vn',
+                            symptom: widget.appointment.symptom,
+                            symptomAttachment: widget
+                                .appointment.symptomAttachment
+                                .map((e) => e.filePath)
+                                .toList());
+                        _cubit.updateCreateDsmesBookingRequest(
+                            request: rescheduleRequest);
+                      }
+
+                      final navigator =
+                          DsmesNavigationMixin.navigationKey.currentState;
+
+                      // // Pop until dsmes_booking
+                      // navigator?.popUntil((route) =>
+                      //     route.settings.name == NavigatorName.dsmes_booking);
+
+                      // Then push to select date
+                      navigator?.pushNamed(
+                          NavigatorName.dsmes_booking_select_date,
+                          arguments: {
+                            'serviceType': widget.serviceType,
+                            'action': 'reschedule',
+                            'appointmentId': widget.appointment.id,
+                          });
+                    });
+              },
+              child: Container(
+                height: 42,
+                // width: 170,
+                decoration: BoxDecoration(
+                  color: R.color.white,
+                  borderRadius: BorderRadius.circular(200),
+                  border: Border.all(
+                    color: R.color.greenGradientBottom,
+                  ),
+                ),
+                child: Center(
+                  child: Text(
+                    R.string.change_booking.tr(),
+                    style: TextStyle(
+                      color: R.color.greenGradientBottom,
+                      fontSize: 15,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+      ],
+    );
+  }
+
+  _builCompletedAppointmentActionButtons() {
+    return Container(
+      color: R.color.white,
+      padding: EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          Flexible(
+            flex: 1,
+            child: GestureDetector(
+              onTap: () {
+                Navigator.of(context, rootNavigator: true)
+                    .pushNamedAndRemoveUntil(
+                  NavigatorName.tabbar,
+                  (route) => false, // This removes all routes from stack
+                );
+              },
+              child: Container(
+                height: 42,
+                // width: 170,
+                decoration: BoxDecoration(
+                  color: R.color.color0xffE7FDFB,
+                  borderRadius: BorderRadius.circular(200),
+                ),
+                child: Center(
+                  child: Text(
+                    R.string.back_home_page.tr(),
+                    style: TextStyle(
+                      color: R.color.greenGradientBottom,
+                      fontSize: 15,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+          GapW(12),
+          Flexible(
+            flex: 1,
+            child: GestureDetector(
+              onTap: () {},
+              child: Container(
+                height: 42,
+                // width: 170,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      R.color.greenGradientTop02,
+                      R.color.greenGradientBottom
+                    ],
+                  ),
+                  borderRadius: BorderRadius.circular(200),
+                ),
+                child: Center(
+                  child: Text(
+                    R.string.rebooking.tr(),
+                    style: TextStyle(
+                      color: R.color.white,
+                      fontSize: 15,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPrimaryButton(String text, VoidCallback onTap) {
     return InkWell(
       onTap: onTap,
       child: Container(
         height: 44,
-        margin: EdgeInsets.symmetric(horizontal: 0, vertical: 8),
+        margin: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         decoration: BoxDecoration(
           color: R.color.mainColor,
           borderRadius: BorderRadius.circular(200),
@@ -561,15 +796,13 @@ class _DsmesBookingDetailState extends State<DsmesBookingDetail> {
     );
   }
 
-  _showPopupBookingSuccess({
+  _showPopupBookingAction({
     required Function onConfirm,
-    Function? onCancel,
     bool isShowImg = false,
     String? subtitle,
     String? title,
-    String? title2,
     String primaryButtonTitle = 'Xác nhận',
-    String secondaryButtonTitle = 'Huỷ',
+    bool hasGradient = false,
   }) {
     showDialog(
       context: context,
@@ -581,40 +814,42 @@ class _DsmesBookingDetailState extends State<DsmesBookingDetail> {
               children: [
                 Container(
                   padding: EdgeInsets.all(16),
+                  width: 350,
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.pop(context);
+                            },
+                            child: SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: Icon(
+                                Icons.close,
+                                color: R.color.color0xff636A6B,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                       if (isShowImg)
                         Image.asset(R.drawable.ic_dialog_success,
                             width: 66, height: 66),
-                      SizedBox(
-                        height: 20,
-                      ),
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          if (title2 != null)
-                            Padding(
-                              padding: const EdgeInsets.only(top: 20.0),
-                              child: Text(
-                                title2,
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  color: R.color.color0xff636A6B,
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w700,
-                                ),
-                              ),
-                            ),
                           Padding(
-                            padding: const EdgeInsets.only(top: 16.0),
+                            padding: const EdgeInsets.only(top: 20.0),
                             child: Text(
-                              title ?? "",
-                              maxLines: 2,
+                              title ?? '',
                               textAlign: TextAlign.center,
                               style: TextStyle(
-                                color: R.color.greenGradientBottom,
-                                fontSize: 40,
+                                color: R.color.color0xff111515,
+                                fontSize: 20,
                                 fontWeight: FontWeight.w700,
                               ),
                             ),
@@ -629,7 +864,7 @@ class _DsmesBookingDetailState extends State<DsmesBookingDetail> {
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             color: R.color.color0xff777E90,
-                            fontSize: 13,
+                            fontSize: 15,
                             fontWeight: FontWeight.w400,
                           ),
                         ),
@@ -641,38 +876,36 @@ class _DsmesBookingDetailState extends State<DsmesBookingDetail> {
                           InkWell(
                             onTap: () {
                               Navigator.pop(context);
-                              onCancel?.call();
+                              onConfirm();
                             },
                             child: Container(
                               height: 43,
                               width: 163,
                               decoration: BoxDecoration(
-                                color: R.color.red,
+                                color: R.color.attentionText,
                                 borderRadius: BorderRadius.circular(200),
-                                gradient: LinearGradient(
-                                  begin: Alignment.topLeft,
-                                  end: Alignment.centerRight,
-                                  colors: [
-                                    R.color.greenGradientTop,
-                                    R.color.greenGradientBottom,
-                                  ],
-                                ),
+                                gradient: hasGradient
+                                    ? LinearGradient(
+                                        begin: Alignment.topLeft,
+                                        end: Alignment.centerRight,
+                                        colors: [
+                                          R.color.greenGradientTop,
+                                          R.color.greenGradientBottom,
+                                        ],
+                                      )
+                                    : null,
                               ),
                               child: Center(
                                 child: Text(
-                                  secondaryButtonTitle,
+                                  primaryButtonTitle,
                                   style: TextStyle(
                                     color: R.color.white,
-                                    fontSize: 16,
+                                    fontSize: 15,
                                     fontWeight: FontWeight.w600,
                                   ),
                                 ),
                               ),
                             ),
-                          ),
-                          _buildButton(
-                            primaryButtonTitle,
-                            onConfirm(),
                           ),
                         ],
                       )

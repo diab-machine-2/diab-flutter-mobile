@@ -6,18 +6,17 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/request/create_dsmes_booking_request.dart';
+import 'package:medical/src/model/request/dsmes_cancel_booking_request.dart';
+import 'package:medical/src/model/request/dsmes_reschedule_request.dart';
 import 'package:medical/src/model/request/register_docosan_user_request.dart';
+import 'package:medical/src/model/response/common_response.dart';
 import 'package:medical/src/model/response/create_dsmes_offline_booking_response.dart';
 import 'package:medical/src/model/response/dsmes_clinic_detail_response.dart';
 import 'package:medical/src/model/response/dsmes_clinic_list_response.dart';
 import 'package:medical/src/model/response/get_dsmes_appointment_detail_response.dart';
 import 'package:medical/src/model/response/get_dsmes_appointment_response.dart';
-import 'package:medical/src/model/response/is_exist_docosan_user_response.dart';
-import 'package:medical/src/model/response/register_docosan_user_response.dart';
 import 'package:medical/src/model/service/api_result.dart';
-import 'package:medical/src/model/service/docosan_client.dart';
 import 'package:medical/src/model/service/network_exceptions.dart';
-import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/dsmes_appointment/model/dsmes_appointment_model.dart';
 import 'package:medical/src/widget/dsmes_appointment/dsmes_appointment_state.dart';
 import 'package:medical/src/widget/dsmes_appointment/model/dsmes_clinic_model.dart';
@@ -83,7 +82,8 @@ class DsmesAppointmentCubit extends Cubit<DsmesAppointmentState> {
     return;
   }
 
-  Future<void> getDsmesAppointmentList(
+  Future<void> 
+  getDsmesAppointmentList(
       {int page = 1, bool isRefresh = false}) async {
     if (isRefresh) {
       // myAppointments.clear();
@@ -147,11 +147,11 @@ class DsmesAppointmentCubit extends Cubit<DsmesAppointmentState> {
         .createDsmesOfflineBooking(request: createDsmesBookingRequest!);
     apiResult.when(success: (CreateDsmesOfflineBookingResponse response) {
       print('CreateDsmesOfflineBookingResponse: ${response.data.toString()}');
-      emit(DsmesAppointmentLoaded());
       dsmesAppointment = response.data;
+      emit(DsmesAppointmentLoaded());
     }, failure: (NetworkExceptions error) {
-      emit(DsmesAppointmentFailure(NetworkExceptions.getErrorMessage(error)));
       dsmesAppointment = null;
+      emit(DsmesAppointmentFailure(NetworkExceptions.getErrorMessage(error)));
     });
     return dsmesAppointment;
   }
@@ -173,6 +173,36 @@ class DsmesAppointmentCubit extends Cubit<DsmesAppointmentState> {
     return dsmesAppointment;
   }
 
+  Future<void> cancelDsmesAppointment(
+      {required DsmesCancelBookingRequest request}) async {
+    emit(DsmesAppointmentLoading());
+    ApiResult<CommonResponse> apiResult =
+        await appRepository.cancelDsmesBooking(request: request);
+    apiResult.when(success: (CommonResponse response) {
+      print('cancelDsmesAppointment: ${response.statusCode}');
+      emit(DsmesAppointmentLoaded());
+    }, failure: (NetworkExceptions error) {
+      emit(DsmesAppointmentFailure(NetworkExceptions.getErrorMessage(error)));
+    });
+  }
+
+  Future<DsmesAppointment?> rescheduleDsmesBooking(
+      {required RescheduleDsmesBookingRequest request}) async {
+    emit(DsmesAppointmentLoading());
+    DsmesAppointment? dsmesAppointment;
+    ApiResult<CreateDsmesOfflineBookingResponse> apiResult =
+        await appRepository.rescheduleDsmesBooking(request: request);
+    apiResult.when(success: (CreateDsmesOfflineBookingResponse response) {
+      print('rescheduleDsmesBooking: ${response.data.toString()}');
+      dsmesAppointment = response.data;
+      emit(DsmesAppointmentLoaded());
+    }, failure: (NetworkExceptions error) {
+      dsmesAppointment = null;
+      emit(DsmesAppointmentFailure(NetworkExceptions.getErrorMessage(error)));
+    });
+    return dsmesAppointment;
+  }
+
   _getFilteredData() {
     List<DsmesAppointment> filteredData = myAppointments.where((data) {
       DateTime startTime =
@@ -184,7 +214,8 @@ class DsmesAppointmentCubit extends Cubit<DsmesAppointmentState> {
               // startTime.isAfter(now) &&
               (data.status == DSMES_STATUS_REQUEST ||
                   data.status == DSMES_STATUS_ON_HOLD)) ||
-          (startTime.isAfter(threeDaysAgo) &&
+          (
+            // startTime.isAfter(threeDaysAgo) &&
               data.status == DSMES_STATUS_APPROVE);
     }).toList();
     return filteredData;
@@ -201,7 +232,7 @@ class DsmesAppointmentCubit extends Cubit<DsmesAppointmentState> {
       birthday: DateFormat('yyyy-MM-dd').format(
           DateTime.fromMillisecondsSinceEpoch(
               AppSettings.userInfo!.dateOfBirth! ~/ 1000)),
-      patientGender: AppSettings.userInfo?.gender == 'Nam' ? 1 : 0,
+      patientGender: AppSettings.userInfo?.gender == 'Male' ? 1 : 0,
       patientEmail: AppSettings.userInfo?.email ?? '',
       bookingForClinic: 1, // 1: Booking phòng khám, 2: Booking bác sĩ
       language: 'vn',
@@ -235,6 +266,25 @@ class DsmesAppointmentCubit extends Cubit<DsmesAppointmentState> {
   updateCreateDsmesBookingRequestSymptom({required String symptom}) {
     createDsmesBookingRequest = createDsmesBookingRequest?.copyWith(
       symptom: symptom,
+    );
+  }
+
+  updateCreateDsmesBookingRequest(
+      {required CreateDsmesBookingRequest request}) {
+    createDsmesBookingRequest = createDsmesBookingRequest?.copyWith(
+      startTime: request.startTime,
+      endTime: request.endTime,
+      clinicId: request.clinicId,
+      doctorId: request.doctorId,
+      patientPhoneNumber: request.patientPhoneNumber,
+      patientName: request.patientName,
+      birthday: request.birthday,
+      patientGender: request.patientGender,
+      patientEmail: request.patientEmail,
+      bookingForClinic: request.bookingForClinic,
+      language: request.language,
+      symptom: request.symptom,
+      symptomAttachment: request.symptomAttachment,
     );
   }
 

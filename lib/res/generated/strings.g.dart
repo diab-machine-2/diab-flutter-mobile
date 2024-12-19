@@ -1198,4 +1198,12 @@ class Strings {
   String get booking_success_dialog_title => 'booking_success_dialog_title';
   String get notice_symptom => 'notice_symptom';
   String get symptom => 'symptom';
+  String get cancel_booking => 'cancel_booking';
+  String get confirm_cancel_schedule => 'confirm_cancel_schedule';
+  String get confirm_cancel_schedule_content => 'confirm_cancel_schedule_content';
+  String get confirm_change_booking_content => 'confirm_change_booking_content';
+  String get rebooking => 'rebooking';
+  String get support => 'support';
+  String get view_map => 'view_map';
+  String get center_information => 'center_information';
 }

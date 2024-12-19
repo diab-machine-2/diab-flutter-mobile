@@ -12,7 +12,7 @@ class PickerHelper {
 
   static getTextColorByState({required bool isSelected, required bool hasSlot}) {
     if (isSelected) {
-      return R.color.color0xff008479;
+      return R.color.greenGradientBottom;
     } else if (hasSlot) {
       return R.color.color0xff27272A;
     } else {
@@ -30,7 +30,7 @@ class PickerHelper {
 
   static getBorderColorByState({required bool isSelected, required bool hasSlot}) {
     if (isSelected) {
-      return R.color.color0xff008479;
+      return R.color.greenGradientBottom;
     } else {
       return R.color.color0xffD4D4D8;
     }

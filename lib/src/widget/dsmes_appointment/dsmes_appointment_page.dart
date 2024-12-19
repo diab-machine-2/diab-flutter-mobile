@@ -3,6 +3,8 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_observer/Observable.dart';
+import 'package:flutter_observer/Observer.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app.dart';
@@ -16,6 +18,7 @@ import 'package:medical/src/widget/dsmes_appointment/pages/dsmes_appointment_his
 import 'package:medical/src/widget/dsmes_appointment/pages/dsmes_booking_detail.dart';
 import 'package:medical/src/widget/dsmes_appointment/pages/dsmes_booking_offline_page.dart';
 import 'package:medical/src/widget/dsmes_appointment/pages/dsmes_booking_select_datetime.dart';
+import 'package:medical/src/widget/dsmes_appointment/pages/dsmes_clinic_detail_page.dart';
 import 'package:medical/src/widget/dsmes_appointment/pages/dsmes_confirm_create_information_page.dart';
 import 'package:medical/src/widget/dsmes_appointment/pages/dsmes_navigation_mixin.dart';
 import 'package:medical/src/widget/dsmes_appointment/widgets/dsmes_appointment_item.dart';
@@ -29,17 +32,36 @@ class DsmesAppointmentPage extends StatefulWidget {
   _DsmesAppointmentPageState createState() => _DsmesAppointmentPageState();
 }
 
-class _DsmesAppointmentPageState extends State<DsmesAppointmentPage> {
+class _DsmesAppointmentPageState extends State<DsmesAppointmentPage>
+    with Observer {
   final RefreshController _controller = RefreshController();
   late DsmesAppointmentCubit _cubit;
 
   @override
   void initState() {
     super.initState();
+    Observable.instance.addObserver(this);
     final AppRepository repository = AppRepository();
     _cubit = DsmesAppointmentCubit(repository);
     // _cubit.getDsmesAppointmentList();
     _cubit.initDsmesBooking();
+  }
+
+  @override
+  void dispose() {
+    Observable.instance.removeObserver(this);
+    super.dispose();
+  }
+
+   @override
+  void update(Observable observable, String? notifyName, Map<dynamic, dynamic>? map) {
+    if (notifyName == 'refresh_dsmes_appointment') {
+      _refresh();
+    }
+  }
+
+  void _refresh() {
+    _cubit.getDsmesAppointmentList(isRefresh: false, page: 1);
   }
 
   @override
@@ -54,6 +76,12 @@ class _DsmesAppointmentPageState extends State<DsmesAppointmentPage> {
           child: Navigator(
             key: DsmesNavigationMixin.navigationKey,
             onGenerateRoute: (settings) {
+              // Log current route name
+              print('[ROUTE] Current Route: ${settings.name}');
+
+              // Log full navigator stack
+              print(
+                  '[ROUTE] Navigator Stack: ${DsmesNavigationMixin.navigationKey.currentState?.toString()}');
               switch (settings.name) {
                 case '/':
                   return MaterialPageRoute(
@@ -81,6 +109,8 @@ class _DsmesAppointmentPageState extends State<DsmesAppointmentPage> {
                       settings,
                       DsmesCalendarSection(
                         serviceType: args!["serviceType"],
+                        action: args["action"],
+                        appointmentId: args["appointmentId"],
                       ),
                     );
                   }
@@ -92,6 +122,8 @@ class _DsmesAppointmentPageState extends State<DsmesAppointmentPage> {
                       settings,
                       DsmesConfirmCreateInformation(
                         serviceType: args!["serviceType"],
+                        action: args["action"],
+                        appointmentId: args["appointmentId"],
                       ),
                     );
                   }
@@ -104,6 +136,17 @@ class _DsmesAppointmentPageState extends State<DsmesAppointmentPage> {
                       DsmesBookingDetail(
                         serviceType: args!["serviceType"],
                         appointment: args["appointment"],
+                      ),
+                    );
+                  }
+                  case NavigatorName.dsmes_clinic_detail:
+                  {
+                    Map<String, dynamic>? args =
+                        settings.arguments as Map<String, dynamic>?;
+                    return _buildRoute(
+                      settings,
+                      DsmesClinicDetailPage(
+                        clinicId: args!["clinicId"],
                       ),
                     );
                   }
@@ -233,7 +276,12 @@ class _DsmesAppointmentPageState extends State<DsmesAppointmentPage> {
                         DsmesAppointment data = _cubit.listFilteredData[index];
                         return DsmesAppointmentItem(
                           data: data,
-                          onChooseService: () {
+                          onChooseService: () async {
+                            if (data.mode ==
+                                DsmesAppointmentMode.atClinic.toString()) {
+                              await _cubit.getClinicDetail(id: data.clinicId);
+                            }
+
                             DsmesNavigationMixin.navigationKey.currentState
                                 ?.pushNamed(
                               NavigatorName.dsmes_booking_detail,

@@ -1485,7 +1485,8 @@ class _AddBloodSugarControllerNewState
     bool glucoseUnit = AppSettings.userInfo!.glucoseUnit == 1;
     int index = -1;
     int indexRange = findIndexInRanges(_number, _rangeValue);
-    num widthRange = (AppMediaQuery.deviceWidth - 72) / (_rangeValue.length);
+    num widthRange =
+        (MediaQuery.of(context).size.width - 72) / (_rangeValue.length);
     print('hihi widthRange: $widthRange');
     num width = _number == 0 ? 0 : widthRange * (indexRange);
 

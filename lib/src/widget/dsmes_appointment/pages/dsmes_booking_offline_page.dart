@@ -178,167 +178,177 @@ class _DsmesBookingOfflinePageState extends State<DsmesBookingOfflinePage> {
         color: R.color.white,
         borderRadius: BorderRadius.circular(8),
       ),
-      child: Container(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                SizedBox(
-                    width: 72,
-                    child: Image.network(
-                        "${Utils.getHostDocosanUrl()}${data.avatar}")),
-                GapW(12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        data.name,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w700,
+      child: GestureDetector(
+        onTap: () {
+          DsmesNavigationMixin.navigationKey.currentState?.pushNamed(
+              NavigatorName.dsmes_clinic_detail,
+              arguments: {'clinicId': data.id});
+        },
+        child: Container(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  SizedBox(
+                      width: 72,
+                      child: Image.network(
+                          "${Utils.getHostDocosanUrl()}${data.avatar}")),
+                  GapW(12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          data.name,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w700,
+                          ),
                         ),
-                      ),
-                      GapH(10),
-                      Row(
-                        mainAxisSize: MainAxisSize.min,
+                        GapH(10),
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Image.asset(R.drawable.ic_map_marker,
+                                width: 12, height: 12),
+                            GapW(5),
+                            Flexible(
+                              child: Text(
+                                data.address,
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w400,
+                                  color: R.color.color0xff777E90,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              GapH(12),
+              Container(
+                width: double.infinity,
+                child: Wrap(
+                  spacing: 6,
+                  runSpacing: 6,
+                  children: data.specialty.map((e) {
+                    return Container(
+                        height: 20,
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                        decoration: BoxDecoration(
+                          color: R.color.color0xffFAF0D2,
+                          borderRadius: BorderRadius.circular(30),
+                        ),
+                        child: Text(
+                          e.info.name,
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w500,
+                            color: R.color.color0xffA36E2A,
+                          ),
+                        ));
+                  }).toList(),
+                ),
+              ),
+              GapH(16),
+              Row(
+                children: [
+                  Expanded(
+                    child: Container(
+                      height: 40,
+                      child: Row(
                         children: [
-                          Image.asset(R.drawable.ic_map_marker,
-                              width: 12, height: 12),
-                          GapW(5),
-                          Flexible(
-                            child: Text(
-                              data.address,
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
-                                fontSize: 11,
-                                fontWeight: FontWeight.w400,
-                                color: R.color.color0xff777E90,
+                          Expanded(
+                            child: InkWell(
+                              onTap: () {
+                                //TODO: handle navigate to create online booking page
+                              },
+                              child: Container(
+                                alignment: Alignment.center,
+                                padding: EdgeInsets.all(10),
+                                decoration: BoxDecoration(
+                                  color: R.color.color0xffE7FDFB,
+                                  borderRadius: BorderRadius.circular(200),
+                                ),
+                                child: Text(
+                                  R.string.consult_online.tr(),
+                                  style: TextStyle(
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w700,
+                                    color: R.color.greenGradientBottom,
+                                  ),
+                                ),
                               ),
                             ),
                           ),
                         ],
                       ),
-                    ],
+                    ),
                   ),
-                ),
-              ],
-            ),
-            GapH(12),
-            Container(
-              width: double.infinity,
-              child: Wrap(
-                spacing: 6,
-                runSpacing: 6,
-                children: data.specialty.map((e) {
-                  return Container(
-                      height: 20,
-                      padding: EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                      decoration: BoxDecoration(
-                        color: R.color.color0xffFAF0D2,
-                        borderRadius: BorderRadius.circular(30),
+                  Expanded(
+                    child: Container(
+                      height: 40,
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: InkWell(
+                              onTap: () async {
+                                await _cubit.getClinicDetail(id: data.id);
+                                if (_cubit.selectedClinic == null) return;
+                                _cubit.initCreateDsmesBookingRequest();
+                                await DsmesNavigationMixin
+                                    .navigationKey.currentState
+                                    ?.pushNamed(
+                                        NavigatorName.dsmes_booking_select_date,
+                                        arguments: {
+                                      'serviceType': widget.serviceType,
+                                      'action': 'create',
+                                    });
+                              },
+                              child: Container(
+                                alignment: Alignment.center,
+                                decoration: BoxDecoration(
+                                  gradient: LinearGradient(
+                                    begin: Alignment.topCenter,
+                                    end: Alignment.bottomCenter,
+                                    colors: [
+                                      R.color.greenGradientTop02,
+                                      R.color.greenGradientBottom
+                                    ],
+                                  ),
+                                  borderRadius: BorderRadius.circular(200),
+                                ),
+                                padding: EdgeInsets.all(10),
+                                child: Text(
+                                  R.string.consult_at_clinic.tr(),
+                                  style: TextStyle(
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w700,
+                                    color: R.color.white,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
-                      child: Text(
-                        e.info.name,
-                        style: TextStyle(
-                          fontSize: 11,
-                          fontWeight: FontWeight.w400,
-                          color: R.color.color0xffA36E2A,
-                        ),
-                      ));
-                }).toList(),
+                    ),
+                  ),
+                ],
               ),
-            ),
-            GapH(16),
-            Row(
-              children: [
-                Expanded(
-                  child: Container(
-                    height: 40,
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: InkWell(
-                            onTap: () {
-                              //TODO: handle navigate to create online booking page
-                            },
-                            child: Container(
-                              alignment: Alignment.center,
-                              padding: EdgeInsets.all(10),
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(200),
-                              ),
-                              child: Text(
-                                R.string.consult_online.tr(),
-                                style: TextStyle(
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w700,
-                                  color: R.color.greenGradientBottom,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                Expanded(
-                  child: Container(
-                    height: 40,
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: InkWell(
-                            onTap: () async {
-                              await _cubit.getClinicDetail(id: data.id);
-                              if (_cubit.selectedClinic == null) return;
-                              _cubit.initCreateDsmesBookingRequest();
-                              await DsmesNavigationMixin
-                                  .navigationKey.currentState
-                                  ?.pushNamed(
-                                      NavigatorName.dsmes_booking_select_date,
-                                      arguments: {
-                                    'serviceType': widget.serviceType,
-                                  });
-                            },
-                            child: Container(
-                              alignment: Alignment.center,
-                              decoration: BoxDecoration(
-                                gradient: LinearGradient(
-                                  begin: Alignment.topCenter,
-                                  end: Alignment.bottomCenter,
-                                  colors: [
-                                    R.color.greenGradientTop02,
-                                    R.color.color0xff008479
-                                  ],
-                                ),
-                                borderRadius: BorderRadius.circular(200),
-                              ),
-                              padding: EdgeInsets.all(10),
-                              child: Text(
-                                R.string.consult_at_clinic.tr(),
-                                style: TextStyle(
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w700,
-                                  color: R.color.white,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

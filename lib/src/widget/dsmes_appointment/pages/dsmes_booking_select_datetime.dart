@@ -17,10 +17,14 @@ import 'package:medical/src/widgets/CalendarPicker/picker_helper.dart';
 
 class DsmesCalendarSection extends StatefulWidget {
   final String serviceType;
+  final String action; // 'create' or 'reschedule'
+  final int? appointmentId;
 
   const DsmesCalendarSection({
     Key? key,
     required this.serviceType,
+    this.action = 'create',
+    this.appointmentId,
   }) : super(key: key);
 
   @override
@@ -53,7 +57,8 @@ class _DsmesCalendarSectionState extends State<DsmesCalendarSection> {
             DateTime.parse(selectedBookingSchedule!.startTime).hour < 12;
       }
     }
-    availableBookingSchedule = _getAvailableBookingSchedule();
+    availableBookingSchedule =
+        _getAvailableBookingSchedule(bookingDate: selectedDate);
   }
 
   List<BookingSchedule> _getAvailableBookingSchedule({DateTime? bookingDate}) {
@@ -105,7 +110,8 @@ class _DsmesCalendarSectionState extends State<DsmesCalendarSection> {
                     highlightColor: R.color.transparent,
                     icon: Icon(Icons.arrow_back, color: R.color.textDark),
                     onPressed: () {
-                      DsmesNavigationMixin.navigationKey.currentState?.pop();
+                      DsmesNavigationMixin.navigationKey.currentState
+                          ?.pop(context);
                     },
                   ),
                 ),
@@ -148,7 +154,9 @@ class _DsmesCalendarSectionState extends State<DsmesCalendarSection> {
                         DsmesNavigationMixin.navigationKey.currentState
                             ?.pushNamed(NavigatorName.dsmes_confirm_information,
                                 arguments: {
-                              'serviceType': widget.serviceType
+                              'serviceType': widget.serviceType,
+                              'action': widget.action,
+                              'appointmentId': widget.appointmentId,
                             });
                       }),
                     ),
@@ -280,10 +288,10 @@ class _DsmesCalendarSectionState extends State<DsmesCalendarSection> {
       String endTime = "${availableBookingSchedule[i].endTime.split(' ')[1]}";
 
       final isSlotPicked = selectedBookingSchedule != null &&
-          selectedBookingSchedule?.startTime ==
-              availableBookingSchedule[i].startTime &&
-          selectedBookingSchedule?.endTime ==
-              availableBookingSchedule[i].endTime;
+          DateTime.parse(selectedBookingSchedule!.startTime).isAtSameMomentAs(
+              DateTime.parse(availableBookingSchedule[i].startTime)) &&
+          DateTime.parse(selectedBookingSchedule!.endTime).isAtSameMomentAs(
+              DateTime.parse(availableBookingSchedule[i].endTime));
 
       if (!addedStartTimes.contains(startTime) ||
           !addedEndTimes.contains(endTime)) {
@@ -370,8 +378,10 @@ class _DsmesCalendarSectionState extends State<DsmesCalendarSection> {
 
   Widget _buildItemTimeFrame(String time, String startTime, String endTime) {
     final isSlotPicked = selectedBookingSchedule != null &&
-        selectedBookingSchedule!.startTime == startTime &&
-        selectedBookingSchedule!.endTime == endTime;
+        DateTime.parse(selectedBookingSchedule!.startTime)
+            .isAtSameMomentAs(DateTime.parse(startTime)) &&
+        DateTime.parse(selectedBookingSchedule!.endTime)
+            .isAtSameMomentAs(DateTime.parse(endTime));
     return Container(
       decoration: BoxDecoration(
         color: R.color.white,

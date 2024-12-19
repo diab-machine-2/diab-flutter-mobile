@@ -9,6 +9,8 @@ import 'package:medical/src/model/request/create_dsmes_booking_request.dart';
 import 'package:medical/src/model/request/create_menu_request.dart';
 import 'package:medical/src/model/request/create_smart_goal_request.dart';
 import 'package:medical/src/model/request/delete_calendar_request.dart';
+import 'package:medical/src/model/request/dsmes_cancel_booking_request.dart';
+import 'package:medical/src/model/request/dsmes_reschedule_request.dart';
 import 'package:medical/src/model/request/exercise_feedback_request.dart';
 import 'package:medical/src/model/request/food_change_request.dart';
 import 'package:medical/src/model/request/get_dsmes_appointment_request.dart';
@@ -1040,6 +1042,27 @@ class AppRepository {
           {required CreateDsmesBookingRequest request}) async {
     try {
       final response = await docosanClient.createDsmesOfflineBooking(request);
+      return ApiResult.success(data: response);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
+  Future<ApiResult<CommonResponse>> cancelDsmesBooking(
+      {required DsmesCancelBookingRequest request}) async {
+    try {
+      final response = await docosanClient.cancelDsmesAppointment(request);
+      return ApiResult.success(data: response);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
+  Future<ApiResult<CreateDsmesOfflineBookingResponse>>
+      rescheduleDsmesBooking(
+          {required RescheduleDsmesBookingRequest request}) async {
+    try {
+      final response = await docosanClient.rescheduleDsmesAppointment(request);
       return ApiResult.success(data: response);
     } catch (e) {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));

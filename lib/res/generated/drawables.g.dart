@@ -580,4 +580,6 @@ class Drawables {
   String get online_consulting => "lib/res/drawables/online_consulting.png";
   String get offline_consulting => "lib/res/drawables/offline_consulting.png";
   String get ic_dialog_success => "lib/res/drawables/ic_dialog_success.png";
+  String get map_location_bg => "lib/res/drawables/map_location_bg.png";
+  String get ic_map_direction => "lib/res/drawables/ic_map_direction.png";
 }

@@ -3,9 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
+import 'package:medical/src/model/request/dsmes_reschedule_request.dart';
 import 'package:medical/src/utils/date_utils.dart';
 import 'package:medical/src/utils/length_limit_text_field.dart';
 import 'package:medical/src/utils/navigator_name.dart';
+import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/dsmes_appointment/dsmes_appointment_cubit.dart';
 import 'package:medical/src/widget/dsmes_appointment/model/dsmes_appointment_model.dart';
@@ -15,10 +17,14 @@ import 'package:medical/src/widgets/gap_widget.dart';
 
 class DsmesConfirmCreateInformation extends StatefulWidget {
   final String serviceType;
+  final String action;
+  final int? appointmentId;
 
   const DsmesConfirmCreateInformation({
     Key? key,
     required this.serviceType,
+    this.action = 'create',
+    this.appointmentId,
   }) : super(key: key);
 
   @override
@@ -40,6 +46,8 @@ class _DsmesConfirmCreateInformationState
   late TextEditingController phoneController;
   late TextEditingController symptomController;
 
+  late bool isReschedule = false;
+
   @override
   void initState() {
     super.initState();
@@ -57,6 +65,8 @@ class _DsmesConfirmCreateInformationState
     nameController = TextEditingController(text: requesterName);
     phoneController = TextEditingController(text: requesterPhone);
     symptomController = TextEditingController(text: requesterSymptom);
+
+    isReschedule = widget.action == 'reschedule';
   }
 
   @override
@@ -74,48 +84,54 @@ class _DsmesConfirmCreateInformationState
   Widget _buildPage(BuildContext context) {
     return Stack(
       children: [
-        Column(
-          children: [
-            CustomAppBar(
-              backgroundColor: Colors.transparent,
-              title: Text(
-                R.string.confirm_information.tr(),
-                style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w700,
-                    // fontFamily: 'sfpro',
-                    color: R.color.textDark),
-              ),
-              actions: [],
-              leadingIcon: IconButton(
-                splashColor: Colors.transparent,
-                highlightColor: Colors.transparent,
-                icon: Icon(
-                  Icons.arrow_back,
-                  color: R.color.textDark,
+        GestureDetector(
+          onTap: () {
+            Utils.hideKeyboard(context);
+          },
+          child: Column(
+            children: [
+              CustomAppBar(
+                backgroundColor: Colors.transparent,
+                title: Text(
+                  R.string.confirm_information.tr(),
+                  style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w700,
+                      // fontFamily: 'sfpro',
+                      color: R.color.textDark),
                 ),
-                onPressed: () {
-                  DsmesNavigationMixin.navigationKey.currentState?.pop(context);
-                },
+                actions: [],
+                leadingIcon: IconButton(
+                  splashColor: Colors.transparent,
+                  highlightColor: Colors.transparent,
+                  icon: Icon(
+                    Icons.arrow_back,
+                    color: R.color.textDark,
+                  ),
+                  onPressed: () {
+                    DsmesNavigationMixin.navigationKey.currentState
+                        ?.pop(context);
+                  },
+                ),
               ),
-            ),
-            Expanded(
-              child: SingleChildScrollView(
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    children: [
-                      _buildPatientInformation(),
-                      GapH(12),
-                      _buildConsultingInformation(),
-                      GapH(12),
-                      _buildNoticeSymptom(),
-                    ],
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      children: [
+                        _buildPatientInformation(),
+                        GapH(12),
+                        _buildConsultingInformation(),
+                        GapH(12),
+                        _buildNoticeSymptom(),
+                      ],
+                    ),
                   ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
         Positioned(
           bottom: 0,
@@ -123,66 +139,20 @@ class _DsmesConfirmCreateInformationState
           right: 0,
           child: Container(
             color: R.color.white,
-            margin: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
             child: Row(
               children: [
                 Expanded(
                   child: _buildButton(R.string.confirm_book_consult.tr(),
                       () async {
-                    _cubit.updateCreateDsmesBookingRequestSymptom(
-                        symptom: symptomController.text);
-
-                    final token = await AppSettings.getDocosanToken();
-                    if (token.isEmpty) {
-                      await _cubit.registerDocosanUser();
-                      await AppSettings.clearOrganizationApiKey();
+                    if (widget.action == 'reschedule' &&
+                        widget.appointmentId != null) {
+                      _handleRescheduleBooking();
                     }
-                    final resp = await _cubit.createDsmesBooking();
 
-                    if (resp == null) return;
-
-                    final startTime = DateFormat('HH:mm').format(
-                        DateFormat('yyyy-MM-dd HH:mm').parse(resp.startTime));
-                    final startDate = DateFormat('dd/MM/yyyy').format(
-                        DateFormat('yyyy-MM-dd HH:mm').parse(resp.startTime));
-
-                    _showPopupBookingSuccess(
-                      title2: R.string.congratulation_on.tr(),
-                      title: R.string.booking_success_dialog_title.tr(),
-                      subtitle:
-                          R.string.confirm_booking_subtitle.tr(namedArgs: {
-                        'time': startTime,
-                        'date': startDate,
-                      }),
-                      isShowImg: true,
-                      primaryButtonTitle: R.string.back_home_page.tr(),
-                      secondaryButtonTitle: R.string.recheck_information.tr(),
-                      onConfirm: () {
-                        // Back to homepage
-                        Navigator.of(context, rootNavigator: true)
-                            .pushNamedAndRemoveUntil(
-                          NavigatorName.tabbar,
-                          (route) =>
-                              false, // This removes all routes from stack
-                        );
-                      },
-                      onCancel: () async {
-                        // Navigate to booking detail
-                        final myAppointment = await _cubit
-                            .getDsmesAppointmentDetail(appointmentId: 58488);
-
-                        if (myAppointment == null) return;
-
-                        DsmesNavigationMixin.navigationKey.currentState
-                            ?.pushNamed(
-                          NavigatorName.dsmes_booking_detail,
-                          arguments: {
-                            'serviceType': widget.serviceType,
-                            'appointment': myAppointment,
-                          },
-                        );
-                      },
-                    );
+                    if (widget.action == 'create') {
+                      _handleCreateBooking();
+                    }
                   }),
                 ),
               ],
@@ -190,6 +160,81 @@ class _DsmesConfirmCreateInformationState
           ),
         ),
       ],
+    );
+  }
+
+  _handleCreateBooking() async {
+    _cubit.updateCreateDsmesBookingRequestSymptom(
+        symptom: symptomController.text);
+
+    final token = await AppSettings.getDocosanToken();
+    if (token.isEmpty) {
+      await _cubit.registerDocosanUser();
+      await AppSettings.clearOrganizationApiKey();
+    }
+    final resp = await _cubit.createDsmesBooking();
+
+    if (resp == null) return;
+
+    final startTime = DateFormat('HH:mm')
+        .format(DateFormat('yyyy-MM-dd HH:mm').parse(resp.startTime));
+    final startDate = DateFormat('dd/MM/yyyy')
+        .format(DateFormat('yyyy-MM-dd HH:mm').parse(resp.startTime));
+
+    _showPopupBookingSuccess(
+      title2: R.string.congratulation_on.tr(),
+      title: R.string.booking_success_dialog_title.tr(),
+      subtitle: R.string.confirm_booking_subtitle.tr(namedArgs: {
+        'time': startTime,
+        'date': startDate,
+      }),
+      isShowImg: true,
+      primaryButtonTitle: R.string.back_home_page.tr(),
+      secondaryButtonTitle: R.string.recheck_information.tr(),
+      onNavigateHome: () {
+        // Back to homepage
+        Navigator.of(context, rootNavigator: true).pushNamedAndRemoveUntil(
+          NavigatorName.tabbar,
+          (route) => false, // This removes all routes from stack
+        );
+      },
+      onShowInfo: () async {
+        // Navigate to booking detail
+        final myAppointment =
+            await _cubit.getDsmesAppointmentDetail(appointmentId: resp.id);
+
+        if (myAppointment == null) return;
+
+        DsmesNavigationMixin.navigationKey.currentState?.pushNamed(
+          NavigatorName.dsmes_booking_detail,
+          arguments: {
+            'serviceType': widget.serviceType,
+            'appointment': myAppointment,
+          },
+        );
+      },
+    );
+  }
+
+  _handleRescheduleBooking() async {
+    final resp = await _cubit.rescheduleDsmesBooking(
+      request: RescheduleDsmesBookingRequest(
+          appointmentId: AppointmentId(id: widget.appointmentId!),
+          startTime: _cubit.createDsmesBookingRequest!.startTime),
+    );
+    if (resp == null) return;
+
+    final myAppointment =
+        await _cubit.getDsmesAppointmentDetail(appointmentId: resp.id);
+
+    if (myAppointment == null) return;
+
+    DsmesNavigationMixin.navigationKey.currentState?.pushNamed(
+      NavigatorName.dsmes_booking_detail,
+      arguments: {
+        'serviceType': widget.serviceType,
+        'appointment': myAppointment,
+      },
     );
   }
 
@@ -234,15 +279,18 @@ class _DsmesConfirmCreateInformationState
                   onTap: () {
                     _showEditRequesterInformationBottomSheet();
                   },
-                  child: Container(
-                    alignment: Alignment.center,
-                    height: 20,
-                    child: Text(
-                      R.string.chinh_sua.tr(),
-                      style: TextStyle(
-                        fontSize: 10,
-                        fontWeight: FontWeight.w500,
-                        color: R.color.color0xff239A90,
+                  child: Visibility(
+                    visible: !isReschedule,
+                    child: Container(
+                      alignment: Alignment.center,
+                      height: 20,
+                      child: Text(
+                        R.string.chinh_sua.tr(),
+                        style: TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.w500,
+                          color: R.color.color0xff239A90,
+                        ),
                       ),
                     ),
                   ),
@@ -324,24 +372,27 @@ class _DsmesConfirmCreateInformationState
                     color: R.color.color0xff141416,
                   ),
                 ),
-                InkWell(
-                  onTap: () async {
-                    await DsmesNavigationMixin.navigationKey.currentState
-                        ?.popAndPushNamed(
-                            NavigatorName.dsmes_booking_select_date,
-                            arguments: {
-                          'serviceType': widget.serviceType,
-                        });
-                  },
-                  child: Container(
-                    height: 20,
-                    alignment: Alignment.center,
-                    child: Text(
-                      R.string.chinh_sua.tr(),
-                      style: TextStyle(
-                        fontSize: 10,
-                        fontWeight: FontWeight.w500,
-                        color: R.color.color0xff239A90,
+                Visibility(
+                  visible: !isReschedule,
+                  child: InkWell(
+                    onTap: () async {
+                      await DsmesNavigationMixin.navigationKey.currentState
+                          ?.popAndPushNamed(
+                              NavigatorName.dsmes_booking_select_date,
+                              arguments: {
+                            'serviceType': widget.serviceType,
+                          });
+                    },
+                    child: Container(
+                      height: 20,
+                      alignment: Alignment.center,
+                      child: Text(
+                        R.string.chinh_sua.tr(),
+                        style: TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.w500,
+                          color: R.color.color0xff239A90,
+                        ),
                       ),
                     ),
                   ),
@@ -488,11 +539,19 @@ class _DsmesConfirmCreateInformationState
                 maxLines: null, // Allows auto-expansion
                 maxLength: 250,
                 obscureText: false,
+                readOnly: isReschedule ? true : false,
+                buildCounter: (context,
+                        {required currentLength,
+                        required isFocused,
+                        maxLength}) =>
+                    isReschedule ? null : SizedBox(),
                 controller: symptomController,
                 focusNode: symptomFocusNode,
                 decoration: InputDecoration(
                   fillColor: R.color.textDark,
-                  counterText: "${symptomController.text.length}/250",
+                  counterText: isReschedule
+                      ? ""
+                      : "${symptomController.text.length}/250",
                   enabledBorder: OutlineInputBorder(
                     borderSide: BorderSide(
                         color: R.color.grayComponentBorder, width: 1.0),
@@ -689,8 +748,8 @@ class _DsmesConfirmCreateInformationState
   }
 
   _showPopupBookingSuccess({
-    required Function onConfirm,
-    Function? onCancel,
+    required Function onNavigateHome,
+    Function? onShowInfo,
     bool isShowImg = false,
     String? subtitle,
     String? title,
@@ -782,7 +841,7 @@ class _DsmesConfirmCreateInformationState
                           GestureDetector(
                             onTap: () {
                               Navigator.pop(context);
-                              onCancel?.call();
+                              onShowInfo?.call();
                             },
                             child: Container(
                               height: 43,
@@ -791,14 +850,14 @@ class _DsmesConfirmCreateInformationState
                                 color: R.color.white,
                                 borderRadius: BorderRadius.circular(200),
                                 border: Border.all(
-                                  color: R.color.color0xff008479,
+                                  color: R.color.greenGradientBottom,
                                 ),
                               ),
                               child: Center(
                                 child: Text(
                                   secondaryButtonTitle,
                                   style: TextStyle(
-                                    color: R.color.color0xff008479,
+                                    color: R.color.greenGradientBottom,
                                     fontSize: 16,
                                     fontWeight: FontWeight.w700,
                                   ),
@@ -808,7 +867,7 @@ class _DsmesConfirmCreateInformationState
                           ),
                           _buildButton(
                             primaryButtonTitle,
-                            () => onConfirm(),
+                            () => onNavigateHome(),
                           ),
                         ],
                       )

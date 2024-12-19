@@ -137,7 +137,6 @@ class Colors {
   Color get survey_color => Color(0xff1E8F66);
   Color get hba1c_color => Color(0xff533BAA);
   Color get height_color => Color(0xff008479);
-  Color get color0xff008479 => Color(0xff008479);
   Color get color0xff888892 => Color(0xff888892);
   Color get color0xffD4D4D8 => Color(0xffD4D4D8);
   Color get color0xffF4F4F5 => Color(0xffF4F4F5);
@@ -167,4 +166,9 @@ class Colors {
   Color get color0xffFFE9E9 => Color(0xffFFE9E9);
   Color get color0xff111515 => Color(0xff111515);
   Color get color0xffDFE4E4 => Color(0xffDFE4E4);
+  Color get color0xffE7FDFB => Color(0xffE7FDFB);
+  Color get shadowColorNew => Color(0xff042B28);
+  Color get color0xffEDEEEE => Color(0xffEDEEEE);
+  Color get color0xffBFC6C6 => Color(0xffBFC6C6);
+  Color get color0xff00B83D => Color(0xff00B83D);
 }
