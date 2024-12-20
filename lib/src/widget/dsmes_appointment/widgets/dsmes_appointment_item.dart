@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/app_setting/app_setting.dart';
+import 'package:medical/src/model/request/create_dsmes_booking_request.dart';
 import 'package:medical/src/utils/date_utils.dart';
+import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/dsmes_appointment/model/dsmes_appointment_model.dart';
 import 'package:medical/src/widget/dsmes_appointment/dsmes_appointment_cubit.dart';
+import 'package:medical/src/widget/dsmes_appointment/pages/dsmes_navigation_mixin.dart';
 import 'package:medical/src/widgets/gap_widget.dart';
 
 class DsmesAppointmentItem extends StatelessWidget {
@@ -60,7 +64,8 @@ class DsmesAppointmentItem extends StatelessWidget {
             ),
             _buildDescription(),
             if (data.mode == DsmesAppointmentMode.atClinic.toString()) GapH(12),
-            if (displayActionButtons) _buildActionButtons(),
+            if (displayActionButtons)
+              _buildActionButtons(locale: context.locale.languageCode),
           ],
         ),
       ),
@@ -206,7 +211,7 @@ class DsmesAppointmentItem extends StatelessWidget {
     );
   }
 
-  Widget _buildActionButtons() {
+  Widget _buildActionButtons({String locale = 'vi'}) {
     final endDateTime = DateFormat('yyyy-MM-dd HH:mm:ss').parse(data.endTime);
     final isPast = endDateTime.isBefore(DateTime.now());
     if (data.status == DSMES_STATUS_APPROVE && isPast) {
@@ -247,9 +252,7 @@ class DsmesAppointmentItem extends StatelessWidget {
             flex: 1,
             child: _buildPrimaryButton(
               R.string.rebooking.tr(),
-              () => () {
-                //TODO: Handle rebooking
-              },
+              () => _handleRebooking(locale: locale),
             ),
           ),
         ],
@@ -270,12 +273,44 @@ class DsmesAppointmentItem extends StatelessWidget {
           child: _buildPrimaryButton(
             R.string.support.tr(),
             () => () {
-              //TODO: Handle rebooking
+              //TODO: Handle support
             },
           ),
         ),
       ],
     );
+  }
+
+  _handleRebooking({String locale = 'vi'}) async {
+    if (data.mode == DsmesAppointmentMode.atClinic.toString()) {
+      await cubit.getClinicDetail(id: data.clinicId);
+      cubit.initCreateDsmesBookingRequest(locale: locale);
+      final rebookingRequest = CreateDsmesBookingRequest(
+          startTime: "",
+          endTime: "",
+          clinicId: data.clinic.id,
+          doctorId: data.doctorId,
+          patientPhoneNumber: data.patientInfo.phone,
+          patientName: data.patientInfo.displayName,
+          birthday: data.patientInfo.birthday,
+          patientGender: int.tryParse(data.patientInfo.gender) ??
+              (AppSettings.userInfo?.gender == 'Male' ? 1 : 0),
+          patientEmail: data.patientInfo.email,
+          bookingForClinic: 1, // 1: Booking phòng khám, 2: Booking bác sĩ
+          language: locale,
+          symptom: data.symptom,
+          symptomAttachment:
+              data.symptomAttachment.map((e) => e.filePath).toList());
+      cubit.updateCreateDsmesBookingRequest(request: rebookingRequest);
+
+      await DsmesNavigationMixin.navigationKey.currentState
+          ?.pushNamed(NavigatorName.dsmes_booking_select_date, arguments: {
+        'serviceType': data.mode,
+        'action': 'create',
+      });
+    } else {
+      // TODO: Handle rebooking online
+    }
   }
 
   bool _shouldShowJoinButton() {

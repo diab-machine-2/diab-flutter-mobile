@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_observer/Observable.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/model/request/create_dsmes_booking_request.dart';
 import 'package:medical/src/model/request/dsmes_cancel_booking_request.dart';
 import 'package:medical/src/utils/const.dart';
@@ -169,7 +170,8 @@ class _DsmesBookingDetailState extends State<DsmesBookingDetail> {
                       GapH(12),
                       _buildNoticeSymptom(),
                       GapH(12),
-                      _buildActionButtons(),
+                      if (isCompletedAppointment() == false)
+                        _buildActionButtons(),
                     ],
                   ),
                 ),
@@ -730,7 +732,44 @@ class _DsmesBookingDetailState extends State<DsmesBookingDetail> {
           Flexible(
             flex: 1,
             child: GestureDetector(
-              onTap: () {},
+              onTap: () async {
+                final locale = context.locale.languageCode;
+                _cubit.initCreateDsmesBookingRequest(locale: locale);
+                final rebookingRequest = CreateDsmesBookingRequest(
+                    startTime: "",
+                    endTime: "",
+                    clinicId: widget.appointment.clinic.id,
+                    doctorId: widget.appointment.doctorId,
+                    patientPhoneNumber: widget.appointment.patientInfo.phone,
+                    patientName: widget.appointment.patientInfo.displayName,
+                    birthday: widget.appointment.patientInfo.birthday,
+                    patientGender:
+                        int.tryParse(widget.appointment.patientInfo.gender) ??
+                            (AppSettings.userInfo?.gender == 'Male' ? 1 : 0),
+                    patientEmail: widget.appointment.patientInfo.email,
+                    bookingForClinic:
+                        1, // 1: Booking phòng khám, 2: Booking bác sĩ
+                    language: locale,
+                    symptom: widget.appointment.symptom,
+                    symptomAttachment: widget.appointment.symptomAttachment
+                        .map((e) => e.filePath)
+                        .toList());
+                _cubit.updateCreateDsmesBookingRequest(
+                    request: rebookingRequest);
+
+                // Pop until dsmes_booking
+                DsmesNavigationMixin.navigationKey.currentState
+                    ?.popUntil((route) => route.isFirst);
+
+                // Then push to select date
+                DsmesNavigationMixin.navigationKey.currentState?.pushNamed(
+                    NavigatorName.dsmes_booking_select_date,
+                    arguments: {
+                      'serviceType': widget.serviceType,
+                      'action': 'reschedule',
+                      'appointmentId': widget.appointment.id,
+                    });
+              },
               child: Container(
                 height: 42,
                 // width: 170,
