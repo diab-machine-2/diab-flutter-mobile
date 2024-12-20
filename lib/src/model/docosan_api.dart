@@ -7,6 +7,7 @@ import 'package:medical/src/model/response/common_response.dart';
 import 'package:medical/src/model/response/create_dsmes_offline_booking_response.dart';
 import 'package:medical/src/model/response/dsmes_clinic_detail_response.dart';
 import 'package:medical/src/model/response/dsmes_clinic_list_response.dart';
+import 'package:medical/src/model/response/dsmes_clinic_rating_response.dart';
 import 'package:medical/src/model/response/get_dsmes_appointment_detail_response.dart';
 import 'package:medical/src/model/response/get_dsmes_appointment_response.dart';
 import 'package:retrofit/http.dart';
@@ -48,4 +49,9 @@ abstract class DocosanApi {
   @POST("api/patients/reschedule-apt")
   Future<CreateDsmesOfflineBookingResponse> rescheduleDsmesAppointment(
       @Body() RescheduleDsmesBookingRequest request);
+
+  @POST("api/clinics/rate")
+  Future<DsmesClinicRatingResponse> getClinicRate(
+    @Query('clinic_id') int? clinicId,
+  );
 }

@@ -592,6 +592,15 @@ class Utils {
         return R.color.black;
     }
   }
+
+  static BoxShadow getBoxShadowDropCard() {
+    return BoxShadow(
+      color: R.color.shadowColorNew.withOpacity(0.08),
+      spreadRadius: 0,
+      blurRadius: 8,
+      offset: Offset(1, 2),
+    );
+  }
 }
 
 extension Precision on double {

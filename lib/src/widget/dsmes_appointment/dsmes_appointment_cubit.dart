@@ -13,6 +13,7 @@ import 'package:medical/src/model/response/common_response.dart';
 import 'package:medical/src/model/response/create_dsmes_offline_booking_response.dart';
 import 'package:medical/src/model/response/dsmes_clinic_detail_response.dart';
 import 'package:medical/src/model/response/dsmes_clinic_list_response.dart';
+import 'package:medical/src/model/response/dsmes_clinic_rating_response.dart';
 import 'package:medical/src/model/response/get_dsmes_appointment_detail_response.dart';
 import 'package:medical/src/model/response/get_dsmes_appointment_response.dart';
 import 'package:medical/src/model/service/api_result.dart';
@@ -27,6 +28,7 @@ class DsmesAppointmentCubit extends Cubit<DsmesAppointmentState> {
   late List<DsmesAppointment> myAppointments = [];
   late List<DsmesAppointment> listFilteredData = [];
   late List<DsmesClinicModel> listClinic = [];
+  late List<ClinicReview> listClinicReview = [];
 
   DsmesClinicModel? selectedClinic;
   DsmesAppointment? currentDsmesAppointment;
@@ -72,7 +74,7 @@ class DsmesAppointmentCubit extends Cubit<DsmesAppointmentState> {
       isGetCaresOrderInfo: '0',
       email: email,
       type: 'patient',
-      language: '',
+      language: 'vi',
     );
     final resp = await appRepository.registerDocosanUser(request: request);
     if (resp != null) {
@@ -82,8 +84,7 @@ class DsmesAppointmentCubit extends Cubit<DsmesAppointmentState> {
     return;
   }
 
-  Future<void> 
-  getDsmesAppointmentList(
+  Future<void> getDsmesAppointmentList(
       {int page = 1, bool isRefresh = false}) async {
     if (isRefresh) {
       // myAppointments.clear();
@@ -133,8 +134,19 @@ class DsmesAppointmentCubit extends Cubit<DsmesAppointmentState> {
         await appRepository.getClinicDetail(id: id);
     apiResult.when(success: (DsmesClinicDetailResponse response) {
       setSelectedClinic(response.data);
-
       emit(DsmesAppointmentLoaded());
+    }, failure: (NetworkExceptions error) {
+      emit(DsmesAppointmentFailure(NetworkExceptions.getErrorMessage(error)));
+    });
+  }
+
+  Future<void> getClinicRate({required int id}) async {
+    // emit(DsmesAppointmentLoading());
+    ApiResult<DsmesClinicRatingResponse> apiResult =
+        await appRepository.getClinicRate(id: id);
+    apiResult.when(success: (DsmesClinicRatingResponse response) {
+      listClinicReview = response.data.normalReview;
+      // emit(DsmesAppointmentLoaded());
     }, failure: (NetworkExceptions error) {
       emit(DsmesAppointmentFailure(NetworkExceptions.getErrorMessage(error)));
     });
@@ -210,18 +222,16 @@ class DsmesAppointmentCubit extends Cubit<DsmesAppointmentState> {
       DateTime now = DateTime.now();
       DateTime threeDaysAgo = now.subtract(Duration(days: 3));
 
-      return (
-              // startTime.isAfter(now) &&
-              (data.status == DSMES_STATUS_REQUEST ||
-                  data.status == DSMES_STATUS_ON_HOLD)) ||
+      return ((data.status == DSMES_STATUS_REQUEST ||
+              data.status == DSMES_STATUS_ON_HOLD)) ||
           (
-            // startTime.isAfter(threeDaysAgo) &&
+              startTime.isAfter(threeDaysAgo) &&
               data.status == DSMES_STATUS_APPROVE);
     }).toList();
     return filteredData;
   }
 
-  initCreateDsmesBookingRequest() {
+  initCreateDsmesBookingRequest({String locale = 'vi'}) {
     createDsmesBookingRequest = CreateDsmesBookingRequest(
       startTime: '',
       endTime: '',
@@ -235,7 +245,7 @@ class DsmesAppointmentCubit extends Cubit<DsmesAppointmentState> {
       patientGender: AppSettings.userInfo?.gender == 'Male' ? 1 : 0,
       patientEmail: AppSettings.userInfo?.email ?? '',
       bookingForClinic: 1, // 1: Booking phòng khám, 2: Booking bác sĩ
-      language: 'vn',
+      language: locale,
       symptom: '',
       symptomAttachment: [],
     );

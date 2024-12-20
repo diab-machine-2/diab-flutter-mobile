@@ -2,12 +2,15 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/model/response/dsmes_clinic_rating_response.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/dsmes_appointment/dsmes_appointment_cubit.dart';
+import 'package:medical/src/widget/dsmes_appointment/model/dsmes_appointment_model.dart';
 import 'package:medical/src/widget/dsmes_appointment/model/dsmes_clinic_model.dart';
 import 'package:medical/src/widget/dsmes_appointment/pages/dsmes_navigation_mixin.dart';
+import 'package:medical/src/widget/dsmes_appointment/widgets/dsmes_appointment_item.dart';
 import 'package:medical/src/widgets/gap_widget.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
@@ -25,12 +28,13 @@ class DsmesClinicDetailPage extends StatefulWidget {
 class _DsmesClinicDetailPageState extends State<DsmesClinicDetailPage> {
   final RefreshController _controller = RefreshController();
   late DsmesAppointmentCubit _cubit;
+  int _visibleComments = 3;
+  bool _showingAll = false;
 
   @override
   void initState() {
     super.initState();
     _cubit = context.read<DsmesAppointmentCubit>();
-    _cubit.getClinicDetail(id: widget.clinicId);
   }
 
   @override
@@ -46,42 +50,53 @@ class _DsmesClinicDetailPageState extends State<DsmesClinicDetailPage> {
   }
 
   Widget _buildPage(BuildContext context) {
-    return Column(
+    return Stack(
       children: [
-        CustomAppBar(
-          backgroundColor: Colors.transparent,
-          title: Text(
-            R.string.center_information.tr(),
-            style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.w700,
-                // fontFamily: 'sfpro',
-                color: R.color.textDark),
-          ),
-          actions: [],
-          leadingIcon: IconButton(
-            splashColor: Colors.transparent,
-            highlightColor: Colors.transparent,
-            icon: Icon(
-              Icons.arrow_back,
-              color: R.color.textDark,
-            ),
-            onPressed: () {
-              DsmesNavigationMixin.navigationKey.currentState?.pop(context);
-            },
-          ),
-        ),
-        Expanded(
-          child: SingleChildScrollView(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 16.0),
-              child: Column(
-                children: [
-                  _buildClinicItem(_cubit.selectedClinic!),
-                ],
+        Column(
+          children: [
+            CustomAppBar(
+              backgroundColor: Colors.transparent,
+              title: Text(
+                R.string.center_information.tr(),
+                style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w700,
+                    // fontFamily: 'sfpro',
+                    color: R.color.textDark),
+              ),
+              actions: [],
+              leadingIcon: IconButton(
+                splashColor: Colors.transparent,
+                highlightColor: Colors.transparent,
+                icon: Icon(
+                  Icons.arrow_back,
+                  color: R.color.textDark,
+                ),
+                onPressed: () {
+                  DsmesNavigationMixin.navigationKey.currentState?.pop(context);
+                },
               ),
             ),
-          ),
+            Expanded(
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 16.0),
+                  child: Column(
+                    children: [
+                      _buildClinicItem(_cubit.selectedClinic!),
+                      GapH(24),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+        Positioned(
+          bottom: 0,
+          left: 0,
+          right: 0,
+          child: _buildAppointmentActionButtons(),
         ),
       ],
     );
@@ -90,6 +105,11 @@ class _DsmesClinicDetailPageState extends State<DsmesClinicDetailPage> {
   _buildClinicItem(DsmesClinicModel data) {
     final locale = context.locale.languageCode;
     final goodAtList = data.getGoodAtByLocale(locale);
+    final recentBooking = _cubit.listFilteredData
+        .where(
+          (element) => element.clinicId == data.id,
+        )
+        .firstOrNull;
 
     return Container(
       padding: EdgeInsets.all(12),
@@ -103,6 +123,7 @@ class _DsmesClinicDetailPageState extends State<DsmesClinicDetailPage> {
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 SizedBox(
                     width: 72,
@@ -183,13 +204,14 @@ class _DsmesClinicDetailPageState extends State<DsmesClinicDetailPage> {
                   Flexible(
                     flex: 4,
                     child: Container(
-                      width: 111,
+                      width: 120,
                       decoration: BoxDecoration(
                         color: R.color.color0xff00B83D,
                         borderRadius: BorderRadius.circular(20),
                       ),
                       padding: EdgeInsets.all(8),
                       child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           SizedBox(
                             width: 20,
@@ -198,7 +220,7 @@ class _DsmesClinicDetailPageState extends State<DsmesClinicDetailPage> {
                           ),
                           GapW(5),
                           Text(
-                            R.string.view_map,
+                            R.string.view_map.tr(),
                             style: TextStyle(
                               fontSize: 13,
                               fontWeight: FontWeight.w400,
@@ -212,8 +234,347 @@ class _DsmesClinicDetailPageState extends State<DsmesClinicDetailPage> {
                 ],
               ),
             ),
+            if (goodAtList.isNotEmpty) GapH(24),
+            if (goodAtList.isNotEmpty)
+              Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Text(
+                        goodAtList.first.name,
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ],
+                  ),
+                  Container(
+                    decoration: BoxDecoration(
+                      color: R.color.white,
+                      borderRadius: BorderRadius.circular(8),
+                      boxShadow: [
+                        Utils.getBoxShadowDropCard(),
+                      ],
+                    ),
+                    padding: EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+                    child: Column(
+                      children: [
+                        ...goodAtList.sublist(1).map((e) {
+                          return Padding(
+                            padding: const EdgeInsets.only(bottom: 8.0),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                SizedBox(
+                                  width: 14,
+                                  height: 14,
+                                  child: Image.asset(R.drawable.ic_star),
+                                ),
+                                GapW(8),
+                                Flexible(
+                                  child: Text(
+                                    e.name,
+                                    style: TextStyle(
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.w400,
+                                      color: R.color.color0xff111515,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        }).toList(),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            if (recentBooking != null)
+              Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  GapH(24),
+                  Row(
+                    children: [
+                      Text(R.string.recent_booking.tr(),
+                          style: TextStyle(
+                              fontSize: 15, fontWeight: FontWeight.w700)),
+                    ],
+                  ),
+                  GapH(12),
+                  DsmesAppointmentItem(
+                    data: recentBooking,
+                    onChooseService: () async {
+                      // if (recentBooking.mode ==
+                      //     DsmesAppointmentMode.atClinic.toString()) {
+                      //   await _cubit.getClinicDetail(id: data.clinicId);
+                      // }
+
+                      DsmesNavigationMixin.navigationKey.currentState
+                          ?.pushNamed(
+                        NavigatorName.dsmes_booking_detail,
+                        arguments: {
+                          'serviceType':
+                              DsmesAppointmentMode.atClinic.toString(),
+                          'appointment': recentBooking
+                        },
+                      );
+                    },
+                    cubit: _cubit,
+                    displayActionButtons: false,
+                  ),
+                ],
+              ),
+            Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                GapH(24),
+                Row(
+                  children: [
+                    Text(
+                      R.string.customer_rating.tr(),
+                      style:
+                          TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
+                    ),
+                  ],
+                ),
+                GapH(12),
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+                  decoration: BoxDecoration(
+                    color: R.color.white,
+                    borderRadius: BorderRadius.circular(8),
+                    boxShadow: [
+                      Utils.getBoxShadowDropCard(),
+                    ],
+                  ),
+                  child: Column(
+                    children: [
+                      ..._cubit.listClinicReview
+                          .take(_visibleComments)
+                          .map((e) {
+                        return Column(
+                          children: [
+                            _buildCommentItem(e),
+                            if (e.id !=
+                                _cubit.listClinicReview
+                                    .take(_visibleComments)
+                                    .last
+                                    .id)
+                              Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    vertical: 14.0, horizontal: 12),
+                                child: Divider(
+                                  color: R.color.color0xffDFE4E4,
+                                ),
+                              )
+                          ],
+                        );
+                      }).toList(),
+                      if (_cubit.listClinicReview.length > 3)
+                        Center(
+                          child: Padding(
+                            padding: const EdgeInsets.only(top: 8.0),
+                            child: TextButton(
+                              onPressed: () {
+                                setState(() {
+                                  if (_showingAll) {
+                                    _visibleComments = 3;
+                                    _showingAll = false;
+                                  } else {
+                                    _visibleComments += 3;
+                                    if (_visibleComments >=
+                                        _cubit.listClinicReview.length) {
+                                      _visibleComments =
+                                          _cubit.listClinicReview.length;
+                                      _showingAll = true;
+                                    }
+                                  }
+                                });
+                              },
+                              child: Text(
+                                _showingAll
+                                    ? R.string.show_less.tr()
+                                    : R.string.show_more.tr(),
+                                style: TextStyle(
+                                  color: R.color.color0xff95682E,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ],
         ),
+      ),
+    );
+  }
+
+  _buildCommentItem(ClinicReview data) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SizedBox(
+          width: 32,
+          child: Image.asset(R.drawable.ic_avatar),
+        ),
+        GapW(12),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text(
+                    data.ratingName,
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  GapW(4),
+                  Row(
+                    children: List.generate(
+                      int.tryParse(data.rating) ?? 0,
+                      (index) {
+                        return Container(
+                          height: 16,
+                          width: 16,
+                          margin: EdgeInsets.only(right: 4),
+                          child: Image.asset(R.drawable.ic_star),
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              ),
+              GapH(12),
+              Container(
+                width: double.infinity,
+                child: Wrap(
+                  spacing: 6,
+                  runSpacing: 6,
+                  children: data.suggestion.map((e) {
+                    return Container(
+                        height: 20,
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                        decoration: BoxDecoration(
+                          color: R.color.color0xffEDEEEE,
+                          borderRadius: BorderRadius.circular(30),
+                        ),
+                        child: Text(
+                          ClinicReview.getSuggestionText(
+                              e, context.locale.languageCode),
+                          style: TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w400,
+                            color: R.color.color0xff636A6B,
+                          ),
+                        ));
+                  }).toList(),
+                ),
+              ),
+              GapH(12),
+              Text(
+                data.comment,
+                style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w400,
+                  color: R.color.color0xff141416,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  _buildAppointmentActionButtons() {
+    return Container(
+      padding: EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+      color: R.color.white,
+      child: Row(
+        children: [
+          Flexible(
+            flex: 1,
+            child: GestureDetector(
+              onTap: () {
+                // TODO: Navigate to online booking
+              },
+              child: Container(
+                height: 43,
+                decoration: BoxDecoration(
+                  color: R.color.white,
+                  borderRadius: BorderRadius.circular(200),
+                  border: Border.all(
+                    color: R.color.greenGradientBottom,
+                  ),
+                ),
+                child: Center(
+                  child: Text(
+                    R.string.consult_online.tr(),
+                    style: TextStyle(
+                      color: R.color.greenGradientBottom,
+                      fontSize: 15,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+          GapW(12),
+          Flexible(
+            flex: 1,
+            child: GestureDetector(
+              onTap: () {
+                DsmesNavigationMixin.navigationKey.currentState?.pushNamed(
+                    NavigatorName.dsmes_booking_offline,
+                    arguments: {
+                      'serviceType': DsmesAppointmentMode.atClinic.toString()
+                    });
+              },
+              child: Container(
+                height: 44,
+                margin: EdgeInsets.symmetric(horizontal: 0, vertical: 8),
+                decoration: BoxDecoration(
+                  color: R.color.mainColor,
+                  borderRadius: BorderRadius.circular(200),
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.centerRight,
+                    colors: [
+                      R.color.greenGradientTop,
+                      R.color.greenGradientMid,
+                      R.color.greenGradientBottom,
+                    ],
+                  ),
+                ),
+                child: Center(
+                  child: Text(
+                    R.string.consult_at_clinic.tr(),
+                    style: TextStyle(
+                      color: R.color.white,
+                      fontWeight: FontWeight.w700,
+                      fontSize: 15,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

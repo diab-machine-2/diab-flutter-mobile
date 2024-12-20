@@ -1206,4 +1206,6 @@ class Strings {
   String get support => 'support';
   String get view_map => 'view_map';
   String get center_information => 'center_information';
+  String get recent_booking => 'recent_booking';
+  String get customer_rating => 'customer_rating';
 }

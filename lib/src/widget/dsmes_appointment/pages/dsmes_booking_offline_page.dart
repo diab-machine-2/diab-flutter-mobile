@@ -172,18 +172,20 @@ class _DsmesBookingOfflinePageState extends State<DsmesBookingOfflinePage> {
   }
 
   _buildClinicItem(DsmesClinicModel data) {
-    return Container(
-      padding: EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: R.color.white,
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: GestureDetector(
-        onTap: () {
-          DsmesNavigationMixin.navigationKey.currentState?.pushNamed(
-              NavigatorName.dsmes_clinic_detail,
-              arguments: {'clinicId': data.id});
-        },
+    return GestureDetector(
+      onTap: () async {
+        await _cubit.getClinicDetail(id: data.id);
+        await _cubit.getClinicRate(id: data.id);
+        DsmesNavigationMixin.navigationKey.currentState?.pushNamed(
+            NavigatorName.dsmes_clinic_detail,
+            arguments: {'clinicId': data.id});
+      },
+      child: Container(
+        padding: EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: R.color.white,
+          borderRadius: BorderRadius.circular(8),
+        ),
         child: Container(
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -306,7 +308,8 @@ class _DsmesBookingOfflinePageState extends State<DsmesBookingOfflinePage> {
                               onTap: () async {
                                 await _cubit.getClinicDetail(id: data.id);
                                 if (_cubit.selectedClinic == null) return;
-                                _cubit.initCreateDsmesBookingRequest();
+                                _cubit.initCreateDsmesBookingRequest(
+                                    locale: context.locale.languageCode);
                                 await DsmesNavigationMixin
                                     .navigationKey.currentState
                                     ?.pushNamed(

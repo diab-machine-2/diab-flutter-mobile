@@ -1178,4 +1178,6 @@ confirm_change_booking_content,"Bạn muốn đổi thời gian tư vấn khác?
 rebooking,"Đặt lại","Rebooking",
 support,"Hỗ trợ","Support",
 view_map,"Xem bản đồ","View map",
-center_information,"Thông tin trung tâm","Center information"
+center_information,"Thông tin trung tâm","Center information",
+recent_booking,"Lịch hẹn gần nhất","Recent booking",
+customer_rating,"Đánh giá khách hàng","Customer rating"

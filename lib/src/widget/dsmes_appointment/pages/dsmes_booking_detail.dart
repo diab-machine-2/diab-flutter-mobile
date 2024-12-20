@@ -571,7 +571,6 @@ class _DsmesBookingDetailState extends State<DsmesBookingDetail> {
 
                   DsmesNavigationMixin.navigationKey.currentState
                       ?.popUntil((route) => route.isFirst);
-
                   Observable.instance.notifyObservers([],
                       notifyName: "refresh_dsmes_appointment");
                 },
@@ -614,7 +613,8 @@ class _DsmesBookingDetailState extends State<DsmesBookingDetail> {
                       Navigator.of(context).pop(); // Close dialog
 
                       if (_cubit.createDsmesBookingRequest == null) {
-                        _cubit.initCreateDsmesBookingRequest();
+                        _cubit.initCreateDsmesBookingRequest(
+                            locale: context.locale.languageCode);
                         final rescheduleRequest = CreateDsmesBookingRequest(
                             startTime: widget.appointment.startTime,
                             endTime: widget.appointment.endTime,
@@ -635,7 +635,7 @@ class _DsmesBookingDetailState extends State<DsmesBookingDetail> {
                                 : 0,
                             patientEmail: widget.appointment.patientInfo.email,
                             bookingForClinic: 1,
-                            language: 'vn',
+                            language: context.locale.languageCode,
                             symptom: widget.appointment.symptom,
                             symptomAttachment: widget
                                 .appointment.symptomAttachment

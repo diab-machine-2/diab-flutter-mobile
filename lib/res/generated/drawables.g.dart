@@ -582,4 +582,6 @@ class Drawables {
   String get ic_dialog_success => "lib/res/drawables/ic_dialog_success.png";
   String get map_location_bg => "lib/res/drawables/map_location_bg.png";
   String get ic_map_direction => "lib/res/drawables/ic_map_direction.png";
+  String get ic_star => "lib/res/drawables/ic_star.png";
+  String get ic_avatar => "lib/res/drawables/ic_avatar.png";
 }

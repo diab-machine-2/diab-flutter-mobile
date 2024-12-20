@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/utils/date_utils.dart';
+import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/dsmes_appointment/model/dsmes_appointment_model.dart';
 import 'package:medical/src/widget/dsmes_appointment/dsmes_appointment_cubit.dart';
 import 'package:medical/src/widgets/gap_widget.dart';
@@ -10,12 +11,14 @@ class DsmesAppointmentItem extends StatelessWidget {
   final DsmesAppointment data;
   final VoidCallback onChooseService;
   final DsmesAppointmentCubit cubit;
+  final bool displayActionButtons;
 
   const DsmesAppointmentItem({
     Key? key,
     required this.data,
     required this.onChooseService,
     required this.cubit,
+    this.displayActionButtons = true,
   }) : super(key: key);
 
   @override
@@ -43,12 +46,7 @@ class DsmesAppointmentItem extends StatelessWidget {
           color: R.color.white,
           borderRadius: BorderRadius.circular(8),
           boxShadow: [
-            BoxShadow(
-              color: R.color.shadowColorNew.withOpacity(0.08),
-              spreadRadius: 0,
-              blurRadius: 8,
-              offset: Offset(1, 2),
-            ),
+            Utils.getBoxShadowDropCard(),
           ],
         ),
         child: Column(
@@ -61,9 +59,8 @@ class DsmesAppointmentItem extends StatelessWidget {
               child: Divider(color: R.color.color0xffEFEFEF),
             ),
             _buildDescription(),
-            if (data.mode == DsmesAppointmentMode.atClinic.toString())
-              GapH(12),
-            _buildActionButtons(),
+            if (data.mode == DsmesAppointmentMode.atClinic.toString()) GapH(12),
+            if (displayActionButtons) _buildActionButtons(),
           ],
         ),
       ),

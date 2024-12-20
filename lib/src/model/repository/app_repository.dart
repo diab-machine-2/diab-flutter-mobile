@@ -42,6 +42,7 @@ import 'package:medical/src/model/response/detail_survey_response.dart';
 import 'package:medical/src/model/response/diabetes_status_response.dart';
 import 'package:medical/src/model/response/dsmes_clinic_detail_response.dart';
 import 'package:medical/src/model/response/dsmes_clinic_list_response.dart';
+import 'package:medical/src/model/response/dsmes_clinic_rating_response.dart';
 import 'package:medical/src/model/response/exercise_movement_response.dart';
 import 'package:medical/src/model/response/expert_comment_list_response.dart';
 import 'package:medical/src/model/response/filter_data_response.dart';
@@ -1063,6 +1064,16 @@ class AppRepository {
           {required RescheduleDsmesBookingRequest request}) async {
     try {
       final response = await docosanClient.rescheduleDsmesAppointment(request);
+      return ApiResult.success(data: response);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
+  Future<ApiResult<DsmesClinicRatingResponse>> getClinicRate(
+      {required int id}) async {
+    try {
+      final response = await docosanClient.getClinicRate(id);
       return ApiResult.success(data: response);
     } catch (e) {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));

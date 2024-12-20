@@ -53,15 +53,16 @@ class _DsmesAppointmentPageState extends State<DsmesAppointmentPage>
     super.dispose();
   }
 
-   @override
-  void update(Observable observable, String? notifyName, Map<dynamic, dynamic>? map) {
+  @override
+  void update(
+      Observable observable, String? notifyName, Map<dynamic, dynamic>? map) {
     if (notifyName == 'refresh_dsmes_appointment') {
       _refresh();
     }
   }
 
-  void _refresh() {
-    _cubit.getDsmesAppointmentList(isRefresh: false, page: 1);
+  void _refresh() async {
+    await _cubit.getDsmesAppointmentList(isRefresh: true, page: 1);
   }
 
   @override
@@ -139,7 +140,7 @@ class _DsmesAppointmentPageState extends State<DsmesAppointmentPage>
                       ),
                     );
                   }
-                  case NavigatorName.dsmes_clinic_detail:
+                case NavigatorName.dsmes_clinic_detail:
                   {
                     Map<String, dynamic>? args =
                         settings.arguments as Map<String, dynamic>?;
@@ -166,6 +167,8 @@ class _DsmesAppointmentPageState extends State<DsmesAppointmentPage>
         if (state is DsmesAppointmentFailure) {
           BotToast.closeAllLoading();
           Message.showToastMessage(context, state.error);
+        } else {
+          BotToast.closeAllLoading();
         }
       },
       builder: (
@@ -261,7 +264,7 @@ class _DsmesAppointmentPageState extends State<DsmesAppointmentPage>
                 _cubit.getDsmesAppointmentList(isRefresh: true, page: 1),
             child: SingleChildScrollView(
               child: Padding(
-                padding: const EdgeInsets.all(16.0),
+                padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: Column(
                   children: [
                     ListView.separated(
