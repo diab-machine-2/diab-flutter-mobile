@@ -115,17 +115,20 @@ class DsmesAppointmentCubit extends Cubit<DsmesAppointmentState> {
     });
   }
 
-  Future<void> getClinicList() async {
+  Future<List<DsmesClinicModel>> getClinicList() async {
+    List<DsmesClinicModel> clinics = [];
     emit(DsmesAppointmentLoading());
     ApiResult<DsmesClinicListResponse> apiResult =
         await appRepository.getClinicList();
     apiResult.when(success: (DsmesClinicListResponse response) {
       listClinic = response.data;
+      clinics = listClinic;
 
       emit(DsmesAppointmentLoaded());
     }, failure: (NetworkExceptions error) {
       emit(DsmesAppointmentFailure(NetworkExceptions.getErrorMessage(error)));
     });
+    return clinics;
   }
 
   Future<void> getClinicDetail({required int id}) async {
@@ -225,7 +228,7 @@ class DsmesAppointmentCubit extends Cubit<DsmesAppointmentState> {
       return ((data.status == DSMES_STATUS_REQUEST ||
               data.status == DSMES_STATUS_ON_HOLD)) ||
           (
-              startTime.isAfter(threeDaysAgo) &&
+              // startTime.isAfter(threeDaysAgo) &&
               data.status == DSMES_STATUS_APPROVE);
     }).toList();
     return filteredData;

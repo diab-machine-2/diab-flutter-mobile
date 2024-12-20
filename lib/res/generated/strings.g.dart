@@ -1208,4 +1208,5 @@ class Strings {
   String get center_information => 'center_information';
   String get recent_booking => 'recent_booking';
   String get customer_rating => 'customer_rating';
+  String get select_consulting_demand => 'select_consulting_demand';
 }

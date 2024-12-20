@@ -21,6 +21,7 @@ import 'package:medical/src/widget/dsmes_appointment/pages/dsmes_booking_select_
 import 'package:medical/src/widget/dsmes_appointment/pages/dsmes_clinic_detail_page.dart';
 import 'package:medical/src/widget/dsmes_appointment/pages/dsmes_confirm_create_information_page.dart';
 import 'package:medical/src/widget/dsmes_appointment/pages/dsmes_navigation_mixin.dart';
+import 'package:medical/src/widget/dsmes_appointment/pages/dsmes_select_service_page.dart';
 import 'package:medical/src/widget/dsmes_appointment/widgets/dsmes_appointment_item.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
@@ -148,6 +149,17 @@ class _DsmesAppointmentPageState extends State<DsmesAppointmentPage>
                       settings,
                       DsmesClinicDetailPage(
                         clinicId: args!["clinicId"],
+                      ),
+                    );
+                  }
+                case NavigatorName.dsmes_select_service:
+                  {
+                    Map<String, dynamic>? args =
+                        settings.arguments as Map<String, dynamic>?;
+                    return _buildRoute(
+                      settings,
+                      DsmesSelectServicePage(
+                        clinic: args!["clinic"],
                       ),
                     );
                   }
@@ -303,8 +315,17 @@ class _DsmesAppointmentPageState extends State<DsmesAppointmentPage>
                       height: 20,
                     ),
                     GestureDetector(
-                      onTap: () {
-                        // TODO: Handle create booking online
+                      onTap: () async {
+                        final clinics = await _cubit.getClinicList();
+                        if (clinics.isNotEmpty) {
+                          final priorityClinic = clinics.last;
+                          await _cubit.getClinicDetail(id: priorityClinic.id);
+                          DsmesNavigationMixin.navigationKey.currentState
+                              ?.pushNamed(NavigatorName.dsmes_select_service,
+                                  arguments: {
+                                'clinic': _cubit.selectedClinic,
+                              });
+                        }
                       },
                       child: Image.asset(R.drawable.online_consulting),
                     ),

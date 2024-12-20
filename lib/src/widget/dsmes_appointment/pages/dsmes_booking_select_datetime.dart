@@ -99,9 +99,9 @@ class _DsmesCalendarSectionState extends State<DsmesCalendarSection> {
                   title: Text(
                     R.string.pick_time.tr(),
                     style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w600,
-                      color: R.color.textDark,
+                      fontSize: 20,
+                      fontWeight: FontWeight.w700,
+                      color: R.color.color0xff111515,
                       fontFamily: 'sfpro',
                     ),
                   ),
