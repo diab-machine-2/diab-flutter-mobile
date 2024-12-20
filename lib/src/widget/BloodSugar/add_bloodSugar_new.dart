@@ -1,6 +1,4 @@
-import 'dart:io';
 import 'dart:math';
-
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_observer/Observable.dart';
@@ -19,7 +17,6 @@ import 'package:medical/src/repo/home/home_client.dart';
 import 'package:medical/src/repo/user/user_client.dart';
 import 'package:medical/src/utils/app_media_query.dart';
 import 'package:medical/src/utils/utils.dart';
-import 'package:medical/src/widget/BloodSugar/widget/action_list_trend.dart';
 import 'package:medical/src/widget/HbA1C/widget/description/description.dart';
 import 'package:medical/src/widget/base/base_state.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
@@ -55,8 +52,8 @@ class AddBloodSugarControllerNew extends StatefulWidget {
 class _AddBloodSugarControllerNewState
     extends BaseState<AddBloodSugarControllerNew>
     with SingleTickerProviderStateMixin {
-  TextEditingController _controller = TextEditingController();
-  TextEditingController _controllerNote = TextEditingController();
+  final TextEditingController _controller = TextEditingController();
+  final TextEditingController _controllerNote = TextEditingController();
   final GlobalKey<SectionAddNoteState> _sectionAddNoteKey = GlobalKey<SectionAddNoteState>();
   List<dynamic> files = [];
   DateTime selectedDate = DateTime.now();
@@ -88,6 +85,13 @@ class _AddBloodSugarControllerNewState
 
   FocusNode _focusNode = FocusNode();
   FocusNode _focusNodeKPI = FocusNode();
+
+  final List<TimeFrameModel> _times = [
+    // After filter from api will look like this
+    // TimeFrameModel(id: "Prd01", code: "Prd01", name: R.string.duong_huyet_doi.tr()),
+    // TimeFrameModel(id: "Prd02", code: "Prd02", name: R.string.truoc_an.tr()),
+    // TimeFrameModel(id: "Prd03", code: "Prd03", name: R.string.sau_an.tr()),
+  ];
 
   @override
   void initState() {
@@ -176,17 +180,63 @@ class _AddBloodSugarControllerNewState
   }
 
   Future<void> _loadConfig() async {
+    // Prd01    Thức giấc
+    // Prd02    Trước ăn sáng
+    // Prd03    Sau ăn sáng
+    // Prd04    Trước ăn trưa
+    // Prd05    Sau ăn trưa
+    // Prd06    Trước ăn tối
+    // Prd07    Sau ăn tối
+    // Prd08    Trước tập thể dục
+    // Prd09    Sau tập thể dục
+    // Prd10    Giờ đi ngủ
+    // Prd11    Nửa đêm
+    // Prd12    Khác
+    // Prd13    Ăn sáng
+    // Prd14    Ăn trưa
+    // Prd15    Ăn tối
+
+    Map<String, String> mapTimeFrame = {
+      // Trước ăn
+      "Prd02": "Prd02",
+      "Prd04": "Prd02",
+      "Prd06": "Prd02",
+
+      // Sau ăn
+      "Prd03": "Prd03",
+      "Prd05": "Prd03",
+      "Prd07": "Prd03",
+
+      // Đường huyết đói
+      "*": "Prd01",
+    };
+
     BotToast.showLoading();
     // load concurrent 2 api
     final result = await Future.wait([
       GlucoseClient().fetchFlucoseTimeFrame(
           time: selectedDate.millisecondsSinceEpoch ~/ 1000),
       GlucoseClient().fetchColorConfig(),
+      GlucoseClient().fetchFlucoseTimeFrame(),
     ]);
 
-    if (result.length > 1) {
+    if (result.length > 2) {
       final timeFrames = result[0] as List<TimeFrameModel>;
       final colors = result[1] as List<GlucoseColorConfig>?;
+      final timeFramesFromApi = result[2] as List<TimeFrameModel>;
+      _times.addAll(timeFramesFromApi.where((e) => mapTimeFrame.values.contains(e.code)));
+      _times.sort((a, b) => a.code!.compareTo(b.code!));
+
+      // map name
+      _times.forEach((e) {
+        if (e.code! == 'Prd01') {
+          e.name = R.string.duong_huyet_doi.tr();
+        } else if (e.code! == 'Prd02') {
+          e.name = R.string.truoc_an.tr();
+        } else if (e.code! == 'Prd03') {
+          e.name = R.string.sau_an.tr();
+        }
+      });
 
       if (colors != null) {
         _colorList = colors.map(((e) {
@@ -197,6 +247,11 @@ class _AddBloodSugarControllerNewState
 
       selectedTimeFrame = timeFrames.length == 0 ? null : timeFrames.first;
       if (selectedTimeFrame != null) {
+        selectedTimeFrame = _times.firstWhere(
+          (e) => e.code! == mapTimeFrame[selectedTimeFrame!.code!],
+          orElse: () => _times.first,
+        );
+        _lastTimeFrameIndex = _times.indexOf(selectedTimeFrame!);
         await getGlucoseRange(selectedTimeFrame!);
       }
     }
@@ -456,10 +511,10 @@ class _AddBloodSugarControllerNewState
       Message.showToastMessage(context, R.string.mes_blood_sugar_empty.tr());
       return;
     }
-    if (selectedDate == null) {
-      Message.showToastMessage(context, R.string.ban_chua_nhap_thoi_gian.tr());
-      return;
-    }
+    // if (selectedDate == null) {
+    //   Message.showToastMessage(context, R.string.ban_chua_nhap_thoi_gian.tr());
+    //   return;
+    // }
     if (selectedTimeFrame == null) {
       Message.showToastMessage(context, R.string.ban_chua_chon_khung_gio.tr());
       return;
@@ -920,23 +975,6 @@ class _AddBloodSugarControllerNewState
     );
   }
 
-  void showActionFilter(BuildContext context) {
-    showModalBottomSheet(
-      shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(top: Radius.circular(15))),
-      backgroundColor: R.color.white,
-      context: context,
-      isScrollControlled: true,
-      builder: (context) => ActionListTrend(
-        selected: selectedTimeFrame,
-        callback: (value) {
-          selectedTimeFrame = value;
-          getGlucoseRange(value!);
-        },
-      ),
-    );
-  }
-
   Future<void> showGuide(BuildContext context) async {
     Description.showTooltip(context,
         data: des!, title: R.string.blood_sugar_for_diabetes.tr());
@@ -1118,103 +1156,29 @@ class _AddBloodSugarControllerNewState
     );
   }
 
-  // Widget _dateTimeSection() {
-  //   return Column(
-  //     children: [
-  //       GestureDetector(
-  //         onTap: _onTapDateTime,
-  //         child: Container(
-  //           color: R.color.transparent,
-  //           child: Column(children: [
-  //             Row(
-  //               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-  //               children: [
-  //                 Text(
-  //                   convertToUTC(selectedDate.millisecondsSinceEpoch ~/ 1000,
-  //                       'HH:mm - dd/MM/yyyy'),
-  //                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.w400),
-  //                 ),
-  //                 SizedBox(width: 8),
-  //                 Text(
-  //                   'Chỉnh sửa',
-  //                   style: TextStyle(
-  //                     fontSize: 16,
-  //                     color: R.color.accentColor,
-  //                     fontWeight: FontWeight.w600,
-  //                   ),
-  //                 )
-  //               ],
-  //             ),
-  //             SizedBox(height: 16),
-  //             Container(height: 1, color: R.color.color0xffE5E5E5),
-  //             SizedBox(height: 8),
-  //           ]),
-  //         ),
-  //       )
-  //     ],
-  //   );
-  // }
-
   Widget _dateTimeFrameV2() {
     return Container(
       width: double.infinity,
       height: 32.h,
       child: ToggleButtonsHorizontal(
-        names: ['Đường huyết đói', 'Sau ăn', 'Trước ăn'],
+        names: _times.map((e) => e.name!).toList(),
         backgroundColor: Color(0xFFF2F6F9),
         selectedIndex: _lastTimeFrameIndex,
-        onChange: (index) {
+        onChange: (index) async {
           _lastTimeFrameIndex = index;
-          setState(() {});
+          selectedTimeFrame = _times[index];
+          try {
+            BotToast.showLoading();
+            await getGlucoseRange(selectedTimeFrame!);
+          } catch (e) {
+            BotToast.showText(text: R.string.error_unexpected_error.tr());
+          } finally {
+            BotToast.closeAllLoading();
+            setState(() {});
+          }
         },
         height: 32.h,
       ),
-    );
-  }
-
-  Widget _dateTimeFrame() {
-    return Column(
-      children: [
-        GestureDetector(
-          onTap: () async {
-            await TrackingManager.analytics.logEvent(
-              name: 'component_clicked',
-              parameters: {
-                "screen_name": 'kpi_glycemic_add',
-                'component_name': 'time_section_glycemic',
-              },
-            );
-            showActionFilter(context);
-          },
-          child: Container(
-            color: R.color.transparent,
-            child: Column(
-              children: [
-                SpacingRow(
-                  spacing: 15,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                        selectedTimeFrame == null
-                            ? R.string.chon_khung_gio.tr()
-                            : selectedTimeFrame!.name!,
-                        style: TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.w400)),
-                    Text(
-                      'Chỉnh sửa',
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: R.color.accentColor,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    )
-                  ],
-                ),
-              ],
-            ),
-          ),
-        )
-      ],
     );
   }
 

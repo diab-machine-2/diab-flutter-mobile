@@ -196,7 +196,7 @@ class _BloodSugarDetailTabbarControllerState extends State<BloodSugarDetailTabba
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: InkWell(
                   onTap: () {
-                    // TODO:
+                    Navigator.of(context).pushNamed(NavigatorName.add_blood_sugar_new);
                   },
                   child: Container(
                     height: 48,

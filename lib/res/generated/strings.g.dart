@@ -819,6 +819,7 @@ class Strings {
   String get bieu_do => 'bieu_do';
   String get detail => 'detail';
   String get all => 'all';
+  String get duong_huyet_doi => 'duong_huyet_doi';
   String get truoc_an => 'truoc_an';
   String get sau_an => 'sau_an';
   String get truoc_tap => 'truoc_tap';
