@@ -395,7 +395,7 @@ DEPENDENCIES:
   - zalo_flutter (from `.symlinks/plugins/zalo_flutter/ios`)
 
 SPEC REPOS:
-  trunk:
+  https://github.com/CocoaPods/Specs.git:
     - AppAuth
     - BranchSDK
     - Cache
@@ -618,6 +618,6 @@ SPEC CHECKSUMS:
   zalo_flutter: 0fe7092dc50f3f4baf26ed980cedc9b4ed66c5b2
   ZaloSDK: 233c5cb5247bd6891f4a7d2d9505f6a2b9aa38c6
 
-PODFILE CHECKSUM: 7fec11c2723e53f8d1e936cbf82f6df2af4de52a
+PODFILE CHECKSUM: fbbcaadb8c0139ac01ec5bb8383d1a2a3c9d8c71
 
 COCOAPODS: 1.14.3

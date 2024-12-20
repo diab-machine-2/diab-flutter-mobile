@@ -468,10 +468,6 @@ class Drawables {
   String get ic_compare => "lib/res/drawables/ic_compare.png";
 
   String get im_glucose_intro => "lib/res/drawables/glucose/im_glucose_intro.png";
-  String get im_guide_connectdevice => "lib/res/drawables/glucose/im_guide_connectdevice.png";
-  String get im_guide_read_glucose => "lib/res/drawables/glucose/im_guide_read_glucose.png";
-  String get im_guide_schedule => "lib/res/drawables/glucose/im_guide_schedule.png";
-  String get im_guide_viewchart => "lib/res/drawables/glucose/im_guide_viewchart.png";
   String get im_glucose_input_device => "lib/res/drawables/glucose/im_glucose_input_device.png";
   String get im_glucose_input_manual => "lib/res/drawables/glucose/im_glucose_input_manual.png";
 

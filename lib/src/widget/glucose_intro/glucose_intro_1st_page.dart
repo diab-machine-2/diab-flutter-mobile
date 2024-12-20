@@ -2,13 +2,18 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
+import 'package:medical/src/app_setting/firebase_tracking/activity_list_tracking.dart';
 import 'package:medical/src/modal/glucose/glucose_lesson.dart';
 import 'package:medical/src/repo/glucose/glucose_client.dart';
+import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/BloodSugar/blood_sugar_functions.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
+import 'package:medical/src/widget/my_plan_screens/lesson_tab/lesson_detail/lesson_detail.dart';
 import 'package:medical/src/widgets/common_page.dart';
 import 'package:medical/src/widgets/network_image_widget.dart';
+
+import 'widgets/glucose_lesson_section.dart';
 
 class GlucoseIntro1stPage extends StatefulWidget {
   const GlucoseIntro1stPage({super.key});
@@ -18,27 +23,12 @@ class GlucoseIntro1stPage extends StatefulWidget {
 }
 
 class _GlucoseIntro1stPageState extends State<GlucoseIntro1stPage> {
-  int _currentIndex = 0;
-
-  final ScrollController _scrollController = ScrollController();
-  final double _lessonItemWidth = 338.0;
-
   final List<GlucoseLesson> _pinedLessons = [];
-
-  // seed
-  final int _itemCount = 10;
 
   @override
   void initState() {
     super.initState();
     _loadLessons();
-    _scrollController.addListener(_onScroll);
-  }
-
-  @override
-  void dispose() {
-    _scrollController.dispose();
-    super.dispose();
   }
 
   void _loadLessons() async {
@@ -61,6 +51,23 @@ class _GlucoseIntro1stPageState extends State<GlucoseIntro1stPage> {
       Navigator.of(context).pushNamed(NavigatorName.add_blood_sugar_new);
     }
     BloodSugarFunctions.showModalAddData(context, popPrevious: true);
+  }
+
+  void _navigateToLessonDetail(String id, int type) async {
+    ActivityListTracking.clickLessonItem(
+      objectId: id,
+      objectIndex: null,
+      objectTitle: null,
+    );
+
+      await NavigationUtil.navigatePage(
+        context,
+        LessonDetailPage(
+          lessonType: type,
+          lessonId: id,
+          onComplete: (_, __) {},
+        ),
+      );
   }
 
   @override
@@ -95,7 +102,7 @@ class _GlucoseIntro1stPageState extends State<GlucoseIntro1stPage> {
           const SizedBox(height: 24),
           _buildBannerSection(),
           const SizedBox(height: 16),
-          _buildFAQSection(),
+          _buildPinnedLessonsSection(),
           const SizedBox(height: 16),
           _buildLessonSection(),
           const SizedBox(height: 47),
@@ -169,7 +176,7 @@ class _GlucoseIntro1stPageState extends State<GlucoseIntro1stPage> {
     );
   }
 
-  Widget _buildFAQSection() {
+  Widget _buildPinnedLessonsSection() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 12),
       child: Column(
@@ -192,10 +199,12 @@ class _GlucoseIntro1stPageState extends State<GlucoseIntro1stPage> {
           if (_pinedLessons.isNotEmpty) ...[
             Row(
               children: [
-                Expanded(child: _buildFAQItem(_pinedLessons[0])),
+                Expanded(child: _buildPinnedLessonItem(_pinedLessons[0])),
                 const SizedBox(width: 8),
                 Expanded(
-                    child: _pinedLessons.length > 1 ? _buildFAQItem(_pinedLessons[1]) : const SizedBox()),
+                    child: _pinedLessons.length > 1
+                        ? _buildPinnedLessonItem(_pinedLessons[1])
+                        : const SizedBox()),
               ],
             ),
             const SizedBox(height: 8),
@@ -203,10 +212,10 @@ class _GlucoseIntro1stPageState extends State<GlucoseIntro1stPage> {
           if (_pinedLessons.isNotEmpty && _pinedLessons.length > 2) ...[
             Row(
               children: [
-                Expanded(child: _buildFAQItem(_pinedLessons[2])),
+                Expanded(child: _buildPinnedLessonItem(_pinedLessons[2])),
                 const SizedBox(width: 8),
                 Expanded(
-                    child: _pinedLessons.length > 3 ? _buildFAQItem(_pinedLessons[3]) : const SizedBox()),
+                    child: _pinedLessons.length > 3 ? _buildPinnedLessonItem(_pinedLessons[3]) : const SizedBox()),
               ],
             ),
           ],
@@ -216,227 +225,50 @@ class _GlucoseIntro1stPageState extends State<GlucoseIntro1stPage> {
   }
 
   Widget _buildLessonSection() {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 12),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.all(Radius.circular(16)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const SizedBox(height: 20),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Text(
-              'Kiến thức từ Chuyên gia DiaB',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w700,
-                color: R.color.dark,
-              ),
-            ),
-          ),
-          const SizedBox(height: 16),
-          // List of items
-          SizedBox(
-            height: 318,
-            child: ListView.separated(
-              controller: _scrollController,
-              padding: const EdgeInsets.only(left: 12),
-              scrollDirection: Axis.horizontal,
-              itemBuilder: (context, index) {
-                return SizedBox(child: _buildLessonItem(), height: 318);
-              },
-              separatorBuilder: (context, index) {
-                return const SizedBox(width: 12);
-              },
-              itemCount: _itemCount,
-            ),
-          ),
-
-          const SizedBox(height: 16),
-          SizedBox(
-            height: 8,
-            child: Center(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  for (int i = 0; i < _itemCount; i++)
-                    Container(
-                      width: _currentIndex == i ? 16 : 8,
-                      height: 8,
-                      margin: const EdgeInsets.symmetric(horizontal: 3),
-                      decoration: BoxDecoration(
-                        color: _currentIndex == i ? R.color.mainColor : Colors.grey,
-                        borderRadius: BorderRadius.all(Radius.circular(4)),
-                      ),
-                    ),
-                ],
-              ),
-            ),
-          ),
-
-          const SizedBox(height: 16),
-        ],
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 12),
+      child: GlucoseLessonSection(
+        onLessonTap: (lesson) => _navigateToLessonDetail(lesson.id, lesson.type),
       ),
     );
   }
 
-  Widget _buildFAQItem(GlucoseLesson lesson) {
+  Widget _buildPinnedLessonItem(GlucoseLesson lesson) {
     String title = lesson.name;
     String? imageUrl = lesson.imageUrl;
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.all(Radius.circular(16)),
-        border: Border.all(color: R.color.grayComponentBorder),
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          NetWorkImageWidget(
-            imageUrl: imageUrl,
-            fit: BoxFit.cover,
-            width: 72,
-            height: 72,
-          ),
-          const SizedBox(height: 8),
-          Text(
-            title,
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 14,
-              height: 20 / 14,
-              fontWeight: FontWeight.w400,
-              color: R.color.primaryGreyColor,
+    return InkWell(
+      onTap: () => _navigateToLessonDetail(lesson.id, lesson.type),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.all(Radius.circular(16)),
+          border: Border.all(color: R.color.grayComponentBorder),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            NetWorkImageWidget(
+              imageUrl: imageUrl,
+              fit: BoxFit.cover,
+              width: 72,
+              height: 72,
             ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildLessonItem() {
-    return SizedBox(
-      height: 252.0,
-      width: _lessonItemWidth,
-      child: InkWell(
-        // TODO: add onTap
-        onTap: () {},
-        borderRadius: BorderRadius.circular(12.0),
-        child: Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(12.0),
-            color: Colors.white,
-            border: Border.all(color: const Color(0xFFE4E4E7), width: 1.0),
-          ),
-          clipBehavior: Clip.antiAliasWithSaveLayer,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Image
-              // https://picsum.photos/654/348
-              ClipRRect(
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(12.0),
-                  topRight: Radius.circular(12.0),
-                ),
-                child: NetWorkImageWidget(
-                  imageUrl: 'https://picsum.photos/288/174',
-                  fit: BoxFit.cover,
-                  height: 174.0,
-                  width: double.infinity,
-                ),
-              ),
-
-              const SizedBox(height: 12.0),
-
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Chế độ dinh dưỡng dành cho bệnh đái tháo đường bạn đã biết.',
-                        maxLines: 2,
-                        style: TextStyle(
-                          color: R.color.textDark,
-                          fontSize: 15.0,
-                          height: 24.0 / 15.0,
-                        ),
-                      ),
-                      const SizedBox(height: 4.0),
-                      Row(
-                        children: [
-                          Image.asset(
-                            R.drawable.ic_lesson_category,
-                            width: 16.0,
-                            height: 16.0,
-                          ),
-                          const SizedBox(width: 6.0),
-                          Text(
-                            "Bài học",
-                            style: TextStyle(
-                              color: R.color.color0xff666666,
-                              fontSize: 12.0,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-
-              const SizedBox(height: 12.0),
-              Divider(
-                height: 1,
+            const SizedBox(height: 8),
+            Text(
+              title,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 14,
+                height: 20 / 14,
+                fontWeight: FontWeight.w400,
                 color: R.color.primaryGreyColor,
               ),
-
-              // Actions
-              SizedBox(
-                height: 40,
-                child: Center(
-                  child: InkWell(
-                    onTap: () {},
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Image.asset(R.drawable.ic_lesson_share, width: 20.0, height: 20.0),
-                        const SizedBox(width: 8.0),
-                        Text(
-                          "Chia sẻ",
-                          style: TextStyle(color: R.color.textDark, fontSize: 15.0),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
-  }
-
-  // * Scroll listener
-  void _onScroll() {
-    final double currentScroll = _scrollController.position.pixels;
-    final double eachItemWidth = _lessonItemWidth;
-
-    int currentIndex = (currentScroll / eachItemWidth).round();
-    setState(() {
-      _currentIndex = currentIndex;
-    });
   }
 }

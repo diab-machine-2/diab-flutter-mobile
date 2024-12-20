@@ -2,10 +2,61 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/app_setting/firebase_tracking/activity_list_tracking.dart';
+import 'package:medical/src/modal/glucose/glucose_lesson.dart';
+import 'package:medical/src/repo/glucose/glucose_client.dart';
+import 'package:medical/src/utils/navigation_util.dart';
+import 'package:medical/src/widget/helper/tracking_manager.dart';
+import 'package:medical/src/widget/my_plan_screens/lesson_tab/lesson_detail/lesson_detail.dart';
 import 'package:medical/src/widgets/common_page.dart';
+import 'package:medical/src/widgets/network_image_widget.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-class GlucoseIntro2ndPage extends StatelessWidget {
+class GlucoseIntro2ndPage extends StatefulWidget {
+  @override
+  State<GlucoseIntro2ndPage> createState() => _GlucoseIntro2ndPageState();
+}
+
+class _GlucoseIntro2ndPageState extends State<GlucoseIntro2ndPage> {
+  final List<GlucoseLesson> _pinedLessons = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadLessons();
+  }
+
+  void _loadLessons() async {
+    try {
+      _pinedLessons.clear();
+      final lessons = await GlucoseClient().fetchGlucoseLessons();
+      if (lessons != null) {
+        setState(() {
+          _pinedLessons.addAll(lessons);
+        });
+      }
+    } catch (e, s) {
+      TrackingManager.recordError(e, s);
+    }
+  }
+
+  void _navigateToLessonDetail(String id, int type) async {
+    ActivityListTracking.clickLessonItem(
+      objectId: id,
+      objectIndex: null,
+      objectTitle: null,
+    );
+
+    await NavigationUtil.navigatePage(
+      context,
+      LessonDetailPage(
+        lessonType: type,
+        lessonId: id,
+        onComplete: (_, __) {},
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -23,7 +74,7 @@ class GlucoseIntro2ndPage extends StatelessWidget {
       child: Column(
         children: [
           const SizedBox(height: 12),
-          _buildFAQSection(),
+          _buildPinnedLessonsSection(),
           const SizedBox(height: 26),
           _buildRangeTableSection(),
           const SizedBox(height: 20),
@@ -32,36 +83,38 @@ class GlucoseIntro2ndPage extends StatelessWidget {
     );
   }
 
-  Widget _buildFAQSection() {
+  Widget _buildPinnedLessonsSection() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 12),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
-          Row(
-            children: [
-              Expanded(
-                  child: _buildFAQItem(
-                      'Hướng dẫn kết nối máy đo và app DiaB', R.drawable.im_guide_connectdevice)),
-              const SizedBox(width: 8),
-              Expanded(
-                  child: _buildFAQItem(
-                      'Hướng dẫn xem biểu đồ đường huyết', R.drawable.im_guide_viewchart)),
-            ],
-          ),
-          const SizedBox(height: 8),
-          Row(
-            children: [
-              Expanded(
-                  child: _buildFAQItem(
-                      'Hướng dẫn đặt lịch đo đường huyết', R.drawable.im_guide_schedule)),
-              const SizedBox(width: 8),
-              Expanded(
-                  child: _buildFAQItem(
-                      'Hướng dẫn xem bảng theo dõi đường huyết', R.drawable.im_guide_read_glucose)),
-            ],
-          ),
+          if (_pinedLessons.isNotEmpty) ...[
+            Row(
+              children: [
+                Expanded(child: _buildPinnedLessonItem(_pinedLessons[0])),
+                const SizedBox(width: 8),
+                Expanded(
+                    child: _pinedLessons.length > 1
+                        ? _buildPinnedLessonItem(_pinedLessons[1])
+                        : const SizedBox()),
+              ],
+            ),
+            const SizedBox(height: 8),
+          ],
+          if (_pinedLessons.isNotEmpty && _pinedLessons.length > 2) ...[
+            Row(
+              children: [
+                Expanded(child: _buildPinnedLessonItem(_pinedLessons[2])),
+                const SizedBox(width: 8),
+                Expanded(
+                    child: _pinedLessons.length > 3
+                        ? _buildPinnedLessonItem(_pinedLessons[3])
+                        : const SizedBox()),
+              ],
+            ),
+          ],
         ],
       ),
     );
@@ -206,32 +259,41 @@ class GlucoseIntro2ndPage extends StatelessWidget {
     );
   }
 
-  Widget _buildFAQItem(String title, String iconPath) {
-    // just return content and padding itself
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.all(Radius.circular(16)),
-        border: Border.all(color: R.color.grayComponentBorder),
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Image.asset(iconPath, width: 72, height: 72),
-          const SizedBox(height: 8),
-          Text(
-            title,
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 14,
-              height: 20 / 14,
-              fontWeight: FontWeight.w400,
-              color: R.color.primaryGreyColor,
+  Widget _buildPinnedLessonItem(GlucoseLesson lesson) {
+    String title = lesson.name;
+    String? imageUrl = lesson.imageUrl;
+    return InkWell(
+      onTap: () => _navigateToLessonDetail(lesson.id, lesson.type),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.all(Radius.circular(16)),
+          border: Border.all(color: R.color.grayComponentBorder),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            NetWorkImageWidget(
+              imageUrl: imageUrl,
+              fit: BoxFit.cover,
+              width: 72,
+              height: 72,
             ),
-          ),
-        ],
+            const SizedBox(height: 8),
+            Text(
+              title,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 14,
+                height: 20 / 14,
+                fontWeight: FontWeight.w400,
+                color: R.color.primaryGreyColor,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

@@ -992,7 +992,7 @@ class _HomeControllerState extends State<HomeController>
       if (await AppSettings.hadOpenedGlucoseIntro() == false) {
         AppSettings.markOpenedGlucoseIntro();
         Navigator.of(context).pushNamed(NavigatorName.glucose_intro_1st_page);
-        return true;
+        return false;
       }
       if (AppSettings.isUS) {
         return true;
