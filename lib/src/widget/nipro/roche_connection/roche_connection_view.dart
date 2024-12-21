@@ -1,6 +1,9 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/utils/app_media_query.dart';
+import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widgets/app_bar_widget.dart';
 import 'package:medical/src/widgets/normal_template.dart';
 import 'blocs/rocheConnection_cubit.dart';
@@ -24,6 +27,10 @@ class _RocheConnectionViewState extends State<RocheConnectionView> {
     super.initState();
   }
 
+  void _doManualInput() {
+    Navigator.of(context).pushReplacementNamed(NavigatorName.add_blood_sugar_new, arguments: {'type': 'input'});
+  }
+
   @override
   Widget build(BuildContext context) {
     AppMediaQuery().init(context);
@@ -40,6 +47,7 @@ class _RocheConnectionViewState extends State<RocheConnectionView> {
               return Column(
                 children: [
                   Column(
+                    mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: examples
                         .map((deviceInfo) => DeviceItemWidget(
@@ -49,12 +57,83 @@ class _RocheConnectionViewState extends State<RocheConnectionView> {
                             ))
                         .toList(),
                   ),
+                  const Spacer(),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: _buildConnectManually(),
+                  ),
+                  const SizedBox(height: 20),
+                  const SafeArea(
+                    top: false,
+                    child: SizedBox(height: 20),
+                  ),
                 ],
               );
             },
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildConnectManually() {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(
+          width: 235,
+          height: 20,
+          alignment: Alignment.center,
+          child: Row(
+            children: [
+              Expanded(child: Container(height: 1, color: R.color.greenGradientBottom)),
+              Text(
+                '   ${R.string.or.tr()}   ',
+                style: TextStyle(
+                  fontSize: 14,
+                  color: R.color.greenGradientBottom,
+                ),
+              ),
+              Expanded(child: Container(height: 1, color: R.color.greenGradientBottom)),
+            ],
+          ),
+        ),
+        const SizedBox(height: 24),
+        InkWell(
+          onTap: _doManualInput,
+          borderRadius: BorderRadius.circular(16),
+          child: Container(
+            padding: EdgeInsets.symmetric(vertical: 12, horizontal: 12),
+            decoration: BoxDecoration(
+              color: R.color.white,
+              borderRadius: BorderRadius.circular(16),
+            ),
+            height: 64,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Image.asset(R.drawable.im_glucose_input_manual, width: 40, height: 40),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    'Nhập thủ công',
+                    style: TextStyle(
+                      fontSize: 15,
+                      color: R.color.dark,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Icon(
+                  Icons.chevron_right,
+                  color: R.color.primaryGreyColor,
+                  size: 24,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

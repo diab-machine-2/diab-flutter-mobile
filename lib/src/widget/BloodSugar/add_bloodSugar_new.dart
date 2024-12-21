@@ -1211,19 +1211,21 @@ class _AddBloodSugarControllerNewState
 
   Widget _connectMachine(BuildContext context) {
     final action = () async {
-      Navigator.push(
+      Navigator.pushReplacement(
           context,
           MaterialPageRoute(
               builder: (BuildContext context) => RocheConnectionView()));
     };
     final connectMachineW = InkWell(
       onTap: action,
+      borderRadius: BorderRadius.circular(16),
       child: Container(
         padding: EdgeInsets.symmetric(vertical: 12, horizontal: 12),
         decoration: BoxDecoration(
           color: R.color.white,
           borderRadius: BorderRadius.circular(16),
         ),
+        height: 64,
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
@@ -1258,7 +1260,7 @@ class _AddBloodSugarControllerNewState
           children: [
             // TODO: Enhance this
             // magic number follow sum on design or edit 1by1 :D
-            SizedBox(height: max(height - 620 - (files.length > 0 ? 76 : 0), 12)),
+            SizedBox(height: max(height - 750 - (files.length > 0 ? 76 : 0), 12)),
             Container(
               width: 235,
               height: 20,
@@ -1267,7 +1269,7 @@ class _AddBloodSugarControllerNewState
                 children: [
                   Expanded(child: Container(height: 1, color: R.color.greenGradientBottom)),
                   Text(
-                    '   Hoặc   ',
+                    '   ${R.string.or.tr()}   ',
                     style: TextStyle(
                       fontSize: 14,
                       color: R.color.greenGradientBottom,
