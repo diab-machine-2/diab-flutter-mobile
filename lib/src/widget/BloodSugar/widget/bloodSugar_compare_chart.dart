@@ -46,106 +46,106 @@ class BloodSugarCompareChartState extends State<BloodSugarCompareChart>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    return Container(
-      decoration: BoxDecoration(
-        color: R.color.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: R.color.gray_btn),
-      ),
-      child: BlocProvider<GlucoseBloc>(
-          create: (context) => GlucoseBloc(),
-          child: BlocBuilder<GlucoseBloc, GlucoseState>(
-              builder: (BuildContext context, GlucoseState state) {
-            currentContext = context;
-            List<ComparerModel>? model;
+    return BlocProvider<GlucoseBloc>(
+      create: (context) => GlucoseBloc(),
+      child: BlocBuilder<GlucoseBloc, GlucoseState>(
+          builder: (BuildContext context, GlucoseState state) {
+        currentContext = context;
+        List<ComparerModel>? model;
 
-            if (state is GlucoseInitial) {
-              BlocProvider.of<GlucoseBloc>(context).add(FetchComparerGlucose(
-                  currentDateTime: (DateTime.now().millisecondsSinceEpoch ~/ 1000).toString(),
-                  periodFilterType: periodFilterType.toString(),
-                  page: 1,
-                  comparerType: comparerType.toString()));
-            }
-            if (state is GlucoseError) {
-              Message.showToastMessage(context, state.message);
-            }
-            if (state is GlucoseComparerLoaded) {
-              model = state.listcomparer.reversed.toList();
-            }
-            return model == null
-                ? Container(height: 530, child: Center(child: CircularProgressIndicator()))
-                : Container(
-                    color: R.color.transparent,
-                    padding: EdgeInsets.only(left: 12, right: 12),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                      const SizedBox(height: 20),
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Text(
-                            R.string.compare.tr(),
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w700,
-                              color: R.color.dark,
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          Image.asset(R.drawable.ic_compare, width: 32, height: 32),
-                          const Spacer(),
-                          Container(
-                              height: 32,
-                              padding: const EdgeInsets.only(left: 10.0, right: 10.0),
-                              decoration: BoxDecoration(
-                                  color: R.color.white,
-                                  borderRadius: BorderRadius.circular(200.0),
-                                  border: Border.all(color: R.color.grayBorder)),
-                              child: GestureDetector(
-                                onTap: () {
-                                  showActionCompareFilter(context);
-                                },
-                                child: Align(
-                                    alignment: Alignment.center,
-                                    child: Row(
-                                      children: [
-                                        Text(name),
-                                        SizedBox(width: 2),
-                                        Image.asset(R.drawable.ic_chevron_down,
-                                            width: 24, height: 24)
-                                      ],
-                                    )),
-                              )),
-                        ],
+        if (state is GlucoseInitial) {
+          BlocProvider.of<GlucoseBloc>(context).add(FetchComparerGlucose(
+              currentDateTime: (DateTime.now().millisecondsSinceEpoch ~/ 1000).toString(),
+              periodFilterType: periodFilterType.toString(),
+              page: 1,
+              comparerType: comparerType.toString()));
+        }
+        if (state is GlucoseError) {
+          Message.showToastMessage(context, state.message);
+        }
+        if (state is GlucoseComparerLoaded) {
+          model = state.listcomparer.reversed.toList();
+        }
+        if (model == null || model.isEmpty) {
+          return SizedBox();
+        }
+
+        return Container(
+          margin: EdgeInsets.only(top: 16),
+          decoration: BoxDecoration(
+            color: R.color.white,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: R.color.gray_btn),
+          ),
+          padding: EdgeInsets.only(left: 12, right: 12),
+          child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: 20),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text(
+                      R.string.compare.tr(),
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w700,
+                        color: R.color.dark,
                       ),
-                      SizedBox(height: 16),
-                      model.length == 0
-                          ? EmptyDataBox(
-                              text: "chỉ số đường huyết",
-                              onTap: () async {
-                                await TrackingManager.analytics
-                                    .logEvent(name: 'cta_button_clicked', parameters: {
-                                  "screen_name": 'kpi_glycemic',
-                                  'cta_button_name': 'cta_add_glycemic_2',
-                                });
-                                if (AppSettings.isUS) {
-                                  Navigator.pushNamed(context, NavigatorName.add_blood_sugar_new,
-                                      arguments: {'type': 'input'});
-                                } else {
-                                  BloodSugarFunctions.showModalAddData(context);
-                                }
-                                // BloodSugarFunctions.showModalAddData(context);
-                                // Navigator.pushNamed(
-                                //     context, NavigatorName.add_blood_sugar,
-                                //     arguments: {'type': 'input', 'id': null});
-                              },
-                            )
-                          : _buildChart(model),
-                    ]),
-                  );
-          })),
+                    ),
+                    const SizedBox(width: 8),
+                    Image.asset(R.drawable.ic_compare, width: 32, height: 32),
+                    const Spacer(),
+                    Container(
+                        height: 32,
+                        padding: const EdgeInsets.only(left: 10.0, right: 10.0),
+                        decoration: BoxDecoration(
+                            color: R.color.white,
+                            borderRadius: BorderRadius.circular(200.0),
+                            border: Border.all(color: R.color.grayBorder)),
+                        child: GestureDetector(
+                          onTap: () {
+                            showActionCompareFilter(context);
+                          },
+                          child: Align(
+                              alignment: Alignment.center,
+                              child: Row(
+                                children: [
+                                  Text(name),
+                                  SizedBox(width: 2),
+                                  Image.asset(R.drawable.ic_chevron_down, width: 24, height: 24)
+                                ],
+                              )),
+                        )),
+                  ],
+                ),
+                SizedBox(height: 16),
+                model.length == 0
+                    ? EmptyDataBox(
+                        text: "chỉ số đường huyết",
+                        onTap: () async {
+                          await TrackingManager.analytics
+                              .logEvent(name: 'cta_button_clicked', parameters: {
+                            "screen_name": 'kpi_glycemic',
+                            'cta_button_name': 'cta_add_glycemic_2',
+                          });
+                          if (AppSettings.isUS) {
+                            Navigator.pushNamed(context, NavigatorName.add_blood_sugar_new,
+                                arguments: {'type': 'input'});
+                          } else {
+                            BloodSugarFunctions.showModalAddData(context);
+                          }
+                          // BloodSugarFunctions.showModalAddData(context);
+                          // Navigator.pushNamed(
+                          //     context, NavigatorName.add_blood_sugar,
+                          //     arguments: {'type': 'input', 'id': null});
+                        },
+                      )
+                    : _buildChart(model),
+              ]),
+        );
+      }),
     );
   }
 

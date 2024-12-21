@@ -252,11 +252,11 @@ class _AddBloodSugarControllerNewState
       // map name
       _times.forEach((e) {
         if (e.code! == 'Prd01') {
-          e.name = R.string.duong_huyet_doi.tr();
+          e.name = R.string.duong_huyet_doi;
         } else if (e.code! == 'Prd02') {
-          e.name = R.string.truoc_an.tr();
+          e.name = R.string.truoc_an;
         } else if (e.code! == 'Prd03') {
-          e.name = R.string.sau_an.tr();
+          e.name = R.string.sau_an;
         }
       });
 
@@ -1258,7 +1258,7 @@ class _AddBloodSugarControllerNewState
           children: [
             // TODO: Enhance this
             // magic number follow sum on design or edit 1by1 :D
-            SizedBox(height: max(height - 688 - (files.length > 0 ? 76 : 0), 12)),
+            SizedBox(height: max(height - 620 - (files.length > 0 ? 76 : 0), 12)),
             Container(
               width: 235,
               height: 20,

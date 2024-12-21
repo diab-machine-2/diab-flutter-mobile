@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
@@ -7,6 +8,7 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/bloc/glucose/glucose_bloc.dart';
 import 'package:medical/src/modal/glucose/glucose_data_trend.dart';
+import 'package:medical/src/repo/glucose/glucose_client.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/BloodSugar/bloodSugar_detail_tabbar.dart';
 import 'package:medical/src/widget/BloodSugar/widget/action_list_filter_trend.dart';
@@ -35,6 +37,10 @@ class BloodSugarChartState extends State<BloodSugarChart>
   @override
   bool get wantKeepAlive => true;
 
+  final _bloc = GlucoseBloc();
+
+  StreamSubscription? _subscription;
+
   late BuildContext currentContext;
   int value = 0;
   int touchIndex = -1;
@@ -46,10 +52,52 @@ class BloodSugarChartState extends State<BloodSugarChart>
   int minXIndex = 0;
   int maxXIndex = 0;
 
+  String? _aiSuggestion;
+
   @override
   void initState() {
     super.initState();
-    periodFilterType = BloodSugarDetailTabbarController.of(context)?.periodFilterType ?? widget.periodFilterType;
+    periodFilterType =
+        BloodSugarDetailTabbarController.of(context)?.periodFilterType ?? widget.periodFilterType;
+    _loadAISuggestion();
+    _subscription = _bloc.stream.listen((state) async {
+      if (state is GlucoseTrendLoaded) {
+        _subscription?.cancel();
+        _subscription = null;
+
+        // Navigate to input if no data
+        List<TrendModel> trends = [];
+        state.trend.trendItems.items.forEach((item) {
+          trends.addAll(item.subTrends);
+        });
+        if (trends.isEmpty) {
+          await Future.delayed(Duration(milliseconds: 500));
+          Navigator.pushNamed(context, NavigatorName.add_blood_sugar_new,
+              arguments: {'type': 'input'});
+        }
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _subscription?.cancel();
+    super.dispose();
+  }
+
+  void _loadAISuggestion() async {
+    try {
+      // TODO: Not working
+      final res = await GlucoseClient().fetchGlucoseAlltimeAnalysis();
+      if (res != null) {
+        _aiSuggestion = res.message;
+        if (mounted) {
+          setState(() {});
+        }
+      }
+    } catch (e) {
+      debugPrint('error: $e');
+    }
   }
 
   @override
@@ -57,10 +105,10 @@ class BloodSugarChartState extends State<BloodSugarChart>
     super.build(context);
     // final width = MediaQuery.of(context).size.width;
     // final height = 37.0;
-    return BlocProvider<GlucoseBloc>(
-        create: (context) => GlucoseBloc(),
-        child: BlocBuilder<GlucoseBloc, GlucoseState>(
-            builder: (BuildContext context, GlucoseState state) {
+    return BlocProvider<GlucoseBloc>.value(
+      value: _bloc,
+      child: BlocBuilder<GlucoseBloc, GlucoseState>(
+        builder: (BuildContext context, GlucoseState state) {
           currentContext = context;
           TrendDataModel? model;
 
@@ -93,14 +141,43 @@ class BloodSugarChartState extends State<BloodSugarChart>
                     children: [
                       _sectionTrending(model),
                       const SizedBox(height: 16),
-                      _sectionAIHelp(),
+                      if (_aiSuggestion?.isNotEmpty == true) _sectionAIHelp(),
                     ],
                   ),
                 );
-        }));
+        },
+      ),
+    );
   }
 
   Widget _sectionTrending(TrendDataModel model) {
+    DateTime highestGlucoseDate = DateTime.now();
+    String highestGlucoseType = '';
+    double highestGlucose = 0;
+    int maxGlucoseTrendIndex = -1;
+    int maxGlucoseTrendItemIndex = -1;
+    String highestGlucoseColor = '';
+    for (int i = 0; i < model.trendItems.items.length; i++) {
+      for (int j = 0; j < model.trendItems.items[i].subTrends.length; j++) {
+        if (model.trendItems.items[i].subTrends[j].glucose != null &&
+            model.trendItems.items[i].subTrends[j].glucose! > highestGlucose) {
+          maxGlucoseTrendIndex = i;
+          maxGlucoseTrendItemIndex = j;
+          highestGlucose = model.trendItems.items[i].subTrends[j].glucose!;
+        }
+      }
+    }
+    if (maxGlucoseTrendIndex > -1) {
+      int dateMilli =
+          model.trendItems.items[maxGlucoseTrendIndex].subTrends[maxGlucoseTrendItemIndex].date!;
+      highestGlucoseDate = DateTime.fromMillisecondsSinceEpoch(dateMilli * 1000);
+      highestGlucoseType =
+          model.trendItems.items[maxGlucoseTrendIndex].subTrends[maxGlucoseTrendItemIndex].type!;
+      highestGlucose =
+          model.trendItems.items[maxGlucoseTrendIndex].subTrends[maxGlucoseTrendItemIndex].glucose!;
+      highestGlucoseColor =
+          model.trendItems.items[maxGlucoseTrendIndex].subTrends[maxGlucoseTrendItemIndex].color!;
+    }
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -109,7 +186,8 @@ class BloodSugarChartState extends State<BloodSugarChart>
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Text(
-              '16:45 - 21/08/2024',
+              // '16:45 - 21/08/2024',
+              DateFormat('HH:mm - dd/MM/yyyy').format(highestGlucoseDate),
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 14,
@@ -119,16 +197,18 @@ class BloodSugarChartState extends State<BloodSugarChart>
             ),
             const SizedBox(height: 6),
             Text(
-              'Cao',
+              highestGlucoseType,
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
-                color: R.color.red,
+                color: highestGlucoseColor.isNotEmpty
+                    ? Color(int.parse('0xff${highestGlucoseColor.split('#').join()}'))
+                    : null,
                 height: 36 / 24,
               ),
             ),
             Text(
-              '135 mg/dL',
+              '${highestGlucose.toStringAsFixed(0)} mmol/L',
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 14,
@@ -140,24 +220,7 @@ class BloodSugarChartState extends State<BloodSugarChart>
         ),
         Container(
           height: 100,
-          child: model.trendItems.items.length == 0
-              ? EmptyDataBox(
-                  text: "chỉ số đường huyết",
-                  onTap: () async {
-                    await TrackingManager.analytics
-                        .logEvent(name: 'cta_button_clicked', parameters: {
-                      "screen_name": 'kpi_glycemic',
-                      'cta_button_name': 'cta_add_glycemic_1',
-                    });
-                    if (AppSettings.isUS) {
-                      Navigator.pushNamed(context, NavigatorName.add_blood_sugar_new,
-                          arguments: {'type': 'input'});
-                    } else {
-                      BloodSugarFunctions.showModalAddData(context);
-                    }
-                  },
-                )
-              : _buildChart(model),
+          child: model.trendItems.items.length == 0 ? SizedBox.shrink() : _buildChart(model),
         ),
       ],
     );
@@ -181,7 +244,7 @@ class BloodSugarChartState extends State<BloodSugarChart>
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
               Text(
-                'Gợi ý từ Trợ lý Sống khỏe',
+                R.string.ai_suggestion_glucose.tr(),
                 style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.bold,
@@ -197,7 +260,7 @@ class BloodSugarChartState extends State<BloodSugarChart>
           ),
           const SizedBox(height: 8),
           Text(
-            'Mức đường huyết sau ăn của bạn lúc 12h hôm nay là 280 mg/dL, cao hơn mức bình thường. Đổi với người mắc bệnh đái tháo đường, mức đường huyết sau ăn thường nên ở dưới 180 mg/dL để đảm bảo kiểm soát tốt bệnh và ngẫn ngừa các biến chứng.',
+            _aiSuggestion ?? '',
             style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w400,
@@ -412,6 +475,10 @@ class BloodSugarChartState extends State<BloodSugarChart>
         }
       }
     }
+
+    minY = max(0, minY - 10);
+    maxY = maxY + 10;
+
     return Padding(
       padding: EdgeInsets.only(top: 32),
       child: SingleChildScrollView(
@@ -420,86 +487,95 @@ class BloodSugarChartState extends State<BloodSugarChart>
         child: Stack(
           children: [
             Container(
-                // width: ((length < 5 ? 5 : length) * (width + 20)).toDouble(),
-                width: MediaQuery.of(context).size.width - 56,
-                height: 100,
-                padding: EdgeInsets.only(top: 8, bottom: 8),
-                alignment: Alignment.center,
-                child: LineChart(
-                  LineChartData(
-                    lineTouchData: LineTouchData(
-                        // getTouchLineStart: (barData, index) =>
-                        //     -double.infinity, // default: from bottom
-                        // getTouchLineEnd: (barData, index) => double.infinity, //to top
-                        getTouchedSpotIndicator: (LineChartBarData barData, List<int> spotIndexes) {
-                          return spotIndexes.map((index) {
-                            return TouchedSpotIndicatorData(
-                              FlLine(color: toColor(trends[index].color), strokeWidth: 0.5),
-                              FlDotData(
-                                show: true,
-                                getDotPainter: (spot, percent, barData, index) =>
-                                    FlDotCirclePainter(
-                                  radius: 6.5,
-                                  color: toColor(trends[index].color),
-                                  strokeWidth: 18,
-                                  strokeColor: toColor(trends[index].color).withOpacity(0.3),
-                                ),
+              // width: ((length < 5 ? 5 : length) * (width + 20)).toDouble(),
+              width: MediaQuery.of(context).size.width - 56,
+              height: 100,
+              padding: EdgeInsets.only(top: 8, bottom: 8),
+              alignment: Alignment.center,
+              child: LineChart(
+                LineChartData(
+                  lineTouchData: LineTouchData(
+                      // getTouchLineStart: (barData, index) =>
+                      //     -double.infinity, // default: from bottom
+                      // getTouchLineEnd: (barData, index) => double.infinity, //to top
+                      getTouchedSpotIndicator: (LineChartBarData barData, List<int> spotIndexes) {
+                        return spotIndexes.map((index) {
+                          return TouchedSpotIndicatorData(
+                            FlLine(color: toColor(trends[index].color), strokeWidth: 0.5),
+                            FlDotData(
+                              show: true,
+                              getDotPainter: (spot, percent, barData, index) => FlDotCirclePainter(
+                                radius: 6.5,
+                                color: toColor(trends[index].color),
+                                strokeWidth: 18,
+                                strokeColor: toColor(trends[index].color).withOpacity(0.3),
                               ),
+                            ),
+                          );
+                        }).toList();
+                      },
+                      touchTooltipData: LineTouchTooltipData(
+                        showOnTopOfTheChartBoxArea: true,
+                        fitInsideHorizontally: true,
+                        fitInsideVertically: true,
+                        tooltipBgColor: R.color.transparent,
+                        tooltipRoundedRadius: 8,
+                        getTooltipItems: (List<LineBarSpot> lineBarsSpot) {
+                          return lineBarsSpot.map((lineBarSpot) {
+                            return LineTooltipItem(
+                              lineBarSpot.y.round() == lineBarSpot.y
+                                  ? lineBarSpot.y.round().toString()
+                                  : lineBarSpot.y.toString(),
+                              TextStyle(
+                                  color: toColor(trends[lineBarSpot.spotIndex].color),
+                                  fontWeight: FontWeight.bold),
                             );
                           }).toList();
                         },
-                        touchTooltipData: LineTouchTooltipData(
-                          showOnTopOfTheChartBoxArea: true,
-                          fitInsideHorizontally: true,
-                          fitInsideVertically: true,
-                          tooltipBgColor: touchIndex == -1
-                              ? R.color.transparent
-                              : toColor(trends[touchIndex].color).withOpacity(0.2),
-                          tooltipRoundedRadius: 8,
-                          getTooltipItems: (List<LineBarSpot> lineBarsSpot) {
-                            return lineBarsSpot.map((lineBarSpot) {
-                              return LineTooltipItem(
-                                lineBarSpot.y.round() == lineBarSpot.y
-                                    ? lineBarSpot.y.round().toString()
-                                    : lineBarSpot.y.toString(),
-                                TextStyle(
-                                    color: toColor(trends[lineBarSpot.spotIndex].color),
-                                    fontWeight: FontWeight.bold),
-                              );
-                            }).toList();
-                          },
-                        ),
-                        touchCallback: (FlTouchEvent event, LineTouchResponse? lineTouch) {
-                          previousDate = 0;
-                          if (lineTouch?.lineBarSpots?.length == 1 &&
-                              event is! FlLongPressEnd &&
-                              event is! FlPanEndEvent) {
-                            final value = lineTouch?.lineBarSpots?[0].x;
-                            if (value != null) {
-                              //    setState(() {
-                              touchIndex = value.toInt();
-                              //    });
-                            }
-                          } else {
-                            touchIndex = -1;
+                        // TODO: Check position tooltip
+                        tooltipPadding: EdgeInsets.only(bottom: 50),
+                      ),
+                      touchCallback: (FlTouchEvent event, LineTouchResponse? lineTouch) {
+                        previousDate = 0;
+                        if (lineTouch?.lineBarSpots?.length == 1 &&
+                            event is! FlLongPressEnd &&
+                            event is! FlPanEndEvent) {
+                          final value = lineTouch?.lineBarSpots?[0].x;
+                          if (value != null) {
+                            //    setState(() {
+                            touchIndex = value.toInt();
+                            //    });
                           }
-                        }),
-                    gridData: FlGridData(show: false),
-                    titlesData: FlTitlesData(
-                      rightTitles: SideTitles(showTitles: false),
-                      topTitles: SideTitles(showTitles: false),
-                      bottomTitles: SideTitles(showTitles: false),
-                      leftTitles: SideTitles(showTitles: false),
-                    ),
-                    borderData: FlBorderData(show: false),
-                    minX: 0,
-                    maxX: length.toDouble(),
-                    maxY: maxY,
-                    minY: minY,
-                    lineBarsData: _linesBarData(model),
+                        } else {
+                          touchIndex = -1;
+                        }
+                      }),
+                  gridData: FlGridData(show: false),
+                  extraLinesData: ExtraLinesData(
+                    horizontalLines: [
+                      HorizontalLine(
+                        y: 180,
+                        color: Color(0xFFC82221),
+                        dashArray: [4, 4],
+                      ),
+                    ],
                   ),
-                  swapAnimationDuration: Duration(milliseconds: 250),
-                )),
+                  titlesData: FlTitlesData(
+                    rightTitles: SideTitles(showTitles: false),
+                    topTitles: SideTitles(showTitles: false),
+                    bottomTitles: SideTitles(showTitles: false),
+                    leftTitles: SideTitles(showTitles: false),
+                  ),
+                  borderData: FlBorderData(show: false),
+                  minX: 0,
+                  maxX: length.toDouble(),
+                  maxY: maxY,
+                  minY: minY,
+                  lineBarsData: _linesBarData(model),
+                ),
+                swapAnimationDuration: Duration(milliseconds: 250),
+              ),
+            ),
           ],
         ),
       ),
@@ -519,43 +595,36 @@ class BloodSugarChartState extends State<BloodSugarChart>
               spots: List.generate(trends.length, (index) {
                 return FlSpot((index).toDouble(), trends[index].glucose!);
               }),
-              isCurved: true,
-              // TODO: change color
-              colors: [Colors.green],
-              barWidth: 2,
+              isCurved: false,
+              colors: [Color(0xFF008479)],
+              barWidth: 1,
               isStrokeCapRound: true,
               dotData: FlDotData(
                 show: true,
                 checkToShowDot: (spot, barData) => spot.x == minXIndex || spot.x == maxXIndex,
                 getDotPainter: (spot, percent, barData, index) {
                   return FlDotCirclePainter(
-                    radius: 6,
-                    color: index == maxXIndex ? Colors.red : Colors.yellow,
-                    strokeWidth: 0,
+                    radius: 3,
+                    color: index == maxXIndex ? Color(0xFFC82221) : Color(0xFFF9C239),
+                    strokeWidth: 6,
                     strokeColor: index == maxXIndex
-                        ? Colors.red.withOpacity(0.3)
-                        : Colors.yellow.withOpacity(0.3),
+                        ? Color(0xFFC82221).withOpacity(0.3)
+                        : Color(0xFFF9C239).withOpacity(0.3),
                   );
                 },
-                // getDotPainter: (spot, percent, barData, index) {
-                //   return FlDotCirclePainter(
-                //     radius: 4,
-                //     color: toColor(trends[index].color),
-                //     strokeWidth: trends.length - 1 == index ? 18 : 0,
-                //     strokeColor: toColor(trends.last.color).withOpacity(0.2),
-                //   );
-                // },
               ),
               belowBarData: BarAreaData(
                 show: true,
-                // TODO: change color
                 colors: [
-                  Colors.green,
+                  // TODO: change color
+                  Colors.green.withOpacity(0.7),
                   Colors.green.withOpacity(0.2),
                   Colors.green.withOpacity(0.01),
+                  // Color(0xFFFFFDFD), Color(0xFFE1FAF8),
                 ],
                 gradientFrom: Offset(0.5, 0),
                 gradientTo: Offset(0.5, 1),
+                // gradientColorStops: [0, 0.3],
               ),
             ),
           ];

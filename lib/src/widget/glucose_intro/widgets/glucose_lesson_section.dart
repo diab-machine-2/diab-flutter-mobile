@@ -55,7 +55,6 @@ class _GlucoseLessonSectionState extends State<GlucoseLessonSection> {
         if (state is GlucoseIntroLessonLoaded) {
           final lessons = state.lessons;
           return Container(
-            margin: const EdgeInsets.symmetric(horizontal: 12),
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.all(Radius.circular(16)),
@@ -180,8 +179,9 @@ class _GlucoseLessonSectionState extends State<GlucoseLessonSection> {
                       // Category
                       Row(
                         mainAxisSize: MainAxisSize.min,
+                        mainAxisAlignment: MainAxisAlignment.start,
                         children: [
-                          const SizedBox(width: 16.0),
+                          // const SizedBox(width: 16.0),
                           Image.asset(
                             R.drawable.ic_lesson_category,
                             width: 16.0,
@@ -205,7 +205,7 @@ class _GlucoseLessonSectionState extends State<GlucoseLessonSection> {
               const SizedBox(height: 12.0),
               Divider(
                 height: 1,
-                color: R.color.primaryGreyColor,
+                color: R.color.color0xffE5E5E5,
               ),
 
               // Actions
