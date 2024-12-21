@@ -1,13 +1,17 @@
 import 'dart:io';
 import 'dart:math';
 
+import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_observer/Observable.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/modal/HbA1C/short_gui.dart';
+import 'package:medical/src/repo/HbA1C/HbA1C_client.dart';
 import 'package:medical/src/repo/glucose/glucose_client.dart';
 import 'package:medical/src/utils/navigation_util.dart';
+import 'package:medical/src/widget/HbA1C/widget/description/description.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widgets/network_image_widget.dart';
@@ -34,20 +38,25 @@ class _PageAddBloodSugarResultState extends State<PageAddBloodSugarResult> {
   List<String?> _removeIDs = [];
   List<dynamic> _files = [];
 
+  ShortGuiModel? _des;
+
   @override
   void initState() {
     _loadData();
     super.initState();
   }
 
-  void _loadData() {
+  void _loadData() async {
     final data = widget.data;
     _files = data.files ?? [];
     _aiResult = data.aiResult ?? '';
+
+    _des = await HbA1CClient().fetchShortGuide(2);
   }
 
   void _doComplete() async {
     try {
+      BotToast.showLoading();
       if (_haveEditNote) {
         List<String> paths = [];
         for (var file in _files) {
@@ -67,6 +76,7 @@ class _PageAddBloodSugarResultState extends State<PageAddBloodSugarResult> {
             _removeIDs,
             paths);
         if (result == true) {
+          BotToast.closeAllLoading();
           Observable.instance.notifyObservers([], notifyName: "glucose_change_data");
           return;
         }
@@ -74,6 +84,8 @@ class _PageAddBloodSugarResultState extends State<PageAddBloodSugarResult> {
       Observable.instance.notifyObservers([], notifyName: "glucose_change_data");
     } catch (e, s) {
       TrackingManager.recordError(e, s);
+    } finally {
+      BotToast.closeAllLoading();
     }
   }
 
@@ -81,8 +93,10 @@ class _PageAddBloodSugarResultState extends State<PageAddBloodSugarResult> {
     // TODO: share
   }
 
-  void _doGuide() {
-    // TODO: guide
+  void _doGuide() async {
+    if (_des != null) {
+      Description.showTooltip(context, data: _des!, title: R.string.blood_sugar_for_diabetes.tr());
+    }
   }
 
   void _doEditNote() async {
