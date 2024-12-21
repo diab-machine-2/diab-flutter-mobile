@@ -203,6 +203,7 @@ class Strings {
   String get blood_sugar_for_diabetes => 'blood_sugar_for_diabetes';
   String get corresponding_to => 'corresponding_to';
   String get mes_unsafe_blood_sugar => 'mes_unsafe_blood_sugar';
+  String get ai_suggestion_glucose => 'ai_suggestion_glucose';
   String get mes_blood_sugar_empty => 'mes_blood_sugar_empty';
   String get mes_reason_empty => 'mes_reason_empty';
   String get blood_sugar_group => 'blood_sugar_group';

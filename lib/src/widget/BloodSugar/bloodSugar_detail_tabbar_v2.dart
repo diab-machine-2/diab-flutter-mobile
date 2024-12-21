@@ -45,7 +45,6 @@ class _BloodSugarDetailTabbarControllerState extends State<BloodSugarDetailTabba
 
   final GlobalKey<BloodSugarDetailState> sugarDetailKey = GlobalKey();
   final GlobalKey<BloodSugarChartState> sugarChartKey = GlobalKey();
-  final GlobalKey<BloodGlucoseItemState> latestDataKey = GlobalKey();
   final GlobalKey<BloodSugarCompareChartState> sugarCompareKey = GlobalKey();
 
   int periodFilterType = 3;

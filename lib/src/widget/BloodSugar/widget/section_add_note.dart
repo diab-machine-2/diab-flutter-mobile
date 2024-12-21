@@ -14,13 +14,13 @@ class SectionAddNote extends StatefulWidget {
     this.focusNode,
     this.controllerNote,
     this.maxMedia = 5,
-    this.files,
+    this.initialFiles,
   });
 
   final FocusNode? focusNode;
   final TextEditingController? controllerNote;
   final int maxMedia;
-  final List<dynamic>? files;
+  final List<dynamic>? initialFiles;
 
   @override
   State<SectionAddNote> createState() => SectionAddNoteState();
@@ -33,7 +33,7 @@ class SectionAddNoteState extends State<SectionAddNote> {
   @override
   void initState() {
     super.initState();
-    _files.addAll(widget.files ?? []);
+    _files.addAll(widget.initialFiles ?? []);
   }
 
   @override

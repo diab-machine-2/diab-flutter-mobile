@@ -16,6 +16,7 @@ import 'package:medical/src/repo/glucose/glucose_client.dart';
 import 'package:medical/src/repo/home/home_client.dart';
 import 'package:medical/src/repo/user/user_client.dart';
 import 'package:medical/src/utils/app_media_query.dart';
+import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/HbA1C/widget/description/description.dart';
 import 'package:medical/src/widget/base/base_state.dart';
@@ -34,6 +35,7 @@ import 'package:medical/src/modal/error/error_model.dart';
 import 'package:easy_localization/easy_localization.dart';
 import '../../widgets/CalendarPicker/custom_date_picker.dart';
 import '../my_plan_screens/activity_tab/activity_tab/models/schedule_type.dart';
+import 'bloodSugar_result.dto.dart';
 import 'widget/level_off_diabetes_rule_picker.dart';
 import 'widget/section_add_note.dart';
 
@@ -99,6 +101,14 @@ class _AddBloodSugarControllerNewState
     super.initState();
   }
 
+  @override
+  void dispose() {
+    _controller.dispose();
+    _focusNode.dispose();
+    _controllerNote.dispose();
+    super.dispose();
+  }
+
   void _initData() async {
     isPregnancy = Utils.isGestationalDiabetes();
     if (widget.type == 'update') {
@@ -110,11 +120,11 @@ class _AddBloodSugarControllerNewState
     _lastUnitIndex = isMgPerDl ? 0 : 1;
     List<int> valueOfClickTime = await AppSettings.getValueOfClickShortGuide();
     clickTime = valueOfClickTime[ScreenList.BLOOD_SUGAR.index];
-    loadDescription();
-    firebaseSetup();
+    _loadDescription();
+    _firebaseSetup();
   }
 
-  Future firebaseSetup() async {
+  Future _firebaseSetup() async {
     await TrackingManager.analytics.logScreenView(
         screenName: "kpi_glycemic_add",
         screenClass: "BloodSugarDetailController");
@@ -129,12 +139,24 @@ class _AddBloodSugarControllerNewState
     );
   }
 
-  @override
-  void dispose() {
-    _controller.dispose();
-    _focusNode.dispose();
-    _controllerNote.dispose();
-    super.dispose();
+  void _navigateAfterSuccess(String id, String? aiResult) {
+    // Observable.instance.notifyObservers([], notifyName: "glucose_change_data");
+    int indexRange = findIndexInRanges(number, _rangeValue);
+    final data = BloodSugarResultDto(
+      id: id,
+      dateTime: selectedDate,
+      timeFrame: selectedTimeFrame?.name ?? '',
+      rangeValue: _rangeValue,
+      indexRange: indexRange,
+      rangeColor: _colorList[indexRange],
+      rangeLabel: indexRange > -1 ? _rangeLabel[indexRange] : '',
+      glucose: number ?? 0,
+      glucoseUnit: isMgPerDl ? R.string.mg_dl.tr() : R.string.mmol_l.tr(),
+      note: _controllerNote.text,
+      files: files,
+      aiResult: aiResult,
+    );
+    Navigator.of(context).pushReplacementNamed(NavigatorName.add_blood_sugar_result, arguments: data);
   }
 
   Future<void> getGlucoseRange(TimeFrameModel selectedTimeFrame) async {
@@ -260,7 +282,7 @@ class _AddBloodSugarControllerNewState
     setState(() {});
   }
 
-  void loadDescription() async {
+  void _loadDescription() async {
     des = await HbA1CClient().fetchShortGuide(1);
     setState(() {});
   }
@@ -443,9 +465,7 @@ class _AddBloodSugarControllerNewState
                                         )),
                                   ),
                                   GestureDetector(
-                                    onTap: () {
-                                      editData();
-                                    },
+                                    onTap: _editData,
                                     child: Container(
                                       height: 48,
                                       width: 164,
@@ -502,7 +522,7 @@ class _AddBloodSugarControllerNewState
     }
   }
 
-  void editData() async {
+  void _editData() async {
     FocusScope.of(context).unfocus();
     final note = _controllerNote.text;
     final numberInput = _controller.text;
@@ -543,8 +563,8 @@ class _AddBloodSugarControllerNewState
           removeIDs,
           paths);
       if (result == true) {
-        Observable.instance
-            .notifyObservers([], notifyName: "glucose_change_data");
+        // TODO: update data
+        _navigateAfterSuccess('', null);
       }
 
       BotToast.closeAllLoading();
@@ -591,7 +611,7 @@ class _AddBloodSugarControllerNewState
       for (var file in files) {
         paths.add(file.path);
       }
-      final result = await GlucoseClient().postIndexGlucose(
+      final resultId = await GlucoseClient().postIndexGlucose(
           selectedTimeFrame!.id,
           (selectedDate.millisecondsSinceEpoch ~/ 1000).toInt(),
           number.toString(),
@@ -599,7 +619,16 @@ class _AddBloodSugarControllerNewState
           note,
           fromNipro,
           paths);
-      if (result == true) {
+      if (resultId?.isNotEmpty == true) {
+        final aiResult = await GlucoseClient().fetchGlucoseInputAnalysis(
+            selectedTimeFrame!.id!,
+            (selectedDate.millisecondsSinceEpoch ~/ 1000).toInt(),
+            number.toString(),
+            note,
+            fromNipro).catchError((e, s) {
+          TrackingManager.recordError(e, s);
+          return null;
+        });
         await TrackingManager.analytics.logEvent(
           name: 'kpi_add_success',
           parameters: {
@@ -610,9 +639,7 @@ class _AddBloodSugarControllerNewState
         );
         await HomeClient().completeSmartGoal(selectedDate, widget.goalId ?? '',
             1, ScheduleType.blood_sugar.typeIndex);
-        // }
-        Observable.instance
-            .notifyObservers([], notifyName: "glucose_change_data");
+        _navigateAfterSuccess(resultId!, aiResult?.message);
       }
 
       BotToast.closeAllLoading();
@@ -1265,7 +1292,7 @@ class _AddBloodSugarControllerNewState
         controllerNote: _controllerNote,
         maxMedia: 5,
         key: _sectionAddNoteKey,
-        files: files,
+        initialFiles: files,
       ),
     );
   }

@@ -1,24 +1,106 @@
 import 'dart:io';
+import 'dart:math';
 
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_observer/Observable.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:medical/res/R.dart';
-import 'package:medical/src/utils/navigator_name.dart';
+import 'package:medical/src/repo/glucose/glucose_client.dart';
+import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
+import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widgets/network_image_widget.dart';
 import 'package:syncfusion_flutter_gauges/gauges.dart';
 
+import 'add_bloodSugar_result_note.dart';
+import 'bloodSugar_result.dto.dart';
+
 class PageAddBloodSugarResult extends StatefulWidget {
-  const PageAddBloodSugarResult({super.key, required this.dateTime});
-  final DateTime dateTime;
+  const PageAddBloodSugarResult({super.key, required this.data});
+  final BloodSugarResultDto data;
 
   @override
   State<PageAddBloodSugarResult> createState() => _PageAddBloodSugarResultState();
 }
 
 class _PageAddBloodSugarResultState extends State<PageAddBloodSugarResult> {
+  bool get _haveNote =>
+      widget.data.note?.isNotEmpty == true || widget.data.files?.isNotEmpty == true;
+  String _aiResult = '';
+
+  bool _haveEditNote = false;
+  late String _note = widget.data.note ?? '';
+  List<String?> _removeIDs = [];
   List<dynamic> _files = [];
+
+  @override
+  void initState() {
+    _loadData();
+    super.initState();
+  }
+
+  void _loadData() {
+    final data = widget.data;
+    _files = data.files ?? [];
+    _aiResult = data.aiResult ?? '';
+  }
+
+  void _doComplete() async {
+    try {
+      if (_haveEditNote) {
+        List<String> paths = [];
+        for (var file in _files) {
+          if (file is PickedFile) {
+            paths.add(file.path);
+          }
+        }
+        final result = await GlucoseClient().putIndexGlucose(
+            widget.data.id,
+            null,
+            (widget.data.dateTime.millisecondsSinceEpoch ~/ 1000).toInt(),
+            widget.data.glucose.toString(),
+            null,
+            _note,
+            // TODO: check fromNipro
+            false,
+            _removeIDs,
+            paths);
+        if (result == true) {
+          Observable.instance.notifyObservers([], notifyName: "glucose_change_data");
+          return;
+        }
+      }
+      Observable.instance.notifyObservers([], notifyName: "glucose_change_data");
+    } catch (e, s) {
+      TrackingManager.recordError(e, s);
+    }
+  }
+
+  void _doShare() {
+    // TODO: share
+  }
+
+  void _doGuide() {
+    // TODO: guide
+  }
+
+  void _doEditNote() async {
+    final noteResult = await NavigationUtil.navigatePage(
+        context,
+        PageAddBloodSugarResultNote(
+          note: _note,
+          files: _files,
+        ));
+    if (noteResult != null) {
+      _haveEditNote = true;
+      _note = noteResult['note'];
+      _files = noteResult['files'];
+      _removeIDs = noteResult['removeIDs'];
+      setState(() {});
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -54,7 +136,7 @@ class _PageAddBloodSugarResultState extends State<PageAddBloodSugarResult> {
   }
 
   Widget _appBarSection() {
-    String formattedDateTime = DateFormat('HH:mm - dd/MM/yyyy').format(widget.dateTime);
+    String formattedDateTime = DateFormat('HH:mm - dd/MM/yyyy').format(widget.data.dateTime);
     return CustomAppBar(
       backgroundColor: R.color.transparent,
       title: Text(
@@ -69,7 +151,7 @@ class _PageAddBloodSugarResultState extends State<PageAddBloodSugarResult> {
       ),
       actions: [
         GestureDetector(
-          onTap: () {},
+          onTap: _doGuide,
           child: Padding(
             padding: const EdgeInsets.only(left: 16, right: 16),
             child: Image.asset(R.drawable.ic_help_outlined, width: 24, height: 24),
@@ -85,15 +167,22 @@ class _PageAddBloodSugarResultState extends State<PageAddBloodSugarResult> {
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
       ),
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
       child: Column(
         children: [
           const SizedBox(height: 24),
-          // TODO: chart
           Container(
             height: 200,
             width: 250,
-            child: _SegmentedCircularGauge(),
+            child: _SegmentedCircularGauge(
+              rangeValue: widget.data.rangeValue,
+              glucose: widget.data.glucose,
+              glucoseUnit: widget.data.glucoseUnit,
+              timeFrame: widget.data.timeFrame,
+              rangeLabel: widget.data.rangeLabel,
+              indexRange: widget.data.indexRange,
+              rangeColor: widget.data.rangeColor,
+            ),
           ),
 
           const SizedBox(height: 24),
@@ -106,7 +195,7 @@ class _PageAddBloodSugarResultState extends State<PageAddBloodSugarResult> {
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
               Text(
-                'Gợi ý từ Trợ lý Sống khỏe',
+                R.string.ai_suggestion_glucose.tr(),
                 style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.bold,
@@ -122,7 +211,7 @@ class _PageAddBloodSugarResultState extends State<PageAddBloodSugarResult> {
           ),
           const SizedBox(height: 8),
           Text(
-            'Mức đường huyết sau ăn của bạn lúc 12h hôm nay là 280 mg/dL, cao hơn mức bình thường. Đổi với người mắc bệnh đái tháo đường, mức đường huyết sau ăn thường nên ở dưới 180 mg/dL để đảm bảo kiểm soát tốt bệnh và ngẫn ngừa các biến chứng.',
+            _aiResult,
             style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w400,
@@ -165,7 +254,7 @@ class _PageAddBloodSugarResultState extends State<PageAddBloodSugarResult> {
   }
 
   Widget _buildNoteOrAddNoteSection() {
-    if (true) {
+    if (_haveNote) {
       // Section show note
       return Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
@@ -180,20 +269,19 @@ class _PageAddBloodSugarResultState extends State<PageAddBloodSugarResult> {
               children: [
                 Text(
                   R.string.ghi_chu.tr(),
-                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: R.color.textDark),
+                  style:
+                      TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: R.color.textDark),
                 ),
                 Expanded(child: SizedBox()),
                 GestureDetector(
-                  onTap: () {
-                    // TODO: show dialog edit note
-                  },
+                  onTap: _doEditNote,
                   child: Image.asset(R.drawable.ic_edit, width: 24, height: 24),
                 ),
               ],
             ),
             const SizedBox(height: 8),
             Text(
-              'Mức đường huyết sau ăn của bạn lúc 12h hôm nay là 280 mg/dL, cao hơn mức bình thường. Đổi với người mắc bệnh đái tháo đường, mức đường huyết sau ăn thường nên ở dưới 180 mg/dL để đảm bảo kiểm soát tốt bệnh và ngẫn ngừa các biến chứng.',
+              widget.data.note ?? '',
               style: TextStyle(
                 fontSize: 12,
                 fontWeight: FontWeight.w400,
@@ -242,10 +330,7 @@ class _PageAddBloodSugarResultState extends State<PageAddBloodSugarResult> {
       );
     }
     return ElevatedButton(
-      onPressed: () {
-        // TODO: show dialog add note
-        Navigator.pushNamed(context, NavigatorName.add_blood_sugar_result_note);
-      },
+      onPressed: _doEditNote,
       child: Text(
         R.string.them_ghi_chu.tr(),
         style: TextStyle(color: R.color.dark, fontSize: 13, fontWeight: FontWeight.bold),
@@ -262,14 +347,11 @@ class _PageAddBloodSugarResultState extends State<PageAddBloodSugarResult> {
   }
 
   Widget _bottomSection() {
-    // two elevated button, one is primary, one is secondary, full width
     return Row(
       children: [
         Expanded(
           child: ElevatedButton(
-            onPressed: () {
-              // TODO: share
-            },
+            onPressed: _doShare,
             child: Text(R.string.share.tr(), style: TextStyle(color: R.color.textDark)),
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.white,
@@ -282,9 +364,7 @@ class _PageAddBloodSugarResultState extends State<PageAddBloodSugarResult> {
         const SizedBox(width: 16),
         Expanded(
           child: ElevatedButton(
-            onPressed: () {
-              // TODO: save
-            },
+            onPressed: _doComplete,
             child: Text(R.string.completed.tr(), style: TextStyle(color: Colors.white)),
             style: ElevatedButton.styleFrom(
               backgroundColor: R.color.mainColor,
@@ -300,116 +380,135 @@ class _PageAddBloodSugarResultState extends State<PageAddBloodSugarResult> {
 }
 
 class _SegmentedCircularGauge extends StatelessWidget {
+  final List<int> rangeValue;
+  final double glucose;
+  final String glucoseUnit;
+  final String timeFrame;
+  final String rangeLabel;
+  final int indexRange;
+  final Color rangeColor;
+  const _SegmentedCircularGauge({
+    required this.rangeValue,
+    required this.glucose,
+    required this.glucoseUnit,
+    required this.timeFrame,
+    required this.rangeLabel,
+    required this.indexRange,
+    required this.rangeColor,
+  });
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: SfRadialGauge(
-          backgroundColor: Colors.white,
-          axes: <RadialAxis>[
-            RadialAxis(
-              startAngle: 135,
-              endAngle: 405,
-              minimum: 0,
-              maximum: 200,
-              showLabels: false,
-              showTicks: false,
-              axisLineStyle: AxisLineStyle(
-                thickness: 0,
-                thicknessUnit: GaugeSizeUnit.logicalPixel,
-                cornerStyle: CornerStyle.bothFlat,
-              ),
-              ranges: <GaugeRange>[
-                // Segment 1
-                GaugeRange(
-                  startValue: 0,
-                  endValue: 39,
-                  color: Colors.grey.shade200,
-                  startWidth: 10,
-                  endWidth: 10,
-                ),
-                // Segment 2
-                GaugeRange(
-                  startValue: 41,
-                  endValue: 79,
-                  color: Colors.grey.shade200,
-                  startWidth: 10,
-                  endWidth: 10,
-                ),
-                // Segment 3
-                GaugeRange(
-                  startValue: 81,
-                  endValue: 119,
-                  color: Colors.grey.shade200,
-                  startWidth: 10,
-                  endWidth: 10,
-                ),
-                // Segment 4
-                GaugeRange(
-                  startValue: 121,
-                  endValue: 159,
-                  color: Colors.red,
-                  startWidth: 10,
-                  endWidth: 10,
-                ),
-                // Segment 5
-                GaugeRange(
-                  startValue: 161,
-                  endValue: 200,
-                  color: Colors.grey.shade200,
-                  startWidth: 10,
-                  endWidth: 10,
-                ),
-              ],
-              pointers: <GaugePointer>[
-                MarkerPointer(
-                  value: 140, // Current value
-                  markerType: MarkerType.invertedTriangle,
-                  color: R.color.dark,
-                  markerHeight: 8,
-                  markerWidth: 12,
-                  markerOffset: -6,
-                ),
-              ],
-              annotations: <GaugeAnnotation>[
-                // Add the text annotations for "Trước ăn", "Cao", and "135 mg/dL"
-                GaugeAnnotation(
-                  widget: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        'Trước ăn',
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: Colors.grey.shade600,
-                        ),
-                      ),
-                      SizedBox(height: 4),
-                      Text(
-                        'Cao',
-                        style: TextStyle(
-                          fontSize: 24,
-                          color: Colors.red,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      SizedBox(height: 4),
-                      Text(
-                        '135 mg/dL',
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: Colors.black,
-                        ),
-                      ),
-                    ],
-                  ),
-                  positionFactor: 0.1,
-                  angle: 90,
-                ),
-              ],
+    double startAngle = 135;
+    double endAngle = 405;
+
+    // scale list rangeValue
+    List<double> scaleList = rangeValue.map((e) => e.toDouble()).toList();
+    double minValue = -1;
+    double maxValue = -1;
+    for (var i = 0; i < scaleList.length; i++) {
+      if (minValue == -1 || scaleList[i] < minValue) {
+        minValue = scaleList[i];
+      }
+      if (maxValue == -1 || scaleList[i] > maxValue) {
+        maxValue = scaleList[i];
+      }
+    }
+
+    // from minValue to maxValue, separate equally
+    double step = (maxValue - minValue) / (scaleList.length - 1);
+    List<double> scaleListRendering = List.generate(
+      scaleList.length,
+      (i) => minValue + i * step,
+    );
+    double renderMaxValue = maxValue;
+    if (scaleListRendering.length > 2) {
+      renderMaxValue = maxValue +
+          (scaleListRendering[scaleListRendering.length - 1] -
+              scaleListRendering[scaleListRendering.length - 2]);
+      scaleListRendering.add(renderMaxValue);
+    }
+
+    // recalculate glucose by scaleListRendering
+    double glucoseRendering = glucose;
+    if (scaleListRendering.length > 2) {
+      glucoseRendering = scaleListRendering[indexRange] + (step / 2);
+    }
+
+    return Center(
+      child: SfRadialGauge(
+        backgroundColor: Colors.white,
+        axes: <RadialAxis>[
+          RadialAxis(
+            startAngle: startAngle,
+            endAngle: endAngle,
+            minimum: minValue, // 0
+            maximum: renderMaxValue, // 200
+            showLabels: false,
+            showTicks: false,
+            axisLineStyle: AxisLineStyle(
+              thickness: 0,
+              thicknessUnit: GaugeSizeUnit.logicalPixel,
+              cornerStyle: CornerStyle.bothFlat,
             ),
-          ],
-        ),
+            ranges: <GaugeRange>[
+              for (int i = 0; i < scaleListRendering.length - 1; i++)
+                GaugeRange(
+                  startValue: scaleListRendering[i] + 1,
+                  endValue: max(0, scaleListRendering[i + 1] - 1),
+                  color: i == indexRange ? rangeColor : Color(0xFFE6ECF1),
+                  startWidth: 10,
+                  endWidth: 10,
+                ),
+            ],
+            pointers: <GaugePointer>[
+              MarkerPointer(
+                value: glucoseRendering, // Current value
+                markerType: MarkerType.invertedTriangle,
+                color: R.color.dark,
+                markerHeight: 8,
+                markerWidth: 12,
+                markerOffset: -6,
+              ),
+            ],
+            annotations: <GaugeAnnotation>[
+              // Add the text annotations for "Trước ăn", "Cao", and "135 mg/dL"
+              GaugeAnnotation(
+                widget: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      timeFrame,
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.grey.shade600,
+                      ),
+                    ),
+                    SizedBox(height: 4),
+                    Text(
+                      rangeLabel,
+                      style: TextStyle(
+                        fontSize: 24,
+                        color: rangeColor,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    SizedBox(height: 4),
+                    Text(
+                      '$glucose $glucoseUnit',
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.black,
+                      ),
+                    ),
+                  ],
+                ),
+                positionFactor: 0.1,
+                angle: 90,
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }

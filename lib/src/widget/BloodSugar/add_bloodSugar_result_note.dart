@@ -6,7 +6,9 @@ import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'widget/section_add_note.dart';
 
 class PageAddBloodSugarResultNote extends StatefulWidget {
-  const PageAddBloodSugarResultNote({super.key});
+  const PageAddBloodSugarResultNote({super.key, this.note, this.files});
+  final String? note;
+  final List<dynamic>? files;
 
   @override
   State<PageAddBloodSugarResultNote> createState() => _PageAddBloodSugarResultNoteState();
@@ -14,8 +16,14 @@ class PageAddBloodSugarResultNote extends StatefulWidget {
 
 class _PageAddBloodSugarResultNoteState extends State<PageAddBloodSugarResultNote> {
   final FocusNode _focusNode = FocusNode();
-  final TextEditingController _controllerNote = TextEditingController();
+  late TextEditingController _controllerNote = TextEditingController(text: widget.note);
   final GlobalKey<SectionAddNoteState> _sectionAddNoteKey = GlobalKey<SectionAddNoteState>();
+
+  @override
+  void dispose() {
+    _controllerNote.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -39,6 +47,7 @@ class _PageAddBloodSugarResultNoteState extends State<PageAddBloodSugarResultNot
                 controllerNote: _controllerNote,
                 maxMedia: 5,
                 key: _sectionAddNoteKey,
+                initialFiles: widget.files,
               ),
             ),
           ],
@@ -63,8 +72,12 @@ class _PageAddBloodSugarResultNoteState extends State<PageAddBloodSugarResultNot
       actions: [
         TextButton(
           onPressed: () {
-            // TODO: Save note
-            Navigator.pop(context);
+            final note = _sectionAddNoteKey.currentState?.getNote();
+            Navigator.pop(context, {
+              'note': note?.note,
+              'files': note?.files,
+              'removeIDs': note?.removeIDs,
+            });
           },
           child: Text(
             R.string.luu_ghi_chu.tr(),

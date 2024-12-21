@@ -68,11 +68,27 @@ class GlucoseClient extends FetchClient {
     return null;
   }
 
-  Future<GlucoseInputAIAnalysis?> fetchGlucoseInputAnalysis() async {
+  Future<GlucoseInputAIAnalysis?> fetchGlucoseInputAnalysis(
+      String timeFrameId,
+      int date,
+      String glucoseInput,
+      String note,
+      bool byDevice,
+  ) async {
+    bool isGestationalDiabetes = Utils.isGestationalDiabetes();
+    Map<String, String> params = {
+        'timeFrameId': timeFrameId,
+        'createDate': date.toString(),
+        'unitType': AppSettings.userInfo!.glucoseUnit.toString(),
+        'glucoseInput': glucoseInput,
+        'note': note,
+        'byDevice': byDevice.toString(),
+        'thresholdType': isGestationalDiabetes ? '1' : '0',
+      };
     final Response response = await super.postUri(
       baseOption: true,
       url: '/App/Glucose/InputAI',
-      params: {},
+      params: params,
     );
 
     if (response.statusCode == 200) {
@@ -271,7 +287,7 @@ class GlucoseClient extends FetchClient {
   }
   //============ nhập chỉ số Đường huyết =============/
 
-  Future<bool> postIndexGlucose(
+  Future<String?> postIndexGlucose(
       String? timeFrameId,
       int date,
       String glucoseInput,
@@ -297,7 +313,9 @@ class GlucoseClient extends FetchClient {
           .postHttp(path: '/App/Glucose/Input', params: params, files: files);
 
       if (response.statusCode == 200) {
-        return true;
+        final data = await response.stream.bytesToString();
+        final jsonData = jsonDecode(data);
+        return jsonData['data']?['id'];
       } else {
         throw response.reasonPhrase!;
       }
