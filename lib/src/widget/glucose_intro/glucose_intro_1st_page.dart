@@ -48,7 +48,10 @@ class _GlucoseIntro1stPageState extends State<GlucoseIntro1stPage> {
   void _navigateToInputSelection() {
     if (AppSettings.isUS) {
       Navigator.of(context).pop();
-      Navigator.of(context).pushNamed(NavigatorName.add_blood_sugar_new);
+      Navigator.of(context).pushNamed(
+        NavigatorName.add_blood_sugar_new,
+        arguments: {'type': 'input'},
+      );
     }
     BloodSugarFunctions.showModalAddData(context, popPrevious: true);
   }
@@ -60,14 +63,14 @@ class _GlucoseIntro1stPageState extends State<GlucoseIntro1stPage> {
       objectTitle: null,
     );
 
-      await NavigationUtil.navigatePage(
-        context,
-        LessonDetailPage(
-          lessonType: type,
-          lessonId: id,
-          onComplete: (_, __) {},
-        ),
-      );
+    await NavigationUtil.navigatePage(
+      context,
+      LessonDetailPage(
+        lessonType: type,
+        lessonId: id,
+        onComplete: (_, __) {},
+      ),
+    );
   }
 
   @override
@@ -215,7 +218,9 @@ class _GlucoseIntro1stPageState extends State<GlucoseIntro1stPage> {
                 Expanded(child: _buildPinnedLessonItem(_pinedLessons[2])),
                 const SizedBox(width: 8),
                 Expanded(
-                    child: _pinedLessons.length > 3 ? _buildPinnedLessonItem(_pinedLessons[3]) : const SizedBox()),
+                    child: _pinedLessons.length > 3
+                        ? _buildPinnedLessonItem(_pinedLessons[3])
+                        : const SizedBox()),
               ],
             ),
           ],

@@ -129,7 +129,7 @@ class BloodSugarDetailState extends State<BloodSugarDetail>
                               ),
                             ),
                           ),
-                        )
+                        ),
                       ],
                     ),
                   ),

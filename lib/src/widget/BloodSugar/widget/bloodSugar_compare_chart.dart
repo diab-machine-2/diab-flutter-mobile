@@ -4,20 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
-import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/bloc/glucose/glucose_bloc.dart';
 import 'package:medical/src/modal/glucose/glucose_comparer.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/BloodSugar/bloodSugar_detail_tabbar.dart';
-import 'package:medical/src/widget/BloodSugar/widget/action_list_compare.dart';
 import 'package:medical/src/widget/HbA1C/hba1c_tabble.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:medical/src/widget/helper/tracking_manager.dart';
-import 'package:medical/src/widgets/empty_data_box.dart';
-
-import '../blood_sugar_functions.dart';
 
 class BloodSugarCompareChart extends StatefulWidget {
   BloodSugarCompareChart({Key? key, required this.periodFilterType}) : super(key: key);
@@ -36,11 +30,22 @@ class BloodSugarCompareChartState extends State<BloodSugarCompareChart>
   int periodFilterType = 3;
   String name = R.string.before_and_after_eating.tr();
   int comparerType = 1;
+
   @override
   void initState() {
     periodFilterType =
         BloodSugarDetailTabbarController.of(context)?.periodFilterType ?? widget.periodFilterType;
     super.initState();
+  }
+
+  void _doViewDetail(List<ComparerModel> model) {
+    // showActionCompareFilter(context);
+    Navigator.pushNamed(context, NavigatorName.blood_sugar_compare_table, arguments: {
+      'model': model,
+      'title': name,
+      'comparerType': comparerType,
+      'periodFilterType': periodFilterType,
+    });
   }
 
   @override
@@ -97,52 +102,25 @@ class BloodSugarCompareChartState extends State<BloodSugarCompareChart>
                     const SizedBox(width: 8),
                     Image.asset(R.drawable.ic_compare, width: 32, height: 32),
                     const Spacer(),
-                    Container(
+                    InkWell(
+                      onTap: () => _doViewDetail(model!),
+                      child: SizedBox(
+                        width: 80,
                         height: 32,
-                        padding: const EdgeInsets.only(left: 10.0, right: 10.0),
-                        decoration: BoxDecoration(
-                            color: R.color.white,
-                            borderRadius: BorderRadius.circular(200.0),
-                            border: Border.all(color: R.color.grayBorder)),
-                        child: GestureDetector(
-                          onTap: () {
-                            showActionCompareFilter(context);
-                          },
-                          child: Align(
-                              alignment: Alignment.center,
-                              child: Row(
-                                children: [
-                                  Text(name),
-                                  SizedBox(width: 2),
-                                  Image.asset(R.drawable.ic_chevron_down, width: 24, height: 24)
-                                ],
-                              )),
-                        )),
+                        child: Text(
+                          R.string.show_more.tr(),
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                            color: R.color.mainColor,
+                          ),
+                        ),
+                      ),
+                    ),
                   ],
                 ),
                 SizedBox(height: 16),
-                model.length == 0
-                    ? EmptyDataBox(
-                        text: "chỉ số đường huyết",
-                        onTap: () async {
-                          await TrackingManager.analytics
-                              .logEvent(name: 'cta_button_clicked', parameters: {
-                            "screen_name": 'kpi_glycemic',
-                            'cta_button_name': 'cta_add_glycemic_2',
-                          });
-                          if (AppSettings.isUS) {
-                            Navigator.pushNamed(context, NavigatorName.add_blood_sugar_new,
-                                arguments: {'type': 'input'});
-                          } else {
-                            BloodSugarFunctions.showModalAddData(context);
-                          }
-                          // BloodSugarFunctions.showModalAddData(context);
-                          // Navigator.pushNamed(
-                          //     context, NavigatorName.add_blood_sugar,
-                          //     arguments: {'type': 'input', 'id': null});
-                        },
-                      )
-                    : _buildChart(model),
+                _buildChart(model),
               ]),
         );
       }),
@@ -262,10 +240,7 @@ class BloodSugarCompareChartState extends State<BloodSugarCompareChart>
                                 reservedSize: -16,
                                 margin: 16,
                                 getTitles: (double value) {
-                                  return convertToUTC(model[value.toInt()].date!, 'dd/MM') +
-                                      (model[value.toInt()].description == null
-                                          ? ''
-                                          : '\n${model[value.toInt()].description}');
+                                  return convertToUTC(model[value.toInt()].date!, 'dd/MM');
                                 },
                               ),
                               leftTitles: SideTitles(
@@ -374,26 +349,26 @@ class BloodSugarCompareChartState extends State<BloodSugarCompareChart>
         opaque: false, pageBuilder: (BuildContext context, _, __) => HbA1CTable()));
   }
 
-  void showActionCompareFilter(BuildContext context) {
-    // setState(() {
-    //   this.isChoose = !isChoose;
-    // });
-    showModalBottomSheet(
-        shape:
-            RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(15))),
-        backgroundColor: R.color.white,
-        context: context,
-        isScrollControlled: true,
-        builder: (context) => ActionListCompare(
-            selectedIndex: comparerType,
-            callback: (value, index) {
-              if (value != null) {
-                name = value;
-                comparerType = index == 0 ? 1 : 2;
-                reloadData(periodFilterType);
-              }
-            }));
-  }
+  // void showActionCompareFilter(BuildContext context) {
+  //   // setState(() {
+  //   //   this.isChoose = !isChoose;
+  //   // });
+  //   showModalBottomSheet(
+  //       shape:
+  //           RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(15))),
+  //       backgroundColor: R.color.white,
+  //       context: context,
+  //       isScrollControlled: true,
+  //       builder: (context) => ActionListCompare(
+  //           selectedIndex: comparerType,
+  //           callback: (value, index) {
+  //             if (value != null) {
+  //               name = value;
+  //               comparerType = index == 0 ? 1 : 2;
+  //               reloadData(periodFilterType);
+  //             }
+  //           }));
+  // }
 
   void reloadData(int periodFilter) {
     periodFilterType = periodFilter;
