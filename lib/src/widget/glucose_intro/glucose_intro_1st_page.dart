@@ -80,20 +80,6 @@ class _GlucoseIntro1stPageState extends State<GlucoseIntro1stPage> {
         background: R.drawable.bg_glucose,
         title: R.string.duong_huyet.tr(),
         child: _composeLayout(),
-        appBarAction: Padding(
-          padding: const EdgeInsets.only(right: 8),
-          child: TextButton(
-            onPressed: () {},
-            child: Text(
-              R.string.huong_dan.tr(),
-              style: TextStyle(
-                color: R.color.mainColor,
-                fontSize: 13,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
-        ),
       ),
     );
   }
