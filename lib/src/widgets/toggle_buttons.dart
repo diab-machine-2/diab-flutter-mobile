@@ -10,13 +10,18 @@ class ToggleButtonsHorizontal extends StatelessWidget {
     this.radius = 8,
     this.backgroundColor = Colors.transparent,
     this.height = 32,
-  });
+    this.flexes,
+  }) : assert(
+          flexes == null || flexes.length == names.length,
+          'flexes must be null or have the same length as names',
+        );
   final List<String> names;
   final int selectedIndex;
   final Function(int index) onChange;
   final double radius;
   final Color backgroundColor;
   final double height;
+  final List<int>? flexes;
 
   @override
   Widget build(BuildContext context) {
@@ -51,6 +56,7 @@ class ToggleButtonsHorizontal extends StatelessWidget {
     // final bool isFirst = currentIndex == 0;
     // final bool isLast = currentIndex == names.length - 1;
     return Expanded(
+      flex: flexes?[currentIndex] ?? 1,
       child: GestureDetector(
         onTap: onSelect,
         child: Container(

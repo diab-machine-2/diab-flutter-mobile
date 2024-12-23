@@ -1,6 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/firebase_tracking/activity_list_tracking.dart';
 import 'package:medical/src/modal/glucose/glucose_lesson.dart';
@@ -74,49 +75,52 @@ class _GlucoseIntro2ndPageState extends State<GlucoseIntro2ndPage> {
       child: Column(
         children: [
           const SizedBox(height: 12),
-          _buildPinnedLessonsSection(),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            child: _buildPinnedLessonsSection(),
+          ),
           const SizedBox(height: 26),
-          _buildRangeTableSection(),
-          const SizedBox(height: 20),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            child: _buildRangeTableSection(),
+          ),
+          const SizedBox(height: 32),
         ],
       ),
     );
   }
 
   Widget _buildPinnedLessonsSection() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 12),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          if (_pinedLessons.isNotEmpty) ...[
-            Row(
-              children: [
-                Expanded(child: _buildPinnedLessonItem(_pinedLessons[0])),
-                const SizedBox(width: 8),
-                Expanded(
-                    child: _pinedLessons.length > 1
-                        ? _buildPinnedLessonItem(_pinedLessons[1])
-                        : const SizedBox()),
-              ],
-            ),
-            const SizedBox(height: 8),
-          ],
-          if (_pinedLessons.isNotEmpty && _pinedLessons.length > 2) ...[
-            Row(
-              children: [
-                Expanded(child: _buildPinnedLessonItem(_pinedLessons[2])),
-                const SizedBox(width: 8),
-                Expanded(
-                    child: _pinedLessons.length > 3
-                        ? _buildPinnedLessonItem(_pinedLessons[3])
-                        : const SizedBox()),
-              ],
-            ),
-          ],
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        if (_pinedLessons.isNotEmpty) ...[
+          Row(
+            children: [
+              Expanded(child: _buildPinnedLessonItem(_pinedLessons[0])),
+              const SizedBox(width: 8),
+              Expanded(
+                  child: _pinedLessons.length > 1
+                      ? _buildPinnedLessonItem(_pinedLessons[1])
+                      : const SizedBox()),
+            ],
+          ),
+          const SizedBox(height: 8),
         ],
-      ),
+        if (_pinedLessons.isNotEmpty && _pinedLessons.length > 2) ...[
+          Row(
+            children: [
+              Expanded(child: _buildPinnedLessonItem(_pinedLessons[2])),
+              const SizedBox(width: 8),
+              Expanded(
+                  child: _pinedLessons.length > 3
+                      ? _buildPinnedLessonItem(_pinedLessons[3])
+                      : const SizedBox()),
+            ],
+          ),
+        ],
+      ],
     );
   }
 
@@ -266,6 +270,7 @@ class _GlucoseIntro2ndPageState extends State<GlucoseIntro2ndPage> {
       onTap: () => _navigateToLessonDetail(lesson.id, lesson.type),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+        height: 152.h,
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.all(Radius.circular(16)),

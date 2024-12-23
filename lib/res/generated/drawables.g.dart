@@ -192,6 +192,7 @@ class Drawables {
   String get ic_heart_rate => "lib/res/drawables/ic_heart_rate.png";
   String get ic_help_circle => "lib/res/drawables/ic_help_circle.png";
   String get ic_help_outlined => "lib/res/drawables/ic_help_outlined.png";
+  String get ic_pencil_create => "lib/res/drawables/ic_pencil_create.png";
   String get ic_help_circle_active =>
       "lib/res/drawables/ic_help_circle_active.png";
   String get ic_home => "lib/res/drawables/ic_home.png";

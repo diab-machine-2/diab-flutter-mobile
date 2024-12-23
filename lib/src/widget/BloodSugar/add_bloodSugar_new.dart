@@ -112,7 +112,7 @@ class _AddBloodSugarControllerNewState
   void _initData() async {
     isPregnancy = Utils.isGestationalDiabetes();
     if (widget.type == 'update') {
-      loadDetail();
+      _loadDetail();
     } else {
       await _loadConfig();
     }
@@ -145,7 +145,7 @@ class _AddBloodSugarControllerNewState
     final data = BloodSugarResultDto(
       id: id,
       dateTime: selectedDate,
-      timeFrame: selectedTimeFrame?.name ?? '',
+      timeFrame: selectedTimeFrame?.name?.tr() ?? '',
       rangeValue: _rangeValue,
       indexRange: indexRange,
       rangeColor: _colorList[indexRange],
@@ -159,7 +159,7 @@ class _AddBloodSugarControllerNewState
     Navigator.of(context).pushReplacementNamed(NavigatorName.add_blood_sugar_result, arguments: data);
   }
 
-  Future<void> getGlucoseRange(TimeFrameModel selectedTimeFrame) async {
+  Future<void> _getGlucoseRange(TimeFrameModel selectedTimeFrame) async {
     GlucoseRangeData? result = await GlucoseClient().getGlucoseRange(
         thresholdType: isPregnancy ? 1 : 0,
         timeFrameCode: selectedTimeFrame.code!);
@@ -176,7 +176,7 @@ class _AddBloodSugarControllerNewState
     }
   }
 
-  void loadDetail() async {
+  void _loadDetail() async {
     try {
       BotToast.showLoading();
       model = await GlucoseClient().fetchDetail(widget.id);
@@ -274,7 +274,7 @@ class _AddBloodSugarControllerNewState
           orElse: () => _times.first,
         );
         _lastTimeFrameIndex = _times.indexOf(selectedTimeFrame!);
-        await getGlucoseRange(selectedTimeFrame!);
+        await _getGlucoseRange(selectedTimeFrame!);
       }
     }
     // rangeValue = changeRange(selectedTimeFrame);
@@ -344,9 +344,8 @@ class _AddBloodSugarControllerNewState
                           top: 16,
                           left: 16,
                           right: 16,
-                          bottom: AppMediaQuery.deviceSafeAreaBottom,
+                          bottom: MediaQuery.of(context).padding.bottom / 2,
                         ),
-                        color: Colors.white,
                         child: SpacingColumn(
                           spacing: 20,
                           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -358,7 +357,7 @@ class _AddBloodSugarControllerNewState
                                     context,
                                     onSuccess: () {
                                       isPregnancy = false;
-                                      getGlucoseRange(selectedTimeFrame!);
+                                      _getGlucoseRange(selectedTimeFrame!);
                                     },
                                   );
                                 },
@@ -1189,6 +1188,7 @@ class _AddBloodSugarControllerNewState
       height: 32.h,
       child: ToggleButtonsHorizontal(
         names: _times.map((e) => e.name!).toList(),
+        flexes: _times.length > 1 ? [3, ...List.generate(_times.length - 1, (index) => 2)] : null,
         backgroundColor: Color(0xFFF2F6F9),
         selectedIndex: _lastTimeFrameIndex,
         onChange: (index) async {
@@ -1196,7 +1196,7 @@ class _AddBloodSugarControllerNewState
           selectedTimeFrame = _times[index];
           try {
             BotToast.showLoading();
-            await getGlucoseRange(selectedTimeFrame!);
+            await _getGlucoseRange(selectedTimeFrame!);
           } catch (e) {
             BotToast.showText(text: R.string.error_unexpected_error.tr());
           } finally {

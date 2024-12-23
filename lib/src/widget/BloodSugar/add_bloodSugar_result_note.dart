@@ -27,30 +27,33 @@ class _PageAddBloodSugarResultNoteState extends State<PageAddBloodSugarResultNot
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: R.color.backgroundColor,
-      body: Container(
-        decoration: BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage(R.drawable.bg_splash),
-            fit: BoxFit.cover,
-          ),
-        ),
-        child: Column(
-          children: [
-            _appBarSection(),
-            const SizedBox(height: 24),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12),
-              child: SectionAddNote(
-                focusNode: _focusNode,
-                controllerNote: _controllerNote,
-                maxMedia: 5,
-                key: _sectionAddNoteKey,
-                initialFiles: widget.files,
-              ),
+    return GestureDetector(
+      onTap: () => FocusScope.of(context).unfocus(),
+      child: Scaffold(
+        backgroundColor: R.color.backgroundColor,
+        body: Container(
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage(R.drawable.bg_splash),
+              fit: BoxFit.cover,
             ),
-          ],
+          ),
+          child: Column(
+            children: [
+              _appBarSection(),
+              const SizedBox(height: 24),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                child: SectionAddNote(
+                  focusNode: _focusNode,
+                  controllerNote: _controllerNote,
+                  maxMedia: 5,
+                  key: _sectionAddNoteKey,
+                  initialFiles: widget.files,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -82,9 +85,9 @@ class _PageAddBloodSugarResultNoteState extends State<PageAddBloodSugarResultNot
           child: Text(
             R.string.luu_ghi_chu.tr(),
             style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-              color: R.color.primaryColor,
+              fontSize: 13,
+              fontWeight: FontWeight.bold,
+              color: R.color.mainColor,
             ),
           ),
         ),

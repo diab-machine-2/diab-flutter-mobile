@@ -30,7 +30,7 @@ class PageAddBloodSugarResult extends StatefulWidget {
 
 class _PageAddBloodSugarResultState extends State<PageAddBloodSugarResult> {
   bool get _haveNote =>
-      widget.data.note?.isNotEmpty == true || widget.data.files?.isNotEmpty == true;
+      _note.isNotEmpty == true || _files.isNotEmpty == true;
   String _aiResult = '';
 
   bool _haveEditNote = false;
@@ -90,6 +90,10 @@ class _PageAddBloodSugarResultState extends State<PageAddBloodSugarResult> {
   }
 
   void _doShare() {
+    // TODO: share
+  }
+
+  void _doChatWithDiabExpert() {
     // TODO: share
   }
 
@@ -161,7 +165,10 @@ class _PageAddBloodSugarResultState extends State<PageAddBloodSugarResult> {
         splashColor: R.color.transparent,
         highlightColor: R.color.transparent,
         icon: Icon(Icons.arrow_back, color: R.color.textDark),
-        onPressed: () => Navigator.pop(context),
+        onPressed: () {
+          Observable.instance.notifyObservers([], notifyName: "glucose_change_data");
+          Navigator.pop(context);
+        },
       ),
       actions: [
         GestureDetector(
@@ -237,12 +244,12 @@ class _PageAddBloodSugarResultState extends State<PageAddBloodSugarResult> {
           const SizedBox(height: 16),
           // elevated button, ic_zalo and text, full width
           ElevatedButton(
-            onPressed: () {},
+            onPressed: _doChatWithDiabExpert,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Image.asset(R.drawable.ic_social_zalo, width: 24, height: 24),
+                Image.asset(R.drawable.ic_social_zalo, width: 16, height: 16),
                 const SizedBox(width: 4),
                 Text(
                   'Chat với Chuyên gia sức khoẻ',
@@ -260,6 +267,7 @@ class _PageAddBloodSugarResultState extends State<PageAddBloodSugarResult> {
                 borderRadius: BorderRadius.circular(16),
               ),
               elevation: 0,
+              minimumSize: Size.fromHeight(32),
             ),
           ),
         ],
@@ -289,13 +297,16 @@ class _PageAddBloodSugarResultState extends State<PageAddBloodSugarResult> {
                 Expanded(child: SizedBox()),
                 GestureDetector(
                   onTap: _doEditNote,
-                  child: Image.asset(R.drawable.ic_edit, width: 24, height: 24),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 6.0, vertical: 2.0),
+                    child: Image.asset(R.drawable.ic_pencil_create, width: 20, height: 20),
+                  ),
                 ),
               ],
             ),
             const SizedBox(height: 8),
             Text(
-              widget.data.note ?? '',
+              _note,
               style: TextStyle(
                 fontSize: 12,
                 fontWeight: FontWeight.w400,
@@ -345,16 +356,18 @@ class _PageAddBloodSugarResultState extends State<PageAddBloodSugarResult> {
     }
     return ElevatedButton(
       onPressed: _doEditNote,
-      child: Text(
-        R.string.them_ghi_chu.tr(),
-        style: TextStyle(color: R.color.dark, fontSize: 13, fontWeight: FontWeight.bold),
+      child: Center(
+        child: Text(
+          R.string.them_ghi_chu.tr(),
+          style: TextStyle(color: R.color.dark, fontSize: 13, fontWeight: FontWeight.bold),
+        ),
       ),
       style: ElevatedButton.styleFrom(
         backgroundColor: R.color.color0xffF2F6F9,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
         ),
-        fixedSize: const Size(128, 32),
+        fixedSize: const Size(146, 32),
         elevation: 0,
       ),
     );
@@ -498,7 +511,7 @@ class _SegmentedCircularGauge extends StatelessWidget {
                         color: Colors.grey.shade600,
                       ),
                     ),
-                    SizedBox(height: 4),
+                    SizedBox(height: 12),
                     Text(
                       rangeLabel,
                       style: TextStyle(
