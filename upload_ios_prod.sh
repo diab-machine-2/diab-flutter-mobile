@@ -25,9 +25,9 @@ else
   echo "Failed to extract version and suffix from pubspec.yaml"
 
   # normal build
-  flutter build ios --no-codesign --flavor=Stag.Release
+  flutter build ios --no-codesign --flavor=Release.Release
 fi
 
 # upload to testflight
 cd ios
-fastlane upload_beta
+fastlane upload_prod
