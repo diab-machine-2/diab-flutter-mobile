@@ -367,6 +367,7 @@ class _CalendarBookingControllerState extends State<CalendarBookingController> {
       calendarAccounts: [account],
       goal: "Phỏng vấn đầu vào",
       trainingGroupIds: [],
+      zoomUserId: pickSlot!.zoomUserId,
     );
     _cubit.createCalendar(request);
   }
@@ -592,7 +593,8 @@ class _CalendarBookingControllerState extends State<CalendarBookingController> {
   }
 
   Widget _buildTimeFrame() {
-    List<CalendarCoachModel> coachSchedules = pickSlots;
+    List<CalendarCoachModel> coachSchedules =
+        pickSlots.where((element) => element.zoomUserId.isNotEmpty).toList();
     List<Widget> morningTargets = [];
     List<Widget> afternoonTargets = [];
 
@@ -636,16 +638,15 @@ class _CalendarBookingControllerState extends State<CalendarBookingController> {
                 Text(
                   "-",
                   style: TextStyle(
-                    fontSize: 14.0,
-                    fontFamily: 'sfpro',
-                    fontWeight: PickerHelper.getTextFontWeightByState(
-                      isSelected: isSlotPicked,
-                    ),
-                    color: PickerHelper.getTextColorByState(
-                      isSelected: isSlotPicked,
-                      hasSlot: true,
-                    )
-                  ),
+                      fontSize: 14.0,
+                      fontFamily: 'sfpro',
+                      fontWeight: PickerHelper.getTextFontWeightByState(
+                        isSelected: isSlotPicked,
+                      ),
+                      color: PickerHelper.getTextColorByState(
+                        isSelected: isSlotPicked,
+                        hasSlot: true,
+                      )),
                 ),
                 _buildItemTimeFrame(
                   endTime,
