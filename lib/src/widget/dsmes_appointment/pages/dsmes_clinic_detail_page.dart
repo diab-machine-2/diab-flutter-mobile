@@ -509,8 +509,22 @@ class _DsmesClinicDetailPageState extends State<DsmesClinicDetailPage> {
           Flexible(
             flex: 1,
             child: GestureDetector(
-              onTap: () {
-                // TODO: Navigate to online booking
+              onTap: () async {
+                final clinics = await _cubit.getClinicList();
+                if (clinics.isNotEmpty) {
+                  final priorityClinic = clinics.first;
+                  await _cubit.getClinicDetail(id: priorityClinic.id);
+                  await _cubit.initCreateDsmesBookingRequest(
+                      locale: context.locale.languageCode);
+
+                  DsmesNavigationMixin.navigationKey.currentState?.pushNamed(
+                      NavigatorName.dsmes_select_service,
+                      arguments: {
+                        'clinic': _cubit.selectedClinic,
+                        'serviceType':
+                            DsmesAppointmentMode.telemedicine.toString()
+                      });
+                }
               },
               child: Container(
                 height: 43,

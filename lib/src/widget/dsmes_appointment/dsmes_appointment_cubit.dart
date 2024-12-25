@@ -14,6 +14,7 @@ import 'package:medical/src/model/response/create_dsmes_offline_booking_response
 import 'package:medical/src/model/response/dsmes_clinic_detail_response.dart';
 import 'package:medical/src/model/response/dsmes_clinic_list_response.dart';
 import 'package:medical/src/model/response/dsmes_clinic_rating_response.dart';
+import 'package:medical/src/model/response/get_diab_clinics_schedule_response.dart';
 import 'package:medical/src/model/response/get_dsmes_appointment_detail_response.dart';
 import 'package:medical/src/model/response/get_dsmes_appointment_response.dart';
 import 'package:medical/src/model/service/api_result.dart';
@@ -155,11 +156,45 @@ class DsmesAppointmentCubit extends Cubit<DsmesAppointmentState> {
     });
   }
 
+  Future<List<BookingSchedule>> getDiabClinicsSchedule() async {
+    emit(DsmesAppointmentLoading());
+    List<BookingSchedule> bookingSchedules = [];
+    ApiResult<GetDiabClinicsScheduleResponse> apiResult =
+        await appRepository.getDiabClinicsSchedule();
+    apiResult.when(success: (GetDiabClinicsScheduleResponse response) {
+      bookingSchedules = response.getMergedSchedules();
+      emit(DsmesAppointmentLoaded());
+    }, failure: (NetworkExceptions error) {
+      emit(DsmesAppointmentFailure(NetworkExceptions.getErrorMessage(error)));
+    });
+    return bookingSchedules;
+  }
+
   Future<DsmesAppointment?> createDsmesBooking() async {
     emit(DsmesAppointmentLoading());
     DsmesAppointment? dsmesAppointment;
     ApiResult<CreateDsmesOfflineBookingResponse> apiResult = await appRepository
         .createDsmesOfflineBooking(request: createDsmesBookingRequest!);
+    apiResult.when(success: (CreateDsmesOfflineBookingResponse response) {
+      print('CreateDsmesOfflineBookingResponse: ${response.data.toString()}');
+      dsmesAppointment = response.data;
+      emit(DsmesAppointmentLoaded());
+    }, failure: (NetworkExceptions error) {
+      dsmesAppointment = null;
+      emit(DsmesAppointmentFailure(NetworkExceptions.getErrorMessage(error)));
+    });
+    return dsmesAppointment;
+  }
+
+  Future<DsmesAppointment?> createDsmesBookingOnline() async {
+    emit(DsmesAppointmentLoading());
+    DsmesAppointment? dsmesAppointment;
+    String startTimeWithSeconds = "${createDsmesBookingRequest?.startTime}:00";
+    String endTimeWithSeconds = "${createDsmesBookingRequest?.endTime}:00";
+    updateCreateDsmesBookingRequestTime(
+        startTime: startTimeWithSeconds, endTime: endTimeWithSeconds);
+    ApiResult<CreateDsmesOfflineBookingResponse> apiResult = await appRepository
+        .createDsmesOnlineBooking(request: createDsmesBookingRequest!);
     apiResult.when(success: (CreateDsmesOfflineBookingResponse response) {
       print('CreateDsmesOfflineBookingResponse: ${response.data.toString()}');
       dsmesAppointment = response.data;
@@ -251,6 +286,7 @@ class DsmesAppointmentCubit extends Cubit<DsmesAppointmentState> {
       language: locale,
       symptom: '',
       symptomAttachment: [],
+      paymentInfo: PaymentInfo(services: []),
     );
   }
 
@@ -282,6 +318,12 @@ class DsmesAppointmentCubit extends Cubit<DsmesAppointmentState> {
     );
   }
 
+  updateCreateDsmesBookingRequestServiceList(
+      {required List<ServiceItem> selectedServices}) {
+    createDsmesBookingRequest = createDsmesBookingRequest?.copyWith(
+        paymentInfo: PaymentInfo(services: selectedServices));
+  }
+
   updateCreateDsmesBookingRequest(
       {required CreateDsmesBookingRequest request}) {
     createDsmesBookingRequest = createDsmesBookingRequest?.copyWith(
@@ -298,6 +340,7 @@ class DsmesAppointmentCubit extends Cubit<DsmesAppointmentState> {
       language: request.language,
       symptom: request.symptom,
       symptomAttachment: request.symptomAttachment,
+      paymentInfo: request.paymentInfo,
     );
   }
 

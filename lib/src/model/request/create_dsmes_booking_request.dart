@@ -13,6 +13,7 @@ class CreateDsmesBookingRequest {
   final String language;
   final String symptom;
   final List<String> symptomAttachment;
+  final PaymentInfo? paymentInfo;
 
   CreateDsmesBookingRequest({
     required this.startTime,
@@ -29,6 +30,7 @@ class CreateDsmesBookingRequest {
     required this.language,
     required this.symptom,
     required this.symptomAttachment,
+    this.paymentInfo,
   });
 
   factory CreateDsmesBookingRequest.fromJson(Map<String, dynamic> json) {
@@ -47,6 +49,7 @@ class CreateDsmesBookingRequest {
       language: json['language'] as String,
       symptom: json['symptom'] as String,
       symptomAttachment: (json['symptom_attachment'] as List<String>?) ?? [],
+      paymentInfo: PaymentInfo.fromJson(json['payment_info']),
     );
   }
 
@@ -66,6 +69,7 @@ class CreateDsmesBookingRequest {
       'language': language,
       'symptom': symptom,
       'symptom_attachment': symptomAttachment,
+      'payment_info': paymentInfo?.toJson() ?? {},
     };
   }
 
@@ -84,6 +88,7 @@ class CreateDsmesBookingRequest {
     String? language,
     String? symptom,
     List<String>? symptomAttachment,
+    PaymentInfo? paymentInfo,
   }) {
     return CreateDsmesBookingRequest(
       startTime: startTime ?? this.startTime,
@@ -100,6 +105,53 @@ class CreateDsmesBookingRequest {
       language: language ?? this.language,
       symptom: symptom ?? this.symptom,
       symptomAttachment: symptomAttachment ?? this.symptomAttachment,
+      paymentInfo: paymentInfo ?? this.paymentInfo,
     );
   }
+}
+
+class PaymentInfo {
+  final String? paymentType;
+  final List<ServiceItem> services;
+
+  PaymentInfo({
+    this.paymentType,
+    required this.services,
+  });
+
+  factory PaymentInfo.fromJson(Map<String, dynamic> json) {
+    return PaymentInfo(
+      paymentType: json['payment_type'],
+      services: (json['services'] as List)
+          .map((service) => ServiceItem.fromJson(service))
+          .toList(),
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+        'payment_type': paymentType,
+        'services': services.map((service) => service.toJson()).toList(),
+      };
+}
+
+class ServiceItem {
+  final int id;
+  final int quantity;
+
+  ServiceItem({
+    required this.id,
+    required this.quantity,
+  });
+
+  factory ServiceItem.fromJson(Map<String, dynamic> json) {
+    return ServiceItem(
+      id: json['id'],
+      quantity: json['quantity'],
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'quantity': quantity,
+      };
 }

@@ -124,6 +124,8 @@ class _DsmesConfirmCreateInformationState
                         GapH(12),
                         _buildConsultingInformation(),
                         GapH(12),
+                        _buildSelectedServiceInformation(),
+                        GapH(12),
                         _buildNoticeSymptom(),
                       ],
                     ),
@@ -172,7 +174,14 @@ class _DsmesConfirmCreateInformationState
       await _cubit.registerDocosanUser();
       await AppSettings.clearOrganizationApiKey();
     }
-    final resp = await _cubit.createDsmesBooking();
+
+    DsmesAppointment? resp;
+
+    if (widget.serviceType == DsmesAppointmentMode.atClinic.toString()) {
+      resp = await _cubit.createDsmesBooking();
+    } else {
+      resp = await _cubit.createDsmesBookingOnline();
+    }
 
     if (resp == null) return;
 
@@ -201,7 +210,7 @@ class _DsmesConfirmCreateInformationState
       onShowInfo: () async {
         // Navigate to booking detail
         final myAppointment =
-            await _cubit.getDsmesAppointmentDetail(appointmentId: resp.id);
+            await _cubit.getDsmesAppointmentDetail(appointmentId: resp!.id);
 
         if (myAppointment == null) return;
 
@@ -277,6 +286,8 @@ class _DsmesConfirmCreateInformationState
                 ),
                 InkWell(
                   onTap: () {
+                    _cubit.updateCreateDsmesBookingRequestSymptom(
+                        symptom: symptomController.text);
                     _showEditRequesterInformationBottomSheet();
                   },
                   child: Visibility(
@@ -376,6 +387,8 @@ class _DsmesConfirmCreateInformationState
                   visible: !isReschedule,
                   child: InkWell(
                     onTap: () async {
+                      _cubit.updateCreateDsmesBookingRequestSymptom(
+                          symptom: symptomController.text);
                       await DsmesNavigationMixin.navigationKey.currentState
                           ?.popAndPushNamed(
                               NavigatorName.dsmes_booking_select_date,
@@ -501,6 +514,106 @@ class _DsmesConfirmCreateInformationState
                 ),
               ],
             ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  _buildSelectedServiceInformation() {
+    if (_cubit.createDsmesBookingRequest == null) return SizedBox.shrink();
+    if (_cubit.createDsmesBookingRequest!.paymentInfo == null) {
+      return SizedBox.shrink();
+    }
+    return Container(
+      padding: EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: R.color.white,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Container(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  R.string.consult_demand.tr().toUpperCase(),
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w700,
+                    color: R.color.color0xff141416,
+                  ),
+                ),
+                InkWell(
+                  onTap: () async {
+                    _cubit.updateCreateDsmesBookingRequestSymptom(
+                        symptom: symptomController.text);
+                    await DsmesNavigationMixin.navigationKey.currentState
+                        ?.popAndPushNamed(NavigatorName.dsmes_select_service,
+                            arguments: {
+                          'serviceType': widget.serviceType,
+                          'clinic': _cubit.selectedClinic,
+                        });
+                  },
+                  child: Visibility(
+                    visible: !isReschedule,
+                    child: Container(
+                      alignment: Alignment.center,
+                      height: 20,
+                      child: Text(
+                        R.string.chinh_sua.tr(),
+                        style: TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.w500,
+                          color: R.color.color0xff239A90,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            GapH(12),
+            Column(
+              children: [
+                ..._cubit.createDsmesBookingRequest!.paymentInfo!.services
+                    .map((e) {
+                  final service = _cubit.selectedClinic?.serviceList.categories
+                      .expand((category) => category.data)
+                      .firstWhere((service) => service.id == e.id);
+
+                  final isLastItem = e ==
+                      _cubit.createDsmesBookingRequest!.paymentInfo!.services
+                          .last;
+
+                  return Column(
+                    children: [
+                      Row(
+                        children: [
+                          Flexible(
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 10),
+                              child: Text(
+                                service?.name ?? '',
+                                style: TextStyle(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w400,
+                                  color: R.color.color0xff111515,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      if (!isLastItem) Divider(color: R.color.color0xffE6E8EC)
+                    ],
+                  );
+                }),
+              ],
+            )
           ],
         ),
       ),

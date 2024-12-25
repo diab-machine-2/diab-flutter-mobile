@@ -650,11 +650,6 @@ class _DsmesBookingDetailState extends State<DsmesBookingDetail> {
                       final navigator =
                           DsmesNavigationMixin.navigationKey.currentState;
 
-                      // // Pop until dsmes_booking
-                      // navigator?.popUntil((route) =>
-                      //     route.settings.name == NavigatorName.dsmes_booking);
-
-                      // Then push to select date
                       navigator?.pushNamed(
                           NavigatorName.dsmes_booking_select_date,
                           arguments: {

@@ -47,6 +47,7 @@ import 'package:medical/src/model/response/exercise_movement_response.dart';
 import 'package:medical/src/model/response/expert_comment_list_response.dart';
 import 'package:medical/src/model/response/filter_data_response.dart';
 import 'package:medical/src/model/response/food_suggest_response.dart';
+import 'package:medical/src/model/response/get_diab_clinics_schedule_response.dart';
 import 'package:medical/src/model/response/get_dsmes_appointment_detail_response.dart';
 import 'package:medical/src/model/response/get_dsmes_appointment_response.dart';
 import 'package:medical/src/model/response/is_exist_docosan_user_response.dart';
@@ -1049,6 +1050,17 @@ class AppRepository {
     }
   }
 
+  Future<ApiResult<CreateDsmesOfflineBookingResponse>>
+      createDsmesOnlineBooking(
+          {required CreateDsmesBookingRequest request}) async {
+    try {
+      final response = await docosanClient.createDsmesOnlineBooking(request);
+      return ApiResult.success(data: response);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
   Future<ApiResult<CommonResponse>> cancelDsmesBooking(
       {required DsmesCancelBookingRequest request}) async {
     try {
@@ -1074,6 +1086,16 @@ class AppRepository {
       {required int id}) async {
     try {
       final response = await docosanClient.getClinicRate(id);
+      return ApiResult.success(data: response);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
+  Future<ApiResult<GetDiabClinicsScheduleResponse>> getDiabClinicsSchedule(
+      ) async {
+    try {
+      final response = await docosanClient.getDiabClinicsSchedule();
       return ApiResult.success(data: response);
     } catch (e) {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));

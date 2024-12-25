@@ -48,7 +48,7 @@ class DsmesAppointment {
   final int alreadyReview;
   final List<dynamic> doctor;
   final ClinicInfo clinic;
-  // final List<dynamic> teleMedicine;
+  final TeleMedicine? teleMedicine;
   final int hasAttachment;
   final int newAttachments;
   final int hasNewNote;
@@ -106,7 +106,7 @@ class DsmesAppointment {
     required this.alreadyReview,
     required this.doctor,
     required this.clinic,
-    // required this.teleMedicine,
+    required this.teleMedicine,
     required this.hasAttachment,
     required this.newAttachments,
     required this.hasNewNote,
@@ -117,7 +117,7 @@ class DsmesAppointment {
 
   factory DsmesAppointment.fromJson(Map<String, dynamic> json) {
     return DsmesAppointment(
-      id: json['id'] ?? 0,
+      id: json['id'] ?? json['appointment_id'] ?? 0,
       prefix: json['prefix'],
       groupId: json['group_id'],
       doctorId: json['doctor_id'] ?? 0,
@@ -170,7 +170,9 @@ class DsmesAppointment {
       alreadyReview: json['already_review'] ?? 0,
       doctor: json['doctor_info'] ?? json['doctor'] ?? [],
       clinic: ClinicInfo.fromJson(json['clinic_info'] ?? json['clinic'] ?? {}),
-      // teleMedicine: json['teleMedicine'] ?? [],
+      teleMedicine: json['teleMedicine'] != null && json['teleMedicine'] is Map
+          ? TeleMedicine.fromJson(json['teleMedicine'])
+          : null, // handle case empty response value is []
       hasAttachment: json['has_attachment'] ?? 0,
       newAttachments: json['new_attachments'] ?? 0,
       hasNewNote: json['has_new_note'] ?? 0,
@@ -261,6 +263,20 @@ class SymptomAttachment {
       name: json['name'] ?? '',
       fileType: json['file_type'] ?? '',
       filePath: json['file_path'] ?? '',
+    );
+  }
+}
+
+class TeleMedicine {
+  final int id;
+
+  TeleMedicine({
+    required this.id,
+  });
+
+  factory TeleMedicine.fromJson(Map<String, dynamic> json) {
+    return TeleMedicine(
+      id: json['id'] ?? 0,
     );
   }
 }

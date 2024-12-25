@@ -95,4 +95,5 @@ class NavigatorName {
   static const String dsmes_confirm_information = '/dsmes_confirm_information';
   static const String dsmes_clinic_detail = '/dsmes_clinic_detail';
   static const String dsmes_select_service = '/dsmes_select_service';
+  static const String dsmes_booking_online_join_room = '/dsmes_booking_online_join_room';
 }

@@ -214,50 +214,50 @@ class DsmesAppointmentItem extends StatelessWidget {
   Widget _buildActionButtons({String locale = 'vi'}) {
     final endDateTime = DateFormat('yyyy-MM-dd HH:mm:ss').parse(data.endTime);
     final isPast = endDateTime.isBefore(DateTime.now());
-    if (data.status == DSMES_STATUS_APPROVE && isPast) {
-      return Row(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          Flexible(
-            flex: 1,
-            child: GestureDetector(
-              onTap: () {
-                // TODO: Handle support
-              },
-              child: Container(
-                height: 43,
-                // width: 158,
-                decoration: BoxDecoration(
-                  color: R.color.white,
-                  borderRadius: BorderRadius.circular(200),
-                  border: Border.all(
-                    color: R.color.greenGradientBottom,
-                  ),
-                ),
-                child: Center(
-                  child: Text(
-                    R.string.support.tr(),
-                    style: TextStyle(
-                      color: R.color.greenGradientBottom,
-                      fontSize: 15,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-          GapW(12),
-          Flexible(
-            flex: 1,
-            child: _buildPrimaryButton(
-              R.string.rebooking.tr(),
-              () => _handleRebooking(locale: locale),
-            ),
-          ),
-        ],
-      );
-    }
+    // if (data.status == DSMES_STATUS_APPROVE && isPast) {
+    //   return Row(
+    //     mainAxisAlignment: MainAxisAlignment.start,
+    //     children: [
+    //       Flexible(
+    //         flex: 1,
+    //         child: GestureDetector(
+    //           onTap: () {
+    //             // TODO: Handle support
+    //           },
+    //           child: Container(
+    //             height: 43,
+    //             // width: 158,
+    //             decoration: BoxDecoration(
+    //               color: R.color.white,
+    //               borderRadius: BorderRadius.circular(200),
+    //               border: Border.all(
+    //                 color: R.color.greenGradientBottom,
+    //               ),
+    //             ),
+    //             child: Center(
+    //               child: Text(
+    //                 R.string.support.tr(),
+    //                 style: TextStyle(
+    //                   color: R.color.greenGradientBottom,
+    //                   fontSize: 15,
+    //                   fontWeight: FontWeight.w700,
+    //                 ),
+    //               ),
+    //             ),
+    //           ),
+    //         ),
+    //       ),
+    //       GapW(12),
+    //       Flexible(
+    //         flex: 1,
+    //         child: _buildPrimaryButton(
+    //           R.string.rebooking.tr(),
+    //           () => _handleRebooking(locale: locale),
+    //         ),
+    //       ),
+    //     ],
+    //   );
+    // }
 
     final mode = DsmesAppointmentMode.fromString(data.mode);
     return mode == DsmesAppointmentMode.atClinic
@@ -325,7 +325,7 @@ class DsmesAppointmentItem extends StatelessWidget {
 
     // 10 minutes before and after start time window
     final windowStart = appointmentStart.subtract(Duration(minutes: 10));
-    final windowEnd = appointmentStart.add(Duration(minutes: 10));
+    final windowEnd = appointmentStart.add(Duration(minutes: 120));
 
     return now.isAfter(windowStart) && now.isBefore(windowEnd);
   }
@@ -338,9 +338,7 @@ class DsmesAppointmentItem extends StatelessWidget {
           child: _shouldShowJoinButton()
               ? _buildPrimaryButton(
                   R.string.join_now.tr(),
-                  () => () {
-                    //TODO: Handle join now
-                  },
+                  () => _handleJoinRoom(),
                 )
               : Container(
                   height: 44,
@@ -364,5 +362,12 @@ class DsmesAppointmentItem extends StatelessWidget {
         ),
       ],
     );
+  }
+
+  _handleJoinRoom() async {
+    await DsmesNavigationMixin.navigationKey.currentState
+        ?.pushNamed(NavigatorName.dsmes_booking_online_join_room, arguments: {
+      'telemedicineId': data.teleMedicine?.id,
+    });
   }
 }

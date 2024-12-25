@@ -8,6 +8,7 @@ import 'package:medical/src/model/response/create_dsmes_offline_booking_response
 import 'package:medical/src/model/response/dsmes_clinic_detail_response.dart';
 import 'package:medical/src/model/response/dsmes_clinic_list_response.dart';
 import 'package:medical/src/model/response/dsmes_clinic_rating_response.dart';
+import 'package:medical/src/model/response/get_diab_clinics_schedule_response.dart';
 import 'package:medical/src/model/response/get_dsmes_appointment_detail_response.dart';
 import 'package:medical/src/model/response/get_dsmes_appointment_response.dart';
 import 'package:retrofit/http.dart';
@@ -54,4 +55,11 @@ abstract class DocosanApi {
   Future<DsmesClinicRatingResponse> getClinicRate(
     @Query('clinic_id') int? clinicId,
   );
+
+  @GET("api/clinics/profile-clinic-diab-schedule")
+  Future<GetDiabClinicsScheduleResponse> getDiabClinicsSchedule();
+
+  @POST("api/payment/create-order-mobile")
+  Future<CreateDsmesOfflineBookingResponse> createDsmesOnlineBooking(
+      @Body() CreateDsmesBookingRequest request);
 }

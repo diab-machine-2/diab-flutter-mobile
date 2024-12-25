@@ -38,6 +38,8 @@ class _DsmesCalendarSectionState extends State<DsmesCalendarSection> {
   BookingSchedule? selectedBookingSchedule;
 
   late List<BookingSchedule> availableBookingSchedule = [];
+  late List<DateTime> activeDates = [];
+  late List<BookingSchedule> fullSchedule = [];
 
   @override
   void initState() {
@@ -57,29 +59,61 @@ class _DsmesCalendarSectionState extends State<DsmesCalendarSection> {
             DateTime.parse(selectedBookingSchedule!.startTime).hour < 12;
       }
     }
-    availableBookingSchedule =
-        _getAvailableBookingSchedule(bookingDate: selectedDate);
+    _loadInitialData();
   }
 
-  List<BookingSchedule> _getAvailableBookingSchedule({DateTime? bookingDate}) {
-    if (bookingDate == null) {
-      bookingDate = DateTime.now();
-    }
-    if (widget.serviceType == DsmesAppointmentMode.atClinic.toString()) {
-      final scheduleDates = _cubit.selectedClinic?.getBookingSchedules() ?? [];
-      if (scheduleDates.isEmpty) {
-        return [];
-      }
-      return scheduleDates
-          .where((schedule) =>
-              schedule.isAvailable == true &&
-              DateTime.parse(schedule.startTime)
-                  .isSameDayWith(bookingDate!)) // Only get available slots
-          .toList();
-    } else {
-      // Handle case for online booking
+  void _loadInitialData() async {
+    final scheduleDates = await _getScheduleDates();
+    final schedules = _filterAvailableSchedules(
+        scheduleDates, selectedDate ?? DateTime.now());
+    final dates = _getActiveDates(scheduleDates: scheduleDates);
+
+    setState(() {
+      fullSchedule = scheduleDates; // Store full schedule
+      availableBookingSchedule = schedules;
+      activeDates = dates;
+    });
+  }
+
+  List<DateTime> _getActiveDates(
+      {required List<BookingSchedule> scheduleDates}) {
+    if (scheduleDates.isEmpty) {
       return [];
     }
+
+    return scheduleDates
+        .where((schedule) => schedule.isAvailable)
+        .map((schedule) => DateTime.parse(schedule.startTime))
+        .toList()
+      ..sort();
+  }
+
+  Future<List<BookingSchedule>> _getAvailableBookingSchedule(
+      {DateTime? bookingDate}) async {
+    final date = bookingDate ?? DateTime.now();
+
+    final List<BookingSchedule> scheduleDates = await _getScheduleDates();
+
+    if (scheduleDates.isEmpty) {
+      return [];
+    }
+
+    return _filterAvailableSchedules(scheduleDates, date);
+  }
+
+  Future<List<BookingSchedule>> _getScheduleDates() async {
+    return widget.serviceType == DsmesAppointmentMode.atClinic.toString()
+        ? _cubit.selectedClinic?.getBookingSchedules() ?? []
+        : await _cubit.getDiabClinicsSchedule();
+  }
+
+  List<BookingSchedule> _filterAvailableSchedules(
+      List<BookingSchedule> schedules, DateTime date) {
+    return schedules
+        .where((schedule) =>
+            schedule.isAvailable == true &&
+            DateTime.parse(schedule.startTime).isSameDayWith(date))
+        .toList();
   }
 
   @override
@@ -204,7 +238,6 @@ class _DsmesCalendarSectionState extends State<DsmesCalendarSection> {
   }
 
   _buildSectionCalendarBooking() {
-    List<DateTime> activeDates = _getActiveDates();
     return Container(
       margin: EdgeInsets.fromLTRB(16, 0, 16, 24),
       decoration: BoxDecoration(
@@ -231,15 +264,11 @@ class _DsmesCalendarSectionState extends State<DsmesCalendarSection> {
             activeDates: activeDates,
             lastDate: _getLastDate(),
             datesRange: Const.MAX_DAY_RANGE_DSMES_BOOKING,
-            onDateChanged: (datetime) {
+            onDateChanged: (datetime) async {
               if (datetime != null) {
-                var targets =
-                    _getAvailableBookingSchedule(bookingDate: datetime)
-                        .where((schedule) =>
-                            schedule.isAvailable == true &&
-                            DateTime.parse(schedule.startTime).isSameDayWith(
-                                datetime)) // Only get available slots
-                        .toList();
+                final targets =
+                    _filterAvailableSchedules(fullSchedule, datetime);
+
                 setState(() {
                   availableBookingSchedule = targets;
                   selectedDate = datetime;
@@ -478,23 +507,6 @@ class _DsmesCalendarSectionState extends State<DsmesCalendarSection> {
         ],
       ),
     );
-  }
-
-  List<DateTime> _getActiveDates() {
-    if (widget.serviceType == DsmesAppointmentMode.atClinic.toString()) {
-      final scheduleDates = _cubit.selectedClinic?.getBookingSchedules() ?? [];
-      if (scheduleDates.isEmpty) {
-        return [];
-      }
-      return scheduleDates
-          .where((schedule) =>
-              schedule.isAvailable == true) // Only get available slots
-          .map((schedule) => DateTime.parse(schedule.startTime))
-          .toList()
-        ..sort();
-    } else {
-      return [];
-    }
   }
 
   DateTime _getLastDate() {

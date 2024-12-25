@@ -17,6 +17,7 @@ import 'package:medical/src/widget/dsmes_appointment/dsmes_appointment_state.dar
 import 'package:medical/src/widget/dsmes_appointment/pages/dsmes_appointment_history_page.dart';
 import 'package:medical/src/widget/dsmes_appointment/pages/dsmes_booking_detail.dart';
 import 'package:medical/src/widget/dsmes_appointment/pages/dsmes_booking_offline_page.dart';
+import 'package:medical/src/widget/dsmes_appointment/pages/dsmes_booking_online_join_call_page.dart';
 import 'package:medical/src/widget/dsmes_appointment/pages/dsmes_booking_select_datetime.dart';
 import 'package:medical/src/widget/dsmes_appointment/pages/dsmes_clinic_detail_page.dart';
 import 'package:medical/src/widget/dsmes_appointment/pages/dsmes_confirm_create_information_page.dart';
@@ -160,6 +161,19 @@ class _DsmesAppointmentPageState extends State<DsmesAppointmentPage>
                       settings,
                       DsmesSelectServicePage(
                         clinic: args!["clinic"],
+                        serviceType: args["serviceType"],
+                      ),
+                    );
+                  }
+
+                case NavigatorName.dsmes_booking_online_join_room:
+                  {
+                    Map<String, dynamic>? args =
+                        settings.arguments as Map<String, dynamic>?;
+                    return _buildRoute(
+                      settings,
+                      WebViewScreen(
+                        telemedicineId: args!["telemedicineId"],
                       ),
                     );
                   }
@@ -292,17 +306,13 @@ class _DsmesAppointmentPageState extends State<DsmesAppointmentPage>
                         return DsmesAppointmentItem(
                           data: data,
                           onChooseService: () async {
-                            if (data.mode ==
-                                DsmesAppointmentMode.atClinic.toString()) {
-                              await _cubit.getClinicDetail(id: data.clinicId);
-                            }
+                            await _cubit.getClinicDetail(id: data.clinicId);
 
                             DsmesNavigationMixin.navigationKey.currentState
                                 ?.pushNamed(
                               NavigatorName.dsmes_booking_detail,
                               arguments: {
-                                'serviceType':
-                                    DsmesAppointmentMode.atClinic.toString(),
+                                'serviceType': data.mode,
                                 'appointment': data
                               },
                             );
@@ -318,12 +328,17 @@ class _DsmesAppointmentPageState extends State<DsmesAppointmentPage>
                       onTap: () async {
                         final clinics = await _cubit.getClinicList();
                         if (clinics.isNotEmpty) {
-                          final priorityClinic = clinics.last;
+                          final priorityClinic = clinics.first;
                           await _cubit.getClinicDetail(id: priorityClinic.id);
+                          await _cubit.initCreateDsmesBookingRequest(
+                              locale: context.locale.languageCode);
+
                           DsmesNavigationMixin.navigationKey.currentState
                               ?.pushNamed(NavigatorName.dsmes_select_service,
                                   arguments: {
                                 'clinic': _cubit.selectedClinic,
+                                'serviceType':
+                                    DsmesAppointmentMode.telemedicine.toString()
                               });
                         }
                       },
