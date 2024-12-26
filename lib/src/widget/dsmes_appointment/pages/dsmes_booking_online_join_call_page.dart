@@ -83,8 +83,7 @@ class _WebViewScreenState extends State<WebViewScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final uri =
-        '$baseUrl/vi/telemedicine/patient/${widget.telemedicineId}?t=webview';
+    final uri = '$baseUrl/vi/telemedicine/patient/${widget.telemedicineId}';
     return Scaffold(
       appBar: CustomAppBar(
         backgroundColor: R.color.transparent,
@@ -221,6 +220,13 @@ class _WebViewScreenState extends State<WebViewScreen> {
             shouldOverrideUrlLoading: (controller, navigationAction) async {
               final uri = navigationAction.request.url;
               if (uri == null) return NavigationActionPolicy.CANCEL;
+
+              if (uri.toString() == 'https://staging.docosan.com/') {
+                if (mounted) {
+                  DsmesNavigationMixin.navigationKey.currentState?.pop(context);
+                }
+                return NavigationActionPolicy.CANCEL;
+              }
 
               if (uri.host.contains('staging.docosan.com')) {
                 return NavigationActionPolicy.ALLOW;
