@@ -151,11 +151,11 @@ class _DsmesBookingDetailState extends State<DsmesBookingDetail> {
                   color: R.color.textDark,
                 ),
                 onPressed: () {
-                  Observable.instance.notifyObservers([],
-                      notifyName: "refresh_dsmes_appointment");
-                      
                   DsmesNavigationMixin.navigationKey.currentState
                       ?.popUntil((route) => route.isFirst);
+
+                  Observable.instance.notifyObservers([],
+                      notifyName: "refresh_dsmes_appointment");
                 },
               ),
             ),

@@ -52,6 +52,7 @@ class _DsmesAppointmentPageState extends State<DsmesAppointmentPage>
   @override
   void dispose() {
     Observable.instance.removeObserver(this);
+    _controller.dispose();
     super.dispose();
   }
 
