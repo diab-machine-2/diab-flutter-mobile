@@ -3,6 +3,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/model/request/create_dsmes_booking_request.dart';
+import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/date_utils.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/utils/utils.dart';
@@ -292,7 +293,7 @@ class DsmesAppointmentItem extends StatelessWidget {
     if (appointment == null) {
       return;
     }
-    
+
     cubit.initCreateDsmesBookingRequest(locale: locale);
     final rebookingRequest = CreateDsmesBookingRequest(
       startTime: "",
@@ -332,8 +333,10 @@ class DsmesAppointmentItem extends StatelessWidget {
     final now = DateTime.now();
 
     // 10 minutes before and after start time window
-    final windowStart = appointmentStart.subtract(Duration(minutes: 50));
-    final windowEnd = appointmentStart.add(Duration(minutes: 50));
+    final windowStart = appointmentStart
+        .subtract(Duration(minutes: Const.DSMES_BOOKING_TIME_WINDOW_RANGE));
+    final windowEnd = appointmentStart
+        .add(Duration(minutes: Const.DSMES_BOOKING_TIME_WINDOW_RANGE));
 
     return now.isAfter(windowStart) && now.isBefore(windowEnd);
   }

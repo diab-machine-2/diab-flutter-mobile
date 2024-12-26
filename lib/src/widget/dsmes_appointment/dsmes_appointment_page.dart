@@ -355,7 +355,8 @@ class _DsmesAppointmentPageState extends State<DsmesAppointmentPage>
                       height: 20,
                     ),
                     GestureDetector(
-                      onTap: () {
+                      onTap: () async {
+                        await _cubit.getClinicList();
                         DsmesNavigationMixin.navigationKey.currentState
                             ?.pushNamed(NavigatorName.dsmes_booking_offline,
                                 arguments: {

@@ -29,14 +29,12 @@ class DsmesBookingOfflinePage extends StatefulWidget {
 }
 
 class _DsmesBookingOfflinePageState extends State<DsmesBookingOfflinePage> {
-  final RefreshController _controller = RefreshController();
   late DsmesAppointmentCubit _cubit;
 
   @override
   void initState() {
     super.initState();
     _cubit = context.read<DsmesAppointmentCubit>();
-    _cubit.getClinicList();
   }
 
   @override
@@ -46,33 +44,12 @@ class _DsmesBookingOfflinePageState extends State<DsmesBookingOfflinePage> {
         decoration: BoxDecoration(
           color: R.color.backgroundColorNew,
         ),
-        child: BlocProvider(
-          create: (context) => _cubit,
-          child: BlocConsumer<DsmesAppointmentCubit, DsmesAppointmentState>(
-            listener: (context, state) {
-              if (state is DsmesAppointmentFailure) {
-                Message.showToastMessage(context, state.error);
-              }
-            },
-            builder: (
-              BuildContext context,
-              DsmesAppointmentState state,
-            ) {
-              if (state is DsmesAppointmentLoading) {
-                BotToast.showLoading();
-              } else {
-                BotToast.closeAllLoading();
-                _controller.refreshCompleted();
-              }
-              return _buildPage(context, state);
-            },
-          ),
-        ),
+        child: _buildPage(context),
       ),
     );
   }
 
-  Widget _buildPage(BuildContext context, DsmesAppointmentState state) {
+  Widget _buildPage(BuildContext context) {
     return Column(
       children: [
         CustomAppBar(
@@ -142,28 +119,24 @@ class _DsmesBookingOfflinePageState extends State<DsmesBookingOfflinePage> {
           ),
         ),
         Expanded(
-          child: SmartRefresher(
-            controller: _controller,
-            onRefresh: () => _cubit.getClinicList(),
-            child: SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  children: [
-                    ListView.separated(
-                      physics: NeverScrollableScrollPhysics(),
-                      padding: EdgeInsets.zero,
-                      shrinkWrap: true,
-                      itemCount: _cubit.listClinic.length,
-                      separatorBuilder: (context, index) => GapH(16),
-                      itemBuilder: (context, index) {
-                        DsmesClinicModel data = _cubit.listClinic[index];
-                        return _buildClinicItem(data);
-                      },
-                    ),
-                    GapH(20),
-                  ],
-                ),
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                children: [
+                  ListView.separated(
+                    physics: NeverScrollableScrollPhysics(),
+                    padding: EdgeInsets.zero,
+                    shrinkWrap: true,
+                    itemCount: _cubit.listClinic.length,
+                    separatorBuilder: (context, index) => GapH(16),
+                    itemBuilder: (context, index) {
+                      DsmesClinicModel data = _cubit.listClinic[index];
+                      return _buildClinicItem(data);
+                    },
+                  ),
+                  GapH(20),
+                ],
               ),
             ),
           ),
@@ -246,7 +219,7 @@ class _DsmesBookingOfflinePageState extends State<DsmesBookingOfflinePage> {
                   runSpacing: 6,
                   children: data.specialty.map((e) {
                     return Container(
-                        height: 20,
+                        height: 21,
                         padding:
                             EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                         decoration: BoxDecoration(
