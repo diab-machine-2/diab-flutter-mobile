@@ -159,7 +159,7 @@ class _WebViewScreenState extends State<WebViewScreen> {
                   url: url,
                   name: "access_token",
                   value: accessToken,
-                  domain: "staging.docosan.com",
+                  domain: Utils.getDocosanDomain(),
                   path: "/",
                 );
 
@@ -221,14 +221,14 @@ class _WebViewScreenState extends State<WebViewScreen> {
               final uri = navigationAction.request.url;
               if (uri == null) return NavigationActionPolicy.CANCEL;
 
-              if (uri.toString() == 'https://staging.docosan.com/') {
+              if (uri.toString() == "${Utils.getDocosanDomainUrl()}/") {
                 if (mounted) {
                   DsmesNavigationMixin.navigationKey.currentState?.pop(context);
                 }
                 return NavigationActionPolicy.CANCEL;
               }
 
-              if (uri.host.contains('staging.docosan.com')) {
+              if (uri.host.contains(Utils.getDocosanDomain())) {
                 return NavigationActionPolicy.ALLOW;
               }
 
