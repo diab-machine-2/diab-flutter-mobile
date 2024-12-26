@@ -190,17 +190,20 @@ class _DsmesAppointmentPageState extends State<DsmesAppointmentPage>
   Widget _buildMainContent(BuildContext context) {
     return BlocConsumer<DsmesAppointmentCubit, DsmesAppointmentState>(
       listener: (context, state) {
+        print('Current state: $state');
         if (state is DsmesAppointmentFailure) {
           BotToast.closeAllLoading();
           Message.showToastMessage(context, state.error);
         } else {
           BotToast.closeAllLoading();
+          _controller.refreshCompleted();
         }
       },
       builder: (
         BuildContext context,
         DsmesAppointmentState state,
       ) {
+        print('Building with state: $state');
         if (state is DsmesAppointmentLoading) {
           BotToast.showLoading();
         } else {
@@ -232,7 +235,7 @@ class _DsmesAppointmentPageState extends State<DsmesAppointmentPage>
                     ?.pushNamed(NavigatorName.dsmes_booking_history);
               },
               child: Container(
-                width: 130,
+                width: 140,
                 height: 33,
                 padding: EdgeInsets.symmetric(vertical: 8, horizontal: 6),
                 margin: EdgeInsets.fromLTRB(0, 8, 16, 8),
@@ -302,18 +305,21 @@ class _DsmesAppointmentPageState extends State<DsmesAppointmentPage>
                         height: 16,
                       ),
                       itemBuilder: (context, index) {
-                        DsmesAppointment data = _cubit.listFilteredData[index];
+                        final data = _cubit.listFilteredData[index];
                         return DsmesAppointmentItem(
                           data: data,
                           onChooseService: () async {
                             await _cubit.getClinicDetail(id: data.clinicId);
+                            final appointment =
+                                await _cubit.getDsmesAppointmentDetail(
+                                    appointmentId: data.id);
 
                             DsmesNavigationMixin.navigationKey.currentState
                                 ?.pushNamed(
                               NavigatorName.dsmes_booking_detail,
                               arguments: {
-                                'serviceType': data.mode,
-                                'appointment': data
+                                'serviceType': appointment?.mode,
+                                'appointment': appointment
                               },
                             );
                           },

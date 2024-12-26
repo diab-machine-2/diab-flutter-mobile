@@ -145,12 +145,14 @@ class DsmesAppointmentItem extends StatelessWidget {
             children: [
               Row(
                 children: [
-                  Text(
-                    data.clinic.name,
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w700,
-                      color: R.color.textDark,
+                  Flexible(
+                    child: Text(
+                      data.clinic.name,
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w700,
+                        color: R.color.textDark,
+                      ),
                     ),
                   ),
                 ],
@@ -160,14 +162,16 @@ class DsmesAppointmentItem extends StatelessWidget {
                 children: [
                   Image.asset(R.drawable.ic_map_marker, width: 12, height: 12),
                   SizedBox(width: 5),
-                  Text(
-                    data.clinic.address,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w500,
-                      color: R.color.color0xff777E90,
+                  Flexible(
+                    child: Text(
+                      data.clinic.address,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                        color: R.color.color0xff777E90,
+                      ),
                     ),
                   ),
                 ],
@@ -214,50 +218,50 @@ class DsmesAppointmentItem extends StatelessWidget {
   Widget _buildActionButtons({String locale = 'vi'}) {
     final endDateTime = DateFormat('yyyy-MM-dd HH:mm:ss').parse(data.endTime);
     final isPast = endDateTime.isBefore(DateTime.now());
-    // if (data.status == DSMES_STATUS_APPROVE && isPast) {
-    //   return Row(
-    //     mainAxisAlignment: MainAxisAlignment.start,
-    //     children: [
-    //       Flexible(
-    //         flex: 1,
-    //         child: GestureDetector(
-    //           onTap: () {
-    //             // TODO: Handle support
-    //           },
-    //           child: Container(
-    //             height: 43,
-    //             // width: 158,
-    //             decoration: BoxDecoration(
-    //               color: R.color.white,
-    //               borderRadius: BorderRadius.circular(200),
-    //               border: Border.all(
-    //                 color: R.color.greenGradientBottom,
-    //               ),
-    //             ),
-    //             child: Center(
-    //               child: Text(
-    //                 R.string.support.tr(),
-    //                 style: TextStyle(
-    //                   color: R.color.greenGradientBottom,
-    //                   fontSize: 15,
-    //                   fontWeight: FontWeight.w700,
-    //                 ),
-    //               ),
-    //             ),
-    //           ),
-    //         ),
-    //       ),
-    //       GapW(12),
-    //       Flexible(
-    //         flex: 1,
-    //         child: _buildPrimaryButton(
-    //           R.string.rebooking.tr(),
-    //           () => _handleRebooking(locale: locale),
-    //         ),
-    //       ),
-    //     ],
-    //   );
-    // }
+    if (data.status == DSMES_STATUS_APPROVE && isPast) {
+      return Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          Flexible(
+            flex: 1,
+            child: GestureDetector(
+              onTap: () {
+                // TODO: Handle support
+              },
+              child: Container(
+                height: 43,
+                // width: 158,
+                decoration: BoxDecoration(
+                  color: R.color.white,
+                  borderRadius: BorderRadius.circular(200),
+                  border: Border.all(
+                    color: R.color.greenGradientBottom,
+                  ),
+                ),
+                child: Center(
+                  child: Text(
+                    R.string.support.tr(),
+                    style: TextStyle(
+                      color: R.color.greenGradientBottom,
+                      fontSize: 15,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+          GapW(12),
+          Flexible(
+            flex: 1,
+            child: _buildPrimaryButton(
+              R.string.rebooking.tr(),
+              () => _handleRebooking(locale: locale),
+            ),
+          ),
+        ],
+      );
+    }
 
     final mode = DsmesAppointmentMode.fromString(data.mode);
     return mode == DsmesAppointmentMode.atClinic
@@ -282,35 +286,39 @@ class DsmesAppointmentItem extends StatelessWidget {
   }
 
   _handleRebooking({String locale = 'vi'}) async {
-    if (data.mode == DsmesAppointmentMode.atClinic.toString()) {
-      await cubit.getClinicDetail(id: data.clinicId);
-      cubit.initCreateDsmesBookingRequest(locale: locale);
-      final rebookingRequest = CreateDsmesBookingRequest(
-          startTime: "",
-          endTime: "",
-          clinicId: data.clinic.id,
-          doctorId: data.doctorId,
-          patientPhoneNumber: data.patientInfo.phone,
-          patientName: data.patientInfo.displayName,
-          birthday: data.patientInfo.birthday,
-          patientGender: int.tryParse(data.patientInfo.gender) ??
-              (AppSettings.userInfo?.gender == 'Male' ? 1 : 0),
-          patientEmail: data.patientInfo.email,
-          bookingForClinic: 1, // 1: Booking phòng khám, 2: Booking bác sĩ
-          language: locale,
-          symptom: data.symptom,
-          symptomAttachment:
-              data.symptomAttachment.map((e) => e.filePath).toList());
-      cubit.updateCreateDsmesBookingRequest(request: rebookingRequest);
-
-      await DsmesNavigationMixin.navigationKey.currentState
-          ?.pushNamed(NavigatorName.dsmes_booking_select_date, arguments: {
-        'serviceType': data.mode,
-        'action': 'create',
-      });
-    } else {
-      // TODO: Handle rebooking online
+    await cubit.getClinicDetail(id: data.clinicId);
+    final appointment =
+        await cubit.getDsmesAppointmentDetail(appointmentId: data.id);
+    if (appointment == null) {
+      return;
     }
+    
+    cubit.initCreateDsmesBookingRequest(locale: locale);
+    final rebookingRequest = CreateDsmesBookingRequest(
+      startTime: "",
+      endTime: "",
+      clinicId: appointment.clinic.id,
+      doctorId: appointment.doctorId,
+      patientPhoneNumber: appointment.patientInfo.phone,
+      patientName: appointment.patientInfo.displayName,
+      birthday: appointment.patientInfo.birthday,
+      patientGender: int.tryParse(appointment.patientInfo.gender) ??
+          (AppSettings.userInfo?.gender == 'Male' ? 1 : 0),
+      patientEmail: appointment.patientInfo.email,
+      bookingForClinic: 1, // 1: Booking phòng khám, 2: Booking bác sĩ
+      language: locale,
+      symptom: appointment.symptom,
+      symptomAttachment:
+          appointment.symptomAttachment.map((e) => e.filePath).toList(),
+      paymentInfo: PaymentInfo(services: appointment.services),
+    );
+    cubit.updateCreateDsmesBookingRequest(request: rebookingRequest);
+
+    await DsmesNavigationMixin.navigationKey.currentState
+        ?.pushNamed(NavigatorName.dsmes_booking_select_date, arguments: {
+      'serviceType': data.mode,
+      'action': 'create',
+    });
   }
 
   bool _shouldShowJoinButton() {
@@ -324,8 +332,8 @@ class DsmesAppointmentItem extends StatelessWidget {
     final now = DateTime.now();
 
     // 10 minutes before and after start time window
-    final windowStart = appointmentStart.subtract(Duration(minutes: 10));
-    final windowEnd = appointmentStart.add(Duration(minutes: 120));
+    final windowStart = appointmentStart.subtract(Duration(minutes: 50));
+    final windowEnd = appointmentStart.add(Duration(minutes: 50));
 
     return now.isAfter(windowStart) && now.isBefore(windowEnd);
   }

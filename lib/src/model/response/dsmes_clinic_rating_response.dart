@@ -127,8 +127,12 @@ class ClinicReview {
       active: json['active'] ?? 0,
       sortComment: json['sort_comment'] ?? 0,
       ratingName: json['rating_name'] ?? '',
-      patient: ReviewUser.fromJson(json['patient'] ?? {}),
-      clinic: ReviewClinic.fromJson(json['clinic'] ?? {}),
+      patient: (json['patient'] is! List)
+          ? ReviewUser.fromJson(json['patient'] ?? {})
+          : ReviewUser.fromJson({}),
+      clinic: (json['clinic'] is! List)
+          ? ReviewClinic.fromJson(json['clinic'] ?? {})
+          : ReviewClinic.fromJson({}),
       appointment: ReviewAppointment.fromJson(json['appointment'] ?? {}),
       isLiked: json['is_liked'] ?? 0,
       clinicName: json['clinic_name'] ?? '',

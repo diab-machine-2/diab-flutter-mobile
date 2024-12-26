@@ -425,6 +425,22 @@ class Utils {
     }
   }
 
+  static String getDocosanDomain() {
+    if (AppSettings.environment == "product") {
+      return Const.HOST_DOCOSAN_DOMAIN;
+    } else {
+      return Const.HOST_DOCOSAN_DOMAIN_STAGING;
+    }
+  }
+
+  static String getDocosanDomainUrl() {
+    if (AppSettings.environment == "product") {
+      return Const.HOST_DOCOSAN_DOMAIN_URL;
+    } else {
+      return Const.HOST_DOCOSAN_DOMAIN_STAGING_URL;
+    }
+  }
+
   static String showValue(double number) {
     if (number == number.toInt()) {
       return number.toInt().toString();

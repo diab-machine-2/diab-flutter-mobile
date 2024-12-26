@@ -263,7 +263,7 @@ class DsmesAppointmentCubit extends Cubit<DsmesAppointmentState> {
       return ((data.status == DSMES_STATUS_REQUEST ||
               data.status == DSMES_STATUS_ON_HOLD)) ||
           (
-              // startTime.isAfter(threeDaysAgo) &&
+              startTime.isAfter(threeDaysAgo) &&
               data.status == DSMES_STATUS_APPROVE);
     }).toList();
     return filteredData;

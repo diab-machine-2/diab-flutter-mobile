@@ -9,6 +9,7 @@ import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/dsmes_appointment/dsmes_appointment_cubit.dart';
 import 'package:medical/src/widget/dsmes_appointment/dsmes_appointment_state.dart';
+import 'package:medical/src/widget/dsmes_appointment/model/dsmes_appointment_model.dart';
 import 'package:medical/src/widget/dsmes_appointment/model/dsmes_clinic_model.dart';
 import 'package:medical/src/widget/dsmes_appointment/pages/dsmes_navigation_mixin.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
@@ -91,7 +92,7 @@ class _DsmesBookingOfflinePageState extends State<DsmesBookingOfflinePage> {
                     ?.pushNamed(NavigatorName.dsmes_booking_history);
               },
               child: Container(
-                width: 130,
+                width: 140,
                 height: 33,
                 padding: EdgeInsets.symmetric(vertical: 8, horizontal: 6),
                 margin: EdgeInsets.fromLTRB(0, 8, 16, 8),
@@ -273,8 +274,26 @@ class _DsmesBookingOfflinePageState extends State<DsmesBookingOfflinePage> {
                         children: [
                           Expanded(
                             child: InkWell(
-                              onTap: () {
-                                //TODO: handle navigate to create online booking page
+                              onTap: () async {
+                                final clinics = await _cubit.getClinicList();
+                                if (clinics.isNotEmpty) {
+                                  final priorityClinic = clinics.first;
+                                  await _cubit.getClinicDetail(
+                                      id: priorityClinic.id);
+                                  await _cubit.initCreateDsmesBookingRequest(
+                                      locale: context.locale.languageCode);
+
+                                  DsmesNavigationMixin
+                                      .navigationKey.currentState
+                                      ?.pushNamed(
+                                          NavigatorName.dsmes_select_service,
+                                          arguments: {
+                                        'clinic': _cubit.selectedClinic,
+                                        'serviceType': DsmesAppointmentMode
+                                            .telemedicine
+                                            .toString()
+                                      });
+                                }
                               },
                               child: Container(
                                 alignment: Alignment.center,

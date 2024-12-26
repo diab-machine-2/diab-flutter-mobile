@@ -106,7 +106,7 @@ class _CalendarControllerState extends State<CalendarController> {
                             }
                           },
                           child: Container(
-                            width: 79,
+                            width: 85,
                             height: 33,
                             padding: EdgeInsets.symmetric(
                                 vertical: 8, horizontal: 6),

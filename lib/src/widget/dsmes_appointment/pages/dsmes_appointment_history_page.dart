@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
+import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/dsmes_appointment/dsmes_appointment_cubit.dart';
 import 'package:medical/src/widget/dsmes_appointment/model/dsmes_appointment_model.dart';
@@ -94,8 +95,20 @@ class _DsmesAppointmentHistoryPageState
                           DsmesAppointment data = _cubit.myAppointments[index];
                           return DsmesAppointmentItem(
                             data: data,
-                            onChooseService: () {
-                              // Handle on tap detail
+                            onChooseService: () async {
+                              await _cubit.getClinicDetail(id: data.clinicId);
+                              final appointment =
+                                  await _cubit.getDsmesAppointmentDetail(
+                                      appointmentId: data.id);
+
+                              DsmesNavigationMixin.navigationKey.currentState
+                                  ?.pushNamed(
+                                NavigatorName.dsmes_booking_detail,
+                                arguments: {
+                                  'serviceType': appointment?.mode,
+                                  'appointment': appointment
+                                },
+                              );
                             },
                             cubit: _cubit,
                           );

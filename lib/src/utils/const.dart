@@ -1,5 +1,6 @@
 class Const {
-  static const String ENVIRONMENT_DEFAULT = "staging"; //product or staging or dev
+  static const String ENVIRONMENT_DEFAULT =
+      "staging"; //product or staging or dev
 
   static const String IS_DOMAIN = "is.diab.com.vn";
   static const String IS_DOMAIN_STAGING = "is.staging.diab.com.vn";
@@ -18,7 +19,15 @@ class Const {
   static const String DOCOSAN_DOMAIN_STAGING = "api.staging.docosan.com";
 
   static const String HOST_DOCOSAN_URL = "https://$DOCOSAN_DOMAIN/";
-  static const String HOST_DOCOSAN_URL_STAGING = "https://$DOCOSAN_DOMAIN_STAGING/";
+  static const String HOST_DOCOSAN_URL_STAGING =
+      "https://$DOCOSAN_DOMAIN_STAGING/";
+
+  static const String HOST_DOCOSAN_DOMAIN = "docosan.com";
+  static const String HOST_DOCOSAN_DOMAIN_STAGING = "staging.docosan.com";
+
+  static const String HOST_DOCOSAN_DOMAIN_URL = "https://$HOST_DOCOSAN_DOMAIN";
+  static const String HOST_DOCOSAN_DOMAIN_STAGING_URL =
+      "https://$HOST_DOCOSAN_DOMAIN_STAGING";
 
   // ignore: non_constant_identifier_names
   static String API_URL = "${HOST_URL}api/";
@@ -204,4 +213,6 @@ class Const {
   static const int MAX_DAY_RANGE_DSMES_BOOKING = 30;
   static const String CLICKED_BRANCH_LINK = 'clicked_branch_link';
   static const String ORGANIZATION_API_KEY = 'organization_api_key';
+  static const String ORGANIZATION_API_KEY_VALUE = 'diab-heath-center-9a3cefac-136caaef';
+  static const int DSMES_BOOKING_TIME_WINDOW_RANGE = 10; // In minutes
 }

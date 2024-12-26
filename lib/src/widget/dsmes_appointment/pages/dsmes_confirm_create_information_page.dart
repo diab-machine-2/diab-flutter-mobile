@@ -123,8 +123,12 @@ class _DsmesConfirmCreateInformationState
                         _buildPatientInformation(),
                         GapH(12),
                         _buildConsultingInformation(),
-                        GapH(12),
-                        _buildSelectedServiceInformation(),
+                        if (widget.serviceType ==
+                            DsmesAppointmentMode.telemedicine.toString())
+                          GapH(12),
+                        if (widget.serviceType ==
+                            DsmesAppointmentMode.telemedicine.toString())
+                          _buildSelectedServiceInformation(),
                         GapH(12),
                         _buildNoticeSymptom(),
                       ],
@@ -551,8 +555,20 @@ class _DsmesConfirmCreateInformationState
                   onTap: () async {
                     _cubit.updateCreateDsmesBookingRequestSymptom(
                         symptom: symptomController.text);
-                    await DsmesNavigationMixin.navigationKey.currentState
-                        ?.popAndPushNamed(NavigatorName.dsmes_select_service,
+                    // await DsmesNavigationMixin.navigationKey.currentState
+                    //     ?.popAndPushNamed(NavigatorName.dsmes_select_service,
+                    //         arguments: {
+                    //       'serviceType': widget.serviceType,
+                    //       'clinic': _cubit.selectedClinic,
+                    //     });
+                    DsmesNavigationMixin.navigationKey.currentState?.popUntil(
+                        (route) =>
+                            route.settings.name ==
+                            NavigatorName.dsmes_select_service);
+                    // Push new arguments to existing select service page
+                    DsmesNavigationMixin.navigationKey.currentState
+                        ?.pushReplacementNamed(
+                            NavigatorName.dsmes_select_service,
                             arguments: {
                           'serviceType': widget.serviceType,
                           'clinic': _cubit.selectedClinic,

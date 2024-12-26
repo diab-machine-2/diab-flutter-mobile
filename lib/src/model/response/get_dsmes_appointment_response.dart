@@ -14,7 +14,9 @@ class GetDsmesAppointmentResponse {
   });
 
   factory GetDsmesAppointmentResponse.fromJson(Map<String, dynamic> json) {
-    final currentPage = json['attr']['pagination']['current_page'] ?? 1;
+    final currentPage =
+        int.tryParse(json['attr']['pagination']['current_page']) ?? 1;
+
     final totalPage = json['attr']['pagination']['total_page'] ?? 1;
     return GetDsmesAppointmentResponse(
       code: json['code'] ?? 0,

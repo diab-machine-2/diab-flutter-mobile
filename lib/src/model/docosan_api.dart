@@ -22,9 +22,9 @@ abstract class DocosanApi {
 
   // DSMES Booking Center
 
-  @POST("api/patients/my-appointment")
+  @GET("api/patients/my-appointment-partner")
   Future<GetDsmesAppointmentResponse> getListDsmesAppointment(
-      @Body() GetDsmesAppointmentRequest page);
+      @Query('page') int? page);
 
   @GET("api/clinics/profile")
   Future<DsmesClinicDetailResponse> getClinicDetail(
@@ -59,7 +59,7 @@ abstract class DocosanApi {
   @GET("api/clinics/profile-clinic-diab-schedule")
   Future<GetDiabClinicsScheduleResponse> getDiabClinicsSchedule();
 
-  @POST("api/payment/create-order-mobile")
+  @POST("api/payment/create-order-partner")
   Future<CreateDsmesOfflineBookingResponse> createDsmesOnlineBooking(
       @Body() CreateDsmesBookingRequest request);
 }

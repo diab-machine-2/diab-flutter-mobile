@@ -105,7 +105,7 @@ class _DsmesBookingDetailState extends State<DsmesBookingDetail> {
                     }
                   },
                   child: Container(
-                    width: 79,
+                    width: 85,
                     height: 33,
                     padding: EdgeInsets.symmetric(vertical: 8, horizontal: 6),
                     margin: EdgeInsets.fromLTRB(0, 8, 16, 8),
@@ -151,10 +151,11 @@ class _DsmesBookingDetailState extends State<DsmesBookingDetail> {
                   color: R.color.textDark,
                 ),
                 onPressed: () {
-                  DsmesNavigationMixin.navigationKey.currentState
-                      ?.popUntil((route) => route.isFirst);
                   Observable.instance.notifyObservers([],
                       notifyName: "refresh_dsmes_appointment");
+                      
+                  DsmesNavigationMixin.navigationKey.currentState
+                      ?.popUntil((route) => route.isFirst);
                 },
               ),
             ),
@@ -169,6 +170,12 @@ class _DsmesBookingDetailState extends State<DsmesBookingDetail> {
                       _buildConsultingInformation(),
                       GapH(12),
                       _buildNoticeSymptom(),
+                      if (widget.serviceType ==
+                          DsmesAppointmentMode.telemedicine.toString())
+                        GapH(12),
+                      if (widget.serviceType ==
+                          DsmesAppointmentMode.telemedicine.toString())
+                        _buildSelectedServiceInformation(),
                       GapH(12),
                       if (isCompletedAppointment() == false)
                         _buildActionButtons(),
@@ -472,6 +479,74 @@ class _DsmesBookingDetailState extends State<DsmesBookingDetail> {
     );
   }
 
+  _buildSelectedServiceInformation() {
+    if (widget.appointment.services.isEmpty) return SizedBox.shrink();
+
+    return Container(
+      padding: EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: R.color.white,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Container(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Text(
+                  R.string.consult_demand.tr().toUpperCase(),
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w700,
+                    color: R.color.color0xff141416,
+                  ),
+                ),
+              ],
+            ),
+            GapH(12),
+            Column(
+              children: [
+                ...widget.appointment.services.map((e) {
+                  final service = _cubit.selectedClinic?.serviceList.categories
+                      .expand((category) => category.data)
+                      .firstWhere((service) => service.id == e.id);
+
+                  final isLastItem = e == widget.appointment.services.last;
+
+                  return Column(
+                    children: [
+                      Row(
+                        children: [
+                          Flexible(
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 10),
+                              child: Text(
+                                service?.name ?? '',
+                                style: TextStyle(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w400,
+                                  color: R.color.color0xff111515,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      if (!isLastItem) Divider(color: R.color.color0xffE6E8EC)
+                    ],
+                  );
+                }),
+              ],
+            )
+          ],
+        ),
+      ),
+    );
+  }
+
   _buildNoticeSymptom() {
     return Container(
       padding: EdgeInsets.symmetric(vertical: 16, horizontal: 12),
@@ -573,6 +648,7 @@ class _DsmesBookingDetailState extends State<DsmesBookingDetail> {
 
                   DsmesNavigationMixin.navigationKey.currentState
                       ?.popUntil((route) => route.isFirst);
+
                   Observable.instance.notifyObservers([],
                       notifyName: "refresh_dsmes_appointment");
                 },
@@ -618,31 +694,34 @@ class _DsmesBookingDetailState extends State<DsmesBookingDetail> {
                         _cubit.initCreateDsmesBookingRequest(
                             locale: context.locale.languageCode);
                         final rescheduleRequest = CreateDsmesBookingRequest(
-                            startTime: widget.appointment.startTime,
-                            endTime: widget.appointment.endTime,
-                            clinicId: widget.appointment.clinicId,
-                            doctorId: widget.appointment.doctorId,
-                            patientPhoneNumber:
-                                widget.appointment.patientInfo.phone,
-                            patientName:
-                                widget.appointment.patientInfo.displayName,
-                            birthday: widget.appointment.patientInfo.birthday,
-                            patientGender: widget
-                                            .appointment.patientInfo.gender ==
-                                        'Nam' ||
-                                    widget.appointment.patientInfo.gender ==
-                                        'Male' ||
-                                    widget.appointment.patientInfo.gender == '1'
-                                ? 1
-                                : 0,
-                            patientEmail: widget.appointment.patientInfo.email,
-                            bookingForClinic: 1,
-                            language: context.locale.languageCode,
-                            symptom: widget.appointment.symptom,
-                            symptomAttachment: widget
-                                .appointment.symptomAttachment
-                                .map((e) => e.filePath)
-                                .toList());
+                          startTime: widget.appointment.startTime,
+                          endTime: widget.appointment.endTime,
+                          clinicId: widget.appointment.clinicId,
+                          doctorId: widget.appointment.doctorId,
+                          patientPhoneNumber:
+                              widget.appointment.patientInfo.phone,
+                          patientName:
+                              widget.appointment.patientInfo.displayName,
+                          birthday: widget.appointment.patientInfo.birthday,
+                          patientGender:
+                              widget.appointment.patientInfo.gender == 'Nam' ||
+                                      widget.appointment.patientInfo.gender ==
+                                          'Male' ||
+                                      widget.appointment.patientInfo.gender ==
+                                          '1'
+                                  ? 1
+                                  : 0,
+                          patientEmail: widget.appointment.patientInfo.email,
+                          bookingForClinic: 1,
+                          language: context.locale.languageCode,
+                          symptom: widget.appointment.symptom,
+                          symptomAttachment: widget
+                              .appointment.symptomAttachment
+                              .map((e) => e.filePath)
+                              .toList(),
+                          paymentInfo: PaymentInfo(
+                              services: widget.appointment.services),
+                        );
                         _cubit.updateCreateDsmesBookingRequest(
                             request: rescheduleRequest);
                       }
@@ -748,7 +827,11 @@ class _DsmesBookingDetailState extends State<DsmesBookingDetail> {
                     symptom: widget.appointment.symptom,
                     symptomAttachment: widget.appointment.symptomAttachment
                         .map((e) => e.filePath)
-                        .toList());
+                        .toList(),
+                    paymentInfo: PaymentInfo(
+                      paymentType: null,
+                      services: widget.appointment.services,
+                    ));
                 _cubit.updateCreateDsmesBookingRequest(
                     request: rebookingRequest);
 

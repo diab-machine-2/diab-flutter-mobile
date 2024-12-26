@@ -1,3 +1,5 @@
+import 'package:medical/src/model/request/create_dsmes_booking_request.dart';
+
 class DsmesAppointment {
   final int id;
   final String? prefix;
@@ -55,6 +57,7 @@ class DsmesAppointment {
   final int hasNote;
   final PatientInfo patientInfo;
   final List<SymptomAttachment> symptomAttachment;
+  final List<ServiceItem> services;
 
   DsmesAppointment({
     required this.id,
@@ -113,6 +116,7 @@ class DsmesAppointment {
     required this.hasNote,
     required this.patientInfo,
     required this.symptomAttachment,
+    required this.services,
   });
 
   factory DsmesAppointment.fromJson(Map<String, dynamic> json) {
@@ -180,6 +184,10 @@ class DsmesAppointment {
       patientInfo: PatientInfo.fromJson(json['patient_info'] ?? {}),
       symptomAttachment: (json['symptom_attachment'] as List?)
               ?.map((e) => SymptomAttachment.fromJson(e))
+              .toList() ??
+          [],
+      services: (json['paid_services']?['main_services']?['services'] as List?)
+              ?.map((e) => ServiceItem.fromJson(e))
               .toList() ??
           [],
     );

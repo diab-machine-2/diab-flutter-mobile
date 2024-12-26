@@ -457,33 +457,34 @@ class _DsmesClinicDetailPageState extends State<DsmesClinicDetailPage> {
                   ),
                 ],
               ),
-              GapH(12),
-              Container(
-                width: double.infinity,
-                child: Wrap(
-                  spacing: 6,
-                  runSpacing: 6,
-                  children: data.suggestion.map((e) {
-                    return Container(
-                        height: 20,
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                        decoration: BoxDecoration(
-                          color: R.color.color0xffEDEEEE,
-                          borderRadius: BorderRadius.circular(30),
-                        ),
-                        child: Text(
-                          ClinicReview.getSuggestionText(
-                              e, context.locale.languageCode),
-                          style: TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w400,
-                            color: R.color.color0xff636A6B,
+              if (data.suggestion.isNotEmpty) GapH(12),
+              if (data.suggestion.isNotEmpty)
+                Container(
+                  width: double.infinity,
+                  child: Wrap(
+                    spacing: 6,
+                    runSpacing: 6,
+                    children: data.suggestion.map((e) {
+                      return Container(
+                          height: 20,
+                          padding:
+                              EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                          decoration: BoxDecoration(
+                            color: R.color.color0xffEDEEEE,
+                            borderRadius: BorderRadius.circular(30),
                           ),
-                        ));
-                  }).toList(),
+                          child: Text(
+                            ClinicReview.getSuggestionText(
+                                e, context.locale.languageCode),
+                            style: TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w400,
+                              color: R.color.color0xff636A6B,
+                            ),
+                          ));
+                    }).toList(),
+                  ),
                 ),
-              ),
               GapH(12),
               Text(
                 data.comment,
@@ -552,11 +553,16 @@ class _DsmesClinicDetailPageState extends State<DsmesClinicDetailPage> {
           Flexible(
             flex: 1,
             child: GestureDetector(
-              onTap: () {
-                DsmesNavigationMixin.navigationKey.currentState?.pushNamed(
-                    NavigatorName.dsmes_booking_offline,
-                    arguments: {
-                      'serviceType': DsmesAppointmentMode.atClinic.toString()
+              onTap: () async {
+                await _cubit.getClinicDetail(id: widget.clinicId);
+                if (_cubit.selectedClinic == null) return;
+                _cubit.initCreateDsmesBookingRequest(
+                    locale: context.locale.languageCode);
+                await DsmesNavigationMixin.navigationKey.currentState
+                    ?.pushNamed(NavigatorName.dsmes_booking_select_date,
+                        arguments: {
+                      'serviceType': DsmesAppointmentMode.atClinic.toString(),
+                      'action': 'create',
                     });
               },
               child: Container(

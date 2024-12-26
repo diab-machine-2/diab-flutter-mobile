@@ -82,6 +82,7 @@ import 'package:medical/src/model/response/zoom_token_response.dart';
 import 'package:medical/src/model/service/api_result.dart';
 import 'package:medical/src/model/service/docosan_client.dart';
 import 'package:medical/src/model/service/network_exceptions.dart';
+import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/calendar/calendar_model.dart';
 
@@ -955,9 +956,7 @@ class AppRepository {
   Future<ApiResult<GetDsmesAppointmentResponse>> getDsmesAppointmentList(
       {int page = 1}) async {
     try {
-      final response = await docosanClient.getListDsmesAppointment(
-        GetDsmesAppointmentRequest(page: page),
-      );
+      final response = await docosanClient.getListDsmesAppointment(page);
       return ApiResult.success(data: response);
     } catch (e) {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));
@@ -1005,7 +1004,7 @@ class AppRepository {
       headers: {
         'Content-Type': 'application/json; charset=UTF-8',
         'User-Agent': 'Mobile',
-        'x-api-key': 'diab-heath-center-9a3cefac-136caaef',
+        'x-api-key': Const.ORGANIZATION_API_KEY_VALUE,
       },
     );
     if (response.statusCode == 200) {
@@ -1025,7 +1024,7 @@ class AppRepository {
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
         'User-Agent': 'Mobile',
-        'x-api-key': 'diab-heath-center-9a3cefac-136caaef',
+        'x-api-key': Const.ORGANIZATION_API_KEY_VALUE,
       },
       body: request.toJson(),
     );
@@ -1050,9 +1049,8 @@ class AppRepository {
     }
   }
 
-  Future<ApiResult<CreateDsmesOfflineBookingResponse>>
-      createDsmesOnlineBooking(
-          {required CreateDsmesBookingRequest request}) async {
+  Future<ApiResult<CreateDsmesOfflineBookingResponse>> createDsmesOnlineBooking(
+      {required CreateDsmesBookingRequest request}) async {
     try {
       final response = await docosanClient.createDsmesOnlineBooking(request);
       return ApiResult.success(data: response);
@@ -1071,9 +1069,8 @@ class AppRepository {
     }
   }
 
-  Future<ApiResult<CreateDsmesOfflineBookingResponse>>
-      rescheduleDsmesBooking(
-          {required RescheduleDsmesBookingRequest request}) async {
+  Future<ApiResult<CreateDsmesOfflineBookingResponse>> rescheduleDsmesBooking(
+      {required RescheduleDsmesBookingRequest request}) async {
     try {
       final response = await docosanClient.rescheduleDsmesAppointment(request);
       return ApiResult.success(data: response);
@@ -1092,8 +1089,8 @@ class AppRepository {
     }
   }
 
-  Future<ApiResult<GetDiabClinicsScheduleResponse>> getDiabClinicsSchedule(
-      ) async {
+  Future<ApiResult<GetDiabClinicsScheduleResponse>>
+      getDiabClinicsSchedule() async {
     try {
       final response = await docosanClient.getDiabClinicsSchedule();
       return ApiResult.success(data: response);

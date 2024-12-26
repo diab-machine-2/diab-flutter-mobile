@@ -21,19 +21,19 @@ class _DocosanApi implements DocosanApi {
   @override
   Future<GetDsmesAppointmentResponse> getListDsmesAppointment(page) async {
     const _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{r'page': page};
+    queryParameters.removeWhere((k, v) => v == null);
     final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
-    _data.addAll(page.toJson());
     final _result = await _dio.fetch<Map<String, dynamic>>(
         _setStreamType<GetDsmesAppointmentResponse>(Options(
-      method: 'POST',
+      method: 'GET',
       headers: _headers,
       extra: _extra,
     )
             .compose(
               _dio.options,
-              'api/patients/my-appointment',
+              'api/patients/my-appointment-partner',
               queryParameters: queryParameters,
               data: _data,
             )
@@ -251,7 +251,7 @@ class _DocosanApi implements DocosanApi {
     )
             .compose(
               _dio.options,
-              'api/payment/create-order-mobile',
+              'api/payment/create-order-partner',
               queryParameters: queryParameters,
               data: _data,
             )
