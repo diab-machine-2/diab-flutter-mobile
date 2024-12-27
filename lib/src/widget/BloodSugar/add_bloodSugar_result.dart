@@ -29,8 +29,7 @@ class PageAddBloodSugarResult extends StatefulWidget {
 }
 
 class _PageAddBloodSugarResultState extends State<PageAddBloodSugarResult> {
-  bool get _haveNote =>
-      _note.isNotEmpty == true || _files.isNotEmpty == true;
+  bool get _haveNote => _note.isNotEmpty == true || _files.isNotEmpty == true;
   String _aiResult = '';
 
   bool _haveEditNote = false;
@@ -49,9 +48,19 @@ class _PageAddBloodSugarResultState extends State<PageAddBloodSugarResult> {
   void _loadData() async {
     final data = widget.data;
     _files = data.files ?? [];
-    _aiResult = data.aiResult ?? '';
 
     _des = await HbA1CClient().fetchShortGuide(2);
+
+    final aiResult = await GlucoseClient()
+        .fetchGlucoseInputAnalysis(widget.data.id)
+        .catchError((e, s) {
+      TrackingManager.recordError(e, s);
+      return null;
+    });
+    _aiResult = aiResult ?? '';
+    if (mounted) {
+      setState(() {});
+    }
   }
 
   void _doComplete() async {

@@ -139,7 +139,7 @@ class _AddBloodSugarControllerNewState
     );
   }
 
-  void _navigateAfterSuccess(String id, String? aiResult) {
+  void _navigateAfterSuccess(String id) {
     // Observable.instance.notifyObservers([], notifyName: "glucose_change_data");
     int indexRange = findIndexInRanges(number, _rangeValue);
     final data = BloodSugarResultDto(
@@ -154,7 +154,6 @@ class _AddBloodSugarControllerNewState
       glucoseUnit: isMgPerDl ? R.string.mg_dl.tr() : R.string.mmol_l.tr(),
       note: _controllerNote.text,
       files: files,
-      aiResult: aiResult,
     );
     Navigator.of(context).pushReplacementNamed(NavigatorName.add_blood_sugar_result, arguments: data);
   }
@@ -563,7 +562,7 @@ class _AddBloodSugarControllerNewState
           paths);
       if (result == true) {
         // TODO: update data
-        _navigateAfterSuccess('', null);
+        _navigateAfterSuccess('');
       }
 
       BotToast.closeAllLoading();
@@ -619,15 +618,6 @@ class _AddBloodSugarControllerNewState
           fromNipro,
           paths);
       if (resultId?.isNotEmpty == true) {
-        final aiResult = await GlucoseClient().fetchGlucoseInputAnalysis(
-            selectedTimeFrame!.id!,
-            (selectedDate.millisecondsSinceEpoch ~/ 1000).toInt(),
-            number.toString(),
-            note,
-            fromNipro).catchError((e, s) {
-          TrackingManager.recordError(e, s);
-          return null;
-        });
         await TrackingManager.analytics.logEvent(
           name: 'kpi_add_success',
           parameters: {
@@ -638,7 +628,7 @@ class _AddBloodSugarControllerNewState
         );
         await HomeClient().completeSmartGoal(selectedDate, widget.goalId ?? '',
             1, ScheduleType.blood_sugar.typeIndex);
-        _navigateAfterSuccess(resultId!, aiResult?.message);
+        _navigateAfterSuccess(resultId!);
       }
 
       BotToast.closeAllLoading();

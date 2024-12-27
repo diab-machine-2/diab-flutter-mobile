@@ -10,7 +10,6 @@ import 'package:medical/src/modal/glucose/glucose_comparer.dart';
 import 'package:medical/src/modal/glucose/glucose_data_trend.dart';
 import 'package:medical/src/modal/glucose/glucose_distribution.dart';
 import 'package:medical/src/modal/glucose/glucose_input.dart';
-import 'package:medical/src/modal/glucose/glucose_input_ai_analysis.dart';
 import 'package:medical/src/modal/glucose/glucose_lesson.dart';
 import 'package:medical/src/modal/glucose/glucose_range_data.dart';
 import 'package:medical/src/modal/glucose/glucose_timeFrame.dart';
@@ -68,50 +67,40 @@ class GlucoseClient extends FetchClient {
     return null;
   }
 
-  Future<GlucoseInputAIAnalysis?> fetchGlucoseInputAnalysis(
-      String timeFrameId,
-      int date,
-      String glucoseInput,
-      String note,
-      bool byDevice,
+  Future<String?> fetchGlucoseInputAnalysis(
+    String id
   ) async {
-    bool isGestationalDiabetes = Utils.isGestationalDiabetes();
     Map<String, String> params = {
-        'timeFrameId': timeFrameId,
-        'createDate': date.toString(),
-        'unitType': AppSettings.userInfo!.glucoseUnit.toString(),
-        'glucoseInput': glucoseInput,
-        'note': note,
-        'byDevice': byDevice.toString(),
-        'thresholdType': isGestationalDiabetes ? '1' : '0',
-      };
-    final Response response = await super.postUri(
-      baseOption: true,
-      url: '/App/Glucose/InputAI',
+      'id': id,
+    };
+    final Response response = await super.fetchData(
+      url: '/App/Glucose/Analysis/Index',
       params: params,
     );
 
     if (response.statusCode == 200) {
-      final singleResponse = SingleResponse.fromJson(
+      final singleResponse = SingleResponse<String>.fromJson(
         response.data as Map<String, dynamic>,
-        GlucoseInputAIAnalysis.fromJson,
+        (json) => json as String,
       );
       return singleResponse.data;
     }
     return null;
   }
 
-  Future<GlucoseInputAIAnalysis?> fetchGlucoseAlltimeAnalysis() async {
-    final Response response = await super.postUri(
-      baseOption: true,
-      url: '/App/OpenAI/heath-chart',
-      params: {},
+  Future<String?> fetchGlucoseAlltimeAnalysis(int periodFilterType) async {
+    final Response response = await super.fetchData(
+      url: '/App/Glucose/Analysis/HealthTrend',
+      params: {
+        'periodFilterType': periodFilterType.toString(),
+        'currentDateTime': (DateTime.now().millisecondsSinceEpoch ~/ 1000).toString(),
+      },
     );
 
     if (response.statusCode == 200) {
       final singleResponse = SingleResponse.fromJson(
         response.data as Map<String, dynamic>,
-        GlucoseInputAIAnalysis.fromJson,
+        (json) => json as String,
       );
       return singleResponse.data;
     }

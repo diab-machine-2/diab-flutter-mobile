@@ -5,10 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
-import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/bloc/glucose/glucose_bloc.dart';
 import 'package:medical/src/modal/glucose/glucose_data_trend.dart';
-import 'package:medical/src/repo/glucose/glucose_client.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/BloodSugar/bloodSugar_detail_tabbar.dart';
 import 'package:medical/src/widget/BloodSugar/widget/action_list_filter_trend.dart';
@@ -17,11 +15,7 @@ import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/modal/glucose/glucose_trend.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:medical/src/widget/helper/tracking_manager.dart';
-import 'package:medical/src/widgets/empty_data_box.dart';
 import 'package:visibility_detector/visibility_detector.dart';
-
-import '../blood_sugar_functions.dart';
 
 class BloodSugarChart extends StatefulWidget {
   BloodSugarChart({Key? key, required this.periodFilterType}) : super(key: key);
@@ -59,7 +53,6 @@ class BloodSugarChartState extends State<BloodSugarChart>
     super.initState();
     periodFilterType =
         BloodSugarDetailTabbarController.of(context)?.periodFilterType ?? widget.periodFilterType;
-    _loadAISuggestion();
     _subscription = _bloc.stream.listen((state) async {
       if (state is GlucoseTrendLoaded) {
         _subscription?.cancel();
@@ -85,21 +78,6 @@ class BloodSugarChartState extends State<BloodSugarChart>
     super.dispose();
   }
 
-  void _loadAISuggestion() async {
-    try {
-      // TODO: Not working
-      final res = await GlucoseClient().fetchGlucoseAlltimeAnalysis();
-      if (res != null) {
-        _aiSuggestion = res.message;
-        if (mounted) {
-          setState(() {});
-        }
-      }
-    } catch (e) {
-      debugPrint('error: $e');
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     super.build(context);
@@ -122,8 +100,10 @@ class BloodSugarChartState extends State<BloodSugarChart>
           if (state is GlucoseError) {
             Message.showToastMessage(context, state.message);
           }
+          String? aiSuggestion;
           if (state is GlucoseTrendLoaded) {
             model = state.trend;
+            aiSuggestion = state.glucoseInputAIAnalysis;
           }
 
           return model == null
@@ -141,7 +121,8 @@ class BloodSugarChartState extends State<BloodSugarChart>
                     children: [
                       _sectionTrending(model),
                       const SizedBox(height: 16),
-                      if (_aiSuggestion?.isNotEmpty == true) _sectionAIHelp(),
+                      if (aiSuggestion?.isNotEmpty == true)
+                        _sectionAIHelp(),
                     ],
                   ),
                 );
@@ -300,154 +281,6 @@ class BloodSugarChartState extends State<BloodSugarChart>
         ],
       ),
     );
-  }
-
-  Widget build1(BuildContext context) {
-    super.build(context);
-    // final width = MediaQuery.of(context).size.width;
-    // final height = 37.0;
-    return BlocProvider<GlucoseBloc>(
-        create: (context) => GlucoseBloc(),
-        child: BlocBuilder<GlucoseBloc, GlucoseState>(
-            builder: (BuildContext context, GlucoseState state) {
-          currentContext = context;
-          TrendDataModel? model;
-
-          if (state is GlucoseInitial) {
-            BlocProvider.of<GlucoseBloc>(context).add(FetchTrendGlucose(
-                trendType: trendTypeIndex.toString(),
-                currentDateTime: (DateTime.now().millisecondsSinceEpoch ~/ 1000).toString(),
-                periodFilterType: periodFilterType.toString(),
-                page: '1'));
-          }
-          if (state is GlucoseError) {
-            Message.showToastMessage(context, state.message);
-          }
-          if (state is GlucoseTrendLoaded) {
-            model = state.trend;
-          }
-
-          return model == null
-              ? Container(height: 100, child: Center(child: CircularProgressIndicator()))
-              : VisibilityDetector(
-                  key: Key('blood_sugar_chart'),
-                  onVisibilityChanged: (visibilityInfo) {
-                    var visiblePercentage = visibilityInfo.visibleFraction * 100;
-                    if (visiblePercentage == 0) {
-                      previousDate = 0;
-                    }
-                  },
-                  child: Padding(
-                    padding: EdgeInsets.all(18),
-                    child: Column(
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Row(
-                              children: [
-                                Text(R.string.blood_sugar_trend.tr(),
-                                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600)),
-                              ],
-                            ),
-                            Container(
-                                decoration: BoxDecoration(
-                                    color: R.color.white,
-                                    borderRadius: BorderRadius.circular(200.0),
-                                    border: Border.all(color: R.color.grayBorder)),
-                                child: GestureDetector(
-                                  onTap: () {
-                                    showActionTrendFilter(context);
-                                  },
-                                  child: Align(
-                                      alignment: Alignment.center,
-                                      child: Container(
-                                        color: R.color.transparent,
-                                        padding: const EdgeInsets.only(
-                                            top: 4, bottom: 4, left: 12, right: 8),
-                                        child: Row(
-                                          children: [
-                                            Text(
-                                                trendType != null ? trendType! : R.string.all.tr()),
-                                            SizedBox(width: 4),
-                                            Image.asset(R.drawable.ic_chevron_down,
-                                                width: 24, height: 24)
-                                          ],
-                                        ),
-                                      )),
-                                )),
-                          ],
-                        ),
-                        SizedBox(height: 23),
-                        model.trendItems.items.length == 0
-                            ? EmptyDataBox(
-                                text: "chỉ số đường huyết",
-                                onTap: () async {
-                                  await TrackingManager.analytics
-                                      .logEvent(name: 'cta_button_clicked', parameters: {
-                                    "screen_name": 'kpi_glycemic',
-                                    'cta_button_name': 'cta_add_glycemic_1',
-                                  });
-                                  if (AppSettings.isUS) {
-                                    Navigator.pushNamed(context, NavigatorName.add_blood_sugar_new,
-                                        arguments: {'type': 'input'});
-                                  } else {
-                                    BloodSugarFunctions.showModalAddData(context);
-                                  }
-                                  // Navigator.pushNamed(
-                                  //     context, NavigatorName.add_blood_sugar,
-                                  //     arguments: {'type': 'input', 'id': null});
-                                },
-                              )
-                            : Container(
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(16),
-                                  color: R.color.white,
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: R.color.grey.withOpacity(0.5),
-                                      spreadRadius: 1,
-                                      blurRadius: 7,
-                                      offset: Offset(0, 2), // changes position of shadow
-                                    ),
-                                  ],
-                                ),
-                                //padding: EdgeInsets.all(16),
-                                child: Column(children: [
-                                  //SizedBox(height: 32),
-                                  _buildChart(model),
-
-                                  GestureDetector(
-                                    onTap: () {
-                                      Navigator.pushNamed(context, NavigatorName.blood_sugar_table,
-                                          arguments: {
-                                            'title': trendType,
-                                            'timeFrameType': trendTypeIndex,
-                                            'periodFilterType': periodFilterType,
-                                            'glucoseDistributionType': null
-                                          });
-                                    },
-                                    child: Container(
-                                      color: R.color.transparent,
-                                      child: Row(
-                                          mainAxisAlignment: MainAxisAlignment.center,
-                                          children: [
-                                            Text(R.string.xem_chi_tiet.tr(),
-                                                style: TextStyle(color: R.color.mainColor)),
-                                            Image.asset(R.drawable.ic_arrow_right,
-                                                width: 20, height: 20)
-                                          ]),
-                                    ),
-                                  ),
-                                  SizedBox(
-                                    height: 16,
-                                  )
-                                ])),
-                      ],
-                    ),
-                  ),
-                );
-        }));
   }
 
   Widget _buildChart(TrendDataModel model) {
