@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
+import 'package:medical/src/modal/glucose/glucose_faq.dart';
 
 class FirebaseRemoteSetting {
   FirebaseRemoteSetting._privateConstructor();
@@ -16,6 +17,18 @@ class FirebaseRemoteSetting {
   late bool _activePopupHealthConnect; //ACTIVE_POPUP_HEALTH_CONNECT
   late String _linkStoreNavigation;
   String? _utilitiesOrder;
+  List<GlucoseFaq> _glucoseFaqs = [
+    GlucoseFaq(
+      title: 'Nâng Cấp Máy Đo Đường Huyết Tại Bệnh Viện Đồng Nai -2: Cơ Hội Tiết Kiệm 200.000đ Và Chăm Sóc Sức Khỏe Toàn Diện',
+      linkTitle: 'Xem chương trình Thu cũ đổi mới của DiaB',
+      url: 'https://diab.com.vn/nang-cap-may-do-duong-huyet-tai-benh-vien-dong-nai-2-co-hoi-tiet-kiem-200-000d-va-cham-soc-suc-khoe-toan-dien/',
+    ),
+    GlucoseFaq(
+      title: 'Tìm hiểu lợi ích của máy đo đường huyết có kết nối với ứng dụng DiaB',
+      linkTitle: 'Tìm hiểu về lợi ích máy đo đường huyết có kết nối với ứng dụng DiaB',
+      url: 'https://diab.com.vn/tim-hieu-loi-ich-cua-may-do-duong-huyet-co-ket-noi-voi-ung-dung-diab/',
+    ),
+  ];
   bool? _appDeveloperMode = false;
 
   String get appStoreVersion => _appStoreVersion;
@@ -28,6 +41,7 @@ class FirebaseRemoteSetting {
   String get linkStoreNavigation => _linkStoreNavigation;
   bool get appDeveloperMode => _appDeveloperMode ?? false;
   String? get utilitiesOrder => _utilitiesOrder;
+  List<GlucoseFaq> get glucoseFaqs => _glucoseFaqs;
 
   Future<void> init({Duration timeout = const Duration(seconds: 10)}) async {
     // Get local settings
@@ -48,6 +62,7 @@ class FirebaseRemoteSetting {
           bool.parse(localSetting["APP_DEVELOPER_MODE"] ?? "true"),
       "UTILITIES_ORDER":
           localSetting["UTILITIES_ORDER"] ?? "thiet-lap-muc-tieu,lich-do-duong-huyet,tu-van-bac-si,thuc-don-mau,ket-noi-thiet-bi,lich-uong-thuoc,moi-ban-be",
+      "GLUCOSE_FAQS": jsonEncode(_glucoseFaqs.map((faq) => faq.toJson()).toList()),
     });
     // Config timeout for remoteConfig
     await remoteConfig.setConfigSettings(RemoteConfigSettings(
@@ -84,5 +99,10 @@ class FirebaseRemoteSetting {
     _linkStoreNavigation = remoteConfig.getString('LINKSTORE_NAVIGATION_URL');
     _appDeveloperMode = remoteConfig.getBool('APP_DEVELOPER_MODE');
     _utilitiesOrder = remoteConfig.getString('UTILITIES_ORDER');
+    if (remoteConfig.getString('GLUCOSE_FAQS').isNotEmpty == true) {
+      _glucoseFaqs = (jsonDecode(remoteConfig.getString('GLUCOSE_FAQS')) as List<dynamic>)
+                        .map((item) => GlucoseFaq.fromJson(item as Map<String, dynamic>))
+                        .toList();
+    }
   }
 }

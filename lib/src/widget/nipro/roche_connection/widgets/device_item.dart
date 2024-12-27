@@ -34,29 +34,18 @@ class DeviceItemWidget extends StatelessWidget {
         }
       },
       child: Container(
-        padding: EdgeInsets.all(13),
+        padding: EdgeInsets.all(12),
         child: Row(
           children: [
             Expanded(
               child: Row(
                 children: [
-                  Container(
-                    height: 96,
-                    width: 96,
-                    padding: EdgeInsets.all(13),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(
-                        color: Color(0xffF2F2F2),
-                      ),
-                    ),
-                    child: Image.asset(
-                      deviceInfo.image,
-                      height: 100,
-                      width: 100,
-                    ),
+                  Image.asset(
+                    deviceInfo.image,
+                    height: 72,
+                    width: 72,
                   ),
-                  SizedBox(width: 15),
+                  SizedBox(width: 12),
                   Expanded(
                     child: Text(
                       deviceInfo.name,
