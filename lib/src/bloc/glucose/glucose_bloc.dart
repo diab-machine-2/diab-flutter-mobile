@@ -85,6 +85,7 @@ class GlucoseBloc extends Bloc<GlucoseEvent, GlucoseState> {
       yield GlucoseLoading();
       final model = await client.fetchGlucoseTrend(
           timeFrameId, currentDateTime, periodFilterType, page);
+      yield GlucoseTrendLoaded(trend: model);
       final glucoseInputAIAnalysis = await client.fetchGlucoseAlltimeAnalysis(int.parse(periodFilterType!));
       yield GlucoseTrendLoaded(trend: model, glucoseInputAIAnalysis: glucoseInputAIAnalysis);
     } catch (e, _) {

@@ -79,9 +79,8 @@ class GlucoseClient extends FetchClient {
     );
 
     if (response.statusCode == 200) {
-      final singleResponse = SingleResponse<String>.fromJson(
+      final singleResponse = SingleResponse.fromJsonTypeString(
         response.data as Map<String, dynamic>,
-        (json) => json as String,
       );
       return singleResponse.data;
     }
@@ -98,9 +97,8 @@ class GlucoseClient extends FetchClient {
     );
 
     if (response.statusCode == 200) {
-      final singleResponse = SingleResponse.fromJson(
+      final singleResponse = SingleResponse.fromJsonTypeString(
         response.data as Map<String, dynamic>,
-        (json) => json as String,
       );
       return singleResponse.data;
     }

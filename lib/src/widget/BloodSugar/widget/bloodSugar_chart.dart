@@ -46,8 +46,6 @@ class BloodSugarChartState extends State<BloodSugarChart>
   int minXIndex = 0;
   int maxXIndex = 0;
 
-  String? _aiSuggestion;
-
   @override
   void initState() {
     super.initState();
@@ -121,8 +119,7 @@ class BloodSugarChartState extends State<BloodSugarChart>
                     children: [
                       _sectionTrending(model),
                       const SizedBox(height: 16),
-                      if (aiSuggestion?.isNotEmpty == true)
-                        _sectionAIHelp(),
+                      if (aiSuggestion?.isNotEmpty == true) _sectionAIHelp(aiSuggestion!),
                     ],
                   ),
                 );
@@ -207,7 +204,7 @@ class BloodSugarChartState extends State<BloodSugarChart>
     );
   }
 
-  Widget _sectionAIHelp() {
+  Widget _sectionAIHelp(String aiSuggestion) {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -241,7 +238,7 @@ class BloodSugarChartState extends State<BloodSugarChart>
           ),
           const SizedBox(height: 8),
           Text(
-            _aiSuggestion ?? '',
+            aiSuggestion,
             style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w400,
@@ -284,10 +281,8 @@ class BloodSugarChartState extends State<BloodSugarChart>
   }
 
   Widget _buildChart(TrendDataModel model) {
-    int length = 0;
     List<TrendModel> trends = [];
     model.trendItems.items.forEach((element) {
-      length += element.subTrends.length;
       trends.addAll(element.subTrends);
     });
 
@@ -315,7 +310,7 @@ class BloodSugarChartState extends State<BloodSugarChart>
     return Padding(
       padding: EdgeInsets.only(top: 32),
       child: SingleChildScrollView(
-        reverse: length > 1,
+        reverse: trends.length > 1,
         scrollDirection: Axis.horizontal,
         child: Stack(
           children: [
@@ -325,89 +320,100 @@ class BloodSugarChartState extends State<BloodSugarChart>
               height: 100,
               padding: EdgeInsets.only(top: 8, bottom: 8),
               alignment: Alignment.center,
-              child: LineChart(
-                LineChartData(
-                  lineTouchData: LineTouchData(
-                      // getTouchLineStart: (barData, index) =>
-                      //     -double.infinity, // default: from bottom
-                      // getTouchLineEnd: (barData, index) => double.infinity, //to top
-                      getTouchedSpotIndicator: (LineChartBarData barData, List<int> spotIndexes) {
-                        return spotIndexes.map((index) {
-                          return TouchedSpotIndicatorData(
-                            FlLine(color: toColor(trends[index].color), strokeWidth: 0.5),
-                            FlDotData(
-                              show: true,
-                              getDotPainter: (spot, percent, barData, index) => FlDotCirclePainter(
-                                radius: 6.5,
-                                color: toColor(trends[index].color),
-                                strokeWidth: 18,
-                                strokeColor: toColor(trends[index].color).withOpacity(0.3),
-                              ),
+              child: trends.length == 1
+                  ? Container(
+                      width: 18,
+                      height: 18,
+                      decoration: BoxDecoration(
+                        color: toColor(trends[0].color).withOpacity(0.3),
+                        shape: BoxShape.circle,
+                      ),
+                      alignment: Alignment.center,
+                      child: Container(
+                        width: 6,
+                        height: 6,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: toColor(trends[0].color),
+                        ),
+                      ),
+                    )
+                  : LineChart(
+                      LineChartData(
+                        lineTouchData: LineTouchData(
+                            getTouchLineStart: (barData, index) =>
+                                -double.infinity, // default: from bottom
+                            getTouchLineEnd: (barData, index) => double.infinity, // to top
+                            getTouchedSpotIndicator:
+                                (LineChartBarData barData, List<int> spotIndexes) {
+                              return spotIndexes.map((index) {
+                                return TouchedSpotIndicatorData(
+                                  FlLine(color: toColor(trends[index].color), strokeWidth: 0.5),
+                                  FlDotData(
+                                    show: true,
+                                    getDotPainter: (spot, percent, barData, index) =>
+                                        FlDotCirclePainter(
+                                      radius: 6.5,
+                                      color: toColor(trends[index].color),
+                                      strokeWidth: 18,
+                                      strokeColor: toColor(trends[index].color).withOpacity(0.3),
+                                    ),
+                                  ),
+                                );
+                              }).toList();
+                            },
+                            touchTooltipData: LineTouchTooltipData(
+                              showOnTopOfTheChartBoxArea: true,
+                              fitInsideHorizontally: true,
+                              fitInsideVertically: true,
+                              tooltipBgColor: R.color.transparent,
+                              tooltipRoundedRadius: 8,
+                              getTooltipItems: (List<LineBarSpot> lineBarsSpot) {
+                                return lineBarsSpot.map((lineBarSpot) {
+                                  return LineTooltipItem(
+                                    lineBarSpot.y.round() == lineBarSpot.y
+                                        ? lineBarSpot.y.round().toString()
+                                        : lineBarSpot.y.toString(),
+                                    TextStyle(
+                                        color: toColor(trends[lineBarSpot.spotIndex].color),
+                                        fontWeight: FontWeight.bold),
+                                  );
+                                }).toList();
+                              },
+                              // TODO: Check position tooltip
+                              tooltipPadding: EdgeInsets.only(bottom: 50),
                             ),
-                          );
-                        }).toList();
-                      },
-                      touchTooltipData: LineTouchTooltipData(
-                        showOnTopOfTheChartBoxArea: true,
-                        fitInsideHorizontally: true,
-                        fitInsideVertically: true,
-                        tooltipBgColor: R.color.transparent,
-                        tooltipRoundedRadius: 8,
-                        getTooltipItems: (List<LineBarSpot> lineBarsSpot) {
-                          return lineBarsSpot.map((lineBarSpot) {
-                            return LineTooltipItem(
-                              lineBarSpot.y.round() == lineBarSpot.y
-                                  ? lineBarSpot.y.round().toString()
-                                  : lineBarSpot.y.toString(),
-                              TextStyle(
-                                  color: toColor(trends[lineBarSpot.spotIndex].color),
-                                  fontWeight: FontWeight.bold),
-                            );
-                          }).toList();
-                        },
-                        // TODO: Check position tooltip
-                        tooltipPadding: EdgeInsets.only(bottom: 50),
+                            touchCallback: (FlTouchEvent event, LineTouchResponse? lineTouch) {
+                              previousDate = 0;
+                              if (lineTouch?.lineBarSpots?.length == 1 &&
+                                  event is! FlLongPressEnd &&
+                                  event is! FlPanEndEvent) {
+                                final value = lineTouch?.lineBarSpots?[0].x;
+                                if (value != null) {
+                                  //    setState(() {
+                                  touchIndex = value.toInt();
+                                  //    });
+                                }
+                              } else {
+                                touchIndex = -1;
+                              }
+                            }),
+                        gridData: FlGridData(show: false),
+                        titlesData: FlTitlesData(
+                          rightTitles: SideTitles(showTitles: false),
+                          topTitles: SideTitles(showTitles: false),
+                          bottomTitles: SideTitles(showTitles: false),
+                          leftTitles: SideTitles(showTitles: false),
+                        ),
+                        borderData: FlBorderData(show: false),
+                        minX: 0,
+                        maxX: trends.length.toDouble() - 1,
+                        maxY: maxY,
+                        minY: minY,
+                        lineBarsData: _linesBarData(trends),
                       ),
-                      touchCallback: (FlTouchEvent event, LineTouchResponse? lineTouch) {
-                        previousDate = 0;
-                        if (lineTouch?.lineBarSpots?.length == 1 &&
-                            event is! FlLongPressEnd &&
-                            event is! FlPanEndEvent) {
-                          final value = lineTouch?.lineBarSpots?[0].x;
-                          if (value != null) {
-                            //    setState(() {
-                            touchIndex = value.toInt();
-                            //    });
-                          }
-                        } else {
-                          touchIndex = -1;
-                        }
-                      }),
-                  gridData: FlGridData(show: false),
-                  extraLinesData: ExtraLinesData(
-                    horizontalLines: [
-                      HorizontalLine(
-                        y: 180,
-                        color: Color(0xFFC82221),
-                        dashArray: [4, 4],
-                      ),
-                    ],
-                  ),
-                  titlesData: FlTitlesData(
-                    rightTitles: SideTitles(showTitles: false),
-                    topTitles: SideTitles(showTitles: false),
-                    bottomTitles: SideTitles(showTitles: false),
-                    leftTitles: SideTitles(showTitles: false),
-                  ),
-                  borderData: FlBorderData(show: false),
-                  minX: 0,
-                  maxX: length.toDouble(),
-                  maxY: maxY,
-                  minY: minY,
-                  lineBarsData: _linesBarData(model),
-                ),
-                swapAnimationDuration: Duration(milliseconds: 250),
-              ),
+                      swapAnimationDuration: Duration(milliseconds: 250),
+                    ),
             ),
           ],
         ),
@@ -415,12 +421,7 @@ class BloodSugarChartState extends State<BloodSugarChart>
     );
   }
 
-  List<LineChartBarData> _linesBarData(TrendDataModel model) {
-    List<TrendModel> trends = [];
-    model.trendItems.items.forEach((item) {
-      trends.addAll(item.subTrends);
-    });
-
+  List<LineChartBarData> _linesBarData(List<TrendModel> trends) {
     return trends.length == 0
         ? []
         : [
@@ -428,9 +429,9 @@ class BloodSugarChartState extends State<BloodSugarChart>
               spots: List.generate(trends.length, (index) {
                 return FlSpot((index).toDouble(), trends[index].glucose!);
               }),
-              isCurved: false,
+              isCurved: true,
               colors: [Color(0xFF008479)],
-              barWidth: 1,
+              barWidth: 2,
               isStrokeCapRound: true,
               dotData: FlDotData(
                 show: true,
