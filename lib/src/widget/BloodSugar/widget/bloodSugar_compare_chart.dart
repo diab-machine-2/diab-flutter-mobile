@@ -142,6 +142,9 @@ class BloodSugarCompareChartState extends State<BloodSugarCompareChart>
     List<int> number =
         List.generate(5, (index) => (jumpValue * index + minY).round()).reversed.toList();
 
+    final double titleAlign = 20;
+    final double titleMargin = 8;
+
     return Padding(
       padding: EdgeInsets.only(right: 18, left: 8),
       child: Column(
@@ -152,6 +155,7 @@ class BloodSugarCompareChartState extends State<BloodSugarCompareChart>
               Container(
                 width: 30,
                 height: 300,
+                padding: EdgeInsets.only(bottom: titleAlign + titleMargin),
                 child: Column(
                     crossAxisAlignment: CrossAxisAlignment.end,
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -167,6 +171,7 @@ class BloodSugarCompareChartState extends State<BloodSugarCompareChart>
                     children: [
                       Container(
                           height: 300,
+                          padding: EdgeInsets.only(bottom: titleAlign + titleMargin),
                           child: Column(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: List.generate(
@@ -237,8 +242,8 @@ class BloodSugarCompareChartState extends State<BloodSugarCompareChart>
                                     color: R.color.black,
                                     fontSize: 14,
                                     fontWeight: FontWeight.normal),
-                                reservedSize: -16,
-                                margin: 16,
+                                reservedSize: titleAlign,
+                                margin: titleMargin,
                                 getTitles: (double value) {
                                   return convertToUTC(model[value.toInt()].date!, 'dd/MM');
                                 },
@@ -265,7 +270,6 @@ class BloodSugarCompareChartState extends State<BloodSugarCompareChart>
               )
             ],
           ),
-          SizedBox(height: 20),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [

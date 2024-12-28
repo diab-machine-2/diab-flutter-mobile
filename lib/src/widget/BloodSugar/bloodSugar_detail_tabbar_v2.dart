@@ -85,6 +85,12 @@ class _BloodSugarDetailTabbarControllerState extends State<BloodSugarDetailTabba
     super.dispose();
   }
 
+  void _doReloadData(int periodFilterType) {
+    sugarChartKey.currentState?.reloadData(periodFilterType);
+    sugarDetailKey.currentState?.reloadData(periodFilterType);
+    sugarCompareKey.currentState?.reloadData(periodFilterType);
+  }
+
   void _navigateToLessonDetail(String id, int type) async {
     ActivityListTracking.clickLessonItem(
       objectId: id,
@@ -333,6 +339,7 @@ class _BloodSugarDetailTabbarControllerState extends State<BloodSugarDetailTabba
                   name = value;
                   periodFilterType = index + 1;
                 });
+                _doReloadData(periodFilterType);
               }
             }));
   }
