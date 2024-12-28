@@ -232,7 +232,6 @@ class FoodTrendChartTabViewState extends State<FoodTrendChartTabView>
                                       return '';
                                     } else {
                                       final dateTime = DateTime.fromMillisecondsSinceEpoch(date * 1000);
-                                      print('duc2111 dateTime.hour = ${dateTime.hour}, date = $date');
                                       if(dateTime.hour > 0 && dateTime.hour < 7){
                                         return convertToGMT0(date, 'dd/MM');
                                       } else {

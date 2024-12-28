@@ -10,6 +10,7 @@ import 'package:medical/src/modal/glucose/glucose_comparer.dart';
 import 'package:medical/src/modal/glucose/glucose_data_trend.dart';
 import 'package:medical/src/modal/glucose/glucose_distribution.dart';
 import 'package:medical/src/modal/glucose/glucose_input.dart';
+import 'package:medical/src/modal/glucose/glucose_lesson.dart';
 import 'package:medical/src/modal/glucose/glucose_range_data.dart';
 import 'package:medical/src/modal/glucose/glucose_timeFrame.dart';
 import 'package:medical/src/model/response/base/response.dart';
@@ -49,6 +50,57 @@ class GlucoseClient extends FetchClient {
         GlucoseColorConfig.fromJson,
       );
       return listResponse.data;
+    }
+    return null;
+  }
+
+  Future<List<GlucoseLesson>?> fetchGlucoseLessons() async {
+    final Response response = await super.fetchData(url: '/App/Lesson/LessonSupport', params: {});
+
+    if (response.statusCode == 200) {
+      final listResponse = ListResponse.fromJson(
+        response.data as Map<String, dynamic>,
+        GlucoseLesson.fromJson,
+      );
+      return listResponse.data;
+    }
+    return null;
+  }
+
+  Future<String?> fetchGlucoseInputAnalysis(
+    String id
+  ) async {
+    Map<String, String> params = {
+      'id': id,
+    };
+    final Response response = await super.fetchData(
+      url: '/App/Glucose/Analysis/Index',
+      params: params,
+    );
+
+    if (response.statusCode == 200) {
+      final singleResponse = SingleResponse.fromJsonTypeString(
+        response.data as Map<String, dynamic>,
+      );
+      return singleResponse.data;
+    }
+    return null;
+  }
+
+  Future<String?> fetchGlucoseAlltimeAnalysis(int periodFilterType) async {
+    final Response response = await super.fetchData(
+      url: '/App/Glucose/Analysis/HealthTrend',
+      params: {
+        'periodFilterType': periodFilterType.toString(),
+        'currentDateTime': (DateTime.now().millisecondsSinceEpoch ~/ 1000).toString(),
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final singleResponse = SingleResponse.fromJsonTypeString(
+        response.data as Map<String, dynamic>,
+      );
+      return singleResponse.data;
     }
     return null;
   }
@@ -222,7 +274,7 @@ class GlucoseClient extends FetchClient {
   }
   //============ nhập chỉ số Đường huyết =============/
 
-  Future<bool> postIndexGlucose(
+  Future<String?> postIndexGlucose(
       String? timeFrameId,
       int date,
       String glucoseInput,
@@ -248,7 +300,9 @@ class GlucoseClient extends FetchClient {
           .postHttp(path: '/App/Glucose/Input', params: params, files: files);
 
       if (response.statusCode == 200) {
-        return true;
+        final data = await response.stream.bytesToString();
+        final jsonData = jsonDecode(data);
+        return jsonData['data']?['id'];
       } else {
         throw response.reasonPhrase!;
       }

@@ -48,5 +48,15 @@ class GlucoseAlllLoaded extends GlucoseState {
 
 class GlucoseTrendLoaded extends GlucoseState {
   final TrendDataModel trend;
-  GlucoseTrendLoaded({required this.trend});
+  final String? glucoseInputAIAnalysis;
+  GlucoseTrendLoaded({required this.trend, this.glucoseInputAIAnalysis});
+
+  GlucoseTrendLoaded copyWith({
+    TrendDataModel? trend,
+    String? glucoseInputAIAnalysis,
+  }) {
+    return GlucoseTrendLoaded(
+        trend: trend ?? this.trend,
+        glucoseInputAIAnalysis: glucoseInputAIAnalysis ?? this.glucoseInputAIAnalysis);
+  }
 }

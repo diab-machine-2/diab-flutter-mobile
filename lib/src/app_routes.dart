@@ -5,8 +5,12 @@ import 'package:medical/src/widget/my_plan_screens/activity_tab/create_goal/crea
 import 'package:medical/src/widget/utilities/utilities_page.dart';
 
 import 'utils/navigator_name.dart';
+import 'widget/BloodSugar/add_bloodSugar_result.dart';
+import 'widget/BloodSugar/bloodSugar_result.dto.dart';
 import 'widget/Food/daily_nutrition/daily_nutrition.dart';
 import 'widget/food_menu_screens/food_menu/food_menu.dart';
+import 'widget/glucose_intro/glucose_intro_1st_page.dart';
+import 'widget/glucose_intro/glucose_intro_2nd_page.dart';
 import 'widget/home/schema/home_schema.dart';
 import 'widget/tabbar/tabbar_v2.dart';
 
@@ -60,6 +64,15 @@ class AppRoutes {
           page = MeetingPreparePage();
           break;
         }
+      case NavigatorName.add_blood_sugar_result:
+        page = PageAddBloodSugarResult(data: settings.arguments as BloodSugarResultDto);
+        break;
+      case NavigatorName.glucose_intro_1st_page:
+        page = GlucoseIntro1stPage();
+        break;
+      case NavigatorName.glucose_intro_2nd_page:
+        page = GlucoseIntro2ndPage();
+        break;
       default:
         break;
     }
