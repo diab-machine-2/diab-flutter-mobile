@@ -584,13 +584,13 @@ class _AddBloodSugarControllerNewState
       removeIDs.clear();
       removeIDs.addAll(data.removeIDs);
     }
-    await TrackingManager.analytics.logEvent(
-      name: 'cta_button_clicked',
-      parameters: {
-        "screen_name": 'kpi_glycemic_add',
-        'cta_button_name': 'cta_save_glycemic',
-      },
-    );
+    // await TrackingManager.analytics.logEvent(
+    //   name: 'cta_button_clicked',
+    //   parameters: {
+    //     "screen_name": 'kpi_glycemic_add',
+    //     'cta_button_name': 'cta_save_glycemic',
+    //   },
+    // );
     FocusScope.of(context).unfocus();
     final note = _controllerNote.text;
 
@@ -618,12 +618,12 @@ class _AddBloodSugarControllerNewState
           fromNipro,
           paths);
       if (resultId?.isNotEmpty == true) {
-        await TrackingManager.analytics.logEvent(
-          name: 'kpi_add_success',
-          parameters: {
-            "screen_name": 'kpi_glycemic_add',
-            'object_type': 'kpi_glycemic',
-            'object_title': 'Chỉ số đường huyết'
+        await TrackingManager.trackEvent(
+          'glucose_add',
+          'kpi_glucose_add',
+          params: {
+            'index_time': selectedTimeFrame?.name,
+            'method': fromNipro ? 'device' : 'manual',
           },
         );
         await HomeClient().completeSmartGoal(selectedDate, widget.goalId ?? '',
@@ -1452,11 +1452,11 @@ class _AddBloodSugarControllerNewState
   }
 
   void _onTapDateTime() async {
-    await TrackingManager.analytics
-        .logEvent(name: 'component_clicked', parameters: {
-      "screen_name": 'kpi_glycemic_add',
-      'component_name': 'date_picker_glycemic',
-    });
+    // await TrackingManager.analytics
+    //     .logEvent(name: 'component_clicked', parameters: {
+    //   "screen_name": 'kpi_glycemic_add',
+    //   'component_name': 'date_picker_glycemic',
+    // });
 
     showDialog(
       barrierColor: R.color.color0xff003F38.withOpacity(0.5),

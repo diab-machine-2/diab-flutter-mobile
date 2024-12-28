@@ -12,7 +12,6 @@ import 'package:medical/src/widget/components/samples/pie_chart/samples/indicato
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widgets/empty_data_box.dart';
 
 class BloodSugarDetail extends StatefulWidget {
@@ -140,11 +139,11 @@ class BloodSugarDetailState extends State<BloodSugarDetail>
                       ? EmptyDataBox(
                           text: "chỉ số đường huyết",
                           onTap: () async {
-                            await TrackingManager.analytics
-                                .logEvent(name: 'cta_button_clicked', parameters: {
-                              "screen_name": 'kpi_glycemic',
-                              'cta_button_name': 'cta_add_glycemic_0',
-                            });
+                            // await TrackingManager.analytics
+                            //     .logEvent(name: 'cta_button_clicked', parameters: {
+                            //   "screen_name": 'kpi_glycemic',
+                            //   'cta_button_name': 'cta_add_glycemic_0',
+                            // });
                             if (AppSettings.isUS) {
                               Navigator.pushNamed(context, NavigatorName.add_blood_sugar_new,
                                   arguments: {'type': 'input'});

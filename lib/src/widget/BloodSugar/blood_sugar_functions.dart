@@ -67,6 +67,14 @@ class BloodSugarFunctions {
       );
     }
 
+    TrackingManager.analytics.logEvent(
+      name: 'glucose_add_start',
+      parameters: {
+        "screen_name": 'kpi_glucose',
+        'cta_button_name': 'cta_add_glucose',
+      },
+    );
+
      showModalBottomSheet(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(16))),
       backgroundColor: Colors.white,
@@ -124,6 +132,13 @@ class BloodSugarFunctions {
                     'Tự động nhập chỉ số một cách nhanh chóng và chính xác.',
                     R.drawable.im_glucose_input_device,
                     () {
+                      TrackingManager.analytics.logEvent(
+                        name: 'glucose_select_method',
+                        parameters: {
+                          "screen_name": 'kpi_glucose',
+                          'method': 'device',
+                        },
+                      );
                       Navigator.pop(context);
                       if (popPrevious) {
                         Navigator.pop(context);
@@ -137,6 +152,13 @@ class BloodSugarFunctions {
                     'Nhập chỉ số đường huyết của bạn bằng cách nhập thủ công từ kết quả đo đã có sẵn',
                     R.drawable.im_glucose_input_manual,
                     () {
+                      TrackingManager.analytics.logEvent(
+                        name: 'glucose_select_method',
+                        parameters: {
+                          "screen_name": 'kpi_glucose',
+                          'method': 'manual',
+                        },
+                      );
                       Navigator.pop(context);
                       if (popPrevious) {
                         Navigator.pop(context);
