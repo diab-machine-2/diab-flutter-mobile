@@ -99,8 +99,6 @@ class BloodSugarCompareChartState extends State<BloodSugarCompareChart>
                         color: R.color.dark,
                       ),
                     ),
-                    const SizedBox(width: 8),
-                    Image.asset(R.drawable.ic_compare, width: 32, height: 32),
                     const Spacer(),
                     InkWell(
                       onTap: () => _doViewDetail(model!),

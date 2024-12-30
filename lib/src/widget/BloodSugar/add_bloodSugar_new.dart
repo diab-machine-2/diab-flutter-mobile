@@ -245,6 +245,7 @@ class _AddBloodSugarControllerNewState
       final timeFrames = result[0] as List<TimeFrameModel>;
       final colors = result[1] as List<GlucoseColorConfig>?;
       final timeFramesFromApi = result[2] as List<TimeFrameModel>;
+      _times.clear();
       _times.addAll(timeFramesFromApi.where((e) => mapTimeFrame.values.contains(e.code)));
       _times.sort((a, b) => a.code!.compareTo(b.code!));
 
