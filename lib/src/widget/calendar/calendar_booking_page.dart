@@ -367,7 +367,7 @@ class _CalendarBookingControllerState extends State<CalendarBookingController> {
       calendarAccounts: [account],
       goal: "Phỏng vấn đầu vào",
       trainingGroupIds: [],
-      zoomUserId: pickSlot!.zoomUserId,
+      userId: pickSlot!.zoomUserId,
     );
     _cubit.createCalendar(request);
   }

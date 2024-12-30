@@ -17,7 +17,7 @@ class CreateCalendarRequest {
   String courseId;
   int startTime;
   int endTime;
-  String zoomUserId;
+  String userId;
 
   CreateCalendarRequest(
       {required this.name,
@@ -36,7 +36,7 @@ class CreateCalendarRequest {
       required this.courseId,
       required this.endTime,
       required this.startTime,
-      required this.zoomUserId});
+      required this.userId});
 
   factory CreateCalendarRequest.fromJson(Map<String, dynamic> json) {
     // Parse calendarAccounts
@@ -80,7 +80,7 @@ class CreateCalendarRequest {
       courseId: json['courseId'] ?? '',
       startTime: json['startTime'] ?? DateTime.now(),
       endTime: json['endTime'] ?? DateTime.now(),
-      zoomUserId: json['zoomUserId'] ?? '',
+      userId: json['userId'] ?? '',
     );
   }
 
@@ -103,7 +103,7 @@ class CreateCalendarRequest {
       'courseId': courseId,
       'startTime': startTime,
       'endTime': endTime,
-      'zoomUserId': zoomUserId,
+      'userId': userId,
     };
   }
 }
