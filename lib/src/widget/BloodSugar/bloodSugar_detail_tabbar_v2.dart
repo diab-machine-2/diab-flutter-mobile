@@ -139,19 +139,16 @@ class _BloodSugarDetailTabbarControllerState extends State<BloodSugarDetailTabba
       body: CommonPage(
         background: R.drawable.bg_glucose,
         title: R.string.duong_huyet.tr(),
-        appBarAction: GestureDetector(
-          onTap: () {},
-          child: Padding(
-            padding: const EdgeInsets.only(right: 8),
-            child: TextButton(
-              onPressed: () {
-                Navigator.of(context).pushNamed(NavigatorName.glucose_intro_2nd_page);
-              },
-              child: Text(
-                R.string.huong_dan.tr(),
-                style:
-                    TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: R.color.textDark),
-              ),
+        appBarAction: Padding(
+          padding: const EdgeInsets.only(right: 8),
+          child: TextButton(
+            onPressed: () {
+              Navigator.of(context).pushNamed(NavigatorName.glucose_intro_2nd_page);
+            },
+            child: Text(
+              R.string.huong_dan.tr(),
+              style:
+                  TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: R.color.textDark),
             ),
           ),
         ),
