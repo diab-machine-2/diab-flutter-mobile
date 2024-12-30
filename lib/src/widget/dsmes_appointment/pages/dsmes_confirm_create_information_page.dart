@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
+import 'package:medical/src/modal/user/user_model.dart';
 import 'package:medical/src/model/request/dsmes_reschedule_request.dart';
 import 'package:medical/src/utils/date_utils.dart';
 import 'package:medical/src/utils/length_limit_text_field.dart';
@@ -13,6 +14,7 @@ import 'package:medical/src/widget/dsmes_appointment/dsmes_appointment_cubit.dar
 import 'package:medical/src/widget/dsmes_appointment/model/dsmes_appointment_model.dart';
 import 'package:medical/src/widget/dsmes_appointment/pages/dsmes_navigation_mixin.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
+import 'package:medical/src/widget/profile/user_info.dart';
 import 'package:medical/src/widgets/gap_widget.dart';
 
 class DsmesConfirmCreateInformation extends StatefulWidget {
@@ -157,6 +159,14 @@ class _DsmesConfirmCreateInformationState
                     }
 
                     if (widget.action == 'create') {
+                      final phoneNumber = AppSettings.userInfo?.phoneNumber ??
+                          phoneController.text;
+
+                      if (phoneNumber.isEmpty) {
+                        await _showDialogUpdatePhone();
+                        return;
+                      }
+
                       _handleCreateBooking();
                     }
                   }),
@@ -172,10 +182,12 @@ class _DsmesConfirmCreateInformationState
   _handleCreateBooking() async {
     _cubit.updateCreateDsmesBookingRequestSymptom(
         symptom: symptomController.text);
+    final phoneNumber =
+        AppSettings.userInfo?.phoneNumber ?? phoneController.text;
 
     final token = await AppSettings.getDocosanToken();
     if (token.isEmpty) {
-      await _cubit.registerDocosanUser();
+      await _cubit.registerDocosanUser(phoneNumber: phoneNumber);
       await AppSettings.clearOrganizationApiKey();
     }
 
@@ -672,11 +684,16 @@ class _DsmesConfirmCreateInformationState
                 obscureText: false,
                 readOnly: isReschedule ? true : false,
                 textInputAction: TextInputAction.done,
-                buildCounter: (context,
-                        {required currentLength,
-                        required isFocused,
-                        maxLength}) =>
-                    isReschedule ? null : SizedBox(),
+                onEditingComplete: () {
+                  // Update counter when done button is pressed
+                  setState(() {});
+                  FocusScope.of(context).unfocus();
+                },
+                // buildCounter: (context,
+                //         {required currentLength,
+                //         required isFocused,
+                //         maxLength}) =>
+                //     isReschedule ? null : SizedBox(),
                 controller: symptomController,
                 focusNode: symptomFocusNode,
                 decoration: InputDecoration(
@@ -851,7 +868,8 @@ class _DsmesConfirmCreateInformationState
               const String pattern = r'(^(?:[+0]9)?[0-9]{9}|\d{10}$)';
               final RegExp regExp = RegExp(pattern);
               final isCorrect = regExp.hasMatch(phoneController.text);
-              if (phoneController.text.length != 9 &&
+              if (phoneController.text.length > 0 &&
+                  phoneController.text.length != 9 &&
                   phoneController.text.length != 10 &&
                   !isCorrect) {
                 Message.showToastMessage(
@@ -1019,5 +1037,158 @@ class _DsmesConfirmCreateInformationState
         );
       },
     );
+  }
+
+  _showDialogUpdatePhone() {
+    final width = MediaQuery.of(context).size.width;
+    final TextEditingController textEditingController = TextEditingController();
+    final FocusNode phoneDialogFocusNode = FocusNode();
+
+    textEditingController.text = AppSettings.userInfo?.phoneNumber ?? '';
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+              Text(R.string.phone_number.tr(),
+                  style: TextStyle(
+                      color: R.color.textDark,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600)),
+              GestureDetector(
+                  child: Icon(Icons.close, color: R.color.color0xffBEC0C8),
+                  onTap: () {
+                    Navigator.of(context).pop(false);
+                  })
+            ]),
+            const SizedBox(height: 16),
+            Container(
+                height: 54,
+                width: width - 36,
+                child: TextField(
+                    controller: textEditingController,
+                    focusNode: phoneDialogFocusNode,
+                    autofocus: true,
+                    keyboardType: TextInputType.number,
+                    minLines: 1,
+                    maxLines: 1,
+                    obscureText: false,
+                    decoration: InputDecoration(
+                      fillColor: R.color.textDark,
+                      counterText: '',
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                            color: R.color.grayComponentBorder, width: 1.0),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide:
+                            BorderSide(color: R.color.mainColor, width: 1.0),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      contentPadding:
+                          const EdgeInsets.only(top: 0, left: 16, right: 16),
+                    ),
+                    onChanged: (value) {})),
+            Container(
+              margin: const EdgeInsets.only(top: 16),
+              child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      flex: 1,
+                      child: GestureDetector(
+                        onTap: () {
+                          Navigator.pop(context);
+                        },
+                        child: Container(
+                            height: 48,
+                            width: 119,
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(200),
+                                color: R.color.grayBorder),
+                            child: Center(
+                              child: Text(R.string.cancel.tr(),
+                                  style: TextStyle(
+                                      color: R.color.textDark,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600)),
+                            )),
+                      ),
+                    ),
+                    SizedBox(width: 8),
+                    Expanded(
+                      flex: 1,
+                      child: GestureDetector(
+                        onTap: () {
+                          String phone = textEditingController.text;
+                          if (phone.isEmpty) {
+                            Message.showToastMessage(context,
+                                R.string.ban_chua_nhap_so_dien_thoai.tr());
+                            return;
+                          } else {
+                            final UserModel userInfo = AppSettings.userInfo!;
+
+                            if (phone.startsWith('0')) {
+                              final formattedNumber =
+                                  '+84${phone.substring(1)}';
+                              phone = formattedNumber;
+                            }
+
+                            updateUserInfo(
+                              userInfo.copyWith(
+                                phoneNumber: phone,
+                              ),
+                            );
+
+                            _cubit.updateCreateDsmesBookingRequestRequesterInfo(
+                                name: nameController.text, phone: phone);
+
+                            phoneController.text = phone;
+
+                            Navigator.pop(context);
+                          }
+                        },
+                        child: Container(
+                          height: 48,
+                          width: 119,
+                          decoration: BoxDecoration(
+                              color: R.color.red,
+                              borderRadius: BorderRadius.circular(200),
+                              gradient: LinearGradient(
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.centerRight,
+                                  colors: [
+                                    R.color.greenGradientTop,
+                                    R.color.greenGradientBottom
+                                  ])),
+                          child: Center(
+                            child: Text(
+                              R.string.save.tr(),
+                              style: TextStyle(
+                                color: R.color.white,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ]),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void updateUserInfo(UserModel user, {bool isUpdateDiabetes = false}) async {
+    ProfileInfoController.updateUserInfo(context, user,
+        isUpdateDiabetes: isUpdateDiabetes);
   }
 }

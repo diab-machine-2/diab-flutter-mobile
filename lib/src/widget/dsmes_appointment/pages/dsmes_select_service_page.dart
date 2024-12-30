@@ -7,6 +7,7 @@ import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/dsmes_appointment/dsmes_appointment_cubit.dart';
+import 'package:medical/src/widget/dsmes_appointment/model/dsmes_appointment_model.dart';
 import 'package:medical/src/widget/dsmes_appointment/model/dsmes_clinic_model.dart';
 import 'package:medical/src/widget/dsmes_appointment/pages/dsmes_navigation_mixin.dart';
 import 'package:medical/src/widgets/gap_widget.dart';
@@ -45,6 +46,10 @@ class _DsmesSelectServicePageState extends State<DsmesSelectServicePage> {
 
   @override
   Widget build(BuildContext context) {
+    final telemedicineCategories = widget.clinic.serviceList.categories
+        .where((category) =>
+            category.type == DsmesAppointmentMode.telemedicine.toString())
+        .toList();
     return Scaffold(
       body: Container(
         decoration: BoxDecoration(
@@ -87,17 +92,17 @@ class _DsmesSelectServicePageState extends State<DsmesSelectServicePage> {
                         ]),
                     child: ListView.builder(
                       padding: EdgeInsets.zero,
-                      itemCount: widget.clinic.serviceList.categories.length,
+                      itemCount: telemedicineCategories.length,
                       itemBuilder: (context, index) {
                         final category =
-                            widget.clinic.serviceList.categories[index];
+                            telemedicineCategories[index];
                         return CategorySection(
                           category: category,
                           selectedServices: selectedServices,
                           onServiceSelected: _handleServiceSelection,
                           isFirst: index == 0,
                           isLast: index ==
-                              widget.clinic.serviceList.categories.length - 1,
+                              telemedicineCategories.length - 1,
                         );
                       },
                     ),

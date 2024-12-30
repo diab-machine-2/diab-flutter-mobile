@@ -2334,7 +2334,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController>
                           flex: 1,
                           child: GestureDetector(
                             onTap: () {
-                              final phone = textEditingController.text;
+                              String phone = textEditingController.text;
                               if (phone.isEmpty) {
                                 Message.showToastMessage(context,
                                     R.string.ban_chua_nhap_so_dien_thoai.tr());
@@ -2342,6 +2342,13 @@ class _ProfileInfoControllerState extends State<ProfileInfoController>
                               } else {
                                 final UserModel userInfo =
                                     AppSettings.userInfo!;
+
+                                if (phone.startsWith('0')) {
+                                  final formattedNumber =
+                                      '+84${phone.substring(1)}';
+                                  phone = formattedNumber;
+                                }
+                                
                                 if (isPhoneNumber2) {
                                   updateUserInfo(
                                     userInfo.copyWith(

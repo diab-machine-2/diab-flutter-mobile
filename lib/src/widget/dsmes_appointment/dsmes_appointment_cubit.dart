@@ -45,7 +45,7 @@ class DsmesAppointmentCubit extends Cubit<DsmesAppointmentState> {
   Future<void> initDsmesBooking() async {
     final isExist = await isExistDocosanUser();
     if (isExist) {
-      await registerDocosanUser();
+      await registerDocosanUser(phoneNumber: AppSettings.userInfo?.phoneNumber ?? '');
       await getDsmesAppointmentList();
     }
   }
@@ -60,9 +60,8 @@ class DsmesAppointmentCubit extends Cubit<DsmesAppointmentState> {
     return isExist;
   }
 
-  Future<void> registerDocosanUser() async {
-    final phoneNumber = AppSettings.userInfo?.phoneNumber;
-    if (phoneNumber == null) {
+  Future<void> registerDocosanUser({required String phoneNumber}) async {
+    if (phoneNumber.isEmpty || phoneNumber == null) {
       return;
     }
     final displayName = AppSettings.userInfo?.fullName ?? '';
