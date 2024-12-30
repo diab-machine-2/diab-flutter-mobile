@@ -8,6 +8,7 @@ import 'package:flutter_observer/Observer.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app.dart';
+import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
@@ -316,8 +317,15 @@ class _DsmesAppointmentPageState extends State<DsmesAppointmentPage>
         Expanded(
           child: SmartRefresher(
             controller: _controller,
-            onRefresh: () =>
-                _cubit.getDsmesAppointmentList(isRefresh: true, page: 1),
+            onRefresh: () async {
+              final docosanToken = await AppSettings.getDocosanToken();
+              if (docosanToken == null || docosanToken.isEmpty) {
+                BotToast.closeAllLoading();
+                _controller.refreshCompleted();
+                return;
+              }
+              _cubit.getDsmesAppointmentList(isRefresh: true, page: 1);
+            },
             child: SingleChildScrollView(
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),

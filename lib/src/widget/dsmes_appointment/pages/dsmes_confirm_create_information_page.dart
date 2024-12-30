@@ -500,38 +500,40 @@ class _DsmesConfirmCreateInformationState
                   ),
                 ],
               ),
-            GapH(4),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Flexible(
-                  flex: 3,
-                  child: Text(
-                    R.string.address.tr(),
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w400,
-                      color: R.color.color0xff777E90,
+            if (widget.serviceType == DsmesAppointmentMode.atClinic.toString())
+              GapH(4),
+            if (widget.serviceType == DsmesAppointmentMode.atClinic.toString())
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Flexible(
+                    flex: 3,
+                    child: Text(
+                      R.string.address.tr(),
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w400,
+                        color: R.color.color0xff777E90,
+                      ),
                     ),
                   ),
-                ),
-                Flexible(
-                  flex: 7,
-                  child: Text(
-                    _cubit.selectedClinic?.address ?? '',
-                    maxLines: 2,
-                    textAlign: TextAlign.end,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: R.color.color0xff141416,
+                  Flexible(
+                    flex: 7,
+                    child: Text(
+                      _cubit.selectedClinic?.address ?? '',
+                      maxLines: 2,
+                      textAlign: TextAlign.end,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: R.color.color0xff141416,
+                      ),
                     ),
                   ),
-                ),
-              ],
-            ),
+                ],
+              ),
           ],
         ),
       ),
@@ -1149,6 +1151,9 @@ class _DsmesConfirmCreateInformationState
                                 name: nameController.text, phone: phone);
 
                             phoneController.text = phone;
+                            setState(() {
+                              requesterPhone = phone;
+                            });
 
                             Navigator.pop(context);
                           }
