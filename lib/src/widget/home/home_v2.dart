@@ -122,7 +122,7 @@ class _HomeControllerState extends State<HomeController>
     final String? lessonId = DynamicLinkConfig.instance.lessonId;
     final String? meetingId = BranchioLinkConfig.instance.meetingId;
     final String? activityId = DynamicLinkConfig.instance.activityId;
-    _checkShowRating();
+    // _checkShowRating();
 
     Future.delayed(Duration.zero, () async {
       String? username = AppSettings.userInfo!.userName;
