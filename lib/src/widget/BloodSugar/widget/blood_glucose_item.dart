@@ -27,8 +27,9 @@ class BloodGlucoseItemState extends State<BloodGlucoseItem>
 
   @override
   void initState() {
+    // TODO:
     periodFilterType =
-        BloodSugarDetailTabbarController.of(context)!.periodFilterType;
+        BloodSugarDetailTabbarController.of(context)?.periodFilterType ?? 1;
     super.initState();
   }
 

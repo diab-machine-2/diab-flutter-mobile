@@ -75,12 +75,12 @@ dependencies:
   package_info: ^2.0.2
   flutter_svg: ^1.1.2
   # google_fonts: ^3.0.1
-  firebase_core: ^2.24.2
-  firebase_crashlytics: ^3.4.9
-  firebase_analytics: ^10.0.8
-  firebase_messaging: ^14.7.10
-  firebase_dynamic_links: ^5.4.8
-  firebase_remote_config: ^4.3.8
+  firebase_core: ^2.27.0
+  firebase_crashlytics: ^3.4.18
+  firebase_analytics: ^10.8.9
+  firebase_messaging: ^14.7.19
+  firebase_dynamic_links: ^5.4.17
+  firebase_remote_config: ^4.3.17
   flutter_slidable: ^0.6.0
   flutter_screenutil: ^5.9.0
 
@@ -127,12 +127,13 @@ dependencies:
   # flutter_share: ^2.0.0
   # webview_flutter: ^4.0.7
   health: ^11.0.0
-  flutter_inappwebview: ^5.7.2+3
+  # when upgrade, pls take care "flutter_inappwebview_ios" override
+  flutter_inappwebview: ^6.0.0
   # flutter_app_version_checker: ^0.3.2
   flutter_blue_plus: ^1.32.11
   # fwfh_text_style: ^2.22.8+3
   store_redirect: ^2.0.1
-  youtube_player_flutter: ^8.1.2
+  youtube_player_flutter: 9.0.4
   # zoom video sdk
   # flutter_zoom_videosdk:
   #   path: packages/zoom_video_sdk
@@ -178,6 +179,12 @@ dependency_overrides:
   fwfh_text_style: 2.23.8 # <- to build with flutter 3.16
   visibility_detector: 0.4.0+2
   js: 0.7.1
+  url_launcher_ios: 6.3.1
+  flutter_inappwebview_ios:
+    git:
+      url: https://github.com/ngocphuc1612/flutter_inappwebview.git
+      ref: hotfix/xcode16-build
+      path: flutter_inappwebview_ios
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -198,6 +205,7 @@ flutter:
     - lib/res/fonts/
     - lib/res/drawables/
     - lib/res/drawables/home/
+    - lib/res/drawables/glucose/
     - lib/res/drawables/tab/
     - lib/res/drawables/zoom/
     - lib/res/translations/

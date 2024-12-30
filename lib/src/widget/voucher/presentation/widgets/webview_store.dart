@@ -44,7 +44,7 @@ class _WebviewStoreState extends State<WebviewStore> {
         children: [
           Positioned.fill(
             child: InAppWebView(
-              initialUrlRequest: URLRequest(url: Uri.parse(widget.urlStore)),
+              initialUrlRequest: URLRequest(url: WebUri(widget.urlStore)),
               initialOptions: InAppWebViewGroupOptions(
                 android: AndroidInAppWebViewOptions(
                   mixedContentMode: AndroidMixedContentMode.MIXED_CONTENT_ALWAYS_ALLOW,

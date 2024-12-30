@@ -6,6 +6,7 @@ import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/BloodSugar/widget/bloodSugar_chart.dart';
 import 'package:medical/src/widget/BloodSugar/widget/bloodSugar_compare_chart.dart';
+import 'package:medical/src/widget/BloodSugar/widget/bloodSugar_table.dart';
 import 'package:medical/src/widget/HbA1C/widget/course_suggest.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widgets/spacing_row.dart';
@@ -22,11 +23,11 @@ class BloodSugarOverviewController extends StatefulWidget {
 class BloodSugarOverviewControllerState
     extends State<BloodSugarOverviewController>
     with AutomaticKeepAliveClientMixin<BloodSugarOverviewController>, Observer {
-  ScrollController _scrollController = ScrollController();
-  GlobalKey<BloodSugarDetailState> sugarDetailKey = GlobalKey();
-  GlobalKey<BloodSugarChartState> sugarChartKey = GlobalKey();
-  GlobalKey<BloodGlucoseItemState> latestDataKey = GlobalKey();
-  GlobalKey<BloodSugarCompareChartState> sugarCompareKey = GlobalKey();
+  final ScrollController _scrollController = ScrollController();
+  final GlobalKey<BloodSugarDetailState> sugarDetailKey = GlobalKey();
+  final GlobalKey<BloodSugarChartState> sugarChartKey = GlobalKey();
+  final GlobalKey<BloodGlucoseItemState> latestDataKey = GlobalKey();
+  final GlobalKey<BloodSugarCompareChartState> sugarCompareKey = GlobalKey();
 
   @override
   void initState() {
@@ -42,7 +43,8 @@ class BloodSugarOverviewControllerState
     AppSettings.currentScreenName = 'kpi_glycemic';
   }
 
-  reloadData(int periodFilterType) {
+  // TODO: reload this
+  void reloadData(int periodFilterType) {
     _scrollController.jumpTo(0);
     if (sugarDetailKey.currentState != null) {
       sugarDetailKey.currentState!.reloadData(periodFilterType);
@@ -68,6 +70,7 @@ class BloodSugarOverviewControllerState
 
   @override
   void dispose() {
+    _scrollController.dispose();
     Observable.instance.removeObserver(this);
     super.dispose();
   }
@@ -90,9 +93,15 @@ class BloodSugarOverviewControllerState
               physics: ClampingScrollPhysics(),
               children: [
                 BloodGlucoseItem(key: latestDataKey),
-                BloodSugarDetail(key: sugarDetailKey),
-                BloodSugarChart(key: sugarChartKey),
-                BloodSugarCompareChart(key: sugarCompareKey),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: BloodSugarDetail(key: sugarDetailKey, periodFilterType: periodFilterType),
+                ),
+                BloodSugarChart(key: sugarChartKey, periodFilterType: periodFilterType),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: BloodSugarCompareChart(key: sugarCompareKey, periodFilterType: periodFilterType),
+                ),
                 CourseSuggest(position: 2),
                 SizedBox(height: 36),
               ],

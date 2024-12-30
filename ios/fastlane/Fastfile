@@ -31,4 +31,20 @@ platform :ios do
       ipa: "Runner.ipa"
     )
   end
+
+  desc "Push a new production build to TestFlight"
+  lane :upload_prod do
+    build_app(
+      scheme: "Release",
+      xcargs: "-allowProvisioningUpdates FLUTTER_TARGET=lib/main.dart",
+      workspace: "Runner.xcworkspace",
+      output_name: "Runner.ipa"
+    )
+    upload_to_testflight(
+      skip_waiting_for_build_processing: true,
+      skip_submission: true,
+      beta_app_description: "Production: - fixes and improvements",
+      ipa: "Runner.ipa"
+    )
+  end
 end

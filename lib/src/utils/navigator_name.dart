@@ -18,6 +18,7 @@ class NavigatorName {
   static const String hba1c_tabble = '/hba1c_tabble';
   static const String add_blood_sugar = '/add_blood_sugar';
   static const String add_blood_sugar_new = '/add_blood_sugar_new';
+  static const String add_blood_sugar_result = '/add_blood_sugar_result';
   static const String add_exercrises = '/add_exercrises';
   static const String search_exercrises = '/search_exercrises';
   static const String add_blood_pressure = '/add_blood_pressure';
@@ -85,4 +86,8 @@ class NavigatorName {
   static const String test_ocr_camera = '/test_ocr_camera';
   static const String test_ocr_gallery = '/test_ocr_gallery';
   static const String test_ocr_result = '/test_ocr_result';
+
+  // New Glucose
+  static const String glucose_intro_1st_page = '/glucose-intro-1st-page';
+  static const String glucose_intro_2nd_page = '/glucose-intro-2nd-page';
 }
