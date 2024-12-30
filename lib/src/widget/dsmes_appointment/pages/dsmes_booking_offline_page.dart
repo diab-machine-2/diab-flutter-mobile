@@ -1,4 +1,3 @@
-import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -8,13 +7,10 @@ import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/dsmes_appointment/dsmes_appointment_cubit.dart';
-import 'package:medical/src/widget/dsmes_appointment/dsmes_appointment_state.dart';
 import 'package:medical/src/widget/dsmes_appointment/model/dsmes_appointment_model.dart';
 import 'package:medical/src/widget/dsmes_appointment/model/dsmes_clinic_model.dart';
 import 'package:medical/src/widget/dsmes_appointment/pages/dsmes_navigation_mixin.dart';
-import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widgets/gap_widget.dart';
-import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class DsmesBookingOfflinePage extends StatefulWidget {
   final String serviceType;
@@ -39,12 +35,19 @@ class _DsmesBookingOfflinePageState extends State<DsmesBookingOfflinePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(
-        decoration: BoxDecoration(
-          color: R.color.backgroundColorNew,
+    return WillPopScope(
+      onWillPop: () async {
+        print('[POP] offline clinics pop');
+        DsmesNavigationMixin.navigationKey.currentState?.pop(context);
+        return false;
+      },
+      child: Scaffold(
+        body: Container(
+          decoration: BoxDecoration(
+            color: R.color.backgroundColorNew,
+          ),
+          child: _buildPage(context),
         ),
-        child: _buildPage(context),
       ),
     );
   }
@@ -248,25 +251,19 @@ class _DsmesBookingOfflinePageState extends State<DsmesBookingOfflinePage> {
                           Expanded(
                             child: InkWell(
                               onTap: () async {
-                                final clinics = await _cubit.getClinicList();
-                                if (clinics.isNotEmpty) {
-                                  final priorityClinic = clinics.first;
-                                  await _cubit.getClinicDetail(
-                                      id: priorityClinic.id);
-                                  await _cubit.initCreateDsmesBookingRequest(
-                                      locale: context.locale.languageCode);
+                                await _cubit.getClinicDetail(id: data.id);
+                                await _cubit.initCreateDsmesBookingRequest(
+                                    locale: context.locale.languageCode);
 
-                                  DsmesNavigationMixin
-                                      .navigationKey.currentState
-                                      ?.pushNamed(
-                                          NavigatorName.dsmes_select_service,
-                                          arguments: {
-                                        'clinic': _cubit.selectedClinic,
-                                        'serviceType': DsmesAppointmentMode
-                                            .telemedicine
-                                            .toString()
-                                      });
-                                }
+                                DsmesNavigationMixin.navigationKey.currentState
+                                    ?.pushNamed(
+                                        NavigatorName.dsmes_select_service,
+                                        arguments: {
+                                      'clinic': _cubit.selectedClinic,
+                                      'serviceType': DsmesAppointmentMode
+                                          .telemedicine
+                                          .toString()
+                                    });
                               },
                               child: Container(
                                 alignment: Alignment.center,

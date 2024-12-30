@@ -213,6 +213,7 @@ class Const {
   static const int MAX_DAY_RANGE_DSMES_BOOKING = 30;
   static const String CLICKED_BRANCH_LINK = 'clicked_branch_link';
   static const String ORGANIZATION_API_KEY = 'organization_api_key';
-  static const String ORGANIZATION_API_KEY_VALUE = 'diab-heath-center-9a3cefac-136caaef';
-  static const int DSMES_BOOKING_TIME_WINDOW_RANGE = 10; // In minutes
+  static const String ORGANIZATION_API_KEY_VALUE =
+      'diab-heath-center-9a3cefac-136caaef';
+  static const int DSMES_BOOKING_TIME_WINDOW_RANGE = 30; // In minutes
 }

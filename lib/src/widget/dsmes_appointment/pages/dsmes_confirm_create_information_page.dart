@@ -454,38 +454,40 @@ class _DsmesConfirmCreateInformationState
                 ),
               ],
             ),
-            GapH(4),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Flexible(
-                  flex: 3,
-                  child: Text(
-                    R.string.center_name.tr(),
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w400,
-                      color: R.color.color0xff777E90,
+            if (widget.serviceType == DsmesAppointmentMode.atClinic.toString())
+              GapH(4),
+            if (widget.serviceType == DsmesAppointmentMode.atClinic.toString())
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Flexible(
+                    flex: 3,
+                    child: Text(
+                      R.string.center_name.tr(),
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w400,
+                        color: R.color.color0xff777E90,
+                      ),
                     ),
                   ),
-                ),
-                Flexible(
-                  flex: 7,
-                  child: Text(
-                    _cubit.selectedClinic?.name ?? '',
-                    maxLines: 2,
-                    textAlign: TextAlign.end,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: R.color.color0xff141416,
+                  Flexible(
+                    flex: 7,
+                    child: Text(
+                      _cubit.selectedClinic?.name ?? '',
+                      maxLines: 2,
+                      textAlign: TextAlign.end,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: R.color.color0xff141416,
+                      ),
                     ),
                   ),
-                ),
-              ],
-            ),
+                ],
+              ),
             GapH(4),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -669,6 +671,7 @@ class _DsmesConfirmCreateInformationState
                 maxLength: 250,
                 obscureText: false,
                 readOnly: isReschedule ? true : false,
+                textInputAction: TextInputAction.done,
                 buildCounter: (context,
                         {required currentLength,
                         required isFocused,
@@ -889,121 +892,128 @@ class _DsmesConfirmCreateInformationState
     showDialog(
       context: context,
       builder: (context) {
-        return Container(
-          child: AlertDialog(
-            contentPadding: EdgeInsets.all(10),
-            content: Stack(
-              children: [
-                Container(
-                  width: 351,
-                  padding: EdgeInsets.all(12),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          GestureDetector(
-                            onTap: () {
-                              Navigator.of(context).pop();
-                            },
-                            child: Icon(
-                              Icons.close,
-                              color: R.color.textDark,
-                              size: 24,
-                            ),
-                          )
-                        ],
-                      ),
-                      GapH(30),
-                      if (isShowImg)
-                        Image.asset(R.drawable.ic_dialog_success,
-                            width: 43, height: 43),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          if (title2 != null)
-                            Padding(
-                              padding: const EdgeInsets.only(top: 14.0),
-                              child: Text(
-                                title2,
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  color: R.color.color0xff636A6B,
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w700,
-                                ),
+        return WillPopScope(
+          onWillPop: () async {
+            Navigator.pop(context);
+            onShowInfo?.call();
+            return false;
+          },
+          child: Container(
+            child: AlertDialog(
+              contentPadding: EdgeInsets.all(10),
+              content: Stack(
+                children: [
+                  Container(
+                    width: 351,
+                    padding: EdgeInsets.all(12),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.of(context).pop();
+                              },
+                              child: Icon(
+                                Icons.close,
+                                color: R.color.textDark,
+                                size: 24,
                               ),
-                            ),
-                          Padding(
-                            padding: const EdgeInsets.only(top: 16.0),
-                            child: Text(
-                              title ?? "",
-                              maxLines: 2,
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                color: R.color.greenGradientBottom,
-                                fontSize: 40,
-                                fontWeight: FontWeight.w700,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(top: 16.0),
-                        child: Text(
-                          subtitle ?? "",
-                          maxLines: 2,
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            color: R.color.color0xff777E90,
-                            fontSize: 13,
-                            fontWeight: FontWeight.w400,
-                          ),
+                            )
+                          ],
                         ),
-                      ),
-                      SizedBox(height: 20),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          GestureDetector(
-                            onTap: () {
-                              Navigator.pop(context);
-                              onShowInfo?.call();
-                            },
-                            child: Container(
-                              height: 43,
-                              width: 158,
-                              decoration: BoxDecoration(
-                                color: R.color.white,
-                                borderRadius: BorderRadius.circular(200),
-                                border: Border.all(
-                                  color: R.color.greenGradientBottom,
-                                ),
-                              ),
-                              child: Center(
+                        GapH(30),
+                        if (isShowImg)
+                          Image.asset(R.drawable.ic_dialog_success,
+                              width: 43, height: 43),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            if (title2 != null)
+                              Padding(
+                                padding: const EdgeInsets.only(top: 14.0),
                                 child: Text(
-                                  secondaryButtonTitle,
+                                  title2,
+                                  textAlign: TextAlign.center,
                                   style: TextStyle(
-                                    color: R.color.greenGradientBottom,
-                                    fontSize: 16,
+                                    color: R.color.color0xff636A6B,
+                                    fontSize: 18,
                                     fontWeight: FontWeight.w700,
                                   ),
                                 ),
                               ),
+                            Padding(
+                              padding: const EdgeInsets.only(top: 16.0),
+                              child: Text(
+                                title ?? "",
+                                maxLines: 2,
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  color: R.color.greenGradientBottom,
+                                  fontSize: 40,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 16.0),
+                          child: Text(
+                            subtitle ?? "",
+                            maxLines: 2,
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              color: R.color.color0xff777E90,
+                              fontSize: 13,
+                              fontWeight: FontWeight.w400,
                             ),
                           ),
-                          _buildButton(
-                            primaryButtonTitle,
-                            () => onNavigateHome(),
-                          ),
-                        ],
-                      )
-                    ],
+                        ),
+                        SizedBox(height: 20),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.pop(context);
+                                onShowInfo?.call();
+                              },
+                              child: Container(
+                                height: 43,
+                                width: 158,
+                                decoration: BoxDecoration(
+                                  color: R.color.white,
+                                  borderRadius: BorderRadius.circular(200),
+                                  border: Border.all(
+                                    color: R.color.greenGradientBottom,
+                                  ),
+                                ),
+                                child: Center(
+                                  child: Text(
+                                    secondaryButtonTitle,
+                                    style: TextStyle(
+                                      color: R.color.greenGradientBottom,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            _buildButton(
+                              primaryButtonTitle,
+                              () => onNavigateHome(),
+                            ),
+                          ],
+                        )
+                      ],
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         );

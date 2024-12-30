@@ -186,11 +186,22 @@ class DsmesAppointmentCubit extends Cubit<DsmesAppointmentState> {
     return dsmesAppointment;
   }
 
+ String ensureTimeWithSeconds(String dateTime) {
+  // Check if datetime matches yyyy-MM-dd HH:mm format
+  final dateTimeFormat = RegExp(r'^\d{4}-\d{2}-\d{2} \d{2}:\d{2}$');
+  if (dateTimeFormat.hasMatch(dateTime)) {
+    return "$dateTime:00";
+  }
+  return dateTime;
+}
+
   Future<DsmesAppointment?> createDsmesBookingOnline() async {
     emit(DsmesAppointmentLoading());
     DsmesAppointment? dsmesAppointment;
-    String startTimeWithSeconds = "${createDsmesBookingRequest?.startTime}:00";
-    String endTimeWithSeconds = "${createDsmesBookingRequest?.endTime}:00";
+    String startTimeWithSeconds =
+        ensureTimeWithSeconds(createDsmesBookingRequest?.startTime ?? "");
+    String endTimeWithSeconds =
+        ensureTimeWithSeconds(createDsmesBookingRequest?.endTime ?? "");
     updateCreateDsmesBookingRequestTime(
         startTime: startTimeWithSeconds, endTime: endTimeWithSeconds);
     ApiResult<CreateDsmesOfflineBookingResponse> apiResult = await appRepository
@@ -262,8 +273,7 @@ class DsmesAppointmentCubit extends Cubit<DsmesAppointmentState> {
 
       return ((data.status == DSMES_STATUS_REQUEST ||
               data.status == DSMES_STATUS_ON_HOLD)) ||
-          (
-              startTime.isAfter(threeDaysAgo) &&
+          (startTime.isAfter(threeDaysAgo) &&
               data.status == DSMES_STATUS_APPROVE);
     }).toList();
     return filteredData;

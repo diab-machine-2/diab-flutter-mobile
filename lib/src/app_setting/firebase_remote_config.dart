@@ -47,7 +47,7 @@ class FirebaseRemoteSetting {
       "APP_DEVELOPER_MODE":
           bool.parse(localSetting["APP_DEVELOPER_MODE"] ?? "true"),
       "UTILITIES_ORDER":
-          localSetting["UTILITIES_ORDER"] ?? "thiet-lap-muc-tieu,lich-do-duong-huyet,tu-van-bac-si,thuc-don-mau,ket-noi-thiet-bi,lich-uong-thuoc,moi-ban-be",
+          localSetting["UTILITIES_ORDER"] ?? "thiet-lap-muc-tieu,lich-do-duong-huyet,tu-van-suc-khoe,thuc-don-mau,ket-noi-thiet-bi,lich-uong-thuoc,moi-ban-be",
     });
     // Config timeout for remoteConfig
     await remoteConfig.setConfigSettings(RemoteConfigSettings(

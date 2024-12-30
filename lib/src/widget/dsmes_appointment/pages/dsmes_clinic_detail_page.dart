@@ -12,7 +12,6 @@ import 'package:medical/src/widget/dsmes_appointment/model/dsmes_clinic_model.da
 import 'package:medical/src/widget/dsmes_appointment/pages/dsmes_navigation_mixin.dart';
 import 'package:medical/src/widget/dsmes_appointment/widgets/dsmes_appointment_item.dart';
 import 'package:medical/src/widgets/gap_widget.dart';
-import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class DsmesClinicDetailPage extends StatefulWidget {
   final int clinicId;
@@ -26,7 +25,6 @@ class DsmesClinicDetailPage extends StatefulWidget {
 }
 
 class _DsmesClinicDetailPageState extends State<DsmesClinicDetailPage> {
-  final RefreshController _controller = RefreshController();
   late DsmesAppointmentCubit _cubit;
   int _visibleComments = 3;
   bool _showingAll = false;

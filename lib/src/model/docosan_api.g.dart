@@ -105,7 +105,7 @@ class _DocosanApi implements DocosanApi {
     )
             .compose(
               _dio.options,
-              'api/doctors/patient-appointments',
+              'api/doctors/patient-appointments-partner',
               queryParameters: queryParameters,
               data: _data,
             )

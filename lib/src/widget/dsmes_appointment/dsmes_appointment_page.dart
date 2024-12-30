@@ -38,6 +38,7 @@ class _DsmesAppointmentPageState extends State<DsmesAppointmentPage>
     with Observer {
   final RefreshController _controller = RefreshController();
   late DsmesAppointmentCubit _cubit;
+  String _currentRoute = '/';
 
   @override
   void initState() {
@@ -51,6 +52,7 @@ class _DsmesAppointmentPageState extends State<DsmesAppointmentPage>
 
   @override
   void dispose() {
+    BotToast.closeAllLoading();
     Observable.instance.removeObserver(this);
     _controller.dispose();
     super.dispose();
@@ -77,111 +79,135 @@ class _DsmesAppointmentPageState extends State<DsmesAppointmentPage>
         ),
         child: BlocProvider(
           create: (context) => _cubit,
-          child: Navigator(
-            key: DsmesNavigationMixin.navigationKey,
-            onGenerateRoute: (settings) {
-              // Log current route name
-              print('[ROUTE] Current Route: ${settings.name}');
-
-              // Log full navigator stack
-              print(
-                  '[ROUTE] Navigator Stack: ${DsmesNavigationMixin.navigationKey.currentState?.toString()}');
-              switch (settings.name) {
-                case '/':
-                  return MaterialPageRoute(
-                    builder: (_) => _buildMainContent(context),
-                  );
-                case NavigatorName.dsmes_booking_history:
-                  return _buildRoute(
-                    settings,
-                    DsmesAppointmentHistoryPage(),
-                  );
-                case NavigatorName.dsmes_booking_offline:
-                  Map<String, dynamic>? args =
-                      settings.arguments as Map<String, dynamic>?;
-                  return _buildRoute(
-                    settings,
-                    DsmesBookingOfflinePage(
-                      serviceType: args!["serviceType"],
-                    ),
-                  );
-                case NavigatorName.dsmes_booking_select_date:
-                  {
-                    Map<String, dynamic>? args =
-                        settings.arguments as Map<String, dynamic>?;
-                    return _buildRoute(
-                      settings,
-                      DsmesCalendarSection(
-                        serviceType: args!["serviceType"],
-                        action: args["action"],
-                        appointmentId: args["appointmentId"],
-                      ),
-                    );
-                  }
-                case NavigatorName.dsmes_confirm_information:
-                  {
-                    Map<String, dynamic>? args =
-                        settings.arguments as Map<String, dynamic>?;
-                    return _buildRoute(
-                      settings,
-                      DsmesConfirmCreateInformation(
-                        serviceType: args!["serviceType"],
-                        action: args["action"],
-                        appointmentId: args["appointmentId"],
-                      ),
-                    );
-                  }
-                case NavigatorName.dsmes_booking_detail:
-                  {
-                    Map<String, dynamic>? args =
-                        settings.arguments as Map<String, dynamic>?;
-                    return _buildRoute(
-                      settings,
-                      DsmesBookingDetail(
-                        serviceType: args!["serviceType"],
-                        appointment: args["appointment"],
-                      ),
-                    );
-                  }
-                case NavigatorName.dsmes_clinic_detail:
-                  {
-                    Map<String, dynamic>? args =
-                        settings.arguments as Map<String, dynamic>?;
-                    return _buildRoute(
-                      settings,
-                      DsmesClinicDetailPage(
-                        clinicId: args!["clinicId"],
-                      ),
-                    );
-                  }
-                case NavigatorName.dsmes_select_service:
-                  {
-                    Map<String, dynamic>? args =
-                        settings.arguments as Map<String, dynamic>?;
-                    return _buildRoute(
-                      settings,
-                      DsmesSelectServicePage(
-                        clinic: args!["clinic"],
-                        serviceType: args["serviceType"],
-                      ),
-                    );
-                  }
-
-                case NavigatorName.dsmes_booking_online_join_room:
-                  {
-                    Map<String, dynamic>? args =
-                        settings.arguments as Map<String, dynamic>?;
-                    return _buildRoute(
-                      settings,
-                      WebViewScreen(
-                        telemedicineId: args!["telemedicineId"],
-                      ),
-                    );
-                  }
-                default:
-                  return null;
+          child: WillPopScope(
+            onWillPop: () async {
+              print('[POP] root pop scope');
+              if (_currentRoute == NavigatorName.dsmes_booking_detail) {
+                FocusScope.of(
+                        DsmesNavigationMixin.navigationKey.currentContext!)
+                    .unfocus();
+                DsmesNavigationMixin.navigationKey.currentState
+                    ?.popUntil((route) => route.isFirst);
+                Observable.instance.notifyObservers([],
+                    notifyName: "refresh_dsmes_appointment");
+                return false;
               }
+              if (DsmesNavigationMixin.navigationKey.currentState?.canPop() ??
+                  false) {
+                DsmesNavigationMixin.navigationKey.currentState?.pop();
+                return false;
+              } else {
+                BotToast.closeAllLoading();
+                Navigator.of(context, rootNavigator: true).pop();
+              }
+              return true;
             },
+            child: Navigator(
+              key: DsmesNavigationMixin.navigationKey,
+              onGenerateRoute: (settings) {
+                // Log current route name
+                print('[ROUTE] Current Route: ${settings.name}');
+                _currentRoute = settings.name ?? '/';
+                // Log full navigator stack
+                print(
+                    '[ROUTE] Navigator Stack: ${DsmesNavigationMixin.navigationKey.currentState?.toString()}');
+                switch (settings.name) {
+                  case '/':
+                    return MaterialPageRoute(
+                      builder: (_) => _buildMainContent(context),
+                    );
+                  case NavigatorName.dsmes_booking_history:
+                    return _buildRoute(
+                      settings,
+                      DsmesAppointmentHistoryPage(),
+                    );
+                  case NavigatorName.dsmes_booking_offline:
+                    Map<String, dynamic>? args =
+                        settings.arguments as Map<String, dynamic>?;
+                    return _buildRoute(
+                      settings,
+                      DsmesBookingOfflinePage(
+                        serviceType: args!["serviceType"],
+                      ),
+                    );
+                  case NavigatorName.dsmes_booking_select_date:
+                    {
+                      Map<String, dynamic>? args =
+                          settings.arguments as Map<String, dynamic>?;
+                      return _buildRoute(
+                        settings,
+                        DsmesCalendarSection(
+                          serviceType: args!["serviceType"],
+                          action: args["action"],
+                          appointmentId: args["appointmentId"],
+                        ),
+                      );
+                    }
+                  case NavigatorName.dsmes_confirm_information:
+                    {
+                      Map<String, dynamic>? args =
+                          settings.arguments as Map<String, dynamic>?;
+                      return _buildRoute(
+                        settings,
+                        DsmesConfirmCreateInformation(
+                          serviceType: args!["serviceType"],
+                          action: args["action"],
+                          appointmentId: args["appointmentId"],
+                        ),
+                      );
+                    }
+                  case NavigatorName.dsmes_booking_detail:
+                    {
+                      Map<String, dynamic>? args =
+                          settings.arguments as Map<String, dynamic>?;
+                      return _buildRoute(
+                        settings,
+                        DsmesBookingDetail(
+                          serviceType: args!["serviceType"],
+                          appointment: args["appointment"],
+                        ),
+                      );
+                    }
+                  case NavigatorName.dsmes_clinic_detail:
+                    {
+                      Map<String, dynamic>? args =
+                          settings.arguments as Map<String, dynamic>?;
+                      return _buildRoute(
+                        settings,
+                        DsmesClinicDetailPage(
+                          clinicId: args!["clinicId"],
+                        ),
+                      );
+                    }
+                  case NavigatorName.dsmes_select_service:
+                    {
+                      Map<String, dynamic>? args =
+                          settings.arguments as Map<String, dynamic>?;
+                      return _buildRoute(
+                        settings,
+                        DsmesSelectServicePage(
+                          clinic: args!["clinic"],
+                          serviceType: args["serviceType"],
+                        ),
+                      );
+                    }
+
+                  case NavigatorName.dsmes_booking_online_join_room:
+                    {
+                      Map<String, dynamic>? args =
+                          settings.arguments as Map<String, dynamic>?;
+                      return _buildRoute(
+                        settings,
+                        WebViewScreen(
+                          telemedicineId: args!["telemedicineId"],
+                        ),
+                      );
+                    }
+                  default:
+                    return null;
+                }
+              },
+            ),
           ),
         ),
       ),
@@ -384,18 +410,13 @@ class _DsmesAppointmentPageState extends State<DsmesAppointmentPage>
     );
   }
 
-  PageRoute _buildRoute(RouteSettings settings, Widget builder,
-      {bool isPresent = false}) {
-    if (isPresent) {
-      return CupertinoPageRoute(
-          settings: settings,
-          fullscreenDialog: true,
-          builder: (context) => builder);
-    } else {
-      return MaterialPageRoute(
-        settings: settings,
-        builder: (ctx) => builder,
-      );
-    }
+  PageRoute _buildRoute(
+    RouteSettings settings,
+    Widget builder,
+  ) {
+    return MaterialPageRoute(
+      settings: settings,
+      builder: (ctx) => builder,
+    );
   }
 }
