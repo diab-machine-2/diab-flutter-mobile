@@ -93,6 +93,23 @@ class _DsmesAppointmentPageState extends State<DsmesAppointmentPage>
                     notifyName: "refresh_dsmes_appointment");
                 return false;
               }
+
+              final route = ModalRoute.of(
+                      DsmesNavigationMixin.navigationKey.currentContext!)
+                  ?.settings;
+              final args = route?.arguments as Map<String, dynamic>?;
+              final isEditing = args?['isEditing'] ?? false;
+              final previousRoute = args?['previousRoute'];
+
+              if (isEditing && previousRoute != null) {
+                DsmesNavigationMixin.navigationKey.currentState
+                    ?.pushReplacementNamed(previousRoute, arguments: {
+                  'serviceType': args?['serviceType'],
+                  'action': args?['action'],
+                });
+                return false;
+              }
+
               if (DsmesNavigationMixin.navigationKey.currentState?.canPop() ??
                   false) {
                 DsmesNavigationMixin.navigationKey.currentState?.pop();

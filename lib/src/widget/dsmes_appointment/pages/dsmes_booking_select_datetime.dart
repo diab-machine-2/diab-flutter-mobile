@@ -68,6 +68,11 @@ class _DsmesCalendarSectionState extends State<DsmesCalendarSection> {
         scheduleDates, selectedDate ?? DateTime.now());
     final dates = _getActiveDates(scheduleDates: scheduleDates);
 
+    if (selectedDate == null) {
+      // If current date isn't in activeDates, use first available date
+      selectedDate = dates.isNotEmpty ? dates.first : DateTime.now();
+    }
+
     setState(() {
       fullSchedule = scheduleDates; // Store full schedule
       availableBookingSchedule = schedules;
@@ -185,13 +190,55 @@ class _DsmesCalendarSectionState extends State<DsmesCalendarSection> {
                             startTime: selectedBookingSchedule!.startTime,
                             endTime: selectedBookingSchedule!.endTime);
 
-                        DsmesNavigationMixin.navigationKey.currentState
-                            ?.pushNamed(NavigatorName.dsmes_confirm_information,
-                                arguments: {
-                              'serviceType': widget.serviceType,
-                              'action': widget.action,
-                              'appointmentId': widget.appointmentId,
-                            });
+                        final route = ModalRoute.of(context)?.settings;
+                        final args = route?.arguments as Map<String, dynamic>?;
+                        final isEditing = args?['isEditing'] ?? false;
+
+                        if (isEditing) {
+                          // Pop until select_service to rebuild stack with new state
+                          DsmesNavigationMixin.navigationKey.currentState
+                              ?.popUntil((route) =>
+                                  route.settings.name ==
+                                  NavigatorName.dsmes_select_service);
+
+                          // Replace select_service
+                          DsmesNavigationMixin.navigationKey.currentState
+                              ?.pushReplacementNamed(
+                                  NavigatorName.dsmes_select_service,
+                                  arguments: {
+                                'serviceType': widget.serviceType,
+                                'clinic': _cubit.selectedClinic,
+                              });
+
+                          // Push new select_date with updated state
+                          DsmesNavigationMixin.navigationKey.currentState
+                              ?.pushNamed(
+                                  NavigatorName.dsmes_booking_select_date,
+                                  arguments: {
+                                'serviceType': widget.serviceType,
+                                'action': 'edit',
+                              });
+
+                          // Push confirm info
+                          DsmesNavigationMixin.navigationKey.currentState
+                              ?.pushNamed(
+                                  NavigatorName.dsmes_confirm_information,
+                                  arguments: {
+                                'serviceType': widget.serviceType,
+                                'action': 'edit',
+                                'appointmentId': widget.appointmentId,
+                              });
+                        } else {
+                          // Normal flow
+                          DsmesNavigationMixin.navigationKey.currentState
+                              ?.pushNamed(
+                                  NavigatorName.dsmes_confirm_information,
+                                  arguments: {
+                                'serviceType': widget.serviceType,
+                                'action': 'create',
+                                'appointmentId': widget.appointmentId,
+                              });
+                        }
                       }),
                     ),
                   ],
@@ -376,6 +423,12 @@ class _DsmesCalendarSectionState extends State<DsmesCalendarSection> {
       }
       addedStartTimes.add(startTime);
       addedEndTimes.add(endTime);
+    }
+
+    if (morningTargets.isEmpty && isMorningSelected) {
+      setState(() {
+        isMorningSelected = false;
+      });
     }
 
     return LayoutBuilder(builder: (context, constraints) {

@@ -158,7 +158,7 @@ class _DsmesConfirmCreateInformationState
                       _handleRescheduleBooking();
                     }
 
-                    if (widget.action == 'create') {
+                    if (widget.action == 'create' || widget.action == 'edit') {
                       final phoneNumber = AppSettings.userInfo?.phoneNumber ??
                           phoneController.text;
 
@@ -406,10 +406,13 @@ class _DsmesConfirmCreateInformationState
                       _cubit.updateCreateDsmesBookingRequestSymptom(
                           symptom: symptomController.text);
                       await DsmesNavigationMixin.navigationKey.currentState
-                          ?.popAndPushNamed(
-                              NavigatorName.dsmes_booking_select_date,
+                          ?.pushNamed(NavigatorName.dsmes_booking_select_date,
                               arguments: {
                             'serviceType': widget.serviceType,
+                            'action': 'edit',
+                            'isEditing': true,
+                            'previousRoute':
+                                NavigatorName.dsmes_confirm_information
                           });
                     },
                     child: Container(
@@ -571,24 +574,28 @@ class _DsmesConfirmCreateInformationState
                   onTap: () async {
                     _cubit.updateCreateDsmesBookingRequestSymptom(
                         symptom: symptomController.text);
-                    // await DsmesNavigationMixin.navigationKey.currentState
-                    //     ?.popAndPushNamed(NavigatorName.dsmes_select_service,
+                    await DsmesNavigationMixin.navigationKey.currentState
+                        ?.pushNamed(NavigatorName.dsmes_select_service,
+                            arguments: {
+                          'serviceType': widget.serviceType,
+                          'clinic': _cubit.selectedClinic,
+                          'isEditing': true,
+                          'previousRoute':
+                              NavigatorName.dsmes_confirm_information
+                        });
+
+                    // DsmesNavigationMixin.navigationKey.currentState?.popUntil(
+                    //     (route) =>
+                    //         route.settings.name ==
+                    //         NavigatorName.dsmes_select_service);
+                    // // Push new arguments to existing select service page
+                    // DsmesNavigationMixin.navigationKey.currentState
+                    //     ?.pushReplacementNamed(
+                    //         NavigatorName.dsmes_select_service,
                     //         arguments: {
                     //       'serviceType': widget.serviceType,
                     //       'clinic': _cubit.selectedClinic,
                     //     });
-                    DsmesNavigationMixin.navigationKey.currentState?.popUntil(
-                        (route) =>
-                            route.settings.name ==
-                            NavigatorName.dsmes_select_service);
-                    // Push new arguments to existing select service page
-                    DsmesNavigationMixin.navigationKey.currentState
-                        ?.pushReplacementNamed(
-                            NavigatorName.dsmes_select_service,
-                            arguments: {
-                          'serviceType': widget.serviceType,
-                          'clinic': _cubit.selectedClinic,
-                        });
                   },
                   child: Visibility(
                     visible: !isReschedule,
@@ -798,9 +805,9 @@ class _DsmesConfirmCreateInformationState
               child: TextFormField(
                 minLines: 1,
                 maxLines: 1,
-                maxLength: 50,
+                maxLength: 20,
                 inputFormatters: [
-                  LengthLimitingTextFieldFormatterFixed(50),
+                  LengthLimitingTextFieldFormatterFixed(20),
                 ],
                 obscureText: false,
                 controller: nameController,
@@ -839,9 +846,9 @@ class _DsmesConfirmCreateInformationState
               child: TextFormField(
                 minLines: 1,
                 maxLines: 1,
-                maxLength: 50,
+                maxLength: 12,
                 inputFormatters: [
-                  LengthLimitingTextFieldFormatterFixed(50),
+                  LengthLimitingTextFieldFormatterFixed(12),
                 ],
                 obscureText: false,
                 controller: phoneController,
@@ -876,6 +883,11 @@ class _DsmesConfirmCreateInformationState
                   !isCorrect) {
                 Message.showToastMessage(
                     context, R.string.phone_not_valid.tr());
+              }
+
+              if (phoneController.text.isEmpty) {
+                Message.showToastMessage(
+                    context, R.string.please_enter_phone_number.tr());
               }
 
               if (nameController.text.isEmpty) {

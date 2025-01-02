@@ -94,15 +94,13 @@ class _DsmesSelectServicePageState extends State<DsmesSelectServicePage> {
                       padding: EdgeInsets.zero,
                       itemCount: telemedicineCategories.length,
                       itemBuilder: (context, index) {
-                        final category =
-                            telemedicineCategories[index];
+                        final category = telemedicineCategories[index];
                         return CategorySection(
                           category: category,
                           selectedServices: selectedServices,
                           onServiceSelected: _handleServiceSelection,
                           isFirst: index == 0,
-                          isLast: index ==
-                              telemedicineCategories.length - 1,
+                          isLast: index == telemedicineCategories.length - 1,
                         );
                       },
                     ),
@@ -194,11 +192,52 @@ class _DsmesSelectServicePageState extends State<DsmesSelectServicePage> {
       _cubit.updateCreateDsmesBookingRequestServiceList(
           selectedServices: serviceItems);
 
-      await DsmesNavigationMixin.navigationKey.currentState
-          ?.pushNamed(NavigatorName.dsmes_booking_select_date, arguments: {
-        'serviceType': widget.serviceType,
-        'action': 'create',
-      });
+      final route = ModalRoute.of(context)?.settings;
+      final args = route?.arguments as Map<String, dynamic>?;
+      final isEditing = args?['isEditing'] ?? false;
+
+      if (isEditing) {
+        // First pop the current select_service page
+        DsmesNavigationMixin.navigationKey.currentState?.pop();
+
+        // Now pop until the original select_service
+        DsmesNavigationMixin.navigationKey.currentState?.popUntil((route) =>
+            route.settings.name == NavigatorName.dsmes_select_service);
+
+        // Replace with new select_service state
+        DsmesNavigationMixin.navigationKey.currentState?.pushReplacementNamed(
+            NavigatorName.dsmes_select_service,
+            arguments: {
+              'serviceType': widget.serviceType,
+              'clinic': _cubit.selectedClinic,
+            });
+
+        // Push new select_date
+        DsmesNavigationMixin.navigationKey.currentState
+            ?.pushNamed(NavigatorName.dsmes_booking_select_date, arguments: {
+          'serviceType': widget.serviceType,
+          'action': 'edit',
+        });
+
+        // Push confirm info
+        DsmesNavigationMixin.navigationKey.currentState
+            ?.pushNamed(NavigatorName.dsmes_confirm_information, arguments: {
+          'serviceType': widget.serviceType,
+          'action': 'edit',
+        });
+      } else {
+        await DsmesNavigationMixin.navigationKey.currentState
+            ?.pushNamed(NavigatorName.dsmes_booking_select_date, arguments: {
+          'serviceType': widget.serviceType,
+          'action': 'create',
+        });
+      }
+
+      // await DsmesNavigationMixin.navigationKey.currentState
+      //     ?.pushNamed(NavigatorName.dsmes_booking_select_date, arguments: {
+      //   'serviceType': widget.serviceType,
+      //   'action': 'create',
+      // });
     }
   }
 }
