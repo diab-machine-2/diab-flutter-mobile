@@ -68,6 +68,7 @@ class _BloodSugarDetailTabbarControllerState extends State<BloodSugarDetailTabba
   @override
   void update(Observable observable, String? notifyName, Map<dynamic, dynamic>? map) {
     if (notifyName == 'glucose_change_data') {
+      _doReloadData(periodFilterType);
       // overViewKey.currentState?.reloadData(periodFilterType);
       // detailKey.currentState?.reloadData(periodFilterType);
       // if (map != null && map['index'] != null) {
@@ -130,112 +131,134 @@ class _BloodSugarDetailTabbarControllerState extends State<BloodSugarDetailTabba
             },
             child: Text(
               R.string.huong_dan.tr(),
-              style:
-                  TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: R.color.textDark),
+              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: R.color.textDark),
             ),
           ),
         ),
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              const SizedBox(height: 12),
-              _sectionFilter(),
-              const SizedBox(height: 24),
-              BloodSugarChart(
-                key: sugarChartKey,
-                periodFilterType: periodFilterType,
-              ),
-              const SizedBox(height: 14),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: BloodSugarDetail(
-                  key: sugarDetailKey,
-                  periodFilterType: periodFilterType,
-                  onViewDetail: _viewDetailListing,
-                ),
-              ),
-
-              // Compare chart will align itself if have data
-              // const SizedBox(height: 16),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: BloodSugarCompareChart(
-                  key: sugarCompareKey,
-                  periodFilterType: periodFilterType,
-                  onViewDetail: _viewDetailListing,
-                ),
-              ),
-
-              const SizedBox(height: 24),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12),
-                child: GlucoseLessonSection(
-                  onLessonTap: (lesson) => _navigateToLessonDetail(lesson.id, lesson.type),
-                ),
-              ),
-
-              const SizedBox(height: 32),
-
-              // Buttons
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: InkWell(
-                  onTap: () {
-                    Navigator.pushNamed(context, NavigatorName.schedule_glucose);
-                  },
-                  child: Container(
-                    height: 48,
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      color: R.color.gray_btn,
-                      borderRadius: BorderRadius.circular(24),
+        child: Stack(
+          children: [
+            Positioned.fill(
+              child: SingleChildScrollView(
+                padding: EdgeInsets.only(bottom: 128),
+                child: Column(
+                  children: [
+                    const SizedBox(height: 12),
+                    _sectionFilter(),
+                    const SizedBox(height: 24),
+                    BloodSugarChart(
+                      key: sugarChartKey,
+                      periodFilterType: periodFilterType,
                     ),
-                    child: Center(
-                      child: Text(
-                        R.string.blood_sugar_schedule_single_line.tr(),
-                        style: TextStyle(
-                          color: R.color.dark,
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
+                    const SizedBox(height: 14),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: BloodSugarDetail(
+                        key: sugarDetailKey,
+                        periodFilterType: periodFilterType,
+                        onViewDetail: _viewDetailListing,
+                      ),
+                    ),
+
+                    // Compare chart will align itself if have data
+                    // const SizedBox(height: 16),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: BloodSugarCompareChart(
+                        key: sugarCompareKey,
+                        periodFilterType: periodFilterType,
+                        onViewDetail: _viewDetailListing,
+                      ),
+                    ),
+
+                    const SizedBox(height: 24),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                      child: GlucoseLessonSection(
+                        onLessonTap: (lesson) => _navigateToLessonDetail(lesson.id, lesson.type),
+                      ),
+                    ),
+
+                    const SizedBox(height: 32),
+                  ],
+                ),
+              ),
+            ),
+            Positioned(
+              left: 0,
+              right: 0,
+              bottom: 0,
+              child: Container(
+                padding: EdgeInsets.only(
+                  bottom: 8 + MediaQuery.of(context).padding.bottom / 2,
+                  left: 16,
+                  right: 16,
+                  top: 12,
+                ),
+                child: Column(
+                  children: [
+                    // Buttons
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: InkWell(
+                        onTap: () {
+                          Navigator.pushNamed(context, NavigatorName.schedule_glucose);
+                        },
+                        child: Container(
+                          height: 48,
+                          width: double.infinity,
+                          decoration: BoxDecoration(
+                            color: R.color.gray_btn,
+                            borderRadius: BorderRadius.circular(24),
+                          ),
+                          child: Center(
+                            child: Text(
+                              R.string.blood_sugar_schedule_single_line.tr(),
+                              style: TextStyle(
+                                color: R.color.dark,
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 16),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: InkWell(
-                  onTap: () {
-                    Navigator.of(context).pushNamed(
-                      NavigatorName.add_blood_sugar_new,
-                      arguments: {'type': 'input'},
-                    );
-                  },
-                  child: Container(
-                    height: 48,
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      color: R.color.accentColor,
-                      borderRadius: BorderRadius.circular(24),
-                    ),
-                    child: Center(
-                      child: Text(
-                        R.string.blood_sugar_input.tr(),
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
+                    const SizedBox(height: 16),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: InkWell(
+                        onTap: () {
+                          Navigator.of(context).pushNamed(
+                            NavigatorName.add_blood_sugar_new,
+                            arguments: {'type': 'input'},
+                          );
+                        },
+                        child: Container(
+                          height: 48,
+                          width: double.infinity,
+                          decoration: BoxDecoration(
+                            color: R.color.accentColor,
+                            borderRadius: BorderRadius.circular(24),
+                          ),
+                          child: Center(
+                            child: Text(
+                              R.string.blood_sugar_input.tr(),
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
                         ),
                       ),
                     ),
-                  ),
+                  ],
                 ),
+                color: Colors.white,
               ),
-              const SizedBox(height: 32),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

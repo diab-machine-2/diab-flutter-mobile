@@ -45,9 +45,8 @@ class _PageAddBloodSugarResultState extends State<PageAddBloodSugarResult> {
     final data = widget.data;
     _files = data.files ?? [];
 
-    final aiResult = await GlucoseClient()
-        .fetchGlucoseInputAnalysis(widget.data.id)
-        .catchError((e, s) {
+    final aiResult =
+        await GlucoseClient().fetchGlucoseInputAnalysis(widget.data.id).catchError((e, s) {
       TrackingManager.recordError(e, s);
       return null;
     });
@@ -127,26 +126,44 @@ class _PageAddBloodSugarResultState extends State<PageAddBloodSugarResult> {
       body: Container(
         decoration: BoxDecoration(
           image: DecorationImage(
-            image: AssetImage(R.drawable.bg_splash),
+            image: AssetImage(R.drawable.bg_glucose),
             fit: BoxFit.cover,
           ),
         ),
-        child: Column(
+        child: Stack(
           children: [
-            _appBarSection(),
-            const SizedBox(height: 12),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16),
-              child: _glucoseResultSection(),
-            ),
-            Expanded(child: SizedBox()),
-            Padding(
-              padding: EdgeInsets.only(
-                bottom: 8 + MediaQuery.of(context).padding.bottom / 2,
-                left: 16,
-                right: 16,
+            Positioned.fill(
+              child: Column(
+                children: [
+                  _appBarSection(),
+                  const SizedBox(height: 12),
+                  Expanded(
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 16),
+                      child: SingleChildScrollView(
+                        padding: EdgeInsets.only(bottom: 100),
+                        physics: const ClampingScrollPhysics(),
+                        child: _glucoseResultSection(),
+                      ),
+                    ),
+                  ),
+                ],
               ),
-              child: _bottomSection(),
+            ),
+            Positioned(
+              left: 0,
+              right: 0,
+              bottom: 0,
+              child: Container(
+                padding: EdgeInsets.only(
+                  bottom: 8 + MediaQuery.of(context).padding.bottom / 2,
+                  left: 16,
+                  right: 16,
+                  top: 12,
+                ),
+                child: _bottomSection(),
+                color: Colors.white,
+              ),
             ),
           ],
         ),
@@ -158,6 +175,7 @@ class _PageAddBloodSugarResultState extends State<PageAddBloodSugarResult> {
     String formattedDateTime = DateFormat('HH:mm - dd/MM/yyyy').format(widget.data.dateTime);
     return CustomAppBar(
       backgroundColor: R.color.transparent,
+      centerTitle: true,
       title: Text(
         formattedDateTime,
         style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: R.color.textDark),
@@ -189,7 +207,7 @@ class _PageAddBloodSugarResultState extends State<PageAddBloodSugarResult> {
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
       ),
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
       child: Column(
         children: [
           const SizedBox(height: 24),
@@ -289,13 +307,14 @@ class _PageAddBloodSugarResultState extends State<PageAddBloodSugarResult> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Text(
                   R.string.ghi_chu.tr(),
                   style:
                       TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: R.color.textDark),
                 ),
-                Expanded(child: SizedBox()),
+                Spacer(),
                 GestureDetector(
                   onTap: _doEditNote,
                   child: Padding(
@@ -529,9 +548,10 @@ class _SegmentedCircularGauge extends StatelessWidget {
                         color: Colors.black,
                       ),
                     ),
+                    SizedBox(height: 24),
                   ],
                 ),
-                positionFactor: 0.1,
+                positionFactor: 0,
                 angle: 90,
               ),
             ],
