@@ -5,8 +5,6 @@ import 'package:flutter_observer/Observer.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/firebase_tracking/activity_list_tracking.dart';
 import 'package:medical/src/app_setting/firebase_tracking/kpi_glycemic_tracking.dart';
-import 'package:medical/src/modal/HbA1C/short_gui.dart';
-import 'package:medical/src/repo/HbA1C/HbA1C_client.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/components/custom_action_descriptipn.dart';
@@ -15,7 +13,6 @@ import 'package:medical/src/widget/home/fliter_enum.dart';
 import 'package:medical/src/widget/my_plan_screens/lesson_tab/lesson_detail/lesson_detail_page.dart';
 import 'package:medical/src/widget/tabbar/fillter_bloodSugar_panel.dart';
 import 'package:medical/src/widgets/common_page.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../app_setting/app_setting.dart';
 import 'widget/bloodSugar_chart.dart';
@@ -50,14 +47,15 @@ class _BloodSugarDetailTabbarControllerState extends State<BloodSugarDetailTabba
   late String name = R.string.filter_day.tr(args: ['30']);
   String? glucoseID;
 
-  ShortGuiModel? des;
+  void _viewDetailListing() {
+    Navigator.pushNamed(context, NavigatorName.detail_blood_sugar_listing,
+        arguments: {'glucoseID': glucoseID, 'initPeriodFilterType': periodFilterType});
+  }
 
   @override
   void initState() {
     super.initState();
     Observable.instance.addObserver(this);
-    checkShowDes();
-    loadDescription();
     KpiGlycemicTracking.firebaseSetup();
 
     // TODO: KpiGlycemicTracking.clickDetailTab();
@@ -117,21 +115,6 @@ class _BloodSugarDetailTabbarControllerState extends State<BloodSugarDetailTabba
     // }
   }
 
-  void checkShowDes() async {
-    final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
-    final SharedPreferences prefs = await _prefs;
-    final showDes = prefs.getBool('show_des_glucose');
-    prefs.setBool('show_des_glucose', false);
-    if (showDes == null || showDes) {
-      customActionDesKey.currentState!.showDes();
-    }
-  }
-
-  void loadDescription() async {
-    des = await HbA1CClient().fetchShortGuide(1);
-    setState(() {});
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -168,6 +151,7 @@ class _BloodSugarDetailTabbarControllerState extends State<BloodSugarDetailTabba
                 child: BloodSugarDetail(
                   key: sugarDetailKey,
                   periodFilterType: periodFilterType,
+                  onViewDetail: _viewDetailListing,
                 ),
               ),
 
@@ -178,6 +162,7 @@ class _BloodSugarDetailTabbarControllerState extends State<BloodSugarDetailTabba
                 child: BloodSugarCompareChart(
                   key: sugarCompareKey,
                   periodFilterType: periodFilterType,
+                  onViewDetail: _viewDetailListing,
                 ),
               ),
 
@@ -303,16 +288,19 @@ class _BloodSugarDetailTabbarControllerState extends State<BloodSugarDetailTabba
             ),
           ),
           const SizedBox(width: 6),
-          SizedBox(
-            width: 36,
-            height: 36,
-            child: DecoratedBox(
-              decoration: BoxDecoration(
-                color: R.color.white,
-                borderRadius: BorderRadius.circular(18),
-                border: Border.all(color: R.color.color0xffE5E5E5),
+          InkWell(
+            onTap: _viewDetailListing,
+            child: SizedBox(
+              width: 36,
+              height: 36,
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  color: R.color.white,
+                  borderRadius: BorderRadius.circular(18),
+                  border: Border.all(color: R.color.color0xffE5E5E5),
+                ),
+                child: Center(child: Icon(Icons.history, color: R.color.textDark, size: 20)),
               ),
-              child: Center(child: Icon(Icons.history, color: R.color.textDark, size: 20)),
             ),
           ),
         ],

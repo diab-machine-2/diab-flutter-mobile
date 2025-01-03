@@ -16,10 +16,11 @@ import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widgets/empty_data_box.dart';
 
 class BloodSugarDetail extends StatefulWidget {
-  BloodSugarDetail({Key? key, required this.periodFilterType}) : super(key: key);
+  BloodSugarDetail({Key? key, required this.periodFilterType, required this.onViewDetail})
+      : super(key: key);
 
   final int periodFilterType;
-
+  final Function() onViewDetail;
   @override
   BloodSugarDetailState createState() => BloodSugarDetailState();
 }
@@ -49,7 +50,7 @@ class BloodSugarDetailState extends State<BloodSugarDetail>
   }
 
   void _doViewMore() {
-    // TODO:
+    widget.onViewDetail();
   }
 
   @override

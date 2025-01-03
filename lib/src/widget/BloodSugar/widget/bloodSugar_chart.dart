@@ -79,8 +79,6 @@ class BloodSugarChartState extends State<BloodSugarChart>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    // final width = MediaQuery.of(context).size.width;
-    // final height = 37.0;
     return BlocProvider<GlucoseBloc>.value(
       value: _bloc,
       child: BlocBuilder<GlucoseBloc, GlucoseState>(

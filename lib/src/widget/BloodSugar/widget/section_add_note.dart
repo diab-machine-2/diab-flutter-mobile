@@ -36,6 +36,8 @@ class SectionAddNoteState extends State<SectionAddNote> {
     _files.addAll(widget.initialFiles ?? []);
   }
 
+  bool get _isAddable => _files.length < widget.maxMedia;
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -62,10 +64,17 @@ class SectionAddNoteState extends State<SectionAddNote> {
                 color: R.color.primaryGreyColor,
               ),
               suffixIcon: GestureDetector(
-                onTap: () {
-                  _showActionSheet(context);
-                },
-                child: Image.asset(R.drawable.ic_pick_photo, width: 24, height: 24),
+                onTap: _isAddable
+                    ? () {
+                        _showActionSheet(context);
+                      }
+                    : null,
+                child: Image.asset(
+                  R.drawable.ic_pick_photo,
+                  width: 24,
+                  height: 24,
+                  color: _isAddable ? null : R.color.primaryGreyColor,
+                ),
               ),
               suffixIconConstraints: BoxConstraints(
                 maxHeight: 24,
@@ -109,7 +118,8 @@ class SectionAddNoteState extends State<SectionAddNote> {
                                     File(_files[index].path),
                                     fit: BoxFit.cover,
                                   )
-                                : NetWorkImageWidget(imageUrl: _files[index].url, fit: BoxFit.cover),
+                                : NetWorkImageWidget(
+                                    imageUrl: _files[index].url, fit: BoxFit.cover),
                           ),
                         ),
                         GestureDetector(
@@ -139,7 +149,7 @@ class SectionAddNoteState extends State<SectionAddNote> {
 
   void _showActionSheet(BuildContext context) {
     FocusScope.of(context).unfocus();
-    if (_files.length < widget.maxMedia) {
+    if (_isAddable) {
       final action = CupertinoActionSheet(
         actions: <Widget>[
           CupertinoActionSheetAction(
