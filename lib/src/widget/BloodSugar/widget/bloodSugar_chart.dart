@@ -46,6 +46,8 @@ class BloodSugarChartState extends State<BloodSugarChart>
   int minXIndex = 0;
   int maxXIndex = 0;
 
+  final int _breakingTypeNumber = 11;
+
   @override
   void initState() {
     super.initState();
@@ -127,33 +129,56 @@ class BloodSugarChartState extends State<BloodSugarChart>
   }
 
   Widget _sectionTrending(TrendDataModel model) {
-    DateTime highestGlucoseDate = DateTime.now();
-    String highestGlucoseType = '';
     double highestGlucose = 0;
-    int maxGlucoseTrendIndex = -1;
-    int maxGlucoseTrendItemIndex = -1;
-    String highestGlucoseColor = '';
+    double lowestGlucose = -1;
+
+    String fromDate = '';
+    String toDate = '';
+    if (model.fromDate != null) {
+      fromDate = DateFormat('dd/MM/yyyy')
+          .format(DateTime.fromMillisecondsSinceEpoch(model.fromDate! * 1000));
+    }
+    if (model.toDate != null) {
+      toDate = DateFormat('dd/MM/yyyy')
+          .format(DateTime.fromMillisecondsSinceEpoch(model.toDate! * 1000));
+    } else {
+      toDate = DateFormat('dd/MM/yyyy').format(DateTime.now());
+    }
+
+    Map<String, int> typesAppear = {};
     for (int i = 0; i < model.trendItems.items.length; i++) {
       for (int j = 0; j < model.trendItems.items[i].subTrends.length; j++) {
+        if (model.trendItems.items[i].subTrends[j].type != null) {
+          typesAppear[model.trendItems.items[i].subTrends[j].type!] =
+              (typesAppear[model.trendItems.items[i].subTrends[j].type!] ?? 0) + 1;
+        }
         if (model.trendItems.items[i].subTrends[j].glucose != null &&
             model.trendItems.items[i].subTrends[j].glucose! > highestGlucose) {
-          maxGlucoseTrendIndex = i;
-          maxGlucoseTrendItemIndex = j;
           highestGlucose = model.trendItems.items[i].subTrends[j].glucose!;
+        }
+        if (lowestGlucose == -1 ||
+            (model.trendItems.items[i].subTrends[j].glucose != null &&
+                model.trendItems.items[i].subTrends[j].glucose! < lowestGlucose)) {
+          lowestGlucose = model.trendItems.items[i].subTrends[j].glucose!;
         }
       }
     }
-    if (maxGlucoseTrendIndex > -1) {
-      int dateMilli =
-          model.trendItems.items[maxGlucoseTrendIndex].subTrends[maxGlucoseTrendItemIndex].date!;
-      highestGlucoseDate = DateTime.fromMillisecondsSinceEpoch(dateMilli * 1000);
-      highestGlucoseType =
-          model.trendItems.items[maxGlucoseTrendIndex].subTrends[maxGlucoseTrendItemIndex].type!;
-      highestGlucose =
-          model.trendItems.items[maxGlucoseTrendIndex].subTrends[maxGlucoseTrendItemIndex].glucose!;
-      highestGlucoseColor =
-          model.trendItems.items[maxGlucoseTrendIndex].subTrends[maxGlucoseTrendItemIndex].color!;
+    String mostAppearTypeStr = '';
+    String mostAppearTypeColor = '';
+    if (typesAppear.isNotEmpty) {
+      final mostAppearType = typesAppear.entries.toList()
+        ..sort((a, b) => b.value.compareTo(a.value));
+      mostAppearTypeStr = mostAppearType[0].key;
+      for (int i = 0; i < model.trendItems.items.length; i++) {
+        for (int j = 0; j < model.trendItems.items[i].subTrends.length; j++) {
+          if (model.trendItems.items[i].subTrends[j].type == mostAppearTypeStr) {
+            mostAppearTypeColor = model.trendItems.items[i].subTrends[j].color!;
+            break;
+          }
+        }
+      }
     }
+
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -162,8 +187,8 @@ class BloodSugarChartState extends State<BloodSugarChart>
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Text(
-              // '16:45 - 21/08/2024',
-              DateFormat('HH:mm - dd/MM/yyyy').format(highestGlucoseDate),
+              // '01/01/2024 - 31/01/2024',
+              '$fromDate - $toDate',
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 14,
@@ -173,18 +198,18 @@ class BloodSugarChartState extends State<BloodSugarChart>
             ),
             const SizedBox(height: 6),
             Text(
-              highestGlucoseType,
+              mostAppearTypeStr,
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
-                color: highestGlucoseColor.isNotEmpty
-                    ? Color(int.parse('0xff${highestGlucoseColor.split('#').join()}'))
+                color: mostAppearTypeColor.isNotEmpty
+                    ? Color(int.parse('0xff${mostAppearTypeColor.split('#').join()}'))
                     : null,
                 height: 36 / 24,
               ),
             ),
             Text(
-              '${highestGlucose.toStringAsFixed(0)} mmol/L',
+              '${lowestGlucose.toStringAsFixed(0)} - ${highestGlucose.toStringAsFixed(0)} mmol/L',
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 14,
@@ -288,6 +313,7 @@ class BloodSugarChartState extends State<BloodSugarChart>
     minY = (minY * (trends.length == 1 ? 0.5 : 0.8)).roundToDouble();
     double maxY = trends.map<double>((e) => e.glucose ?? 0).reduce(max);
     maxY = (maxY * (trends.length == 1 ? 1.5 : 1.2)).roundToDouble();
+    double scaleYMaxLine = 180;
     // find min and max index
     minXIndex = -1;
     maxXIndex = -1;
@@ -409,6 +435,17 @@ class BloodSugarChartState extends State<BloodSugarChart>
                         maxY: maxY,
                         minY: minY,
                         lineBarsData: _linesBarData(trends),
+                        extraLinesData: trends.length > _breakingTypeNumber
+                            ? ExtraLinesData(
+                                horizontalLines: [
+                                  HorizontalLine(
+                                    y: scaleYMaxLine,
+                                    color: Color(0xFFC52F2F),
+                                    dashArray: [4, 4],
+                                  ),
+                                ],
+                              )
+                            : null,
                       ),
                       swapAnimationDuration: Duration(milliseconds: 250),
                     ),
@@ -420,46 +457,83 @@ class BloodSugarChartState extends State<BloodSugarChart>
   }
 
   List<LineChartBarData> _linesBarData(List<TrendModel> trends) {
-    return trends.length == 0
-        ? []
-        : [
-            LineChartBarData(
-              spots: List.generate(trends.length, (index) {
-                return FlSpot((index).toDouble(), trends[index].glucose!);
-              }),
-              isCurved: true,
-              colors: [Color(0xFF008479)],
-              barWidth: 2,
-              isStrokeCapRound: true,
-              dotData: FlDotData(
-                show: true,
-                checkToShowDot: (spot, barData) => spot.x == minXIndex || spot.x == maxXIndex,
-                getDotPainter: (spot, percent, barData, index) {
-                  return FlDotCirclePainter(
-                    radius: 3,
-                    color: index == maxXIndex ? Color(0xFFC82221) : Color(0xFFF9C239),
-                    strokeWidth: 6,
-                    strokeColor: index == maxXIndex
-                        ? Color(0xFFC82221).withOpacity(0.3)
-                        : Color(0xFFF9C239).withOpacity(0.3),
-                  );
-                },
-              ),
-              belowBarData: BarAreaData(
-                show: true,
-                colors: [
-                  // TODO: change color
-                  Colors.green.withOpacity(0.7),
-                  Colors.green.withOpacity(0.2),
-                  Colors.green.withOpacity(0.01),
-                  // Color(0xFFFFFDFD), Color(0xFFE1FAF8),
-                ],
-                gradientFrom: Offset(0.5, 0),
-                gradientTo: Offset(0.5, 1),
-                // gradientColorStops: [0, 0.3],
-              ),
-            ),
-          ];
+    if (trends.length == 0) return [];
+    if (trends.length < _breakingTypeNumber) {
+      return [
+        LineChartBarData(
+          spots: List.generate(trends.length, (index) {
+            return FlSpot((index).toDouble(), trends[index].glucose!);
+          }),
+          isCurved: false,
+          colors: [Color(0xFF008479)],
+          barWidth: 2,
+          isStrokeCapRound: false,
+          dotData: FlDotData(
+            show: true,
+            checkToShowDot: (spot, barData) => true,
+            getDotPainter: (spot, percent, barData, index) {
+              return FlDotCirclePainter(
+                radius: 3,
+                color: toColor(trends[index].color),
+                strokeWidth: 6,
+                strokeColor: toColor(trends[index].color).withOpacity(0.3),
+              );
+            },
+          ),
+          belowBarData: BarAreaData(
+            show: true,
+            colors: [
+              // TODO: change color
+              Colors.green.withOpacity(0.7),
+              Colors.green.withOpacity(0.2),
+              Colors.green.withOpacity(0.01),
+              // Color(0xFFFFFDFD), Color(0xFFE1FAF8),
+            ],
+            gradientFrom: Offset(0.5, 0),
+            gradientTo: Offset(0.5, 1),
+            // gradientColorStops: [0, 0.3],
+          ),
+        ),
+      ];
+    }
+    return [
+      LineChartBarData(
+        spots: List.generate(trends.length, (index) {
+          return FlSpot((index).toDouble(), trends[index].glucose!);
+        }),
+        isCurved: true,
+        colors: [Color(0xFF008479)],
+        barWidth: 2,
+        isStrokeCapRound: true,
+        dotData: FlDotData(
+          show: true,
+          checkToShowDot: (spot, barData) => spot.x == minXIndex || spot.x == maxXIndex,
+          getDotPainter: (spot, percent, barData, index) {
+            return FlDotCirclePainter(
+              radius: 3,
+              color: index == maxXIndex ? Color(0xFFC82221) : Color(0xFFF9C239),
+              strokeWidth: 6,
+              strokeColor: index == maxXIndex
+                  ? Color(0xFFC82221).withOpacity(0.3)
+                  : Color(0xFFF9C239).withOpacity(0.3),
+            );
+          },
+        ),
+        belowBarData: BarAreaData(
+          show: true,
+          colors: [
+            // TODO: change color
+            Colors.green.withOpacity(0.7),
+            Colors.green.withOpacity(0.2),
+            Colors.green.withOpacity(0.01),
+            // Color(0xFFFFFDFD), Color(0xFFE1FAF8),
+          ],
+          gradientFrom: Offset(0.5, 0),
+          gradientTo: Offset(0.5, 1),
+          // gradientColorStops: [0, 0.3],
+        ),
+      ),
+    ];
   }
 
   void showDialog(BuildContext context) {

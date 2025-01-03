@@ -57,23 +57,12 @@ class _BloodSugarDetailTabbarControllerState extends State<BloodSugarDetailTabba
     super.initState();
     Observable.instance.addObserver(this);
     KpiGlycemicTracking.firebaseSetup();
-
-    // TODO: KpiGlycemicTracking.clickDetailTab();
-
-    // List<String> filters = await AppSettings.getHomeFilters();
-    // name = filters[ScreenList.BLOOD_SUGAR.index];
-    // selectedIndex = valueOfSelectedFilter[name]!;
   }
 
   @override
   void update(Observable observable, String? notifyName, Map<dynamic, dynamic>? map) {
     if (notifyName == 'glucose_change_data') {
       _doReloadData(periodFilterType);
-      // overViewKey.currentState?.reloadData(periodFilterType);
-      // detailKey.currentState?.reloadData(periodFilterType);
-      // if (map != null && map['index'] != null) {
-      //   _tabController!.animateTo(map['index']);
-      // }
     }
   }
 
@@ -109,11 +98,6 @@ class _BloodSugarDetailTabbarControllerState extends State<BloodSugarDetailTabba
 
   void loadInputWithId(int index, String? id) {
     glucoseID = id;
-    // _tabController!.animateTo(index);
-
-    // if (detailKey.currentState != null) {
-    //   detailKey.currentState!.loadDataToID(periodFilterType);
-    // }
   }
 
   @override

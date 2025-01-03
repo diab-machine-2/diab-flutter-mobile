@@ -91,7 +91,7 @@ class BloodSugarDetailState extends State<BloodSugarDetail>
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Expanded(
                           child: Text(
@@ -106,15 +106,18 @@ class BloodSugarDetailState extends State<BloodSugarDetail>
                         const SizedBox(width: 8),
                         InkWell(
                           onTap: _doViewMore,
-                          child: SizedBox(
-                            width: 80,
-                            height: 32,
-                            child: Text(
-                              R.string.show_more.tr(),
-                              style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.bold,
-                                color: R.color.mainColor,
+                          child: Padding(
+                            padding: const EdgeInsets.only(top: 3.0),
+                            child: SizedBox(
+                              width: 80,
+                              height: 28,
+                              child: Text(
+                                R.string.show_more.tr(),
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.bold,
+                                  color: R.color.mainColor,
+                                ),
                               ),
                             ),
                           ),
