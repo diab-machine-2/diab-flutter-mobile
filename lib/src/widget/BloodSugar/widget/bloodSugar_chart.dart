@@ -46,7 +46,7 @@ class BloodSugarChartState extends State<BloodSugarChart>
   int minXIndex = 0;
   int maxXIndex = 0;
 
-  final int _breakingTypeNumber = 11;
+  final int _breakingTypeNumber = 12;
 
   // less than [_breakingTypeNumber] focus
   int _focusIndex = -1;
@@ -141,10 +141,10 @@ class BloodSugarChartState extends State<BloodSugarChart>
     });
     int totalItems = trends.length;
 
-    if (totalItems > _breakingTypeNumber) {
-      return _sectionTrendingMany(trends, model.fromDate, model.toDate);
-    } else {
+    if (totalItems < _breakingTypeNumber) {
       return _sectionTrendingLess(trends);
+    } else {
+      return _sectionTrendingMany(trends, model.fromDate, model.toDate);
     }
   }
 
@@ -573,8 +573,9 @@ class BloodSugarChartState extends State<BloodSugarChart>
                         maxY: maxY,
                         minY: minY,
                         lineBarsData: _linesBarData(trends),
-                        extraLinesData: trends.length > _breakingTypeNumber
-                            ? ExtraLinesData(
+                        extraLinesData: trends.length < _breakingTypeNumber
+                            ? null
+                            : ExtraLinesData(
                                 horizontalLines: [
                                   HorizontalLine(
                                     y: scaleYMaxLine,
@@ -582,8 +583,7 @@ class BloodSugarChartState extends State<BloodSugarChart>
                                     dashArray: [4, 4],
                                   ),
                                 ],
-                              )
-                            : null,
+                              ),
                       ),
                       swapAnimationDuration: Duration(milliseconds: 250),
                     ),
