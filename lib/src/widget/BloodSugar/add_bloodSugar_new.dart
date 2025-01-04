@@ -219,17 +219,6 @@ class _AddBloodSugarControllerNewState
       _times.addAll(timeFramesFromApi);
       _times.sort((a, b) => a.code!.compareTo(b.code!));
 
-      // map name
-      _times.forEach((e) {
-        if (e.code! == 'Prd01') {
-          e.name = R.string.duong_huyet_doi;
-        } else if (e.code! == 'Prd02') {
-          e.name = R.string.truoc_an;
-        } else if (e.code! == 'Prd03') {
-          e.name = R.string.sau_an;
-        }
-      });
-
       if (colors != null) {
         _colorList = colors.map(((e) {
           return Color(int.parse("0xFF" + e.background.substring(1)));
@@ -264,9 +253,6 @@ class _AddBloodSugarControllerNewState
         FocusScope.of(context).unfocus();
       },
       child: PopScope(
-        onPopInvoked: (bool didPop) async {
-          _showDialogSave();
-        },
         canPop: false,
         child: Scaffold(
           backgroundColor: R.color.backgroundColor,

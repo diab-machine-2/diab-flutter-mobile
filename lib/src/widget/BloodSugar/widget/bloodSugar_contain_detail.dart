@@ -339,26 +339,35 @@ class BloodSugarDetailState extends State<BloodSugarDetail>
         model.lowCount! +
         model.veryLowCount!;
 
-    return Padding(
+    const double radius = 80;
+
+    return Container(
       padding: EdgeInsets.only(left: 8, right: 8),
+      // height: 180,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
           const SizedBox(height: 12),
           Expanded(
             child: Center(
-              child: AspectRatio(
-                aspectRatio: 1,
+              child: SizedBox(
+                width: radius * 2,
+                height: radius * 2,
                 child: PieChart(
                   PieChartData(
                     startDegreeOffset: 270,
                     borderData: FlBorderData(show: false),
                     sectionsSpace: 2,
-                    centerSpaceRadius: 0,
+                    centerSpaceRadius: double.infinity,
+                    centerSpaceColor: Colors.transparent,
+                    pieTouchData: PieTouchData(
+                      touchCallback: (FlTouchEvent event, pieTouchResponse) {
+                        print(pieTouchResponse);
+                      },
+                    ),
                     sections: List.generate(
                       5,
                       (i) {
-                        const double radius = 100;
                         const bool showTitle = false;
                         late final double value;
                         late final Color color;
@@ -415,7 +424,7 @@ class BloodSugarDetailState extends State<BloodSugarDetail>
                   ),
                 ),
               ),
-              SizedBox(height: 2),
+              SizedBox(height: 4),
               InkWell(
                 onTap: () {
                   Navigator.pushNamed(context, NavigatorName.blood_sugar_distribution_table,
@@ -434,7 +443,7 @@ class BloodSugarDetailState extends State<BloodSugarDetail>
                   ),
                 ),
               ),
-              SizedBox(height: 2),
+              SizedBox(height: 4),
               InkWell(
                 onTap: () {
                   Navigator.pushNamed(context, NavigatorName.blood_sugar_distribution_table,
@@ -453,7 +462,7 @@ class BloodSugarDetailState extends State<BloodSugarDetail>
                   ),
                 ),
               ),
-              SizedBox(height: 2),
+              SizedBox(height: 4),
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 3),
                 child: InkWell(
@@ -472,7 +481,7 @@ class BloodSugarDetailState extends State<BloodSugarDetail>
                   ),
                 ),
               ),
-              SizedBox(height: 2),
+              SizedBox(height: 4),
               InkWell(
                 onTap: () {
                   Navigator.pushNamed(context, NavigatorName.blood_sugar_distribution_table,

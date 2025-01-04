@@ -70,7 +70,7 @@ class ToggleButtonsHorizontal extends StatelessWidget {
           ),
           child: Center(
             child: Text(
-              names[currentIndex].tr(),
+              names[currentIndex],
               style: TextStyle(
                 color: isSelected ? R.color.white : R.color.primaryGreyColor,
                 fontSize: 13,

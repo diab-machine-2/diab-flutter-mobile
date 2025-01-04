@@ -65,7 +65,7 @@ class BloodSugarChartState extends State<BloodSugarChart>
         });
         if (trends.isEmpty) {
           await Future.delayed(Duration(milliseconds: 500));
-          Navigator.pushNamed(context, NavigatorName.add_blood_sugar_new,
+          Navigator.pushReplacementNamed(context, NavigatorName.add_blood_sugar_new,
               arguments: {'type': 'input'});
         }
       }
@@ -475,8 +475,7 @@ class BloodSugarChartState extends State<BloodSugarChart>
               return FlDotCirclePainter(
                 radius: 3,
                 color: toColor(trends[index].color),
-                strokeWidth: 6,
-                strokeColor: toColor(trends[index].color).withOpacity(0.3),
+                strokeWidth: 0,
               );
             },
           ),
