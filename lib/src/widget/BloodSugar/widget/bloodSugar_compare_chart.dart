@@ -6,7 +6,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/bloc/glucose/glucose_bloc.dart';
 import 'package:medical/src/modal/glucose/glucose_comparer.dart';
-import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/BloodSugar/bloodSugar_detail_tabbar.dart';
 import 'package:medical/src/widget/HbA1C/hba1c_tabble.dart';
 import 'package:medical/src/widget/helper/helper.dart';
@@ -14,10 +13,14 @@ import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:easy_localization/easy_localization.dart';
 
 class BloodSugarCompareChart extends StatefulWidget {
-  BloodSugarCompareChart({Key? key, required this.periodFilterType}) : super(key: key);
+  BloodSugarCompareChart({
+    Key? key,
+    required this.periodFilterType,
+    required this.onViewDetail,
+  }) : super(key: key);
 
   final int periodFilterType;
-
+  final Function() onViewDetail;
   @override
   BloodSugarCompareChartState createState() => BloodSugarCompareChartState();
 }
@@ -39,13 +42,14 @@ class BloodSugarCompareChartState extends State<BloodSugarCompareChart>
   }
 
   void _doViewDetail(List<ComparerModel> model) {
+    widget.onViewDetail();
     // showActionCompareFilter(context);
-    Navigator.pushNamed(context, NavigatorName.blood_sugar_compare_table, arguments: {
-      'model': model,
-      'title': name,
-      'comparerType': comparerType,
-      'periodFilterType': periodFilterType,
-    });
+    // Navigator.pushNamed(context, NavigatorName.blood_sugar_compare_table, arguments: {
+    //   'model': model,
+    //   'title': name,
+    //   'comparerType': comparerType,
+    //   'periodFilterType': periodFilterType,
+    // });
   }
 
   @override
@@ -99,8 +103,6 @@ class BloodSugarCompareChartState extends State<BloodSugarCompareChart>
                         color: R.color.dark,
                       ),
                     ),
-                    const SizedBox(width: 8),
-                    Image.asset(R.drawable.ic_compare, width: 32, height: 32),
                     const Spacer(),
                     InkWell(
                       onTap: () => _doViewDetail(model!),

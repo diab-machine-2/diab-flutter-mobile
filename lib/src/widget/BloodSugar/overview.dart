@@ -95,12 +95,20 @@ class BloodSugarOverviewControllerState
                 BloodGlucoseItem(key: latestDataKey),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: BloodSugarDetail(key: sugarDetailKey, periodFilterType: periodFilterType),
+                  child: BloodSugarDetail(
+                    key: sugarDetailKey,
+                    periodFilterType: periodFilterType,
+                    onViewDetail: () {},
+                  ),
                 ),
-                BloodSugarChart(key: sugarChartKey, periodFilterType: periodFilterType),
+                BloodSugarChart(
+                  key: sugarChartKey,
+                  periodFilterType: periodFilterType,
+                ),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: BloodSugarCompareChart(key: sugarCompareKey, periodFilterType: periodFilterType),
+                  child: BloodSugarCompareChart(key: sugarCompareKey, periodFilterType: periodFilterType,
+                  onViewDetail: () {},),
                 ),
                 CourseSuggest(position: 2),
                 SizedBox(height: 36),

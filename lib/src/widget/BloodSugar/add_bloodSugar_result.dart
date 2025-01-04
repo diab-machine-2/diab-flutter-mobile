@@ -7,11 +7,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_observer/Observable.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:medical/res/R.dart';
-import 'package:medical/src/modal/HbA1C/short_gui.dart';
-import 'package:medical/src/repo/HbA1C/HbA1C_client.dart';
 import 'package:medical/src/repo/glucose/glucose_client.dart';
 import 'package:medical/src/utils/navigation_util.dart';
-import 'package:medical/src/widget/HbA1C/widget/description/description.dart';
+import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widgets/network_image_widget.dart';
@@ -37,8 +35,6 @@ class _PageAddBloodSugarResultState extends State<PageAddBloodSugarResult> {
   List<String?> _removeIDs = [];
   List<dynamic> _files = [];
 
-  ShortGuiModel? _des;
-
   @override
   void initState() {
     _loadData();
@@ -49,11 +45,8 @@ class _PageAddBloodSugarResultState extends State<PageAddBloodSugarResult> {
     final data = widget.data;
     _files = data.files ?? [];
 
-    _des = await HbA1CClient().fetchShortGuide(2);
-
-    final aiResult = await GlucoseClient()
-        .fetchGlucoseInputAnalysis(widget.data.id)
-        .catchError((e, s) {
+    final aiResult =
+        await GlucoseClient().fetchGlucoseInputAnalysis(widget.data.id).catchError((e, s) {
       TrackingManager.recordError(e, s);
       return null;
     });
@@ -107,9 +100,7 @@ class _PageAddBloodSugarResultState extends State<PageAddBloodSugarResult> {
   }
 
   void _doGuide() async {
-    if (_des != null) {
-      Description.showTooltip(context, data: _des!, title: R.string.blood_sugar_for_diabetes.tr());
-    }
+    Navigator.of(context).pushNamed(NavigatorName.glucose_intro_2nd_page);
   }
 
   void _doEditNote() async {
@@ -135,26 +126,44 @@ class _PageAddBloodSugarResultState extends State<PageAddBloodSugarResult> {
       body: Container(
         decoration: BoxDecoration(
           image: DecorationImage(
-            image: AssetImage(R.drawable.bg_splash),
+            image: AssetImage(R.drawable.bg_glucose),
             fit: BoxFit.cover,
           ),
         ),
-        child: Column(
+        child: Stack(
           children: [
-            _appBarSection(),
-            const SizedBox(height: 12),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16),
-              child: _glucoseResultSection(),
-            ),
-            Expanded(child: SizedBox()),
-            Padding(
-              padding: EdgeInsets.only(
-                bottom: 8 + MediaQuery.of(context).padding.bottom / 2,
-                left: 16,
-                right: 16,
+            Positioned.fill(
+              child: Column(
+                children: [
+                  _appBarSection(),
+                  const SizedBox(height: 12),
+                  Expanded(
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 16),
+                      child: SingleChildScrollView(
+                        padding: EdgeInsets.only(bottom: 100),
+                        physics: const ClampingScrollPhysics(),
+                        child: _glucoseResultSection(),
+                      ),
+                    ),
+                  ),
+                ],
               ),
-              child: _bottomSection(),
+            ),
+            Positioned(
+              left: 0,
+              right: 0,
+              bottom: 0,
+              child: Container(
+                padding: EdgeInsets.only(
+                  bottom: 8 + MediaQuery.of(context).padding.bottom / 2,
+                  left: 16,
+                  right: 16,
+                  top: 12,
+                ),
+                child: _bottomSection(),
+                color: Colors.white,
+              ),
             ),
           ],
         ),
@@ -166,6 +175,7 @@ class _PageAddBloodSugarResultState extends State<PageAddBloodSugarResult> {
     String formattedDateTime = DateFormat('HH:mm - dd/MM/yyyy').format(widget.data.dateTime);
     return CustomAppBar(
       backgroundColor: R.color.transparent,
+      centerTitle: true,
       title: Text(
         formattedDateTime,
         style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: R.color.textDark),
@@ -197,7 +207,7 @@ class _PageAddBloodSugarResultState extends State<PageAddBloodSugarResult> {
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
       ),
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
       child: Column(
         children: [
           const SizedBox(height: 24),
@@ -297,13 +307,14 @@ class _PageAddBloodSugarResultState extends State<PageAddBloodSugarResult> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Text(
                   R.string.ghi_chu.tr(),
                   style:
                       TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: R.color.textDark),
                 ),
-                Expanded(child: SizedBox()),
+                Spacer(),
                 GestureDetector(
                   onTap: _doEditNote,
                   child: Padding(
@@ -323,7 +334,6 @@ class _PageAddBloodSugarResultState extends State<PageAddBloodSugarResult> {
                 height: 16 / 12,
               ),
             ),
-            const SizedBox(height: 16),
             // images
             if (_files.isNotEmpty) ...[
               const SizedBox(height: 16),
@@ -358,6 +368,7 @@ class _PageAddBloodSugarResultState extends State<PageAddBloodSugarResult> {
                   );
                 }).toList(),
               ),
+              const SizedBox(height: 8),
             ],
           ],
         ),
@@ -537,9 +548,10 @@ class _SegmentedCircularGauge extends StatelessWidget {
                         color: Colors.black,
                       ),
                     ),
+                    SizedBox(height: 24),
                   ],
                 ),
-                positionFactor: 0.1,
+                positionFactor: 0,
                 angle: 90,
               ),
             ],

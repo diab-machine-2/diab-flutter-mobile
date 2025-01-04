@@ -201,63 +201,23 @@ class _AddBloodSugarControllerNewState
   }
 
   Future<void> _loadConfig() async {
-    // Prd01    Thức giấc
-    // Prd02    Trước ăn sáng
-    // Prd03    Sau ăn sáng
-    // Prd04    Trước ăn trưa
-    // Prd05    Sau ăn trưa
-    // Prd06    Trước ăn tối
-    // Prd07    Sau ăn tối
-    // Prd08    Trước tập thể dục
-    // Prd09    Sau tập thể dục
-    // Prd10    Giờ đi ngủ
-    // Prd11    Nửa đêm
-    // Prd12    Khác
-    // Prd13    Ăn sáng
-    // Prd14    Ăn trưa
-    // Prd15    Ăn tối
-
-    Map<String, String> mapTimeFrame = {
-      // Trước ăn
-      "Prd02": "Prd02",
-      "Prd04": "Prd02",
-      "Prd06": "Prd02",
-
-      // Sau ăn
-      "Prd03": "Prd03",
-      "Prd05": "Prd03",
-      "Prd07": "Prd03",
-
-      // Đường huyết đói
-      "*": "Prd01",
-    };
 
     BotToast.showLoading();
     // load concurrent 2 api
     final result = await Future.wait([
-      GlucoseClient().fetchFlucoseTimeFrame(
+      GlucoseClient().fetchFlucoseTimeFrameV2(
           time: selectedDate.millisecondsSinceEpoch ~/ 1000),
       GlucoseClient().fetchColorConfig(),
-      GlucoseClient().fetchFlucoseTimeFrame(),
+      GlucoseClient().fetchFlucoseTimeFrameV2(),
     ]);
 
     if (result.length > 2) {
       final timeFrames = result[0] as List<TimeFrameModel>;
       final colors = result[1] as List<GlucoseColorConfig>?;
       final timeFramesFromApi = result[2] as List<TimeFrameModel>;
-      _times.addAll(timeFramesFromApi.where((e) => mapTimeFrame.values.contains(e.code)));
+      _times.clear();
+      _times.addAll(timeFramesFromApi);
       _times.sort((a, b) => a.code!.compareTo(b.code!));
-
-      // map name
-      _times.forEach((e) {
-        if (e.code! == 'Prd01') {
-          e.name = R.string.duong_huyet_doi;
-        } else if (e.code! == 'Prd02') {
-          e.name = R.string.truoc_an;
-        } else if (e.code! == 'Prd03') {
-          e.name = R.string.sau_an;
-        }
-      });
 
       if (colors != null) {
         _colorList = colors.map(((e) {
@@ -269,7 +229,7 @@ class _AddBloodSugarControllerNewState
       selectedTimeFrame = timeFrames.length == 0 ? null : timeFrames.first;
       if (selectedTimeFrame != null) {
         selectedTimeFrame = _times.firstWhere(
-          (e) => e.code! == mapTimeFrame[selectedTimeFrame!.code!],
+          (e) => e.code! == selectedTimeFrame!.code!,
           orElse: () => _times.first,
         );
         _lastTimeFrameIndex = _times.indexOf(selectedTimeFrame!);
@@ -293,9 +253,6 @@ class _AddBloodSugarControllerNewState
         FocusScope.of(context).unfocus();
       },
       child: PopScope(
-        onPopInvoked: (bool didPop) async {
-          _showDialogSave();
-        },
         canPop: false,
         child: Scaffold(
           backgroundColor: R.color.backgroundColor,

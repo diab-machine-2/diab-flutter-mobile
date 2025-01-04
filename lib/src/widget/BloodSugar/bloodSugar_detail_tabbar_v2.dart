@@ -5,8 +5,6 @@ import 'package:flutter_observer/Observer.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/firebase_tracking/activity_list_tracking.dart';
 import 'package:medical/src/app_setting/firebase_tracking/kpi_glycemic_tracking.dart';
-import 'package:medical/src/modal/HbA1C/short_gui.dart';
-import 'package:medical/src/repo/HbA1C/HbA1C_client.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/components/custom_action_descriptipn.dart';
@@ -15,7 +13,6 @@ import 'package:medical/src/widget/home/fliter_enum.dart';
 import 'package:medical/src/widget/my_plan_screens/lesson_tab/lesson_detail/lesson_detail_page.dart';
 import 'package:medical/src/widget/tabbar/fillter_bloodSugar_panel.dart';
 import 'package:medical/src/widgets/common_page.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../app_setting/app_setting.dart';
 import 'widget/bloodSugar_chart.dart';
@@ -50,31 +47,22 @@ class _BloodSugarDetailTabbarControllerState extends State<BloodSugarDetailTabba
   late String name = R.string.filter_day.tr(args: ['30']);
   String? glucoseID;
 
-  ShortGuiModel? des;
+  void _viewDetailListing() {
+    Navigator.pushNamed(context, NavigatorName.detail_blood_sugar_listing,
+        arguments: {'glucoseID': glucoseID, 'initPeriodFilterType': periodFilterType});
+  }
 
   @override
   void initState() {
     super.initState();
     Observable.instance.addObserver(this);
-    checkShowDes();
-    loadDescription();
     KpiGlycemicTracking.firebaseSetup();
-
-    // TODO: KpiGlycemicTracking.clickDetailTab();
-
-    // List<String> filters = await AppSettings.getHomeFilters();
-    // name = filters[ScreenList.BLOOD_SUGAR.index];
-    // selectedIndex = valueOfSelectedFilter[name]!;
   }
 
   @override
   void update(Observable observable, String? notifyName, Map<dynamic, dynamic>? map) {
     if (notifyName == 'glucose_change_data') {
-      // overViewKey.currentState?.reloadData(periodFilterType);
-      // detailKey.currentState?.reloadData(periodFilterType);
-      // if (map != null && map['index'] != null) {
-      //   _tabController!.animateTo(map['index']);
-      // }
+      _doReloadData(periodFilterType);
     }
   }
 
@@ -110,26 +98,6 @@ class _BloodSugarDetailTabbarControllerState extends State<BloodSugarDetailTabba
 
   void loadInputWithId(int index, String? id) {
     glucoseID = id;
-    // _tabController!.animateTo(index);
-
-    // if (detailKey.currentState != null) {
-    //   detailKey.currentState!.loadDataToID(periodFilterType);
-    // }
-  }
-
-  void checkShowDes() async {
-    final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
-    final SharedPreferences prefs = await _prefs;
-    final showDes = prefs.getBool('show_des_glucose');
-    prefs.setBool('show_des_glucose', false);
-    if (showDes == null || showDes) {
-      customActionDesKey.currentState!.showDes();
-    }
-  }
-
-  void loadDescription() async {
-    des = await HbA1CClient().fetchShortGuide(1);
-    setState(() {});
   }
 
   @override
@@ -139,121 +107,142 @@ class _BloodSugarDetailTabbarControllerState extends State<BloodSugarDetailTabba
       body: CommonPage(
         background: R.drawable.bg_glucose,
         title: R.string.duong_huyet.tr(),
-        appBarAction: GestureDetector(
-          onTap: () {},
-          child: Padding(
-            padding: const EdgeInsets.only(right: 8),
-            child: TextButton(
-              onPressed: () {
-                Navigator.of(context).pushNamed(NavigatorName.glucose_intro_2nd_page);
-              },
-              child: Text(
-                R.string.huong_dan.tr(),
-                style:
-                    TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: R.color.textDark),
-              ),
+        appBarAction: Padding(
+          padding: const EdgeInsets.only(right: 8),
+          child: TextButton(
+            onPressed: () {
+              Navigator.of(context).pushNamed(NavigatorName.glucose_intro_2nd_page);
+            },
+            child: Text(
+              R.string.huong_dan.tr(),
+              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: R.color.textDark),
             ),
           ),
         ),
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              const SizedBox(height: 12),
-              _sectionFilter(),
-              const SizedBox(height: 24),
-              BloodSugarChart(
-                key: sugarChartKey,
-                periodFilterType: periodFilterType,
-              ),
-              const SizedBox(height: 14),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: BloodSugarDetail(
-                  key: sugarDetailKey,
-                  periodFilterType: periodFilterType,
-                ),
-              ),
-
-              // Compare chart will align itself if have data
-              // const SizedBox(height: 16),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: BloodSugarCompareChart(
-                  key: sugarCompareKey,
-                  periodFilterType: periodFilterType,
-                ),
-              ),
-
-              const SizedBox(height: 24),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12),
-                child: GlucoseLessonSection(
-                  onLessonTap: (lesson) => _navigateToLessonDetail(lesson.id, lesson.type),
-                ),
-              ),
-
-              const SizedBox(height: 32),
-
-              // Buttons
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: InkWell(
-                  onTap: () {
-                    Navigator.pushNamed(context, NavigatorName.schedule_glucose);
-                  },
-                  child: Container(
-                    height: 48,
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      color: R.color.gray_btn,
-                      borderRadius: BorderRadius.circular(24),
+        child: Stack(
+          children: [
+            Positioned.fill(
+              child: SingleChildScrollView(
+                padding: EdgeInsets.only(bottom: 128),
+                child: Column(
+                  children: [
+                    const SizedBox(height: 12),
+                    _sectionFilter(),
+                    const SizedBox(height: 24),
+                    BloodSugarChart(
+                      key: sugarChartKey,
+                      periodFilterType: periodFilterType,
                     ),
-                    child: Center(
-                      child: Text(
-                        R.string.blood_sugar_schedule_single_line.tr(),
-                        style: TextStyle(
-                          color: R.color.dark,
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
+                    const SizedBox(height: 14),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: BloodSugarDetail(
+                        key: sugarDetailKey,
+                        periodFilterType: periodFilterType,
+                        onViewDetail: _viewDetailListing,
+                      ),
+                    ),
+
+                    // Compare chart will align itself if have data
+                    // const SizedBox(height: 16),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: BloodSugarCompareChart(
+                        key: sugarCompareKey,
+                        periodFilterType: periodFilterType,
+                        onViewDetail: _viewDetailListing,
+                      ),
+                    ),
+
+                    const SizedBox(height: 24),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                      child: GlucoseLessonSection(
+                        onLessonTap: (lesson) => _navigateToLessonDetail(lesson.id, lesson.type),
+                      ),
+                    ),
+
+                    const SizedBox(height: 32),
+                  ],
+                ),
+              ),
+            ),
+            Positioned(
+              left: 0,
+              right: 0,
+              bottom: 0,
+              child: Container(
+                padding: EdgeInsets.only(
+                  bottom: 8 + MediaQuery.of(context).padding.bottom / 2,
+                  left: 16,
+                  right: 16,
+                  top: 12,
+                ),
+                child: Column(
+                  children: [
+                    // Buttons
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: InkWell(
+                        onTap: () {
+                          Navigator.pushNamed(context, NavigatorName.schedule_glucose);
+                        },
+                        child: Container(
+                          height: 48,
+                          width: double.infinity,
+                          decoration: BoxDecoration(
+                            color: R.color.gray_btn,
+                            borderRadius: BorderRadius.circular(24),
+                          ),
+                          child: Center(
+                            child: Text(
+                              R.string.blood_sugar_schedule_single_line.tr(),
+                              style: TextStyle(
+                                color: R.color.dark,
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 16),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: InkWell(
-                  onTap: () {
-                    Navigator.of(context).pushNamed(
-                      NavigatorName.add_blood_sugar_new,
-                      arguments: {'type': 'input'},
-                    );
-                  },
-                  child: Container(
-                    height: 48,
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      color: R.color.accentColor,
-                      borderRadius: BorderRadius.circular(24),
-                    ),
-                    child: Center(
-                      child: Text(
-                        R.string.blood_sugar_input.tr(),
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
+                    const SizedBox(height: 16),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: InkWell(
+                        onTap: () {
+                          Navigator.of(context).pushNamed(
+                            NavigatorName.add_blood_sugar_new,
+                            arguments: {'type': 'input'},
+                          );
+                        },
+                        child: Container(
+                          height: 48,
+                          width: double.infinity,
+                          decoration: BoxDecoration(
+                            color: R.color.accentColor,
+                            borderRadius: BorderRadius.circular(24),
+                          ),
+                          child: Center(
+                            child: Text(
+                              R.string.blood_sugar_input.tr(),
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
                         ),
                       ),
                     ),
-                  ),
+                  ],
                 ),
+                color: Colors.white,
               ),
-              const SizedBox(height: 32),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -306,16 +295,19 @@ class _BloodSugarDetailTabbarControllerState extends State<BloodSugarDetailTabba
             ),
           ),
           const SizedBox(width: 6),
-          SizedBox(
-            width: 36,
-            height: 36,
-            child: DecoratedBox(
-              decoration: BoxDecoration(
-                color: R.color.white,
-                borderRadius: BorderRadius.circular(18),
-                border: Border.all(color: R.color.color0xffE5E5E5),
+          InkWell(
+            onTap: _viewDetailListing,
+            child: SizedBox(
+              width: 36,
+              height: 36,
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  color: R.color.white,
+                  borderRadius: BorderRadius.circular(18),
+                  border: Border.all(color: R.color.color0xffE5E5E5),
+                ),
+                child: Center(child: Icon(Icons.history, color: R.color.textDark, size: 20)),
               ),
-              child: Center(child: Icon(Icons.history, color: R.color.textDark, size: 20)),
             ),
           ),
         ],

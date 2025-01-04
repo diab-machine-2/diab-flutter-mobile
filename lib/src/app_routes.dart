@@ -6,6 +6,7 @@ import 'package:medical/src/widget/utilities/utilities_page.dart';
 
 import 'utils/navigator_name.dart';
 import 'widget/BloodSugar/add_bloodSugar_result.dart';
+import 'widget/BloodSugar/bloodSugar_detail.dart';
 import 'widget/BloodSugar/bloodSugar_result.dto.dart';
 import 'widget/Food/daily_nutrition/daily_nutrition.dart';
 import 'widget/food_menu_screens/food_menu/food_menu.dart';
@@ -72,6 +73,13 @@ class AppRoutes {
         break;
       case NavigatorName.glucose_intro_2nd_page:
         page = GlucoseIntro2ndPage();
+        break;
+      case NavigatorName.detail_blood_sugar_listing:
+        final data = settings.arguments as Map<String, dynamic>?;
+        page = BloodSugarDetailController(
+          glucoseID: data?['glucoseID'],
+          initPeriodFilterType: data?['initPeriodFilterType'],
+        );
         break;
       default:
         break;

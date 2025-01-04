@@ -41,6 +41,20 @@ class GlucoseClient extends FetchClient {
     // }
   }
 
+  Future<List<TimeFrameModel>> fetchFlucoseTimeFrameV2({int? time}) async {
+    // try {
+    final Response response = await super.fetchData(
+        url: '/app/TimeFrame/Glucose',
+        params: time == null ? {} : {'time': time.toString()});
+
+    if (response.statusCode == 200) {
+      return TimeFrameModel.toList(response.data['data']);
+    } else {
+      final error = Error.fromJson(response);
+      throw error;
+    }
+  }
+
   Future<List<GlucoseColorConfig>?> fetchColorConfig() async {
     final Response response = await super.fetchData(url: '/App/Glucose/Config/Status', params: {});
 

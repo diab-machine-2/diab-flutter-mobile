@@ -1,5 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/app_setting/firebase_tracking/activity_list_tracking.dart';
@@ -231,6 +232,7 @@ class _GlucoseIntro1stPageState extends State<GlucoseIntro1stPage> {
       onTap: () => _navigateToLessonDetail(lesson.id, lesson.type),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+        height: 152.h,
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.all(Radius.circular(16)),
