@@ -90,6 +90,11 @@ class _DsmesAppointmentHistoryPageState
                     : SmartRefresher(
                         controller: _refreshController,
                         enablePullUp: _cubit.hasMore,
+                        footer: ClassicFooter(
+                          loadingText: "",
+                          canLoadingText: R.string.release_to_load_more.tr(),
+                          idleText: R.string.pull_up_to_load_more.tr(),
+                        ),
                         onRefresh: () async {
                           await _cubit.getDsmesAppointmentList(
                               isRefresh: true, page: 1);

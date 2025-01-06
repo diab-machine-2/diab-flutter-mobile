@@ -2343,12 +2343,8 @@ class _ProfileInfoControllerState extends State<ProfileInfoController>
                                 final UserModel userInfo =
                                     AppSettings.userInfo!;
 
-                                if (phone.startsWith('0')) {
-                                  final formattedNumber =
-                                      '+84${phone.substring(1)}';
-                                  phone = formattedNumber;
-                                }
-                                
+                                phone = Utils.formatPhoneNumber(phone);
+
                                 if (isPhoneNumber2) {
                                   updateUserInfo(
                                     userInfo.copyWith(

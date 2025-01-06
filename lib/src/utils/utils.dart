@@ -618,13 +618,20 @@ class Utils {
     );
   }
 
-   static BoxShadow getBoxShadowDropButton() {
+  static BoxShadow getBoxShadowDropButton() {
     return BoxShadow(
       color: R.color.shadowColorNew.withOpacity(0.08),
       spreadRadius: 0,
       blurRadius: 8,
       offset: Offset(2, -4),
     );
+  }
+
+  static String formatPhoneNumber(String phoneNumber) {
+    if (phoneNumber.startsWith('0')) {
+      return '+84${phoneNumber.substring(1)}';
+    }
+    return phoneNumber;
   }
 }
 

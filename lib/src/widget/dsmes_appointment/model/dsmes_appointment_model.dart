@@ -48,7 +48,7 @@ class DsmesAppointment {
   final int showChatWithDoctor;
   final int canReview;
   final int alreadyReview;
-  final List<dynamic> doctor;
+  final Doctor? doctor;
   final ClinicInfo clinic;
   final TeleMedicine? teleMedicine;
   final int hasAttachment;
@@ -172,7 +172,11 @@ class DsmesAppointment {
       showChatWithDoctor: json['show_chat_with_doctor'] ?? 0,
       canReview: json['can_review'] ?? 0,
       alreadyReview: json['already_review'] ?? 0,
-      doctor: json['doctor_info'] ?? json['doctor'] ?? [],
+      doctor: json['doctor_info'] is Map
+          ? Doctor.fromJson(json['doctor_info'])
+          : json['doctor'] is Map
+              ? Doctor.fromJson(json['doctor'])
+              : null,
       clinic: ClinicInfo.fromJson(json['clinic_info'] ?? json['clinic'] ?? {}),
       teleMedicine: json['teleMedicine'] != null && json['teleMedicine'] is Map
           ? TeleMedicine.fromJson(json['teleMedicine'])
@@ -285,6 +289,78 @@ class TeleMedicine {
   factory TeleMedicine.fromJson(Map<String, dynamic> json) {
     return TeleMedicine(
       id: json['id'] ?? 0,
+    );
+  }
+}
+
+class Doctor {
+  final String displayName;
+  final int graduate;
+  final int id;
+  final String avatar;
+  final List<DoctorSpecialty> specialty;
+  final String graduateName;
+  final String name;
+
+  Doctor({
+    required this.displayName,
+    required this.graduate,
+    required this.id,
+    required this.avatar,
+    required this.specialty,
+    required this.graduateName,
+    required this.name,
+  });
+
+  factory Doctor.fromJson(Map<String, dynamic> json) {
+    return Doctor(
+      displayName: json['display_name'] ?? '',
+      graduate: json['graduate'] ?? 0,
+      id: json['id'] ?? 0,
+      avatar: json['avatar'] ?? '',
+      specialty: (json['specialty'] as List?)
+              ?.map((e) => DoctorSpecialty.fromJson(e))
+              .toList() ??
+          [],
+      graduateName: json['graduate_name'] ?? '',
+      name: json['name'] ?? '',
+    );
+  }
+}
+
+class DoctorSpecialty {
+  final String name;
+  final int specialtyId;
+  final Pivot pivot;
+
+  DoctorSpecialty({
+    required this.name,
+    required this.specialtyId,
+    required this.pivot,
+  });
+
+  factory DoctorSpecialty.fromJson(Map<String, dynamic> json) {
+    return DoctorSpecialty(
+      name: json['name'] ?? '',
+      specialtyId: json['specialty_id'] ?? 0,
+      pivot: Pivot.fromJson(json['pivot'] ?? {}),
+    );
+  }
+}
+
+class Pivot {
+  final int doctorId;
+  final int specialtyId;
+
+  Pivot({
+    required this.doctorId,
+    required this.specialtyId,
+  });
+
+  factory Pivot.fromJson(Map<String, dynamic> json) {
+    return Pivot(
+      doctorId: json['doctor_id'] ?? 0,
+      specialtyId: json['specialty_id'] ?? 0,
     );
   }
 }

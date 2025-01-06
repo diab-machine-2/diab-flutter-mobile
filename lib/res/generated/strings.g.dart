@@ -1213,4 +1213,6 @@ class Strings {
   String get max_selected_demand_warning => 'max_selected_demand_warning';
   String get empty_history_appointment => 'empty_history_appointment';
   String get select_booking_dates_warning => 'select_booking_dates_warning';
+  String get pull_up_to_load_more => 'pull_up_to_load_more';
+  String get release_to_load_more => 'release_to_load_more';
 }

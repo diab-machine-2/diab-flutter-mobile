@@ -19,6 +19,7 @@ import 'package:medical/src/model/response/get_dsmes_appointment_detail_response
 import 'package:medical/src/model/response/get_dsmes_appointment_response.dart';
 import 'package:medical/src/model/service/api_result.dart';
 import 'package:medical/src/model/service/network_exceptions.dart';
+import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/dsmes_appointment/model/dsmes_appointment_model.dart';
 import 'package:medical/src/widget/dsmes_appointment/dsmes_appointment_state.dart';
 import 'package:medical/src/widget/dsmes_appointment/model/dsmes_clinic_model.dart';
@@ -43,12 +44,14 @@ class DsmesAppointmentCubit extends Cubit<DsmesAppointmentState> {
       : super(InitialDsmesAppointmentState());
 
   Future<void> initDsmesBooking() async {
+    emit(DsmesAppointmentLoading());
     final isExist = await isExistDocosanUser();
     if (isExist) {
       await registerDocosanUser(
           phoneNumber: AppSettings.userInfo?.phoneNumber ?? '');
       await getDsmesAppointmentList();
     }
+    emit(DsmesAppointmentLoaded());
   }
 
   Future<bool> isExistDocosanUser() async {
@@ -56,8 +59,8 @@ class DsmesAppointmentCubit extends Cubit<DsmesAppointmentState> {
     if (phoneNumber == null) {
       return false;
     }
-    final isExist =
-        await appRepository.isExistDocosanUser(phoneNumber: phoneNumber);
+    final isExist = await appRepository.isExistDocosanUser(
+        phoneNumber: Utils.formatPhoneNumber(phoneNumber));
     return isExist;
   }
 
@@ -69,7 +72,7 @@ class DsmesAppointmentCubit extends Cubit<DsmesAppointmentState> {
     final gender = AppSettings.userInfo?.gender == 'Nam' ? '1' : '0';
     final email = AppSettings.userInfo?.email ?? '';
     final request = RegisterDocosanUserRequest(
-      phoneNumber: phoneNumber,
+      phoneNumber: Utils.formatPhoneNumber(phoneNumber),
       displayName: displayName,
       gender: gender,
       isGetCaresOrderInfo: '0',
@@ -86,7 +89,7 @@ class DsmesAppointmentCubit extends Cubit<DsmesAppointmentState> {
   }
 
   Future<void> getDsmesAppointmentList(
-      {int page = 1, bool isRefresh = false}) async {
+      {int page = 1, bool isRefresh = false, bool showLoading = true}) async {
     if (isRefresh) {
       // myAppointments.clear();
       currentPage = 1;
@@ -95,8 +98,11 @@ class DsmesAppointmentCubit extends Cubit<DsmesAppointmentState> {
 
     if (!hasMore) return;
 
-    emit(
-        isRefresh ? InitialDsmesAppointmentState() : DsmesAppointmentLoading());
+    if (showLoading) {
+      emit(isRefresh
+          ? InitialDsmesAppointmentState()
+          : DsmesAppointmentLoading());
+    }
     ApiResult<GetDsmesAppointmentResponse> apiResult =
         await appRepository.getDsmesAppointmentList(page: page);
     apiResult.when(success: (GetDsmesAppointmentResponse response) {
@@ -105,10 +111,10 @@ class DsmesAppointmentCubit extends Cubit<DsmesAppointmentState> {
 
       if (isRefresh) {
         myAppointments = response.data;
-        listFilteredData = _getFilteredData();
+        listFilteredData = _getMostRelevantAppointment();
       } else {
         myAppointments.addAll(response.data);
-        listFilteredData = _getFilteredData();
+        listFilteredData = _getMostRelevantAppointment();
       }
       emit(DsmesAppointmentLoaded());
     }, failure: (NetworkExceptions error) {
@@ -279,6 +285,56 @@ class DsmesAppointmentCubit extends Cubit<DsmesAppointmentState> {
               data.status == DSMES_STATUS_APPROVE);
     }).toList();
     return filteredData;
+  }
+
+  List<DsmesAppointment> _getMostRelevantAppointment() {
+    final now = DateTime.now();
+    final threeDaysAgo = now.subtract(Duration(days: 3));
+
+    // Sort appointments by start time
+    myAppointments.sort((a, b) {
+      final aTime = DateFormat('yyyy-MM-dd HH:mm:ss').parse(a.startTime);
+      final bTime = DateFormat('yyyy-MM-dd HH:mm:ss').parse(b.startTime);
+      return aTime.compareTo(bTime);
+    });
+
+    if (myAppointments.isEmpty) return [];
+
+    // Priority 1: Upcoming appointment closest to now
+    final upcomingAppointment = myAppointments.firstWhere(
+      (appointment) {
+        final startTime =
+            DateFormat('yyyy-MM-dd HH:mm:ss').parse(appointment.startTime);
+        return startTime.isAfter(now) &&
+            appointment.status == DSMES_STATUS_APPROVE;
+      },
+      orElse: () => myAppointments.firstWhere(
+        // Priority 2: Most recent approved appointment not after now
+        (appointment) {
+          final startTime =
+              DateFormat('yyyy-MM-dd HH:mm:ss').parse(appointment.startTime);
+          return !startTime.isAfter(now) &&
+              appointment.status == DSMES_STATUS_APPROVE;
+        },
+        orElse: () => myAppointments.firstWhere(
+          // Priority 3: Most recent requested appointment
+          (appointment) => appointment.status == DSMES_STATUS_REQUEST,
+          orElse: () => myAppointments.firstWhere(
+            // Priority 4: Completed appointment within last 3 days
+            (appointment) {
+              final endTime =
+                  DateFormat('yyyy-MM-dd HH:mm:ss').parse(appointment.endTime);
+              return endTime.isBefore(now) &&
+                  endTime.isAfter(threeDaysAgo) &&
+                  appointment.status == DSMES_STATUS_APPROVE;
+            },
+            orElse: () => myAppointments.first,
+          ),
+        ),
+      ),
+    );
+
+    return [upcomingAppointment];
   }
 
   initCreateDsmesBookingRequest({String locale = 'vi'}) {

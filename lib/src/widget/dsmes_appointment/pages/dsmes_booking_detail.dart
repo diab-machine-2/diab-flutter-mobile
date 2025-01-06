@@ -205,7 +205,7 @@ class _DsmesBookingDetailState extends State<DsmesBookingDetail> {
                         child: _buildPrimaryButton(
                           R.string.join_now.tr(),
                           () async {
-                            // Handle join zoom action
+                            _handleJoinRoom();
                           },
                         ),
                       ),
@@ -218,6 +218,13 @@ class _DsmesBookingDetailState extends State<DsmesBookingDetail> {
         ),
       ],
     );
+  }
+
+  _handleJoinRoom() async {
+    await DsmesNavigationMixin.navigationKey.currentState
+        ?.pushNamed(NavigatorName.dsmes_booking_online_join_room, arguments: {
+      'telemedicineId': widget.appointment.teleMedicine?.id,
+    });
   }
 
   String getTimeRange(String startTime, String endTime) {
@@ -457,38 +464,42 @@ class _DsmesBookingDetailState extends State<DsmesBookingDetail> {
                   ),
                 ],
               ),
-            GapH(4),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Flexible(
-                  flex: 3,
-                  child: Text(
-                    R.string.address.tr(),
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w400,
-                      color: R.color.color0xff777E90,
+            if (widget.appointment.mode ==
+                DsmesAppointmentMode.atClinic.toString())
+              GapH(4),
+            if (widget.appointment.mode ==
+                DsmesAppointmentMode.atClinic.toString())
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Flexible(
+                    flex: 3,
+                    child: Text(
+                      R.string.address.tr(),
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w400,
+                        color: R.color.color0xff777E90,
+                      ),
                     ),
                   ),
-                ),
-                Flexible(
-                  flex: 7,
-                  child: Text(
-                    widget.appointment.clinic.address,
-                    maxLines: 2,
-                    textAlign: TextAlign.end,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: R.color.color0xff141416,
+                  Flexible(
+                    flex: 7,
+                    child: Text(
+                      widget.appointment.clinic.address,
+                      maxLines: 2,
+                      textAlign: TextAlign.end,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: R.color.color0xff141416,
+                      ),
                     ),
                   ),
-                ),
-              ],
-            ),
+                ],
+              ),
           ],
         ),
       ),

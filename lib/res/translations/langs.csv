@@ -1185,4 +1185,6 @@ select_consulting_demand,"Chọn nhu cầu tư vấn","Select consulting demand"
 selected_demand,"Nhu cầu đã chọn","Selected demand",
 max_selected_demand_warning,"Chọn tối đa 2 dịch vụ để đảm bảo\nthời gian tư vấn tốt nhất","Select up to 2 services to ensure\nthe best consulting time.",
 empty_history_appointment,"Bạn chưa có lịch hẹn nào","You have no appointment",
-select_booking_dates_warning,"Chỉ hỗ trợ đặt trước tối đa 30 ngày\nVui lòng chọn ngày có sẵn","Only support booking up to 30 days in advance\nPlease choose a date that is available."
+select_booking_dates_warning,"Chỉ hỗ trợ đặt trước tối đa 30 ngày\nVui lòng chọn ngày có sẵn","Only support booking up to 30 days in advance\nPlease choose a date that is available.",
+pull_up_to_load_more,"Kéo lên để tải thêm","Pull up to load more",
+release_to_load_more,"Thả ra để tải thêm","Release to load more"

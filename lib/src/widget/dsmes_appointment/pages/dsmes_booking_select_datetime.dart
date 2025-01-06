@@ -97,19 +97,6 @@ class _DsmesCalendarSectionState extends State<DsmesCalendarSection> {
       ..sort();
   }
 
-  Future<List<BookingSchedule>> _getAvailableBookingSchedule(
-      {DateTime? bookingDate}) async {
-    final date = bookingDate ?? DateTime.now();
-
-    final List<BookingSchedule> scheduleDates = await _getScheduleDates();
-
-    if (scheduleDates.isEmpty) {
-      return [];
-    }
-
-    return _filterAvailableSchedules(scheduleDates, date);
-  }
-
   Future<List<BookingSchedule>> _getScheduleDates() async {
     return widget.serviceType == DsmesAppointmentMode.atClinic.toString()
         ? _cubit.selectedClinic?.getBookingSchedules() ?? []
@@ -382,22 +369,22 @@ class _DsmesCalendarSectionState extends State<DsmesCalendarSection> {
             },
             onDateChanged: (datetime) async {
               if (datetime != null) {
-                // First check if morning slots exist for the new date
-                final morningSchedules = _filterAvailableSchedules(
-                  fullSchedule,
-                  datetime,
-                )
-                    .where((schedule) =>
-                        DateTime.parse(schedule.startTime).hour < 12)
-                    .toList();
-
+                // Always start with morning when changing dates
                 setState(() {
                   selectedDate = datetime;
-                  // Set to morning only if morning slots exist, otherwise afternoon
-                  isMorningSelected = morningSchedules.isNotEmpty;
+                  isMorningSelected = true;
                   availableBookingSchedule =
                       _filterAvailableSchedules(fullSchedule, datetime);
                 });
+
+                // If morning is empty, switch to afternoon
+                if (availableBookingSchedule.isEmpty) {
+                  setState(() {
+                    isMorningSelected = false;
+                    availableBookingSchedule =
+                        _filterAvailableSchedules(fullSchedule, datetime);
+                  });
+                }
               }
             },
           ),

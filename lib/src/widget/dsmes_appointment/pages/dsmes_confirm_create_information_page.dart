@@ -770,6 +770,11 @@ class _DsmesConfirmCreateInformationState
                   setState(() {});
                   FocusScope.of(context).unfocus();
                 },
+                onChanged: (value) {
+                  setState(() {
+                    // This will trigger a rebuild and update the counter
+                  });
+                },
                 // buildCounter: (context,
                 //         {required currentLength,
                 //         required isFocused,
@@ -876,9 +881,9 @@ class _DsmesConfirmCreateInformationState
               child: TextFormField(
                 minLines: 1,
                 maxLines: 1,
-                maxLength: 20,
+                maxLength: 30,
                 inputFormatters: [
-                  LengthLimitingTextFieldFormatterFixed(20),
+                  LengthLimitingTextFieldFormatterFixed(30),
                 ],
                 obscureText: false,
                 controller: nameController,
@@ -967,8 +972,8 @@ class _DsmesConfirmCreateInformationState
               }
 
               setState(() {
-                requesterName = nameController.text;
-                requesterPhone = phoneController.text;
+                requesterName = nameController.text.trim();
+                requesterPhone = phoneController.text.trim();
               });
 
               _cubit.updateCreateDsmesBookingRequestRequesterInfo(
@@ -1233,11 +1238,7 @@ class _DsmesConfirmCreateInformationState
                           } else {
                             final UserModel userInfo = AppSettings.userInfo!;
 
-                            if (phone.startsWith('0')) {
-                              final formattedNumber =
-                                  '+84${phone.substring(1)}';
-                              phone = formattedNumber;
-                            }
+                            phone = Utils.formatPhoneNumber(phone);
 
                             updateUserInfo(
                               userInfo.copyWith(

@@ -80,48 +80,48 @@ class _DsmesBookingOfflinePageState extends State<DsmesBookingOfflinePage> {
                   color: R.color.white),
             ),
             actions: [
-              GestureDetector(
-                onTap: () async {
-                  DsmesNavigationMixin.navigationKey.currentState
-                      ?.pushNamed(NavigatorName.dsmes_booking_history);
-                },
-                child: Container(
-                  width: 90,
-                  height: 33,
-                  padding: EdgeInsets.symmetric(vertical: 4, horizontal: 6),
-                  margin: EdgeInsets.fromLTRB(0, 12, 16, 12),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(8),
-                    color: R.color.color0xffECFFFD,
-                    border: Border.all(
-                      color: R.color.color0xffA4E3DD,
-                    ),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      SvgPicture.asset(
-                        R.icons.ic_clock,
-                        width: 16,
-                        height: 16,
-                        color: R.color.color0xff239A90,
-                        fit: BoxFit.scaleDown,
-                      ),
-                      GapW(4),
-                      Text(
-                        R.string.consulting_history.tr(),
-                        style: TextStyle(
-                          fontSize: 14,
-                          // fontFamily: 'sfpro',
-                          fontWeight: FontWeight.w700,
-                          color: R.color.color0xff239A90,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
+              // GestureDetector(
+              //   onTap: () async {
+              //     DsmesNavigationMixin.navigationKey.currentState
+              //         ?.pushNamed(NavigatorName.dsmes_booking_history);
+              //   },
+              //   child: Container(
+              //     width: 90,
+              //     height: 33,
+              //     padding: EdgeInsets.symmetric(vertical: 4, horizontal: 6),
+              //     margin: EdgeInsets.fromLTRB(0, 12, 16, 12),
+              //     decoration: BoxDecoration(
+              //       borderRadius: BorderRadius.circular(8),
+              //       color: R.color.color0xffECFFFD,
+              //       border: Border.all(
+              //         color: R.color.color0xffA4E3DD,
+              //       ),
+              //     ),
+              //     child: Row(
+              //       mainAxisSize: MainAxisSize.min,
+              //       mainAxisAlignment: MainAxisAlignment.center,
+              //       children: [
+              //         SvgPicture.asset(
+              //           R.icons.ic_clock,
+              //           width: 16,
+              //           height: 16,
+              //           color: R.color.color0xff239A90,
+              //           fit: BoxFit.scaleDown,
+              //         ),
+              //         GapW(4),
+              //         Text(
+              //           R.string.consulting_history.tr(),
+              //           style: TextStyle(
+              //             fontSize: 14,
+              //             // fontFamily: 'sfpro',
+              //             fontWeight: FontWeight.w700,
+              //             color: R.color.color0xff239A90,
+              //           ),
+              //         ),
+              //       ],
+              //     ),
+              //   ),
+              // ),
             ],
             leadingIcon: IconButton(
               splashColor: Colors.transparent,
