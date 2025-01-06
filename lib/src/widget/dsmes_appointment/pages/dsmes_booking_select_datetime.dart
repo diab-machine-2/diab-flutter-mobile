@@ -3,14 +3,17 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/utils/app_media_query.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/extention.dart';
 import 'package:medical/src/utils/navigator_name.dart';
+import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/dsmes_appointment/dsmes_appointment_cubit.dart';
 import 'package:medical/src/widget/dsmes_appointment/model/dsmes_appointment_model.dart';
 import 'package:medical/src/widget/dsmes_appointment/model/dsmes_clinic_model.dart';
 import 'package:medical/src/widget/dsmes_appointment/pages/dsmes_navigation_mixin.dart';
+import 'package:medical/src/widget/dsmes_appointment/widgets/dsmes_empty_widget.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widgets/CalendarPicker/custom_date_picker_horizontal.dart';
 import 'package:medical/src/widgets/CalendarPicker/picker_helper.dart';
@@ -36,6 +39,7 @@ class _DsmesCalendarSectionState extends State<DsmesCalendarSection> {
   DateTime? selectedDate;
   bool isMorningSelected = true;
   BookingSchedule? selectedBookingSchedule;
+  bool _isProcessing = false;
 
   late List<BookingSchedule> availableBookingSchedule = [];
   late List<DateTime> activeDates = [];
@@ -114,11 +118,16 @@ class _DsmesCalendarSectionState extends State<DsmesCalendarSection> {
 
   List<BookingSchedule> _filterAvailableSchedules(
       List<BookingSchedule> schedules, DateTime date) {
-    return schedules
-        .where((schedule) =>
-            schedule.isAvailable == true &&
-            DateTime.parse(schedule.startTime).isSameDayWith(date))
-        .toList();
+    return schedules.where((schedule) {
+      var scheduleDateTime = DateTime.parse(schedule.startTime);
+      bool isSameDay = scheduleDateTime.isSameDayWith(date);
+      bool isAvailable = schedule.isAvailable == true;
+      bool isMorningSlot = isMorningSelected
+          ? scheduleDateTime.hour < 12
+          : scheduleDateTime.hour >= 12;
+
+      return isSameDay && isAvailable && isMorningSlot;
+    }).toList();
   }
 
   @override
@@ -133,25 +142,38 @@ class _DsmesCalendarSectionState extends State<DsmesCalendarSection> {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                CustomAppBar(
-                  backgroundColor: R.color.transparent,
-                  title: Text(
-                    R.string.pick_time.tr(),
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.w700,
-                      color: R.color.color0xff111515,
-                      fontFamily: 'sfpro',
+                DecoratedBox(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        R.color.greenGradientTop02,
+                        R.color.greenGradientBottom
+                      ],
+                      stops: [0.01, 0.99],
+                      begin: Alignment.bottomCenter,
+                      end: Alignment.topCenter,
                     ),
                   ),
-                  leadingIcon: IconButton(
-                    splashColor: R.color.transparent,
-                    highlightColor: R.color.transparent,
-                    icon: Icon(Icons.arrow_back, color: R.color.textDark),
-                    onPressed: () {
-                      DsmesNavigationMixin.navigationKey.currentState
-                          ?.pop(context);
-                    },
+                  child: CustomAppBar(
+                    backgroundColor: R.color.transparent,
+                    title: Text(
+                      R.string.pick_time.tr(),
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w700,
+                        color: R.color.white,
+                        fontFamily: 'sfpro',
+                      ),
+                    ),
+                    leadingIcon: IconButton(
+                      splashColor: R.color.transparent,
+                      highlightColor: R.color.transparent,
+                      icon: Icon(Icons.arrow_back, color: R.color.white),
+                      onPressed: () {
+                        DsmesNavigationMixin.navigationKey.currentState
+                            ?.pop(context);
+                      },
+                    ),
                   ),
                 ),
                 Expanded(
@@ -175,69 +197,82 @@ class _DsmesCalendarSectionState extends State<DsmesCalendarSection> {
               left: 0,
               right: 0,
               child: Container(
-                color: R.color.white,
+                decoration: BoxDecoration(
+                  color: R.color.white,
+                  boxShadow: [Utils.getBoxShadowDropButton()],
+                ),
                 child: Row(
                   children: [
                     Expanded(
                       child: _buildButton(R.string.tiep_tuc.tr(), () async {
+                        if (_isProcessing) return;
+
                         if (selectedBookingSchedule == null) {
                           Message.showToastMessage(
                               context, R.string.vui_long_chon_gio_kham.tr());
                           return;
                         }
 
-                        _cubit.updateCreateDsmesBookingRequestTime(
-                            startTime: selectedBookingSchedule!.startTime,
-                            endTime: selectedBookingSchedule!.endTime);
+                        setState(() => _isProcessing = true);
 
-                        final route = ModalRoute.of(context)?.settings;
-                        final args = route?.arguments as Map<String, dynamic>?;
-                        final isEditing = args?['isEditing'] ?? false;
+                        try {
+                          _cubit.updateCreateDsmesBookingRequestTime(
+                              startTime: selectedBookingSchedule!.startTime,
+                              endTime: selectedBookingSchedule!.endTime);
 
-                        if (isEditing) {
-                          // Pop until select_service to rebuild stack with new state
-                          DsmesNavigationMixin.navigationKey.currentState
-                              ?.popUntil((route) =>
-                                  route.settings.name ==
-                                  NavigatorName.dsmes_select_service);
+                          final route = ModalRoute.of(context)?.settings;
+                          final args =
+                              route?.arguments as Map<String, dynamic>?;
+                          final isEditing = args?['isEditing'] ?? false;
 
-                          // Replace select_service
-                          DsmesNavigationMixin.navigationKey.currentState
-                              ?.pushReplacementNamed(
-                                  NavigatorName.dsmes_select_service,
-                                  arguments: {
-                                'serviceType': widget.serviceType,
-                                'clinic': _cubit.selectedClinic,
-                              });
+                          if (isEditing) {
+                            // Pop until select_service to rebuild stack with new state
+                            DsmesNavigationMixin.navigationKey.currentState
+                                ?.popUntil((route) =>
+                                    route.settings.name ==
+                                    NavigatorName.dsmes_select_service);
 
-                          // Push new select_date with updated state
-                          DsmesNavigationMixin.navigationKey.currentState
-                              ?.pushNamed(
-                                  NavigatorName.dsmes_booking_select_date,
-                                  arguments: {
-                                'serviceType': widget.serviceType,
-                                'action': 'edit',
-                              });
+                            // Replace select_service
+                            DsmesNavigationMixin.navigationKey.currentState
+                                ?.pushReplacementNamed(
+                                    NavigatorName.dsmes_select_service,
+                                    arguments: {
+                                  'serviceType': widget.serviceType,
+                                  'action': widget.action,
+                                  'clinic': _cubit.selectedClinic,
+                                });
 
-                          // Push confirm info
-                          DsmesNavigationMixin.navigationKey.currentState
-                              ?.pushNamed(
-                                  NavigatorName.dsmes_confirm_information,
-                                  arguments: {
-                                'serviceType': widget.serviceType,
-                                'action': 'edit',
-                                'appointmentId': widget.appointmentId,
-                              });
-                        } else {
-                          // Normal flow
-                          DsmesNavigationMixin.navigationKey.currentState
-                              ?.pushNamed(
-                                  NavigatorName.dsmes_confirm_information,
-                                  arguments: {
-                                'serviceType': widget.serviceType,
-                                'action': 'create',
-                                'appointmentId': widget.appointmentId,
-                              });
+                            // Push new select_date with updated state
+                            DsmesNavigationMixin.navigationKey.currentState
+                                ?.pushNamed(
+                                    NavigatorName.dsmes_booking_select_date,
+                                    arguments: {
+                                  'serviceType': widget.serviceType,
+                                  'action': widget.action,
+                                });
+
+                            // Push confirm info
+                            DsmesNavigationMixin.navigationKey.currentState
+                                ?.pushNamed(
+                                    NavigatorName.dsmes_confirm_information,
+                                    arguments: {
+                                  'serviceType': widget.serviceType,
+                                  'action': widget.action,
+                                  'appointmentId': widget.appointmentId,
+                                });
+                          } else {
+                            // Normal flow
+                            DsmesNavigationMixin.navigationKey.currentState
+                                ?.pushNamed(
+                                    NavigatorName.dsmes_confirm_information,
+                                    arguments: {
+                                  'serviceType': widget.serviceType,
+                                  'action': widget.action,
+                                  'appointmentId': widget.appointmentId,
+                                });
+                          }
+                        } finally {
+                          setState(() => _isProcessing = false);
                         }
                       }),
                     ),
@@ -286,10 +321,13 @@ class _DsmesCalendarSectionState extends State<DsmesCalendarSection> {
 
   _buildSectionCalendarBooking() {
     return Container(
-      margin: EdgeInsets.fromLTRB(16, 0, 16, 24),
+      margin: EdgeInsets.fromLTRB(12, 12, 12, 24),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16.0),
+        boxShadow: [
+          Utils.getBoxShadowDropCard(),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -311,15 +349,54 @@ class _DsmesCalendarSectionState extends State<DsmesCalendarSection> {
             activeDates: activeDates,
             lastDate: _getLastDate(),
             datesRange: Const.MAX_DAY_RANGE_DSMES_BOOKING,
+            onEndReached: () {
+              BotToast.showCustomText(
+                align: Alignment.center,
+                toastBuilder: (cancelFunc) {
+                  return Container(
+                    width: AppMediaQuery.deviceHeight,
+                    decoration: BoxDecoration(
+                      color: R.color.color0xff111515.withOpacity(0.7),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    margin: EdgeInsets.symmetric(horizontal: 20),
+                    padding: EdgeInsets.symmetric(vertical: 8, horizontal: 25),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Text(
+                          R.string.select_booking_dates_warning.tr(),
+                          style: TextStyle(
+                            color: R.color.white,
+                            fontSize: 15,
+                            fontWeight: FontWeight.w400,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              );
+            },
             onDateChanged: (datetime) async {
               if (datetime != null) {
-                final targets =
-                    _filterAvailableSchedules(fullSchedule, datetime);
+                // First check if morning slots exist for the new date
+                final morningSchedules = _filterAvailableSchedules(
+                  fullSchedule,
+                  datetime,
+                )
+                    .where((schedule) =>
+                        DateTime.parse(schedule.startTime).hour < 12)
+                    .toList();
 
                 setState(() {
-                  availableBookingSchedule = targets;
                   selectedDate = datetime;
-                  isMorningSelected = true;
+                  // Set to morning only if morning slots exist, otherwise afternoon
+                  isMorningSelected = morningSchedules.isNotEmpty;
+                  availableBookingSchedule =
+                      _filterAvailableSchedules(fullSchedule, datetime);
                 });
               }
             },
@@ -433,28 +510,36 @@ class _DsmesCalendarSectionState extends State<DsmesCalendarSection> {
 
     return LayoutBuilder(builder: (context, constraints) {
       final targets = isMorningSelected ? morningTargets : afternoonTargets;
-      return Container(
-        padding: EdgeInsets.symmetric(horizontal: 16),
-        child: Wrap(
-          spacing: 8,
-          runSpacing: 8,
-          alignment: WrapAlignment.spaceBetween,
-          children: List.generate((targets.length / 3).ceil() * 3, (index) {
-            if (index < targets.length) {
-              return Container(
-                width: (constraints.maxWidth - 48) /
-                    3, // Total width minus padding divided by 3
-                height: 41,
-                child: targets[index],
-              );
-            }
-            return SizedBox(
-              width: (constraints.maxWidth - 48) / 3,
-              height: 41,
+      return targets.isEmpty
+          ? DsmesEmptyWidget(
+              imagePath: R.drawable.dsmes_empty,
+              title:
+                  "Đã hết lịch trống!\nBạn vui lòng chọn khung giờ khác nhé!",
+              subtitle: "",
+            )
+          : Container(
+              padding: EdgeInsets.symmetric(horizontal: 16),
+              child: Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                alignment: WrapAlignment.spaceBetween,
+                children:
+                    List.generate((targets.length / 3).ceil() * 3, (index) {
+                  if (index < targets.length) {
+                    return Container(
+                      width: (constraints.maxWidth - 48) /
+                          3, // Total width minus padding divided by 3
+                      height: 41,
+                      child: targets[index],
+                    );
+                  }
+                  return SizedBox(
+                    width: (constraints.maxWidth - 48) / 3,
+                    height: 41,
+                  );
+                }),
+              ),
             );
-          }),
-        ),
-      );
     });
   }
 
@@ -498,6 +583,8 @@ class _DsmesCalendarSectionState extends State<DsmesCalendarSection> {
               onTap: () {
                 setState(() {
                   isMorningSelected = true;
+                  availableBookingSchedule =
+                      _filterAvailableSchedules(fullSchedule, selectedDate!);
                 });
               },
               child: Container(
@@ -532,6 +619,8 @@ class _DsmesCalendarSectionState extends State<DsmesCalendarSection> {
               onTap: () {
                 setState(() {
                   isMorningSelected = false;
+                  availableBookingSchedule =
+                      _filterAvailableSchedules(fullSchedule, selectedDate!);
                 });
               },
               child: Container(

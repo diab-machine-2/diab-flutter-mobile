@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math' as math;
 // import 'package:easy_localization/easy_localization.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -39,6 +40,7 @@ class CustomHorizontalDatePicker extends StatefulWidget {
     required int datesRange,
     required this.onDateChanged,
     this.selectableDayPredicate,
+    this.onEndReached,
   })  : initialDate = utils.dateOnly(initialDate),
         this.activeDates = activeDates,
         firstDate = utils.dateOnly(firstDate),
@@ -81,6 +83,8 @@ class CustomHorizontalDatePicker extends StatefulWidget {
   /// Display range of dates
   final int datesRange;
 
+  final VoidCallback? onEndReached;
+
   @override
   _CustomCalendarDatePickerState createState() =>
       _CustomCalendarDatePickerState();
@@ -91,11 +95,25 @@ class _CustomCalendarDatePickerState extends State<CustomHorizontalDatePicker> {
   DateTime? _currentDisplayedMonthDate;
   DateTime? _selectedDate;
   late MaterialLocalizations _localizations;
+  // final ScrollController _scrollController = ScrollController();
+  // bool _hasReachedEnd = false;
 
   @override
   void initState() {
     super.initState();
     _initWidgetState();
+    // _scrollController.addListener(() {
+    //   if (widget.onEndReached != null &&
+    //       !_hasReachedEnd &&
+    //       _scrollController.position.pixels >=
+    //           _scrollController.position.maxScrollExtent - 10) {
+    //     _hasReachedEnd = true;
+    //     widget.onEndReached!();
+    //   } else if (_scrollController.position.pixels <= 10) {
+    //     // Only reset when near start
+    //     _hasReachedEnd = false;
+    //   }
+    // });
   }
 
   @override
@@ -149,6 +167,12 @@ class _CustomCalendarDatePickerState extends State<CustomHorizontalDatePicker> {
   }
 
   @override
+  void dispose() {
+    // _scrollController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     assert(debugCheckHasMaterial(context));
     assert(debugCheckHasMaterialLocalizations(context));
@@ -169,6 +193,14 @@ class _CustomCalendarDatePickerState extends State<CustomHorizontalDatePicker> {
       height: _datePickerHeight,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
+        // controller: _scrollController
+        //   ..addListener(() {
+        //     if (widget.onEndReached != null &&
+        //         _scrollController.position.pixels ==
+        //             _scrollController.position.maxScrollExtent) {
+        //       widget.onEndReached!();
+        //     }
+        //   }),
         itemCount: widget.datesRange,
         itemBuilder: (context, index) {
           final date = days[index];
@@ -188,9 +220,7 @@ class _CustomCalendarDatePickerState extends State<CustomHorizontalDatePicker> {
               height: _datePickerHeight,
               margin: EdgeInsets.only(
                   left: index == 0 ? 16 : 10,
-                  right: index == widget.datesRange - 1
-                      ? 16
-                      : 0),
+                  right: index == widget.datesRange - 1 ? 16 : 0),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10),
                 border: Border.all(

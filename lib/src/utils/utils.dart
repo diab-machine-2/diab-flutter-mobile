@@ -617,6 +617,15 @@ class Utils {
       offset: Offset(1, 2),
     );
   }
+
+   static BoxShadow getBoxShadowDropButton() {
+    return BoxShadow(
+      color: R.color.shadowColorNew.withOpacity(0.08),
+      spreadRadius: 0,
+      blurRadius: 8,
+      offset: Offset(2, -4),
+    );
+  }
 }
 
 extension Precision on double {

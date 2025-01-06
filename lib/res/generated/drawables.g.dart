@@ -584,4 +584,10 @@ class Drawables {
   String get ic_map_direction => "lib/res/drawables/ic_map_direction.png";
   String get ic_star => "lib/res/drawables/ic_star.png";
   String get ic_avatar => "lib/res/drawables/ic_avatar.png";
+  String get ic_benh_ly => "lib/res/drawables/dsmes_service/benh-ly.png";
+  String get ic_dinh_duong_bua_an_can_bang => "lib/res/drawables/dsmes_service/dinh-duong-bua-an-can-bang.png";
+  String get ic_theo_doi_chi_so => "lib/res/drawables/dsmes_service/theo-doi-chi-so.png";
+  String get ic_van_dong_va_tinh_than => "lib/res/drawables/dsmes_service/van-dong-va-tinh-than.png";
+  String get ic_khac => "lib/res/drawables/dsmes_service/khac.png";
+  String get dsmes_empty => "lib/res/drawables/dsmes_empty.png";
 }

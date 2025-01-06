@@ -1209,4 +1209,8 @@ class Strings {
   String get recent_booking => 'recent_booking';
   String get customer_rating => 'customer_rating';
   String get select_consulting_demand => 'select_consulting_demand';
+  String get selected_demand => 'selected_demand';
+  String get max_selected_demand_warning => 'max_selected_demand_warning';
+  String get empty_history_appointment => 'empty_history_appointment';
+  String get select_booking_dates_warning => 'select_booking_dates_warning';
 }

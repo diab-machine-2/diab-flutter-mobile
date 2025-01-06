@@ -81,15 +81,34 @@ class DsmesAppointmentItem extends StatelessWidget {
         Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Image.asset(icon, width: 26, height: 26),
+            Image.asset(icon, width: 38, height: 38),
             SizedBox(width: 10),
-            Text(
-              cubit.getItemTitle(mode),
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w700,
-                color: R.color.textDark,
-              ),
+            Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Flexible(
+                  child: Text(
+                    R.string.health_consulting.tr(),
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w700,
+                      color: R.color.color0xff111515,
+                    ),
+                  ),
+                ),
+                GapH(4),
+                Flexible(
+                  child: Text(
+                    cubit.getItemTitle(mode),
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500,
+                      color: R.color.color0xff636A6B,
+                    ),
+                  ),
+                ),
+              ],
             ),
           ],
         ),
@@ -315,11 +334,26 @@ class DsmesAppointmentItem extends StatelessWidget {
     );
     cubit.updateCreateDsmesBookingRequest(request: rebookingRequest);
 
-    await DsmesNavigationMixin.navigationKey.currentState
-        ?.pushNamed(NavigatorName.dsmes_booking_select_date, arguments: {
-      'serviceType': data.mode,
-      'action': 'create',
-    });
+    if (appointment.mode == DsmesAppointmentMode.atClinic.toString()) {
+      DsmesNavigationMixin.navigationKey.currentState
+          ?.popUntil((route) => route.isFirst);
+          
+      await DsmesNavigationMixin.navigationKey.currentState
+          ?.pushNamed(NavigatorName.dsmes_booking_select_date, arguments: {
+        'serviceType': appointment.mode,
+        'action': 'create',
+      });
+    } else {
+      DsmesNavigationMixin.navigationKey.currentState
+          ?.popUntil((route) => route.isFirst);
+
+      DsmesNavigationMixin.navigationKey.currentState
+          ?.pushNamed(NavigatorName.dsmes_select_service, arguments: {
+        'action': 'create',
+        'clinic': cubit.selectedClinic,
+        'serviceType': appointment.mode,
+      });
+    }
   }
 
   bool _shouldShowJoinButton() {

@@ -1,8 +1,10 @@
+import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/model/request/create_dsmes_booking_request.dart';
+import 'package:medical/src/utils/app_media_query.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
@@ -15,11 +17,13 @@ import 'package:medical/src/widgets/gap_widget.dart';
 class DsmesSelectServicePage extends StatefulWidget {
   final DsmesClinicModel clinic;
   final String serviceType;
+  final String action; // 'create' or 'reschedule'
 
   const DsmesSelectServicePage({
     Key? key,
     required this.clinic,
     required this.serviceType,
+    this.action = 'create',
   }) : super(key: key);
 
   @override
@@ -30,6 +34,7 @@ class _DsmesSelectServicePageState extends State<DsmesSelectServicePage> {
   late DsmesAppointmentCubit _cubit;
   final Set<int> selectedServices = {};
   static const int maxServices = 2;
+  bool _isProcessing = false;
 
   @override
   void initState() {
@@ -60,30 +65,48 @@ class _DsmesSelectServicePageState extends State<DsmesSelectServicePage> {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                CustomAppBar(
-                  backgroundColor: R.color.transparent,
-                  title: Text(
-                    R.string.select_consulting_demand.tr(),
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.w700,
-                      color: R.color.color0xff111515,
+                DecoratedBox(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        R.color.greenGradientTop02,
+                        R.color.greenGradientBottom
+                      ],
+                      stops: [0.01, 0.99],
+                      begin: Alignment.bottomCenter,
+                      end: Alignment.topCenter,
                     ),
                   ),
-                  leadingIcon: IconButton(
-                    splashColor: R.color.transparent,
-                    highlightColor: R.color.transparent,
-                    icon:
-                        Icon(Icons.arrow_back, color: R.color.color0xff111515),
-                    onPressed: () {
-                      DsmesNavigationMixin.navigationKey.currentState
-                          ?.pop(context);
-                    },
+                  child: CustomAppBar(
+                    backgroundColor: R.color.transparent,
+                    title: Text(
+                      R.string.select_consulting_demand.tr(),
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w700,
+                        color: R.color.white,
+                      ),
+                    ),
+                    leadingIcon: IconButton(
+                      splashColor: R.color.transparent,
+                      highlightColor: R.color.transparent,
+                      icon: Icon(Icons.arrow_back, color: R.color.white),
+                      onPressed: () {
+                        DsmesNavigationMixin.navigationKey.currentState
+                            ?.pop(context);
+                      },
+                    ),
                   ),
                 ),
                 Expanded(
                   child: Container(
-                    margin: EdgeInsets.only(bottom: 60),
+                    margin: EdgeInsets.only(
+                      bottom: selectedServices.isEmpty
+                          ? 90 // Just the continue button height + padding
+                          : selectedServices.length == 1
+                              ? 150 // Single service + title + button + padding
+                              : 180, // Multiple services + title + button + padding
+                    ),
                     decoration: BoxDecoration(
                         color: R.color.backgroundColorNew,
                         borderRadius: BorderRadius.circular(12),
@@ -113,15 +136,66 @@ class _DsmesSelectServicePageState extends State<DsmesSelectServicePage> {
               left: 0,
               right: 0,
               child: Container(
-                color: R.color.white,
-                child: Row(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                decoration: BoxDecoration(
+                  color: R.color.white,
+                  borderRadius: selectedServices.isEmpty
+                      ? null
+                      : BorderRadius.only(
+                          topLeft: Radius.circular(20),
+                          topRight: Radius.circular(20),
+                        ),
+                  boxShadow: [
+                    Utils.getBoxShadowDropButton(),
+                  ],
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Expanded(
-                      child: _buildButton(R.string.tiep_tuc.tr(), () async {
-                        _proceedToNextStep();
-                      },
-                          isDisabled: selectedServices.isEmpty ||
-                              selectedServices.length > maxServices),
+                    GapH(16),
+                    // Add selected services display
+                    if (selectedServices.isNotEmpty) ...[
+                      Text(
+                        R.string.selected_demand.tr(),
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                      GapH(12),
+                      ...selectedServices.map((serviceId) {
+                        final service = widget.clinic.serviceList.categories
+                            .expand((category) => category.data)
+                            .firstWhere((service) => service.id == serviceId);
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 8),
+                          child: Text(service.name,
+                              style: TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.w400,
+                              )),
+                        );
+                      }).toList(),
+                      GapH(12),
+                    ],
+                    Row(
+                      children: [
+                        Expanded(
+                          child: _buildButton(R.string.tiep_tuc.tr(), () async {
+                            if (_isProcessing) return;
+                            setState(() => _isProcessing = true);
+
+                            try {
+                              _proceedToNextStep();
+                            } finally {
+                              setState(() => _isProcessing = false);
+                            }
+                          },
+                              isDisabled: selectedServices.isEmpty ||
+                                  selectedServices.length > maxServices),
+                        ),
+                      ],
                     ),
                   ],
                 ),
@@ -139,7 +213,7 @@ class _DsmesSelectServicePageState extends State<DsmesSelectServicePage> {
       onTap: isDisabled ? null : onTap,
       child: Container(
         height: 44,
-        margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        margin: EdgeInsets.symmetric(horizontal: 0, vertical: 8),
         decoration: BoxDecoration(
           color: R.color.color0xffBFC6C6,
           borderRadius: BorderRadius.circular(200),
@@ -174,6 +248,36 @@ class _DsmesSelectServicePageState extends State<DsmesSelectServicePage> {
       if (isSelected) {
         if (selectedServices.length < maxServices) {
           selectedServices.add(serviceId);
+        } else {
+          BotToast.showCustomText(
+            align: Alignment.center,
+            toastBuilder: (cancelFunc) {
+              return Container(
+                width: AppMediaQuery.deviceHeight,
+                decoration: BoxDecoration(
+                  color: R.color.color0xff111515.withOpacity(0.7),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                margin: EdgeInsets.symmetric(horizontal: 20),
+                padding: EdgeInsets.symmetric(vertical: 8, horizontal: 25),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text(
+                      R.string.max_selected_demand_warning.tr(),
+                      style: TextStyle(
+                        color: R.color.white,
+                        fontSize: 15,
+                        fontWeight: FontWeight.w400,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
+                ),
+              );
+            },
+          );
         }
       } else {
         selectedServices.remove(serviceId);
@@ -209,6 +313,7 @@ class _DsmesSelectServicePageState extends State<DsmesSelectServicePage> {
             NavigatorName.dsmes_select_service,
             arguments: {
               'serviceType': widget.serviceType,
+              'action': widget.action,
               'clinic': _cubit.selectedClinic,
             });
 
@@ -216,14 +321,14 @@ class _DsmesSelectServicePageState extends State<DsmesSelectServicePage> {
         DsmesNavigationMixin.navigationKey.currentState
             ?.pushNamed(NavigatorName.dsmes_booking_select_date, arguments: {
           'serviceType': widget.serviceType,
-          'action': 'edit',
+          'action': widget.action,
         });
 
         // Push confirm info
         DsmesNavigationMixin.navigationKey.currentState
             ?.pushNamed(NavigatorName.dsmes_confirm_information, arguments: {
           'serviceType': widget.serviceType,
-          'action': 'edit',
+          'action': widget.action,
         });
       } else {
         await DsmesNavigationMixin.navigationKey.currentState
@@ -262,10 +367,10 @@ class CategorySection extends StatelessWidget {
   Widget build(BuildContext context) {
     final filteredServices = filterFreePriceServices(category);
     return Container(
-      padding: EdgeInsets.fromLTRB(12, 12, 12, 0),
-      margin: EdgeInsets.symmetric(horizontal: 12),
+      // padding: EdgeInsets.fromLTRB(12, 12, 12, 0),
+      margin: EdgeInsets.fromLTRB(12, 20, 12, 0),
       decoration: BoxDecoration(
-        color: R.color.white,
+        color: R.color.backgroundColorNew,
         borderRadius: BorderRadius.only(
           topLeft: isFirst ? Radius.circular(12) : Radius.zero,
           topRight: isFirst ? Radius.circular(12) : Radius.zero,
@@ -276,54 +381,77 @@ class CategorySection extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            category.name,
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w700,
-              color: R.color.color0xff141416,
-            ),
+          Row(
+            children: [
+              Image.asset(
+                getIconPathFromSlug(category.slug),
+                width: 30,
+                height: 24,
+              ),
+              GapW(8),
+              Flexible(
+                child: Text(
+                  category.name,
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w700,
+                    color: R.color.color0xff141416,
+                  ),
+                ),
+              ),
+            ],
           ),
           GapH(16),
-          ListView.builder(
-            shrinkWrap: true,
-            padding: EdgeInsets.zero,
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: filteredServices.length,
-            itemBuilder: (context, index) {
-              final service = filteredServices[index];
-              return GestureDetector(
-                onTap: () => onServiceSelected(
-                    service.id, !selectedServices.contains(service.id)),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    ServiceRow(
-                      service: service,
-                      isSelected: selectedServices.contains(service.id),
-                      onSelected: (selected) =>
-                          onServiceSelected(service.id, selected),
+          if (filteredServices.isNotEmpty)
+            Container(
+              padding: EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+              decoration: BoxDecoration(
+                color: R.color.white,
+                borderRadius: BorderRadius.circular(12),
+                boxShadow: [Utils.getBoxShadowDropCard()],
+              ),
+              child: ListView.builder(
+                shrinkWrap: true,
+                padding: EdgeInsets.zero,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: filteredServices.length,
+                itemBuilder: (context, index) {
+                  final service = filteredServices[index];
+                  return GestureDetector(
+                    onTap: () => onServiceSelected(
+                        service.id, !selectedServices.contains(service.id)),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        ServiceRow(
+                          service: service,
+                          isSelected: selectedServices.contains(service.id),
+                          onSelected: (selected) =>
+                              onServiceSelected(service.id, selected),
+                        ),
+                        index != filteredServices.length - 1
+                            ? Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 12.0),
+                                child: Divider(
+                                  color: R.color.color0xffDFE4E4,
+                                  height: 1,
+                                ),
+                              )
+                            : Padding(
+                                padding:
+                                    const EdgeInsets.fromLTRB(0, 12, 0, 12),
+                                child: Divider(
+                                  color: R.color.color0xffDFE4E4,
+                                  height: 1,
+                                ),
+                              ),
+                      ],
                     ),
-                    index != filteredServices.length - 1
-                        ? Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 12.0),
-                            child: Divider(
-                              color: R.color.color0xffDFE4E4,
-                              height: 1,
-                            ),
-                          )
-                        : Padding(
-                            padding: const EdgeInsets.fromLTRB(0, 12, 0, 16),
-                            child: Divider(
-                              color: R.color.color0xffDFE4E4,
-                              height: 1,
-                            ),
-                          ),
-                  ],
-                ),
-              );
-            },
-          ),
+                  );
+                },
+              ),
+            ),
         ],
       ),
     );
@@ -334,6 +462,18 @@ List<ServiceData> filterFreePriceServices(ServiceCategory category) {
   return category.data
       .where((service) => service.fromPrice == 0 && service.toPrice == 0)
       .toList();
+}
+
+String getIconPathFromSlug(String slug) {
+  Map<String, String> iconPaths = {
+    'benh-ly': R.drawable.ic_benh_ly,
+    'dinh-duong-bua-an-can-bang': R.drawable.ic_dinh_duong_bua_an_can_bang,
+    'theo-doi-chi-so': R.drawable.ic_theo_doi_chi_so,
+    'van-dong-va-tinh-than': R.drawable.ic_van_dong_va_tinh_than,
+    'khac': R.drawable.ic_khac,
+  };
+
+  return iconPaths[slug] ?? R.drawable.ic_khac;
 }
 
 class ServiceRow extends StatelessWidget {

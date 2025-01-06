@@ -125,8 +125,11 @@ class _DsmesClinicDetailPageState extends State<DsmesClinicDetailPage> {
               children: [
                 SizedBox(
                     width: 72,
-                    child: Image.network(
-                        "${Utils.getHostDocosanUrl()}${data.avatar}")),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(5),
+                      child: Image.network(
+                          "${Utils.getHostDocosanUrl()}${data.avatar}"),
+                    )),
                 GapW(12),
                 Expanded(
                   child: Column(
@@ -147,7 +150,7 @@ class _DsmesClinicDetailPageState extends State<DsmesClinicDetailPage> {
                         child: Wrap(
                           spacing: 6,
                           runSpacing: 6,
-                          children: data.specialty.map((e) {
+                          children: data.specialty.take(3).map((e) {
                             return Container(
                                 height: 20,
                                 padding: EdgeInsets.symmetric(
@@ -201,31 +204,44 @@ class _DsmesClinicDetailPageState extends State<DsmesClinicDetailPage> {
                   ),
                   Flexible(
                     flex: 4,
-                    child: Container(
-                      width: 120,
-                      decoration: BoxDecoration(
-                        color: R.color.color0xff00B83D,
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      padding: EdgeInsets.all(8),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          SizedBox(
-                            width: 20,
-                            height: 20,
-                            child: Image.asset(R.drawable.ic_map_direction),
-                          ),
-                          GapW(5),
-                          Text(
-                            R.string.view_map.tr(),
-                            style: TextStyle(
-                              fontSize: 13,
-                              fontWeight: FontWeight.w400,
-                              color: R.color.white,
+                    child: GestureDetector(
+                      onTap: data.extraAvatar.isNotEmpty
+                          ? () {
+                              showDialog(
+                                context: context,
+                                builder: (context) => Dialog(
+                                  child: Image.network(
+                                      "${Utils.getHostDocosanUrl()}${data.extraAvatar.first.path}"),
+                                ),
+                              );
+                            }
+                          : null,
+                      child: Container(
+                        width: 120,
+                        decoration: BoxDecoration(
+                          color: R.color.color0xff00B83D,
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        padding: EdgeInsets.all(8),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: Image.asset(R.drawable.ic_map_direction),
                             ),
-                          ),
-                        ],
+                            GapW(5),
+                            Text(
+                              R.string.view_map.tr(),
+                              style: TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w400,
+                                color: R.color.white,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
@@ -501,8 +517,14 @@ class _DsmesClinicDetailPageState extends State<DsmesClinicDetailPage> {
 
   _buildAppointmentActionButtons() {
     return Container(
-      padding: EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-      color: R.color.white,
+      padding: EdgeInsets.symmetric(vertical: 0, horizontal: 12),
+      decoration: BoxDecoration(
+        color: R.color.white,
+        borderRadius: BorderRadius.circular(8),
+        boxShadow: [
+          Utils.getBoxShadowDropButton(),
+        ],
+      ),
       child: Row(
         children: [
           Flexible(
@@ -520,6 +542,7 @@ class _DsmesClinicDetailPageState extends State<DsmesClinicDetailPage> {
                       NavigatorName.dsmes_select_service,
                       arguments: {
                         'clinic': _cubit.selectedClinic,
+                        'action': 'create',
                         'serviceType':
                             DsmesAppointmentMode.telemedicine.toString()
                       });

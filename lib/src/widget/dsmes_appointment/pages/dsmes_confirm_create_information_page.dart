@@ -50,6 +50,15 @@ class _DsmesConfirmCreateInformationState
 
   late bool isReschedule = false;
 
+  Map<String, bool> isProcessing = {
+    'confirmBooking': false,
+    'editPatientInfo': false,
+    'editConsultInfo': false,
+    'editServiceInfo': false,
+    'recheckInfo': false,
+    'backHome': false,
+  };
+
   @override
   void initState() {
     super.initState();
@@ -69,11 +78,35 @@ class _DsmesConfirmCreateInformationState
     symptomController = TextEditingController(text: requesterSymptom);
 
     isReschedule = widget.action == 'reschedule';
+
+    symptomFocusNode.addListener(() {
+      if (symptomFocusNode.hasFocus) {
+        Future.delayed(Duration(milliseconds: 300), () {
+          Scrollable.ensureVisible(
+            symptomFocusNode.context!,
+            alignment: 0.5,
+            duration: Duration(milliseconds: 300),
+          );
+        });
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    nameController.dispose();
+    phoneController.dispose();
+    symptomController.dispose();
+    nameFocusNode.dispose();
+    phoneFocusNode.dispose();
+    symptomFocusNode.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       body: Container(
         decoration: BoxDecoration(
           color: R.color.backgroundColorNew,
@@ -84,75 +117,95 @@ class _DsmesConfirmCreateInformationState
   }
 
   Widget _buildPage(BuildContext context) {
-    return Stack(
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        GestureDetector(
-          onTap: () {
-            Utils.hideKeyboard(context);
-          },
-          child: Column(
-            children: [
-              CustomAppBar(
-                backgroundColor: Colors.transparent,
-                title: Text(
-                  R.string.confirm_information.tr(),
-                  style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.w700,
-                      // fontFamily: 'sfpro',
-                      color: R.color.textDark),
-                ),
-                actions: [],
-                leadingIcon: IconButton(
-                  splashColor: Colors.transparent,
-                  highlightColor: Colors.transparent,
-                  icon: Icon(
-                    Icons.arrow_back,
-                    color: R.color.textDark,
-                  ),
-                  onPressed: () {
-                    DsmesNavigationMixin.navigationKey.currentState
-                        ?.pop(context);
-                  },
-                ),
-              ),
-              Expanded(
-                child: SingleChildScrollView(
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Column(
-                      children: [
-                        _buildPatientInformation(),
-                        GapH(12),
-                        _buildConsultingInformation(),
-                        if (widget.serviceType ==
-                            DsmesAppointmentMode.telemedicine.toString())
-                          GapH(12),
-                        if (widget.serviceType ==
-                            DsmesAppointmentMode.telemedicine.toString())
-                          _buildSelectedServiceInformation(),
-                        GapH(12),
-                        _buildNoticeSymptom(),
+        Expanded(
+          child: GestureDetector(
+            onTap: () {
+              Utils.hideKeyboard(context);
+            },
+            child: Column(
+              children: [
+                DecoratedBox(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        R.color.greenGradientTop02,
+                        R.color.greenGradientBottom
                       ],
+                      stops: [0.01, 0.99],
+                      begin: Alignment.bottomCenter,
+                      end: Alignment.topCenter,
+                    ),
+                  ),
+                  child: CustomAppBar(
+                    backgroundColor: Colors.transparent,
+                    title: Text(
+                      R.string.confirm_information.tr(),
+                      style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w700,
+                          // fontFamily: 'sfpro',
+                          color: R.color.white),
+                    ),
+                    actions: [],
+                    leadingIcon: IconButton(
+                      splashColor: Colors.transparent,
+                      highlightColor: Colors.transparent,
+                      icon: Icon(
+                        Icons.arrow_back,
+                        color: R.color.white,
+                      ),
+                      onPressed: () {
+                        DsmesNavigationMixin.navigationKey.currentState
+                            ?.pop(context);
+                      },
                     ),
                   ),
                 ),
-              ),
-            ],
+                Expanded(
+                  child: SingleChildScrollView(
+                    child: Padding(
+                      padding: EdgeInsets.all(12),
+                      child: Column(
+                        children: [
+                          _buildPatientInformation(),
+                          GapH(12),
+                          _buildConsultingInformation(),
+                          if (widget.serviceType ==
+                              DsmesAppointmentMode.telemedicine.toString())
+                            GapH(12),
+                          if (widget.serviceType ==
+                              DsmesAppointmentMode.telemedicine.toString())
+                            _buildSelectedServiceInformation(),
+                          GapH(12),
+                          _buildNoticeSymptom(),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
-        Positioned(
-          bottom: 0,
-          left: 0,
-          right: 0,
-          child: Container(
+        Container(
+          height: 74,
+          padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          decoration: BoxDecoration(
+            boxShadow: [Utils.getBoxShadowDropButton()],
             color: R.color.white,
-            padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-            child: Row(
-              children: [
-                Expanded(
-                  child: _buildButton(R.string.confirm_book_consult.tr(),
-                      () async {
+          ),
+          child: Row(
+            children: [
+              Expanded(
+                child:
+                    _buildButton(R.string.confirm_book_consult.tr(), () async {
+                  if (isProcessing['confirmBooking']!) return;
+                  setState(() => isProcessing['confirmBooking'] = true);
+
+                  try {
                     if (widget.action == 'reschedule' &&
                         widget.appointmentId != null) {
                       _handleRescheduleBooking();
@@ -169,10 +222,12 @@ class _DsmesConfirmCreateInformationState
 
                       _handleCreateBooking();
                     }
-                  }),
-                ),
-              ],
-            ),
+                  } finally {
+                    setState(() => isProcessing['confirmBooking'] = false);
+                  }
+                }),
+              ),
+            ],
           ),
         ),
       ],
@@ -207,7 +262,6 @@ class _DsmesConfirmCreateInformationState
         .format(DateFormat('yyyy-MM-dd HH:mm').parse(resp.startTime));
 
     _showPopupBookingSuccess(
-      title2: R.string.congratulation_on.tr(),
       title: R.string.booking_success_dialog_title.tr(),
       subtitle: R.string.confirm_booking_subtitle.tr(namedArgs: {
         'time': startTime,
@@ -283,6 +337,9 @@ class _DsmesConfirmCreateInformationState
       decoration: BoxDecoration(
         color: R.color.white,
         borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          Utils.getBoxShadowDropCard(),
+        ],
       ),
       child: Container(
         child: Column(
@@ -293,18 +350,24 @@ class _DsmesConfirmCreateInformationState
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  R.string.consult_information.tr().toUpperCase(),
+                  R.string.consult_information.tr(),
                   style: TextStyle(
-                    fontSize: 12,
+                    fontSize: 15,
                     fontWeight: FontWeight.w700,
                     color: R.color.color0xff141416,
                   ),
                 ),
                 InkWell(
                   onTap: () {
-                    _cubit.updateCreateDsmesBookingRequestSymptom(
-                        symptom: symptomController.text);
-                    _showEditRequesterInformationBottomSheet();
+                    if (isProcessing['editPatientInfo']!) return;
+                    setState(() => isProcessing['editPatientInfo'] = true);
+                    try {
+                      _cubit.updateCreateDsmesBookingRequestSymptom(
+                          symptom: symptomController.text);
+                      _showEditRequesterInformationBottomSheet();
+                    } finally {
+                      setState(() => isProcessing['editPatientInfo'] = false);
+                    }
                   },
                   child: Visibility(
                     visible: !isReschedule,
@@ -314,9 +377,9 @@ class _DsmesConfirmCreateInformationState
                       child: Text(
                         R.string.chinh_sua.tr(),
                         style: TextStyle(
-                          fontSize: 10,
+                          fontSize: 12,
                           fontWeight: FontWeight.w500,
-                          color: R.color.color0xff239A90,
+                          color: R.color.color0xff95682E,
                         ),
                       ),
                     ),
@@ -380,6 +443,9 @@ class _DsmesConfirmCreateInformationState
       decoration: BoxDecoration(
         color: R.color.white,
         borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          Utils.getBoxShadowDropCard(),
+        ],
       ),
       child: Container(
         child: Column(
@@ -391,10 +457,10 @@ class _DsmesConfirmCreateInformationState
               children: [
                 Text(
                   widget.serviceType == DsmesAppointmentMode.atClinic.toString()
-                      ? R.string.consult_at_clinic.tr().toUpperCase()
-                      : R.string.consult_online.tr().toUpperCase(),
+                      ? R.string.consult_at_clinic.tr()
+                      : R.string.consult_online.tr(),
                   style: TextStyle(
-                    fontSize: 12,
+                    fontSize: 15,
                     fontWeight: FontWeight.w700,
                     color: R.color.color0xff141416,
                   ),
@@ -403,17 +469,23 @@ class _DsmesConfirmCreateInformationState
                   visible: !isReschedule,
                   child: InkWell(
                     onTap: () async {
-                      _cubit.updateCreateDsmesBookingRequestSymptom(
-                          symptom: symptomController.text);
-                      await DsmesNavigationMixin.navigationKey.currentState
-                          ?.pushNamed(NavigatorName.dsmes_booking_select_date,
-                              arguments: {
-                            'serviceType': widget.serviceType,
-                            'action': 'edit',
-                            'isEditing': true,
-                            'previousRoute':
-                                NavigatorName.dsmes_confirm_information
-                          });
+                      if (isProcessing['editConsultInfo']!) return;
+                      setState(() => isProcessing['editConsultInfo'] = true);
+                      try {
+                        _cubit.updateCreateDsmesBookingRequestSymptom(
+                            symptom: symptomController.text);
+                        await DsmesNavigationMixin.navigationKey.currentState
+                            ?.pushNamed(NavigatorName.dsmes_booking_select_date,
+                                arguments: {
+                              'serviceType': widget.serviceType,
+                              'action': widget.action,
+                              'isEditing': true,
+                              'previousRoute':
+                                  NavigatorName.dsmes_confirm_information
+                            });
+                      } finally {
+                        setState(() => isProcessing['editConsultInfo'] = false);
+                      }
                     },
                     child: Container(
                       height: 20,
@@ -421,9 +493,9 @@ class _DsmesConfirmCreateInformationState
                       child: Text(
                         R.string.chinh_sua.tr(),
                         style: TextStyle(
-                          fontSize: 10,
+                          fontSize: 12,
                           fontWeight: FontWeight.w500,
-                          color: R.color.color0xff239A90,
+                          color: R.color.color0xff95682E,
                         ),
                       ),
                     ),
@@ -453,7 +525,7 @@ class _DsmesConfirmCreateInformationState
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w700,
-                        color: R.color.color0xffA36E2A,
+                        color: R.color.greenGradientBottom,
                       ),
                     ),
                     Text(
@@ -462,7 +534,7 @@ class _DsmesConfirmCreateInformationState
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w700,
-                        color: R.color.color0xffA36E2A,
+                        color: R.color.greenGradientBottom,
                       ),
                     ),
                   ],
@@ -553,6 +625,9 @@ class _DsmesConfirmCreateInformationState
       decoration: BoxDecoration(
         color: R.color.white,
         borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          Utils.getBoxShadowDropCard(),
+        ],
       ),
       child: Container(
         child: Column(
@@ -563,39 +638,33 @@ class _DsmesConfirmCreateInformationState
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  R.string.consult_demand.tr().toUpperCase(),
+                  R.string.consult_demand.tr(),
                   style: TextStyle(
-                    fontSize: 12,
+                    fontSize: 15,
                     fontWeight: FontWeight.w700,
                     color: R.color.color0xff141416,
                   ),
                 ),
                 InkWell(
                   onTap: () async {
-                    _cubit.updateCreateDsmesBookingRequestSymptom(
-                        symptom: symptomController.text);
-                    await DsmesNavigationMixin.navigationKey.currentState
-                        ?.pushNamed(NavigatorName.dsmes_select_service,
-                            arguments: {
-                          'serviceType': widget.serviceType,
-                          'clinic': _cubit.selectedClinic,
-                          'isEditing': true,
-                          'previousRoute':
-                              NavigatorName.dsmes_confirm_information
-                        });
-
-                    // DsmesNavigationMixin.navigationKey.currentState?.popUntil(
-                    //     (route) =>
-                    //         route.settings.name ==
-                    //         NavigatorName.dsmes_select_service);
-                    // // Push new arguments to existing select service page
-                    // DsmesNavigationMixin.navigationKey.currentState
-                    //     ?.pushReplacementNamed(
-                    //         NavigatorName.dsmes_select_service,
-                    //         arguments: {
-                    //       'serviceType': widget.serviceType,
-                    //       'clinic': _cubit.selectedClinic,
-                    //     });
+                    if (isProcessing['editServiceInfo']!) return;
+                    setState(() => isProcessing['editServiceInfo'] = true);
+                    try {
+                      _cubit.updateCreateDsmesBookingRequestSymptom(
+                          symptom: symptomController.text);
+                      await DsmesNavigationMixin.navigationKey.currentState
+                          ?.pushNamed(NavigatorName.dsmes_select_service,
+                              arguments: {
+                            'serviceType': widget.serviceType,
+                            'action': widget.action,
+                            'clinic': _cubit.selectedClinic,
+                            'isEditing': true,
+                            'previousRoute':
+                                NavigatorName.dsmes_confirm_information
+                          });
+                    } finally {
+                      setState(() => isProcessing['editServiceInfo'] = false);
+                    }
                   },
                   child: Visibility(
                     visible: !isReschedule,
@@ -605,9 +674,9 @@ class _DsmesConfirmCreateInformationState
                       child: Text(
                         R.string.chinh_sua.tr(),
                         style: TextStyle(
-                          fontSize: 10,
+                          fontSize: 12,
                           fontWeight: FontWeight.w500,
-                          color: R.color.color0xff239A90,
+                          color: R.color.color0xff95682E,
                         ),
                       ),
                     ),
@@ -665,6 +734,9 @@ class _DsmesConfirmCreateInformationState
       decoration: BoxDecoration(
         color: R.color.white,
         borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          Utils.getBoxShadowDropCard(),
+        ],
       ),
       child: Container(
         child: Column(
@@ -737,8 +809,7 @@ class _DsmesConfirmCreateInformationState
       onTap: onTap,
       child: Container(
         height: 44,
-        width: 158,
-        margin: EdgeInsets.symmetric(horizontal: 0, vertical: 8),
+        // width: 158,
         decoration: BoxDecoration(
           color: R.color.mainColor,
           borderRadius: BorderRadius.circular(200),
@@ -931,120 +1002,135 @@ class _DsmesConfirmCreateInformationState
             return false;
           },
           child: Container(
-            child: AlertDialog(
-              contentPadding: EdgeInsets.all(10),
-              content: Stack(
-                children: [
-                  Container(
-                    width: 351,
-                    padding: EdgeInsets.all(12),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
+            child: Dialog(
+              insetPadding: EdgeInsets.symmetric(horizontal: 12),
+              child: Container(
+                width: MediaQuery.of(context).size.width,
+                padding: EdgeInsets.all(12),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
                       children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            GestureDetector(
-                              onTap: () {
-                                Navigator.of(context).pop();
-                              },
-                              child: Icon(
-                                Icons.close,
-                                color: R.color.textDark,
-                                size: 24,
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.pop(context);
+                            onShowInfo?.call();
+                          },
+                          child: Icon(
+                            Icons.close,
+                            color: R.color.textDark,
+                            size: 24,
+                          ),
+                        )
+                      ],
+                    ),
+                    GapH(16),
+                    if (isShowImg)
+                      Image.asset(R.drawable.ic_dialog_success,
+                          width: 43, height: 43),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        if (title2 != null)
+                          Padding(
+                            padding: const EdgeInsets.only(top: 14.0),
+                            child: Text(
+                              title2,
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                color: R.color.color0xff636A6B,
+                                fontSize: 18,
+                                fontWeight: FontWeight.w700,
                               ),
-                            )
-                          ],
+                            ),
+                          ),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 16.0),
+                          child: Text(
+                            title ?? "",
+                            maxLines: 2,
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              color: R.color.greenGradientBottom,
+                              fontSize: 40,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
                         ),
-                        GapH(30),
-                        if (isShowImg)
-                          Image.asset(R.drawable.ic_dialog_success,
-                              width: 43, height: 43),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            if (title2 != null)
-                              Padding(
-                                padding: const EdgeInsets.only(top: 14.0),
+                      ],
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 16.0),
+                      child: Text(
+                        subtitle ?? "",
+                        maxLines: 2,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: R.color.color0xff777E90,
+                          fontSize: 13,
+                          fontWeight: FontWeight.w400,
+                        ),
+                      ),
+                    ),
+                    GapH(16),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Flexible(
+                          child: GestureDetector(
+                            onTap: () {
+                              if (isProcessing['recheckInfo']!) return;
+                              setState(
+                                  () => isProcessing['recheckInfo'] = true);
+                              try {
+                                Navigator.pop(context);
+                                onShowInfo?.call();
+                              } finally {
+                                setState(
+                                    () => isProcessing['recheckInfo'] = false);
+                              }
+                            },
+                            child: Container(
+                              height: 43,
+                              margin: EdgeInsets.only(right: 8),
+                              decoration: BoxDecoration(
+                                color: R.color.white,
+                                borderRadius: BorderRadius.circular(200),
+                                border: Border.all(
+                                  color: R.color.greenGradientBottom,
+                                ),
+                              ),
+                              child: Center(
                                 child: Text(
-                                  title2,
-                                  textAlign: TextAlign.center,
+                                  secondaryButtonTitle,
                                   style: TextStyle(
-                                    color: R.color.color0xff636A6B,
-                                    fontSize: 18,
+                                    color: R.color.greenGradientBottom,
+                                    fontSize: 16,
                                     fontWeight: FontWeight.w700,
                                   ),
                                 ),
                               ),
-                            Padding(
-                              padding: const EdgeInsets.only(top: 16.0),
-                              child: Text(
-                                title ?? "",
-                                maxLines: 2,
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  color: R.color.greenGradientBottom,
-                                  fontSize: 40,
-                                  fontWeight: FontWeight.w700,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(top: 16.0),
-                          child: Text(
-                            subtitle ?? "",
-                            maxLines: 2,
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              color: R.color.color0xff777E90,
-                              fontSize: 13,
-                              fontWeight: FontWeight.w400,
                             ),
                           ),
                         ),
-                        SizedBox(height: 20),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            GestureDetector(
-                              onTap: () {
-                                Navigator.pop(context);
-                                onShowInfo?.call();
-                              },
-                              child: Container(
-                                height: 43,
-                                width: 158,
-                                decoration: BoxDecoration(
-                                  color: R.color.white,
-                                  borderRadius: BorderRadius.circular(200),
-                                  border: Border.all(
-                                    color: R.color.greenGradientBottom,
-                                  ),
-                                ),
-                                child: Center(
-                                  child: Text(
-                                    secondaryButtonTitle,
-                                    style: TextStyle(
-                                      color: R.color.greenGradientBottom,
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w700,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                            _buildButton(
-                              primaryButtonTitle,
-                              () => onNavigateHome(),
-                            ),
-                          ],
-                        )
+                        Flexible(
+                          child: _buildButton(primaryButtonTitle, () {
+                            if (isProcessing['backHome']!) return;
+                            setState(() => isProcessing['backHome'] = true);
+                            try {
+                              onNavigateHome();
+                            } finally {
+                              setState(() => isProcessing['backHome'] = false);
+                            }
+                          }),
+                        ),
                       ],
                     ),
-                  ),
-                ],
+                    GapH(16),
+                  ],
+                ),
               ),
             ),
           ),

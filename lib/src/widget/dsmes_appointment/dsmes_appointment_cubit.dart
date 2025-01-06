@@ -45,7 +45,8 @@ class DsmesAppointmentCubit extends Cubit<DsmesAppointmentState> {
   Future<void> initDsmesBooking() async {
     final isExist = await isExistDocosanUser();
     if (isExist) {
-      await registerDocosanUser(phoneNumber: AppSettings.userInfo?.phoneNumber ?? '');
+      await registerDocosanUser(
+          phoneNumber: AppSettings.userInfo?.phoneNumber ?? '');
       await getDsmesAppointmentList();
     }
   }
@@ -131,8 +132,10 @@ class DsmesAppointmentCubit extends Cubit<DsmesAppointmentState> {
     return clinics;
   }
 
-  Future<void> getClinicDetail({required int id}) async {
-    emit(DsmesAppointmentLoading());
+  Future<void> getClinicDetail({required int id, bool isLoading = true}) async {
+    if (isLoading) {
+      emit(DsmesAppointmentLoading());
+    }
     ApiResult<DsmesClinicDetailResponse> apiResult =
         await appRepository.getClinicDetail(id: id);
     apiResult.when(success: (DsmesClinicDetailResponse response) {
@@ -185,14 +188,14 @@ class DsmesAppointmentCubit extends Cubit<DsmesAppointmentState> {
     return dsmesAppointment;
   }
 
- String ensureTimeWithSeconds(String dateTime) {
-  // Check if datetime matches yyyy-MM-dd HH:mm format
-  final dateTimeFormat = RegExp(r'^\d{4}-\d{2}-\d{2} \d{2}:\d{2}$');
-  if (dateTimeFormat.hasMatch(dateTime)) {
-    return "$dateTime:00";
+  String ensureTimeWithSeconds(String dateTime) {
+    // Check if datetime matches yyyy-MM-dd HH:mm format
+    final dateTimeFormat = RegExp(r'^\d{4}-\d{2}-\d{2} \d{2}:\d{2}$');
+    if (dateTimeFormat.hasMatch(dateTime)) {
+      return "$dateTime:00";
+    }
+    return dateTime;
   }
-  return dateTime;
-}
 
   Future<DsmesAppointment?> createDsmesBookingOnline() async {
     emit(DsmesAppointmentLoading());

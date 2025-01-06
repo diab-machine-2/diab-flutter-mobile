@@ -25,6 +25,7 @@ class DsmesClinicModel {
   final ServiceList serviceList;
   final Map<String, Map<String, int>> schedule;
   final String aptInterval;
+  final List<ExtraAvatar> extraAvatar;
 
   DsmesClinicModel({
     required this.id,
@@ -51,6 +52,7 @@ class DsmesClinicModel {
     required this.serviceList,
     required this.schedule,
     required this.aptInterval,
+    required this.extraAvatar,
   });
 
   factory DsmesClinicModel.fromJson(Map<String, dynamic> json) {
@@ -91,10 +93,15 @@ class DsmesClinicModel {
       serviceList: ServiceList.fromJson(json['service_list'] ?? {}),
       schedule: _parseSchedule(json['schedule'] ?? {}),
       aptInterval: json['apt_interval'] ?? '',
+      extraAvatar: (json['extra_avatar'] as List?)
+              ?.map((e) => ExtraAvatar.fromJson(e))
+              .toList() ??
+          [],
     );
   }
 
-  static Map<String, Map<String, int>> _parseSchedule(Map<String, dynamic> json) {
+  static Map<String, Map<String, int>> _parseSchedule(
+      Map<String, dynamic> json) {
     Map<String, Map<String, int>> result = {};
     json.forEach((key, value) {
       if (value is Map) {
@@ -107,12 +114,11 @@ class DsmesClinicModel {
   }
 
   List<GoodAt> getGoodAtByLocale(String locale) {
-  if (goodAt.containsKey(locale)) {
-    return goodAt[locale] ?? [];
+    if (goodAt.containsKey(locale)) {
+      return goodAt[locale] ?? [];
+    }
+    return defaultGoodAt;
   }
-  return defaultGoodAt;
-}
-
 
   List<BookingSchedule> getBookingSchedules() {
     List<BookingSchedule> bookingSchedules = [];
@@ -248,12 +254,14 @@ class ServiceCategory {
   final int id;
   final String type;
   final List<ServiceData> data;
+  final String slug;
 
   ServiceCategory({
     required this.name,
     required this.id,
     required this.type,
     required this.data,
+    required this.slug,
   });
 
   factory ServiceCategory.fromJson(Map<String, dynamic> json) {
@@ -265,6 +273,7 @@ class ServiceCategory {
               ?.map((e) => ServiceData.fromJson(e))
               .toList() ??
           [],
+      slug: json['slug'] ?? '',
     );
   }
 }
@@ -306,6 +315,27 @@ class ServiceData {
       description: json['description'] ?? '',
       isPayment: json['is_payment'] ?? 0,
       value: json['value'] ?? '',
+    );
+  }
+}
+
+// Add this class to handle extra avatar data
+class ExtraAvatar {
+  final int id;
+  final String path;
+  final String thumbPath;
+
+  ExtraAvatar({
+    required this.id,
+    required this.path,
+    required this.thumbPath,
+  });
+
+  factory ExtraAvatar.fromJson(Map<String, dynamic> json) {
+    return ExtraAvatar(
+      id: json['id'] ?? 0,
+      path: json['path'] ?? '',
+      thumbPath: json['thumb_path'] ?? '',
     );
   }
 }

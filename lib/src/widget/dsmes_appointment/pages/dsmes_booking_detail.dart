@@ -10,6 +10,7 @@ import 'package:medical/src/model/request/dsmes_cancel_booking_request.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/date_utils.dart';
 import 'package:medical/src/utils/navigator_name.dart';
+import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/dsmes_appointment/dsmes_appointment_cubit.dart';
 import 'package:medical/src/widget/dsmes_appointment/model/dsmes_appointment_model.dart';
@@ -107,8 +108,8 @@ class _DsmesBookingDetailState extends State<DsmesBookingDetail> {
                   child: Container(
                     width: 85,
                     height: 33,
-                    padding: EdgeInsets.symmetric(vertical: 8, horizontal: 6),
-                    margin: EdgeInsets.fromLTRB(0, 8, 16, 8),
+                    padding: EdgeInsets.symmetric(vertical: 4, horizontal: 6),
+                    margin: EdgeInsets.fromLTRB(0, 12, 16, 12),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(8),
                       color: R.color.color0xffFCF8DA,
@@ -170,14 +171,14 @@ class _DsmesBookingDetailState extends State<DsmesBookingDetail> {
                       _buildPatientInformation(),
                       GapH(12),
                       _buildConsultingInformation(),
-                      GapH(12),
-                      _buildNoticeSymptom(),
                       if (widget.serviceType ==
                           DsmesAppointmentMode.telemedicine.toString())
                         GapH(12),
                       if (widget.serviceType ==
                           DsmesAppointmentMode.telemedicine.toString())
                         _buildSelectedServiceInformation(),
+                      GapH(12),
+                      _buildNoticeSymptom(),
                       GapH(12),
                       if (isCompletedAppointment() == false)
                         _buildActionButtons(),
@@ -194,7 +195,10 @@ class _DsmesBookingDetailState extends State<DsmesBookingDetail> {
           right: 0,
           child: _shouldShowJoinButton()
               ? Container(
-                  color: R.color.white,
+                  decoration: BoxDecoration(
+                    color: R.color.white,
+                    boxShadow: [Utils.getBoxShadowDropButton()],
+                  ),
                   child: Row(
                     children: [
                       Expanded(
@@ -236,6 +240,9 @@ class _DsmesBookingDetailState extends State<DsmesBookingDetail> {
       decoration: BoxDecoration(
         color: R.color.white,
         borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          Utils.getBoxShadowDropCard(),
+        ],
       ),
       child: Container(
         child: Column(
@@ -315,6 +322,9 @@ class _DsmesBookingDetailState extends State<DsmesBookingDetail> {
       decoration: BoxDecoration(
         color: R.color.white,
         borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          Utils.getBoxShadowDropCard(),
+        ],
       ),
       child: Container(
         child: Column(
@@ -493,6 +503,9 @@ class _DsmesBookingDetailState extends State<DsmesBookingDetail> {
       decoration: BoxDecoration(
         color: R.color.white,
         borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          Utils.getBoxShadowDropCard(),
+        ],
       ),
       child: Container(
         child: Column(
@@ -559,6 +572,9 @@ class _DsmesBookingDetailState extends State<DsmesBookingDetail> {
       decoration: BoxDecoration(
         color: R.color.white,
         borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          Utils.getBoxShadowDropCard(),
+        ],
       ),
       child: Container(
         child: Column(
@@ -774,7 +790,7 @@ class _DsmesBookingDetailState extends State<DsmesBookingDetail> {
   _builCompletedAppointmentActionButtons() {
     return Container(
       color: R.color.white,
-      padding: EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+      padding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
@@ -846,13 +862,23 @@ class _DsmesBookingDetailState extends State<DsmesBookingDetail> {
                     ?.popUntil((route) => route.isFirst);
 
                 // Then push to select date
-                DsmesNavigationMixin.navigationKey.currentState?.pushNamed(
-                    NavigatorName.dsmes_booking_select_date,
-                    arguments: {
-                      'serviceType': widget.serviceType,
-                      'action': 'reschedule',
-                      'appointmentId': widget.appointment.id,
-                    });
+                if (widget.appointment.mode ==
+                    DsmesAppointmentMode.atClinic.toString()) {
+                  await DsmesNavigationMixin.navigationKey.currentState
+                      ?.pushNamed(NavigatorName.dsmes_booking_select_date,
+                          arguments: {
+                        'serviceType': widget.appointment.mode,
+                        'action': 'create',
+                      });
+                } else {
+                  DsmesNavigationMixin.navigationKey.currentState?.pushNamed(
+                      NavigatorName.dsmes_select_service,
+                      arguments: {
+                        'action': 'create',
+                        'clinic': _cubit.selectedClinic,
+                        'serviceType': widget.appointment.mode,
+                      });
+                }
               },
               child: Container(
                 height: 42,
