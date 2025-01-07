@@ -34,6 +34,12 @@ class _DsmesAppointmentHistoryPageState
 
   @override
   Widget build(BuildContext context) {
+    final sortedMyAppointments = _cubit.myAppointments;
+    sortedMyAppointments.sort((a, b) {
+      final aTime = DateFormat('yyyy-MM-dd HH:mm:ss').parse(a.startTime);
+      final bTime = DateFormat('yyyy-MM-dd HH:mm:ss').parse(b.startTime);
+      return bTime.compareTo(aTime);
+    });
     return Scaffold(
       body: Container(
         decoration: BoxDecoration(
@@ -80,7 +86,7 @@ class _DsmesAppointmentHistoryPageState
                 ),
               ),
               Expanded(
-                child: _cubit.myAppointments.isEmpty
+                child: sortedMyAppointments.isEmpty
                     ? DsmesEmptyWidget(
                         imagePath: R.drawable.dsmes_empty,
                         title: R.string.empty_history_appointment.tr(),
@@ -107,12 +113,11 @@ class _DsmesAppointmentHistoryPageState
                         },
                         child: ListView.separated(
                           padding: EdgeInsets.all(16),
-                          itemCount: _cubit.myAppointments.length,
+                          itemCount: sortedMyAppointments.length,
                           separatorBuilder: (context, index) =>
                               SizedBox(height: 16),
                           itemBuilder: (context, index) {
-                            DsmesAppointment data =
-                                _cubit.myAppointments[index];
+                            DsmesAppointment data = sortedMyAppointments[index];
                             return DsmesAppointmentItem(
                               data: data,
                               onChooseService: () async {

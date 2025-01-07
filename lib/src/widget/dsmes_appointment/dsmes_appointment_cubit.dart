@@ -291,50 +291,41 @@ class DsmesAppointmentCubit extends Cubit<DsmesAppointmentState> {
     final now = DateTime.now();
     final threeDaysAgo = now.subtract(Duration(days: 3));
 
-    // Sort appointments by start time
+    // Sort appointments by start time first (most recent first)
     myAppointments.sort((a, b) {
       final aTime = DateFormat('yyyy-MM-dd HH:mm:ss').parse(a.startTime);
       final bTime = DateFormat('yyyy-MM-dd HH:mm:ss').parse(b.startTime);
-      return aTime.compareTo(bTime);
+
+      // First compare by time
+      int timeCompare = bTime.compareTo(aTime);
+      if (timeCompare != 0) return timeCompare;
+
+      // If same time, sort by priority
+      final aScore = _getPriorityScore(a, aTime, now, threeDaysAgo);
+      final bScore = _getPriorityScore(b, bTime, now, threeDaysAgo);
+      return bScore.compareTo(aScore);
     });
 
-    if (myAppointments.isEmpty) return [];
+    return myAppointments.isEmpty ? [] : [myAppointments.first];
+  }
 
-    // Priority 1: Upcoming appointment closest to now
-    final upcomingAppointment = myAppointments.firstWhere(
-      (appointment) {
-        final startTime =
-            DateFormat('yyyy-MM-dd HH:mm:ss').parse(appointment.startTime);
-        return startTime.isAfter(now) &&
-            appointment.status == DSMES_STATUS_APPROVE;
-      },
-      orElse: () => myAppointments.firstWhere(
-        // Priority 2: Most recent approved appointment not after now
-        (appointment) {
-          final startTime =
-              DateFormat('yyyy-MM-dd HH:mm:ss').parse(appointment.startTime);
-          return !startTime.isAfter(now) &&
-              appointment.status == DSMES_STATUS_APPROVE;
-        },
-        orElse: () => myAppointments.firstWhere(
-          // Priority 3: Most recent requested appointment
-          (appointment) => appointment.status == DSMES_STATUS_REQUEST,
-          orElse: () => myAppointments.firstWhere(
-            // Priority 4: Completed appointment within last 3 days
-            (appointment) {
-              final endTime =
-                  DateFormat('yyyy-MM-dd HH:mm:ss').parse(appointment.endTime);
-              return endTime.isBefore(now) &&
-                  endTime.isAfter(threeDaysAgo) &&
-                  appointment.status == DSMES_STATUS_APPROVE;
-            },
-            orElse: () => myAppointments.first,
-          ),
-        ),
-      ),
-    );
-
-    return [upcomingAppointment];
+  int _getPriorityScore(DsmesAppointment appointment, DateTime startTime,
+      DateTime now, DateTime threeDaysAgo) {
+    // Priority 1: Most recent approved appointment not after now
+    if (!startTime.isAfter(now) && appointment.status == DSMES_STATUS_APPROVE) {
+      return 3;
+    }
+    // Priority 2: Most recent requested appointment
+    if (appointment.status == DSMES_STATUS_REQUEST) {
+      return 2;
+    }
+    // Priority 3: Approved appointment within last 3 days
+    if (startTime.isBefore(now) &&
+        startTime.isAfter(threeDaysAgo) &&
+        appointment.status == DSMES_STATUS_APPROVE) {
+      return 1;
+    }
+    return 0;
   }
 
   initCreateDsmesBookingRequest({String locale = 'vi'}) {

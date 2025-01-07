@@ -158,6 +158,12 @@ class _DsmesCalendarSectionState extends State<DsmesCalendarSection> {
                       icon: Icon(Icons.arrow_back, color: R.color.white),
                       onPressed: () {
                         DsmesNavigationMixin.navigationKey.currentState
+                            ?.popUntil((route) {
+                          print('Route: ${route.settings.name}');
+                          return true; // Don't actually pop, just print
+                        });
+
+                        DsmesNavigationMixin.navigationKey.currentState
                             ?.pop(context);
                       },
                     ),

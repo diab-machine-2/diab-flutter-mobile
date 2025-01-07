@@ -19,7 +19,7 @@ class DsmesAppointment {
   final String status;
   final String? memo;
   final String isShow;
-  final String? repeatId;
+  final int? repeatId;
   final String extraInfo;
   final int campaignId;
   final String? promotionCode;
