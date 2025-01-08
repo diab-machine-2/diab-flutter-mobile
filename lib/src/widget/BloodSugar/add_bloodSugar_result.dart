@@ -103,6 +103,10 @@ class _PageAddBloodSugarResultState extends State<PageAddBloodSugarResult> {
     Navigator.of(context).pushNamed(NavigatorName.glucose_intro_2nd_page);
   }
 
+  void _doBack() {
+    Observable.instance.notifyObservers([], notifyName: "glucose_change_data");
+  }
+
   void _doEditNote() async {
     final noteResult = await NavigationUtil.navigatePage(
         context,
@@ -184,10 +188,7 @@ class _PageAddBloodSugarResultState extends State<PageAddBloodSugarResult> {
         splashColor: R.color.transparent,
         highlightColor: R.color.transparent,
         icon: Icon(Icons.arrow_back, color: R.color.textDark),
-        onPressed: () {
-          Observable.instance.notifyObservers([], notifyName: "glucose_change_data");
-          Navigator.pop(context);
-        },
+        onPressed: _doBack,
       ),
       actions: [
         GestureDetector(

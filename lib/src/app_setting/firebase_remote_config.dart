@@ -19,12 +19,12 @@ class FirebaseRemoteSetting {
   String? _utilitiesOrder;
   List<GlucoseFaq> _glucoseFaqs = [
     GlucoseFaq(
-      title: 'Nâng Cấp Máy Đo Đường Huyết Tại Bệnh Viện Đồng Nai -2: Cơ Hội Tiết Kiệm 200.000đ Và Chăm Sóc Sức Khỏe Toàn Diện',
+      title: 'Máy đo của bạn không thuộc danh sách thiết bị hỗ trợ?',
       linkTitle: 'Xem chương trình Thu cũ đổi mới của DiaB',
       url: 'https://diab.com.vn/nang-cap-may-do-duong-huyet-tai-benh-vien-dong-nai-2-co-hoi-tiet-kiem-200-000d-va-cham-soc-suc-khoe-toan-dien/',
     ),
     GlucoseFaq(
-      title: 'Tìm hiểu lợi ích của máy đo đường huyết có kết nối với ứng dụng DiaB',
+      title: 'Bạn chưa có máy đo đường huyết?',
       linkTitle: 'Tìm hiểu về lợi ích máy đo đường huyết có kết nối với ứng dụng DiaB',
       url: 'https://diab.com.vn/tim-hieu-loi-ich-cua-may-do-duong-huyet-co-ket-noi-voi-ung-dung-diab/',
     ),

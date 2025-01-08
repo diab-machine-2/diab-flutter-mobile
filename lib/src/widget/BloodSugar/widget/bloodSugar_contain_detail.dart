@@ -8,6 +8,7 @@ import 'package:medical/src/modal/glucose/glucose_distribution.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/BloodSugar/bloodSugar_detail_tabbar.dart';
 import 'package:medical/src/widget/BloodSugar/blood_sugar_functions.dart';
+import 'package:medical/src/widget/BloodSugar/constant/bloodSugar_rangetype.dart';
 import 'package:medical/src/widget/components/samples/pie_chart/samples/indicator.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
@@ -15,11 +16,16 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:medical/src/widgets/empty_data_box.dart';
 
 class BloodSugarDetail extends StatefulWidget {
-  BloodSugarDetail({Key? key, required this.periodFilterType, required this.onViewDetail})
-      : super(key: key);
+  BloodSugarDetail({
+    Key? key,
+    required this.periodFilterType,
+    required this.onViewMore,
+    required this.onViewDetail,
+  }) : super(key: key);
 
   final int periodFilterType;
-  final Function() onViewDetail;
+  final Function() onViewMore;
+  final Function(BloodSugarRangeType) onViewDetail;
   @override
   BloodSugarDetailState createState() => BloodSugarDetailState();
 }
@@ -49,7 +55,7 @@ class BloodSugarDetailState extends State<BloodSugarDetail>
   }
 
   void _doViewMore() {
-    widget.onViewDetail();
+    widget.onViewMore();
   }
 
   @override
@@ -347,6 +353,7 @@ class BloodSugarDetailState extends State<BloodSugarDetail>
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
           const SizedBox(height: 12),
+          // Chart "tần suất phân bổ"
           Expanded(
             child: Center(
               child: SizedBox(
@@ -400,20 +407,14 @@ class BloodSugarDetailState extends State<BloodSugarDetail>
             ),
           ),
           const SizedBox(width: 12),
+          // Guide
           Column(
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               InkWell(
-                onTap: () {
-                  Navigator.pushNamed(context, NavigatorName.blood_sugar_distribution_table,
-                      arguments: {
-                        'title': R.string.very_high.tr(),
-                        'glucoseDistributionType': 5,
-                        'periodFilterType': periodFilterType
-                      });
-                },
+                onTap: () => widget.onViewDetail(BloodSugarRangeType.very_high),
                 child: Padding(
                   padding: const EdgeInsets.symmetric(vertical: 3),
                   child: CircleIndicator(
@@ -425,14 +426,7 @@ class BloodSugarDetailState extends State<BloodSugarDetail>
               ),
               SizedBox(height: 4),
               InkWell(
-                onTap: () {
-                  Navigator.pushNamed(context, NavigatorName.blood_sugar_distribution_table,
-                      arguments: {
-                        'title': R.string.high.tr(),
-                        'glucoseDistributionType': 4,
-                        'periodFilterType': periodFilterType
-                      });
-                },
+                onTap: () => widget.onViewDetail(BloodSugarRangeType.high),
                 child: Padding(
                   padding: const EdgeInsets.symmetric(vertical: 3),
                   child: CircleIndicator(
@@ -444,14 +438,7 @@ class BloodSugarDetailState extends State<BloodSugarDetail>
               ),
               SizedBox(height: 4),
               InkWell(
-                onTap: () {
-                  Navigator.pushNamed(context, NavigatorName.blood_sugar_distribution_table,
-                      arguments: {
-                        'title': R.string.good.tr(),
-                        'glucoseDistributionType': 3,
-                        'periodFilterType': periodFilterType
-                      });
-                },
+                onTap: () => widget.onViewDetail(BloodSugarRangeType.normal),
                 child: Padding(
                   padding: const EdgeInsets.symmetric(vertical: 3),
                   child: CircleIndicator(
@@ -465,14 +452,7 @@ class BloodSugarDetailState extends State<BloodSugarDetail>
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 3),
                 child: InkWell(
-                  onTap: () {
-                    Navigator.pushNamed(context, NavigatorName.blood_sugar_distribution_table,
-                        arguments: {
-                          'title': R.string.low.tr(),
-                          'glucoseDistributionType': 2,
-                          'periodFilterType': periodFilterType
-                        });
-                  },
+                  onTap: () => widget.onViewDetail(BloodSugarRangeType.low),
                   child: CircleIndicator(
                     color: toColor(model.lowColor),
                     number: (model.lowCount! / total * 100).round().toString(),
@@ -482,14 +462,7 @@ class BloodSugarDetailState extends State<BloodSugarDetail>
               ),
               SizedBox(height: 4),
               InkWell(
-                onTap: () {
-                  Navigator.pushNamed(context, NavigatorName.blood_sugar_distribution_table,
-                      arguments: {
-                        'title': R.string.very_low.tr(),
-                        'glucoseDistributionType': 1,
-                        'periodFilterType': periodFilterType
-                      });
-                },
+                onTap: () => widget.onViewDetail(BloodSugarRangeType.very_low),
                 child: Padding(
                   padding: const EdgeInsets.symmetric(vertical: 3),
                   child: CircleIndicator(
