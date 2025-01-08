@@ -1,5 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
@@ -347,7 +348,7 @@ class _DsmesConfirmCreateInformationState
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 Text(
                   R.string.consult_information.tr(),
@@ -357,34 +358,34 @@ class _DsmesConfirmCreateInformationState
                     color: R.color.color0xff141416,
                   ),
                 ),
-                InkWell(
-                  onTap: () {
-                    if (isProcessing['editPatientInfo']!) return;
-                    setState(() => isProcessing['editPatientInfo'] = true);
-                    try {
-                      _cubit.updateCreateDsmesBookingRequestSymptom(
-                          symptom: symptomController.text);
-                      _showEditRequesterInformationBottomSheet();
-                    } finally {
-                      setState(() => isProcessing['editPatientInfo'] = false);
-                    }
-                  },
-                  child: Visibility(
-                    visible: !isReschedule,
-                    child: Container(
-                      alignment: Alignment.center,
-                      height: 20,
-                      child: Text(
-                        R.string.chinh_sua.tr(),
-                        style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w500,
-                          color: R.color.color0xff95682E,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
+                // InkWell(
+                //   onTap: () {
+                //     if (isProcessing['editPatientInfo']!) return;
+                //     setState(() => isProcessing['editPatientInfo'] = true);
+                //     try {
+                //       _cubit.updateCreateDsmesBookingRequestSymptom(
+                //           symptom: symptomController.text);
+                //       _showEditRequesterInformationBottomSheet();
+                //     } finally {
+                //       setState(() => isProcessing['editPatientInfo'] = false);
+                //     }
+                //   },
+                //   child: Visibility(
+                //     visible: !isReschedule,
+                //     child: Container(
+                //       alignment: Alignment.center,
+                //       height: 20,
+                //       child: Text(
+                //         R.string.chinh_sua.tr(),
+                //         style: TextStyle(
+                //           fontSize: 12,
+                //           fontWeight: FontWeight.w500,
+                //           color: R.color.color0xff95682E,
+                //         ),
+                //       ),
+                //     ),
+                //   ),
+                // ),
               ],
             ),
             GapH(12),
@@ -851,7 +852,7 @@ class _DsmesConfirmCreateInformationState
       context: context,
       isScrollControlled: true,
       builder: (context) => Container(
-        height: 370,
+        height: 270,
         padding: EdgeInsets.all(16),
         child: Column(
           children: [
@@ -906,65 +907,58 @@ class _DsmesConfirmCreateInformationState
                     hintText: R.string.name.tr()),
               ),
             ),
-            GapH(16),
-            Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-              Text(
-                R.string.phone_number.tr(),
-                style: TextStyle(
-                    color: R.color.textDark,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w700),
-              ),
-            ]),
-            GapH(8),
-            Container(
-              height: 54,
-              child: TextFormField(
-                minLines: 1,
-                maxLines: 1,
-                maxLength: 12,
-                inputFormatters: [
-                  LengthLimitingTextFieldFormatterFixed(12),
-                ],
-                obscureText: false,
-                controller: phoneController,
-                focusNode: phoneFocusNode,
-                keyboardType: TextInputType.number,
-                decoration: InputDecoration(
-                    fillColor: R.color.textDark,
-                    counterText: '',
-                    enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(
-                          color: R.color.grayComponentBorder, width: 1.0),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderSide:
-                          BorderSide(color: R.color.mainColor, width: 1.0),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    contentPadding:
-                        const EdgeInsets.only(top: 0, left: 16, right: 16),
-                    hintText: R.string.phone_number.tr()),
-              ),
-            ),
+            // GapH(16),
+            // Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+            //   Text(
+            //     R.string.phone_number.tr(),
+            //     style: TextStyle(
+            //         color: R.color.textDark,
+            //         fontSize: 16,
+            //         fontWeight: FontWeight.w700),
+            //   ),
+            // ]),
+            // GapH(8),
+            // Container(
+            //   height: 54,
+            //   child: TextFormField(
+            //     minLines: 1,
+            //     maxLines: 1,
+            //     maxLength: 12,
+            //     inputFormatters: [
+            //       LengthLimitingTextFieldFormatterFixed(12),
+            //     ],
+            //     obscureText: false,
+            //     controller: phoneController,
+            //     focusNode: phoneFocusNode,
+            //     keyboardType: TextInputType.number,
+            //     decoration: InputDecoration(
+            //         fillColor: R.color.textDark,
+            //         counterText: '',
+            //         enabledBorder: OutlineInputBorder(
+            //           borderSide: BorderSide(
+            //               color: R.color.grayComponentBorder, width: 1.0),
+            //           borderRadius: BorderRadius.circular(10),
+            //         ),
+            //         focusedBorder: OutlineInputBorder(
+            //           borderSide:
+            //               BorderSide(color: R.color.mainColor, width: 1.0),
+            //           borderRadius: BorderRadius.circular(10),
+            //         ),
+            //         contentPadding:
+            //             const EdgeInsets.only(top: 0, left: 16, right: 16),
+            //         hintText: R.string.phone_number.tr()),
+            //   ),
+            // ),
             GapH(16),
             _buildButton(R.string.confirm.tr(), () {
-              const String pattern = r'(^(?:[+0]9)?[0-9]{9}|\d{10}$)';
-              final RegExp regExp = RegExp(pattern);
-              final isCorrect = regExp.hasMatch(phoneController.text);
-              if (phoneController.text.length > 0 &&
-                  phoneController.text.length != 9 &&
-                  phoneController.text.length != 10 &&
-                  !isCorrect) {
-                Message.showToastMessage(
-                    context, R.string.phone_not_valid.tr());
-              }
+              // const String pattern = r'(^(?:[+0]9)?[0-9]{9}|\d{10}$)';
+              // final RegExp regExp = RegExp(pattern);
+              // final isCorrect = regExp.hasMatch(phoneController.text);
 
-              if (phoneController.text.isEmpty) {
-                Message.showToastMessage(
-                    context, R.string.please_enter_phone_number.tr());
-              }
+              // if (phoneController.text.isEmpty) {
+              //   Message.showToastMessage(
+              //       context, R.string.please_enter_phone_number.tr());
+              // }
 
               if (nameController.text.isEmpty) {
                 Message.showToastMessage(
@@ -973,7 +967,8 @@ class _DsmesConfirmCreateInformationState
 
               setState(() {
                 requesterName = nameController.text.trim();
-                requesterPhone = phoneController.text.trim();
+                // requesterPhone =
+                //     Utils.formatPhoneNumber(phoneController.text.trim());
               });
 
               _cubit.updateCreateDsmesBookingRequestRequesterInfo(
@@ -1181,6 +1176,9 @@ class _DsmesConfirmCreateInformationState
                     keyboardType: TextInputType.number,
                     minLines: 1,
                     maxLines: 1,
+                    inputFormatters: [
+                      LengthLimitingTextInputFormatter(10),
+                    ],
                     obscureText: false,
                     decoration: InputDecoration(
                       fillColor: R.color.textDark,
@@ -1236,6 +1234,21 @@ class _DsmesConfirmCreateInformationState
                                 R.string.ban_chua_nhap_so_dien_thoai.tr());
                             return;
                           } else {
+                            const String pattern =
+                                r'(^(?:[+0]9)?[0-9]{9}|\d{10}$)';
+                            final RegExp regExp = RegExp(pattern);
+                            if (!regExp.hasMatch(phone)) {
+                              Message.showToastMessage(
+                                  context, R.string.phone_not_valid.tr());
+                              return;
+                            }
+
+                            if (phone.length != 9 && phone.length != 10) {
+                              Message.showToastMessage(
+                                  context, R.string.phone_not_valid.tr());
+                              return;
+                            }
+
                             final UserModel userInfo = AppSettings.userInfo!;
 
                             phone = Utils.formatPhoneNumber(phone);

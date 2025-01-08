@@ -291,6 +291,14 @@ class _DsmesAppointmentPageState extends State<DsmesAppointmentPage>
             actions: [
               GestureDetector(
                 onTap: () async {
+                  final docosanToken = await AppSettings.getDocosanToken();
+                  if (docosanToken == null || docosanToken.isEmpty) {
+                    DsmesNavigationMixin.navigationKey.currentState
+                        ?.pushNamed(NavigatorName.dsmes_booking_history);
+                    return;
+                  }
+                  _cubit.clearAppointments();
+                  await _cubit.getDsmesAppointmentList(page: 1);
                   DsmesNavigationMixin.navigationKey.currentState
                       ?.pushNamed(NavigatorName.dsmes_booking_history);
                 },
@@ -360,7 +368,7 @@ class _DsmesAppointmentPageState extends State<DsmesAppointmentPage>
             },
             child: SingleChildScrollView(
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(12, 0, 12, 16),
+                padding: const EdgeInsets.fromLTRB(12, 16, 12, 16),
                 child: Column(
                   children: [
                     ListView.separated(
@@ -418,7 +426,7 @@ class _DsmesAppointmentPageState extends State<DsmesAppointmentPage>
                                   'clinic': _cubit.selectedClinic,
                                   'serviceType': DsmesAppointmentMode
                                       .telemedicine
-                                      .toString()
+                                      .toString(),
                                 });
                           }
                         } finally {

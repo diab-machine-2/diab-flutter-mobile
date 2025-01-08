@@ -28,6 +28,10 @@ class _DsmesClinicDetailPageState extends State<DsmesClinicDetailPage> {
   late DsmesAppointmentCubit _cubit;
   int _visibleComments = 3;
   bool _showingAll = false;
+  Map<String, bool> isProcessing = {
+    'onlineConsult': false,
+    'clinicConsult': false,
+  };
 
   @override
   void initState() {
@@ -103,7 +107,7 @@ class _DsmesClinicDetailPageState extends State<DsmesClinicDetailPage> {
   _buildClinicItem(DsmesClinicModel data) {
     final locale = context.locale.languageCode;
     final goodAtList = data.getGoodAtByLocale(locale);
-    final recentBooking = _cubit.listFilteredData
+    final recentBooking = _cubit.myAppointments
         .where(
           (element) => element.clinicId == data.id,
         )
@@ -531,10 +535,10 @@ class _DsmesClinicDetailPageState extends State<DsmesClinicDetailPage> {
             flex: 1,
             child: GestureDetector(
               onTap: () async {
-                final clinics = await _cubit.getClinicList();
-                if (clinics.isNotEmpty) {
-                  final priorityClinic = clinics.first;
-                  await _cubit.getClinicDetail(id: priorityClinic.id);
+                if (isProcessing['onlineConsult']!) return;
+                isProcessing['onlineConsult'] = true;
+                try {
+                  await _cubit.getClinicDetail(id: widget.clinicId);
                   await _cubit.initCreateDsmesBookingRequest(
                       locale: context.locale.languageCode);
 
@@ -546,6 +550,8 @@ class _DsmesClinicDetailPageState extends State<DsmesClinicDetailPage> {
                         'serviceType':
                             DsmesAppointmentMode.telemedicine.toString()
                       });
+                } finally {
+                  isProcessing['onlineConsult'] = false;
                 }
               },
               child: Container(
@@ -575,16 +581,22 @@ class _DsmesClinicDetailPageState extends State<DsmesClinicDetailPage> {
             flex: 1,
             child: GestureDetector(
               onTap: () async {
-                await _cubit.getClinicDetail(id: widget.clinicId);
-                if (_cubit.selectedClinic == null) return;
-                _cubit.initCreateDsmesBookingRequest(
-                    locale: context.locale.languageCode);
-                await DsmesNavigationMixin.navigationKey.currentState
-                    ?.pushNamed(NavigatorName.dsmes_booking_select_date,
-                        arguments: {
-                      'serviceType': DsmesAppointmentMode.atClinic.toString(),
-                      'action': 'create',
-                    });
+                if (isProcessing['clinicConsult']!) return;
+                isProcessing['clinicConsult'] = true;
+                try {
+                  await _cubit.getClinicDetail(id: widget.clinicId);
+                  if (_cubit.selectedClinic == null) return;
+                  _cubit.initCreateDsmesBookingRequest(
+                      locale: context.locale.languageCode);
+                  await DsmesNavigationMixin.navigationKey.currentState
+                      ?.pushNamed(NavigatorName.dsmes_booking_select_date,
+                          arguments: {
+                        'serviceType': DsmesAppointmentMode.atClinic.toString(),
+                        'action': 'create',
+                      });
+                } finally {
+                  isProcessing['clinicConsult'] = false;
+                }
               },
               child: Container(
                 height: 44,

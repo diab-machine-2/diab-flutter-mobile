@@ -2285,7 +2285,6 @@ class _ProfileInfoControllerState extends State<ProfileInfoController>
                         obscureText: false,
                         decoration: InputDecoration(
                           fillColor: R.color.textDark,
-                          counterText: '',
                           enabledBorder: OutlineInputBorder(
                             borderSide: BorderSide(
                                 color: R.color.grayComponentBorder, width: 1.0),
@@ -2340,6 +2339,37 @@ class _ProfileInfoControllerState extends State<ProfileInfoController>
                                     R.string.ban_chua_nhap_so_dien_thoai.tr());
                                 return;
                               } else {
+                                const String pattern =
+                                    r'(^(?:[+0]9)?[0-9]{9}|\d{10}$)';
+                                final RegExp regExp = RegExp(pattern);
+                                if (!regExp.hasMatch(phone)) {
+                                  Message.showToastMessage(
+                                      context, R.string.phone_not_valid.tr());
+                                  return;
+                                }
+                                if (phone.startsWith('+84')) {
+                                  if (phone.length != 12) {
+                                    // +84 + 9 digits
+                                    Message.showToastMessage(
+                                        context, R.string.phone_not_valid.tr());
+                                    return;
+                                  }
+                                } else if (phone.startsWith('0')) {
+                                  if (phone.length != 10) {
+                                    // 0 + 9 digits
+                                    Message.showToastMessage(
+                                        context, R.string.phone_not_valid.tr());
+                                    return;
+                                  }
+                                } else {
+                                  if (phone.length != 9) {
+                                    // 9 digits
+                                    Message.showToastMessage(
+                                        context, R.string.phone_not_valid.tr());
+                                    return;
+                                  }
+                                }
+                                
                                 final UserModel userInfo =
                                     AppSettings.userInfo!;
 

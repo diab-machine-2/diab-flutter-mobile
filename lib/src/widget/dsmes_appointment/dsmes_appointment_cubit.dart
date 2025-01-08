@@ -19,6 +19,7 @@ import 'package:medical/src/model/response/get_dsmes_appointment_detail_response
 import 'package:medical/src/model/response/get_dsmes_appointment_response.dart';
 import 'package:medical/src/model/service/api_result.dart';
 import 'package:medical/src/model/service/network_exceptions.dart';
+import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/dsmes_appointment/model/dsmes_appointment_model.dart';
 import 'package:medical/src/widget/dsmes_appointment/dsmes_appointment_state.dart';
@@ -47,8 +48,12 @@ class DsmesAppointmentCubit extends Cubit<DsmesAppointmentState> {
     emit(DsmesAppointmentLoading());
     final isExist = await isExistDocosanUser();
     if (isExist) {
+      final phoneNumber = AppSettings.userInfo?.phoneNumber;
+      if (phoneNumber == null) {
+        return;
+      }
       await registerDocosanUser(
-          phoneNumber: AppSettings.userInfo?.phoneNumber ?? '');
+          phoneNumber: Utils.formatPhoneNumber(phoneNumber));
       await getDsmesAppointmentList();
     }
     emit(DsmesAppointmentLoaded());
@@ -69,7 +74,7 @@ class DsmesAppointmentCubit extends Cubit<DsmesAppointmentState> {
       return;
     }
     final displayName = AppSettings.userInfo?.fullName ?? '';
-    final gender = AppSettings.userInfo?.gender == 'Nam' ? '1' : '0';
+    final gender = AppSettings.userInfo?.gender == 'Nam' ? '1' : '2';
     final email = AppSettings.userInfo?.email ?? '';
     final request = RegisterDocosanUserRequest(
       phoneNumber: Utils.formatPhoneNumber(phoneNumber),
@@ -88,10 +93,17 @@ class DsmesAppointmentCubit extends Cubit<DsmesAppointmentState> {
     return;
   }
 
+  void clearAppointments() {
+    myAppointments.clear();
+    listFilteredData.clear();
+    currentPage = 1;
+    hasMore = true;
+  }
+
   Future<void> getDsmesAppointmentList(
       {int page = 1, bool isRefresh = false, bool showLoading = true}) async {
     if (isRefresh) {
-      // myAppointments.clear();
+      myAppointments.clear();
       currentPage = 1;
       hasMore = true;
     }
@@ -290,42 +302,64 @@ class DsmesAppointmentCubit extends Cubit<DsmesAppointmentState> {
   List<DsmesAppointment> _getMostRelevantAppointment() {
     final now = DateTime.now();
     final threeDaysAgo = now.subtract(Duration(days: 3));
+    final windowStart =
+        now.subtract(Duration(minutes: Const.DSMES_BOOKING_TIME_WINDOW_RANGE));
+    final windowEnd =
+        now.add(Duration(minutes: Const.DSMES_BOOKING_TIME_WINDOW_RANGE));
 
-    // Sort appointments by start time first (most recent first)
+    // First check for approved appointments within time window
+    for (var appointment in myAppointments) {
+      final startTime =
+          DateFormat('yyyy-MM-dd HH:mm:ss').parse(appointment.startTime);
+      if (startTime.isAfter(windowStart) &&
+          startTime.isBefore(windowEnd) &&
+          appointment.status == DSMES_STATUS_APPROVE) {
+        return [appointment];
+      }
+    }
+
+    // Sort remaining appointments by most recent start time
     myAppointments.sort((a, b) {
       final aTime = DateFormat('yyyy-MM-dd HH:mm:ss').parse(a.startTime);
       final bTime = DateFormat('yyyy-MM-dd HH:mm:ss').parse(b.startTime);
-
-      // First compare by time
-      int timeCompare = bTime.compareTo(aTime);
-      if (timeCompare != 0) return timeCompare;
-
-      // If same time, sort by priority
-      final aScore = _getPriorityScore(a, aTime, now, threeDaysAgo);
-      final bScore = _getPriorityScore(b, bTime, now, threeDaysAgo);
-      return bScore.compareTo(aScore);
+      return bTime.compareTo(aTime);
     });
 
-    return myAppointments.isEmpty ? [] : [myAppointments.first];
-  }
+    // Then check other priorities
+    for (var appointment in myAppointments) {
+      final startTime =
+          DateFormat('yyyy-MM-dd HH:mm:ss').parse(appointment.startTime);
+      final endTime =
+          DateFormat('yyyy-MM-dd HH:mm:ss').parse(appointment.endTime);
 
-  int _getPriorityScore(DsmesAppointment appointment, DateTime startTime,
-      DateTime now, DateTime threeDaysAgo) {
-    // Priority 1: Most recent approved appointment not after now
-    if (!startTime.isAfter(now) && appointment.status == DSMES_STATUS_APPROVE) {
-      return 3;
+      final isAfterNow = now.isAfter(endTime);
+
+      // Priority 1: Most recent approved appointment not after now
+      if (!now.isAfter(endTime) && appointment.status == DSMES_STATUS_APPROVE) {
+        return [appointment];
+      }
     }
-    // Priority 2: Most recent requested appointment
-    if (appointment.status == DSMES_STATUS_REQUEST) {
-      return 2;
+
+    for (var appointment in myAppointments) {
+      // Priority 2: Most recent requested appointment
+      if (appointment.status == DSMES_STATUS_REQUEST) {
+        return [appointment];
+      }
     }
-    // Priority 3: Approved appointment within last 3 days
-    if (startTime.isBefore(now) &&
-        startTime.isAfter(threeDaysAgo) &&
-        appointment.status == DSMES_STATUS_APPROVE) {
-      return 1;
+
+    for (var appointment in myAppointments) {
+      final startTime =
+          DateFormat('yyyy-MM-dd HH:mm:ss').parse(appointment.startTime);
+
+      // Priority 3: Approved appointment within last 3 days
+      if (startTime.isBefore(now) &&
+          startTime.isAfter(threeDaysAgo) &&
+          appointment.status == DSMES_STATUS_APPROVE) {
+        return [appointment];
+      }
     }
-    return 0;
+
+    return myAppointments.isEmpty ? [] : [myAppointments.first];
   }
 
   initCreateDsmesBookingRequest({String locale = 'vi'}) {
@@ -339,7 +373,10 @@ class DsmesAppointmentCubit extends Cubit<DsmesAppointmentState> {
       birthday: DateFormat('yyyy-MM-dd').format(
           DateTime.fromMillisecondsSinceEpoch(
               AppSettings.userInfo!.dateOfBirth! ~/ 1000)),
-      patientGender: AppSettings.userInfo?.gender == 'Male' ? 1 : 0,
+      patientGender: AppSettings.userInfo?.gender == 'Male' ||
+              AppSettings.userInfo?.gender == 'Nam'
+          ? 1
+          : 2,
       patientEmail: AppSettings.userInfo?.email ?? '',
       bookingForClinic: 1, // 1: Booking phòng khám, 2: Booking bác sĩ
       language: locale,

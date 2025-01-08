@@ -2,6 +2,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/dsmes_appointment/dsmes_appointment_cubit.dart';
@@ -29,7 +30,11 @@ class _DsmesAppointmentHistoryPageState
   void initState() {
     super.initState();
     _cubit = context.read<DsmesAppointmentCubit>();
-    _cubit.getDsmesAppointmentList(page: 1);
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 
   @override
@@ -96,20 +101,25 @@ class _DsmesAppointmentHistoryPageState
                     : SmartRefresher(
                         controller: _refreshController,
                         enablePullUp: _cubit.hasMore,
-                        footer: ClassicFooter(
-                          loadingText: "",
-                          canLoadingText: R.string.release_to_load_more.tr(),
-                          idleText: R.string.pull_up_to_load_more.tr(),
-                        ),
+                        footer: _cubit.hasMore
+                            ? ClassicFooter(
+                                loadingText: "Đang tải",
+                                canLoadingText:
+                                    R.string.release_to_load_more.tr(),
+                                idleText: R.string.pull_up_to_load_more.tr(),
+                              )
+                            : null,
                         onRefresh: () async {
                           await _cubit.getDsmesAppointmentList(
                               isRefresh: true, page: 1);
                           _refreshController.refreshCompleted();
+                          setState(() {});
                         },
                         onLoading: () async {
                           await _cubit.getDsmesAppointmentList(
                               page: _cubit.currentPage + 1);
                           _refreshController.loadComplete();
+                          setState(() {});
                         },
                         child: ListView.separated(
                           padding: EdgeInsets.all(16),

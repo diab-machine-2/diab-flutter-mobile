@@ -723,7 +723,7 @@ class _DsmesBookingDetailState extends State<DsmesBookingDetail> {
                     onConfirm: () {
                       Navigator.of(context).pop(); // Close dialog
 
-                      if (_cubit.createDsmesBookingRequest == null) {
+                      
                         _cubit.initCreateDsmesBookingRequest(
                             locale: context.locale.languageCode);
                         final rescheduleRequest = CreateDsmesBookingRequest(
@@ -743,7 +743,7 @@ class _DsmesBookingDetailState extends State<DsmesBookingDetail> {
                                       widget.appointment.patientInfo.gender ==
                                           '1'
                                   ? 1
-                                  : 0,
+                                  : 2,
                           patientEmail: widget.appointment.patientInfo.email,
                           bookingForClinic: 1,
                           language: context.locale.languageCode,
@@ -757,7 +757,7 @@ class _DsmesBookingDetailState extends State<DsmesBookingDetail> {
                         );
                         _cubit.updateCreateDsmesBookingRequest(
                             request: rescheduleRequest);
-                      }
+                      
 
                       final navigator =
                           DsmesNavigationMixin.navigationKey.currentState;

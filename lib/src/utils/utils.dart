@@ -631,6 +631,9 @@ class Utils {
     if (phoneNumber.startsWith('0')) {
       return '+84${phoneNumber.substring(1)}';
     }
+    if (!phoneNumber.startsWith("+84")) {
+      return '+84$phoneNumber';
+    }
     return phoneNumber;
   }
 }

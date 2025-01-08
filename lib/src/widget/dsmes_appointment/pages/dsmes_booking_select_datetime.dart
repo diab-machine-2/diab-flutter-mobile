@@ -68,9 +68,10 @@ class _DsmesCalendarSectionState extends State<DsmesCalendarSection> {
 
   void _loadInitialData() async {
     final scheduleDates = await _getScheduleDates();
-    final schedules = _filterAvailableSchedules(
-        scheduleDates, selectedDate ?? DateTime.now());
+
     final dates = _getActiveDates(scheduleDates: scheduleDates);
+    final schedules =
+        _filterAvailableSchedules(scheduleDates, selectedDate ?? dates.first);
 
     if (selectedDate == null) {
       // If current date isn't in activeDates, use first available date
@@ -81,6 +82,7 @@ class _DsmesCalendarSectionState extends State<DsmesCalendarSection> {
       fullSchedule = scheduleDates; // Store full schedule
       availableBookingSchedule = schedules;
       activeDates = dates;
+      isMorningSelected = selectedDate!.hour < 12;
     });
   }
 
@@ -109,11 +111,11 @@ class _DsmesCalendarSectionState extends State<DsmesCalendarSection> {
       var scheduleDateTime = DateTime.parse(schedule.startTime);
       bool isSameDay = scheduleDateTime.isSameDayWith(date);
       bool isAvailable = schedule.isAvailable == true;
-      bool isMorningSlot = isMorningSelected
-          ? scheduleDateTime.hour < 12
-          : scheduleDateTime.hour >= 12;
+      // bool isMorningSlot = isMorningSelected
+      //     ? scheduleDateTime.hour < 12
+      //     : scheduleDateTime.hour >= 12;
 
-      return isSameDay && isAvailable && isMorningSlot;
+      return isSameDay && isAvailable;
     }).toList();
   }
 
@@ -157,14 +159,9 @@ class _DsmesCalendarSectionState extends State<DsmesCalendarSection> {
                       highlightColor: R.color.transparent,
                       icon: Icon(Icons.arrow_back, color: R.color.white),
                       onPressed: () {
-                        DsmesNavigationMixin.navigationKey.currentState
-                            ?.popUntil((route) {
-                          print('Route: ${route.settings.name}');
-                          return true; // Don't actually pop, just print
-                        });
-
-                        DsmesNavigationMixin.navigationKey.currentState
-                            ?.pop(context);
+                        DsmesNavigationMixin.navigationKey.currentState?.pop(
+                            DsmesNavigationMixin
+                                .navigationKey.currentState?.context);
                       },
                     ),
                   ),
@@ -495,11 +492,11 @@ class _DsmesCalendarSectionState extends State<DsmesCalendarSection> {
       addedEndTimes.add(endTime);
     }
 
-    if (morningTargets.isEmpty && isMorningSelected) {
-      setState(() {
-        isMorningSelected = false;
-      });
-    }
+    // if (morningTargets.isEmpty && isMorningSelected) {
+    //   setState(() {
+    //     isMorningSelected = false;
+    //   });
+    // }
 
     return LayoutBuilder(builder: (context, constraints) {
       final targets = isMorningSelected ? morningTargets : afternoonTargets;
