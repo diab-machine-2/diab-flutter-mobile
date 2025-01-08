@@ -79,6 +79,7 @@ class AppRoutes {
         page = BloodSugarDetailController(
           glucoseID: data?['glucoseID'],
           initPeriodFilterType: data?['initPeriodFilterType'],
+          glucoseDistributionType: data?['glucoseDistributionType'],
         );
         break;
       default:

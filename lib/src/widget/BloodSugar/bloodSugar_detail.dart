@@ -14,10 +14,11 @@ import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:easy_localization/easy_localization.dart';
 
 class BloodSugarDetailController extends StatefulWidget {
-  BloodSugarDetailController({Key? key, this.initPeriodFilterType = 3, this.glucoseID})
+  BloodSugarDetailController({Key? key, this.initPeriodFilterType = 3, this.glucoseID, this.glucoseDistributionType})
       : super(key: key);
   final int initPeriodFilterType;
   final String? glucoseID;
+  final int? glucoseDistributionType;
   @override
   BloodSugarDetailControllerState createState() => BloodSugarDetailControllerState();
 }
@@ -80,6 +81,7 @@ class BloodSugarDetailControllerState extends State<BloodSugarDetailController> 
         page: page,
         currentDateTime: (DateTime.now().millisecondsSinceEpoch ~/ 1000).toString(),
         periodFilterType: periodFilterType.toString(),
+        glucoseDistributionType: widget.glucoseDistributionType?.toString(),
       ));
     }
     return true;
@@ -91,6 +93,7 @@ class BloodSugarDetailControllerState extends State<BloodSugarDetailController> 
       page: 1,
       currentDateTime: (DateTime.now().millisecondsSinceEpoch ~/ 1000).toString(),
       periodFilterType: periodFilterType.toString(),
+      glucoseDistributionType: widget.glucoseDistributionType?.toString(),
     ));
     return true;
   }
@@ -114,6 +117,7 @@ class BloodSugarDetailControllerState extends State<BloodSugarDetailController> 
                       BlocProvider.of<GlucoseBloc>(context).add(FetchInputGlucose(
                           currentDateTime: (DateTime.now().millisecondsSinceEpoch ~/ 1000).toString(),
                           periodFilterType: periodFilterType.toString(),
+                          glucoseDistributionType: widget.glucoseDistributionType?.toString(),
                           page: 1));
                     }
                     if (state is GlucoseError) {

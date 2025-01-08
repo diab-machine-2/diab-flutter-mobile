@@ -15,6 +15,7 @@ import 'package:medical/src/widget/tabbar/fillter_bloodSugar_panel.dart';
 import 'package:medical/src/widgets/common_page.dart';
 
 import '../../app_setting/app_setting.dart';
+import 'constant/bloodSugar_rangetype.dart';
 import 'widget/bloodSugar_chart.dart';
 import 'widget/bloodSugar_compare_chart.dart';
 import 'widget/bloodSugar_contain_detail.dart';
@@ -47,9 +48,17 @@ class _BloodSugarDetailTabbarControllerState extends State<BloodSugarDetailTabba
   late String name = R.string.filter_day.tr(args: ['30']);
   String? glucoseID;
 
-  void _viewDetailListing() {
+  void _viewListing() {
     Navigator.pushNamed(context, NavigatorName.detail_blood_sugar_listing,
         arguments: {'glucoseID': glucoseID, 'initPeriodFilterType': periodFilterType});
+  }
+
+  void _viewFilteredListing(BloodSugarRangeType rangeType) {
+    Navigator.pushNamed(context, NavigatorName.detail_blood_sugar_listing, arguments: {
+      'glucoseID': glucoseID,
+      'glucoseDistributionType': rangeType.value,
+      'initPeriodFilterType': periodFilterType,
+    });
   }
 
   @override
@@ -139,7 +148,8 @@ class _BloodSugarDetailTabbarControllerState extends State<BloodSugarDetailTabba
                       child: BloodSugarDetail(
                         key: sugarDetailKey,
                         periodFilterType: periodFilterType,
-                        onViewDetail: _viewDetailListing,
+                        onViewMore: _viewListing,
+                        onViewDetail: _viewFilteredListing,
                       ),
                     ),
 
@@ -150,7 +160,7 @@ class _BloodSugarDetailTabbarControllerState extends State<BloodSugarDetailTabba
                       child: BloodSugarCompareChart(
                         key: sugarCompareKey,
                         periodFilterType: periodFilterType,
-                        onViewDetail: _viewDetailListing,
+                        onViewDetail: _viewListing,
                       ),
                     ),
 
@@ -296,7 +306,7 @@ class _BloodSugarDetailTabbarControllerState extends State<BloodSugarDetailTabba
           ),
           const SizedBox(width: 6),
           InkWell(
-            onTap: _viewDetailListing,
+            onTap: _viewListing,
             child: SizedBox(
               width: 36,
               height: 36,

@@ -98,7 +98,8 @@ class BloodSugarOverviewControllerState
                   child: BloodSugarDetail(
                     key: sugarDetailKey,
                     periodFilterType: periodFilterType,
-                    onViewDetail: () {},
+                    onViewMore: () {},
+                    onViewDetail: (_) {},
                   ),
                 ),
                 BloodSugarChart(
