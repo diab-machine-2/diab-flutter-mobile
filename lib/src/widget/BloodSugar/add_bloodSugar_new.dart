@@ -112,12 +112,16 @@ class _AddBloodSugarControllerNewState
   void _initData() async {
     isPregnancy = Utils.isGestationalDiabetes();
     if (widget.type == 'update') {
-      _loadDetail();
+      await _loadDetail();
+      await _loadConfig(selectedTimeframeId: selectedTimeFrame?.id);
     } else {
       await _loadConfig();
     }
     isMgPerDl = AppSettings.userInfo!.glucoseUnit == 1;
     _lastUnitIndex = isMgPerDl ? 0 : 1;
+    if (mounted) {
+      setState(() {});
+    }
     List<int> valueOfClickTime = await AppSettings.getValueOfClickShortGuide();
     clickTime = valueOfClickTime[ScreenList.BLOOD_SUGAR.index];
     _loadDescription();
@@ -175,7 +179,7 @@ class _AddBloodSugarControllerNewState
     }
   }
 
-  void _loadDetail() async {
+  Future<void> _loadDetail() async {
     try {
       BotToast.showLoading();
       model = await GlucoseClient().fetchDetail(widget.id);
@@ -193,14 +197,12 @@ class _AddBloodSugarControllerNewState
       selectedTimeFrame = TimeFrameModel(
           id: model!.timeFrameId, code: '', name: model!.timeFrame);
       fromNipro = model!.byDevice;
-
-      setState(() {});
     } catch (e) {
       print(e);
     }
   }
 
-  Future<void> _loadConfig() async {
+  Future<void> _loadConfig({String? selectedTimeframeId}) async {
 
     BotToast.showLoading();
     // load concurrent 2 api
@@ -226,7 +228,14 @@ class _AddBloodSugarControllerNewState
         _rangeLabel = colors.map(((e) => e.name)).toList();
       }
 
-      selectedTimeFrame = timeFrames.length == 0 ? null : timeFrames.first;
+      if (selectedTimeframeId != null) {
+        selectedTimeFrame = _times.firstWhere(
+          (e) => e.id == selectedTimeframeId,
+          orElse: () => _times.first,
+        );
+      } else {
+        selectedTimeFrame = timeFrames.length == 0 ? null : timeFrames.first;
+      }
       if (selectedTimeFrame != null) {
         selectedTimeFrame = _times.firstWhere(
           (e) => e.code! == selectedTimeFrame!.code!,
@@ -238,7 +247,6 @@ class _AddBloodSugarControllerNewState
     }
     // rangeValue = changeRange(selectedTimeFrame);
     BotToast.closeAllLoading();
-    setState(() {});
   }
 
   void _loadDescription() async {
@@ -420,7 +428,17 @@ class _AddBloodSugarControllerNewState
                                         )),
                                   ),
                                   GestureDetector(
-                                    onTap: _editData,
+                                    onTap: () {
+                                      int indexRange = findIndexInRanges(number, _rangeValue);
+                                      if (indexRange == 4 || indexRange == 0) {
+                                        _showDialogWarning(
+                                          onConfirm: () => _editData(),
+                                          range: indexRange,
+                                        );
+                                      } else {
+                                        _editData();
+                                      }
+                                    },
                                     child: Container(
                                       height: 48,
                                       width: 164,
@@ -518,8 +536,7 @@ class _AddBloodSugarControllerNewState
           removeIDs,
           paths);
       if (result == true) {
-        // TODO: update data
-        _navigateAfterSuccess('');
+        _navigateAfterSuccess(widget.id ?? '');
       }
 
       BotToast.closeAllLoading();
@@ -1425,6 +1442,7 @@ class _AddBloodSugarControllerNewState
             selectedDate = date ?? DateTime.now();
           });
           _loadConfig();
+          setState(() {});
         },
       ),
     );
