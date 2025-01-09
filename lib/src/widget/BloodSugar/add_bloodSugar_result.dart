@@ -17,6 +17,7 @@ import 'package:syncfusion_flutter_gauges/gauges.dart';
 
 import 'add_bloodSugar_result_note.dart';
 import 'bloodSugar_result.dto.dart';
+import 'widget/ai_loading_text_widget.dart';
 
 class PageAddBloodSugarResult extends StatefulWidget {
   const PageAddBloodSugarResult({super.key, required this.data});
@@ -28,7 +29,8 @@ class PageAddBloodSugarResult extends StatefulWidget {
 
 class _PageAddBloodSugarResultState extends State<PageAddBloodSugarResult> {
   bool get _haveNote => _note.isNotEmpty == true || _files.isNotEmpty == true;
-  String _aiResult = '';
+  String? _aiResult = null;
+  bool _isLoadedAIResult = false;
 
   bool _haveEditNote = false;
   late String _note = widget.data.note ?? '';
@@ -50,7 +52,8 @@ class _PageAddBloodSugarResultState extends State<PageAddBloodSugarResult> {
       TrackingManager.recordError(e, s);
       return null;
     });
-    _aiResult = aiResult ?? '';
+    _aiResult = aiResult;
+    _isLoadedAIResult = true;
     if (mounted) {
       setState(() {});
     }
@@ -180,6 +183,7 @@ class _PageAddBloodSugarResultState extends State<PageAddBloodSugarResult> {
     return CustomAppBar(
       backgroundColor: R.color.transparent,
       centerTitle: true,
+      transformValue: 0,
       title: Text(
         formattedDateTime,
         style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: R.color.textDark),
@@ -194,7 +198,7 @@ class _PageAddBloodSugarResultState extends State<PageAddBloodSugarResult> {
         GestureDetector(
           onTap: _doGuide,
           child: Padding(
-            padding: const EdgeInsets.only(left: 16, right: 16),
+            padding: const EdgeInsets.only(right: 16),
             child: Image.asset(R.drawable.ic_help_outlined, width: 24, height: 24),
           ),
         ),
@@ -226,7 +230,7 @@ class _PageAddBloodSugarResultState extends State<PageAddBloodSugarResult> {
             ),
           ),
 
-          const SizedBox(height: 24),
+          // const SizedBox(height: 24),
           // button add note
           _buildNoteOrAddNoteSection(),
 
@@ -238,22 +242,39 @@ class _PageAddBloodSugarResultState extends State<PageAddBloodSugarResult> {
               Text(
                 R.string.ai_suggestion_glucose.tr(),
                 style: TextStyle(
-                  fontSize: 14,
+                  fontSize: 15,
                   fontWeight: FontWeight.bold,
                   color: R.color.textDark,
+                  height: 21 / 15,
                 ),
               ),
               const SizedBox(width: 6),
-              InkWell(
-                onTap: () {},
-                child: Image.asset(R.drawable.ic_speak_text, width: 24, height: 24),
-              ),
+              Image.asset(R.drawable.ic_info, width: 18, height: 18),
+              // InkWell(
+              //   onTap: () {},
+              //   child: Image.asset(R.drawable.ic_speak_text, width: 24, height: 24),
+              // ),
             ],
           ),
           const SizedBox(height: 8),
-          Text(
-            _aiResult,
-            style: TextStyle(
+          if (_isLoadedAIResult == false && _aiResult == null)
+            Padding(
+              padding: const EdgeInsets.only(top: 8.0),
+              child: const AILoadingTextWidget(),
+            )
+          else if (_isLoadedAIResult == true && _aiResult == null)
+            Text(
+              'Có lỗi xảy ra',
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w400,
+                color: Color(0xFFC82221),
+              ),
+            )
+          else
+            Text(
+              _aiResult ?? '',
+              style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w400,
               color: R.color.primaryGreyColor,
@@ -543,7 +564,7 @@ class _SegmentedCircularGauge extends StatelessWidget {
                     ),
                     SizedBox(height: 4),
                     Text(
-                      '$glucose $glucoseUnit',
+                      '${glucose.toStringAsFixed(0)} $glucoseUnit',
                       style: TextStyle(
                         fontSize: 16,
                         color: Colors.black,

@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_observer/Observable.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medical/res/R.dart';
@@ -1045,7 +1046,7 @@ class _AddBloodSugarControllerNewState
             child: TextField(
               focusNode: _focusNodeKPI,
               controller: _controller,
-              maxLength: isMgPerDl ? 3 : 4,
+              maxLength: isMgPerDl ? 4 : 5,
               autofocus: true,
               textAlign: TextAlign.center,
               keyboardType: TextInputType.numberWithOptions(decimal: true),
@@ -1054,6 +1055,9 @@ class _AddBloodSugarControllerNewState
                   fontSize: 48,
                   fontFamily: 'Viga',
                   fontWeight: FontWeight.w500),
+              inputFormatters: [
+                FilteringTextInputFormatter.allow(RegExp(r'^\d{0,3}(,\d{0,2})?$')),
+              ],
               decoration: InputDecoration(
                 counterText: '',
                 hintText: '0.0',

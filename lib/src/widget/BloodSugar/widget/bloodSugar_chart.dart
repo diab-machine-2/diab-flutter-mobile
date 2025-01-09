@@ -17,6 +17,8 @@ import 'package:medical/src/modal/glucose/glucose_trend.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 
+import 'ai_loading_text_widget.dart';
+
 class BloodSugarChart extends StatefulWidget {
   BloodSugarChart({Key? key, required this.periodFilterType}) : super(key: key);
 
@@ -102,36 +104,41 @@ class BloodSugarChartState extends State<BloodSugarChart>
             Message.showToastMessage(context, state.message);
           }
           String? aiSuggestion;
+          String? mostAppearType;
+          String? mostAppearTypeColor;
           if (state is GlucoseTrendLoaded) {
             model = state.trend;
             aiSuggestion = state.glucoseInputAIAnalysis;
+            mostAppearType = state.mostAppearType;
+            mostAppearTypeColor = state.mostAppearTypeColor;
           }
 
-          return model == null
-              ? Container(height: 450, child: Center(child: CircularProgressIndicator()))
-              : VisibilityDetector(
-                  key: Key('blood_sugar_chart'),
-                  onVisibilityChanged: (visibilityInfo) {
-                    var visiblePercentage = visibilityInfo.visibleFraction * 100;
-                    if (visiblePercentage == 0) {
-                      previousDate = 0;
-                    }
-                  },
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      _sectionTrending(model),
-                      const SizedBox(height: 16),
-                      if (aiSuggestion?.isNotEmpty == true) _sectionAIHelp(aiSuggestion!),
-                    ],
-                  ),
-                );
+          if (model == null)
+            return Container(height: 450, child: Center(child: CircularProgressIndicator()));
+
+          return VisibilityDetector(
+            key: Key('blood_sugar_chart'),
+            onVisibilityChanged: (visibilityInfo) {
+              var visiblePercentage = visibilityInfo.visibleFraction * 100;
+              if (visiblePercentage == 0) {
+                previousDate = 0;
+              }
+            },
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                _sectionTrending(model, mostAppearType, mostAppearTypeColor),
+                const SizedBox(height: 16),
+                _sectionAIHelp(aiSuggestion),
+              ],
+            ),
+          );
         },
       ),
     );
   }
 
-  Widget _sectionTrending(TrendDataModel model) {
+  Widget _sectionTrending(TrendDataModel model, String? mostAppearType, String? mostAppearTypeColor) {
     if (model.trendItems.items.isEmpty) {
       return Container(height: 100);
     }
@@ -144,7 +151,8 @@ class BloodSugarChartState extends State<BloodSugarChart>
     if (totalItems < _breakingTypeNumber) {
       return _sectionTrendingLess(trends);
     } else {
-      return _sectionTrendingMany(trends, model.fromDate, model.toDate);
+      return _sectionTrendingMany(
+          trends, model.fromDate, model.toDate, mostAppearType, mostAppearTypeColor);
     }
   }
 
@@ -278,7 +286,13 @@ class BloodSugarChartState extends State<BloodSugarChart>
     );
   }
 
-  Widget _sectionTrendingMany(List<TrendModel> trends, int? fromDateInt, int? toDateInt) {
+  Widget _sectionTrendingMany(
+    List<TrendModel> trends,
+    int? fromDateInt,
+    int? toDateInt,
+    String? mostAppearType,
+    String? mostAppearTypeColor,
+  ) {
     double highestGlucose = 0;
     double lowestGlucose = -1;
 
@@ -295,30 +309,13 @@ class BloodSugarChartState extends State<BloodSugarChart>
       toDate = DateFormat('dd/MM/yyyy').format(DateTime.now());
     }
 
-    Map<String, int> typesAppear = {};
     for (int i = 0; i < trends.length; i++) {
-      if (trends[i].type != null) {
-        typesAppear[trends[i].type!] = (typesAppear[trends[i].type!] ?? 0) + 1;
-      }
       if (trends[i].glucose != null && trends[i].glucose! > highestGlucose) {
         highestGlucose = trends[i].glucose!;
       }
       if (lowestGlucose == -1 ||
           (trends[i].glucose != null && trends[i].glucose! < lowestGlucose)) {
         lowestGlucose = trends[i].glucose!;
-      }
-    }
-    String mostAppearTypeStr = '';
-    String mostAppearTypeColor = '';
-    if (typesAppear.isNotEmpty) {
-      final mostAppearType = typesAppear.entries.toList()
-        ..sort((a, b) => b.value.compareTo(a.value));
-      mostAppearTypeStr = mostAppearType[0].key;
-      for (int i = 0; i < trends.length; i++) {
-        if (trends[i].type == mostAppearTypeStr) {
-          mostAppearTypeColor = trends[i].color!;
-          break;
-        }
       }
     }
 
@@ -341,12 +338,12 @@ class BloodSugarChartState extends State<BloodSugarChart>
             ),
             const SizedBox(height: 6),
             Text(
-              mostAppearTypeStr,
+              mostAppearType ?? '--',
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
-                color: mostAppearTypeColor.isNotEmpty
-                    ? Color(int.parse('0xff${mostAppearTypeColor.split('#').join()}'))
+                color: mostAppearTypeColor?.isNotEmpty == true
+                    ? Color(int.parse('0xff${mostAppearTypeColor!.split('#').join()}'))
                     : null,
                 height: 36 / 24,
               ),
@@ -370,7 +367,7 @@ class BloodSugarChartState extends State<BloodSugarChart>
     );
   }
 
-  Widget _sectionAIHelp(String aiSuggestion) {
+  Widget _sectionAIHelp(String? aiSuggestion) {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -390,22 +387,39 @@ class BloodSugarChartState extends State<BloodSugarChart>
               Text(
                 R.string.ai_suggestion_glucose.tr(),
                 style: TextStyle(
-                  fontSize: 14,
+                  fontSize: 15,
                   fontWeight: FontWeight.bold,
                   color: R.color.textDark,
+                  height: 21 / 15,
                 ),
               ),
               const SizedBox(width: 6),
-              InkWell(
-                onTap: () {},
-                child: Image.asset(R.drawable.ic_speak_text, width: 24, height: 24),
-              ),
+              Image.asset(R.drawable.ic_info, width: 18, height: 18),
+              // InkWell(
+              //   onTap: () {},
+              //   child: Image.asset(R.drawable.ic_speak_text, width: 24, height: 24),
+              // ),
             ],
           ),
           const SizedBox(height: 8),
-          Text(
-            aiSuggestion,
-            style: TextStyle(
+          if (aiSuggestion == null)
+            Padding(
+              padding: const EdgeInsets.only(top: 8.0),
+              child: const AILoadingTextWidget(),
+            )
+          else if (aiSuggestion.isEmpty)
+            Text(
+              'Có lỗi xảy ra',
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w400,
+                color: Color(0xFFC82221),
+              ),
+            )
+          else
+            Text(
+              aiSuggestion,
+              style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w400,
               color: R.color.primaryGreyColor,
