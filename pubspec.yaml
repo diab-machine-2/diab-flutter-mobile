@@ -234,6 +234,9 @@ flutter:
     - family: SFPro
       fonts:
         - asset: assets/fonts/sf_pro.ttf
+    - family: Nunito
+      fonts:
+        - asset: assets/fonts/nunito.ttf
   #       - asset: fonts/Schyler-Italic.ttf
   #         style: italic
   #   - family: Trajan Pro

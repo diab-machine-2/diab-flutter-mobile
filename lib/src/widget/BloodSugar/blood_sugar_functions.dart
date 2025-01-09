@@ -12,9 +12,10 @@ import 'package:medical/src/widget/nipro/health_app/widgets/request_health_conne
 import 'package:medical/src/widgets/button_widget.dart';
 
 class BloodSugarFunctions {
-  static void showModalAddData(BuildContext context, {bool popPrevious = false}) {
-    Widget buildContentItem(
-        String title, String subtitle, String iconPath, VoidCallback onPressed) {
+  static void showModalAddData(BuildContext context,
+      {bool popPrevious = false}) {
+    Widget buildContentItem(String title, String subtitle, String iconPath,
+        VoidCallback onPressed) {
       return InkWell(
         onTap: onPressed,
         child: Container(
@@ -60,23 +61,25 @@ class BloodSugarFunctions {
                 ),
               ),
               const SizedBox(width: 12),
-              Icon(Icons.chevron_right, size: 24, color: R.color.primaryGreyColor),
+              Icon(Icons.chevron_right,
+                  size: 24, color: R.color.primaryGreyColor),
             ],
           ),
         ),
       );
     }
 
-    TrackingManager.analytics.logEvent(
-      name: 'glucose_add_start',
-      parameters: {
-        "screen_name": 'kpi_glucose',
+    TrackingManager.trackEvent(
+      'glucose_add_start',
+      'kpi_glucose',
+      params: {
         'cta_button_name': 'cta_add_glucose',
       },
     );
 
-     showModalBottomSheet(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(16))),
+    showModalBottomSheet(
+      shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(16))),
       backgroundColor: Colors.white,
       context: context,
       isScrollControlled: true,
@@ -132,10 +135,10 @@ class BloodSugarFunctions {
                     'Tự động nhập chỉ số một cách nhanh chóng và chính xác.',
                     R.drawable.im_glucose_input_device,
                     () {
-                      TrackingManager.analytics.logEvent(
-                        name: 'glucose_select_method',
-                        parameters: {
-                          "screen_name": 'kpi_glucose',
+                      TrackingManager.trackEvent(
+                        'glucose_select_method',
+                        'kpi_glucose',
+                        params: {
                           'method': 'device',
                         },
                       );
@@ -152,10 +155,10 @@ class BloodSugarFunctions {
                     'Nhập chỉ số đường huyết của bạn bằng cách nhập thủ công từ kết quả đo đã có sẵn',
                     R.drawable.im_glucose_input_manual,
                     () {
-                      TrackingManager.analytics.logEvent(
-                        name: 'glucose_select_method',
-                        parameters: {
-                          "screen_name": 'kpi_glucose',
+                      TrackingManager.trackEvent(
+                        'glucose_select_method',
+                        'kpi_glucose',
+                        params: {
                           'method': 'manual',
                         },
                       );
@@ -163,7 +166,8 @@ class BloodSugarFunctions {
                       if (popPrevious) {
                         Navigator.pop(context);
                       }
-                      Navigator.pushNamed(context, NavigatorName.add_blood_sugar_new,
+                      Navigator.pushNamed(
+                          context, NavigatorName.add_blood_sugar_new,
                           arguments: {'type': 'input'});
                     },
                   ),
@@ -177,20 +181,23 @@ class BloodSugarFunctions {
   }
 
   static Future<void> showModalAddDataV1(BuildContext context) async {
-    String healthIcon = Platform.isIOS ? R.drawable.logo_healthkit : R.drawable.logo_healthConnect;
+    String healthIcon = Platform.isIOS
+        ? R.drawable.logo_healthkit
+        : R.drawable.logo_healthConnect;
     String healthTitle = Platform.isIOS
         ? R.string.connect_from_Apple_Health.tr()
         : R.string.connect_from_Health_Connect.tr();
     bool? hasHealthConnection = await AppStorages.getHealthAppPermission();
-    await TrackingManager.analytics.logEvent(
-      name: 'glucose_add_start',
-      parameters: {
-        "screen_name": 'kpi_glucose',
+    await TrackingManager.trackEvent(
+      'glucose_add_start',
+      'kpi_glucose',
+      params: {
         'cta_button_name': 'cta_add_glucose',
       },
     );
     showModalBottomSheet(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(15))),
+      shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(15))),
       backgroundColor: R.color.transparent,
       context: context,
       isScrollControlled: true,
@@ -206,8 +213,8 @@ class BloodSugarFunctions {
             Container(
               padding: EdgeInsets.all(20),
               alignment: Alignment.center,
-              decoration:
-                  BoxDecoration(border: Border(bottom: BorderSide(color: Color(0xffF2F2F2)))),
+              decoration: BoxDecoration(
+                  border: Border(bottom: BorderSide(color: Color(0xffF2F2F2)))),
               child: Text(
                 R.string.choose_how_to_enter.tr(),
                 style: TextStyle(
@@ -238,10 +245,10 @@ class BloodSugarFunctions {
                     textColor: Color(0xff249B92),
                     title: 'Kết nối từ thiết bị',
                     onPressed: () async {
-                      await TrackingManager.analytics.logEvent(
-                        name: 'glucose_select_method',
-                        parameters: {
-                          "screen_name": 'kpi_glucose',
+                      await TrackingManager.trackEvent(
+                        'glucose_select_method',
+                        'kpi_glucose',
+                        params: {
                           'method': 'device',
                         },
                       );
@@ -256,15 +263,16 @@ class BloodSugarFunctions {
                     textColor: Color(0xff249B92),
                     title: 'Nhập thủ công',
                     onPressed: () async {
-                      await TrackingManager.analytics.logEvent(
-                        name: 'glucose_select_method',
-                        parameters: {
-                          "screen_name": 'kpi_glucose',
+                      await TrackingManager.trackEvent(
+                        'glucose_select_method',
+                        'kpi_glucose',
+                        params: {
                           'method': 'manual',
                         },
                       );
                       Navigator.pop(context);
-                      Navigator.pushNamed(context, NavigatorName.add_blood_sugar_new,
+                      Navigator.pushNamed(
+                          context, NavigatorName.add_blood_sugar_new,
                           arguments: {'type': 'input'});
                     },
                   ),

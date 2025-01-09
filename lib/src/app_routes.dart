@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
+import 'package:medical/src/widget/dsmes_appointment/dsmes_appointment_page.dart';
 import 'package:medical/src/widget/meeting/meeting_prepare_page.dart';
 import 'package:medical/src/widget/my_plan_screens/activity_tab/create_goal/create_goal.dart';
 import 'package:medical/src/widget/utilities/utilities_page.dart';
@@ -65,6 +66,11 @@ class AppRoutes {
           page = MeetingPreparePage();
           break;
         }
+      case NavigatorName.dsmes_booking:
+        {
+          page = DsmesAppointmentPage();
+          break;
+        }
       case NavigatorName.add_blood_sugar_result:
         page = PageAddBloodSugarResult(data: settings.arguments as BloodSugarResultDto);
         break;
@@ -85,6 +91,8 @@ class AppRoutes {
       default:
         break;
     }
-    return page != null ? MaterialPageRoute(settings: settings, builder: (_) => page!) : null;
+    return page != null
+        ? MaterialPageRoute(settings: settings, builder: (_) => page!)
+        : null;
   }
 }

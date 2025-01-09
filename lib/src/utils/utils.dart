@@ -417,6 +417,30 @@ class Utils {
     }
   }
 
+  static String getHostDocosanUrl() {
+    if (AppSettings.environment == "product") {
+      return Const.HOST_DOCOSAN_URL;
+    } else {
+      return Const.HOST_DOCOSAN_URL_STAGING;
+    }
+  }
+
+  static String getDocosanDomain() {
+    if (AppSettings.environment == "product") {
+      return Const.HOST_DOCOSAN_DOMAIN;
+    } else {
+      return Const.HOST_DOCOSAN_DOMAIN_STAGING;
+    }
+  }
+
+  static String getDocosanDomainUrl() {
+    if (AppSettings.environment == "product") {
+      return Const.HOST_DOCOSAN_DOMAIN_URL;
+    } else {
+      return Const.HOST_DOCOSAN_DOMAIN_STAGING_URL;
+    }
+  }
+
   static String showValue(double number) {
     if (number == number.toInt()) {
       return number.toInt().toString();
@@ -583,6 +607,34 @@ class Utils {
       default:
         return R.color.black;
     }
+  }
+
+  static BoxShadow getBoxShadowDropCard() {
+    return BoxShadow(
+      color: R.color.shadowColorNew.withOpacity(0.08),
+      spreadRadius: 0,
+      blurRadius: 8,
+      offset: Offset(1, 2),
+    );
+  }
+
+  static BoxShadow getBoxShadowDropButton() {
+    return BoxShadow(
+      color: R.color.shadowColorNew.withOpacity(0.08),
+      spreadRadius: 0,
+      blurRadius: 8,
+      offset: Offset(2, -4),
+    );
+  }
+
+  static String formatPhoneNumber(String phoneNumber) {
+    if (phoneNumber.startsWith('0')) {
+      return '+84${phoneNumber.substring(1)}';
+    }
+    if (!phoneNumber.startsWith("+84")) {
+      return '+84$phoneNumber';
+    }
+    return phoneNumber;
   }
 }
 

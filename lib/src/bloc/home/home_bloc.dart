@@ -439,12 +439,12 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       //   slug: "book-lich-tai-co-so-y-te",
       //   navigatorName: NavigatorName.reminder,
       // ),
-      // HomeUtilityData(
-      //   icon: R.drawable.ic_home_doctor_consult,
-      //   title: "Tư vấn Bác sĩ",
-      //   slug: "tu-van-bac-si",
-      //   navigatorName: "consult",
-      // ),
+      HomeUtilityData(
+        icon: R.drawable.ic_home_doctor_consult,
+        title: "Tư vấn sức khoẻ",
+        slug: "tu-van-suc-khoe",
+        navigatorName: NavigatorName.dsmes_booking,
+      ),
     ];
 
     if (preOrder?.isNotEmpty == true) {

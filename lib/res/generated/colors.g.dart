@@ -138,7 +138,6 @@ class Colors {
   Color get survey_color => Color(0xff1E8F66);
   Color get hba1c_color => Color(0xff533BAA);
   Color get height_color => Color(0xff008479);
-  Color get color0xff008479 => Color(0xff008479);
   Color get color0xff888892 => Color(0xff888892);
   Color get color0xffD4D4D8 => Color(0xffD4D4D8);
   Color get color0xffF4F4F5 => Color(0xffF4F4F5);
@@ -150,4 +149,29 @@ class Colors {
   Color get color0xff004ED5 => Color(0xff004ED5);
   Color get color0xff52525B => Color(0xff52525B);
   Color get color0xffBE8B0E => Color(0xffBE8B0E);
+  Color get color0xffECFFFD => Color(0xffECFFFD);
+  Color get color0xffA4E3DD => Color(0xffA4E3DD);
+  Color get color0xff239A90 => Color(0xff239A90);
+  Color get color0xffC34040 => Color(0xffC34040);
+  Color get color0xffE0E4EA => Color(0xffE0E4EA);
+  Color get color0xffDC0000 => Color(0xffDC0000);
+  Color get color0xffD59200 => Color(0xffD59200);
+  Color get color0xffFAF0D2 => Color(0xffFAF0D2);
+  Color get color0xffA36E2A => Color(0xffA36E2A);
+  Color get greenGradientTop02 => Color(0xff0FB4A5);
+  Color get color0xffE6E8EC => Color(0xffE6E8EC);
+  Color get color0xff636A6B => Color(0xff636A6B);
+  Color get backgroundColorNew => Color(0xffEAF9F7);
+  Color get color0xffD1E2FF => Color(0xffD1E2FF);
+  Color get color0xffEAFFEC => Color(0xffEAFFEC);
+  Color get color0xffFFE9E9 => Color(0xffFFE9E9);
+  Color get color0xff111515 => Color(0xff111515);
+  Color get color0xffDFE4E4 => Color(0xffDFE4E4);
+  Color get color0xffE7FDFB => Color(0xffE7FDFB);
+  Color get shadowColorNew => Color(0xff042B28);
+  Color get color0xffEDEEEE => Color(0xffEDEEEE);
+  Color get color0xffBFC6C6 => Color(0xffBFC6C6);
+  Color get color0xff00B83D => Color(0xff00B83D);
+  Color get color0xff95682E => Color(0xff95682E);
+  Color get color0xff6E7378 => Color(0xff6E7378);
 }

@@ -1,5 +1,8 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:intl/intl.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/utils/app_log.dart';
+import 'package:medical/src/utils/extention.dart';
 
 class DateUtil {
   static bool? isAfter(int? dateTime1, int? dateTime2) {
@@ -184,29 +187,29 @@ class DateUtil {
             : DateFormat('dd/MM/yyyy').format(dateConverted).toString();
   }
 
-  static String weekDayToString(DateTime date) {
+  static String weekDayToString(DateTime date, {bool isDisplayfull = false}) {
     String dayLabel;
     switch (date.weekday) {
       case DateTime.monday:
-        dayLabel = 'T2';
+        dayLabel = isDisplayfull ? R.string.day_in_week_monday.tr() : 'T2';
         break;
       case DateTime.tuesday:
-        dayLabel = 'T3';
+        dayLabel = isDisplayfull ? R.string.day_in_week_tuesday.tr() : 'T3';
         break;
       case DateTime.wednesday:
-        dayLabel = 'T4';
+        dayLabel = isDisplayfull ? R.string.day_in_week_wednesday.tr() : 'T4';
         break;
       case DateTime.thursday:
-        dayLabel = 'T5';
+        dayLabel = isDisplayfull ? R.string.day_in_week_thursday.tr() : 'T5';
         break;
       case DateTime.friday:
-        dayLabel = 'T6';
+        dayLabel = isDisplayfull ? R.string.day_in_week_friday.tr() : 'T6';
         break;
       case DateTime.saturday:
-        dayLabel = 'T7';
+        dayLabel = isDisplayfull ? R.string.day_in_week_saturday.tr() : 'T7';
         break;
       case DateTime.sunday:
-        dayLabel = 'CN';
+        dayLabel = isDisplayfull ? R.string.day_in_week_sunday.tr() : 'CN';
         break;
       default:
         dayLabel = '';

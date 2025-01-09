@@ -888,13 +888,12 @@ packages:
     source: hosted
     version: "1.2.0"
   flutter_inappwebview_ios:
-    dependency: "direct overridden"
+    dependency: transitive
     description:
-      path: flutter_inappwebview_ios
-      ref: "hotfix/xcode16-build"
-      resolved-ref: "23ea093d79e4ba8fa964b51cd3434d83d2a0a95f"
-      url: "https://github.com/ngocphuc1612/flutter_inappwebview.git"
-    source: git
+      name: flutter_inappwebview_ios
+      sha256: f363577208b97b10b319cd0c428555cd8493e88b468019a8c5635a0e4312bd0f
+      url: "https://pub.dev"
+    source: hosted
     version: "1.0.13"
   flutter_inappwebview_macos:
     dependency: transitive

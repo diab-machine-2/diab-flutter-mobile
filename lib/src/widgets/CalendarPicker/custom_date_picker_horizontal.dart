@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math' as math;
 // import 'package:easy_localization/easy_localization.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -36,13 +37,16 @@ class CustomHorizontalDatePicker extends StatefulWidget {
     required DateTime lastDate,
     List<DateTime>? activeDates,
     DateTime? currentDate,
+    required int datesRange,
     required this.onDateChanged,
     this.selectableDayPredicate,
+    this.onEndReached,
   })  : initialDate = utils.dateOnly(initialDate),
         this.activeDates = activeDates,
         firstDate = utils.dateOnly(firstDate),
         lastDate = utils.dateOnly(lastDate),
         currentDate = utils.dateOnly(currentDate ?? DateTime.now()),
+        datesRange = datesRange,
         super(key: key) {
     assert(!this.lastDate.isBefore(this.firstDate),
         'lastDate ${this.lastDate} must be on or after firstDate ${this.firstDate}.');
@@ -76,6 +80,11 @@ class CustomHorizontalDatePicker extends StatefulWidget {
   /// Function to provide full control over which dates in the calendar can be selected.
   final SelectableDayPredicate? selectableDayPredicate;
 
+  /// Display range of dates
+  final int datesRange;
+
+  final VoidCallback? onEndReached;
+
   @override
   _CustomCalendarDatePickerState createState() =>
       _CustomCalendarDatePickerState();
@@ -86,11 +95,25 @@ class _CustomCalendarDatePickerState extends State<CustomHorizontalDatePicker> {
   DateTime? _currentDisplayedMonthDate;
   DateTime? _selectedDate;
   late MaterialLocalizations _localizations;
+  // final ScrollController _scrollController = ScrollController();
+  // bool _hasReachedEnd = false;
 
   @override
   void initState() {
     super.initState();
     _initWidgetState();
+    // _scrollController.addListener(() {
+    //   if (widget.onEndReached != null &&
+    //       !_hasReachedEnd &&
+    //       _scrollController.position.pixels >=
+    //           _scrollController.position.maxScrollExtent - 10) {
+    //     _hasReachedEnd = true;
+    //     widget.onEndReached!();
+    //   } else if (_scrollController.position.pixels <= 10) {
+    //     // Only reset when near start
+    //     _hasReachedEnd = false;
+    //   }
+    // });
   }
 
   @override
@@ -144,6 +167,12 @@ class _CustomCalendarDatePickerState extends State<CustomHorizontalDatePicker> {
   }
 
   @override
+  void dispose() {
+    // _scrollController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     assert(debugCheckHasMaterial(context));
     assert(debugCheckHasMaterialLocalizations(context));
@@ -164,7 +193,15 @@ class _CustomCalendarDatePickerState extends State<CustomHorizontalDatePicker> {
       height: _datePickerHeight,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
-        itemCount: 14,
+        // controller: _scrollController
+        //   ..addListener(() {
+        //     if (widget.onEndReached != null &&
+        //         _scrollController.position.pixels ==
+        //             _scrollController.position.maxScrollExtent) {
+        //       widget.onEndReached!();
+        //     }
+        //   }),
+        itemCount: widget.datesRange,
         itemBuilder: (context, index) {
           final date = days[index];
           final dayLabel = DateUtil.weekDayToString(date);
@@ -183,9 +220,7 @@ class _CustomCalendarDatePickerState extends State<CustomHorizontalDatePicker> {
               height: _datePickerHeight,
               margin: EdgeInsets.only(
                   left: index == 0 ? 16 : 10,
-                  right: index == Const.MAX_DAY_RANGE_PRIMARY_SCREENING - 1
-                      ? 16
-                      : 0),
+                  right: index == widget.datesRange - 1 ? 16 : 0),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10),
                 border: Border.all(
@@ -233,7 +268,7 @@ class _CustomCalendarDatePickerState extends State<CustomHorizontalDatePicker> {
     final List<DateTime> days = [];
     final DateTime today = DateTime.now();
 
-    for (int i = 0; i < 14; i++) {
+    for (int i = 0; i < widget.datesRange; i++) {
       days.add(today.add(Duration(days: i)));
     }
 

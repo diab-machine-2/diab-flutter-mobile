@@ -88,6 +88,16 @@ class NavigatorName {
   static const String test_ocr_gallery = '/test_ocr_gallery';
   static const String test_ocr_result = '/test_ocr_result';
 
+  // DSMES BOOKING CENTER
+  static const String dsmes_booking = '/dsmes_booking';
+  static const String dsmes_booking_history = '/dsmes_booking_history';
+  static const String dsmes_booking_offline = '/dsmes_booking_offline';
+  static const String dsmes_booking_detail = '/dsmes_booking_detail';
+  static const String dsmes_booking_select_date = '/dsmes_booking_select_date';
+  static const String dsmes_confirm_information = '/dsmes_confirm_information';
+  static const String dsmes_clinic_detail = '/dsmes_clinic_detail';
+  static const String dsmes_select_service = '/dsmes_select_service';
+  static const String dsmes_booking_online_join_room = '/dsmes_booking_online_join_room';
   // New Glucose
   static const String glucose_intro_1st_page = '/glucose-intro-1st-page';
   static const String glucose_intro_2nd_page = '/glucose-intro-2nd-page';
