@@ -30,11 +30,18 @@ class _DsmesAppointmentHistoryPageState
   void initState() {
     super.initState();
     _cubit = context.read<DsmesAppointmentCubit>();
+    _initData();
   }
 
   @override
   void dispose() {
     super.dispose();
+  }
+
+  _initData() async {
+    await _cubit.getDsmesAppointmentList(
+        page: 1, isRefresh: true, showLoading: true);
+    setState(() {});
   }
 
   @override
@@ -105,13 +112,13 @@ class _DsmesAppointmentHistoryPageState
                             ? ClassicFooter(
                                 loadingText: "Đang tải",
                                 canLoadingText:
-                                    R.string.release_to_load_more.tr(),
-                                idleText: R.string.pull_up_to_load_more.tr(),
+                                    R.string.pull_up_to_load_more.tr(),
+                                // idleText: R.string.pull_up_to_load_more.tr(),
                               )
                             : null,
                         onRefresh: () async {
                           await _cubit.getDsmesAppointmentList(
-                              isRefresh: true, page: 1);
+                              isRefresh: true, page: 1, showLoading: false);
                           _refreshController.refreshCompleted();
                           setState(() {});
                         },

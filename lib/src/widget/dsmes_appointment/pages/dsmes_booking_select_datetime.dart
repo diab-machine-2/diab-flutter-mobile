@@ -3,7 +3,6 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
-import 'package:medical/src/utils/app_media_query.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/extention.dart';
 import 'package:medical/src/utils/navigator_name.dart';
@@ -203,6 +202,14 @@ class _DsmesCalendarSectionState extends State<DsmesCalendarSection> {
                           return;
                         }
 
+                        if (DateFormat('yyyy-MM-dd HH:mm')
+                            .parse(selectedBookingSchedule!.startTime)
+                            .isBefore(activeDates.first)) {
+                          Message.showToastMessage(
+                              context, R.string.vui_long_chon_gio_kham.tr());
+                          return;
+                        }
+
                         setState(() => _isProcessing = true);
 
                         try {
@@ -251,6 +258,7 @@ class _DsmesCalendarSectionState extends State<DsmesCalendarSection> {
                                   'appointmentId': widget.appointmentId,
                                 });
                           } else {
+                            if (widget.action == ' reschedule') {}
                             // Normal flow
                             DsmesNavigationMixin.navigationKey.currentState
                                 ?.pushNamed(
@@ -340,34 +348,18 @@ class _DsmesCalendarSectionState extends State<DsmesCalendarSection> {
             lastDate: _getLastDate(),
             datesRange: Const.MAX_DAY_RANGE_DSMES_BOOKING,
             onEndReached: () {
-              BotToast.showCustomText(
+              BotToast.showText(
+                text: R.string.select_booking_dates_warning.tr(),
+                contentColor: R.color.color0xff111515.withOpacity(0.7),
+                contentPadding:
+                    EdgeInsets.symmetric(vertical: 8, horizontal: 25),
+                borderRadius: BorderRadius.circular(8),
+                textStyle: TextStyle(
+                  color: R.color.white,
+                  fontSize: 15,
+                  fontWeight: FontWeight.w400,
+                ),
                 align: Alignment.center,
-                toastBuilder: (cancelFunc) {
-                  return Container(
-                    width: AppMediaQuery.deviceHeight,
-                    decoration: BoxDecoration(
-                      color: R.color.color0xff111515.withOpacity(0.7),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    margin: EdgeInsets.symmetric(horizontal: 20),
-                    padding: EdgeInsets.symmetric(vertical: 8, horizontal: 25),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Text(
-                          R.string.select_booking_dates_warning.tr(),
-                          style: TextStyle(
-                            color: R.color.white,
-                            fontSize: 15,
-                            fontWeight: FontWeight.w400,
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                      ],
-                    ),
-                  );
-                },
               );
             },
             onDateChanged: (datetime) async {

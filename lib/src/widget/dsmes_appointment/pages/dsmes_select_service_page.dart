@@ -249,34 +249,17 @@ class _DsmesSelectServicePageState extends State<DsmesSelectServicePage> {
         if (selectedServices.length < maxServices) {
           selectedServices.add(serviceId);
         } else {
-          BotToast.showCustomText(
+          BotToast.showText(
+            text: R.string.max_selected_demand_warning.tr(),
+            contentColor: R.color.color0xff111515.withOpacity(0.7),
+            contentPadding: EdgeInsets.symmetric(vertical: 8, horizontal: 25),
+            borderRadius: BorderRadius.circular(8),
+            textStyle: TextStyle(
+              color: R.color.white,
+              fontSize: 15,
+              fontWeight: FontWeight.w400,
+            ),
             align: Alignment.center,
-            toastBuilder: (cancelFunc) {
-              return Container(
-                width: AppMediaQuery.deviceHeight,
-                decoration: BoxDecoration(
-                  color: R.color.color0xff111515.withOpacity(0.7),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                margin: EdgeInsets.symmetric(horizontal: 20),
-                padding: EdgeInsets.symmetric(vertical: 8, horizontal: 25),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Text(
-                      R.string.max_selected_demand_warning.tr(),
-                      style: TextStyle(
-                        color: R.color.white,
-                        fontSize: 15,
-                        fontWeight: FontWeight.w400,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ],
-                ),
-              );
-            },
           );
         }
       } else {

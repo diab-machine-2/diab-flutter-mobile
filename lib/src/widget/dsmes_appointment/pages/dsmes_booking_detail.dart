@@ -69,12 +69,23 @@ class _DsmesBookingDetailState extends State<DsmesBookingDetail> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(
-        decoration: BoxDecoration(
-          color: R.color.backgroundColorNew,
+    return WillPopScope(
+      onWillPop: () async {
+        FocusScope.of(context).unfocus();
+        DsmesNavigationMixin.navigationKey.currentState
+            ?.popUntil((route) => route.isFirst);
+        Observable.instance
+            .notifyObservers([], notifyName: "refresh_dsmes_appointment");
+        return false;
+      },
+      child: Scaffold(
+        drawerEnableOpenDragGesture: false,
+        body: Container(
+          decoration: BoxDecoration(
+            color: R.color.backgroundColorNew,
+          ),
+          child: _buildPage(context),
         ),
-        child: _buildPage(context),
       ),
     );
   }
@@ -723,41 +734,36 @@ class _DsmesBookingDetailState extends State<DsmesBookingDetail> {
                     onConfirm: () {
                       Navigator.of(context).pop(); // Close dialog
 
-                      
-                        _cubit.initCreateDsmesBookingRequest(
-                            locale: context.locale.languageCode);
-                        final rescheduleRequest = CreateDsmesBookingRequest(
-                          startTime: widget.appointment.startTime,
-                          endTime: widget.appointment.endTime,
-                          clinicId: widget.appointment.clinicId,
-                          doctorId: widget.appointment.doctorId,
-                          patientPhoneNumber:
-                              widget.appointment.patientInfo.phone,
-                          patientName:
-                              widget.appointment.patientInfo.displayName,
-                          birthday: widget.appointment.patientInfo.birthday,
-                          patientGender:
-                              widget.appointment.patientInfo.gender == 'Nam' ||
-                                      widget.appointment.patientInfo.gender ==
-                                          'Male' ||
-                                      widget.appointment.patientInfo.gender ==
-                                          '1'
-                                  ? 1
-                                  : 2,
-                          patientEmail: widget.appointment.patientInfo.email,
-                          bookingForClinic: 1,
-                          language: context.locale.languageCode,
-                          symptom: widget.appointment.symptom,
-                          symptomAttachment: widget
-                              .appointment.symptomAttachment
-                              .map((e) => e.filePath)
-                              .toList(),
-                          paymentInfo: PaymentInfo(
-                              services: widget.appointment.services),
-                        );
-                        _cubit.updateCreateDsmesBookingRequest(
-                            request: rescheduleRequest);
-                      
+                      _cubit.initCreateDsmesBookingRequest(
+                          locale: context.locale.languageCode);
+                      final rescheduleRequest = CreateDsmesBookingRequest(
+                        startTime: widget.appointment.startTime,
+                        endTime: widget.appointment.endTime,
+                        clinicId: widget.appointment.clinicId,
+                        doctorId: widget.appointment.doctorId,
+                        patientPhoneNumber:
+                            widget.appointment.patientInfo.phone,
+                        patientName: widget.appointment.patientInfo.displayName,
+                        birthday: widget.appointment.patientInfo.birthday,
+                        patientGender:
+                            widget.appointment.patientInfo.gender == 'Nam' ||
+                                    widget.appointment.patientInfo.gender ==
+                                        'Male' ||
+                                    widget.appointment.patientInfo.gender == '1'
+                                ? 1
+                                : 2,
+                        patientEmail: widget.appointment.patientInfo.email,
+                        bookingForClinic: 1,
+                        language: context.locale.languageCode,
+                        symptom: widget.appointment.symptom,
+                        symptomAttachment: widget.appointment.symptomAttachment
+                            .map((e) => e.filePath)
+                            .toList(),
+                        paymentInfo:
+                            PaymentInfo(services: widget.appointment.services),
+                      );
+                      _cubit.updateCreateDsmesBookingRequest(
+                          request: rescheduleRequest);
 
                       final navigator =
                           DsmesNavigationMixin.navigationKey.currentState;

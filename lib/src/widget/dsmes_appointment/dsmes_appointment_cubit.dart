@@ -110,11 +110,10 @@ class DsmesAppointmentCubit extends Cubit<DsmesAppointmentState> {
 
     if (!hasMore) return;
 
-    if (showLoading) {
-      emit(isRefresh
-          ? InitialDsmesAppointmentState()
-          : DsmesAppointmentLoading());
-    }
+    emit(
+      showLoading ? DsmesAppointmentLoading() : InitialDsmesAppointmentState(),
+    );
+
     ApiResult<GetDsmesAppointmentResponse> apiResult =
         await appRepository.getDsmesAppointmentList(page: page);
     apiResult.when(success: (GetDsmesAppointmentResponse response) {

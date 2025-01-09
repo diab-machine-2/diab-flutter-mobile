@@ -297,8 +297,9 @@ class _DsmesAppointmentPageState extends State<DsmesAppointmentPage>
                         ?.pushNamed(NavigatorName.dsmes_booking_history);
                     return;
                   }
+
                   _cubit.clearAppointments();
-                  await _cubit.getDsmesAppointmentList(page: 1);
+
                   DsmesNavigationMixin.navigationKey.currentState
                       ?.pushNamed(NavigatorName.dsmes_booking_history);
                 },
@@ -363,7 +364,8 @@ class _DsmesAppointmentPageState extends State<DsmesAppointmentPage>
                 _controller.refreshCompleted();
                 return;
               }
-              await _cubit.getDsmesAppointmentList(isRefresh: true, page: 1);
+              await _cubit.getDsmesAppointmentList(
+                  isRefresh: true, page: 1, showLoading: false);
               _controller.refreshCompleted();
             },
             child: SingleChildScrollView(
