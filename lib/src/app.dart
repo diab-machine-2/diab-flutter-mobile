@@ -14,7 +14,7 @@ import 'package:medical/src/widget/BloodPressure/add_bloodPressure.dart';
 import 'package:medical/src/widget/BloodPressure/bloodPressure_detail_tabbar.dart';
 import 'package:medical/src/widget/BloodPressure/widget/bloodPressure_table.dart';
 import 'package:medical/src/widget/BloodSugar/add_bloodSugar.dart';
-import 'package:medical/src/widget/BloodSugar/bloodSugar_detail_tabbar.dart';
+import 'package:medical/src/widget/BloodSugar/bloodSugar_detail_tabbar_v2.dart';
 import 'package:medical/src/widget/BloodSugar/bloodSugar_table_distribution.dart';
 import 'package:medical/src/widget/BloodSugar/widget/bloodSugar_table.dart';
 import 'package:medical/src/widget/BloodSugar/widget/bloodSugar_table_compare.dart';

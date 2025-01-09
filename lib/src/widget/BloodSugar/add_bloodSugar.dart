@@ -969,7 +969,7 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController>
       for (var file in files) {
         paths.add(file.path);
       }
-      final result = await GlucoseClient().postIndexGlucose(
+      final resultId = await GlucoseClient().postIndexGlucose(
           selectedTimeFrame!.id,
           (selectedDate.millisecondsSinceEpoch ~/ 1000).toInt(),
           number.toString(),
@@ -977,15 +977,15 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController>
           note,
           fromNipro,
           paths);
-      if (result == true) {
-        // await TrackingManager.analytics.logEvent(
-        //   name: 'kpi_add_success',
-        //   parameters: {
-        //     "screen_name": 'kpi_glycemic_add',
-        //     'object_type': 'kpi_glycemic',
-        //     'object_title': 'Chỉ số đường huyết'
-        //   },
-        // );
+      if (resultId?.isNotEmpty == true) {
+        await TrackingManager.analytics.logEvent(
+          name: 'kpi_add_success',
+          parameters: {
+            "screen_name": 'kpi_glycemic_add',
+            'object_type': 'kpi_glycemic',
+            'object_title': 'Chỉ số đường huyết'
+          },
+        );
         // if(widget.goalId != null && widget.goalId?.isNotEmpty == true){
         await HomeClient().completeSmartGoal(selectedDate, widget.goalId ?? '',
             1, ScheduleType.blood_sugar.typeIndex);

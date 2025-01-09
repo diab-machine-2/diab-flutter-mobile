@@ -571,7 +571,7 @@ class _HomeControllerState extends State<HomeController>
                             onAddMeasurement: () =>
                                 _showAddMeasurement(context),
                             onHealthProfile: () {},
-                            onMeasurement: (routeName, args, title) {
+                            onMeasurement: (routeName, args, title) async {
                               // track event
                               final String eventName = "home_select_kpi";
                               TrackingManager.trackEvent(eventName, _screenName,
@@ -585,8 +585,7 @@ class _HomeControllerState extends State<HomeController>
                                 return;
                               }
                               // case input glucose
-                              if (_showGlucoseAddBottomSheet(routeName) ==
-                                  false) {
+                              if (await _showGlucoseAddBottomSheet(routeName) == false) {
                                 return;
                               }
                               // others
@@ -958,7 +957,7 @@ class _HomeControllerState extends State<HomeController>
         BlocProvider.of<HomeBloc>(context).getAllMeasurements();
     final dialog = AddMeasurement(
       measurements: measurementIndexes,
-      onItemTap: (item) {
+      onItemTap: (item) async {
         // track event
         final String eventName = "home_add_kpi_item";
         TrackingManager.trackEvent(eventName, _screenName, params: {
@@ -971,7 +970,7 @@ class _HomeControllerState extends State<HomeController>
           return;
         }
         // case input glucose
-        if (_showGlucoseAddBottomSheet(item.navigatorName) == false) {
+        if (await _showGlucoseAddBottomSheet(item.navigatorName) == false) {
           return;
         }
         // others
@@ -1006,9 +1005,15 @@ class _HomeControllerState extends State<HomeController>
   }
 
   // return allow next route
-  bool _showGlucoseAddBottomSheet(String? routeName) {
+  Future<bool> _showGlucoseAddBottomSheet(String? routeName) async {
     if (routeName == NavigatorName.add_blood_sugar_new ||
         routeName == NavigatorName.add_blood_sugar) {
+      // check first time open glucose intro
+      if (await AppSettings.hadOpenedGlucoseIntro() == false) {
+        AppSettings.markOpenedGlucoseIntro();
+        Navigator.of(context).pushNamed(NavigatorName.glucose_intro_1st_page);
+        return false;
+      }
       if (AppSettings.isUS) {
         return true;
       }

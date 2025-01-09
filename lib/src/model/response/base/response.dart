@@ -26,6 +26,13 @@ class SingleResponse<T> {
       meta: json['meta'] != null ? Meta.fromJson(json['meta']) : null,
     );
   }
+
+  factory SingleResponse.fromJsonTypeString(Map<String, dynamic> json) {
+    return SingleResponse(
+      data: json['data'],
+      meta: json['meta'] != null ? Meta.fromJson(json['meta']) : null,
+    );
+  }
 }
 
 class Meta {

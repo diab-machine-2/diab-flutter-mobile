@@ -1,5 +1,5 @@
-
 import 'package:flutter/material.dart';
+import 'package:medical/res/R.dart';
 
 class Indicator extends StatelessWidget {
   final Color? color;
@@ -50,13 +50,11 @@ class Indicator extends StatelessWidget {
                   children: [
                     Container(
                         decoration: BoxDecoration(
-                            shape:
-                                isSquare! ? BoxShape.rectangle : BoxShape.circle,
+                            shape: isSquare! ? BoxShape.rectangle : BoxShape.circle,
                             color: color,
                             borderRadius: BorderRadius.circular(8)),
                         child: Padding(
-                          padding: EdgeInsets.only(
-                              top: 2, bottom: 2, left: 8, right: 8),
+                          padding: EdgeInsets.only(top: 2, bottom: 2, left: 8, right: 8),
                           child: Center(
                             child: Text(number!,
                                 style: TextStyle(
@@ -73,6 +71,56 @@ class Indicator extends StatelessWidget {
               Text(text!, style: TextStyle(fontSize: 13))
             ],
           ),
+        )
+      ],
+    );
+  }
+}
+
+class CircleIndicator extends StatelessWidget {
+  final Color color;
+  final String text;
+  final String number;
+
+  const CircleIndicator({
+    Key? key,
+    required this.text,
+    required this.color,
+    required this.number,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: <Widget>[
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(top: 2),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(6),
+                child: ColoredBox(
+                  color: color,
+                  child: SizedBox(
+                    width: 12,
+                    height: 12,
+                  ),
+                ),
+              ),
+            ),
+            SizedBox(width: 4),
+            Text(
+              '$text ($number%)',
+              style: TextStyle(
+                fontSize: 14,
+                height: 20 / 14,
+                color: R.color.textDark,
+              ),
+            )
+          ],
         )
       ],
     );

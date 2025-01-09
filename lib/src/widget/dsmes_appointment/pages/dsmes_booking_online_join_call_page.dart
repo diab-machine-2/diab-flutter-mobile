@@ -109,29 +109,25 @@ class _WebViewScreenState extends State<WebViewScreen> {
         children: [
           InAppWebView(
             initialUrlRequest: URLRequest(
-              url: Uri.parse(uri),
+              url: WebUri.uri(Uri.parse(uri)),
             ),
-            initialOptions: InAppWebViewGroupOptions(
-              crossPlatform: InAppWebViewOptions(
-                javaScriptEnabled: true,
-                useOnLoadResource: true,
-                useShouldOverrideUrlLoading: true,
-                mediaPlaybackRequiresUserGesture: false,
-                clearCache: true,
-              ),
-              android: AndroidInAppWebViewOptions(
-                useHybridComposition: true,
-                domStorageEnabled: true,
-                databaseEnabled: true,
-                supportMultipleWindows: true,
-                allowContentAccess: true,
-                allowFileAccess: true,
-                builtInZoomControls: true,
-              ),
-              ios: IOSInAppWebViewOptions(
-                allowsInlineMediaPlayback: true,
-                allowsBackForwardNavigationGestures: true,
-              ),
+            initialSettings: InAppWebViewSettings(
+              javaScriptEnabled: true,
+              useOnLoadResource: true,
+              useShouldOverrideUrlLoading: true,
+              mediaPlaybackRequiresUserGesture: false,
+              clearCache: true,
+              // Android specific settings
+              useHybridComposition: true,
+              domStorageEnabled: true,
+              databaseEnabled: true,
+              supportMultipleWindows: true,
+              allowContentAccess: true,
+              allowFileAccess: true,
+              builtInZoomControls: true,
+              // iOS specific settings
+              allowsInlineMediaPlayback: true,
+              allowsBackForwardNavigationGestures: true,
             ),
             onWebViewCreated: (controller) {
               webViewController = controller;
@@ -145,12 +141,12 @@ class _WebViewScreenState extends State<WebViewScreen> {
                 },
               );
             },
-            androidOnPermissionRequest: (controller, origin, resources) async {
+            onPermissionRequest: (controller, permissionRequest) async {
               debugPrint(
-                  'Android permission requested from $origin for $resources');
-              return PermissionRequestResponse(
-                  resources: resources,
-                  action: PermissionRequestResponseAction.GRANT);
+                  'Permission requested from ${permissionRequest.origin} for ${permissionRequest.resources}');
+              return PermissionResponse(
+                  resources: permissionRequest.resources,
+                  action: PermissionResponseAction.GRANT);
             },
             onLoadStart: (controller, url) async {
               setState(() => isLoading = true);

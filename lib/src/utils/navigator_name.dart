@@ -15,9 +15,11 @@ class NavigatorName {
   static const String detail_hba1c = '/detail_hba1c';
   static const String detail_exercrises = '/detail_exercrises';
   static const String detail_blood_sugar = '/detail_blood_sugar';
+  static const String detail_blood_sugar_listing = '/detail_blood_sugar_listing';
   static const String hba1c_tabble = '/hba1c_tabble';
   static const String add_blood_sugar = '/add_blood_sugar';
   static const String add_blood_sugar_new = '/add_blood_sugar_new';
+  static const String add_blood_sugar_result = '/add_blood_sugar_result';
   static const String add_exercrises = '/add_exercrises';
   static const String search_exercrises = '/search_exercrises';
   static const String add_blood_pressure = '/add_blood_pressure';
@@ -96,4 +98,7 @@ class NavigatorName {
   static const String dsmes_clinic_detail = '/dsmes_clinic_detail';
   static const String dsmes_select_service = '/dsmes_select_service';
   static const String dsmes_booking_online_join_room = '/dsmes_booking_online_join_room';
+  // New Glucose
+  static const String glucose_intro_1st_page = '/glucose-intro-1st-page';
+  static const String glucose_intro_2nd_page = '/glucose-intro-2nd-page';
 }
