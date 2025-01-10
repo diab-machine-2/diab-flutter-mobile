@@ -467,6 +467,7 @@ class Drawables {
   String get ic_social_zalo => "lib/res/drawables/ic_social_zalo.png";
   String get ic_speak_text => "lib/res/drawables/ic_speak_text.png";
 
+  String get ic_glucose_create_scheduler => "lib/res/drawables/glucose/ic_glucose_create_scheduler.png";
   String get im_glucose_intro => "lib/res/drawables/glucose/im_glucose_intro.png";
   String get im_glucose_input_device => "lib/res/drawables/glucose/im_glucose_input_device.png";
   String get im_glucose_input_manual => "lib/res/drawables/glucose/im_glucose_input_manual.png";

@@ -91,24 +91,26 @@ class BloodSugarCompareChartState extends State<BloodSugarCompareChart>
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const SizedBox(height: 20),
+                const SizedBox(height: 16),
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Text(
-                      R.string.compare.tr(),
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w700,
-                        color: R.color.dark,
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 4),
+                      child: Text(
+                        R.string.compare.tr(),
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w700,
+                          color: R.color.dark,
+                        ),
                       ),
                     ),
                     const Spacer(),
                     InkWell(
                       onTap: () => _doViewDetail(model!),
-                      child: SizedBox(
-                        width: 80,
-                        height: 32,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 4),
                         child: Text(
                           R.string.show_more.tr(),
                           style: TextStyle(
@@ -119,6 +121,7 @@ class BloodSugarCompareChartState extends State<BloodSugarCompareChart>
                         ),
                       ),
                     ),
+                    const SizedBox(width: 12),
                   ],
                 ),
                 SizedBox(height: 16),
@@ -148,7 +151,7 @@ class BloodSugarCompareChartState extends State<BloodSugarCompareChart>
     final double titleMargin = 8;
 
     return Padding(
-      padding: EdgeInsets.only(right: 18, left: 8),
+      padding: EdgeInsets.only(left: 8),
       child: Column(
         children: [
           Row(
