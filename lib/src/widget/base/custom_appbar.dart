@@ -12,7 +12,6 @@ class CustomAppBar extends StatefulWidget implements PreferredSizeWidget {
   final bool? showRightCloseButton;
   final bool? hideAllBackButton;
   final bool centerTitle;
-  final double transformValue;
 
   CustomAppBar({
     Key? key,
@@ -25,7 +24,6 @@ class CustomAppBar extends StatefulWidget implements PreferredSizeWidget {
     this.backgroundColor,
     this.showRightCloseButton,
     this.hideAllBackButton,
-    this.transformValue = -20,
   })  : preferredSize = Size.fromHeight(
             kToolbarHeight + (bottom == null ? 0 : bottomHeight)),
         super(key: key);
@@ -45,10 +43,10 @@ class _CustomAppBarState extends State<CustomAppBar> {
       title: widget.showRightCloseButton == true ||
               widget.hideAllBackButton == true
           ? widget.title
-          : widget.transformValue == 0 
+          : widget.centerTitle == true 
             ? widget.title
             : Transform(
-              transform: Matrix4.translationValues(widget.transformValue, 0.0, 0.0),
+              transform: Matrix4.translationValues(-20, 0.0, 0.0),
               child: widget.title),
       centerTitle: widget.centerTitle,
       automaticallyImplyLeading: false,

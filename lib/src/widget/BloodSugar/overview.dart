@@ -105,6 +105,9 @@ class BloodSugarOverviewControllerState
                 BloodSugarChart(
                   key: sugarChartKey,
                   periodFilterType: periodFilterType,
+                  onFilterChanged: () {},
+                  onViewListing: () {},
+                  filterName: 'Tất cả',
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16),

@@ -29,8 +29,7 @@ class PageAddBloodSugarResult extends StatefulWidget {
 
 class _PageAddBloodSugarResultState extends State<PageAddBloodSugarResult> {
   bool get _haveNote => _note.isNotEmpty == true || _files.isNotEmpty == true;
-  String? _aiResult = null;
-  bool _isLoadedAIResult = false;
+  String? _aiResult;
 
   bool _haveEditNote = false;
   late String _note = widget.data.note ?? '';
@@ -52,8 +51,7 @@ class _PageAddBloodSugarResultState extends State<PageAddBloodSugarResult> {
       TrackingManager.recordError(e, s);
       return null;
     });
-    _aiResult = aiResult;
-    _isLoadedAIResult = true;
+    _aiResult = aiResult ?? '';
     if (mounted) {
       setState(() {});
     }
@@ -129,51 +127,43 @@ class _PageAddBloodSugarResultState extends State<PageAddBloodSugarResult> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: R.color.backgroundColor,
-      body: Container(
-        decoration: BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage(R.drawable.bg_glucose),
-            fit: BoxFit.cover,
-          ),
-        ),
-        child: Stack(
-          children: [
-            Positioned.fill(
-              child: Column(
-                children: [
-                  _appBarSection(),
-                  const SizedBox(height: 12),
-                  Expanded(
-                    child: Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 16),
-                      child: SingleChildScrollView(
-                        padding: EdgeInsets.only(bottom: 100),
-                        physics: const ClampingScrollPhysics(),
-                        child: _glucoseResultSection(),
-                      ),
+      backgroundColor: R.color.glucose_bg_color,
+      body: Stack(
+        children: [
+          Positioned.fill(
+            child: Column(
+              children: [
+                _appBarSection(),
+                const SizedBox(height: 12),
+                Expanded(
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 16),
+                    child: SingleChildScrollView(
+                      padding: EdgeInsets.only(bottom: 100),
+                      physics: const ClampingScrollPhysics(),
+                      child: _glucoseResultSection(),
                     ),
                   ),
-                ],
-              ),
-            ),
-            Positioned(
-              left: 0,
-              right: 0,
-              bottom: 0,
-              child: Container(
-                padding: EdgeInsets.only(
-                  bottom: 8 + MediaQuery.of(context).padding.bottom / 2,
-                  left: 16,
-                  right: 16,
-                  top: 12,
                 ),
-                child: _bottomSection(),
-                color: Colors.white,
-              ),
+              ],
             ),
-          ],
-        ),
+          ),
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: 0,
+            child: Container(
+              padding: EdgeInsets.only(
+                bottom: 8 + MediaQuery.of(context).padding.bottom / 2,
+                left: 16,
+                right: 16,
+                top: 12,
+              ),
+              child: _bottomSection(),
+              color: Colors.white,
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -183,7 +173,6 @@ class _PageAddBloodSugarResultState extends State<PageAddBloodSugarResult> {
     return CustomAppBar(
       backgroundColor: R.color.transparent,
       centerTitle: true,
-      transformValue: 0,
       title: Text(
         formattedDateTime,
         style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: R.color.textDark),
@@ -257,12 +246,12 @@ class _PageAddBloodSugarResultState extends State<PageAddBloodSugarResult> {
             ],
           ),
           const SizedBox(height: 8),
-          if (_isLoadedAIResult == false && _aiResult == null)
+          if (_aiResult == null)
             Padding(
               padding: const EdgeInsets.only(top: 8.0),
               child: const AILoadingTextWidget(),
             )
-          else if (_isLoadedAIResult == true && _aiResult == null)
+          else if (_aiResult!.isEmpty)
             Text(
               'Có lỗi xảy ra',
               style: TextStyle(

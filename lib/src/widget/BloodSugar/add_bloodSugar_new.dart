@@ -264,103 +264,90 @@ class _AddBloodSugarControllerNewState
       child: PopScope(
         canPop: false,
         child: Scaffold(
-          backgroundColor: R.color.backgroundColor,
-          body: Container(
-            decoration: BoxDecoration(
-              image: DecorationImage(image: AssetImage(R.drawable.bg_glucose), fit: BoxFit.cover),
-            ),
-            child: Column(
-              children: [
-                _appBarSection(),
-                Expanded(
-                  child: SingleChildScrollView(
-                    child: Column(children: [
-                      _inforSection(context),
-                      Container(
-                        margin: const EdgeInsets.only(
-                            bottom: 16, left: 16, right: 16),
-                        decoration: BoxDecoration(
-                          color: R.color.white,
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                        padding: EdgeInsets.all(20),
-                        child: Column(
-                          children: [
-                            _dateTimeSectionV2(),
-                            const SizedBox(height: 16),
-                            _inputSection(),
-                            const SizedBox(height: 30),
-                            _bloodSugarRange(),
-                            const SizedBox(height: 16),
-                            _dateTimeFrameV2(),
-                          ],
-                        ),
+          backgroundColor: R.color.glucose_bg_color,
+          body: Column(
+            children: [
+              _appBarSection(),
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Column(children: [
+                    _inforSection(context),
+                    Container(
+                      margin: const EdgeInsets.only(
+                          bottom: 16, left: 16, right: 16),
+                      decoration: BoxDecoration(
+                        color: R.color.white,
+                        borderRadius: BorderRadius.circular(16),
                       ),
-                      _selectImageSection(),
-                      if (!AppSettings.isUS) _connectMachine(context),
-                      const SizedBox(height: 16),
-                    ]),
-                  ),
+                      padding: EdgeInsets.all(20),
+                      child: Column(
+                        children: [
+                          _dateTimeSectionV2(),
+                          const SizedBox(height: 16),
+                          _inputSection(),
+                          const SizedBox(height: 30),
+                          _bloodSugarRange(),
+                          const SizedBox(height: 16),
+                          _dateTimeFrameV2(),
+                        ],
+                      ),
+                    ),
+                    _selectImageSection(),
+                    if (!AppSettings.isUS) _connectMachine(context),
+                    const SizedBox(height: 16),
+                  ]),
                 ),
-                widget.type == 'input'
-                    ? Container(
-                        width: double.infinity,
-                        padding: EdgeInsets.only(
-                          top: 16,
-                          left: 16,
-                          right: 16,
-                          bottom: MediaQuery.of(context).padding.bottom / 2,
-                        ),
-                        child: SpacingColumn(
-                          spacing: 20,
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            if (isPregnancy)
-                              GestureDetector(
-                                onTap: () {
-                                  LevelOffDiabetesRulePicker.showModal(
-                                    context,
-                                    onSuccess: () {
-                                      isPregnancy = false;
-                                      _getGlucoseRange(selectedTimeFrame!);
-                                    },
-                                  );
-                                },
-                                child: Container(
-                                  color: Colors.white,
-                                  child: SpacingRow(
-                                    spacing: 15,
-                                    children: [
-                                      IgnorePointer(
-                                        child: CustomCheckboxWidget(
-                                          isChecked: isChangeStatus,
-                                          onTap: () {},
-                                        ),
+              ),
+              widget.type == 'input'
+                  ? Container(
+                      width: double.infinity,
+                      padding: EdgeInsets.only(
+                        top: 16,
+                        left: 16,
+                        right: 16,
+                        bottom: MediaQuery.of(context).padding.bottom / 2,
+                      ),
+                      child: SpacingColumn(
+                        spacing: 20,
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          if (isPregnancy)
+                            GestureDetector(
+                              onTap: () {
+                                LevelOffDiabetesRulePicker.showModal(
+                                  context,
+                                  onSuccess: () {
+                                    isPregnancy = false;
+                                    _getGlucoseRange(selectedTimeFrame!);
+                                  },
+                                );
+                              },
+                              child: Container(
+                                color: Colors.white,
+                                child: SpacingRow(
+                                  spacing: 15,
+                                  children: [
+                                    IgnorePointer(
+                                      child: CustomCheckboxWidget(
+                                        isChecked: isChangeStatus,
+                                        onTap: () {},
                                       ),
-                                      Text(
-                                        'Tôi không còn trong thai kỳ.',
-                                        style: TextStyle(fontSize: 16),
-                                      )
-                                    ],
-                                  ),
+                                    ),
+                                    Text(
+                                      'Tôi không còn trong thai kỳ.',
+                                      style: TextStyle(fontSize: 16),
+                                    )
+                                  ],
                                 ),
                               ),
-                            GestureDetector(
-                              onTap: () async {
-                                int indexRange =
-                                    findIndexInRanges(number, _rangeValue);
-                                if (isChangeStatus) {
-                                  LevelOffDiabetesRulePicker.showModal(context,
-                                      onSuccess: () {
-                                    if (indexRange == 4 || indexRange == 0) {
-                                      _showDialogWarning(
-                                          onConfirm: () => _submitData(),
-                                          range: indexRange);
-                                    } else {
-                                      _submitData();
-                                    }
-                                  });
-                                } else {
+                            ),
+                          GestureDetector(
+                            onTap: () async {
+                              int indexRange =
+                                  findIndexInRanges(number, _rangeValue);
+                              if (isChangeStatus) {
+                                LevelOffDiabetesRulePicker.showModal(context,
+                                    onSuccess: () {
                                   if (indexRange == 4 || indexRange == 0) {
                                     _showDialogWarning(
                                         onConfirm: () => _submitData(),
@@ -368,106 +355,114 @@ class _AddBloodSugarControllerNewState
                                   } else {
                                     _submitData();
                                   }
+                                });
+                              } else {
+                                if (indexRange == 4 || indexRange == 0) {
+                                  _showDialogWarning(
+                                      onConfirm: () => _submitData(),
+                                      range: indexRange);
+                                } else {
+                                  _submitData();
                                 }
-                              },
-                              child: Container(
-                                height: 48,
-                                width: 195,
-                                decoration: BoxDecoration(
-                                  color: R.color.mainColor,
-                                  borderRadius: BorderRadius.circular(200),
-                                  gradient: LinearGradient(
-                                    begin: Alignment.topLeft,
-                                    end: Alignment.centerRight,
-                                    colors: [
-                                      R.color.greenGradientTop,
-                                      R.color.greenGradientBottom
-                                    ],
-                                  ),
+                              }
+                            },
+                            child: Container(
+                              height: 48,
+                              width: 195,
+                              decoration: BoxDecoration(
+                                color: R.color.mainColor,
+                                borderRadius: BorderRadius.circular(200),
+                                gradient: LinearGradient(
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.centerRight,
+                                  colors: [
+                                    R.color.greenGradientTop,
+                                    R.color.greenGradientBottom
+                                  ],
                                 ),
-                                child: Center(
-                                  child: Text(
-                                    R.string.confirm.tr(),
-                                    style: TextStyle(
-                                      color: R.color.white,
-                                      fontWeight: FontWeight.w600,
-                                      fontSize: 16,
-                                    ),
+                              ),
+                              child: Center(
+                                child: Text(
+                                  R.string.confirm.tr(),
+                                  style: TextStyle(
+                                    color: R.color.white,
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 16,
                                   ),
                                 ),
                               ),
                             ),
-                          ],
-                        ),
-                      )
-                    : SafeArea(
-                        top: false,
-                        child: Container(
-                            margin: EdgeInsets.all(16),
-                            child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  GestureDetector(
-                                    onTap: () {
-                                      _showDialogDelete(context);
-                                    },
-                                    child: Container(
-                                        height: 48,
-                                        width: 164,
-                                        decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(200),
-                                            border: Border.all(
-                                                color: R.color.red, width: 2)),
-                                        child: Center(
-                                          child: Text(R.string.xoa_du_lieu.tr(),
-                                              style: TextStyle(
-                                                  color: R.color.red,
-                                                  fontSize: 16,
-                                                  fontWeight: FontWeight.w600)),
-                                        )),
-                                  ),
-                                  GestureDetector(
-                                    onTap: () {
-                                      int indexRange = findIndexInRanges(number, _rangeValue);
-                                      if (indexRange == 4 || indexRange == 0) {
-                                        _showDialogWarning(
-                                          onConfirm: () => _editData(),
-                                          range: indexRange,
-                                        );
-                                      } else {
-                                        _editData();
-                                      }
-                                    },
-                                    child: Container(
+                          ),
+                        ],
+                      ),
+                    )
+                  : SafeArea(
+                      top: false,
+                      child: Container(
+                          margin: EdgeInsets.all(16),
+                          child: Row(
+                              mainAxisAlignment:
+                                  MainAxisAlignment.spaceBetween,
+                              children: [
+                                GestureDetector(
+                                  onTap: () {
+                                    _showDialogDelete(context);
+                                  },
+                                  child: Container(
                                       height: 48,
                                       width: 164,
                                       decoration: BoxDecoration(
-                                          color: R.color.mainColor,
                                           borderRadius:
                                               BorderRadius.circular(200),
-                                          gradient: LinearGradient(
-                                              begin: Alignment.topLeft,
-                                              end: Alignment.centerRight,
-                                              colors: [
-                                                R.color.greenGradientTop,
-                                                R.color.greenGradientBottom
-                                              ])),
+                                          border: Border.all(
+                                              color: R.color.red, width: 2)),
                                       child: Center(
-                                        child: Text(R.string.save.tr(),
+                                        child: Text(R.string.xoa_du_lieu.tr(),
                                             style: TextStyle(
-                                                color: R.color.white,
+                                                color: R.color.red,
                                                 fontSize: 16,
                                                 fontWeight: FontWeight.w600)),
-                                      ),
+                                      )),
+                                ),
+                                GestureDetector(
+                                  onTap: () {
+                                    int indexRange = findIndexInRanges(number, _rangeValue);
+                                    if (indexRange == 4 || indexRange == 0) {
+                                      _showDialogWarning(
+                                        onConfirm: () => _editData(),
+                                        range: indexRange,
+                                      );
+                                    } else {
+                                      _editData();
+                                    }
+                                  },
+                                  child: Container(
+                                    height: 48,
+                                    width: 164,
+                                    decoration: BoxDecoration(
+                                        color: R.color.mainColor,
+                                        borderRadius:
+                                            BorderRadius.circular(200),
+                                        gradient: LinearGradient(
+                                            begin: Alignment.topLeft,
+                                            end: Alignment.centerRight,
+                                            colors: [
+                                              R.color.greenGradientTop,
+                                              R.color.greenGradientBottom
+                                            ])),
+                                    child: Center(
+                                      child: Text(R.string.save.tr(),
+                                          style: TextStyle(
+                                              color: R.color.white,
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w600)),
                                     ),
                                   ),
-                                ])),
-                      ),
-                SizedBox(height: 8),
-              ],
-            ),
+                                ),
+                              ])),
+                    ),
+              SizedBox(height: 8),
+            ],
           ),
         ),
       ),

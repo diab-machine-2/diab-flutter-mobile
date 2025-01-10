@@ -137,4 +137,5 @@ class Colors {
   Color get survey_color => Color(0xff1E8F66);
   Color get hba1c_color => Color(0xff533BAA);
   Color get height_color => Color(0xff008479);
+  Color get glucose_bg_color => Color(0xFFEAF9F7);
 }

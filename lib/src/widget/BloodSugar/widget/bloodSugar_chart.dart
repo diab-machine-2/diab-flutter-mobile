@@ -20,9 +20,18 @@ import 'package:visibility_detector/visibility_detector.dart';
 import 'ai_loading_text_widget.dart';
 
 class BloodSugarChart extends StatefulWidget {
-  BloodSugarChart({Key? key, required this.periodFilterType}) : super(key: key);
+  BloodSugarChart({
+    Key? key,
+    required this.periodFilterType,
+    required this.onFilterChanged,
+    required this.onViewListing,
+    required this.filterName,
+  }) : super(key: key);
 
   final int periodFilterType;
+  final Function() onFilterChanged;
+  final Function() onViewListing;
+  final String filterName;
 
   @override
   BloodSugarChartState createState() => BloodSugarChartState();
@@ -124,13 +133,19 @@ class BloodSugarChartState extends State<BloodSugarChart>
                 previousDate = 0;
               }
             },
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                _sectionTrending(model, mostAppearType, mostAppearTypeColor),
-                const SizedBox(height: 16),
-                _sectionAIHelp(aiSuggestion),
-              ],
+            child: DecoratedBox(
+              decoration: BoxDecoration(color: Colors.white),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const SizedBox(height: 17),
+                  _sectionFilter(),
+                  const SizedBox(height: 24),
+                  _sectionTrending(model, mostAppearType, mostAppearTypeColor),
+                  const SizedBox(height: 16),
+                  _sectionAIHelp(aiSuggestion),
+                ],
+              ),
             ),
           );
         },
@@ -138,7 +153,73 @@ class BloodSugarChartState extends State<BloodSugarChart>
     );
   }
 
-  Widget _sectionTrending(TrendDataModel model, String? mostAppearType, String? mostAppearTypeColor) {
+  Widget _sectionFilter() {
+    return Container(
+      height: 36,
+      width: double.infinity,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const SizedBox(width: 42),
+          SizedBox(
+            width: 165,
+            child: InkWell(
+              onTap: widget.onFilterChanged,
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  color: R.color.white,
+                  borderRadius: BorderRadius.circular(18),
+                  border: Border.all(color: R.color.color0xffE5E5E5),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        widget.filterName,
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w400,
+                          color: R.color.textDark,
+                        ),
+                      ),
+                      const SizedBox(width: 4),
+                      Icon(
+                        Icons.keyboard_arrow_down,
+                        color: R.color.textDark,
+                        size: 16,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(width: 6),
+          InkWell(
+            onTap: widget.onViewListing,
+            child: SizedBox(
+              width: 36,
+              height: 36,
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  color: R.color.white,
+                  borderRadius: BorderRadius.circular(18),
+                  border: Border.all(color: R.color.color0xffE5E5E5),
+                ),
+                child: Center(child: Icon(Icons.history, color: R.color.textDark, size: 20)),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _sectionTrending(
+      TrendDataModel model, String? mostAppearType, String? mostAppearTypeColor) {
     if (model.trendItems.items.isEmpty) {
       return Container(height: 100);
     }
@@ -162,14 +243,16 @@ class BloodSugarChartState extends State<BloodSugarChart>
     }
     String selectedDate = '';
     String selectedType = '';
+    String selectedTimeFrame = '';
     String selectedGlucose = '';
     String selectedColor = '';
 
     if (_focusIndex != -1 && _focusIndex < trends.length) {
       final selectedTrend = trends[_focusIndex];
       selectedDate = DateFormat('HH:mm - dd/MM/yyyy')
-          .format(DateTime.fromMillisecondsSinceEpoch(selectedTrend.date! * 1000));
-      selectedType = selectedTrend.timeFrameName!;
+          .format(DateTime.fromMillisecondsSinceEpoch(selectedTrend.date! * 1000, isUtc: true));
+      selectedType = selectedTrend.type!;
+      selectedTimeFrame = selectedTrend.timeFrameName!;
       selectedGlucose = selectedTrend.glucose!.toStringAsFixed(0);
       selectedColor = selectedTrend.color!;
     }
@@ -182,7 +265,7 @@ class BloodSugarChartState extends State<BloodSugarChart>
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Text(
-              '$selectedDate\n($selectedType)',
+              '$selectedDate\n($selectedTimeFrame)',
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 14,
@@ -224,7 +307,7 @@ class BloodSugarChartState extends State<BloodSugarChart>
                 Expanded(
                   child: Center(
                     child: Text(
-                      selectedGlucose,
+                      selectedType,
                       style: TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
@@ -299,12 +382,14 @@ class BloodSugarChartState extends State<BloodSugarChart>
     String fromDate = '';
     String toDate = '';
     if (fromDateInt != null) {
-      fromDate =
-          DateFormat('dd/MM/yyyy').format(DateTime.fromMillisecondsSinceEpoch(fromDateInt * 1000));
+      fromDate = DateFormat('dd/MM/yyyy').format(
+        DateTime.fromMillisecondsSinceEpoch(fromDateInt * 1000, isUtc: true),
+      );
     }
     if (toDateInt != null) {
-      toDate =
-          DateFormat('dd/MM/yyyy').format(DateTime.fromMillisecondsSinceEpoch(toDateInt * 1000));
+      toDate = DateFormat('dd/MM/yyyy').format(
+        DateTime.fromMillisecondsSinceEpoch(toDateInt * 1000, isUtc: true),
+      );
     } else {
       toDate = DateFormat('dd/MM/yyyy').format(DateTime.now());
     }
@@ -420,12 +505,12 @@ class BloodSugarChartState extends State<BloodSugarChart>
             Text(
               aiSuggestion,
               style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w400,
-              color: R.color.primaryGreyColor,
-              height: 16 / 12,
+                fontSize: 14,
+                fontWeight: FontWeight.w400,
+                color: R.color.primaryGreyColor,
+                height: 16 / 12,
+              ),
             ),
-          ),
 
           const SizedBox(height: 16),
           // elevated button, ic_zalo and text, full width
@@ -556,7 +641,6 @@ class BloodSugarChartState extends State<BloodSugarChart>
                                   );
                                 }).toList();
                               },
-                              // TODO: Check position tooltip
                               tooltipPadding: EdgeInsets.only(bottom: 50),
                             ),
                             touchCallback: (FlTouchEvent event, LineTouchResponse? lineTouch) {
@@ -569,6 +653,9 @@ class BloodSugarChartState extends State<BloodSugarChart>
                                   //    setState(() {
                                   touchIndex = value.toInt();
                                   //    });
+                                  setState(() {
+                                    _focusIndex = touchIndex;
+                                  });
                                 }
                               } else {
                                 touchIndex = -1;
@@ -642,7 +729,7 @@ class BloodSugarChartState extends State<BloodSugarChart>
               Colors.green.withOpacity(0.01),
             ],
             gradientFrom: Offset(0.5, 0),
-            gradientTo: Offset(0.5, 1),
+            gradientTo: Offset(0.5, 1.1),
           ),
         ),
       ];
