@@ -153,7 +153,9 @@ class _DsmesAppointmentHistoryPageState
                                     NavigatorName.dsmes_booking_detail,
                                     arguments: {
                                       'serviceType': appointment?.mode,
-                                      'appointment': appointment
+                                      'appointment': appointment,
+                                      'previousRoute':
+                                          NavigatorName.dsmes_booking_history,
                                     },
                                   );
                                 } finally {

@@ -337,7 +337,8 @@ class _DsmesClinicDetailPageState extends State<DsmesClinicDetailPage> {
                         arguments: {
                           'serviceType':
                               DsmesAppointmentMode.atClinic.toString(),
-                          'appointment': recentBooking
+                          'appointment': recentBooking,
+                          'previousRoute': NavigatorName.dsmes_clinic_detail,
                         },
                       );
                     },

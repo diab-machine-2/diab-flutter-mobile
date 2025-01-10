@@ -21,12 +21,14 @@ class DsmesCalendarSection extends StatefulWidget {
   final String serviceType;
   final String action; // 'create' or 'reschedule'
   final int? appointmentId;
+  final bool isMergedSchedule;
 
   const DsmesCalendarSection({
     Key? key,
     required this.serviceType,
     this.action = 'create',
     this.appointmentId,
+    this.isMergedSchedule = false,
   }) : super(key: key);
 
   @override
@@ -69,13 +71,19 @@ class _DsmesCalendarSectionState extends State<DsmesCalendarSection> {
     final scheduleDates = await _getScheduleDates();
 
     final dates = _getActiveDates(scheduleDates: scheduleDates);
-    final schedules =
-        _filterAvailableSchedules(scheduleDates, selectedDate ?? dates.first);
 
-    if (selectedDate == null) {
-      // If current date isn't in activeDates, use first available date
+    if (selectedDate != null &&
+        !dates.any((date) =>
+            date.year == selectedDate!.year &&
+            date.month == selectedDate!.month &&
+            date.day == selectedDate!.day)) {
+      selectedDate = dates.isNotEmpty ? dates.first : DateTime.now();
+    } else if (selectedDate == null) {
       selectedDate = dates.isNotEmpty ? dates.first : DateTime.now();
     }
+
+    final schedules =
+        _filterAvailableSchedules(scheduleDates, selectedDate ?? dates.first);
 
     setState(() {
       fullSchedule = scheduleDates; // Store full schedule
@@ -99,7 +107,7 @@ class _DsmesCalendarSectionState extends State<DsmesCalendarSection> {
   }
 
   Future<List<BookingSchedule>> _getScheduleDates() async {
-    return widget.serviceType == DsmesAppointmentMode.atClinic.toString()
+    return widget.isMergedSchedule == false
         ? _cubit.selectedClinic?.getBookingSchedules() ?? []
         : await _cubit.getDiabClinicsSchedule();
   }
@@ -256,9 +264,9 @@ class _DsmesCalendarSectionState extends State<DsmesCalendarSection> {
                                   'serviceType': widget.serviceType,
                                   'action': widget.action,
                                   'appointmentId': widget.appointmentId,
+                                  'isMergedSchedule': widget.isMergedSchedule,
                                 });
                           } else {
-                            if (widget.action == ' reschedule') {}
                             // Normal flow
                             DsmesNavigationMixin.navigationKey.currentState
                                 ?.pushNamed(
@@ -267,6 +275,7 @@ class _DsmesCalendarSectionState extends State<DsmesCalendarSection> {
                                   'serviceType': widget.serviceType,
                                   'action': widget.action,
                                   'appointmentId': widget.appointmentId,
+                                  'isMergedSchedule': widget.isMergedSchedule,
                                 });
                           }
                         } finally {

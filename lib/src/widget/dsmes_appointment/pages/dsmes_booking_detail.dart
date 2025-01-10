@@ -165,11 +165,21 @@ class _DsmesBookingDetailState extends State<DsmesBookingDetail> {
                 onPressed: () {
                   FocusScope.of(context).unfocus();
 
+                  final route = ModalRoute.of(context)?.settings;
+                  final args = route?.arguments as Map<String, dynamic>?;
+                  final previousRoute = args?['previousRoute'] as String?;
+
+                  if (previousRoute == NavigatorName.dsmes_booking_history ||
+                      previousRoute == NavigatorName.dsmes_clinic_detail) {
+                    DsmesNavigationMixin.navigationKey.currentState?.pop();
+                    return;
+                  }
+
                   DsmesNavigationMixin.navigationKey.currentState
                       ?.popUntil((route) => route.isFirst);
-
                   Observable.instance.notifyObservers([],
                       notifyName: "refresh_dsmes_appointment");
+                  return;
                 },
               ),
             ),
@@ -191,7 +201,8 @@ class _DsmesBookingDetailState extends State<DsmesBookingDetail> {
                       GapH(12),
                       _buildNoticeSymptom(),
                       GapH(12),
-                      if (isCompletedAppointment() == false)
+                      if (isCompletedAppointment() == false &&
+                          widget.appointment.status != DSMES_STATUS_REJECT)
                         _buildActionButtons(),
                     ],
                   ),
@@ -688,7 +699,7 @@ class _DsmesBookingDetailState extends State<DsmesBookingDetail> {
                     ),
                   );
 
-                  Navigator.of(context).pop();
+                  // Navigator.of(context).pop();
 
                   DsmesNavigationMixin.navigationKey.currentState
                       ?.popUntil((route) => route.isFirst);
@@ -732,7 +743,7 @@ class _DsmesBookingDetailState extends State<DsmesBookingDetail> {
                     subtitle: R.string.confirm_change_booking_content.tr(),
                     hasGradient: true,
                     onConfirm: () {
-                      Navigator.of(context).pop(); // Close dialog
+                      // Navigator.of(context).pop(); // Close dialog
 
                       _cubit.initCreateDsmesBookingRequest(
                           locale: context.locale.languageCode);
@@ -970,7 +981,7 @@ class _DsmesBookingDetailState extends State<DsmesBookingDetail> {
     String primaryButtonTitle = 'Xác nhận',
     bool hasGradient = false,
   }) {
-    showDialog(
+    showDialog<bool>(
       context: context,
       builder: (context) {
         return Container(
@@ -989,7 +1000,7 @@ class _DsmesBookingDetailState extends State<DsmesBookingDetail> {
                         children: [
                           GestureDetector(
                             onTap: () {
-                              Navigator.pop(context);
+                              Navigator.of(context).pop(false);
                             },
                             child: SizedBox(
                               width: 20,
@@ -1041,8 +1052,7 @@ class _DsmesBookingDetailState extends State<DsmesBookingDetail> {
                         children: [
                           InkWell(
                             onTap: () {
-                              Navigator.pop(context);
-                              onConfirm();
+                              Navigator.of(context).pop(true);
                             },
                             child: Container(
                               height: 43,
@@ -1083,6 +1093,6 @@ class _DsmesBookingDetailState extends State<DsmesBookingDetail> {
           ),
         );
       },
-    );
+    ).then((confirmed) => confirmed == true ? onConfirm() : null);
   }
 }
