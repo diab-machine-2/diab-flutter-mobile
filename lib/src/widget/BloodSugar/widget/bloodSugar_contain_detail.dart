@@ -193,7 +193,8 @@ class BloodSugarDetailState extends State<BloodSugarDetail>
                                 Text(
                                   model.highest == 0 ? '--' : roundNumber(model.highest!),
                                   style: TextStyle(
-                                    fontSize: 16,
+                                    fontSize: 20,
+                                    height: 24 / 20,
                                     fontWeight: FontWeight.bold,
                                     color: model.highest == 0
                                         ? R.color.textDark
@@ -201,32 +202,6 @@ class BloodSugarDetailState extends State<BloodSugarDetail>
                                             '0xff${model.highestColor!.split('#').join()}')),
                                   ),
                                 ),
-                                // Text.rich(
-                                //   TextSpan(
-                                //     children: [
-                                //       TextSpan(
-                                //         text:
-                                //             model.highest == 0 ? '--' : roundNumber(model.highest!),
-                                //         style: TextStyle(
-                                //           fontSize: 16,
-                                //           fontWeight: FontWeight.bold,
-                                //           color: model.highest == 0
-                                //               ? R.color.textDark
-                                //               : Color(int.parse(
-                                //                   '0xff${model.highestColor!.split('#').join()}')),
-                                //         ),
-                                //       ),
-                                //       TextSpan(
-                                //         text: ' mmol/L',
-                                //         style: TextStyle(
-                                //           fontSize: 14,
-                                //           fontWeight: FontWeight.w400,
-                                //           color: R.color.primaryGreyColor,
-                                //         ),
-                                //       ),
-                                //     ],
-                                //   ),
-                                // ),
                               ],
                             ),
                           ),
@@ -257,7 +232,8 @@ class BloodSugarDetailState extends State<BloodSugarDetail>
                                 Text(
                                   model.average == 0 ? '--' : roundNumber(model.average!),
                                   style: TextStyle(
-                                    fontSize: 14,
+                                    fontSize: 20,
+                                    height: 24 / 20,
                                     fontWeight: FontWeight.bold,
                                     color: model.average == 0
                                         ? R.color.textDark
@@ -265,32 +241,6 @@ class BloodSugarDetailState extends State<BloodSugarDetail>
                                             '0xff${model.averageColor!.split('#').join()}')),
                                   ),
                                 ),
-                                // Text.rich(
-                                //   TextSpan(
-                                //     children: [
-                                //       TextSpan(
-                                //         text:
-                                //             model.average == 0 ? '--' : roundNumber(model.average!),
-                                //         style: TextStyle(
-                                //           fontSize: 14,
-                                //           fontWeight: FontWeight.bold,
-                                //           color: model.average == 0
-                                //               ? R.color.textDark
-                                //               : Color(int.parse(
-                                //                   '0xff${model.averageColor!.split('#').join()}')),
-                                //         ),
-                                //       ),
-                                //       TextSpan(
-                                //         text: ' mmol/L',
-                                //         style: TextStyle(
-                                //           fontSize: 16,
-                                //           fontWeight: FontWeight.w400,
-                                //           color: R.color.primaryGreyColor,
-                                //         ),
-                                //       ),
-                                //     ],
-                                //   ),
-                                // ),
                               ],
                             ),
                           ),
@@ -321,7 +271,8 @@ class BloodSugarDetailState extends State<BloodSugarDetail>
                                 Text(
                                   model.lowest == 0 ? '--' : roundNumber(model.lowest!),
                                   style: TextStyle(
-                                    fontSize: 14,
+                                    fontSize: 20,
+                                    height: 24 / 20,
                                     fontWeight: FontWeight.bold,
                                     color: model.lowest == 0
                                         ? R.color.textDark
@@ -329,31 +280,6 @@ class BloodSugarDetailState extends State<BloodSugarDetail>
                                             '0xff${model.lowestColor!.split('#').join()}')),
                                   ),
                                 ),
-                                // Text.rich(
-                                //   TextSpan(
-                                //     children: [
-                                //       TextSpan(
-                                //         text: model.lowest == 0 ? '--' : roundNumber(model.lowest!),
-                                //         style: TextStyle(
-                                //           fontSize: 14,
-                                //           fontWeight: FontWeight.bold,
-                                //           color: model.lowest == 0
-                                //               ? R.color.textDark
-                                //               : Color(int.parse(
-                                //                   '0xff${model.lowestColor!.split('#').join()}')),
-                                //         ),
-                                //       ),
-                                //       TextSpan(
-                                //         text: ' mmol/L',
-                                //         style: TextStyle(
-                                //           fontSize: 16,
-                                //           fontWeight: FontWeight.w400,
-                                //           color: R.color.primaryGreyColor,
-                                //         ),
-                                //       ),
-                                //     ],
-                                //   ),
-                                // ),
                               ],
                             ),
                           ),

@@ -198,6 +198,9 @@ class _AddBloodSugarControllerNewState
       selectedTimeFrame = TimeFrameModel(
           id: model!.timeFrameId, code: '', name: model!.timeFrame);
       fromNipro = model!.byDevice;
+      if (_sectionAddNoteKey.currentState != null) {
+        _sectionAddNoteKey.currentState?.updateFilesAndNote(model!.images, model!.note ?? '');
+      }
     } catch (e) {
       print(e);
     }
@@ -1041,7 +1044,7 @@ class _AddBloodSugarControllerNewState
             child: TextField(
               focusNode: _focusNodeKPI,
               controller: _controller,
-              maxLength: isMgPerDl ? 4 : 5,
+              maxLength: isMgPerDl ? 5 : 4,
               autofocus: true,
               textAlign: TextAlign.center,
               keyboardType: TextInputType.numberWithOptions(decimal: true),
@@ -1051,7 +1054,12 @@ class _AddBloodSugarControllerNewState
                   fontFamily: 'Viga',
                   fontWeight: FontWeight.w500),
               inputFormatters: [
-                FilteringTextInputFormatter.allow(RegExp(r'^\d{0,3}(,\d{0,2})?$')),
+                TextInputFormatter.withFunction((oldValue, newValue) {
+                  if (RegExp(r'^\d{0,3}(,\d{0,2})?$').hasMatch(newValue.text)) {
+                    return newValue;
+                  }
+                  return oldValue;
+                }),
               ],
               decoration: InputDecoration(
                 counterText: '',
