@@ -41,6 +41,13 @@ class SectionAddNoteState extends State<SectionAddNote> {
     _files.addAll(widget.initialFiles ?? []);
   }
 
+  void updateFilesAndNote(List<dynamic> files, String note) {
+    _files.clear();
+    _files.addAll(files);
+    widget.controllerNote?.text = note;
+    setState(() {});
+  }
+
   bool get _isAddable => _files.length < widget.maxMedia;
 
   @override
