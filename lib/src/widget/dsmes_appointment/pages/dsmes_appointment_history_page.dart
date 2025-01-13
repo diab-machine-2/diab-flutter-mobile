@@ -25,6 +25,7 @@ class _DsmesAppointmentHistoryPageState
   Map<String, bool> isProcessing = {
     'chooseService': false,
   };
+  bool isLoading = false;
 
   @override
   void initState() {
@@ -39,9 +40,12 @@ class _DsmesAppointmentHistoryPageState
   }
 
   _initData() async {
+    isLoading = true;
     await _cubit.getDsmesAppointmentList(
         page: 1, isRefresh: true, showLoading: true);
-    setState(() {});
+    setState(() {
+      isLoading = false;
+    });
   }
 
   @override
@@ -98,75 +102,78 @@ class _DsmesAppointmentHistoryPageState
                 ),
               ),
               Expanded(
-                child: sortedMyAppointments.isEmpty
-                    ? DsmesEmptyWidget(
-                        imagePath: R.drawable.dsmes_empty,
-                        title: R.string.empty_history_appointment.tr(),
-                        titleColor: R.color.color0xff636A6B,
-                        subtitle: "",
-                      )
-                    : SmartRefresher(
-                        controller: _refreshController,
-                        enablePullUp: _cubit.hasMore,
-                        footer: _cubit.hasMore
-                            ? ClassicFooter(
-                                loadingText: "Đang tải",
-                                canLoadingText:
-                                    R.string.pull_up_to_load_more.tr(),
-                                // idleText: R.string.pull_up_to_load_more.tr(),
-                              )
-                            : null,
-                        onRefresh: () async {
-                          await _cubit.getDsmesAppointmentList(
-                              isRefresh: true, page: 1, showLoading: false);
-                          _refreshController.refreshCompleted();
-                          setState(() {});
-                        },
-                        onLoading: () async {
-                          await _cubit.getDsmesAppointmentList(
-                              page: _cubit.currentPage + 1);
-                          _refreshController.loadComplete();
-                          setState(() {});
-                        },
-                        child: ListView.separated(
-                          padding: EdgeInsets.all(16),
-                          itemCount: sortedMyAppointments.length,
-                          separatorBuilder: (context, index) =>
-                              SizedBox(height: 16),
-                          itemBuilder: (context, index) {
-                            DsmesAppointment data = sortedMyAppointments[index];
-                            return DsmesAppointmentItem(
-                              data: data,
-                              onChooseService: () async {
-                                if (isProcessing['chooseService']!) return;
-                                isProcessing['chooseService'] = true;
-                                try {
-                                  await _cubit.getClinicDetail(
-                                      id: data.clinicId);
-                                  final appointment =
-                                      await _cubit.getDsmesAppointmentDetail(
-                                          appointmentId: data.id);
+                child: isLoading
+                    ? Container()
+                    : sortedMyAppointments.isEmpty
+                        ? DsmesEmptyWidget(
+                            imagePath: R.drawable.dsmes_empty,
+                            title: R.string.empty_history_appointment.tr(),
+                            titleColor: R.color.color0xff636A6B,
+                            subtitle: "",
+                          )
+                        : SmartRefresher(
+                            controller: _refreshController,
+                            enablePullUp: _cubit.hasMore,
+                            footer: _cubit.hasMore
+                                ? ClassicFooter(
+                                    loadingText: "Đang tải",
+                                    canLoadingText:
+                                        R.string.pull_up_to_load_more.tr(),
+                                    // idleText: R.string.pull_up_to_load_more.tr(),
+                                  )
+                                : null,
+                            onRefresh: () async {
+                              await _cubit.getDsmesAppointmentList(
+                                  isRefresh: true, page: 1, showLoading: false);
+                              _refreshController.refreshCompleted();
+                              setState(() {});
+                            },
+                            onLoading: () async {
+                              await _cubit.getDsmesAppointmentList(
+                                  page: _cubit.currentPage + 1);
+                              _refreshController.loadComplete();
+                              setState(() {});
+                            },
+                            child: ListView.separated(
+                              padding: EdgeInsets.all(16),
+                              itemCount: sortedMyAppointments.length,
+                              separatorBuilder: (context, index) =>
+                                  SizedBox(height: 16),
+                              itemBuilder: (context, index) {
+                                DsmesAppointment data =
+                                    sortedMyAppointments[index];
+                                return DsmesAppointmentItem(
+                                  data: data,
+                                  onChooseService: () async {
+                                    if (isProcessing['chooseService']!) return;
+                                    isProcessing['chooseService'] = true;
+                                    try {
+                                      await _cubit.getClinicDetail(
+                                          id: data.clinicId);
+                                      final appointment = await _cubit
+                                          .getDsmesAppointmentDetail(
+                                              appointmentId: data.id);
 
-                                  DsmesNavigationMixin
-                                      .navigationKey.currentState
-                                      ?.pushNamed(
-                                    NavigatorName.dsmes_booking_detail,
-                                    arguments: {
-                                      'serviceType': appointment?.mode,
-                                      'appointment': appointment,
-                                      'previousRoute':
-                                          NavigatorName.dsmes_booking_history,
-                                    },
-                                  );
-                                } finally {
-                                  isProcessing['chooseService'] = false;
-                                }
+                                      DsmesNavigationMixin
+                                          .navigationKey.currentState
+                                          ?.pushNamed(
+                                        NavigatorName.dsmes_booking_detail,
+                                        arguments: {
+                                          'serviceType': appointment?.mode,
+                                          'appointment': appointment,
+                                          'previousRoute': NavigatorName
+                                              .dsmes_booking_history,
+                                        },
+                                      );
+                                    } finally {
+                                      isProcessing['chooseService'] = false;
+                                    }
+                                  },
+                                  cubit: _cubit,
+                                );
                               },
-                              cubit: _cubit,
-                            );
-                          },
-                        ),
-                      ),
+                            ),
+                          ),
               ),
             ],
           ),

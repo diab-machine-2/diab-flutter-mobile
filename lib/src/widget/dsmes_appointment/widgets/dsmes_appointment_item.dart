@@ -397,7 +397,7 @@ class DsmesAppointmentItem extends StatelessWidget {
                     child: Text(
                       R.string.join_now.tr(),
                       style: TextStyle(
-                        color: R.color.color0xffEDEEEE,
+                        color: R.color.grey200,
                         fontWeight: FontWeight.w700,
                         fontSize: 15,
                       ),

@@ -742,7 +742,7 @@ class _DsmesBookingDetailState extends State<DsmesBookingDetail> {
                     title: R.string.confirm_change_schedule.tr(),
                     subtitle: R.string.confirm_change_booking_content.tr(),
                     hasGradient: true,
-                    onConfirm: () {
+                    onConfirm: () async {
                       // Navigator.of(context).pop(); // Close dialog
 
                       _cubit.initCreateDsmesBookingRequest(
@@ -775,6 +775,8 @@ class _DsmesBookingDetailState extends State<DsmesBookingDetail> {
                       );
                       _cubit.updateCreateDsmesBookingRequest(
                           request: rescheduleRequest);
+                      await _cubit.getClinicDetail(
+                          id: widget.appointment.clinicId);
 
                       final navigator =
                           DsmesNavigationMixin.navigationKey.currentState;

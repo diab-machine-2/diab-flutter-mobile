@@ -41,6 +41,7 @@ class _DsmesCalendarSectionState extends State<DsmesCalendarSection> {
   bool isMorningSelected = true;
   BookingSchedule? selectedBookingSchedule;
   bool _isProcessing = false;
+  bool isAllowReschedule = false;
 
   late List<BookingSchedule> availableBookingSchedule = [];
   late List<DateTime> activeDates = [];
@@ -89,8 +90,34 @@ class _DsmesCalendarSectionState extends State<DsmesCalendarSection> {
       fullSchedule = scheduleDates; // Store full schedule
       availableBookingSchedule = schedules;
       activeDates = dates;
-      isMorningSelected = selectedDate!.hour < 12;
+
+      // Update isMorningSelected based on the schedules time
+      // Case restrict only 1 slot per timeframe => current slot will unavailable => show timeframes base on first schedules
+      // Case allow multiple slots per timeframe => current slot will available => show timeframes base on current slot
+      isMorningSelected = schedules.any((schedule) {
+        final scheduleDateTime = DateTime.parse(schedule.startTime);
+        return scheduleDateTime.year == selectedDate!.year &&
+            scheduleDateTime.month == selectedDate!.month &&
+            scheduleDateTime.day == selectedDate!.day &&
+            scheduleDateTime.hour == selectedDate!.hour &&
+            scheduleDateTime.minute == selectedDate!.minute;
+      })
+          ? selectedDate!.hour < 12
+          : DateTime.parse(schedules.first.startTime).hour < 12;
+
+      isAllowReschedule = isSelectedScheduleAvailable();
     });
+  }
+
+  bool isSelectedScheduleAvailable() {
+    if (selectedBookingSchedule == null) return false;
+
+    return fullSchedule.any((schedule) =>
+        _cubit.ensureTimeWithSeconds(schedule.startTime) ==
+            _cubit.ensureTimeWithSeconds(selectedBookingSchedule!.startTime) &&
+        _cubit.ensureTimeWithSeconds(schedule.endTime) ==
+            _cubit.ensureTimeWithSeconds(selectedBookingSchedule!.endTime) &&
+        schedule.isAvailable == true);
   }
 
   List<DateTime> _getActiveDates(
@@ -281,7 +308,7 @@ class _DsmesCalendarSectionState extends State<DsmesCalendarSection> {
                         } finally {
                           setState(() => _isProcessing = false);
                         }
-                      }),
+                      }, isDisabled: !isAllowReschedule),
                     ),
                   ],
                 ),
@@ -293,30 +320,36 @@ class _DsmesCalendarSectionState extends State<DsmesCalendarSection> {
     );
   }
 
-  Widget _buildButton(String text, VoidCallback onTap) {
+  Widget _buildButton(String text, VoidCallback onTap,
+      {bool isDisabled = false}) {
     return InkWell(
-      onTap: onTap,
+      onTap: isDisabled ? null : onTap,
       child: Container(
         height: 44,
         margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        decoration: BoxDecoration(
-          color: R.color.mainColor,
-          borderRadius: BorderRadius.circular(200),
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.centerRight,
-            colors: [
-              R.color.greenGradientTop,
-              R.color.greenGradientMid,
-              R.color.greenGradientBottom,
-            ],
-          ),
-        ),
+        decoration: isDisabled
+            ? BoxDecoration(
+                borderRadius: BorderRadius.circular(200),
+                color: R.color.color0xffC2C2C2,
+              )
+            : BoxDecoration(
+                color: R.color.mainColor,
+                borderRadius: BorderRadius.circular(200),
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.centerRight,
+                  colors: [
+                    R.color.greenGradientTop,
+                    R.color.greenGradientMid,
+                    R.color.greenGradientBottom,
+                  ],
+                ),
+              ),
         child: Center(
           child: Text(
             text,
             style: TextStyle(
-              color: R.color.white,
+              color: isDisabled ? R.color.grey200 : R.color.white,
               fontWeight: FontWeight.w700,
               fontSize: 16,
             ),
@@ -373,22 +406,15 @@ class _DsmesCalendarSectionState extends State<DsmesCalendarSection> {
             },
             onDateChanged: (datetime) async {
               if (datetime != null) {
-                // Always start with morning when changing dates
                 setState(() {
                   selectedDate = datetime;
-                  isMorningSelected = true;
                   availableBookingSchedule =
                       _filterAvailableSchedules(fullSchedule, datetime);
+                  isMorningSelected =
+                      DateTime.parse(availableBookingSchedule.first.startTime)
+                              .hour <
+                          12;
                 });
-
-                // If morning is empty, switch to afternoon
-                if (availableBookingSchedule.isEmpty) {
-                  setState(() {
-                    isMorningSelected = false;
-                    availableBookingSchedule =
-                        _filterAvailableSchedules(fullSchedule, datetime);
-                  });
-                }
               }
             },
           ),
@@ -443,6 +469,7 @@ class _DsmesCalendarSectionState extends State<DsmesCalendarSection> {
           onTap: () => {
             setState(() {
               selectedBookingSchedule = availableBookingSchedule[i];
+              isAllowReschedule = isSelectedScheduleAvailable();
             })
           },
           child: Container(
