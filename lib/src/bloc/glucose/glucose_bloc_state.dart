@@ -51,11 +51,14 @@ class GlucoseTrendLoaded extends GlucoseState {
   final String? glucoseInputAIAnalysis;
   final String? mostAppearType;
   final String? mostAppearTypeColor;
+  final BloodSugarRangeType? rangeType;
+
   GlucoseTrendLoaded({
     required this.trend,
     this.glucoseInputAIAnalysis,
     this.mostAppearType,
     this.mostAppearTypeColor,
+    this.rangeType,
   });
 
   GlucoseTrendLoaded copyWith({
@@ -63,12 +66,14 @@ class GlucoseTrendLoaded extends GlucoseState {
     String? glucoseInputAIAnalysis,
     String? mostAppearType,
     String? mostAppearTypeColor,
+    BloodSugarRangeType? rangeType,
   }) {
     return GlucoseTrendLoaded(
       trend: trend ?? this.trend,
       glucoseInputAIAnalysis: glucoseInputAIAnalysis ?? this.glucoseInputAIAnalysis,
       mostAppearType: mostAppearType ?? this.mostAppearType,
       mostAppearTypeColor: mostAppearTypeColor ?? this.mostAppearTypeColor,
+      rangeType: rangeType ?? this.rangeType,
     );
   }
 }

@@ -10,6 +10,7 @@ import 'package:medical/src/modal/glucose/glucose_data_trend.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/BloodSugar/bloodSugar_detail_tabbar.dart';
+import 'package:medical/src/widget/BloodSugar/constant/bloodSugar_rangetype.dart';
 import 'package:medical/src/widget/BloodSugar/widget/action_list_filter_trend.dart';
 import 'package:medical/src/widget/HbA1C/hba1c_tabble.dart';
 import 'package:medical/src/widget/helper/helper.dart';
@@ -19,6 +20,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 
 import 'ai_loading_text_widget.dart';
+import 'aihelp_butotn.dart';
 
 class BloodSugarChart extends StatefulWidget {
   BloodSugarChart({
@@ -58,7 +60,7 @@ class BloodSugarChartState extends State<BloodSugarChart>
   int minXIndex = 0;
   int maxXIndex = 0;
 
-  final int _breakingTypeNumber = 100;
+  final int _breakingTypeNumber = 12;
 
   // less than [_breakingTypeNumber] focus
   int _focusIndex = -1;
@@ -116,11 +118,13 @@ class BloodSugarChartState extends State<BloodSugarChart>
           String? aiSuggestion;
           String? mostAppearType;
           String? mostAppearTypeColor;
+          BloodSugarRangeType? rangeType;
           if (state is GlucoseTrendLoaded) {
             model = state.trend;
             aiSuggestion = state.glucoseInputAIAnalysis;
             mostAppearType = state.mostAppearType;
             mostAppearTypeColor = state.mostAppearTypeColor;
+            rangeType = state.rangeType;
           }
 
           if (model == null)
@@ -144,7 +148,7 @@ class BloodSugarChartState extends State<BloodSugarChart>
                   const SizedBox(height: 24),
                   _sectionTrending(model, mostAppearType, mostAppearTypeColor),
                   const SizedBox(height: 16),
-                  _sectionAIHelp(aiSuggestion),
+                  _sectionAIHelp(aiSuggestion, rangeType),
                 ],
               ),
             ),
@@ -458,7 +462,7 @@ class BloodSugarChartState extends State<BloodSugarChart>
     );
   }
 
-  Widget _sectionAIHelp(String? aiSuggestion) {
+  Widget _sectionAIHelp(String? aiSuggestion, BloodSugarRangeType? rangeType) {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -507,7 +511,7 @@ class BloodSugarChartState extends State<BloodSugarChart>
                 color: Color(0xFFC82221),
               ),
             )
-          else
+          else ...[
             Text(
               aiSuggestion,
               style: TextStyle(
@@ -517,30 +521,9 @@ class BloodSugarChartState extends State<BloodSugarChart>
                 height: 16 / 12,
               ),
             ),
-
-          const SizedBox(height: 16),
-          // elevated button, ic_zalo and text, full width
-          ElevatedButton(
-            onPressed: () {},
-            child: Center(
-              child: Text(
-                'Tư vấn chuyên gia',
-                style: TextStyle(
-                  color: R.color.mainColor,
-                  fontSize: 13,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: R.color.color0xffE1FAF8,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(18),
-              ),
-              fixedSize: Size(double.infinity, 32),
-              elevation: 0,
-            ),
-          ),
+            const SizedBox(height: 16),
+            AIHelpButton(rangeType: rangeType),
+          ],
         ],
       ),
     );
