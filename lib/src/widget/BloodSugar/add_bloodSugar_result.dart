@@ -10,6 +10,7 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/repo/glucose/glucose_client.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/navigator_name.dart';
+import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widgets/network_image_widget.dart';
@@ -17,6 +18,7 @@ import 'package:syncfusion_flutter_gauges/gauges.dart';
 
 import 'add_bloodSugar_result_note.dart';
 import 'bloodSugar_result.dto.dart';
+import 'widget/ai_loading_text_widget.dart';
 
 class PageAddBloodSugarResult extends StatefulWidget {
   const PageAddBloodSugarResult({super.key, required this.data});
@@ -28,7 +30,7 @@ class PageAddBloodSugarResult extends StatefulWidget {
 
 class _PageAddBloodSugarResultState extends State<PageAddBloodSugarResult> {
   bool get _haveNote => _note.isNotEmpty == true || _files.isNotEmpty == true;
-  String _aiResult = '';
+  String? _aiResult;
 
   bool _haveEditNote = false;
   late String _note = widget.data.note ?? '';
@@ -126,51 +128,43 @@ class _PageAddBloodSugarResultState extends State<PageAddBloodSugarResult> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: R.color.backgroundColor,
-      body: Container(
-        decoration: BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage(R.drawable.bg_glucose),
-            fit: BoxFit.cover,
-          ),
-        ),
-        child: Stack(
-          children: [
-            Positioned.fill(
-              child: Column(
-                children: [
-                  _appBarSection(),
-                  const SizedBox(height: 12),
-                  Expanded(
-                    child: Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 16),
-                      child: SingleChildScrollView(
-                        padding: EdgeInsets.only(bottom: 100),
-                        physics: const ClampingScrollPhysics(),
-                        child: _glucoseResultSection(),
-                      ),
+      backgroundColor: R.color.glucose_bg_color,
+      body: Stack(
+        children: [
+          Positioned.fill(
+            child: Column(
+              children: [
+                _appBarSection(),
+                const SizedBox(height: 12),
+                Expanded(
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 16),
+                    child: SingleChildScrollView(
+                      padding: EdgeInsets.only(bottom: 100),
+                      physics: const ClampingScrollPhysics(),
+                      child: _glucoseResultSection(),
                     ),
                   ),
-                ],
-              ),
-            ),
-            Positioned(
-              left: 0,
-              right: 0,
-              bottom: 0,
-              child: Container(
-                padding: EdgeInsets.only(
-                  bottom: 8 + MediaQuery.of(context).padding.bottom / 2,
-                  left: 16,
-                  right: 16,
-                  top: 12,
                 ),
-                child: _bottomSection(),
-                color: Colors.white,
-              ),
+              ],
             ),
-          ],
-        ),
+          ),
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: 0,
+            child: Container(
+              padding: EdgeInsets.only(
+                bottom: 8 + MediaQuery.of(context).padding.bottom / 2,
+                left: 16,
+                right: 16,
+                top: 12,
+              ),
+              child: _bottomSection(),
+              color: Colors.white,
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -194,7 +188,7 @@ class _PageAddBloodSugarResultState extends State<PageAddBloodSugarResult> {
         GestureDetector(
           onTap: _doGuide,
           child: Padding(
-            padding: const EdgeInsets.only(left: 16, right: 16),
+            padding: const EdgeInsets.only(right: 16),
             child: Image.asset(R.drawable.ic_help_outlined, width: 24, height: 24),
           ),
         ),
@@ -226,7 +220,7 @@ class _PageAddBloodSugarResultState extends State<PageAddBloodSugarResult> {
             ),
           ),
 
-          const SizedBox(height: 24),
+          // const SizedBox(height: 24),
           // button add note
           _buildNoteOrAddNoteSection(),
 
@@ -238,22 +232,39 @@ class _PageAddBloodSugarResultState extends State<PageAddBloodSugarResult> {
               Text(
                 R.string.ai_suggestion_glucose.tr(),
                 style: TextStyle(
-                  fontSize: 14,
+                  fontSize: 15,
                   fontWeight: FontWeight.bold,
                   color: R.color.textDark,
+                  height: 21 / 15,
                 ),
               ),
               const SizedBox(width: 6),
-              InkWell(
-                onTap: () {},
-                child: Image.asset(R.drawable.ic_speak_text, width: 24, height: 24),
-              ),
+              Image.asset(R.drawable.ic_info, width: 18, height: 18),
+              // InkWell(
+              //   onTap: () {},
+              //   child: Image.asset(R.drawable.ic_speak_text, width: 24, height: 24),
+              // ),
             ],
           ),
           const SizedBox(height: 8),
-          Text(
-            _aiResult,
-            style: TextStyle(
+          if (_aiResult == null)
+            Padding(
+              padding: const EdgeInsets.only(top: 8.0),
+              child: const AILoadingTextWidget(),
+            )
+          else if (_aiResult!.isEmpty)
+            Text(
+              'Có lỗi xảy ra',
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w400,
+                color: Color(0xFFC82221),
+              ),
+            )
+          else
+            Text(
+              _aiResult ?? '',
+              style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w400,
               color: R.color.primaryGreyColor,
@@ -543,7 +554,7 @@ class _SegmentedCircularGauge extends StatelessWidget {
                     ),
                     SizedBox(height: 4),
                     Text(
-                      '$glucose $glucoseUnit',
+                      '${glucose.toPrecision(2)} $glucoseUnit',
                       style: TextStyle(
                         fontSize: 16,
                         color: Colors.black,

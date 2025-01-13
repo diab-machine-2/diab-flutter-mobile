@@ -43,8 +43,10 @@ class _CustomAppBarState extends State<CustomAppBar> {
       title: widget.showRightCloseButton == true ||
               widget.hideAllBackButton == true
           ? widget.title
-          : Transform(
-              transform: Matrix4.translationValues(-20.0, 0.0, 0.0),
+          : widget.centerTitle == true 
+            ? widget.title
+            : Transform(
+              transform: Matrix4.translationValues(-20, 0.0, 0.0),
               child: widget.title),
       centerTitle: widget.centerTitle,
       automaticallyImplyLeading: false,
