@@ -113,7 +113,10 @@ class DsmesAppointmentItem extends StatelessWidget {
           ],
         ),
         Container(
-          color: cubit.getItemStatusContainerColor(data.status, isPast),
+          decoration: BoxDecoration(
+            color: cubit.getItemStatusContainerColor(data.status, isPast),
+            borderRadius: BorderRadius.circular(2),
+          ),
           padding: EdgeInsets.symmetric(vertical: 2, horizontal: 6),
           child: Text(
             cubit.getItemStatus(data.status, isPast),
@@ -337,7 +340,7 @@ class DsmesAppointmentItem extends StatelessWidget {
     if (appointment.mode == DsmesAppointmentMode.atClinic.toString()) {
       DsmesNavigationMixin.navigationKey.currentState
           ?.popUntil((route) => route.isFirst);
-          
+
       await DsmesNavigationMixin.navigationKey.currentState
           ?.pushNamed(NavigatorName.dsmes_booking_select_date, arguments: {
         'serviceType': appointment.mode,

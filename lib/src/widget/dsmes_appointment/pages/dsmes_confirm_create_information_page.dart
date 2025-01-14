@@ -335,7 +335,7 @@ class _DsmesConfirmCreateInformationState
 
   _buildPatientInformation() {
     return Container(
-      padding: EdgeInsets.all(16),
+      padding: EdgeInsets.symmetric(vertical: 16, horizontal: 12),
       decoration: BoxDecoration(
         color: R.color.white,
         borderRadius: BorderRadius.circular(12),
@@ -389,7 +389,7 @@ class _DsmesConfirmCreateInformationState
                 // ),
               ],
             ),
-            GapH(12),
+            GapH(16),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -441,7 +441,7 @@ class _DsmesConfirmCreateInformationState
 
   _buildConsultingInformation() {
     return Container(
-      padding: EdgeInsets.all(16),
+      padding: EdgeInsets.symmetric(vertical: 16, horizontal: 12),
       decoration: BoxDecoration(
         color: R.color.white,
         borderRadius: BorderRadius.circular(12),
@@ -628,7 +628,7 @@ class _DsmesConfirmCreateInformationState
       return SizedBox.shrink();
     }
     return Container(
-      padding: EdgeInsets.all(16),
+      padding: EdgeInsets.symmetric(vertical: 16, horizontal: 12),
       decoration: BoxDecoration(
         color: R.color.white,
         borderRadius: BorderRadius.circular(12),
@@ -691,7 +691,7 @@ class _DsmesConfirmCreateInformationState
                 ),
               ],
             ),
-            GapH(12),
+            GapH(6),
             Column(
               children: [
                 ..._cubit.createDsmesBookingRequest!.paymentInfo!.services
@@ -806,7 +806,7 @@ class _DsmesConfirmCreateInformationState
                   ),
                   contentPadding:
                       const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                  hintText: R.string.symptom.tr(),
+                  hintText: R.string.symptom_hint_text.tr(),
                 ),
               ),
             )
@@ -1009,6 +1009,9 @@ class _DsmesConfirmCreateInformationState
           },
           child: Container(
             child: Dialog(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
               insetPadding: EdgeInsets.symmetric(horizontal: 12),
               child: Container(
                 width: MediaQuery.of(context).size.width,

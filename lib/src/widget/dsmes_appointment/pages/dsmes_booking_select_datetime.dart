@@ -276,30 +276,49 @@ class _DsmesCalendarSectionState extends State<DsmesCalendarSection> {
                           final isEditing = args?['isEditing'] ?? false;
 
                           if (isEditing) {
-                            // Pop until select_service to rebuild stack with new state
-                            DsmesNavigationMixin.navigationKey.currentState
-                                ?.popUntil((route) =>
-                                    route.settings.name ==
-                                    NavigatorName.dsmes_select_service);
+                            if (widget.serviceType ==
+                                DsmesAppointmentMode.telemedicine.toString()) {
+                              // Pop until select_service to rebuild stack with new state
+                              DsmesNavigationMixin.navigationKey.currentState
+                                  ?.popUntil((route) =>
+                                      route.settings.name ==
+                                      NavigatorName.dsmes_select_service);
 
-                            // Replace select_service
-                            DsmesNavigationMixin.navigationKey.currentState
-                                ?.pushReplacementNamed(
-                                    NavigatorName.dsmes_select_service,
-                                    arguments: {
-                                  'serviceType': widget.serviceType,
-                                  'action': widget.action,
-                                  'clinic': _cubit.selectedClinic,
-                                });
+                              // Replace select_service
+                              DsmesNavigationMixin.navigationKey.currentState
+                                  ?.pushReplacementNamed(
+                                      NavigatorName.dsmes_select_service,
+                                      arguments: {
+                                    'serviceType': widget.serviceType,
+                                    'action': widget.action,
+                                    'clinic': _cubit.selectedClinic,
+                                  });
 
-                            // Push new select_date with updated state
-                            DsmesNavigationMixin.navigationKey.currentState
-                                ?.pushNamed(
-                                    NavigatorName.dsmes_booking_select_date,
-                                    arguments: {
-                                  'serviceType': widget.serviceType,
-                                  'action': widget.action,
-                                });
+                              // Push new select_date with updated state
+                              DsmesNavigationMixin.navigationKey.currentState
+                                  ?.pushNamed(
+                                      NavigatorName.dsmes_booking_select_date,
+                                      arguments: {
+                                    'serviceType': widget.serviceType,
+                                    'action': widget.action,
+                                  });
+                            } else {
+                              // First pop the current select_date page
+                              DsmesNavigationMixin.navigationKey.currentState
+                                  ?.pop();
+                              DsmesNavigationMixin.navigationKey.currentState
+                                  ?.popUntil((route) =>
+                                      route.settings.name ==
+                                      NavigatorName.dsmes_booking_select_date);
+
+                              DsmesNavigationMixin.navigationKey.currentState
+                                  ?.pushReplacementNamed(
+                                      NavigatorName.dsmes_booking_select_date,
+                                      arguments: {
+                                    'serviceType': widget.serviceType,
+                                    'action': widget.action,
+                                  });
+                            }
 
                             // Push confirm info
                             DsmesNavigationMixin.navigationKey.currentState
