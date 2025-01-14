@@ -292,7 +292,7 @@ class _DsmesBookingOfflinePageState extends State<DsmesBookingOfflinePage> {
                                         'clinic': _cubit.selectedClinic,
                                         'serviceType': DsmesAppointmentMode
                                             .telemedicine
-                                            .toString()
+                                            .toString(),
                                       });
                                 } finally {
                                   isProcessing['onlineConsult'] = false;

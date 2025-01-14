@@ -300,7 +300,8 @@ class _DsmesConfirmCreateInformationState
     final resp = await _cubit.rescheduleDsmesBooking(
       request: RescheduleDsmesBookingRequest(
           appointmentId: AppointmentId(id: widget.appointmentId!),
-          startTime: _cubit.createDsmesBookingRequest!.startTime),
+          startTime: _cubit.ensureTimeWithSeconds(
+              _cubit.createDsmesBookingRequest!.startTime)),
     );
     if (resp == null) return;
 
@@ -475,6 +476,10 @@ class _DsmesConfirmCreateInformationState
                       try {
                         _cubit.updateCreateDsmesBookingRequestSymptom(
                             symptom: symptomController.text);
+                        final route = ModalRoute.of(context)?.settings;
+                        final args = route?.arguments as Map<String, dynamic>?;
+                        final isMergedSchedule =
+                            args?['isMergedSchedule'] ?? false;
                         await DsmesNavigationMixin.navigationKey.currentState
                             ?.pushNamed(NavigatorName.dsmes_booking_select_date,
                                 arguments: {
@@ -482,7 +487,8 @@ class _DsmesConfirmCreateInformationState
                               'action': widget.action,
                               'isEditing': true,
                               'previousRoute':
-                                  NavigatorName.dsmes_confirm_information
+                                  NavigatorName.dsmes_confirm_information,
+                              'isMergedSchedule': isMergedSchedule,
                             });
                       } finally {
                         setState(() => isProcessing['editConsultInfo'] = false);

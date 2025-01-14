@@ -40,6 +40,7 @@ class DsmesAppointmentCubit extends Cubit<DsmesAppointmentState> {
 
   int currentPage = 1;
   bool hasMore = true;
+  bool isSpecifyClinic = false;
 
   DsmesAppointmentCubit(this.appRepository)
       : super(InitialDsmesAppointmentState());
@@ -324,33 +325,44 @@ class DsmesAppointmentCubit extends Cubit<DsmesAppointmentState> {
       return bTime.compareTo(aTime);
     });
 
-    // Then check other priorities
-    for (var appointment in myAppointments) {
-      final startTime =
-          DateFormat('yyyy-MM-dd HH:mm:ss').parse(appointment.startTime);
+    // Priority 1: Find approved appointment not after now, closest to current time
+    List<DsmesAppointment> approvedNotAfterNow =
+        myAppointments.where((appointment) {
       final endTime =
           DateFormat('yyyy-MM-dd HH:mm:ss').parse(appointment.endTime);
+      return !now.isAfter(endTime) &&
+          appointment.status == DSMES_STATUS_APPROVE;
+    }).toList();
 
-      final isAfterNow = now.isAfter(endTime);
-
-      // Priority 1: Most recent approved appointment not after now
-      if (!now.isAfter(endTime) && appointment.status == DSMES_STATUS_APPROVE) {
-        return [appointment];
-      }
+    if (approvedNotAfterNow.isNotEmpty) {
+      approvedNotAfterNow.sort((a, b) {
+        final aTime = DateFormat('yyyy-MM-dd HH:mm:ss').parse(a.startTime);
+        final bTime = DateFormat('yyyy-MM-dd HH:mm:ss').parse(b.startTime);
+        return (aTime.difference(now).abs())
+            .compareTo(bTime.difference(now).abs());
+      });
+      return [approvedNotAfterNow.first];
     }
 
-    for (var appointment in myAppointments) {
-      // Priority 2: Most recent requested appointment
-      if (appointment.status == DSMES_STATUS_REQUEST) {
-        return [appointment];
-      }
+    // Priority 2: Find requested appointment closest to current time
+    List<DsmesAppointment> requestedAppointments = myAppointments
+        .where((appointment) => appointment.status == DSMES_STATUS_REQUEST)
+        .toList();
+
+    if (requestedAppointments.isNotEmpty) {
+      requestedAppointments.sort((a, b) {
+        final aTime = DateFormat('yyyy-MM-dd HH:mm:ss').parse(a.startTime);
+        final bTime = DateFormat('yyyy-MM-dd HH:mm:ss').parse(b.startTime);
+        return (aTime.difference(now).abs())
+            .compareTo(bTime.difference(now).abs());
+      });
+      return [requestedAppointments.first];
     }
 
+    // Priority 3: Just take first approved appointment within last 3 days
     for (var appointment in myAppointments) {
       final startTime =
           DateFormat('yyyy-MM-dd HH:mm:ss').parse(appointment.startTime);
-
-      // Priority 3: Approved appointment within last 3 days
       if (startTime.isBefore(now) &&
           startTime.isAfter(threeDaysAgo) &&
           appointment.status == DSMES_STATUS_APPROVE) {

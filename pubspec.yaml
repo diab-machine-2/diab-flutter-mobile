@@ -181,11 +181,11 @@ dependency_overrides:
   visibility_detector: 0.4.0+2
   js: 0.7.1
   url_launcher_ios: 6.3.1
-  flutter_inappwebview_ios:
-    git:
-      url: https://github.com/ngocphuc1612/flutter_inappwebview.git
-      ref: hotfix/xcode16-build
-      path: flutter_inappwebview_ios
+  # flutter_inappwebview_ios:
+  #   git:
+  #     url: https://github.com/ngocphuc1612/flutter_inappwebview.git
+  #     ref: hotfix/xcode16-build
+  #     path: flutter_inappwebview_ios
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -212,6 +212,7 @@ flutter:
     - lib/res/translations/
     - lib/res/generated/
     - lib/res/icons/
+    - lib/res/drawables/dsmes_service/
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

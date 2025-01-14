@@ -92,6 +92,20 @@ class _DsmesAppointmentPageState extends State<DsmesAppointmentPage>
                 FocusScope.of(
                         DsmesNavigationMixin.navigationKey.currentContext!)
                     .unfocus();
+
+                // final route = ModalRoute.of(
+                //         DsmesNavigationMixin.navigationKey.currentContext!)
+                //     ?.settings;
+                // print('[POP] route: $route');
+                // final args = route?.arguments as Map<String, dynamic>?;
+                // print('[POP] Args: ${route?.arguments}');
+                // final previousRoute = args?['previousRoute'] as String?;
+
+                // if (previousRoute == NavigatorName.dsmes_booking_history ||
+                //     previousRoute == NavigatorName.dsmes_clinic_detail) {
+                //   DsmesNavigationMixin.navigationKey.currentState?.pop();
+                //   return false;
+                // }
                 DsmesNavigationMixin.navigationKey.currentState
                     ?.popUntil((route) => route.isFirst);
                 Observable.instance.notifyObservers([],
@@ -163,6 +177,7 @@ class _DsmesAppointmentPageState extends State<DsmesAppointmentPage>
                           serviceType: args!["serviceType"],
                           action: args["action"],
                           appointmentId: args["appointmentId"],
+                          isMergedSchedule: args["isMergedSchedule"] ?? false,
                         ),
                       );
                     }
@@ -429,6 +444,7 @@ class _DsmesAppointmentPageState extends State<DsmesAppointmentPage>
                                   'serviceType': DsmesAppointmentMode
                                       .telemedicine
                                       .toString(),
+                                  'isMergedSchedule': true
                                 });
                           }
                         } finally {

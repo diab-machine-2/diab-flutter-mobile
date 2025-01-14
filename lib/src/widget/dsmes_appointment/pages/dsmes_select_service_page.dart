@@ -282,6 +282,7 @@ class _DsmesSelectServicePageState extends State<DsmesSelectServicePage> {
       final route = ModalRoute.of(context)?.settings;
       final args = route?.arguments as Map<String, dynamic>?;
       final isEditing = args?['isEditing'] ?? false;
+      final isMergedSchedule = args?['isMergedSchedule'] ?? false;
 
       if (isEditing) {
         // First pop the current select_service page
@@ -305,6 +306,7 @@ class _DsmesSelectServicePageState extends State<DsmesSelectServicePage> {
             ?.pushNamed(NavigatorName.dsmes_booking_select_date, arguments: {
           'serviceType': widget.serviceType,
           'action': widget.action,
+          'isMergedSchedule': isMergedSchedule,
         });
 
         // Push confirm info
@@ -318,6 +320,7 @@ class _DsmesSelectServicePageState extends State<DsmesSelectServicePage> {
             ?.pushNamed(NavigatorName.dsmes_booking_select_date, arguments: {
           'serviceType': widget.serviceType,
           'action': 'create',
+          'isMergedSchedule': isMergedSchedule,
         });
       }
 
