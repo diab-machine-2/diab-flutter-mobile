@@ -1226,4 +1226,5 @@ class Strings {
   String get select_booking_dates_warning => 'select_booking_dates_warning';
   String get pull_up_to_load_more => 'pull_up_to_load_more';
   String get release_to_load_more => 'release_to_load_more';
+  String get exist_appointment => 'exist_appointment';
 }

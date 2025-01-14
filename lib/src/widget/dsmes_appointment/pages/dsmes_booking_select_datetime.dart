@@ -237,12 +237,30 @@ class _DsmesCalendarSectionState extends State<DsmesCalendarSection> {
                           return;
                         }
 
-                        if (DateFormat('yyyy-MM-dd HH:mm')
-                            .parse(selectedBookingSchedule!.startTime)
+                        // When selected booking schedule is before active dates
+                        if (DateTime.parse(selectedBookingSchedule!.startTime)
                             .isBefore(activeDates.first)) {
                           Message.showToastMessage(
                               context, R.string.vui_long_chon_gio_kham.tr());
                           return;
+                        }
+
+                        // Prevent user from reschedule the same time
+                        if (widget.action == 'reschedule') {
+                          final selectedDateTime = DateTime.parse(
+                              selectedBookingSchedule!.startTime);
+                          final existingDateTime = DateTime.parse(
+                              _cubit.createDsmesBookingRequest!.startTime);
+
+                          if (selectedDateTime
+                                  .isSameDayWith(existingDateTime) &&
+                              selectedDateTime.hour == existingDateTime.hour &&
+                              selectedDateTime.minute ==
+                                  existingDateTime.minute) {
+                            Message.showToastMessage(
+                                context, R.string.exist_appointment.tr());
+                            return;
+                          }
                         }
 
                         setState(() => _isProcessing = true);
