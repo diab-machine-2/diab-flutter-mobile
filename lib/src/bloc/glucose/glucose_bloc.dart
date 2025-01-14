@@ -7,6 +7,7 @@ import 'package:medical/src/modal/glucose/glucose_distribution.dart';
 import 'package:medical/src/modal/glucose/glucose_input.dart';
 import 'package:medical/src/modal/glucose/glucose_timeFrame.dart';
 import 'package:medical/src/repo/glucose/glucose_client.dart';
+import 'package:medical/src/widget/BloodSugar/constant/bloodSugar_rangetype.dart';
 import 'package:meta/meta.dart';
 import 'package:medical/src/modal/error/error_model.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -124,8 +125,17 @@ class GlucoseBloc extends Bloc<GlucoseEvent, GlucoseState> {
         }
         final mostAppearType = listNames[maxIndex];
         final mostAppearTypeColor = listColors[maxIndex];
+        final rangeType = maxIndex == 0
+            ? BloodSugarRangeType.very_high
+            : maxIndex == listNames.length - 1
+                ? BloodSugarRangeType.very_low
+                : BloodSugarRangeType.normal;
         yield GlucoseTrendLoaded(
-            trend: model, mostAppearType: mostAppearType, mostAppearTypeColor: mostAppearTypeColor);
+          trend: model,
+          mostAppearType: mostAppearType,
+          mostAppearTypeColor: mostAppearTypeColor,
+          rangeType: rangeType,
+        );
         final glucoseInputAIAnalysis =
             await client.fetchGlucoseAlltimeAnalysis(int.parse(periodFilterType!));
         yield GlucoseTrendLoaded(
@@ -133,6 +143,7 @@ class GlucoseBloc extends Bloc<GlucoseEvent, GlucoseState> {
           glucoseInputAIAnalysis: glucoseInputAIAnalysis ?? '',
           mostAppearType: mostAppearType,
           mostAppearTypeColor: mostAppearTypeColor,
+          rangeType: rangeType,
         );
       }
     } catch (e, _) {

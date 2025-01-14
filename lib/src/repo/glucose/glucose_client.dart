@@ -55,6 +55,14 @@ class GlucoseClient extends FetchClient {
     }
   }
 
+  Future<bool> checkGlucoseSchedulerExisting() async {
+    final Response response = await super.fetchData(url: '/App/Patient/IsExistPatientGlucoseRemind', params: {});
+    if (response.statusCode == 200) {
+      return response.data['data'] == true;
+    }
+    return false;
+  }
+
   Future<List<GlucoseColorConfig>?> fetchColorConfig() async {
     final Response response = await super.fetchData(url: '/App/Glucose/Config/Status', params: {});
 
@@ -64,6 +72,19 @@ class GlucoseClient extends FetchClient {
         GlucoseColorConfig.fromJson,
       );
       return listResponse.data;
+    }
+    return null;
+  }
+
+  Future<GlucoseLesson?> fetchGlucoseUpcommingLesson() async {
+    final Response response = await super.fetchData(url: '/App/Glucose/Lesson/Normal');
+
+    if (response.statusCode == 200) {
+      final singleResponse = SingleResponse.fromJson(
+        response.data as Map<String, dynamic>,
+        GlucoseLesson.fromJson,
+      );
+      return singleResponse.data;
     }
     return null;
   }

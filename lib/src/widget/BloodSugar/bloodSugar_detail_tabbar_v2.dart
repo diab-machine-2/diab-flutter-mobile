@@ -5,6 +5,7 @@ import 'package:flutter_observer/Observer.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/firebase_tracking/activity_list_tracking.dart';
 import 'package:medical/src/app_setting/firebase_tracking/kpi_glycemic_tracking.dart';
+import 'package:medical/src/repo/glucose/glucose_client.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/components/custom_action_descriptipn.dart';
@@ -44,21 +45,11 @@ class _BloodSugarDetailTabbarControllerState extends State<BloodSugarDetailTabba
   late String name = R.string.filter_day.tr(args: ['30']);
   String? glucoseID;
 
-  void _viewListing() {
-    Navigator.pushNamed(context, NavigatorName.detail_blood_sugar_listing,
-        arguments: {'glucoseID': glucoseID, 'initPeriodFilterType': periodFilterType});
-  }
-
-  void _viewFilteredListing(BloodSugarRangeType rangeType) {
-    Navigator.pushNamed(context, NavigatorName.detail_blood_sugar_listing, arguments: {
-      'glucoseID': glucoseID,
-      'glucoseDistributionType': rangeType.value,
-      'initPeriodFilterType': periodFilterType,
-    });
-  }
+  bool _haveGlucoseScheduler = false;
 
   @override
   void initState() {
+    _checkGlucoseScheduler();
     super.initState();
     Observable.instance.addObserver(this);
     KpiGlycemicTracking.firebaseSetup();
@@ -76,6 +67,26 @@ class _BloodSugarDetailTabbarControllerState extends State<BloodSugarDetailTabba
     Observable.instance.removeObserver(this);
     AppSettings.syncDataFromHealthApp();
     super.dispose();
+  }
+
+  void _checkGlucoseScheduler() async {
+    _haveGlucoseScheduler = await GlucoseClient().checkGlucoseSchedulerExisting();
+    if (mounted && _haveGlucoseScheduler) {
+      setState(() {});
+    }
+  }
+
+  void _viewListing() {
+    Navigator.pushNamed(context, NavigatorName.detail_blood_sugar_listing,
+        arguments: {'glucoseID': glucoseID, 'initPeriodFilterType': periodFilterType});
+  }
+
+  void _viewFilteredListing(BloodSugarRangeType rangeType) {
+    Navigator.pushNamed(context, NavigatorName.detail_blood_sugar_listing, arguments: {
+      'glucoseID': glucoseID,
+      'glucoseDistributionType': rangeType.value,
+      'initPeriodFilterType': periodFilterType,
+    });
   }
 
   void _doReloadData(int periodFilterType) {
@@ -262,8 +273,14 @@ class _BloodSugarDetailTabbarControllerState extends State<BloodSugarDetailTabba
             const SizedBox(width: 17),
             Image.asset(R.drawable.ic_glucose_create_scheduler, width: 39, height: 41),
             const SizedBox(width: 12),
-            Expanded(child: Text('Lịch đo đường huyết của bạn')),
-            Icon(Icons.arrow_forward_ios, color: R.color.primaryGreyColor, size: 24),
+            Expanded(
+              child: Text(
+                _haveGlucoseScheduler
+                    ? 'Lịch đo đường huyết của bạn'
+                    : 'Gợi ý lịch đo từ chuyên gia',
+              ),
+            ),
+            Icon(Icons.arrow_forward_ios, color: R.color.primaryGreyColor, size: 20),
             const SizedBox(width: 16),
           ],
         ),
