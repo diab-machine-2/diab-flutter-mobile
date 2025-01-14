@@ -1,4 +1,5 @@
 import 'package:flutter/widgets.dart';
+import 'package:medical/src/widget/BloodSugar/constant/bloodSugar_rangetype.dart';
 
 class BloodSugarResultDto {
   final String id;
@@ -13,6 +14,7 @@ class BloodSugarResultDto {
   final String? note;
   final List<dynamic>? files;
   final String? aiResult;
+  final BloodSugarRangeType? rangeType;
 
   BloodSugarResultDto({
     required this.id,
@@ -27,5 +29,6 @@ class BloodSugarResultDto {
     this.note,
     this.files,
     this.aiResult,
+    this.rangeType,
   });
 }

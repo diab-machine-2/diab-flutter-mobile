@@ -19,6 +19,7 @@ import 'package:syncfusion_flutter_gauges/gauges.dart';
 import 'add_bloodSugar_result_note.dart';
 import 'bloodSugar_result.dto.dart';
 import 'widget/ai_loading_text_widget.dart';
+import 'widget/aihelp_butotn.dart';
 
 class PageAddBloodSugarResult extends StatefulWidget {
   const PageAddBloodSugarResult({super.key, required this.data});
@@ -261,46 +262,20 @@ class _PageAddBloodSugarResultState extends State<PageAddBloodSugarResult> {
                 color: Color(0xFFC82221),
               ),
             )
-          else
+          else ...[
             Text(
               _aiResult ?? '',
               style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w400,
-              color: R.color.primaryGreyColor,
-              height: 16 / 12,
-            ),
-          ),
-
-          const SizedBox(height: 16),
-          // elevated button, ic_zalo and text, full width
-          ElevatedButton(
-            onPressed: _doChatWithDiabExpert,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Image.asset(R.drawable.ic_social_zalo, width: 16, height: 16),
-                const SizedBox(width: 4),
-                Text(
-                  'Chat với Chuyên gia sức khoẻ',
-                  style: TextStyle(
-                    color: R.color.mainColor,
-                    fontSize: 13,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
-            ),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: R.color.color0xffE1FAF8,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
+                fontSize: 14,
+                fontWeight: FontWeight.w400,
+                color: R.color.primaryGreyColor,
+                height: 16 / 12,
               ),
-              elevation: 0,
-              minimumSize: Size.fromHeight(32),
             ),
-          ),
+            const SizedBox(height: 16),
+            // elevated button, ic_zalo and text, full width
+            AIHelpButton(rangeType: widget.data.rangeType),
+          ],
         ],
       ),
     );

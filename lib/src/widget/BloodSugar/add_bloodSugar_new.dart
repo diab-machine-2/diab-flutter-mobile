@@ -37,6 +37,7 @@ import 'package:easy_localization/easy_localization.dart';
 import '../../widgets/CalendarPicker/custom_date_picker.dart';
 import '../my_plan_screens/activity_tab/activity_tab/models/schedule_type.dart';
 import 'bloodSugar_result.dto.dart';
+import 'constant/bloodSugar_rangetype.dart';
 import 'widget/level_off_diabetes_rule_picker.dart';
 import 'widget/section_add_note.dart';
 
@@ -159,6 +160,11 @@ class _AddBloodSugarControllerNewState
       glucoseUnit: isMgPerDl ? R.string.mg_dl.tr() : R.string.mmol_l.tr(),
       note: _controllerNote.text,
       files: files,
+      rangeType: indexRange == 0
+          ? BloodSugarRangeType.very_low
+          : indexRange == _colorList.length - 1
+              ? BloodSugarRangeType.very_high
+              : BloodSugarRangeType.normal,
     );
     Navigator.of(context).pushReplacementNamed(NavigatorName.add_blood_sugar_result, arguments: data);
   }
@@ -1275,11 +1281,13 @@ class _AddBloodSugarControllerNewState
     bool glucoseUnit = AppSettings.userInfo!.glucoseUnit == 1;
 
     for (int i = 0; i < ranges.length - 1; i++) {
+      if (i == ranges.length - 1)
+        break;
       if (number >=
               (glucoseUnit
                   ? ranges[i]
                   : roundAsFixed(ranges[i] / mmollToMgdlFactor)) &&
-          number <=
+          number <
               (glucoseUnit
                   ? ranges[i + 1]
                   : roundAsFixed(ranges[i + 1] / mmollToMgdlFactor))) {
