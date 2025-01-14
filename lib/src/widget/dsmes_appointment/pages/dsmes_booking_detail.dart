@@ -198,8 +198,9 @@ class _DsmesBookingDetailState extends State<DsmesBookingDetail> {
                       if (widget.serviceType ==
                           DsmesAppointmentMode.telemedicine.toString())
                         _buildSelectedServiceInformation(),
-                      GapH(12),
-                      _buildNoticeSymptom(),
+                      if (widget.appointment.symptom.isNotEmpty) GapH(12),
+                      if (widget.appointment.symptom.isNotEmpty)
+                        _buildNoticeSymptom(),
                       GapH(12),
                       if (isCompletedAppointment() == false &&
                           widget.appointment.status != DSMES_STATUS_REJECT)
@@ -265,7 +266,7 @@ class _DsmesBookingDetailState extends State<DsmesBookingDetail> {
 
   _buildPatientInformation() {
     return Container(
-      padding: EdgeInsets.all(16),
+      padding: EdgeInsets.symmetric(vertical: 16, horizontal: 12),
       decoration: BoxDecoration(
         color: R.color.white,
         borderRadius: BorderRadius.circular(12),
@@ -282,16 +283,16 @@ class _DsmesBookingDetailState extends State<DsmesBookingDetail> {
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 Text(
-                  R.string.consult_information.tr().toUpperCase(),
+                  R.string.consult_information.tr(),
                   style: TextStyle(
-                    fontSize: 12,
+                    fontSize: 15,
                     fontWeight: FontWeight.w700,
                     color: R.color.color0xff141416,
                   ),
                 ),
               ],
             ),
-            GapH(12),
+            GapH(16),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -347,7 +348,7 @@ class _DsmesBookingDetailState extends State<DsmesBookingDetail> {
     final isPast = endDateTime.isBefore(DateTime.now());
 
     return Container(
-      padding: EdgeInsets.all(16),
+      padding: EdgeInsets.symmetric(vertical: 16, horizontal: 12),
       decoration: BoxDecoration(
         color: R.color.white,
         borderRadius: BorderRadius.circular(12),
@@ -365,17 +366,17 @@ class _DsmesBookingDetailState extends State<DsmesBookingDetail> {
               children: [
                 Text(
                   widget.serviceType == DsmesAppointmentMode.atClinic.toString()
-                      ? R.string.consult_at_clinic.tr().toUpperCase()
-                      : R.string.consult_online.tr().toUpperCase(),
+                      ? R.string.consult_at_clinic.tr()
+                      : R.string.consult_online.tr(),
                   style: TextStyle(
-                    fontSize: 12,
+                    fontSize: 15,
                     fontWeight: FontWeight.w700,
                     color: R.color.color0xff141416,
                   ),
                 ),
               ],
             ),
-            GapH(12),
+            GapH(16),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -394,8 +395,11 @@ class _DsmesBookingDetailState extends State<DsmesBookingDetail> {
                 Flexible(
                   flex: 7,
                   child: Container(
-                    color: _cubit.getItemStatusContainerColor(
-                        widget.appointment.status, isPast),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(2),
+                      color: _cubit.getItemStatusContainerColor(
+                          widget.appointment.status, isPast),
+                    ),
                     padding: EdgeInsets.symmetric(vertical: 2, horizontal: 6),
                     child: Text(
                       _cubit.getItemStatus(widget.appointment.status, isPast),
@@ -532,7 +536,7 @@ class _DsmesBookingDetailState extends State<DsmesBookingDetail> {
     if (widget.appointment.services.isEmpty) return SizedBox.shrink();
 
     return Container(
-      padding: EdgeInsets.all(16),
+      padding: EdgeInsets.symmetric(vertical: 16, horizontal: 12),
       decoration: BoxDecoration(
         color: R.color.white,
         borderRadius: BorderRadius.circular(12),
@@ -549,16 +553,16 @@ class _DsmesBookingDetailState extends State<DsmesBookingDetail> {
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 Text(
-                  R.string.consult_demand.tr().toUpperCase(),
+                  R.string.consult_demand.tr(),
                   style: TextStyle(
-                    fontSize: 12,
+                    fontSize: 15,
                     fontWeight: FontWeight.w700,
                     color: R.color.color0xff141416,
                   ),
                 ),
               ],
             ),
-            GapH(12),
+            GapH(6),
             Column(
               children: [
                 ...widget.appointment.services.map((e) {
@@ -988,7 +992,11 @@ class _DsmesBookingDetailState extends State<DsmesBookingDetail> {
       builder: (context) {
         return Container(
           child: AlertDialog(
-            contentPadding: EdgeInsets.all(10),
+            contentPadding: EdgeInsets.all(0),
+            titlePadding: EdgeInsets.all(0),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
             content: Stack(
               children: [
                 Container(
