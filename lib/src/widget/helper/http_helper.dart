@@ -43,6 +43,16 @@ class FetchClient {
     // return '139.162.21.142:6002';
   }
 
+  static String get docosanBaseUrl {
+    // return 'https://api.docosan.com/';
+    // return 'https://api.staging.docosan.com/';
+    if (AppSettings.environment == "product") {
+      return Const.HOST_DOCOSAN_URL_STAGING;
+    } else {
+      return Const.HOST_DOCOSAN_URL;
+    }
+  }
+
   Future<Options> options() async {
     await checkNetwork();
     final token = await AppSettings.getToken();
@@ -254,6 +264,31 @@ class FetchClient {
     Console.logJson('Request', params);
 
     return response;
+  }
+
+  Future<http.StreamedResponse> postHttp3(
+      {required String path, required dynamic params, String? fileName}) async {
+    // final token = await AppSettings.getDocosanToken();
+    // final userAgent = await userAgent();
+    final headers = {
+      // 'Authorization': 'Bearer $token',
+      'User-Agent': 'Mobile',
+    };
+    Uri uri = Uri.parse(docosanBaseUrl + path);
+    final request = http.MultipartRequest('POST', uri);
+    request.fields.addAll(params);
+    // Console.log('token', token);
+    Console.log('uri', uri);
+    Console.logJson('Request', params);
+
+    if (fileName != null && fileName.isNotEmpty) {
+      final value = await http.MultipartFile.fromPath('file', fileName);
+      request.files.add(value);
+    }
+
+    request.headers.addAll(headers);
+
+    return request.send();
   }
 
   Future<http.StreamedResponse> putHttp(

@@ -10,10 +10,12 @@ import 'package:medical/src/utils/date_utils.dart';
 import 'package:medical/src/utils/length_limit_text_field.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/utils/utils.dart';
+import 'package:medical/src/widget/BloodSugar/widget/section_add_note.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/dsmes_appointment/dsmes_appointment_cubit.dart';
 import 'package:medical/src/widget/dsmes_appointment/model/dsmes_appointment_model.dart';
 import 'package:medical/src/widget/dsmes_appointment/pages/dsmes_navigation_mixin.dart';
+import 'package:medical/src/widget/dsmes_appointment/widgets/section_add_symptom.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/profile/user_info.dart';
 import 'package:medical/src/widgets/gap_widget.dart';
@@ -50,6 +52,9 @@ class _DsmesConfirmCreateInformationState
   late TextEditingController symptomController;
 
   late bool isReschedule = false;
+  final GlobalKey<SectionAddNoteState> _sectionAddNoteKey =
+      GlobalKey<SectionAddNoteState>();
+  List<String> files = [];
 
   Map<String, bool> isProcessing = {
     'confirmBooking': false,
@@ -181,7 +186,8 @@ class _DsmesConfirmCreateInformationState
                               DsmesAppointmentMode.telemedicine.toString())
                             _buildSelectedServiceInformation(),
                           GapH(12),
-                          _buildNoticeSymptom(),
+                          // _buildNoticeSymptom(),
+                          _selectImageSection(),
                         ],
                       ),
                     ),
@@ -1316,5 +1322,15 @@ class _DsmesConfirmCreateInformationState
   void updateUserInfo(UserModel user, {bool isUpdateDiabetes = false}) async {
     ProfileInfoController.updateUserInfo(context, user,
         isUpdateDiabetes: isUpdateDiabetes);
+  }
+
+  Widget _selectImageSection() {
+    return SectionAddSymptom(
+      focusNode: symptomFocusNode,
+      controllerNote: symptomController,
+      maxMedia: 5,
+      key: _sectionAddNoteKey,
+      initialFiles: files,
+    );
   }
 }

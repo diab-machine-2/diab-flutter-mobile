@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:ui';
 
 import 'package:easy_localization/easy_localization.dart';
@@ -24,6 +25,7 @@ import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/dsmes_appointment/model/dsmes_appointment_model.dart';
 import 'package:medical/src/widget/dsmes_appointment/dsmes_appointment_state.dart';
 import 'package:medical/src/widget/dsmes_appointment/model/dsmes_clinic_model.dart';
+import 'package:medical/src/widget/helper/http_helper.dart';
 
 class DsmesAppointmentCubit extends Cubit<DsmesAppointmentState> {
   final AppRepository appRepository;
@@ -282,6 +284,23 @@ class DsmesAppointmentCubit extends Cubit<DsmesAppointmentState> {
       emit(DsmesAppointmentFailure(NetworkExceptions.getErrorMessage(error)));
     });
     return dsmesAppointment;
+  }
+
+  Future<String?> uploadSymptomImage(String fileName) async {
+    try {
+      final response = await FetchClient()
+          .postHttp3(path: 'api/appointment/upload-symptom', params: {}, fileName: fileName);
+
+      if (response.statusCode == 200) {
+        final data = await response.stream.bytesToString();
+        final jsonData = jsonDecode(data);
+        return jsonData['data'];
+      } else {
+        throw response.reasonPhrase!;
+      }
+    } catch (e) {
+      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+    }
   }
 
   _getFilteredData() {
