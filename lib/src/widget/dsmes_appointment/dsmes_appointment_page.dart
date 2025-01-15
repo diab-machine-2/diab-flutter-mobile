@@ -454,7 +454,7 @@ class _DsmesAppointmentPageState extends State<DsmesAppointmentPage>
                       child: Container(
                         decoration: BoxDecoration(
                           color: R.color.white,
-                          borderRadius: BorderRadius.circular(8),
+                          borderRadius: BorderRadius.circular(12),
                           boxShadow: [
                             Utils.getBoxShadowDropCard(),
                           ],
@@ -482,7 +482,7 @@ class _DsmesAppointmentPageState extends State<DsmesAppointmentPage>
                       child: Container(
                         decoration: BoxDecoration(
                           color: R.color.white,
-                          borderRadius: BorderRadius.circular(8),
+                          borderRadius: BorderRadius.circular(12),
                           boxShadow: [
                             Utils.getBoxShadowDropCard(),
                           ],
