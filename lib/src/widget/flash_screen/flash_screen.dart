@@ -9,6 +9,7 @@ import 'package:medical/src/app_setting/dynamic_link_config.dart';
 import 'package:medical/src/app_setting/firebase_remote_config.dart';
 import 'package:medical/src/bloc/nipro/nipro_bloc.dart';
 import 'package:medical/src/modal/user/user_model.dart';
+import 'package:medical/src/model/service/docosan_client.dart';
 import 'package:medical/src/repo/login/login_client.dart';
 import 'package:medical/src/repo/user/user_client.dart';
 import 'package:medical/src/service/country_service.dart';
@@ -105,6 +106,7 @@ class _FlashScreenControllerState extends State<FlashScreenController> {
     AppSettings.environment = appVersion.enviroment ?? "";
     AppSettings.secureModel = secureModel;
     appClient = AppClient().getAppClient();
+    docosanClient = DocosanClient().getDocosanClient();
   }
 
   Future<void> getData(BuildContext context) async {
