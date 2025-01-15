@@ -52,8 +52,8 @@ class _DsmesConfirmCreateInformationState
   late TextEditingController symptomController;
 
   late bool isReschedule = false;
-  final GlobalKey<SectionAddNoteState> _sectionAddNoteKey =
-      GlobalKey<SectionAddNoteState>();
+  final GlobalKey<SectionAddSymptomState> _sectionAddSymptomKey =
+      GlobalKey<SectionAddSymptomState>();
   List<String> files = [];
 
   Map<String, bool> isProcessing = {
@@ -242,8 +242,13 @@ class _DsmesConfirmCreateInformationState
   }
 
   _handleCreateBooking() async {
-    _cubit.updateCreateDsmesBookingRequestSymptom(
-        symptom: symptomController.text);
+    final data = _sectionAddSymptomKey.currentState?.getNote();
+
+    _cubit.updateCreateDsmesBookingRequestSymptom(symptom: data?.note ?? '');
+
+    _cubit.updateCreateDsmesBookingRequestSymptomAttachments(
+        symptomAttachments: data?.fileNetworkName ?? []);
+
     final phoneNumber =
         AppSettings.userInfo?.phoneNumber ?? phoneController.text;
 
@@ -1329,7 +1334,7 @@ class _DsmesConfirmCreateInformationState
       focusNode: symptomFocusNode,
       controllerNote: symptomController,
       maxMedia: 5,
-      key: _sectionAddNoteKey,
+      key: _sectionAddSymptomKey,
       initialFiles: files,
     );
   }

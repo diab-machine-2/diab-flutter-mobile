@@ -35,6 +35,7 @@ class SectionAddSymptom extends StatefulWidget {
 
 class SectionAddSymptomState extends State<SectionAddSymptom> {
   List<dynamic> _files = [];
+  List<String> _fileNetworkName = [];
   List<String?> _removeIDs = [];
   int _currentLength = 0;
   late DsmesAppointmentCubit _cubit;
@@ -289,6 +290,9 @@ class SectionAddSymptomState extends State<SectionAddSymptom> {
         print('[SYMPTOM] ${pickedFile.path}');
         final fileName = pickedFile.path.split('/').last;
         final imagePath = await _cubit.uploadSymptomImage(fileName);
+        if (imagePath != null) {
+          _fileNetworkName.add(imagePath);
+        }
         _files.add(pickedFile);
         setState(() {});
       }
@@ -333,6 +337,7 @@ class SectionAddSymptomState extends State<SectionAddSymptom> {
       note: widget.controllerNote?.text ?? '',
       files: _files,
       removeIDs: _removeIDs,
+      fileNetworkName: _fileNetworkName,
     );
   }
 }
@@ -341,6 +346,10 @@ class SectionAddSymptomData {
   final String note;
   final List<dynamic> files;
   final List<String?> removeIDs;
+  final List<String> fileNetworkName;
   SectionAddSymptomData(
-      {required this.note, required this.files, required this.removeIDs});
+      {required this.note,
+      required this.files,
+      required this.removeIDs,
+      required this.fileNetworkName});
 }

@@ -288,8 +288,10 @@ class DsmesAppointmentCubit extends Cubit<DsmesAppointmentState> {
 
   Future<String?> uploadSymptomImage(String fileName) async {
     try {
-      final response = await FetchClient()
-          .postHttp3(path: 'api/appointment/upload-symptom', params: {}, fileName: fileName);
+      final response = await FetchClient().postHttp3(
+          path: 'api/appointment/upload-symptom',
+          params: {},
+          fileName: fileName);
 
       if (response.statusCode == 200) {
         final data = await response.stream.bytesToString();
@@ -441,6 +443,13 @@ class DsmesAppointmentCubit extends Cubit<DsmesAppointmentState> {
   updateCreateDsmesBookingRequestSymptom({required String symptom}) {
     createDsmesBookingRequest = createDsmesBookingRequest?.copyWith(
       symptom: symptom,
+    );
+  }
+
+  updateCreateDsmesBookingRequestSymptomAttachments(
+      {required List<String> symptomAttachments}) {
+    createDsmesBookingRequest = createDsmesBookingRequest?.copyWith(
+      symptomAttachment: symptomAttachments,
     );
   }
 
