@@ -58,7 +58,8 @@ class _AddBloodSugarControllerNewState
     with SingleTickerProviderStateMixin {
   final TextEditingController _controller = TextEditingController();
   final TextEditingController _controllerNote = TextEditingController();
-  final GlobalKey<SectionAddNoteState> _sectionAddNoteKey = GlobalKey<SectionAddNoteState>();
+  final GlobalKey<SectionAddNoteState> _sectionAddNoteKey =
+      GlobalKey<SectionAddNoteState>();
   List<dynamic> files = [];
   DateTime selectedDate = DateTime.now();
   bool isClicked = false;
@@ -166,7 +167,9 @@ class _AddBloodSugarControllerNewState
               ? BloodSugarRangeType.very_high
               : BloodSugarRangeType.normal,
     );
-    Navigator.of(context).pushReplacementNamed(NavigatorName.add_blood_sugar_result, arguments: data);
+    Navigator.of(context).pushReplacementNamed(
+        NavigatorName.add_blood_sugar_result,
+        arguments: data);
   }
 
   Future<void> _getGlucoseRange(TimeFrameModel selectedTimeFrame) async {
@@ -205,7 +208,8 @@ class _AddBloodSugarControllerNewState
           id: model!.timeFrameId, code: '', name: model!.timeFrame);
       fromNipro = model!.byDevice;
       if (_sectionAddNoteKey.currentState != null) {
-        _sectionAddNoteKey.currentState?.updateFilesAndNote(model!.images, model!.note ?? '');
+        _sectionAddNoteKey.currentState
+            ?.updateFilesAndNote(model!.images, model!.note ?? '');
       }
     } catch (e) {
       print(e);
@@ -213,7 +217,6 @@ class _AddBloodSugarControllerNewState
   }
 
   Future<void> _loadConfig({String? selectedTimeframeId}) async {
-
     BotToast.showLoading();
     // load concurrent 2 api
     final result = await Future.wait([
@@ -410,8 +413,7 @@ class _AddBloodSugarControllerNewState
                       child: Container(
                           margin: EdgeInsets.all(16),
                           child: Row(
-                              mainAxisAlignment:
-                                  MainAxisAlignment.spaceBetween,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 GestureDetector(
                                   onTap: () {
@@ -435,7 +437,8 @@ class _AddBloodSugarControllerNewState
                                 ),
                                 GestureDetector(
                                   onTap: () {
-                                    int indexRange = findIndexInRanges(number, _rangeValue);
+                                    int indexRange =
+                                        findIndexInRanges(number, _rangeValue);
                                     if (indexRange == 4 || indexRange == 0) {
                                       _showDialogWarning(
                                         onConfirm: () => _editData(),
@@ -1013,7 +1016,8 @@ class _AddBloodSugarControllerNewState
             child: isClicked
                 ? Image.asset(R.drawable.ic_help_circle_active,
                     width: 24, height: 24)
-                : Image.asset(R.drawable.ic_help_outlined, width: 24, height: 24),
+                : Image.asset(R.drawable.ic_help_outlined,
+                    width: 24, height: 24),
           ),
         ),
       ],
@@ -1068,7 +1072,8 @@ class _AddBloodSugarControllerNewState
                     }
                   } else {
                     // 2 digits and 1 decimal (optional)
-                    if (RegExp(r'^\d{0,2}(,\d{0,1})?$').hasMatch(newValue.text)) {
+                    if (RegExp(r'^\d{0,2}([.,]\d{0,1})?$')
+                        .hasMatch(newValue.text)) {
                       return newValue;
                     }
                   }
@@ -1077,7 +1082,7 @@ class _AddBloodSugarControllerNewState
               ],
               decoration: InputDecoration(
                 counterText: '',
-                hintText: '0.0',
+                hintText: isMgPerDl ? '0' : '0.0',
                 contentPadding: EdgeInsets.only(bottom: 8),
                 border: InputBorder.none,
                 hintStyle: TextStyle(
@@ -1108,14 +1113,20 @@ class _AddBloodSugarControllerNewState
                   if (index == _lastUnitIndex) return;
                   _lastUnitIndex = index;
                   await _changeUnit();
-              
+
                   final glucose = roundAsFixed(
                       AppSettings.userInfo!.glucoseUnit == 1
                           ? number! * mmollToMgdlFactor
                           : number! / mmollToMgdlFactor);
-                  number = glucose;
+                  if (AppSettings.userInfo!.glucoseUnit == 1) {
+                    number = glucose.round().toDouble();
+                  } else {
+                    number = glucose;
+                  }
                   if (_controller.text != "") {
-                    _controller.text = glucose.toString();
+                    _controller.text = AppSettings.userInfo!.glucoseUnit == 1
+                        ? glucose.round().toString()
+                        : glucose.toString();
                   }
                   setState(() {
                     isMgPerDl = index == 0;
@@ -1173,7 +1184,9 @@ class _AddBloodSugarControllerNewState
       height: 32.h,
       child: ToggleButtonsHorizontal(
         names: _times.map((e) => e.name!).toList(),
-        flexes: _times.length > 1 ? [3, ...List.generate(_times.length - 1, (index) => 2)] : null,
+        flexes: _times.length > 1
+            ? [3, ...List.generate(_times.length - 1, (index) => 2)]
+            : null,
         backgroundColor: Color(0xFFF2F6F9),
         selectedIndex: _lastTimeFrameIndex,
         onChange: (index) async {
@@ -1214,7 +1227,8 @@ class _AddBloodSugarControllerNewState
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Image.asset(R.drawable.im_glucose_input_device, width: 40, height: 40),
+            Image.asset(R.drawable.im_glucose_input_device,
+                width: 40, height: 40),
             const SizedBox(width: 12),
             Expanded(
               child: Text(
@@ -1242,32 +1256,36 @@ class _AddBloodSugarControllerNewState
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(
         mainAxisSize: MainAxisSize.min,
-          children: [
-            // TODO: Enhance this
-            // magic number follow sum on design or edit 1by1 :D
-            SizedBox(height: max(height - 750 - (files.length > 0 ? 76 : 0), 12)),
-            Container(
-              width: 235,
-              height: 20,
-              alignment: Alignment.center,
-              child: Row(
-                children: [
-                  Expanded(child: Container(height: 1, color: R.color.greenGradientBottom)),
-                  Text(
-                    '   ${R.string.or.tr()}   ',
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: R.color.greenGradientBottom,
-                    ),
+        children: [
+          // TODO: Enhance this
+          // magic number follow sum on design or edit 1by1 :D
+          SizedBox(height: max(height - 750 - (files.length > 0 ? 76 : 0), 12)),
+          Container(
+            width: 235,
+            height: 20,
+            alignment: Alignment.center,
+            child: Row(
+              children: [
+                Expanded(
+                    child: Container(
+                        height: 1, color: R.color.greenGradientBottom)),
+                Text(
+                  '   ${R.string.or.tr()}   ',
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: R.color.greenGradientBottom,
                   ),
-                  Expanded(child: Container(height: 1, color: R.color.greenGradientBottom)),
-                ],
-              ),
+                ),
+                Expanded(
+                    child: Container(
+                        height: 1, color: R.color.greenGradientBottom)),
+              ],
             ),
-            const SizedBox(height: 12),
-            connectMachineW,
-          ],
-        ),
+          ),
+          const SizedBox(height: 12),
+          connectMachineW,
+        ],
+      ),
     );
   }
 
@@ -1289,8 +1307,7 @@ class _AddBloodSugarControllerNewState
     bool glucoseUnit = AppSettings.userInfo!.glucoseUnit == 1;
 
     for (int i = 0; i < ranges.length - 1; i++) {
-      if (i == ranges.length - 1)
-        break;
+      if (i == ranges.length - 1) break;
       if (number >=
               (glucoseUnit
                   ? ranges[i]
@@ -1311,7 +1328,8 @@ class _AddBloodSugarControllerNewState
     bool glucoseUnit = AppSettings.userInfo!.glucoseUnit == 1;
     int index = -1;
     int indexRange = findIndexInRanges(_number, _rangeValue);
-    num widthRange = (AppMediaQuery.deviceWidth - 72) / (_rangeValue.length);
+    num widthRange =
+        (MediaQuery.of(context).size.width - 72) / (_rangeValue.length);
     // print('hihi widthRange: $widthRange');
     num width = _number == 0 ? 0 : widthRange * (indexRange);
 
