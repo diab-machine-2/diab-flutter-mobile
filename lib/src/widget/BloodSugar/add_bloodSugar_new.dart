@@ -6,20 +6,17 @@ import 'package:flutter_observer/Observable.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
-import 'package:medical/src/modal/HbA1C/short_gui.dart';
+import 'package:medical/src/modal/base/images.dart';
 import 'package:medical/src/modal/glucose/glucose_input.dart';
 import 'package:medical/src/modal/glucose/glucose_range_data.dart';
 import 'package:medical/src/modal/glucose/glucose_timeFrame.dart';
 import 'package:medical/src/modal/user/schedule_glucose_time.dart';
 import 'package:medical/src/model/response/config/glucose_color_config.dart';
-import 'package:medical/src/repo/HbA1C/HbA1C_client.dart';
 import 'package:medical/src/repo/glucose/glucose_client.dart';
 import 'package:medical/src/repo/home/home_client.dart';
 import 'package:medical/src/repo/user/user_client.dart';
-import 'package:medical/src/utils/app_media_query.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/utils/utils.dart';
-import 'package:medical/src/widget/HbA1C/widget/description/description.dart';
 import 'package:medical/src/widget/base/base_state.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/helper/helper.dart';
@@ -58,7 +55,8 @@ class _AddBloodSugarControllerNewState
     with SingleTickerProviderStateMixin {
   final TextEditingController _controller = TextEditingController();
   final TextEditingController _controllerNote = TextEditingController();
-  final GlobalKey<SectionAddNoteState> _sectionAddNoteKey = GlobalKey<SectionAddNoteState>();
+  final GlobalKey<SectionAddNoteState> _sectionAddNoteKey =
+      GlobalKey<SectionAddNoteState>();
   List<dynamic> files = [];
   DateTime selectedDate = DateTime.now();
   bool isClicked = false;
@@ -77,7 +75,7 @@ class _AddBloodSugarControllerNewState
   double? number = 0;
   InputGlucoseModel? model;
   List<String?> removeIDs = [];
-  ShortGuiModel? des;
+  // ShortGuiModel? des;
   double mmollToMgdlFactor = 18.018;
   bool fromNipro = false;
   bool isMgPerDl = false;
@@ -126,7 +124,7 @@ class _AddBloodSugarControllerNewState
     }
     List<int> valueOfClickTime = await AppSettings.getValueOfClickShortGuide();
     clickTime = valueOfClickTime[ScreenList.BLOOD_SUGAR.index];
-    _loadDescription();
+    // _loadDescription();
     _firebaseSetup();
   }
 
@@ -145,7 +143,7 @@ class _AddBloodSugarControllerNewState
     // );
   }
 
-  void _navigateAfterSuccess(String id) {
+  void _navigateAfterSuccess(String id, List<ImagesModel> images) {
     // Observable.instance.notifyObservers([], notifyName: "glucose_change_data");
     int indexRange = findIndexInRanges(number, _rangeValue);
     final data = BloodSugarResultDto(
@@ -159,14 +157,16 @@ class _AddBloodSugarControllerNewState
       glucose: number ?? 0,
       glucoseUnit: isMgPerDl ? R.string.mg_dl.tr() : R.string.mmol_l.tr(),
       note: _controllerNote.text,
-      files: files,
-      rangeType: indexRange == 0
+      files: images,
+      rangeType: (indexRange == 0 || indexRange == 1)
           ? BloodSugarRangeType.very_low
-          : indexRange == _colorList.length - 1
+          : (indexRange == _colorList.length - 1 || indexRange == _colorList.length -2)
               ? BloodSugarRangeType.very_high
               : BloodSugarRangeType.normal,
     );
-    Navigator.of(context).pushReplacementNamed(NavigatorName.add_blood_sugar_result, arguments: data);
+    Navigator.of(context).pushReplacementNamed(
+        NavigatorName.add_blood_sugar_result,
+        arguments: data);
   }
 
   Future<void> _getGlucoseRange(TimeFrameModel selectedTimeFrame) async {
@@ -205,7 +205,8 @@ class _AddBloodSugarControllerNewState
           id: model!.timeFrameId, code: '', name: model!.timeFrame);
       fromNipro = model!.byDevice;
       if (_sectionAddNoteKey.currentState != null) {
-        _sectionAddNoteKey.currentState?.updateFilesAndNote(model!.images, model!.note ?? '');
+        _sectionAddNoteKey.currentState
+            ?.updateFilesAndNote(files, model!.note ?? '');
       }
     } catch (e) {
       print(e);
@@ -213,7 +214,6 @@ class _AddBloodSugarControllerNewState
   }
 
   Future<void> _loadConfig({String? selectedTimeframeId}) async {
-
     BotToast.showLoading();
     // load concurrent 2 api
     final result = await Future.wait([
@@ -259,10 +259,14 @@ class _AddBloodSugarControllerNewState
     BotToast.closeAllLoading();
   }
 
-  void _loadDescription() async {
-    des = await HbA1CClient().fetchShortGuide(1);
-    setState(() {});
+  void _doGuide() async {
+    Navigator.of(context).pushNamed(NavigatorName.glucose_intro_2nd_page);
   }
+
+  // void _loadDescription() async {
+  //   des = await HbA1CClient().fetchShortGuide(1);
+  //   setState(() {});
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -410,8 +414,7 @@ class _AddBloodSugarControllerNewState
                       child: Container(
                           margin: EdgeInsets.all(16),
                           child: Row(
-                              mainAxisAlignment:
-                                  MainAxisAlignment.spaceBetween,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 GestureDetector(
                                   onTap: () {
@@ -435,7 +438,8 @@ class _AddBloodSugarControllerNewState
                                 ),
                                 GestureDetector(
                                   onTap: () {
-                                    int indexRange = findIndexInRanges(number, _rangeValue);
+                                    int indexRange =
+                                        findIndexInRanges(number, _rangeValue);
                                     if (indexRange == 4 || indexRange == 0) {
                                       _showDialogWarning(
                                         onConfirm: () => _editData(),
@@ -502,7 +506,14 @@ class _AddBloodSugarControllerNewState
 
   void _editData() async {
     FocusScope.of(context).unfocus();
-    final note = _controllerNote.text;
+    final data = _sectionAddNoteKey.currentState?.getNote();
+    if (data != null) {
+      files.clear();
+      files.addAll(data.files);
+      removeIDs.clear();
+      removeIDs.addAll(data.removeIDs);
+    }
+    final note = data?.note ?? '';
     final numberInput = _controller.text;
 
     if (numberInput.isEmpty) {
@@ -540,9 +551,7 @@ class _AddBloodSugarControllerNewState
           fromNipro,
           removeIDs,
           paths);
-      if (result == true) {
-        _navigateAfterSuccess(widget.id ?? '');
-      }
+      _navigateAfterSuccess(widget.id ?? '', result?.images ?? []);
 
       BotToast.closeAllLoading();
     } catch (e, _) {
@@ -588,7 +597,7 @@ class _AddBloodSugarControllerNewState
       for (var file in files) {
         paths.add(file.path);
       }
-      final resultId = await GlucoseClient().postIndexGlucose(
+      final result = await GlucoseClient().postIndexGlucose(
           selectedTimeFrame!.id,
           (selectedDate.millisecondsSinceEpoch ~/ 1000).toInt(),
           number.toString(),
@@ -596,7 +605,7 @@ class _AddBloodSugarControllerNewState
           note,
           fromNipro,
           paths);
-      if (resultId?.isNotEmpty == true) {
+      if (result?.id.isNotEmpty == true) {
         await TrackingManager.trackEvent(
           'glucose_add',
           'kpi_glucose_add',
@@ -607,7 +616,7 @@ class _AddBloodSugarControllerNewState
         );
         await HomeClient().completeSmartGoal(selectedDate, widget.goalId ?? '',
             1, ScheduleType.blood_sugar.typeIndex);
-        _navigateAfterSuccess(resultId!);
+        _navigateAfterSuccess(result!.id, result.images);
       }
 
       BotToast.closeAllLoading();
@@ -971,11 +980,11 @@ class _AddBloodSugarControllerNewState
   }
 
   Future<void> showGuide(BuildContext context) async {
-    Description.showTooltip(context,
-        data: des!, title: R.string.blood_sugar_for_diabetes.tr());
-    clickTime = clickTime + 1;
-    await AppSettings.setValueOfClickShortGuideIndex(
-        ScreenList.BLOOD_SUGAR.index, clickTime);
+    // Description.showTooltip(context,
+    //     data: des!, title: R.string.blood_sugar_for_diabetes.tr());
+    // clickTime = clickTime + 1;
+    // await AppSettings.setValueOfClickShortGuideIndex(
+    //     ScreenList.BLOOD_SUGAR.index, clickTime);
   }
 
   Widget _appBarSection() {
@@ -998,22 +1007,24 @@ class _AddBloodSugarControllerNewState
           }),
       actions: [
         GestureDetector(
-          onTap: () async {
-            if (clickTime >= 2) {
-              await showGuide(context);
-            } else {
-              setState(() {
-                isClicked = !isClicked;
-                clickTime = clickTime + 1;
-              });
-            }
+          onTap: () {
+            _doGuide();
+            // if (clickTime >= 2) {
+            //   await showGuide(context);
+            // } else {
+            //   setState(() {
+            //     isClicked = !isClicked;
+            //     clickTime = clickTime + 1;
+            //   });
+            // }
           },
           child: Padding(
             padding: const EdgeInsets.only(left: 16, right: 16),
             child: isClicked
                 ? Image.asset(R.drawable.ic_help_circle_active,
                     width: 24, height: 24)
-                : Image.asset(R.drawable.ic_help_outlined, width: 24, height: 24),
+                : Image.asset(R.drawable.ic_help_outlined,
+                    width: 24, height: 24),
           ),
         ),
       ],
@@ -1021,15 +1032,16 @@ class _AddBloodSugarControllerNewState
   }
 
   Widget _inforSection(BuildContext context) {
-    return Padding(
-        padding: const EdgeInsets.only(bottom: 16, left: 16, right: 16),
-        child: isClicked && clickTime < 2
-            ? Description(
-                isCreateData: true,
-                input: true,
-                data: des,
-                titleDetail: R.string.blood_sugar_for_diabetes.tr())
-            : SizedBox());
+    return SizedBox();
+    // return Padding(
+    //     padding: const EdgeInsets.only(bottom: 16, left: 16, right: 16),
+    //     child: isClicked && clickTime < 2
+    //         ? Description(
+    //             isCreateData: true,
+    //             input: true,
+    //             data: des,
+    //             titleDetail: R.string.blood_sugar_for_diabetes.tr())
+    //         : SizedBox());
   }
 
   Widget _inputSection() {
@@ -1061,15 +1073,24 @@ class _AddBloodSugarControllerNewState
                   fontWeight: FontWeight.w500),
               inputFormatters: [
                 TextInputFormatter.withFunction((oldValue, newValue) {
-                  if (RegExp(r'^\d{0,3}(,\d{0,2})?$').hasMatch(newValue.text)) {
-                    return newValue;
+                  if (isMgPerDl) {
+                    // 3 digits
+                    if (RegExp(r'^\d{0,3}$').hasMatch(newValue.text)) {
+                      return newValue;
+                    }
+                  } else {
+                    // 2 digits and 1 decimal (optional)
+                    if (RegExp(r'^\d{0,2}([.,]\d{0,1})?$')
+                        .hasMatch(newValue.text)) {
+                      return newValue;
+                    }
                   }
                   return oldValue;
                 }),
               ],
               decoration: InputDecoration(
                 counterText: '',
-                hintText: '0.0',
+                hintText: isMgPerDl ? '0' : '0.0',
                 contentPadding: EdgeInsets.only(bottom: 8),
                 border: InputBorder.none,
                 hintStyle: TextStyle(
@@ -1100,14 +1121,20 @@ class _AddBloodSugarControllerNewState
                   if (index == _lastUnitIndex) return;
                   _lastUnitIndex = index;
                   await _changeUnit();
-              
+
                   final glucose = roundAsFixed(
                       AppSettings.userInfo!.glucoseUnit == 1
                           ? number! * mmollToMgdlFactor
                           : number! / mmollToMgdlFactor);
-                  number = glucose;
+                  if (AppSettings.userInfo!.glucoseUnit == 1) {
+                    number = glucose.round().toDouble();
+                  } else {
+                    number = glucose;
+                  }
                   if (_controller.text != "") {
-                    _controller.text = glucose.toString();
+                    _controller.text = AppSettings.userInfo!.glucoseUnit == 1
+                        ? glucose.round().toString()
+                        : roundNumber(glucose);
                   }
                   setState(() {
                     isMgPerDl = index == 0;
@@ -1165,7 +1192,9 @@ class _AddBloodSugarControllerNewState
       height: 32.h,
       child: ToggleButtonsHorizontal(
         names: _times.map((e) => e.name!).toList(),
-        flexes: _times.length > 1 ? [3, ...List.generate(_times.length - 1, (index) => 2)] : null,
+        flexes: _times.length > 1
+            ? [3, ...List.generate(_times.length - 1, (index) => 2)]
+            : null,
         backgroundColor: Color(0xFFF2F6F9),
         selectedIndex: _lastTimeFrameIndex,
         onChange: (index) async {
@@ -1206,7 +1235,8 @@ class _AddBloodSugarControllerNewState
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Image.asset(R.drawable.im_glucose_input_device, width: 40, height: 40),
+            Image.asset(R.drawable.im_glucose_input_device,
+                width: 40, height: 40),
             const SizedBox(width: 12),
             Expanded(
               child: Text(
@@ -1234,32 +1264,36 @@ class _AddBloodSugarControllerNewState
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(
         mainAxisSize: MainAxisSize.min,
-          children: [
-            // TODO: Enhance this
-            // magic number follow sum on design or edit 1by1 :D
-            SizedBox(height: max(height - 750 - (files.length > 0 ? 76 : 0), 12)),
-            Container(
-              width: 235,
-              height: 20,
-              alignment: Alignment.center,
-              child: Row(
-                children: [
-                  Expanded(child: Container(height: 1, color: R.color.greenGradientBottom)),
-                  Text(
-                    '   ${R.string.or.tr()}   ',
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: R.color.greenGradientBottom,
-                    ),
+        children: [
+          // TODO: Enhance this
+          // magic number follow sum on design or edit 1by1 :D
+          SizedBox(height: max(height - 750 - (files.length > 0 ? 76 : 0), 12)),
+          Container(
+            width: 235,
+            height: 20,
+            alignment: Alignment.center,
+            child: Row(
+              children: [
+                Expanded(
+                    child: Container(
+                        height: 1, color: R.color.greenGradientBottom)),
+                Text(
+                  '   ${R.string.or.tr()}   ',
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: R.color.greenGradientBottom,
                   ),
-                  Expanded(child: Container(height: 1, color: R.color.greenGradientBottom)),
-                ],
-              ),
+                ),
+                Expanded(
+                    child: Container(
+                        height: 1, color: R.color.greenGradientBottom)),
+              ],
             ),
-            const SizedBox(height: 12),
-            connectMachineW,
-          ],
-        ),
+          ),
+          const SizedBox(height: 12),
+          connectMachineW,
+        ],
+      ),
     );
   }
 
@@ -1281,8 +1315,7 @@ class _AddBloodSugarControllerNewState
     bool glucoseUnit = AppSettings.userInfo!.glucoseUnit == 1;
 
     for (int i = 0; i < ranges.length - 1; i++) {
-      if (i == ranges.length - 1)
-        break;
+      if (i == ranges.length - 1) break;
       if (number >=
               (glucoseUnit
                   ? ranges[i]
@@ -1303,7 +1336,8 @@ class _AddBloodSugarControllerNewState
     bool glucoseUnit = AppSettings.userInfo!.glucoseUnit == 1;
     int index = -1;
     int indexRange = findIndexInRanges(_number, _rangeValue);
-    num widthRange = (AppMediaQuery.deviceWidth - 72) / (_rangeValue.length);
+    num widthRange =
+        (MediaQuery.of(context).size.width - 72) / (_rangeValue.length);
     // print('hihi widthRange: $widthRange');
     num width = _number == 0 ? 0 : widthRange * (indexRange);
 

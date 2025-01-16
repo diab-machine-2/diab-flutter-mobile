@@ -125,9 +125,9 @@ class GlucoseBloc extends Bloc<GlucoseEvent, GlucoseState> {
         }
         final mostAppearType = listNames[maxIndex];
         final mostAppearTypeColor = listColors[maxIndex];
-        final rangeType = maxIndex == 0
+        final rangeType = (maxIndex == 0 || maxIndex == 1)
             ? BloodSugarRangeType.very_high
-            : maxIndex == listNames.length - 1
+            : (maxIndex == listNames.length - 1 || maxIndex == listNames.length - 2)
                 ? BloodSugarRangeType.very_low
                 : BloodSugarRangeType.normal;
         yield GlucoseTrendLoaded(

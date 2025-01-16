@@ -4,6 +4,7 @@ import 'package:dio/dio.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/bloc/nipro/model/glucose_data.dart';
+import 'package:medical/src/modal/base/images.dart';
 import 'package:medical/src/modal/error/error_model.dart';
 import 'package:medical/src/modal/glucose/Glucose_Input_data_model.dart';
 import 'package:medical/src/modal/glucose/glucose_comparer.dart';
@@ -309,14 +310,8 @@ class GlucoseClient extends FetchClient {
   }
   //============ nhập chỉ số Đường huyết =============/
 
-  Future<String?> postIndexGlucose(
-      String? timeFrameId,
-      int date,
-      String glucoseInput,
-      String? reason,
-      String note,
-      bool byDevice,
-      List<String> files) async {
+  Future<GlucoseInputResult?> postIndexGlucose(String? timeFrameId, int date, String glucoseInput,
+      String? reason, String note, bool byDevice, List<String> files) async {
     try {
       bool isGestationalDiabetes = Utils.isGestationalDiabetes();
       Map<String, String> params = {
@@ -331,13 +326,25 @@ class GlucoseClient extends FetchClient {
       if (reason != null) {
         params['reason'] = reason;
       }
-      final response = await super
-          .postHttp(path: '/App/Glucose/Input', params: params, files: files);
+      final response =
+          await super.postHttp(path: '/App/Glucose/Input', params: params, files: files);
 
       if (response.statusCode == 200) {
         final data = await response.stream.bytesToString();
         final jsonData = jsonDecode(data);
-        return jsonData['data']?['id'];
+        String? id = jsonData['data']?['id'];
+        if (id != null) {
+          try {
+            final detailResponse = await fetchDetail(id);
+            return GlucoseInputResult(
+              id: detailResponse.id ?? id,
+              images: detailResponse.images,
+            );
+          } catch (e) {
+            print(e);
+          }
+        }
+        return null;
       } else {
         throw response.reasonPhrase!;
       }
@@ -470,7 +477,7 @@ class GlucoseClient extends FetchClient {
   }
   //============ update chỉ số đường huyết =============/
 
-  Future<bool> putIndexGlucose(
+  Future<GlucoseInputResult?> putIndexGlucose(
       String? id,
       String? timeFrameId,
       int date,
@@ -499,7 +506,21 @@ class GlucoseClient extends FetchClient {
           .putHttp(path: '/App/Glucose/Input', params: params, files: files);
 
       if (response.statusCode == 200) {
-        return true;
+        final data = await response.stream.bytesToString();
+        final jsonData = jsonDecode(data);
+        String? id = jsonData['data']?['id'];
+        if (id != null) {
+          try {
+            final detailResponse = await fetchDetail(id);
+            return GlucoseInputResult(
+              id: detailResponse.id ?? id,
+              images: detailResponse.images,
+            );
+          } catch (e) {
+            print(e);
+          }
+        }
+        return null;
       } else {
         throw response.reasonPhrase!;
       }
@@ -507,4 +528,14 @@ class GlucoseClient extends FetchClient {
       throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
     }
   }
+}
+
+class GlucoseInputResult {
+  final String id;
+  final List<ImagesModel> images;
+
+  GlucoseInputResult({
+    required this.id,
+    required this.images,
+  });
 }

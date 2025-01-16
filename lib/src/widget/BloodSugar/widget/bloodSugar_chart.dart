@@ -5,10 +5,10 @@ import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/bloc/glucose/glucose_bloc.dart';
 import 'package:medical/src/modal/glucose/glucose_data_trend.dart';
 import 'package:medical/src/utils/navigator_name.dart';
-import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/BloodSugar/bloodSugar_detail_tabbar.dart';
 import 'package:medical/src/widget/BloodSugar/constant/bloodSugar_rangetype.dart';
 import 'package:medical/src/widget/BloodSugar/widget/action_list_filter_trend.dart';
@@ -69,7 +69,8 @@ class BloodSugarChartState extends State<BloodSugarChart>
   void initState() {
     super.initState();
     periodFilterType =
-        BloodSugarDetailTabbarController.of(context)?.periodFilterType ?? widget.periodFilterType;
+        BloodSugarDetailTabbarController.of(context)?.periodFilterType ??
+            widget.periodFilterType;
     _subscription = _bloc.stream.listen((state) async {
       if (state is GlucoseTrendLoaded) {
         _subscription?.cancel();
@@ -82,7 +83,8 @@ class BloodSugarChartState extends State<BloodSugarChart>
         });
         if (trends.isEmpty) {
           await Future.delayed(Duration(milliseconds: 500));
-          Navigator.pushReplacementNamed(context, NavigatorName.add_blood_sugar_new,
+          Navigator.pushReplacementNamed(
+              context, NavigatorName.add_blood_sugar_new,
               arguments: {'type': 'input'});
         }
       }
@@ -108,7 +110,8 @@ class BloodSugarChartState extends State<BloodSugarChart>
           if (state is GlucoseInitial) {
             BlocProvider.of<GlucoseBloc>(context).add(FetchTrendGlucose(
                 trendType: trendTypeIndex.toString(),
-                currentDateTime: (DateTime.now().millisecondsSinceEpoch ~/ 1000).toString(),
+                currentDateTime:
+                    (DateTime.now().millisecondsSinceEpoch ~/ 1000).toString(),
                 periodFilterType: periodFilterType.toString(),
                 page: '1'));
           }
@@ -128,7 +131,8 @@ class BloodSugarChartState extends State<BloodSugarChart>
           }
 
           if (model == null)
-            return Container(height: 450, child: Center(child: CircularProgressIndicator()));
+            return Container(
+                height: 450, child: Center(child: CircularProgressIndicator()));
 
           return VisibilityDetector(
             key: Key('blood_sugar_chart'),
@@ -177,7 +181,8 @@ class BloodSugarChartState extends State<BloodSugarChart>
                   border: Border.all(color: R.color.color0xffE5E5E5),
                 ),
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -214,7 +219,9 @@ class BloodSugarChartState extends State<BloodSugarChart>
                   borderRadius: BorderRadius.circular(18),
                   border: Border.all(color: R.color.color0xffE5E5E5),
                 ),
-                child: Center(child: Icon(Icons.history, color: R.color.textDark, size: 20)),
+                child: Center(
+                    child:
+                        Icon(Icons.history, color: R.color.textDark, size: 20)),
               ),
             ),
           ),
@@ -223,8 +230,8 @@ class BloodSugarChartState extends State<BloodSugarChart>
     );
   }
 
-  Widget _sectionTrending(
-      TrendDataModel model, String? mostAppearType, String? mostAppearTypeColor) {
+  Widget _sectionTrending(TrendDataModel model, String? mostAppearType,
+      String? mostAppearTypeColor) {
     if (model.trendItems.items.isEmpty) {
       return Container(height: 100);
     }
@@ -237,8 +244,8 @@ class BloodSugarChartState extends State<BloodSugarChart>
     if (totalItems < _breakingTypeNumber) {
       return _sectionTrendingLess(trends);
     } else {
-      return _sectionTrendingMany(
-          trends, model.fromDate, model.toDate, mostAppearType, mostAppearTypeColor);
+      return _sectionTrendingMany(trends, model.fromDate, model.toDate,
+          mostAppearType, mostAppearTypeColor);
     }
   }
 
@@ -251,15 +258,19 @@ class BloodSugarChartState extends State<BloodSugarChart>
     String selectedTimeFrame = '';
     String selectedGlucose = '';
     String selectedColor = '';
+    String selectedUnit = '';
 
     if (_focusIndex != -1 && _focusIndex < trends.length) {
       final selectedTrend = trends[_focusIndex];
-      selectedDate = DateFormat('HH:mm - dd/MM/yyyy')
-          .format(DateTime.fromMillisecondsSinceEpoch(selectedTrend.date! * 1000, isUtc: true));
+      selectedDate = DateFormat('HH:mm - dd/MM/yyyy').format(
+          DateTime.fromMillisecondsSinceEpoch(selectedTrend.date! * 1000,
+              isUtc: true));
       selectedType = selectedTrend.type!;
       selectedTimeFrame = selectedTrend.timeFrameName!;
-      selectedGlucose = selectedTrend.glucose!.toPrecision(2).toString();
+      selectedGlucose = roundNumber(selectedTrend.glucose!);
       selectedColor = selectedTrend.color!;
+      selectedUnit =
+          AppSettings.userInfo!.glucoseUnit == 1 ? 'mg/dL' : 'mmol/L';
     }
 
     return Column(
@@ -305,7 +316,9 @@ class BloodSugarChartState extends State<BloodSugarChart>
                     child: Icon(
                       Icons.chevron_left,
                       size: 20,
-                      color: _focusIndex > 0 ? R.color.textDark : R.color.color0xffE5E5E5,
+                      color: _focusIndex > 0
+                          ? R.color.textDark
+                          : R.color.color0xffE5E5E5,
                     ),
                   ),
                 ),
@@ -317,7 +330,8 @@ class BloodSugarChartState extends State<BloodSugarChart>
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
                         color: selectedColor.isNotEmpty
-                            ? Color(int.parse('0xff${selectedColor.split('#').join()}'))
+                            ? Color(int.parse(
+                                '0xff${selectedColor.split('#').join()}'))
                             : null,
                         height: 36 / 24,
                       ),
@@ -328,7 +342,8 @@ class BloodSugarChartState extends State<BloodSugarChart>
                   onTap: _focusIndex < trends.length - 1
                       ? () {
                           setState(() {
-                            _focusIndex = min(trends.length - 1, _focusIndex + 1);
+                            _focusIndex =
+                                min(trends.length - 1, _focusIndex + 1);
                           });
                         }
                       : null,
@@ -356,7 +371,7 @@ class BloodSugarChartState extends State<BloodSugarChart>
               ],
             ),
             Text(
-              '$selectedGlucose mmol/L',
+              '$selectedGlucose $selectedUnit',
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 14,
@@ -437,13 +452,14 @@ class BloodSugarChartState extends State<BloodSugarChart>
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
                 color: mostAppearTypeColor?.isNotEmpty == true
-                    ? Color(int.parse('0xff${mostAppearTypeColor!.split('#').join()}'))
+                    ? Color(int.parse(
+                        '0xff${mostAppearTypeColor!.split('#').join()}'))
                     : null,
                 height: 36 / 24,
               ),
             ),
             Text(
-              '${lowestGlucose.toPrecision(2)} - ${highestGlucose.toPrecision(2)} mmol/L',
+              '${roundNumber(lowestGlucose)} - ${roundNumber(highestGlucose)} mmol/L',
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 14,
@@ -540,10 +556,12 @@ class BloodSugarChartState extends State<BloodSugarChart>
     maxXIndex = -1;
     for (int i = 0; i < trends.length; i++) {
       if (trends[i].glucose != null) {
-        if (minXIndex == -1 || trends[i].glucose! < trends[minXIndex].glucose!) {
+        if (minXIndex == -1 ||
+            trends[i].glucose! < trends[minXIndex].glucose!) {
           minXIndex = i;
         }
-        if (maxXIndex == -1 || trends[i].glucose! > trends[maxXIndex].glucose!) {
+        if (maxXIndex == -1 ||
+            trends[i].glucose! > trends[maxXIndex].glucose!) {
           maxXIndex = i;
         }
       }
@@ -584,21 +602,26 @@ class BloodSugarChartState extends State<BloodSugarChart>
                 : LineChart(
                     LineChartData(
                       lineTouchData: LineTouchData(
-                          getTouchLineStart: (barData, index) => -double.infinity,
+                          getTouchLineStart: (barData, index) =>
+                              -double.infinity,
                           getTouchLineEnd: (barData, index) => double.infinity,
-                          getTouchedSpotIndicator:
-                              (LineChartBarData barData, List<int> spotIndexes) {
+                          getTouchedSpotIndicator: (LineChartBarData barData,
+                              List<int> spotIndexes) {
                             return spotIndexes.map((index) {
                               return TouchedSpotIndicatorData(
-                                FlLine(color: toColor(trends[index].color), strokeWidth: 0.5),
+                                FlLine(
+                                    color: toColor(trends[index].color),
+                                    strokeWidth: 0.5),
                                 FlDotData(
                                   show: true,
-                                  getDotPainter: (spot, percent, barData, index) =>
-                                      FlDotCirclePainter(
+                                  getDotPainter:
+                                      (spot, percent, barData, index) =>
+                                          FlDotCirclePainter(
                                     radius: 6.5,
                                     color: toColor(trends[index].color),
                                     strokeWidth: 18,
-                                    strokeColor: toColor(trends[index].color).withOpacity(0.3),
+                                    strokeColor: toColor(trends[index].color)
+                                        .withOpacity(0.3),
                                   ),
                                 ),
                               );
@@ -617,14 +640,16 @@ class BloodSugarChartState extends State<BloodSugarChart>
                                       ? lineBarSpot.y.round().toString()
                                       : lineBarSpot.y.toString(),
                                   TextStyle(
-                                      color: toColor(trends[lineBarSpot.spotIndex].color),
+                                      color: toColor(
+                                          trends[lineBarSpot.spotIndex].color),
                                       fontWeight: FontWeight.bold),
                                 );
                               }).toList();
                             },
                             tooltipPadding: EdgeInsets.only(bottom: 50),
                           ),
-                          touchCallback: (FlTouchEvent event, LineTouchResponse? lineTouch) {
+                          touchCallback: (FlTouchEvent event,
+                              LineTouchResponse? lineTouch) {
                             previousDate = 0;
                             if (lineTouch?.lineBarSpots?.length == 1 &&
                                 event is! FlLongPressEnd &&
@@ -696,8 +721,9 @@ class BloodSugarChartState extends State<BloodSugarChart>
                 radius: 3,
                 color: toColor(trends[index].color),
                 strokeWidth: index == _focusIndex ? 6 : 0,
-                strokeColor:
-                    index == _focusIndex ? toColor(trends[index].color).withOpacity(0.3) : null,
+                strokeColor: index == _focusIndex
+                    ? toColor(trends[index].color).withOpacity(0.3)
+                    : null,
               );
             },
           ),
@@ -724,7 +750,8 @@ class BloodSugarChartState extends State<BloodSugarChart>
         isStrokeCapRound: true,
         dotData: FlDotData(
           show: true,
-          checkToShowDot: (spot, barData) => spot.x == minXIndex || spot.x == maxXIndex,
+          checkToShowDot: (spot, barData) =>
+              spot.x == minXIndex || spot.x == maxXIndex,
           getDotPainter: (spot, percent, barData, index) {
             return FlDotCirclePainter(
               radius: 3,
@@ -752,7 +779,8 @@ class BloodSugarChartState extends State<BloodSugarChart>
   void showDialog(BuildContext context) {
     //Navigator.pushNamed(context, NavigatorName.hba1c_tabble);
     Navigator.of(context).push(PageRouteBuilder(
-        opaque: false, pageBuilder: (BuildContext context, _, __) => HbA1CTable()));
+        opaque: false,
+        pageBuilder: (BuildContext context, _, __) => HbA1CTable()));
   }
 
   void showActionTrendFilter(BuildContext context) {
@@ -760,8 +788,8 @@ class BloodSugarChartState extends State<BloodSugarChart>
     //   this.isChoose = !isChoose;
     // });
     showModalBottomSheet(
-        shape:
-            RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(15))),
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.vertical(top: Radius.circular(15))),
         backgroundColor: R.color.white,
         context: context,
         isScrollControlled: true,
@@ -778,7 +806,8 @@ class BloodSugarChartState extends State<BloodSugarChart>
     periodFilterType = periodFilter;
     BlocProvider.of<GlucoseBloc>(currentContext).add(FetchTrendGlucose(
         trendType: trendTypeIndex.toString(),
-        currentDateTime: (DateTime.now().millisecondsSinceEpoch ~/ 1000).toString(),
+        currentDateTime:
+            (DateTime.now().millisecondsSinceEpoch ~/ 1000).toString(),
         periodFilterType: periodFilterType.toString(),
         page: '1'));
   }
