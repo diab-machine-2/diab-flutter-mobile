@@ -6,20 +6,17 @@ import 'package:flutter_observer/Observable.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
-import 'package:medical/src/modal/HbA1C/short_gui.dart';
 import 'package:medical/src/modal/base/images.dart';
 import 'package:medical/src/modal/glucose/glucose_input.dart';
 import 'package:medical/src/modal/glucose/glucose_range_data.dart';
 import 'package:medical/src/modal/glucose/glucose_timeFrame.dart';
 import 'package:medical/src/modal/user/schedule_glucose_time.dart';
 import 'package:medical/src/model/response/config/glucose_color_config.dart';
-import 'package:medical/src/repo/HbA1C/HbA1C_client.dart';
 import 'package:medical/src/repo/glucose/glucose_client.dart';
 import 'package:medical/src/repo/home/home_client.dart';
 import 'package:medical/src/repo/user/user_client.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/utils/utils.dart';
-import 'package:medical/src/widget/HbA1C/widget/description/description.dart';
 import 'package:medical/src/widget/base/base_state.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/helper/helper.dart';
@@ -78,7 +75,7 @@ class _AddBloodSugarControllerNewState
   double? number = 0;
   InputGlucoseModel? model;
   List<String?> removeIDs = [];
-  ShortGuiModel? des;
+  // ShortGuiModel? des;
   double mmollToMgdlFactor = 18.018;
   bool fromNipro = false;
   bool isMgPerDl = false;
@@ -127,7 +124,7 @@ class _AddBloodSugarControllerNewState
     }
     List<int> valueOfClickTime = await AppSettings.getValueOfClickShortGuide();
     clickTime = valueOfClickTime[ScreenList.BLOOD_SUGAR.index];
-    _loadDescription();
+    // _loadDescription();
     _firebaseSetup();
   }
 
@@ -163,7 +160,7 @@ class _AddBloodSugarControllerNewState
       files: images,
       rangeType: (indexRange == 0 || indexRange == 1)
           ? BloodSugarRangeType.very_low
-          : (indexRange == _colorList.length - 1 || indexRange == -2)
+          : (indexRange == _colorList.length - 1 || indexRange == _colorList.length -2)
               ? BloodSugarRangeType.very_high
               : BloodSugarRangeType.normal,
     );
@@ -262,10 +259,14 @@ class _AddBloodSugarControllerNewState
     BotToast.closeAllLoading();
   }
 
-  void _loadDescription() async {
-    des = await HbA1CClient().fetchShortGuide(1);
-    setState(() {});
+  void _doGuide() async {
+    Navigator.of(context).pushNamed(NavigatorName.glucose_intro_2nd_page);
   }
+
+  // void _loadDescription() async {
+  //   des = await HbA1CClient().fetchShortGuide(1);
+  //   setState(() {});
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -979,11 +980,11 @@ class _AddBloodSugarControllerNewState
   }
 
   Future<void> showGuide(BuildContext context) async {
-    Description.showTooltip(context,
-        data: des!, title: R.string.blood_sugar_for_diabetes.tr());
-    clickTime = clickTime + 1;
-    await AppSettings.setValueOfClickShortGuideIndex(
-        ScreenList.BLOOD_SUGAR.index, clickTime);
+    // Description.showTooltip(context,
+    //     data: des!, title: R.string.blood_sugar_for_diabetes.tr());
+    // clickTime = clickTime + 1;
+    // await AppSettings.setValueOfClickShortGuideIndex(
+    //     ScreenList.BLOOD_SUGAR.index, clickTime);
   }
 
   Widget _appBarSection() {
@@ -1006,15 +1007,16 @@ class _AddBloodSugarControllerNewState
           }),
       actions: [
         GestureDetector(
-          onTap: () async {
-            if (clickTime >= 2) {
-              await showGuide(context);
-            } else {
-              setState(() {
-                isClicked = !isClicked;
-                clickTime = clickTime + 1;
-              });
-            }
+          onTap: () {
+            _doGuide();
+            // if (clickTime >= 2) {
+            //   await showGuide(context);
+            // } else {
+            //   setState(() {
+            //     isClicked = !isClicked;
+            //     clickTime = clickTime + 1;
+            //   });
+            // }
           },
           child: Padding(
             padding: const EdgeInsets.only(left: 16, right: 16),
@@ -1030,15 +1032,16 @@ class _AddBloodSugarControllerNewState
   }
 
   Widget _inforSection(BuildContext context) {
-    return Padding(
-        padding: const EdgeInsets.only(bottom: 16, left: 16, right: 16),
-        child: isClicked && clickTime < 2
-            ? Description(
-                isCreateData: true,
-                input: true,
-                data: des,
-                titleDetail: R.string.blood_sugar_for_diabetes.tr())
-            : SizedBox());
+    return SizedBox();
+    // return Padding(
+    //     padding: const EdgeInsets.only(bottom: 16, left: 16, right: 16),
+    //     child: isClicked && clickTime < 2
+    //         ? Description(
+    //             isCreateData: true,
+    //             input: true,
+    //             data: des,
+    //             titleDetail: R.string.blood_sugar_for_diabetes.tr())
+    //         : SizedBox());
   }
 
   Widget _inputSection() {
@@ -1131,7 +1134,7 @@ class _AddBloodSugarControllerNewState
                   if (_controller.text != "") {
                     _controller.text = AppSettings.userInfo!.glucoseUnit == 1
                         ? glucose.round().toString()
-                        : glucose.toString();
+                        : roundNumber(glucose);
                   }
                   setState(() {
                     isMgPerDl = index == 0;

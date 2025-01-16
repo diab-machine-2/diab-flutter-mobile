@@ -10,8 +10,8 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/repo/glucose/glucose_client.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/navigator_name.dart';
-import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
+import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widgets/network_image_widget.dart';
 import 'package:syncfusion_flutter_gauges/gauges.dart';
@@ -539,7 +539,7 @@ class _SegmentedCircularGauge extends StatelessWidget {
                     ),
                     SizedBox(height: 4),
                     Text(
-                      '${glucose.toPrecision(2)} $glucoseUnit',
+                      '${roundNumber(glucose)} $glucoseUnit',
                       style: TextStyle(
                         fontSize: 16,
                         color: Colors.black,

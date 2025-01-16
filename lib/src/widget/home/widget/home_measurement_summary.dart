@@ -178,10 +178,7 @@ class MeasurementSummary extends StatelessWidget {
       );
     } else {
       valueWidget = Text(
-        data.value1 != null
-            ? (double.tryParse(data.value1!)?.toPrecision(2) ?? data.value1!)
-                .toString()
-            : "--",
+        data.value1 ?? "--",
         style: TextStyle(
             color: Color(data.value1Color),
             fontWeight: FontWeight.bold,

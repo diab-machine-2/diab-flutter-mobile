@@ -9,7 +9,6 @@ import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/bloc/glucose/glucose_bloc.dart';
 import 'package:medical/src/modal/glucose/glucose_data_trend.dart';
 import 'package:medical/src/utils/navigator_name.dart';
-import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/BloodSugar/bloodSugar_detail_tabbar.dart';
 import 'package:medical/src/widget/BloodSugar/constant/bloodSugar_rangetype.dart';
 import 'package:medical/src/widget/BloodSugar/widget/action_list_filter_trend.dart';
@@ -268,7 +267,7 @@ class BloodSugarChartState extends State<BloodSugarChart>
               isUtc: true));
       selectedType = selectedTrend.type!;
       selectedTimeFrame = selectedTrend.timeFrameName!;
-      selectedGlucose = selectedTrend.glucose!.toPrecision(2).toString();
+      selectedGlucose = roundNumber(selectedTrend.glucose!);
       selectedColor = selectedTrend.color!;
       selectedUnit =
           AppSettings.userInfo!.glucoseUnit == 1 ? 'mg/dL' : 'mmol/L';
@@ -460,7 +459,7 @@ class BloodSugarChartState extends State<BloodSugarChart>
               ),
             ),
             Text(
-              '${lowestGlucose.toPrecision(2)} - ${highestGlucose.toPrecision(2)} mmol/L',
+              '${roundNumber(lowestGlucose)} - ${roundNumber(highestGlucose)} mmol/L',
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 14,

@@ -880,7 +880,7 @@ class _MonthPickerState extends State<_MonthPicker> {
     if (widget.activeDates != null && widget.activeDates!.length > 0) {
       return "Tháng" + ' ${date.month}, ${date.year}';
     }
-    return stringValue + ' ${date.month}, ${date.year}';
+    return stringValue + ', ${date.year}';
   }
 }
 
