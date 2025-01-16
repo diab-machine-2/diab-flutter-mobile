@@ -350,7 +350,7 @@ class BloodSugarDetailState extends State<BloodSugarDetail>
                           color = toColor(model.lowColor);
                           value = model.lowCount! / total * 100;
                         } else {
-                          color = toColor(model.lowColor);
+                          color = toColor(model.lowestColor);
                           value = model.veryLowCount! / total * 100;
                         }
                         return PieChartSectionData(
