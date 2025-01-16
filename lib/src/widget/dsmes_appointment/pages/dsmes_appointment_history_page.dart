@@ -41,11 +41,18 @@ class _DsmesAppointmentHistoryPageState
 
   _initData() async {
     isLoading = true;
-    await _cubit.getDsmesAppointmentList(
-        page: 1, isRefresh: true, showLoading: true);
-    setState(() {
-      isLoading = false;
-    });
+    final docosanToken = await AppSettings.getDocosanToken();
+    if (docosanToken == null || docosanToken.isEmpty) {
+      setState(() {
+        isLoading = false;
+      });
+    } else {
+      await _cubit.getDsmesAppointmentList(
+          page: 1, isRefresh: true, showLoading: true);
+      setState(() {
+        isLoading = false;
+      });
+    }
   }
 
   @override
