@@ -7,6 +7,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/modal/HbA1C/short_gui.dart';
+import 'package:medical/src/modal/base/images.dart';
 import 'package:medical/src/modal/glucose/glucose_input.dart';
 import 'package:medical/src/modal/glucose/glucose_range_data.dart';
 import 'package:medical/src/modal/glucose/glucose_timeFrame.dart';
@@ -16,7 +17,6 @@ import 'package:medical/src/repo/HbA1C/HbA1C_client.dart';
 import 'package:medical/src/repo/glucose/glucose_client.dart';
 import 'package:medical/src/repo/home/home_client.dart';
 import 'package:medical/src/repo/user/user_client.dart';
-import 'package:medical/src/utils/app_media_query.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/HbA1C/widget/description/description.dart';
@@ -146,7 +146,7 @@ class _AddBloodSugarControllerNewState
     );
   }
 
-  void _navigateAfterSuccess(String id) {
+  void _navigateAfterSuccess(String id, List<ImagesModel> images) {
     // Observable.instance.notifyObservers([], notifyName: "glucose_change_data");
     int indexRange = findIndexInRanges(number, _rangeValue);
     final data = BloodSugarResultDto(
@@ -160,10 +160,10 @@ class _AddBloodSugarControllerNewState
       glucose: number ?? 0,
       glucoseUnit: isMgPerDl ? R.string.mg_dl.tr() : R.string.mmol_l.tr(),
       note: _controllerNote.text,
-      files: files,
-      rangeType: indexRange == 0
+      files: images,
+      rangeType: (indexRange == 0 || indexRange == 1)
           ? BloodSugarRangeType.very_low
-          : indexRange == _colorList.length - 1
+          : (indexRange == _colorList.length - 1 || indexRange == -2)
               ? BloodSugarRangeType.very_high
               : BloodSugarRangeType.normal,
     );
@@ -209,7 +209,7 @@ class _AddBloodSugarControllerNewState
       fromNipro = model!.byDevice;
       if (_sectionAddNoteKey.currentState != null) {
         _sectionAddNoteKey.currentState
-            ?.updateFilesAndNote(model!.images, model!.note ?? '');
+            ?.updateFilesAndNote(files, model!.note ?? '');
       }
     } catch (e) {
       print(e);
@@ -505,7 +505,14 @@ class _AddBloodSugarControllerNewState
 
   void _editData() async {
     FocusScope.of(context).unfocus();
-    final note = _controllerNote.text;
+    final data = _sectionAddNoteKey.currentState?.getNote();
+    if (data != null) {
+      files.clear();
+      files.addAll(data.files);
+      removeIDs.clear();
+      removeIDs.addAll(data.removeIDs);
+    }
+    final note = data?.note ?? '';
     final numberInput = _controller.text;
 
     if (numberInput.isEmpty) {
@@ -543,9 +550,7 @@ class _AddBloodSugarControllerNewState
           fromNipro,
           removeIDs,
           paths);
-      if (result == true) {
-        _navigateAfterSuccess(widget.id ?? '');
-      }
+      _navigateAfterSuccess(widget.id ?? '', result?.images ?? []);
 
       BotToast.closeAllLoading();
     } catch (e, _) {
@@ -591,7 +596,7 @@ class _AddBloodSugarControllerNewState
       for (var file in files) {
         paths.add(file.path);
       }
-      final resultId = await GlucoseClient().postIndexGlucose(
+      final result = await GlucoseClient().postIndexGlucose(
           selectedTimeFrame!.id,
           (selectedDate.millisecondsSinceEpoch ~/ 1000).toInt(),
           number.toString(),
@@ -599,7 +604,7 @@ class _AddBloodSugarControllerNewState
           note,
           fromNipro,
           paths);
-      if (resultId?.isNotEmpty == true) {
+      if (result?.id.isNotEmpty == true) {
         await TrackingManager.analytics.logEvent(
           name: 'kpi_add_success',
           parameters: {
@@ -610,7 +615,7 @@ class _AddBloodSugarControllerNewState
         );
         await HomeClient().completeSmartGoal(selectedDate, widget.goalId ?? '',
             1, ScheduleType.blood_sugar.typeIndex);
-        _navigateAfterSuccess(resultId!);
+        _navigateAfterSuccess(result!.id, result.images);
       }
 
       BotToast.closeAllLoading();

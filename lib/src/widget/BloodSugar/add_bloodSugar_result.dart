@@ -381,35 +381,45 @@ class _PageAddBloodSugarResultState extends State<PageAddBloodSugarResult> {
   }
 
   Widget _bottomSection() {
-    return Row(
-      children: [
-        Expanded(
-          child: ElevatedButton(
-            onPressed: _doShare,
-            child: Text(R.string.share.tr(), style: TextStyle(color: R.color.textDark)),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.white,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(24),
-              ),
-            ),
-          ),
+    return ElevatedButton(
+      onPressed: _doComplete,
+      child: Text(R.string.completed.tr(), style: TextStyle(color: Colors.white)),
+      style: ElevatedButton.styleFrom(
+        backgroundColor: R.color.mainColor,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(24),
         ),
-        const SizedBox(width: 16),
-        Expanded(
-          child: ElevatedButton(
-            onPressed: _doComplete,
-            child: Text(R.string.completed.tr(), style: TextStyle(color: Colors.white)),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: R.color.mainColor,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(24),
-              ),
-            ),
-          ),
-        ),
-      ],
+      ),
     );
+    // return Row(
+    //   children: [
+    //     Expanded(
+    //       child: ElevatedButton(
+    //         onPressed: _doShare,
+    //         child: Text(R.string.share.tr(), style: TextStyle(color: R.color.textDark)),
+    //         style: ElevatedButton.styleFrom(
+    //           backgroundColor: Colors.white,
+    //           shape: RoundedRectangleBorder(
+    //             borderRadius: BorderRadius.circular(24),
+    //           ),
+    //         ),
+    //       ),
+    //     ),
+    //     const SizedBox(width: 16),
+    //     Expanded(
+    //       child: ElevatedButton(
+    //         onPressed: _doComplete,
+    //         child: Text(R.string.completed.tr(), style: TextStyle(color: Colors.white)),
+    //         style: ElevatedButton.styleFrom(
+    //           backgroundColor: R.color.mainColor,
+    //           shape: RoundedRectangleBorder(
+    //             borderRadius: BorderRadius.circular(24),
+    //           ),
+    //         ),
+    //       ),
+    //     ),
+    //   ],
+    // );
   }
 }
 

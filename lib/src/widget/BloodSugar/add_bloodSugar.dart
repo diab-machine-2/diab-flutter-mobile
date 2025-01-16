@@ -969,7 +969,7 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController>
       for (var file in files) {
         paths.add(file.path);
       }
-      final resultId = await GlucoseClient().postIndexGlucose(
+      final result = await GlucoseClient().postIndexGlucose(
           selectedTimeFrame!.id,
           (selectedDate.millisecondsSinceEpoch ~/ 1000).toInt(),
           number.toString(),
@@ -977,7 +977,7 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController>
           note,
           fromNipro,
           paths);
-      if (resultId?.isNotEmpty == true) {
+      if (result?.id.isNotEmpty == true) {
         await TrackingManager.analytics.logEvent(
           name: 'kpi_add_success',
           parameters: {
