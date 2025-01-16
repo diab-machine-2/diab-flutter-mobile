@@ -7,6 +7,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_zoom_meeting/zoom_options.dart';
 import 'package:flutter_zoom_meeting/zoom_view.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
+import 'package:medical/src/app_setting/branchio_link_config.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/response/zoom_token_response.dart';
 import 'package:medical/src/utils/navigator_name.dart';
@@ -97,7 +98,6 @@ class ZoomService {
           print("[Error] : $results");
         }
       }
-
     } catch (e, s) {
       print("$e, $s");
       TrackingManager.recordError(e, s);
@@ -152,11 +152,16 @@ class ZoomService {
   void _unInitialize() async {
     final zoom = ZoomView();
     await zoom.unInitialize();
+     BranchioLinkConfig.instance.lastMeetingEndTime = DateTime.now();
+    BranchioLinkConfig.instance.removeMeetingId();
   }
 
-  Future<MeetingArguments?> generateMeetingArgument(String roomId, String displayName) async {
-    final response = await AppRepository().getZoomToken(roomId: roomId, displayName: displayName);
-    final result = response.when(success: (ZoomTokenResponse data) => data, failure: (e) => null);
+  Future<MeetingArguments?> generateMeetingArgument(
+      String roomId, String displayName) async {
+    final response = await AppRepository()
+        .getZoomToken(roomId: roomId, displayName: displayName);
+    final result = response.when(
+        success: (ZoomTokenResponse data) => data, failure: (e) => null);
     if (result == null) {
       return null;
     }
@@ -189,17 +194,22 @@ class ZoomService {
       ],
     };
 
-    List<Permission> permissions =
-        (Platform.isAndroid ? platformPermissions["android"] : platformPermissions["ios"])!;
+    List<Permission> permissions = (Platform.isAndroid
+        ? platformPermissions["android"]
+        : platformPermissions["ios"])!;
     Map<Permission, PermissionStatus> statuses = await permissions.request();
     // at least microphone permission is granted
-    bool microGranted = statuses[Permission.microphone] == PermissionStatus.granted;
+    bool microGranted =
+        statuses[Permission.microphone] == PermissionStatus.granted;
 
     // log if any permission is denied
-    if (statuses.isNotEmpty && statuses.entries.any((e) => e.value == PermissionStatus.denied)) {
+    if (statuses.isNotEmpty &&
+        statuses.entries.any((e) => e.value == PermissionStatus.denied)) {
       final entries = statuses.entries;
       String message = "Permissions " +
-          entries.map((e) => "${e.key.toString()}=${e.value.isGranted}").join(", ");
+          entries
+              .map((e) => "${e.key.toString()}=${e.value.isGranted}")
+              .join(", ");
       TrackingManager.recordError(Exception(message), null);
     }
 
