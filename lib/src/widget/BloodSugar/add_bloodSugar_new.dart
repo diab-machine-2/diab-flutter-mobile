@@ -1061,8 +1061,16 @@ class _AddBloodSugarControllerNewState
                   fontWeight: FontWeight.w500),
               inputFormatters: [
                 TextInputFormatter.withFunction((oldValue, newValue) {
-                  if (RegExp(r'^\d{0,3}(,\d{0,2})?$').hasMatch(newValue.text)) {
-                    return newValue;
+                  if (isMgPerDl) {
+                    // 3 digits
+                    if (RegExp(r'^\d{0,3}$').hasMatch(newValue.text)) {
+                      return newValue;
+                    }
+                  } else {
+                    // 2 digits and 1 decimal (optional)
+                    if (RegExp(r'^\d{0,2}(,\d{0,1})?$').hasMatch(newValue.text)) {
+                      return newValue;
+                    }
                   }
                   return oldValue;
                 }),
