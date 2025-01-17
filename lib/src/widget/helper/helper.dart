@@ -154,7 +154,7 @@ String roundNumber(double number) {
   if (result == 0) {
     return number.round().toString();
   } else {
-    return number.toString().split('.').join(',');
+    return ((number * 10).roundToDouble() / 10).toString().split('.').join(',');
   }
 }
 
