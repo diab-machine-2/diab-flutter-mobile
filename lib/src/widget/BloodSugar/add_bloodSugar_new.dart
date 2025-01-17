@@ -80,6 +80,7 @@ class _AddBloodSugarControllerNewState
   bool fromNipro = false;
   bool isMgPerDl = false;
   int _lastUnitIndex = 0;
+  bool _changedUnit = false;
   int _lastTimeFrameIndex = 0;
 
   bool isPregnancy = false;
@@ -765,10 +766,16 @@ class _AddBloodSugarControllerNewState
           files.length == model!.images.length &&
           removeIDs.length == 0 &&
           date.millisecondsSinceEpoch == selectedDate.millisecondsSinceEpoch) {
+        if (_changedUnit)
+          Observable.instance
+            .notifyObservers([], notifyName: "glucose_data_refresh");
         Navigator.pop(context);
         return;
       }
     } else if (note.isEmpty && numberInput.isEmpty && files.length == 0) {
+      if (_changedUnit)
+        Observable.instance
+        .notifyObservers([], notifyName: "glucose_data_refresh");
       Navigator.pop(context);
       return;
     }
@@ -829,6 +836,9 @@ class _AddBloodSugarControllerNewState
                             Expanded(
                               child: GestureDetector(
                                   onTap: () {
+                                    if (_changedUnit)
+                                      Observable.instance
+                                        .notifyObservers([], notifyName: "glucose_data_refresh");
                                     Navigator.pop(context);
                                     Navigator.pop(context);
                                   },
@@ -1120,6 +1130,7 @@ class _AddBloodSugarControllerNewState
                 onChange: (index) async {
                   if (index == _lastUnitIndex) return;
                   _lastUnitIndex = index;
+                  _changedUnit = true;
                   await _changeUnit();
 
                   final glucose = roundAsFixed(

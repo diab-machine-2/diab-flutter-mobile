@@ -57,7 +57,7 @@ class _BloodSugarDetailTabbarControllerState extends State<BloodSugarDetailTabba
 
   @override
   void update(Observable observable, String? notifyName, Map<dynamic, dynamic>? map) {
-    if (notifyName == 'glucose_change_data') {
+    if (notifyName == 'glucose_change_data' || notifyName == 'glucose_data_refresh') {
       _doReloadData(periodFilterType);
     }
   }
@@ -114,6 +114,10 @@ class _BloodSugarDetailTabbarControllerState extends State<BloodSugarDetailTabba
 
   void loadInputWithId(int index, String? id) {
     glucoseID = id;
+  }
+
+  void _doInputGlucose() async {
+    Navigator.of(context).pushNamed(NavigatorName.add_blood_sugar_new, arguments: {'type': 'input'});
   }
 
   @override
@@ -221,12 +225,7 @@ class _BloodSugarDetailTabbarControllerState extends State<BloodSugarDetailTabba
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: InkWell(
-                  onTap: () {
-                    Navigator.of(context).pushNamed(
-                      NavigatorName.add_blood_sugar_new,
-                      arguments: {'type': 'input'},
-                    );
-                  },
+                  onTap: _doInputGlucose,
                   child: Container(
                     height: 48,
                     width: double.infinity,
