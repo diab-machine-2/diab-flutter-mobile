@@ -550,7 +550,7 @@ class BloodSugarChartState extends State<BloodSugarChart>
     minY = (minY * (trends.length == 1 ? 0.5 : 0.8)).roundToDouble();
     double maxY = trends.map<double>((e) => e.glucose ?? 0).reduce(max);
     maxY = (maxY * (trends.length == 1 ? 1.5 : 1.2)).roundToDouble();
-    double scaleYMaxLine = 180;
+    double scaleYMaxLine = AppSettings.userInfo!.glucoseUnit == 1 ? 180 : 10;
     // find min and max index
     minXIndex = -1;
     maxXIndex = -1;
