@@ -636,9 +636,7 @@ class BloodSugarChartState extends State<BloodSugarChart>
                             getTooltipItems: (List<LineBarSpot> lineBarsSpot) {
                               return lineBarsSpot.map((lineBarSpot) {
                                 return LineTooltipItem(
-                                  lineBarSpot.y.round() == lineBarSpot.y
-                                      ? lineBarSpot.y.round().toString()
-                                      : lineBarSpot.y.toString(),
+                                  roundNumber(lineBarSpot.y),
                                   TextStyle(
                                       color: toColor(
                                           trends[lineBarSpot.spotIndex].color),

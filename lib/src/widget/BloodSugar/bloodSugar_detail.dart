@@ -9,7 +9,6 @@ import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/BloodSugar/bloodSugar_detail_tabbar.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
-import 'package:medical/src/widgets/common_page.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:easy_localization/easy_localization.dart';
 
@@ -239,9 +238,7 @@ class BloodSugarDetailControllerState extends State<BloodSugarDetailController> 
                           Row(
                             children: [
                               Text(
-                                  element.glucose!.round() == element.glucose
-                                      ? element.glucose!.round().toString()
-                                      : element.glucose.toString(),
+                                  roundNumber(element.glucose ?? 0),
                                   style: TextStyle(
                                       fontFamily: 'Viga',
                                       color: toColor(element.backgroundColor),
