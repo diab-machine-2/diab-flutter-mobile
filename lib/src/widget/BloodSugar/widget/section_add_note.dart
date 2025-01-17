@@ -39,12 +39,16 @@ class SectionAddNoteState extends State<SectionAddNote> {
   void initState() {
     super.initState();
     _files.addAll(widget.initialFiles ?? []);
+    if (widget.controllerNote != null) {
+      _currentLength = widget.controllerNote?.text.length ?? 0;
+    }
   }
 
   void updateFilesAndNote(List<dynamic> files, String note) {
     _files.clear();
     _files.addAll(files);
     widget.controllerNote?.text = note;
+    _currentLength = note.length;
     setState(() {});
   }
 
