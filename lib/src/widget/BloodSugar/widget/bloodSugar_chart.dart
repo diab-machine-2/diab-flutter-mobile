@@ -428,6 +428,9 @@ class BloodSugarChartState extends State<BloodSugarChart>
       }
     }
 
+    final selectedUnit =
+        AppSettings.userInfo!.glucoseUnit == 1 ? 'mg/dL' : 'mmol/L';
+
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -459,7 +462,7 @@ class BloodSugarChartState extends State<BloodSugarChart>
               ),
             ),
             Text(
-              '${roundNumber(lowestGlucose)} - ${roundNumber(highestGlucose)} mmol/L',
+              '${roundNumber(lowestGlucose)} - ${roundNumber(highestGlucose)} $selectedUnit',
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 14,
