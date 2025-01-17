@@ -104,10 +104,12 @@ class GlucoseClient extends FetchClient {
   }
 
   Future<String?> fetchGlucoseInputAnalysis(
-    String id
+    String id,
+    int unit,
   ) async {
     Map<String, String> params = {
       'id': id,
+      'unit': unit.toString(),
     };
     final Response response = await super.fetchData(
       url: '/App/Glucose/Analysis/Index',
