@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_observer/Observable.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/repo/glucose/glucose_client.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/navigator_name.dart';
@@ -47,9 +48,10 @@ class _PageAddBloodSugarResultState extends State<PageAddBloodSugarResult> {
   void _loadData() async {
     final data = widget.data;
     _files = data.files ?? [];
+    final unit = AppSettings.userInfo?.glucoseUnit ?? 1;
 
     final aiResult =
-        await GlucoseClient().fetchGlucoseInputAnalysis(widget.data.id).catchError((e, s) {
+        await GlucoseClient().fetchGlucoseInputAnalysis(widget.data.id, unit).catchError((e, s) {
       TrackingManager.recordError(e, s);
       return null;
     });
