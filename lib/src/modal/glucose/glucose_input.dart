@@ -19,6 +19,7 @@ class InputGlucoseModel {
   final String? borderColor;
   final List<ImagesModel> images;
   final bool byDevice;
+  final String? healthRecommendation;
 
   InputGlucoseModel({
     required this.id,
@@ -36,30 +37,33 @@ class InputGlucoseModel {
     required this.borderColor,
     required this.images,
     required this.byDevice,
+    this.healthRecommendation,
   });
-  @override
+
   factory InputGlucoseModel.fromJson(Map<String, dynamic> json) {
     final unit = AppSettings.userInfo!.glucoseUnit == 1
         ? R.string.mg_dl.tr()
         : R.string.mmol_l.tr();
     return InputGlucoseModel(
-        id: json['id'],
-        glucose: AppSettings.userInfo!.glucoseUnit == 1
-            ? json['glucose']
-            : json['glucoseMmoll'],
-        unit: unit,
-        type: json['type'],
-        createDate: json['createDate'],
-        reason: json['reason'],
-        note: json['note'],
-        timeFrame: json['timeFrame'],
-        timeFrameId: json['timeFrameId'],
-        color: json['color'],
-        fontColor: json['fontColor'],
-        backgroundColor: json['backgroundColor'],
-        borderColor: json['borderColor'],
-        images: ImagesModel.toList(json['images']),
-        byDevice: json['byDevice']);
+      id: json['id'],
+      glucose: AppSettings.userInfo!.glucoseUnit == 1
+          ? json['glucose']
+          : json['glucoseMmoll'],
+      unit: unit,
+      type: json['type'],
+      createDate: json['createDate'],
+      reason: json['reason'],
+      note: json['note'],
+      timeFrame: json['timeFrame'],
+      timeFrameId: json['timeFrameId'],
+      color: json['color'],
+      fontColor: json['fontColor'],
+      backgroundColor: json['backgroundColor'],
+      borderColor: json['borderColor'],
+      images: ImagesModel.toList(json['images']),
+      byDevice: json['byDevice'] ?? false,
+      healthRecommendation: json['healthRecommendation'],
+    );
   }
 
   static List<InputGlucoseModel> toList(List<dynamic> items) {

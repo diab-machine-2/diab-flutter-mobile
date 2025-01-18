@@ -50,11 +50,18 @@ class _PageAddBloodSugarResultState extends State<PageAddBloodSugarResult> {
     _files = data.files ?? [];
     final unit = AppSettings.userInfo?.glucoseUnit ?? 1;
 
-    final aiResult =
-        await GlucoseClient().fetchGlucoseInputAnalysis(widget.data.id, unit).catchError((e, s) {
-      TrackingManager.recordError(e, s);
-      return null;
-    });
+    bool shouldFetchNewData = (data.isFetchAnalysis ?? false) ||
+        ((data.healthRecommendation?.isEmpty) ?? true);
+
+    final aiResult = shouldFetchNewData
+        ? await GlucoseClient()
+            .fetchGlucoseInputAnalysis(widget.data.id, unit)
+            .catchError((e, s) {
+            TrackingManager.recordError(e, s);
+            return null;
+          })
+        : data.healthRecommendation;
+
     _aiResult = aiResult ?? '';
     if (mounted) {
       setState(() {});
