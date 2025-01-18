@@ -197,7 +197,7 @@ class _AddBloodSugarControllerNewState
       BotToast.closeAllLoading();
       _controller.text = model!.glucose!.round() == model!.glucose
           ? model!.glucose!.round().toString()
-          : model!.glucose.toString();
+          : roundNumber(model!.glucose!);
       number = model!.glucose!.round() == model!.glucose
           ? model!.glucose!.round().toDouble()
           : model!.glucose;
@@ -586,7 +586,7 @@ class _AddBloodSugarControllerNewState
           widget.id,
           selectedTimeFrame!.id,
           (selectedDate.millisecondsSinceEpoch ~/ 1000).toInt(),
-          numberInput,
+          number.toString(),
           null,
           note,
           fromNipro,
@@ -803,7 +803,7 @@ class _AddBloodSugarControllerNewState
       final date =
           DateTime.fromMillisecondsSinceEpoch(model!.createDate! * 1000);
       if (note == noteText &&
-          numberInput == model!.glucose!.round().toString() &&
+          numberInput == roundNumber(model!.glucose!) &&
           files.length == model!.images.length &&
           removeIDs.length == 0 &&
           date.millisecondsSinceEpoch == selectedDate.millisecondsSinceEpoch) {
@@ -1184,7 +1184,9 @@ class _AddBloodSugarControllerNewState
                     number = glucose;
                   }
                   if (_controller.text != "") {
-                    _controller.text = roundNumber(glucose);
+                    _controller.text = AppSettings.userInfo!.glucoseUnit == 1
+                        ? glucose.round().toString()
+                        : roundNumber(glucose);
                   }
                   setState(() {
                     isMgPerDl = index == 0;
