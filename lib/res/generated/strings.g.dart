@@ -174,6 +174,7 @@ class Strings {
   String get mm_hg => 'mm_hg';
   String get time_per_minute => 'time_per_minute';
   String get distribution_frequency => 'distribution_frequency';
+  String get over_100_distribution => 'over_100_distribution';
   String get grade_3_hypertension => 'grade_3_hypertension';
   String get grade_2_hypertension => 'grade_2_hypertension';
   String get grade_1_hypertension => 'grade_1_hypertension';
@@ -202,6 +203,8 @@ class Strings {
   String get blood_sugar_for_diabetes => 'blood_sugar_for_diabetes';
   String get corresponding_to => 'corresponding_to';
   String get mes_unsafe_blood_sugar => 'mes_unsafe_blood_sugar';
+  String get ai_suggestion_glucose => 'ai_suggestion_glucose';
+  String get faq => 'faq';
   String get mes_blood_sugar_empty => 'mes_blood_sugar_empty';
   String get mes_reason_empty => 'mes_reason_empty';
   String get blood_sugar_group => 'blood_sugar_group';
@@ -576,6 +579,11 @@ class Strings {
   String get blood_sugar_schedule_single_line =>
       'blood_sugar_schedule_single_line';
   String get personal_info => 'personal_info';
+  String get blood_sugar_input => 'blood_sugar_input';
+  String get did_you_know => 'did_you_know';
+  String get glucose_benefit_observe => 'glucose_benefit_observe';
+  String get knowledge_from_diab_experts => 'knowledge_from_diab_experts';
+  String get glucose_intro_help_title => 'glucose_intro_help_title';
   String get information_security => 'information_security';
   String get update_phone_number => 'update_phone_number';
   String get let_diab_remind_you => 'let_diab_remind_you';
@@ -789,6 +797,8 @@ class Strings {
   String get nhap_ly_do => 'nhap_ly_do';
   String get chon_khung_gio => 'chon_khung_gio';
   String get ghi_chu => 'ghi_chu';
+  String get them_ghi_chu => 'them_ghi_chu';
+  String get luu_ghi_chu => 'luu_ghi_chu';
   String get nhap_ghi_chu_cua_ban => 'nhap_ghi_chu_cua_ban';
   String get xoa_du_lieu => 'xoa_du_lieu';
   String get xoa_thanh_cong => 'xoa_thanh_cong';
@@ -811,6 +821,7 @@ class Strings {
   String get bieu_do => 'bieu_do';
   String get detail => 'detail';
   String get all => 'all';
+  String get duong_huyet_doi => 'duong_huyet_doi';
   String get truoc_an => 'truoc_an';
   String get sau_an => 'sau_an';
   String get truoc_tap => 'truoc_tap';
@@ -1173,6 +1184,48 @@ class Strings {
   String get confirm_schedule => 'confirm_schedule';
   String get confirm_schedule_content => 'confirm_schedule_content';
   String get confirm_change_schedule => 'confirm_change_schedule';
-  String get confirm_change_schedule_content => 'confirm_change_schedule_content';
+  String get confirm_change_schedule_content =>
+      'confirm_change_schedule_content';
   String get join_now => 'join_now';
+  String get health_consulting => 'health_consulting';
+  String get consulting_history => 'consulting_history';
+  String get consult_at_clinic => 'consult_at_clinic';
+  String get consult_online => 'consult_online';
+  String get requested => 'requested';
+  String get rejected => 'rejected';
+  String get choose_center => 'choose_center';
+  String get vui_long_chon_gio_kham => 'vui_long_chon_gio_kham';
+  String get confirm_information => 'confirm_information';
+  String get consult_information => 'consult_information';
+  String get consult_direct => 'consult_direct';
+  String get consult_time => 'consult_time';
+  String get center_name => 'center_name';
+  String get consult_demand => 'consult_demand';
+  String get confirm_book_consult => 'confirm_book_consult';
+  String get change_consult_info => 'change_consult_info';
+  String get congratulation_on => 'congratulation_on';
+  String get confirm_booking_subtitle => 'confirm_booking_subtitle';
+  String get recheck_information => 'recheck_information';
+  String get booking_success_dialog_title => 'booking_success_dialog_title';
+  String get notice_symptom => 'notice_symptom';
+  String get symptom => 'symptom';
+  String get cancel_booking => 'cancel_booking';
+  String get confirm_cancel_schedule => 'confirm_cancel_schedule';
+  String get confirm_cancel_schedule_content => 'confirm_cancel_schedule_content';
+  String get confirm_change_booking_content => 'confirm_change_booking_content';
+  String get rebooking => 'rebooking';
+  String get support => 'support';
+  String get view_map => 'view_map';
+  String get center_information => 'center_information';
+  String get recent_booking => 'recent_booking';
+  String get customer_rating => 'customer_rating';
+  String get select_consulting_demand => 'select_consulting_demand';
+  String get selected_demand => 'selected_demand';
+  String get max_selected_demand_warning => 'max_selected_demand_warning';
+  String get empty_history_appointment => 'empty_history_appointment';
+  String get select_booking_dates_warning => 'select_booking_dates_warning';
+  String get pull_up_to_load_more => 'pull_up_to_load_more';
+  String get release_to_load_more => 'release_to_load_more';
+  String get exist_appointment => 'exist_appointment';
+  String get symptom_hint_text => 'symptom_hint_text';
 }

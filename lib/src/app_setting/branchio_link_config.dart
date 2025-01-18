@@ -33,6 +33,7 @@ class BranchioLinkConfig {
   String? get meetingId => _meetingId;
   String? get meetingPassword => _meetingPassword;
   String? get referalCode => _referalCode;
+  DateTime? lastMeetingEndTime;
 
   void setUpHandleDeepLink() {
     _subLink = FlutterBranchSdk.listSession().listen((data) async {
@@ -57,7 +58,16 @@ class BranchioLinkConfig {
           return;
         }
 
-        // Logged in => launch zoom meeting
+        // Logged in => Prevent auto join meeting
+        if (lastMeetingEndTime != null) {
+          final timeSinceLastMeeting =
+              DateTime.now().difference(lastMeetingEndTime!);
+          if (timeSinceLastMeeting.inSeconds < 5) {
+            return;
+          }
+        }
+
+        // Launch zoom meeting
         ZoomService().launchZoomMeeting(meetingId, meetingPassword);
       }
       // TODO: Handle other deep link

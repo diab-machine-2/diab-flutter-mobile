@@ -13,17 +13,22 @@ import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:easy_localization/easy_localization.dart';
 
 class BloodSugarDetailController extends StatefulWidget {
-  BloodSugarDetailController({Key? key}) : super(key: key);
+  BloodSugarDetailController(
+      {Key? key,
+      this.initPeriodFilterType = 3,
+      this.glucoseID,
+      this.glucoseDistributionType})
+      : super(key: key);
+  final int initPeriodFilterType;
+  final String? glucoseID;
+  final int? glucoseDistributionType;
   @override
   BloodSugarDetailControllerState createState() =>
       BloodSugarDetailControllerState();
 }
 
-class BloodSugarDetailControllerState extends State<BloodSugarDetailController>
-    with AutomaticKeepAliveClientMixin<BloodSugarDetailController> {
-  @override
-  bool get wantKeepAlive => true;
-
+class BloodSugarDetailControllerState
+    extends State<BloodSugarDetailController> {
   late BuildContext currentContext;
 
   //ScrollController _scrollController = ScrollController();
@@ -42,8 +47,10 @@ class BloodSugarDetailControllerState extends State<BloodSugarDetailController>
   void initState() {
     super.initState();
     periodFilterType =
-        BloodSugarDetailTabbarController.of(context)!.periodFilterType;
-    glucoseID = BloodSugarDetailTabbarController.of(context)!.glucoseID;
+        BloodSugarDetailTabbarController.of(context)?.periodFilterType ??
+            widget.initPeriodFilterType;
+    glucoseID = BloodSugarDetailTabbarController.of(context)?.glucoseID ??
+        widget.glucoseID;
     initializeDateFormatting();
 
     itemPositionsListener.itemPositions.addListener(() {
@@ -59,13 +66,18 @@ class BloodSugarDetailControllerState extends State<BloodSugarDetailController>
     });
   }
 
-  reloadData(int periodFilter) {
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
+  void reloadData(int periodFilter) {
     periodFilterType = periodFilter;
     // itemScrollController.jumpTo(index: 0);
     _refresh();
   }
 
-  loadDataToID(int periodFilter) {
+  void loadDataToID(int periodFilter) {
     periodFilterType = periodFilter;
     if (BloodSugarDetailTabbarController.of(context)!.glucoseID != null) {
       setState(() {});
@@ -84,6 +96,7 @@ class BloodSugarDetailControllerState extends State<BloodSugarDetailController>
         currentDateTime:
             (DateTime.now().millisecondsSinceEpoch ~/ 1000).toString(),
         periodFilterType: periodFilterType.toString(),
+        glucoseDistributionType: widget.glucoseDistributionType?.toString(),
       ));
     }
     return true;
@@ -96,127 +109,116 @@ class BloodSugarDetailControllerState extends State<BloodSugarDetailController>
       currentDateTime:
           (DateTime.now().millisecondsSinceEpoch ~/ 1000).toString(),
       periodFilterType: periodFilterType.toString(),
+      glucoseDistributionType: widget.glucoseDistributionType?.toString(),
     ));
     return true;
   }
 
   @override
   Widget build(BuildContext context) {
-    super.build(context);
-    return BlocProvider<GlucoseBloc>(
-        create: (context) => GlucoseBloc(),
-        child: BlocBuilder<GlucoseBloc, GlucoseState>(
-            builder: (BuildContext context, GlucoseState state) {
-          currentContext = context;
-          List<InputGlucoseModel>? model;
-          if (state is GlucoseInitial) {
-            BlocProvider.of<GlucoseBloc>(context).add(FetchInputGlucose(
-                currentDateTime:
-                    (DateTime.now().millisecondsSinceEpoch ~/ 1000).toString(),
-                periodFilterType: periodFilterType.toString(),
-                page: 1));
-          }
-          if (state is GlucoseError) {
-            Message.showToastMessage(context, state.message);
-          }
-          if (state is GlucoseLoading) {
-            return Center(child: CircularProgressIndicator());
-          }
-          if (state is GlucoseAlllLoaded) {
-            model = state.inputGlucoseModel;
-            hasMore = state.hasMore;
-            if (hasMore!) {
-              page += 1;
-            }
-            isLoading = false;
+    return Scaffold(
+      backgroundColor: R.color.glucose_bg_color,
+      appBar: AppBar(
+        backgroundColor: R.color.glucose_bg_color,
+        leading: IconButton(
+          onPressed: () => Navigator.of(context).pop(),
+          icon: Icon(Icons.arrow_back, color: R.color.textDark),
+        ),
+        title: Text(
+          R.string.detail.tr(),
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.w600,
+            color: R.color.textDark,
+          ),
+        ),
+      ),
+      body: Column(
+        children: [
+          Expanded(
+            child: BlocProvider<GlucoseBloc>(
+              create: (context) => GlucoseBloc(),
+              child: BlocBuilder<GlucoseBloc, GlucoseState>(
+                builder: (BuildContext context, GlucoseState state) {
+                  currentContext = context;
+                  List<InputGlucoseModel>? model;
+                  if (state is GlucoseInitial) {
+                    BlocProvider.of<GlucoseBloc>(context).add(FetchInputGlucose(
+                        currentDateTime:
+                            (DateTime.now().millisecondsSinceEpoch ~/ 1000)
+                                .toString(),
+                        periodFilterType: periodFilterType.toString(),
+                        glucoseDistributionType:
+                            widget.glucoseDistributionType?.toString(),
+                        page: 1));
+                  }
+                  if (state is GlucoseError) {
+                    Message.showToastMessage(context, state.message);
+                  }
+                  if (state is GlucoseLoading) {
+                    return Center(child: CircularProgressIndicator());
+                  }
+                  if (state is GlucoseAlllLoaded) {
+                    model = state.inputGlucoseModel;
+                    hasMore = state.hasMore;
+                    if (hasMore!) {
+                      page += 1;
+                    }
+                    isLoading = false;
 
-            Future.delayed(const Duration(milliseconds: 500), () {
-              final model = state.inputGlucoseModel;
-              for (int i = 0; i < model.length; i++) {
-                if (model[i].id == glucoseID) {
-                  BloodSugarDetailTabbarController.of(context)!.glucoseID =
-                      null;
-                  itemScrollController.jumpTo(index: i);
-                  Future.delayed(const Duration(seconds: 3), () {
-                    setState(() {
-                      glucoseID = null;
+                    Future.delayed(const Duration(milliseconds: 500), () {
+                      final model = state.inputGlucoseModel;
+                      for (int i = 0; i < model.length; i++) {
+                        if (model[i].id == glucoseID) {
+                          BloodSugarDetailTabbarController.of(context)
+                              ?.glucoseID = null;
+                          itemScrollController.jumpTo(index: i);
+                          Future.delayed(const Duration(seconds: 3), () {
+                            setState(() {
+                              glucoseID = null;
+                            });
+                          });
+                        }
+                      }
+                      if (BloodSugarDetailTabbarController.of(context)
+                              ?.glucoseID !=
+                          null) {
+                        _loadMore();
+                      }
                     });
-                  });
-                }
-              }
-              if (BloodSugarDetailTabbarController.of(context)!.glucoseID !=
-                  null) {
-                _loadMore();
-              }
-            });
-          }
-          int index = 0;
-          return RefreshIndicator(
-              onRefresh: _refresh,
-              child: Scaffold(
-                backgroundColor: R.color.backgroundColor,
-                body: model == null
-                    ? Center(child: CircularProgressIndicator())
-                    : Container(
-                        decoration: BoxDecoration(
-                            image: DecorationImage(
-                          image: AssetImage(R.drawable.bg_detail),
-                          fit: BoxFit.cover,
-                        )),
-                        child: ListView(
-                          children: model.map((item) {
-                            return bloodGlucoseItem(
-                                element: item, index: index++, model: model!);
-                          }).toList(),
-                        ),
-                      ),
-                // ScrollablePositionedList.builder(
-                //     itemPositionsListener: itemPositionsListener,
-                //     itemScrollController: itemScrollController,
-                //     physics: AlwaysScrollableScrollPhysics(),
-                //     padding: EdgeInsets.only(top: 16, bottom: 100),
-                //     itemCount: model.length,
-                //     itemBuilder: (context, _index) {
-                //       int index = _index.isNegative ? 0 : _index;
-                //       final element = model![index];
-                //       final previousElement =
-                //           index == 0 ? null : model[index - 1];
+                  }
+                  
+                  return RefreshIndicator(
+                    onRefresh: _refresh,
+                    child: model == null
+                        ? Center(child: CircularProgressIndicator())
+                        : Container(
+                            child: ScrollablePositionedList.builder(
+                              itemPositionsListener: itemPositionsListener,
+                              itemScrollController: itemScrollController,
+                              physics: AlwaysScrollableScrollPhysics(),
+                              padding: EdgeInsets.only(top: 16, bottom: 100),
+                              itemCount: model.length,
+                              itemBuilder: (context, _index) {
+                                int index = _index.isNegative ? 0 : _index;
+                                final element = model![index];
 
-                //       final showDate = previousElement == null
-                //           ? true
-                //           : (convertCustomDate(element.createDate!) !=
-                //               convertCustomDate(
-                //                   previousElement.createDate!));
-                //       print('model.length: ${model.length}');
-                //       return bloodGlucoseItem(
-                //           element: element, index: index++, model: model);
-                //     })
-
-                // child: GroupedListView<InputGlucoseModel, dynamic>(
-                //   controller: _scrollController,
-                //   elements: model,
-                //   groupBy: (element) {
-                //     return toDate(element.createDate);
-                //   },
-                //   order: GroupedListOrder.DESC,
-                //   groupSeparatorBuilder: (dynamic value) => Padding(
-                //     padding: const EdgeInsets.only(
-                //         left: 16, right: 16, top: 16, bottom: 16),
-                //     child: Text(
-                //       toStringDate(value),
-                //       textAlign: TextAlign.left,
-                //       style: TextStyle(
-                //           fontSize: 18, fontWeight: FontWeight.w600),
-                //     ),
-                //   ),
-                //   itemBuilder: (BuildContext context,
-                //       InputGlucoseModel element) {
-
-                //   },
-                // )
-                // ),
-              ));
-        }));
+                                return bloodGlucoseItem(
+                                  element: element,
+                                  index: index,
+                                  model: model,
+                                );
+                              },
+                            ),
+                          ),
+                  );
+                },
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   Widget bloodGlucoseItem({
@@ -275,11 +277,7 @@ class BloodSugarDetailControllerState extends State<BloodSugarDetailController>
                             children: [
                               Row(
                                 children: [
-                                  Text(
-                                      element.glucose!.round() ==
-                                              element.glucose
-                                          ? element.glucose!.round().toString()
-                                          : element.glucose.toString(),
+                                  Text(roundNumber(element.glucose ?? 0),
                                       style: TextStyle(
                                           fontFamily: 'Viga',
                                           color:

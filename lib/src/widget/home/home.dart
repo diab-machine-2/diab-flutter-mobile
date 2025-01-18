@@ -129,7 +129,7 @@ class _HomeControllerState extends State<HomeController> with Observer {
     }
     firebaseSetup();
     initHealthApp();
-    _checkShowRating();
+    // _checkShowRating();
 
     Future.delayed(Duration.zero, () async {
       String? username = AppSettings.userInfo!.userName;

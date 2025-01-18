@@ -7,6 +7,7 @@ import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/response/create_calendar_response.dart';
 import 'package:medical/src/service/zoom_service.dart';
 import 'package:medical/src/utils/const.dart';
+import 'package:medical/src/utils/date_utils.dart';
 import 'package:medical/src/utils/extention.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/calendar/calendar_booking_cubit.dart';
@@ -35,16 +36,6 @@ class _CalendarControllerState extends State<CalendarController> {
     super.initState();
     _cubit = CalendarBookingCubit(repository);
   }
-
-  List<String> daysOfWeek = [
-    "Thứ 2",
-    "Thứ 3",
-    "Thứ 4",
-    "Thứ 5",
-    "Thứ 6",
-    "Thứ 7",
-    "Chủ Nhật",
-  ];
 
   String getCalendarType(int type) {
     switch (type) {
@@ -86,15 +77,7 @@ class _CalendarControllerState extends State<CalendarController> {
         child: Scaffold(
           body: Container(
             decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  R.color.color0xFFFDC798.withOpacity(0.3),
-                  R.color.greenbg.withOpacity(0.9),
-                ],
-                begin: FractionalOffset(1, 1),
-                end: FractionalOffset(0.9, 0.5),
-                stops: [0.0, 1.0],
-              ),
+              color: R.color.backgroundColorNew,
             ),
             child: Stack(
               children: [
@@ -123,7 +106,7 @@ class _CalendarControllerState extends State<CalendarController> {
                             }
                           },
                           child: Container(
-                            width: 79,
+                            width: 85,
                             height: 33,
                             padding: EdgeInsets.symmetric(
                                 vertical: 8, horizontal: 6),
@@ -239,14 +222,14 @@ class _CalendarControllerState extends State<CalendarController> {
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(200),
                           border: Border.all(
-                            color: R.color.color0xff008479,
+                            color: R.color.greenGradientBottom,
                           ),
                         ),
                         child: Center(
                           child: Text(
                             R.string.change_booking.tr(),
                             style: TextStyle(
-                              color: R.color.color0xff008479,
+                              color: R.color.greenGradientBottom,
                               fontWeight: FontWeight.w700,
                               fontSize: 16,
                               fontFamily: 'sfpro',
@@ -275,7 +258,7 @@ class _CalendarControllerState extends State<CalendarController> {
                           child: Text(
                             R.string.back_home_page.tr(),
                             style: TextStyle(
-                              color: R.color.color0xff008479,
+                              color: R.color.greenGradientBottom,
                               fontWeight: FontWeight.w700,
                               fontSize: 16,
                               fontFamily: 'sfpro',
@@ -443,7 +426,7 @@ class _CalendarControllerState extends State<CalendarController> {
                       ),
                       SizedBox(height: 2),
                       Text(
-                        "${daysOfWeek[targetDate.weekday - 1]}, $formattedDate",
+                        "${DateUtil.weekDayToString(targetDate)}, $formattedDate",
                         style: TextStyle(
                           fontSize: 14,
                           fontFamily: 'sfpro',
