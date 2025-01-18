@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medical/res/R.dart';
-import 'package:medical/src/model/response/create_calendar_response.dart';
 import 'package:medical/src/app_routes.dart';
 import 'package:medical/src/bloc/nipro/nipro_bloc.dart';
 import 'package:medical/src/service/zoom_service.dart';
@@ -15,7 +14,7 @@ import 'package:medical/src/widget/BloodPressure/add_bloodPressure.dart';
 import 'package:medical/src/widget/BloodPressure/bloodPressure_detail_tabbar.dart';
 import 'package:medical/src/widget/BloodPressure/widget/bloodPressure_table.dart';
 import 'package:medical/src/widget/BloodSugar/add_bloodSugar.dart';
-import 'package:medical/src/widget/BloodSugar/bloodSugar_detail_tabbar.dart';
+import 'package:medical/src/widget/BloodSugar/bloodSugar_detail_tabbar_v2.dart';
 import 'package:medical/src/widget/BloodSugar/bloodSugar_table_distribution.dart';
 import 'package:medical/src/widget/BloodSugar/widget/bloodSugar_table.dart';
 import 'package:medical/src/widget/BloodSugar/widget/bloodSugar_table_compare.dart';
@@ -38,9 +37,9 @@ import 'package:medical/src/widget/HbA1C/hba1c_detail_tabbar.dart';
 import 'package:medical/src/widget/HbA1C/hba1c_tabble.dart';
 import 'package:medical/src/widget/base/base_state.dart';
 import 'package:medical/src/widget/calendar/calendar_booking_page.dart';
-import 'package:medical/src/widget/calendar/calendar_model.dart';
 import 'package:medical/src/widget/calendar/calendar_page.dart';
 import 'package:medical/src/widget/calendar/interview_success.dart';
+import 'package:medical/src/widget/dsmes_appointment/dsmes_appointment_page.dart';
 import 'package:medical/src/widget/flash_screen/flash_screen.dart';
 import 'package:medical/src/widget/home/widget/sync_loading.dart';
 import 'package:medical/src/widget/login/change_password.dart';
@@ -53,7 +52,6 @@ import 'package:medical/src/widget/login/register_success.dart';
 import 'package:medical/src/widget/login/step_list.dart';
 import 'package:medical/src/widget/login/update_info.dart';
 import 'package:medical/src/widget/login/verify_phone.dart';
-import 'package:medical/src/widget/meeting/meeting_cubit.dart';
 import 'package:medical/src/widget/meeting/meeting_page.dart';
 import 'package:medical/src/widget/nipro/connect_device_app.dart';
 import 'package:medical/src/widget/nipro/connection_instructions.dart';
@@ -662,6 +660,14 @@ class App extends StatelessWidget {
                     return _buildRoute(settings, TestOcrCamera());
                   case NavigatorName.test_ocr_gallery:
                     return _buildRoute(settings, TestOcrGallery());
+
+                  // DSMES Booking
+                  case NavigatorName.dsmes_booking:
+                    final args = settings.arguments as Map<String, dynamic>;
+                    return _buildRoute(
+                      settings,
+                      DsmesAppointmentPage(),
+                    );
 
                   default:
                     return null;

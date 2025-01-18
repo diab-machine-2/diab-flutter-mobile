@@ -1,16 +1,23 @@
 import 'package:medical/src/modal/glucose/glucose_trend.dart';
 import 'package:meta/meta.dart';
+
 @immutable
 class TrendDataModel {
   final TrendItemsModel trendItems;
   final GoodRangeModel goodRange;
+  final int? fromDate;
+  final int? toDate;
 
-  const TrendDataModel({required this.trendItems, required this.goodRange});
+  const TrendDataModel(
+      {required this.trendItems, required this.goodRange, this.fromDate, this.toDate});
   @override
   factory TrendDataModel.fromJson(Map<String, dynamic> json) {
     return TrendDataModel(
-        trendItems: TrendItemsModel.fromJson(json['trendItems']),
-        goodRange: GoodRangeModel.fromJson(json['goodRange']));
+      trendItems: TrendItemsModel.fromJson(json['trendItems']),
+      goodRange: GoodRangeModel.fromJson(json['goodRange']),
+      fromDate: json['fromDate'],
+      toDate: json['toDate'],
+    );
   }
   static List<TrendDataModel> toList(List<dynamic> items) {
     return items.map((item) => TrendDataModel.fromJson(item)).toList();
@@ -24,10 +31,7 @@ class TrendItemsModel {
   final List<TrendItemModel> items;
 
   TrendItemsModel(
-      {required this.total,
-      required this.page,
-      required this.size,
-      required this.items});
+      {required this.total, required this.page, required this.size, required this.items});
   @override
   factory TrendItemsModel.fromJson(Map<String, dynamic> json) {
     return TrendItemsModel(

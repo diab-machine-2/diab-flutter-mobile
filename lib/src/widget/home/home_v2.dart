@@ -15,6 +15,7 @@ import 'package:medical/src/app_setting/branchio_link_config.dart';
 import 'package:medical/src/app_setting/dynamic_link_config.dart';
 import 'package:medical/src/app_setting/firebase_tracking/activity_list_tracking.dart';
 import 'package:medical/src/bloc/home/home_bloc.dart';
+import 'package:medical/src/bloc/nipro/nipro_bloc.dart';
 import 'package:medical/src/modal/home/home_model.dart';
 import 'package:medical/src/modal/home/package_account_home_model.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
@@ -84,6 +85,7 @@ class _HomeControllerState extends State<HomeController>
   var popupStore = PopupStore;
   HomeModel? model;
   String _urlPopup = '';
+  bool _haveInputGlucoseAlready = false;
 
   bool _isActivityExpanded = false;
   bool _isReminderExpanded = false;
@@ -122,7 +124,7 @@ class _HomeControllerState extends State<HomeController>
     final String? lessonId = DynamicLinkConfig.instance.lessonId;
     final String? meetingId = BranchioLinkConfig.instance.meetingId;
     final String? activityId = DynamicLinkConfig.instance.activityId;
-    _checkShowRating();
+    // _checkShowRating();
 
     Future.delayed(Duration.zero, () async {
       String? username = AppSettings.userInfo!.userName;
@@ -421,6 +423,10 @@ class _HomeControllerState extends State<HomeController>
                 });
               } else {}
             }
+            // 
+            _haveInputGlucoseAlready = state.model.measurements?.isNotEmpty == true
+              && state.model.measurements?.first.value1?.isNotEmpty == true
+              && state.model.measurements?.first.value1 != "--";
           }
 
           Widget activitiesW = HomeActivity(
@@ -571,7 +577,7 @@ class _HomeControllerState extends State<HomeController>
                             onAddMeasurement: () =>
                                 _showAddMeasurement(context),
                             onHealthProfile: () {},
-                            onMeasurement: (routeName, args, title) {
+                            onMeasurement: (routeName, args, title) async {
                               // track event
                               final String eventName = "home_select_kpi";
                               TrackingManager.trackEvent(eventName, _screenName,
@@ -585,8 +591,7 @@ class _HomeControllerState extends State<HomeController>
                                 return;
                               }
                               // case input glucose
-                              if (_showGlucoseAddBottomSheet(routeName) ==
-                                  false) {
+                              if (await _showGlucoseAddBottomSheet(routeName) == false) {
                                 return;
                               }
                               // others
@@ -958,7 +963,7 @@ class _HomeControllerState extends State<HomeController>
         BlocProvider.of<HomeBloc>(context).getAllMeasurements();
     final dialog = AddMeasurement(
       measurements: measurementIndexes,
-      onItemTap: (item) {
+      onItemTap: (item) async {
         // track event
         final String eventName = "home_add_kpi_item";
         TrackingManager.trackEvent(eventName, _screenName, params: {
@@ -971,7 +976,7 @@ class _HomeControllerState extends State<HomeController>
           return;
         }
         // case input glucose
-        if (_showGlucoseAddBottomSheet(item.navigatorName) == false) {
+        if (await _showGlucoseAddBottomSheet(item.navigatorName) == false) {
           return;
         }
         // others
@@ -1006,13 +1011,28 @@ class _HomeControllerState extends State<HomeController>
   }
 
   // return allow next route
-  bool _showGlucoseAddBottomSheet(String? routeName) {
+  Future<bool> _showGlucoseAddBottomSheet(String? routeName) async {
     if (routeName == NavigatorName.add_blood_sugar_new ||
         routeName == NavigatorName.add_blood_sugar) {
+      // check first time open glucose intro
+      if (!_haveInputGlucoseAlready) {
+        Navigator.of(context).pushNamed(NavigatorName.glucose_intro_1st_page);
+        return false;
+      }
       if (AppSettings.isUS) {
         return true;
       }
-      BloodSugarFunctions.showModalAddData(context);
+      // Logic navigate to glucose input page (saved before)
+      String? lastOpenedGlucoseInputType = await AppSettings.getLastOpenedGlucoseInputType();
+      if (lastOpenedGlucoseInputType == null) {
+        BloodSugarFunctions.showModalAddData(context);
+      } else if (lastOpenedGlucoseInputType == 'device') {
+        BlocProvider.of<NiproBloc>(context).tryAutoConnect();
+      } else if (lastOpenedGlucoseInputType == 'manual') {
+        Navigator.pushNamed(context, NavigatorName.add_blood_sugar_new,
+            arguments: {'type': 'input'});
+        // or can return "true" to next page
+      }
       return false;
     }
     return true;

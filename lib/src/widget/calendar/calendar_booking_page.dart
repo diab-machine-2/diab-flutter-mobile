@@ -8,6 +8,7 @@ import 'package:medical/src/model/request/create_calendar_request.dart';
 import 'package:medical/src/model/request/delete_calendar_request.dart';
 import 'package:medical/src/model/response/create_calendar_response.dart';
 import 'package:medical/src/utils/app_media_query.dart';
+import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/date_utils.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
@@ -118,15 +119,7 @@ class _CalendarBookingControllerState extends State<CalendarBookingController> {
       child: Scaffold(
         body: Container(
           decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [
-                R.color.color0xFFFDC798.withOpacity(0.3),
-                R.color.greenbg.withOpacity(0.9),
-              ],
-              begin: FractionalOffset(1, 1),
-              end: FractionalOffset(0.9, 0.5),
-              stops: [0.0, 1.0],
-            ),
+            color: R.color.backgroundColorNew
           ),
           child: BlocProvider(
               create: (context) => _cubit,
@@ -404,7 +397,7 @@ class _CalendarBookingControllerState extends State<CalendarBookingController> {
     );
   }
 
-  _showPopupOverSwitchTime({
+   _showPopupOverSwitchTime({
     required Function onConfirm,
     bool isShowImg = false,
     String? subtitle,
@@ -774,6 +767,7 @@ class _CalendarBookingControllerState extends State<CalendarBookingController> {
             initialDate: seletedDate,
             firstDate: DateTime.parse("1969-07-20 20:18:04Z"),
             activeDates: activeDates,
+            datesRange: Const.MAX_DAY_RANGE_PRIMARY_SCREENING,
             lastDate:
                 activeDates.length > 0 && activeDates.last.isAfter(seletedDate)
                     ? activeDates.last

@@ -7,4 +7,5 @@ class Fonts {
 	String get montserrat => "Montserrat";
 	String get trajan => "Trajan";
   String get sfpro => "SFPro";
+  String get nunito => "Nunito";
 }

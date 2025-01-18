@@ -89,7 +89,7 @@ class _MyBookingPageState extends State<MyBookingPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              date ?? "Thứ 6, 12/7/2021",
+              date ?? "",
               textAlign: TextAlign.start,
               style: TextStyle(
                   fontSize: 20.sp,
