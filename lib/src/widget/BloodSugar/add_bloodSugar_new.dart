@@ -144,27 +144,30 @@ class _AddBloodSugarControllerNewState
     // );
   }
 
-  void _navigateAfterSuccess(String id, List<ImagesModel> images) {
+  void _navigateAfterSuccess(String id, List<ImagesModel> images,
+      [bool? isDataChange = false]) {
     // Observable.instance.notifyObservers([], notifyName: "glucose_change_data");
     int indexRange = findIndexInRanges(number, _rangeValue);
     final data = BloodSugarResultDto(
-      id: id,
-      dateTime: selectedDate,
-      timeFrame: selectedTimeFrame?.name?.tr() ?? '',
-      rangeValue: _rangeValue,
-      indexRange: indexRange,
-      rangeColor: _colorList[indexRange],
-      rangeLabel: indexRange > -1 ? _rangeLabel[indexRange] : '',
-      glucose: number ?? 0,
-      glucoseUnit: isMgPerDl ? R.string.mg_dl.tr() : R.string.mmol_l.tr(),
-      note: _controllerNote.text,
-      files: images,
-      rangeType: (indexRange == 0 || indexRange == 1)
-          ? BloodSugarRangeType.very_low
-          : (indexRange == _colorList.length - 1 || indexRange == _colorList.length -2)
-              ? BloodSugarRangeType.very_high
-              : BloodSugarRangeType.normal,
-    );
+        id: id,
+        dateTime: selectedDate,
+        timeFrame: selectedTimeFrame?.name?.tr() ?? '',
+        rangeValue: _rangeValue,
+        indexRange: indexRange,
+        rangeColor: _colorList[indexRange],
+        rangeLabel: indexRange > -1 ? _rangeLabel[indexRange] : '',
+        glucose: number ?? 0,
+        glucoseUnit: isMgPerDl ? R.string.mg_dl.tr() : R.string.mmol_l.tr(),
+        note: _controllerNote.text,
+        files: images,
+        rangeType: (indexRange == 0 || indexRange == 1)
+            ? BloodSugarRangeType.very_low
+            : (indexRange == _colorList.length - 1 ||
+                    indexRange == _colorList.length - 2)
+                ? BloodSugarRangeType.very_high
+                : BloodSugarRangeType.normal,
+        isFetchAnalysis: isDataChange,
+        healthRecommendation: model?.healthRecommendation);
     Navigator.of(context).pushReplacementNamed(
         NavigatorName.add_blood_sugar_result,
         arguments: data);
@@ -212,6 +215,45 @@ class _AddBloodSugarControllerNewState
     } catch (e) {
       print(e);
     }
+  }
+
+  bool _isDataChange() {
+    // If no original model exists, consider it as new data
+    if (model == null) {
+      return true;
+    }
+
+    // Check if number/index has changed
+    final currentInputStr = _controller.text;
+    final originalValueStr = model!.glucose!.round() == model!.glucose
+        ? model!.glucose!.round().toString()
+        : model!.glucose.toString();
+
+    if (currentInputStr != originalValueStr) {
+      return true;
+    }
+
+    // Check if note has changed
+    final currentNote = _controllerNote.text;
+    if (currentNote != (model!.note ?? '')) {
+      return true;
+    }
+
+    // Check if date has changed
+    final originalDate =
+        DateTime.fromMillisecondsSinceEpoch(model!.createDate! * 1000);
+    if (selectedDate.millisecondsSinceEpoch !=
+        originalDate.millisecondsSinceEpoch) {
+      return true;
+    }
+
+    // Check if images have changed (either count or removals)
+    if (files.length != model!.images.length || removeIDs.isNotEmpty) {
+      return true;
+    }
+
+    // No changes detected
+    return false;
   }
 
   Future<void> _loadConfig({String? selectedTimeframeId}) async {
@@ -552,7 +594,8 @@ class _AddBloodSugarControllerNewState
           fromNipro,
           removeIDs,
           paths);
-      _navigateAfterSuccess(widget.id ?? '', result?.images ?? []);
+      _navigateAfterSuccess(
+          widget.id ?? '', result?.images ?? [], _isDataChange());
 
       BotToast.closeAllLoading();
     } catch (e, _) {
@@ -768,14 +811,14 @@ class _AddBloodSugarControllerNewState
           date.millisecondsSinceEpoch == selectedDate.millisecondsSinceEpoch) {
         if (_changedUnit)
           Observable.instance
-            .notifyObservers([], notifyName: "glucose_data_refresh");
+              .notifyObservers([], notifyName: "glucose_data_refresh");
         Navigator.pop(context);
         return;
       }
     } else if (note.isEmpty && numberInput.isEmpty && files.length == 0) {
       if (_changedUnit)
         Observable.instance
-        .notifyObservers([], notifyName: "glucose_data_refresh");
+            .notifyObservers([], notifyName: "glucose_data_refresh");
       Navigator.pop(context);
       return;
     }
@@ -837,8 +880,8 @@ class _AddBloodSugarControllerNewState
                               child: GestureDetector(
                                   onTap: () {
                                     if (_changedUnit)
-                                      Observable.instance
-                                        .notifyObservers([], notifyName: "glucose_data_refresh");
+                                      Observable.instance.notifyObservers([],
+                                          notifyName: "glucose_data_refresh");
                                     Navigator.pop(context);
                                     Navigator.pop(context);
                                   },

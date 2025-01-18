@@ -15,6 +15,8 @@ class BloodSugarResultDto {
   final List<dynamic>? files;
   final String? aiResult;
   final BloodSugarRangeType? rangeType;
+  final bool? isFetchAnalysis;
+  final String? healthRecommendation;
 
   BloodSugarResultDto({
     required this.id,
@@ -30,5 +32,7 @@ class BloodSugarResultDto {
     this.files,
     this.aiResult,
     this.rangeType,
+    this.isFetchAnalysis,
+    this.healthRecommendation,
   });
 }
