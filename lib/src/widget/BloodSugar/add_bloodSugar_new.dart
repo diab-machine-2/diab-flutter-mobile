@@ -225,9 +225,7 @@ class _AddBloodSugarControllerNewState
 
     // Check if number/index has changed
     final currentInputStr = _controller.text;
-    final originalValueStr = model!.glucose!.round() == model!.glucose
-        ? model!.glucose!.round().toString()
-        : model!.glucose.toString();
+    final originalValueStr = roundNumber(model!.glucose!);
 
     if (currentInputStr != originalValueStr) {
       return true;
@@ -1143,7 +1141,7 @@ class _AddBloodSugarControllerNewState
               ],
               decoration: InputDecoration(
                 counterText: '',
-                hintText: isMgPerDl ? '0' : '0.0',
+                hintText: isMgPerDl ? '0' : '0,0',
                 contentPadding: EdgeInsets.only(bottom: 8),
                 border: InputBorder.none,
                 hintStyle: TextStyle(
@@ -1186,9 +1184,7 @@ class _AddBloodSugarControllerNewState
                     number = glucose;
                   }
                   if (_controller.text != "") {
-                    _controller.text = AppSettings.userInfo!.glucoseUnit == 1
-                        ? glucose.round().toString()
-                        : roundNumber(glucose);
+                    _controller.text = roundNumber(glucose);
                   }
                   setState(() {
                     isMgPerDl = index == 0;
