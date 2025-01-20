@@ -394,12 +394,15 @@ class AppSettings {
   }
 
   // Check to show 1st page
-  static Future<bool> hadOpenedGlucoseIntro() async {
-    bool hadOpenedGlucoseIntro = appPreference.getBoolData("hadOpenedGlucoseIntro");
-    return hadOpenedGlucoseIntro;
+  static Future<String?> getLastOpenedGlucoseInputType() async {
+    String? lastOpenedGlucoseInputType = appPreference.getData("lastOpenedGlucoseInputType");
+    return lastOpenedGlucoseInputType;
   }
-  static void markOpenedGlucoseIntro() {
-    appPreference.setData("hadOpenedGlucoseIntro", true);
+  static void setLastOpenedGlucoseInputType(String inputType) {
+    appPreference.setData("lastOpenedGlucoseInputType", inputType);
+  }
+  static void clearLastOpenedGlucoseInputType() {
+    appPreference.removeData("lastOpenedGlucoseInputType");
   }
 
   static Future<bool> logout(
@@ -423,6 +426,7 @@ class AppSettings {
       appPreference.removeData("hasNewReports");
       appPreference.removeData("reports");
       appPreference.removeData("user");
+      clearLastOpenedGlucoseInputType();
       CalendarBookingCubit.myCalendar = null;
       CalendarBookingCubit.updateCount = 0;
       final GoogleSignIn _googleSignIn = GoogleSignIn();

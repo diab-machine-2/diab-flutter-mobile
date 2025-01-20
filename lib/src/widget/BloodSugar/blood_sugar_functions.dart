@@ -4,6 +4,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/bloc/nipro/nipro_bloc.dart';
 import 'package:medical/src/utils/app_storages.dart';
 import 'package:medical/src/utils/navigator_name.dart';
@@ -134,7 +135,10 @@ class BloodSugarFunctions {
                     'Kết nối máy đo đường huyết',
                     'Tự động nhập chỉ số một cách nhanh chóng và chính xác.',
                     R.drawable.im_glucose_input_device,
-                    () {
+                    () async {
+                      if (await AppSettings.getLastOpenedGlucoseInputType() == null) {
+                        AppSettings.setLastOpenedGlucoseInputType('device');
+                      }
                       TrackingManager.trackEvent(
                         'glucose_select_method',
                         'kpi_glucose',
@@ -154,7 +158,10 @@ class BloodSugarFunctions {
                     'Nhập thủ công',
                     'Nhập chỉ số đường huyết của bạn bằng cách nhập thủ công từ kết quả đo đã có sẵn',
                     R.drawable.im_glucose_input_manual,
-                    () {
+                    () async {
+                      if (await AppSettings.getLastOpenedGlucoseInputType() == null) {
+                        AppSettings.setLastOpenedGlucoseInputType('manual');
+                      }
                       TrackingManager.trackEvent(
                         'glucose_select_method',
                         'kpi_glucose',

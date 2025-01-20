@@ -306,13 +306,6 @@ class _DsmesAppointmentPageState extends State<DsmesAppointmentPage>
             actions: [
               GestureDetector(
                 onTap: () async {
-                  final docosanToken = await AppSettings.getDocosanToken();
-                  if (docosanToken == null || docosanToken.isEmpty) {
-                    DsmesNavigationMixin.navigationKey.currentState
-                        ?.pushNamed(NavigatorName.dsmes_booking_history);
-                    return;
-                  }
-
                   _cubit.clearAppointments();
 
                   DsmesNavigationMixin.navigationKey.currentState
@@ -454,7 +447,7 @@ class _DsmesAppointmentPageState extends State<DsmesAppointmentPage>
                       child: Container(
                         decoration: BoxDecoration(
                           color: R.color.white,
-                          borderRadius: BorderRadius.circular(8),
+                          borderRadius: BorderRadius.circular(12),
                           boxShadow: [
                             Utils.getBoxShadowDropCard(),
                           ],
@@ -482,7 +475,7 @@ class _DsmesAppointmentPageState extends State<DsmesAppointmentPage>
                       child: Container(
                         decoration: BoxDecoration(
                           color: R.color.white,
-                          borderRadius: BorderRadius.circular(8),
+                          borderRadius: BorderRadius.circular(12),
                           boxShadow: [
                             Utils.getBoxShadowDropCard(),
                           ],

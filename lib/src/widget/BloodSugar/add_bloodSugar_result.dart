@@ -7,11 +7,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_observer/Observable.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/repo/glucose/glucose_client.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/navigator_name.dart';
-import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
+import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widgets/network_image_widget.dart';
 import 'package:syncfusion_flutter_gauges/gauges.dart';
@@ -47,12 +48,20 @@ class _PageAddBloodSugarResultState extends State<PageAddBloodSugarResult> {
   void _loadData() async {
     final data = widget.data;
     _files = data.files ?? [];
+    final unit = AppSettings.userInfo?.glucoseUnit ?? 1;
 
-    final aiResult =
-        await GlucoseClient().fetchGlucoseInputAnalysis(widget.data.id).catchError((e, s) {
-      TrackingManager.recordError(e, s);
-      return null;
-    });
+    bool shouldFetchNewData = (data.isFetchAnalysis ?? false) ||
+        ((data.healthRecommendation?.isEmpty) ?? true);
+
+    final aiResult = shouldFetchNewData
+        ? await GlucoseClient()
+            .fetchGlucoseInputAnalysis(widget.data.id, unit)
+            .catchError((e, s) {
+            TrackingManager.recordError(e, s);
+            return null;
+          })
+        : data.healthRecommendation;
+
     _aiResult = aiResult ?? '';
     if (mounted) {
       setState(() {});
@@ -381,35 +390,45 @@ class _PageAddBloodSugarResultState extends State<PageAddBloodSugarResult> {
   }
 
   Widget _bottomSection() {
-    return Row(
-      children: [
-        Expanded(
-          child: ElevatedButton(
-            onPressed: _doShare,
-            child: Text(R.string.share.tr(), style: TextStyle(color: R.color.textDark)),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.white,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(24),
-              ),
-            ),
-          ),
+    return ElevatedButton(
+      onPressed: _doComplete,
+      child: Text(R.string.completed.tr(), style: TextStyle(color: Colors.white)),
+      style: ElevatedButton.styleFrom(
+        backgroundColor: R.color.mainColor,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(24),
         ),
-        const SizedBox(width: 16),
-        Expanded(
-          child: ElevatedButton(
-            onPressed: _doComplete,
-            child: Text(R.string.completed.tr(), style: TextStyle(color: Colors.white)),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: R.color.mainColor,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(24),
-              ),
-            ),
-          ),
-        ),
-      ],
+      ),
     );
+    // return Row(
+    //   children: [
+    //     Expanded(
+    //       child: ElevatedButton(
+    //         onPressed: _doShare,
+    //         child: Text(R.string.share.tr(), style: TextStyle(color: R.color.textDark)),
+    //         style: ElevatedButton.styleFrom(
+    //           backgroundColor: Colors.white,
+    //           shape: RoundedRectangleBorder(
+    //             borderRadius: BorderRadius.circular(24),
+    //           ),
+    //         ),
+    //       ),
+    //     ),
+    //     const SizedBox(width: 16),
+    //     Expanded(
+    //       child: ElevatedButton(
+    //         onPressed: _doComplete,
+    //         child: Text(R.string.completed.tr(), style: TextStyle(color: Colors.white)),
+    //         style: ElevatedButton.styleFrom(
+    //           backgroundColor: R.color.mainColor,
+    //           shape: RoundedRectangleBorder(
+    //             borderRadius: BorderRadius.circular(24),
+    //           ),
+    //         ),
+    //       ),
+    //     ),
+    //   ],
+    // );
   }
 }
 
@@ -529,7 +548,7 @@ class _SegmentedCircularGauge extends StatelessWidget {
                     ),
                     SizedBox(height: 4),
                     Text(
-                      '${glucose.toPrecision(2)} $glucoseUnit',
+                      '${roundNumber(glucose)} $glucoseUnit',
                       style: TextStyle(
                         fontSize: 16,
                         color: Colors.black,

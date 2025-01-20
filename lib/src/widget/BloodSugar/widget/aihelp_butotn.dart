@@ -61,7 +61,7 @@ class AIHelpButton extends StatelessWidget {
         child: Center(
           child: Text(
             rangeType == BloodSugarRangeType.very_high
-                ? 'Chat Zalo OA DiaB'
+                ? 'Chuyên gia hỗ trợ'
                 : rangeType == BloodSugarRangeType.very_low
                     ? 'Tư vấn chuyên gia'
                     : 'Bí quyết ổn định đường huyết',
