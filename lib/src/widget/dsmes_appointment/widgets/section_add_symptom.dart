@@ -21,6 +21,8 @@ class SectionAddSymptom extends StatefulWidget {
     this.maxMedia = 5,
     this.initialFiles,
     this.maxLength = 250,
+    this.isDisplayRemove = true,
+    this.readOnly = false,
   });
 
   final FocusNode? focusNode;
@@ -28,6 +30,8 @@ class SectionAddSymptom extends StatefulWidget {
   final int maxMedia;
   final int maxLength;
   final List<dynamic>? initialFiles;
+  final bool isDisplayRemove;
+  final bool readOnly;
 
   @override
   State<SectionAddSymptom> createState() => SectionAddSymptomState();
@@ -83,6 +87,13 @@ class SectionAddSymptomState extends State<SectionAddSymptom> {
           ),
           GapH(12),
           TextField(
+            textInputAction: TextInputAction.done,
+            onEditingComplete: () {
+              // Update counter when done button is pressed
+              setState(() {});
+              FocusScope.of(context).unfocus();
+            },
+            readOnly: widget.readOnly,
             focusNode: widget.focusNode,
             controller: widget.controllerNote,
             style: TextStyle(
@@ -154,47 +165,53 @@ class SectionAddSymptomState extends State<SectionAddSymptom> {
                     Navigator.pushNamed(context, '/photo_view',
                         arguments: {'files': _files, 'index': index});
                   },
-                  child: SizedBox(
-                    width: 60,
-                    height: 60,
-                    child: Stack(
-                      alignment: AlignmentDirectional.topEnd,
-                      children: [
-                        Positioned.fill(
-                          top: 4,
-                          right: 4,
-                          child: Container(
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(8),
+                  child: Visibility(
+                    visible: widget.isDisplayRemove,
+                    child: SizedBox(
+                      width: 60,
+                      height: 60,
+                      child: Stack(
+                        alignment: AlignmentDirectional.topEnd,
+                        children: [
+                          Positioned.fill(
+                            top: 4,
+                            right: 4,
+                            child: Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              width: 56,
+                              height: 56,
+                              clipBehavior: Clip.hardEdge,
+                              child: _files[index] is PickedFile
+                                  ? Image.file(
+                                      File(_files[index].path),
+                                      fit: BoxFit.cover,
+                                    )
+                                  : NetWorkImageWidget(
+                                      imageUrl:
+                                          '${Utils.getHostDocosanUrl()}${_files[index]}',
+                                      fit: BoxFit.cover),
                             ),
-                            width: 56,
-                            height: 56,
-                            clipBehavior: Clip.hardEdge,
-                            child: _files[index] is PickedFile
-                                ? Image.file(
-                                    File(_files[index].path),
-                                    fit: BoxFit.cover,
-                                  )
-                                : NetWorkImageWidget(
-                                    imageUrl: _files[index].url,
-                                    fit: BoxFit.cover),
                           ),
-                        ),
-                        GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              if (_files[index] is PickedFile) {
-                                _files.removeAt(index);
-                              } else {
-                                _removeIDs.add(_files[index].id);
-                                _files.removeAt(index);
-                              }
-                            });
-                          },
-                          child: Image.asset(R.drawable.ic_close_circle_red,
-                              width: 24, height: 24),
-                        ),
-                      ],
+                          GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                if (_files[index] is PickedFile) {
+                                  _files.removeAt(index);
+                                  _fileNetworkName.removeAt(index);
+                                } else {
+                                  _removeIDs.add(_files[index]);
+                                  _files.removeAt(index);
+                                  _fileNetworkName.removeAt(index);
+                                }
+                              });
+                            },
+                            child: Image.asset(R.drawable.ic_close_circle_red,
+                                width: 24, height: 24),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 );
@@ -311,7 +328,7 @@ class SectionAddSymptomState extends State<SectionAddSymptom> {
     Widget continueButton = TextButton(
       child: Text(R.string.allowed.tr()),
       onPressed: () {
-        Navigator.pop(context);
+        // Navigator.pop(context);
         openAppSettings();
       },
     );

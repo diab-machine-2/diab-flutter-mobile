@@ -54,7 +54,7 @@ class _DsmesConfirmCreateInformationState
   late bool isReschedule = false;
   final GlobalKey<SectionAddSymptomState> _sectionAddSymptomKey =
       GlobalKey<SectionAddSymptomState>();
-  List<String> files = [];
+  List<dynamic> files = [];
 
   Map<String, bool> isProcessing = {
     'confirmBooking': false,
@@ -96,6 +96,8 @@ class _DsmesConfirmCreateInformationState
         });
       }
     });
+
+    files = currentCreateRequest?.symptomAttachment ?? [];
   }
 
   @override

@@ -15,6 +15,7 @@ import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/dsmes_appointment/dsmes_appointment_cubit.dart';
 import 'package:medical/src/widget/dsmes_appointment/model/dsmes_appointment_model.dart';
 import 'package:medical/src/widget/dsmes_appointment/pages/dsmes_navigation_mixin.dart';
+import 'package:medical/src/widget/dsmes_appointment/widgets/section_add_symptom.dart';
 import 'package:medical/src/widgets/gap_widget.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -34,11 +35,16 @@ class DsmesBookingDetail extends StatefulWidget {
 
 class _DsmesBookingDetailState extends State<DsmesBookingDetail> {
   late DsmesAppointmentCubit _cubit;
+  FocusNode symptomFocusNode = FocusNode();
+  late TextEditingController symptomController;
+  final GlobalKey<SectionAddSymptomState> _sectionAddSymptomKey =
+      GlobalKey<SectionAddSymptomState>();
 
   @override
   void initState() {
     super.initState();
     _cubit = context.read<DsmesAppointmentCubit>();
+    symptomController.text = widget.appointment.symptom;
   }
 
   bool _shouldShowJoinButton() {
@@ -200,7 +206,8 @@ class _DsmesBookingDetailState extends State<DsmesBookingDetail> {
                         _buildSelectedServiceInformation(),
                       if (widget.appointment.symptom.isNotEmpty) GapH(12),
                       if (widget.appointment.symptom.isNotEmpty)
-                        _buildNoticeSymptom(),
+                        _selectImageSection(),
+                      // _buildNoticeSymptom(),
                       GapH(12),
                       if (isCompletedAppointment() == false &&
                           widget.appointment.status != DSMES_STATUS_REJECT)
@@ -677,6 +684,19 @@ class _DsmesBookingDetailState extends State<DsmesBookingDetail> {
           ],
         ),
       ),
+    );
+  }
+
+  Widget _selectImageSection() {
+    return SectionAddSymptom(
+      focusNode: symptomFocusNode,
+      controllerNote: symptomController,
+      maxMedia: 5,
+      key: _sectionAddSymptomKey,
+      initialFiles:
+          widget.appointment.symptomAttachment.map((e) => e.filePath).toList(),
+      isDisplayRemove: false,
+      readOnly: true,
     );
   }
 
