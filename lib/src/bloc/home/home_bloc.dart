@@ -451,11 +451,18 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     if (preOrder?.isNotEmpty == true) {
       final preOrderSlug =
           preOrder!.split(",").where((e) => e.trim().isNotEmpty).toList();
-      all.sort((a, b) {
+      // Filter to only include items that exist in preOrderSlug
+      final filteredAll =
+          all.where((item) => preOrderSlug.contains(item.slug)).toList();
+      filteredAll.sort((a, b) {
         final aIndex = preOrderSlug.indexOf(a.slug);
         final bIndex = preOrderSlug.indexOf(b.slug);
+        if (aIndex == -1) return 1;
+        if (bIndex == -1) return -1;
         return aIndex - bIndex;
       });
+
+      return full ? filteredAll : [...filteredAll.take(7), moreItem];
     }
 
     return full ? all : [...all.take(7), moreItem];
