@@ -61,7 +61,7 @@ class FirebaseRemoteSetting {
       "APP_DEVELOPER_MODE":
           bool.parse(localSetting["APP_DEVELOPER_MODE"] ?? "true"),
       "UTILITIES_ORDER":
-          localSetting["UTILITIES_ORDER"] ?? "thiet-lap-muc-tieu,lich-do-duong-huyet,tu-van-suc-khoe,thuc-don-mau,ket-noi-thiet-bi,lich-uong-thuoc,moi-ban-be",
+          localSetting["UTILITIES_ORDER"] ?? "thiet-lap-muc-tieu,lich-do-duong-huyet,lich-nhac-nho,thuc-don-mau,ket-noi-thiet-bi,lich-uong-thuoc,moi-ban-be",
       "GLUCOSE_FAQS": jsonEncode(_glucoseFaqs.map((faq) => faq.toJson()).toList()),
     });
     // Config timeout for remoteConfig
