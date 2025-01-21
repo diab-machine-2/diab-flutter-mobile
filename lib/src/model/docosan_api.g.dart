@@ -67,9 +67,10 @@ class _DocosanApi implements DocosanApi {
   }
 
   @override
-  Future<DsmesClinicListResponse> getClinicList() async {
+  Future<DsmesClinicListResponse> getClinicList(type) async {
     const _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{r'type': type};
+    queryParameters.removeWhere((k, v) => v == null);
     final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
     final _result = await _dio.fetch<Map<String, dynamic>>(

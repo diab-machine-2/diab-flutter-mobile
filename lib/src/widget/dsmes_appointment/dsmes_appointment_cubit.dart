@@ -134,11 +134,11 @@ class DsmesAppointmentCubit extends Cubit<DsmesAppointmentState> {
     });
   }
 
-  Future<List<DsmesClinicModel>> getClinicList() async {
+  Future<List<DsmesClinicModel>> getClinicList({String? type}) async {
     List<DsmesClinicModel> clinics = [];
     emit(DsmesAppointmentLoading());
     ApiResult<DsmesClinicListResponse> apiResult =
-        await appRepository.getClinicList();
+        await appRepository.getClinicList(type: type);
     apiResult.when(success: (DsmesClinicListResponse response) {
       listClinic = response.data;
       clinics = listClinic;
