@@ -134,9 +134,10 @@ class _DsmesCalendarSectionState extends State<DsmesCalendarSection> {
   }
 
   Future<List<BookingSchedule>> _getScheduleDates() async {
-    return widget.isMergedSchedule == false
-        ? _cubit.selectedClinic?.getBookingSchedules() ?? []
-        : await _cubit.getDiabClinicsSchedule();
+    // return widget.isMergedSchedule == false
+    //     ? _cubit.selectedClinic?.getBookingSchedules() ?? []
+    //     : await _cubit.getDiabClinicsSchedule();
+    return _cubit.selectedClinic?.getBookingSchedules() ?? [];
   }
 
   List<BookingSchedule> _filterAvailableSchedules(
