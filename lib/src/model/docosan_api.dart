@@ -32,7 +32,9 @@ abstract class DocosanApi {
   );
 
   @GET("api/clinics/profile-clinic-diab")
-  Future<DsmesClinicListResponse> getClinicList();
+  Future<DsmesClinicListResponse> getClinicList(
+    @Query('type') String? type,
+  );
 
   @POST("api/doctors/patient-appointments-partner")
   Future<CreateDsmesOfflineBookingResponse> createDsmesOfflineBooking(

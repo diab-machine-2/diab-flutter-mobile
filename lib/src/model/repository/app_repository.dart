@@ -984,9 +984,9 @@ class AppRepository {
     }
   }
 
-  Future<ApiResult<DsmesClinicListResponse>> getClinicList() async {
+  Future<ApiResult<DsmesClinicListResponse>> getClinicList({String? type}) async {
     try {
-      final response = await docosanClient.getClinicList();
+      final response = await docosanClient.getClinicList(type);
       return ApiResult.success(data: response);
     } catch (e) {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));
