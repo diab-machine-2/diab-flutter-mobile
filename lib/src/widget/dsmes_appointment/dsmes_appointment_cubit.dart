@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:typed_data';
 import 'dart:ui';
 
 import 'package:easy_localization/easy_localization.dart';
@@ -286,12 +287,15 @@ class DsmesAppointmentCubit extends Cubit<DsmesAppointmentState> {
     return dsmesAppointment;
   }
 
-  Future<String?> uploadSymptomImage(String fileName) async {
+  Future<String?> uploadSymptomImage(
+      {required Uint8List bytes, required String fileName}) async {
     try {
       final response = await FetchClient().postHttp3(
-          path: 'api/appointment/upload-symptom',
-          params: {},
-          fileName: fileName);
+        path: 'api/appointment/upload-symptom',
+        params: {},
+        bytes: bytes,
+        fileName: fileName,
+      );
 
       if (response.statusCode == 200) {
         final data = await response.stream.bytesToString();

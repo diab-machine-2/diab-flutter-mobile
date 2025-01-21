@@ -24,6 +24,7 @@ import 'package:medical/src/widget/dsmes_appointment/pages/dsmes_confirm_create_
 import 'package:medical/src/widget/dsmes_appointment/pages/dsmes_navigation_mixin.dart';
 import 'package:medical/src/widget/dsmes_appointment/pages/dsmes_select_service_page.dart';
 import 'package:medical/src/widget/dsmes_appointment/widgets/dsmes_appointment_item.dart';
+import 'package:medical/src/widget/helper/photo_view.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widgets/gap_widget.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';

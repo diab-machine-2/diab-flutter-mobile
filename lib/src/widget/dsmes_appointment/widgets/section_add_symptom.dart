@@ -49,6 +49,10 @@ class SectionAddSymptomState extends State<SectionAddSymptom> {
     super.initState();
     _cubit = context.read<DsmesAppointmentCubit>();
     _files.addAll(widget.initialFiles ?? []);
+    _fileNetworkName
+        .addAll(widget.initialFiles?.whereType<String>().toList() ?? []);
+
+    _currentLength = widget.controllerNote?.text.length ?? 0;
   }
 
   void updateFilesAndNote(List<dynamic> files, String note) {
@@ -113,17 +117,20 @@ class SectionAddSymptomState extends State<SectionAddSymptom> {
                 fontWeight: FontWeight.w400,
                 color: R.color.primaryGreyColor,
               ),
-              suffixIcon: GestureDetector(
-                onTap: _isAddable
-                    ? () {
-                        _showActionSheet(context);
-                      }
-                    : null,
-                child: Image.asset(
-                  R.drawable.ic_pick_photo,
-                  width: 24,
-                  height: 24,
-                  color: _isAddable ? null : R.color.primaryGreyColor,
+              suffixIcon: Visibility(
+                visible: widget.isDisplayRemove,
+                child: GestureDetector(
+                  onTap: _isAddable
+                      ? () {
+                          _showActionSheet(context);
+                        }
+                      : null,
+                  child: Image.asset(
+                    R.drawable.ic_pick_photo,
+                    width: 24,
+                    height: 24,
+                    color: _isAddable ? null : R.color.primaryGreyColor,
+                  ),
                 ),
               ),
               suffixIconConstraints: BoxConstraints(
@@ -162,39 +169,38 @@ class SectionAddSymptomState extends State<SectionAddSymptom> {
                 final index = _files.indexOf(e);
                 return GestureDetector(
                   onTap: () {
-                    Navigator.pushNamed(context, '/photo_view',
-                        arguments: {'files': _files, 'index': index});
+                    _showFullscreenImage(context, index);
                   },
-                  child: Visibility(
-                    visible: widget.isDisplayRemove,
-                    child: SizedBox(
-                      width: 60,
-                      height: 60,
-                      child: Stack(
-                        alignment: AlignmentDirectional.topEnd,
-                        children: [
-                          Positioned.fill(
-                            top: 4,
-                            right: 4,
-                            child: Container(
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              width: 56,
-                              height: 56,
-                              clipBehavior: Clip.hardEdge,
-                              child: _files[index] is PickedFile
-                                  ? Image.file(
-                                      File(_files[index].path),
-                                      fit: BoxFit.cover,
-                                    )
-                                  : NetWorkImageWidget(
-                                      imageUrl:
-                                          '${Utils.getHostDocosanUrl()}${_files[index]}',
-                                      fit: BoxFit.cover),
+                  child: SizedBox(
+                    width: 60,
+                    height: 60,
+                    child: Stack(
+                      alignment: AlignmentDirectional.topEnd,
+                      children: [
+                        Positioned.fill(
+                          top: 4,
+                          right: 4,
+                          child: Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(8),
                             ),
+                            width: 56,
+                            height: 56,
+                            clipBehavior: Clip.hardEdge,
+                            child: _files[index] is PickedFile
+                                ? Image.file(
+                                    File(_files[index].path),
+                                    fit: BoxFit.cover,
+                                  )
+                                : NetWorkImageWidget(
+                                    imageUrl:
+                                        '${Utils.getHostDocosanUrl()}${_files[index]}',
+                                    fit: BoxFit.cover),
                           ),
-                          GestureDetector(
+                        ),
+                        Visibility(
+                          visible: widget.isDisplayRemove,
+                          child: GestureDetector(
                             onTap: () {
                               setState(() {
                                 if (_files[index] is PickedFile) {
@@ -210,8 +216,8 @@ class SectionAddSymptomState extends State<SectionAddSymptom> {
                             child: Image.asset(R.drawable.ic_close_circle_red,
                                 width: 24, height: 24),
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
                   ),
                 );
@@ -219,6 +225,47 @@ class SectionAddSymptomState extends State<SectionAddSymptom> {
             ),
           ],
         ],
+      ),
+    );
+  }
+
+  void _showFullscreenImage(BuildContext context, int index) {
+    showDialog(
+      context: context,
+      builder: (context) => Dialog(
+        insetPadding: EdgeInsets.zero,
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            _files[index] is PickedFile
+                ? Image.file(
+                    File(_files[index].path),
+                    fit: BoxFit.contain,
+                  )
+                : NetWorkImageWidget(
+                    imageUrl: '${Utils.getHostDocosanUrl()}${_files[index]}',
+                    fit: BoxFit.contain),
+            Positioned(
+              top: 16,
+              right: 16,
+              child: GestureDetector(
+                onTap: () => Navigator.of(context, rootNavigator: true).pop(),
+                child: Container(
+                  padding: EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: Colors.black.withOpacity(0.5),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    Icons.close,
+                    color: Colors.white,
+                    size: 24,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -242,6 +289,7 @@ class SectionAddSymptomState extends State<SectionAddSymptom> {
               ),
             ),
             onPressed: () {
+              Navigator.of(context, rootNavigator: true).pop();
               _openGallery(context);
               // Navigator.pop(context);
             },
@@ -261,6 +309,7 @@ class SectionAddSymptomState extends State<SectionAddSymptom> {
               ),
             ),
             onPressed: () {
+              Navigator.of(context, rootNavigator: true).pop();
               _openCamera(context);
               // Navigator.pop(context);
             },
@@ -270,7 +319,7 @@ class SectionAddSymptomState extends State<SectionAddSymptom> {
           child: Text(R.string.cancel.tr(),
               style: TextStyle(color: R.color.color0xff333333, fontSize: 14)),
           onPressed: () {
-            Navigator.pop(context);
+            Navigator.of(context, rootNavigator: true).pop();
           },
         ),
       );
@@ -289,9 +338,28 @@ class SectionAddSymptomState extends State<SectionAddSymptom> {
           source: ImageSource.camera,
           preferredCameraDevice: CameraDevice.rear);
       if (pickedFile != null) {
-        _files.add(pickedFile);
+        print('[SYMPTOM] ${pickedFile.path}');
+        final filePath = pickedFile.path;
+        final fileName = filePath.split('/').last;
+        final bytes = await pickedFile.readAsBytes();
 
-        setState(() {});
+        try {
+          final imagePath =
+              await _cubit.uploadSymptomImage(fileName: fileName, bytes: bytes);
+          if (imagePath != null) {
+            _fileNetworkName.add(imagePath);
+            _files.add(pickedFile);
+            setState(() {});
+          }
+        } catch (apiError) {
+          // Handle API upload error specifically
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                  content: Text('Failed to upload image. Please try again.')),
+            );
+          }
+        }
       }
     } catch (_) {
       _showAlertDialog(context);
@@ -303,18 +371,36 @@ class SectionAddSymptomState extends State<SectionAddSymptom> {
       final picker = ImagePicker();
       final pickedFile = await picker.getImage(
           maxWidth: 512, maxHeight: 512, source: ImageSource.gallery);
+
       if (pickedFile != null) {
         print('[SYMPTOM] ${pickedFile.path}');
-        final fileName = pickedFile.path.split('/').last;
-        final imagePath = await _cubit.uploadSymptomImage(fileName);
-        if (imagePath != null) {
-          _fileNetworkName.add(imagePath);
+        final filePath = pickedFile.path;
+        final fileName = filePath.split('/').last;
+        final bytes = await pickedFile.readAsBytes();
+
+        try {
+          final imagePath =
+              await _cubit.uploadSymptomImage(fileName: fileName, bytes: bytes);
+          if (imagePath != null) {
+            _fileNetworkName.add(imagePath);
+            _files.add(pickedFile);
+            setState(() {});
+          }
+        } catch (apiError) {
+          // Handle API upload error specifically
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                  content: Text('Failed to upload image. Please try again.')),
+            );
+          }
         }
-        _files.add(pickedFile);
-        setState(() {});
       }
-    } catch (_) {
-      _showAlertDialog(context);
+    } catch (permissionError) {
+      // Handle permission error
+      if (mounted) {
+        _showAlertDialog(context);
+      }
     }
   }
 
@@ -322,29 +408,33 @@ class SectionAddSymptomState extends State<SectionAddSymptom> {
     Widget cancelButton = TextButton(
       child: Text(R.string.cancel.tr()),
       onPressed: () {
-        Navigator.pop(context);
+        if (mounted) {
+          Navigator.of(context, rootNavigator: true).pop();
+        }
       },
     );
     Widget continueButton = TextButton(
       child: Text(R.string.allowed.tr()),
       onPressed: () {
-        // Navigator.pop(context);
-        openAppSettings();
+        if (mounted) {
+          Navigator.of(context, rootNavigator: true).pop();
+          openAppSettings();
+        }
       },
     );
 
-    AlertDialog alert = AlertDialog(
-      title: Text(R.string.notification.tr()),
-      content: Text(R.string.ask_for_permission.tr()),
-      actions: [
-        cancelButton,
-        continueButton,
-      ],
-    );
     showDialog(
       context: context,
+      barrierDismissible: false,
       builder: (BuildContext context) {
-        return alert;
+        return AlertDialog(
+          title: Text(R.string.notification.tr()),
+          content: Text(R.string.ask_for_permission.tr()),
+          actions: [
+            cancelButton,
+            continueButton,
+          ],
+        );
       },
     );
   }

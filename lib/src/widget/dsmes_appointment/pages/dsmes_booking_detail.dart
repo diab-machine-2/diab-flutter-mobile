@@ -44,7 +44,7 @@ class _DsmesBookingDetailState extends State<DsmesBookingDetail> {
   void initState() {
     super.initState();
     _cubit = context.read<DsmesAppointmentCubit>();
-    symptomController.text = widget.appointment.symptom;
+    symptomController = TextEditingController(text: widget.appointment.symptom);
   }
 
   bool _shouldShowJoinButton() {

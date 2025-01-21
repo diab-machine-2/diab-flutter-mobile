@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:dio/dio.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -47,9 +48,9 @@ class FetchClient {
     // return 'https://api.docosan.com/';
     // return 'https://api.staging.docosan.com/';
     if (AppSettings.environment == "product") {
-      return Const.HOST_DOCOSAN_URL_STAGING;
-    } else {
       return Const.HOST_DOCOSAN_URL;
+    } else {
+      return Const.HOST_DOCOSAN_URL_STAGING;
     }
   }
 
@@ -266,8 +267,12 @@ class FetchClient {
     return response;
   }
 
-  Future<http.StreamedResponse> postHttp3(
-      {required String path, required dynamic params, String? fileName}) async {
+  Future<http.StreamedResponse> postHttp3({
+    required String path,
+    required Map<String, String> params,
+    Uint8List? bytes,
+    String? fileName,
+  }) async {
     // final token = await AppSettings.getDocosanToken();
     // final userAgent = await userAgent();
     final headers = {
@@ -279,10 +284,11 @@ class FetchClient {
     request.fields.addAll(params);
     // Console.log('token', token);
     Console.log('uri', uri);
-    Console.logJson('Request', params);
+    // Console.logJson('Request', params);
 
-    if (fileName != null && fileName.isNotEmpty) {
-      final value = await http.MultipartFile.fromPath('file', fileName);
+    if (bytes != null && bytes.isNotEmpty) {
+      final value =
+          http.MultipartFile.fromBytes('file', bytes, filename: fileName);
       request.files.add(value);
     }
 

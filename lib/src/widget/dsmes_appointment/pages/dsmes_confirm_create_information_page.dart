@@ -487,8 +487,15 @@ class _DsmesConfirmCreateInformationState
                       if (isProcessing['editConsultInfo']!) return;
                       setState(() => isProcessing['editConsultInfo'] = true);
                       try {
+                        final data =
+                            _sectionAddSymptomKey.currentState?.getNote();
                         _cubit.updateCreateDsmesBookingRequestSymptom(
-                            symptom: symptomController.text);
+                            symptom: data?.note ?? symptomController.text);
+                        _cubit
+                            .updateCreateDsmesBookingRequestSymptomAttachments(
+                                symptomAttachments:
+                                    data?.fileNetworkName ?? []);
+
                         final route = ModalRoute.of(context)?.settings;
                         final args = route?.arguments as Map<String, dynamic>?;
                         final isMergedSchedule =
@@ -670,8 +677,13 @@ class _DsmesConfirmCreateInformationState
                     if (isProcessing['editServiceInfo']!) return;
                     setState(() => isProcessing['editServiceInfo'] = true);
                     try {
+                      final data =
+                          _sectionAddSymptomKey.currentState?.getNote();
                       _cubit.updateCreateDsmesBookingRequestSymptom(
-                          symptom: symptomController.text);
+                          symptom: data?.note ?? symptomController.text);
+                      _cubit.updateCreateDsmesBookingRequestSymptomAttachments(
+                          symptomAttachments: data?.fileNetworkName ?? []);
+
                       await DsmesNavigationMixin.navigationKey.currentState
                           ?.pushNamed(NavigatorName.dsmes_select_service,
                               arguments: {
@@ -1338,6 +1350,8 @@ class _DsmesConfirmCreateInformationState
       maxMedia: 5,
       key: _sectionAddSymptomKey,
       initialFiles: files,
+      isDisplayRemove: isReschedule ? false : true,
+      readOnly: isReschedule,
     );
   }
 }
