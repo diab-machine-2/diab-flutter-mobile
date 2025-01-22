@@ -1228,4 +1228,7 @@ class Strings {
   String get release_to_load_more => 'release_to_load_more';
   String get exist_appointment => 'exist_appointment';
   String get symptom_hint_text => 'symptom_hint_text';
+  String get at_clinic => 'at_clinic';
+  String get kham_tu_xa => 'kham_tu_xa';
+  String get clinic_map => 'clinic_map';
 }

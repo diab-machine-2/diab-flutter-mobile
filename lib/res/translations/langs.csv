@@ -1191,7 +1191,7 @@ support,"Hỗ trợ","Support",
 view_map,"Xem bản đồ","View map",
 center_information,"Thông tin trung tâm","Center information",
 recent_booking,"Lịch hẹn gần nhất","Recent booking",
-customer_rating,"Đánh giá khách hàng","Customer rating",
+customer_rating,"Đánh giá","Rating",
 select_consulting_demand,"Chọn nhu cầu tư vấn","Select consulting demand",
 selected_demand,"Nhu cầu đã chọn","Selected demand",
 max_selected_demand_warning,"Chọn tối đa 2 dịch vụ để đảm bảo\nthời gian tư vấn tốt nhất","Select up to 2 services to ensure\nthe best consulting time.",
@@ -1200,4 +1200,7 @@ select_booking_dates_warning,"Chỉ hỗ trợ đặt trước tối đa 30 ngà
 pull_up_to_load_more,"Kéo lên để tải thêm","Pull up to load more",
 release_to_load_more,"Thả ra để tải thêm","Release to load more",
 exist_appointment,"Bạn đã chọn lịch hẹn này trước đó","You have already selected this appointment before",
-symptom_hint_text,"Nhập lưu ý của bạn","Enter your note"
+symptom_hint_text,"Nhập lưu ý của bạn","Enter your note",
+kham_tu_xa,"Khám từ xa","Remote consultation",
+at_clinic,"Tại trung tâm","At clinic",
+clinic_map,'Sơ đồ trung tâm','Clinic map'

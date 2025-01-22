@@ -294,7 +294,7 @@ class _DsmesBookingDetailState extends State<DsmesBookingDetail> {
                   style: TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.w700,
-                    color: R.color.color0xff141416,
+                    color: R.color.color0xff111515,
                   ),
                 ),
               ],
@@ -316,7 +316,7 @@ class _DsmesBookingDetailState extends State<DsmesBookingDetail> {
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
-                    color: R.color.color0xff141416,
+                    color: R.color.color0xff111515,
                   ),
                 ),
               ],
@@ -338,7 +338,7 @@ class _DsmesBookingDetailState extends State<DsmesBookingDetail> {
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
-                    color: R.color.color0xff141416,
+                    color: R.color.color0xff111515,
                   ),
                 ),
               ],
@@ -378,7 +378,7 @@ class _DsmesBookingDetailState extends State<DsmesBookingDetail> {
                   style: TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.w700,
-                    color: R.color.color0xff141416,
+                    color: R.color.color0xff111515,
                   ),
                 ),
               ],
@@ -491,7 +491,7 @@ class _DsmesBookingDetailState extends State<DsmesBookingDetail> {
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
-                        color: R.color.color0xff141416,
+                        color: R.color.color0xff111515,
                       ),
                     ),
                   ),
@@ -527,7 +527,7 @@ class _DsmesBookingDetailState extends State<DsmesBookingDetail> {
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
-                        color: R.color.color0xff141416,
+                        color: R.color.color0xff111515,
                       ),
                     ),
                   ),
@@ -564,7 +564,7 @@ class _DsmesBookingDetailState extends State<DsmesBookingDetail> {
                   style: TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.w700,
-                    color: R.color.color0xff141416,
+                    color: R.color.color0xff111515,
                   ),
                 ),
               ],

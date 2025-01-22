@@ -57,14 +57,17 @@ class DsmesAppointmentItem extends StatelessWidget {
         child: Column(
           children: [
             _buildHeader(mode, icon, isPast: isPast),
-            SizedBox(height: 14),
+            GapH(12),
+            _buildClinicInfo(data),
+            GapH(12),
             _buildDateTime(startDateTime, formattedDate, startTime, endTime),
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 12),
-              child: Divider(color: R.color.color0xffEFEFEF),
-            ),
-            _buildDescription(),
-            if (data.mode == DsmesAppointmentMode.atClinic.toString()) GapH(12),
+            if (displayActionButtons)
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                child: Divider(color: R.color.color0xffEFEFEF),
+              ),
+            // _buildDescription(),
+            // if (data.mode == DsmesAppointmentMode.atClinic.toString()) GapH(12),
             if (displayActionButtons)
               _buildActionButtons(locale: context.locale.languageCode),
           ],
@@ -81,7 +84,7 @@ class DsmesAppointmentItem extends StatelessWidget {
         Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Image.asset(icon, width: 38, height: 38),
+            Image.asset(icon, width: 20, height: 20),
             SizedBox(width: 10),
             Column(
               mainAxisSize: MainAxisSize.min,
@@ -89,22 +92,11 @@ class DsmesAppointmentItem extends StatelessWidget {
               children: [
                 Flexible(
                   child: Text(
-                    R.string.health_consulting.tr(),
-                    style: TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w700,
-                      color: R.color.color0xff111515,
-                    ),
-                  ),
-                ),
-                GapH(4),
-                Flexible(
-                  child: Text(
                     cubit.getItemTitle(mode),
                     style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w500,
-                      color: R.color.color0xff636A6B,
+                      fontSize: 15,
+                      fontWeight: FontWeight.w400,
+                      color: R.color.color0xff111515,
                     ),
                   ),
                 ),
@@ -131,16 +123,46 @@ class DsmesAppointmentItem extends StatelessWidget {
     );
   }
 
+  Widget _buildClinicInfo(DsmesAppointment data) {
+    return Row(
+      children: [
+        SizedBox(
+            width: 40,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(5),
+              child: Image.network(
+                "${Utils.getHostDocosanUrl()}${data.clinic.avatar}",
+                fit: BoxFit.cover,
+              ),
+            )),
+        GapW(8),
+        Flexible(
+          child: Text(
+            data.clinic.name,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.w700,
+              color: R.color.color0xff111515,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
   Widget _buildDateTime(DateTime startDateTime, String formattedDate,
       String startTime, String endTime) {
     return Row(
       children: [
+        GapW(48),
         Text(
           "${DateUtil.weekDayToString(startDateTime, isDisplayfull: true)}, $formattedDate",
           style: TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w500,
-            color: R.color.textDark,
+            fontSize: 15,
+            fontWeight: FontWeight.w400,
+            color: R.color.color0xff111515,
           ),
         ),
         Padding(
@@ -150,9 +172,9 @@ class DsmesAppointmentItem extends StatelessWidget {
         Text(
           '$startTime-$endTime',
           style: TextStyle(
-            fontSize: 14,
+            fontSize: 15,
             fontWeight: FontWeight.w400,
-            color: R.color.textDark,
+            color: R.color.color0xff111515,
           ),
         ),
       ],

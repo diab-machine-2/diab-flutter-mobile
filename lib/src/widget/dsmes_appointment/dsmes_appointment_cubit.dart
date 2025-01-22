@@ -398,6 +398,59 @@ class DsmesAppointmentCubit extends Cubit<DsmesAppointmentState> {
     return myAppointments.isEmpty ? [] : [myAppointments.first];
   }
 
+  List<DsmesAppointment> getSortedAppointments() {
+    final now = DateTime.now();
+    List<DsmesAppointment> sortedList = [];
+
+    // Priority 1: Approved appointments not after now, closest to current time
+    List<DsmesAppointment> approvedNotAfterNow =
+        myAppointments.where((appointment) {
+      final endTime =
+          DateFormat('yyyy-MM-dd HH:mm:ss').parse(appointment.endTime);
+      return now.isBefore(endTime) &&
+          appointment.status == DSMES_STATUS_APPROVE;
+    }).toList();
+
+    approvedNotAfterNow.sort((a, b) {
+      final aTime = DateFormat('yyyy-MM-dd HH:mm:ss').parse(a.startTime);
+      final bTime = DateFormat('yyyy-MM-dd HH:mm:ss').parse(b.startTime);
+      return (aTime.difference(now).abs())
+          .compareTo(bTime.difference(now).abs());
+    });
+    sortedList.addAll(approvedNotAfterNow);
+
+    // Priority 2: Requested appointments closest to current time
+    List<DsmesAppointment> requestedAppointments = myAppointments
+        .where((appointment) => appointment.status == DSMES_STATUS_REQUEST)
+        .toList();
+
+    requestedAppointments.sort((a, b) {
+      final aTime = DateFormat('yyyy-MM-dd HH:mm:ss').parse(a.startTime);
+      final bTime = DateFormat('yyyy-MM-dd HH:mm:ss').parse(b.startTime);
+      return (aTime.difference(now).abs())
+          .compareTo(bTime.difference(now).abs());
+    });
+    sortedList.addAll(requestedAppointments);
+
+    // Priority 3: Approved appointments after now
+    List<DsmesAppointment> approvedAfterNow =
+        myAppointments.where((appointment) {
+      final endTime =
+          DateFormat('yyyy-MM-dd HH:mm:ss').parse(appointment.endTime);
+      return endTime.isBefore(now) &&
+          appointment.status == DSMES_STATUS_APPROVE;
+    }).toList();
+
+    approvedAfterNow.sort((a, b) {
+      final aTime = DateFormat('yyyy-MM-dd HH:mm:ss').parse(a.startTime);
+      final bTime = DateFormat('yyyy-MM-dd HH:mm:ss').parse(b.startTime);
+      return aTime.compareTo(bTime);
+    });
+    sortedList.addAll(approvedAfterNow);
+
+    return sortedList;
+  }
+
   initCreateDsmesBookingRequest({String locale = 'vi'}) {
     createDsmesBookingRequest = CreateDsmesBookingRequest(
       startTime: '',
@@ -486,9 +539,9 @@ class DsmesAppointmentCubit extends Cubit<DsmesAppointmentState> {
   String getItemTitle(DsmesAppointmentMode mode) {
     switch (mode) {
       case DsmesAppointmentMode.atClinic:
-        return R.string.consult_at_clinic.tr();
+        return R.string.at_clinic.tr();
       case DsmesAppointmentMode.telemedicine:
-        return R.string.consult_online.tr();
+        return R.string.kham_tu_xa.tr();
       default:
         return '';
     }
