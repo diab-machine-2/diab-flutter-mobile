@@ -205,7 +205,8 @@ class _DsmesBookingDetailState extends State<DsmesBookingDetail> {
                           DsmesAppointmentMode.telemedicine.toString())
                         _buildSelectedServiceInformation(),
                       if (widget.appointment.symptom.isNotEmpty) GapH(12),
-                      if (widget.appointment.symptom.isNotEmpty)
+                      if (widget.appointment.symptom.isNotEmpty ||
+                          widget.appointment.symptomAttachment.isNotEmpty)
                         _selectImageSection(),
                       // _buildNoticeSymptom(),
                       GapH(12),
@@ -697,6 +698,7 @@ class _DsmesBookingDetailState extends State<DsmesBookingDetail> {
           widget.appointment.symptomAttachment.map((e) => e.filePath).toList(),
       isDisplayRemove: false,
       readOnly: true,
+      isDisplayTextField: widget.appointment.symptom.isNotEmpty,
     );
   }
 

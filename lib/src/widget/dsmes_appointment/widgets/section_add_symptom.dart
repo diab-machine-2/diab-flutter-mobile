@@ -23,6 +23,7 @@ class SectionAddSymptom extends StatefulWidget {
     this.maxLength = 250,
     this.isDisplayRemove = true,
     this.readOnly = false,
+    this.isDisplayTextField = true,
   });
 
   final FocusNode? focusNode;
@@ -32,6 +33,7 @@ class SectionAddSymptom extends StatefulWidget {
   final List<dynamic>? initialFiles;
   final bool isDisplayRemove;
   final bool readOnly;
+  final bool isDisplayTextField;
 
   @override
   State<SectionAddSymptom> createState() => SectionAddSymptomState();
@@ -89,79 +91,82 @@ class SectionAddSymptomState extends State<SectionAddSymptom> {
               ),
             ],
           ),
-          GapH(12),
-          TextField(
-            textInputAction: TextInputAction.done,
-            onEditingComplete: () {
-              // Update counter when done button is pressed
-              setState(() {});
-              FocusScope.of(context).unfocus();
-            },
-            readOnly: widget.readOnly,
-            focusNode: widget.focusNode,
-            controller: widget.controllerNote,
-            style: TextStyle(
-                color: R.color.black,
-                fontSize: 16,
-                fontWeight: FontWeight.w400),
-            keyboardType: TextInputType.multiline,
-            maxLength: widget.maxLength,
-            maxLengthEnforcement: MaxLengthEnforcement.enforced,
-            decoration: InputDecoration(
-              hintText: R.string.nhap_ghi_chu_cua_ban.tr(),
-              counterText: '',
-              contentPadding: EdgeInsets.only(bottom: 8),
-              border: InputBorder.none,
-              hintStyle: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w400,
-                color: R.color.primaryGreyColor,
-              ),
-              suffixIcon: Visibility(
-                visible: widget.isDisplayRemove,
-                child: GestureDetector(
-                  onTap: _isAddable
-                      ? () {
-                          _showActionSheet(context);
-                        }
-                      : null,
-                  child: Image.asset(
-                    R.drawable.ic_pick_photo,
-                    width: 24,
-                    height: 24,
-                    color: _isAddable ? null : R.color.primaryGreyColor,
-                  ),
-                ),
-              ),
-              suffixIconConstraints: BoxConstraints(
-                maxHeight: 24,
-                maxWidth: 24,
-              ),
-            ),
-            maxLines: 10,
-            minLines: 1,
-            onChanged: (value) {
-              _currentLength = value.length;
-              setState(() {});
-            },
-          ),
-          Container(height: 1, color: R.color.color0xffE5E5E5),
-          Align(
-            alignment: Alignment.centerRight,
-            child: Padding(
-              padding: const EdgeInsets.only(top: 8.0),
-              child: Text(
-                '$_currentLength/${widget.maxLength}',
-                style: TextStyle(
-                  fontSize: 12,
+          if (widget.isDisplayTextField) GapH(12),
+          if (widget.isDisplayTextField)
+            TextField(
+              textInputAction: TextInputAction.done,
+              onEditingComplete: () {
+                // Update counter when done button is pressed
+                setState(() {});
+                FocusScope.of(context).unfocus();
+              },
+              readOnly: widget.readOnly,
+              focusNode: widget.focusNode,
+              controller: widget.controllerNote,
+              style: TextStyle(
+                  color: R.color.black,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w400),
+              keyboardType: TextInputType.multiline,
+              maxLength: widget.maxLength,
+              maxLengthEnforcement: MaxLengthEnforcement.enforced,
+              decoration: InputDecoration(
+                hintText: R.string.nhap_ghi_chu_cua_ban.tr(),
+                counterText: '',
+                contentPadding: EdgeInsets.only(bottom: 8),
+                border: InputBorder.none,
+                hintStyle: TextStyle(
+                  fontSize: 16,
                   fontWeight: FontWeight.w400,
                   color: R.color.primaryGreyColor,
                 ),
+                suffixIcon: Visibility(
+                  visible: widget.isDisplayRemove,
+                  child: GestureDetector(
+                    onTap: _isAddable
+                        ? () {
+                            _showActionSheet(context);
+                          }
+                        : null,
+                    child: Image.asset(
+                      R.drawable.ic_pick_photo,
+                      width: 24,
+                      height: 24,
+                      color: _isAddable ? null : R.color.primaryGreyColor,
+                    ),
+                  ),
+                ),
+                suffixIconConstraints: BoxConstraints(
+                  maxHeight: 24,
+                  maxWidth: 24,
+                ),
+              ),
+              maxLines: 10,
+              minLines: 1,
+              onChanged: (value) {
+                _currentLength = value.length;
+                setState(() {});
+              },
+            ),
+          if (widget.isDisplayTextField)
+            Container(height: 1, color: R.color.color0xffE5E5E5),
+          if (widget.isDisplayTextField)
+            Align(
+              alignment: Alignment.centerRight,
+              child: Padding(
+                padding: const EdgeInsets.only(top: 8.0),
+                child: Text(
+                  '$_currentLength/${widget.maxLength}',
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w400,
+                    color: R.color.primaryGreyColor,
+                  ),
+                ),
               ),
             ),
-          ),
           if (_files.isNotEmpty) ...[
-            const SizedBox(height: 16),
+            const GapH(16),
             Wrap(
               spacing: 16,
               runSpacing: 16,
