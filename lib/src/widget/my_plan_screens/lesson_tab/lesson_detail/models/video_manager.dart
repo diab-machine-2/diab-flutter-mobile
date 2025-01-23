@@ -18,7 +18,7 @@ class VideoManager {
     this.callbackEventListener,
     this.percentCallbackDefault = 1,
   }) {
-    initController(url: url);
+    _initializeController(url: url);
   }
   BetterPlayerController? _controller;
   final double percentCallbackDefault;
@@ -39,7 +39,15 @@ class VideoManager {
   StreamController<bool> _placeholderStreamController =
       StreamController.broadcast();
 
-  BetterPlayerController? get controller => hasVideo ? _controller : null;
+  // BetterPlayerController? get controller => hasVideo ? _controller : null;
+
+  Future<BetterPlayerController?> get controller async {
+    // Wait until initialization is complete
+    while (_controller == null && hasVideo) {
+      await Future.delayed(Duration(milliseconds: 100));
+    }
+    return hasVideo ? _controller : null;
+  }
 
   Future<void> refreshUrl({required String? url}) async {
     finishedVideo = false;
@@ -70,7 +78,12 @@ class VideoManager {
     await _controller?.pause();
   }
 
-  void initController({required String? url}) async {
+  Future<void> _initializeController({String? url}) async {
+    await initController(url: url);
+    // Notify any listeners that controller is ready
+  }
+
+  Future<void> initController({required String? url}) async {
     if (url?.isNotEmpty != true) return;
     BetterPlayerController newController = BetterPlayerController(
       BetterPlayerConfiguration(
@@ -139,7 +152,8 @@ class VideoManager {
       BetterPlayerDataSourceType.network,
       url!,
     );
-    await newController.setupDataSource(betterPlayerDataSource);
+    newController.setupDataSource(betterPlayerDataSource);
+
     newController.videoPlayerController?.addListener(() async {
       if (Platform.isIOS) {
         if ((newController
