@@ -70,7 +70,7 @@ class VideoManager {
     await _controller?.pause();
   }
 
-  void initController({required String? url}) {
+  void initController({required String? url}) async {
     if (url?.isNotEmpty != true) return;
     BetterPlayerController newController = BetterPlayerController(
       BetterPlayerConfiguration(
@@ -139,7 +139,7 @@ class VideoManager {
       BetterPlayerDataSourceType.network,
       url!,
     );
-    newController.setupDataSource(betterPlayerDataSource);
+    await newController.setupDataSource(betterPlayerDataSource);
     newController.videoPlayerController?.addListener(() async {
       if (Platform.isIOS) {
         if ((newController
@@ -166,28 +166,31 @@ class VideoManager {
         if (videoDuration == null) {
           videoDuration = duration;
         }
+        if (duration != null &&
+            position != null &&
+            duration.inMilliseconds > 0) {
+          // WHEN COMPLETE VIDEO
+          if (duration == position) {
+            checkCallbackEventListener(CustomPlayerEventType.videoCompleted);
+            onCompleted?.call();
+            finishedVideo = true;
+          }
 
-        // WHEN COMPLETE VIDEO
-        if (duration == position) {
-          checkCallbackEventListener(CustomPlayerEventType.videoCompleted);
-          onCompleted?.call();
-          finishedVideo = true;
+          // CALLBACK BY PERCENT VIDEO
+          if (callbackByPercentVideoSuccess == false &&
+              callbackByPercentVideo != null &&
+              (duration != null &&
+                  position.inSeconds / duration.inSeconds >=
+                      percentCallbackDefault)) {
+            callbackByPercentVideo!.call();
+            callbackByPercentVideoSuccess = true;
+          }
+
+          // if (duration != null && duration.inSeconds / position.inSeconds <= 2) {
+          //   onCompleted?.call();
+          //   finishedVideo = true;
+          // }
         }
-
-        // CALLBACK BY PERCENT VIDEO
-        if (callbackByPercentVideoSuccess == false &&
-            callbackByPercentVideo != null &&
-            (duration != null &&
-                position.inSeconds / duration.inSeconds >=
-                    percentCallbackDefault)) {
-          callbackByPercentVideo!.call();
-          callbackByPercentVideoSuccess = true;
-        }
-
-        // if (duration != null && duration.inSeconds / position.inSeconds <= 2) {
-        //   onCompleted?.call();
-        //   finishedVideo = true;
-        // }
       }
     });
 
