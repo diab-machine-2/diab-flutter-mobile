@@ -423,7 +423,7 @@ class _DsmesAppointmentPageState extends State<DsmesAppointmentPage>
                         if (isProcessing['onlineConsulting']!) return;
                         isProcessing['onlineConsulting'] = true;
                         try {
-                          final clinics = await _cubit.getClinicList();
+                          final clinics = await _cubit.getClinicList(type: 'online');
                           if (clinics.isNotEmpty) {
                             final priorityClinic = clinics.first;
                             await _cubit.getClinicDetail(id: priorityClinic.id);
