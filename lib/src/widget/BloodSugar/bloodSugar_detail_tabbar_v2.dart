@@ -51,6 +51,7 @@ class _BloodSugarDetailTabbarControllerState extends State<BloodSugarDetailTabba
   void initState() {
     _checkGlucoseScheduler();
     super.initState();
+    _initPeriodFilterType();
     Observable.instance.addObserver(this);
     KpiGlycemicTracking.firebaseSetup();
   }
@@ -67,6 +68,14 @@ class _BloodSugarDetailTabbarControllerState extends State<BloodSugarDetailTabba
     Observable.instance.removeObserver(this);
     AppSettings.syncDataFromHealthApp();
     super.dispose();
+  }
+
+  _initPeriodFilterType() async {
+    final filterList = await AppSettings.getHomeFilters();
+    name = filterList.elementAtOrNull(ScreenList.BLOOD_SUGAR.]index) ??
+        R.string.filter_day.tr(args: ['30']);
+    final periodFilterTypeStr = await AppSettings.getPeriodByScreen(ScreenList.BLOOD_SUGAR.index);
+    periodFilterType = int.tryParse(periodFilterTypeStr) ?? 3;
   }
 
   void _checkGlucoseScheduler() async {
