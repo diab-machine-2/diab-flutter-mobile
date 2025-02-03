@@ -72,7 +72,7 @@ class _BloodSugarDetailTabbarControllerState extends State<BloodSugarDetailTabba
 
   _initPeriodFilterType() async {
     final filterList = await AppSettings.getHomeFilters();
-    name = filterList.elementAtOrNull(ScreenList.BLOOD_SUGAR.]index) ??
+    name = filterList.elementAtOrNull(ScreenList.BLOOD_SUGAR.index) ??
         R.string.filter_day.tr(args: ['30']);
     final periodFilterTypeStr = await AppSettings.getPeriodByScreen(ScreenList.BLOOD_SUGAR.index);
     periodFilterType = int.tryParse(periodFilterTypeStr) ?? 3;
