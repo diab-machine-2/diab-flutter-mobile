@@ -1352,6 +1352,7 @@ class _DsmesConfirmCreateInformationState
       initialFiles: files,
       isDisplayRemove: isReschedule ? false : true,
       readOnly: isReschedule,
+      isDisplayTextField: !(isReschedule && symptomController.text.isEmpty),
     );
   }
 }
