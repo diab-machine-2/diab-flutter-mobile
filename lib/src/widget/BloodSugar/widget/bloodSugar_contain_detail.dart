@@ -8,6 +8,7 @@ import 'package:medical/src/modal/glucose/glucose_distribution.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/BloodSugar/bloodSugar_detail_tabbar.dart';
 import 'package:medical/src/widget/BloodSugar/blood_sugar_functions.dart';
+import 'package:medical/src/widget/BloodSugar/constant/bloodSugar_rangetype.dart';
 import 'package:medical/src/widget/components/samples/pie_chart/samples/indicator.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
@@ -15,10 +16,16 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:medical/src/widgets/empty_data_box.dart';
 
 class BloodSugarDetail extends StatefulWidget {
-  BloodSugarDetail({Key? key, required this.periodFilterType}) : super(key: key);
+  BloodSugarDetail({
+    Key? key,
+    required this.periodFilterType,
+    required this.onViewMore,
+    required this.onViewDetail,
+  }) : super(key: key);
 
   final int periodFilterType;
-
+  final Function() onViewMore;
+  final Function(BloodSugarRangeType) onViewDetail;
   @override
   BloodSugarDetailState createState() => BloodSugarDetailState();
 }
@@ -34,7 +41,8 @@ class BloodSugarDetailState extends State<BloodSugarDetail>
   int periodFilterType = 3;
   @override
   void initState() {
-    periodFilterType = BloodSugarDetailTabbarController.of(context)?.periodFilterType ?? widget.periodFilterType;
+    periodFilterType =
+        BloodSugarDetailTabbarController.of(context)?.periodFilterType ?? widget.periodFilterType;
     super.initState();
   }
 
@@ -44,6 +52,10 @@ class BloodSugarDetailState extends State<BloodSugarDetail>
         currentDateTime: (DateTime.now().millisecondsSinceEpoch ~/ 1000).toString(),
         periodFilterType: periodFilterType.toString(),
         page: periodFilterType.toString()));
+  }
+
+  void _doViewMore() {
+    widget.onViewMore();
   }
 
   @override
@@ -87,44 +99,30 @@ class BloodSugarDetailState extends State<BloodSugarDetail>
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Expanded(
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                R.string.distribution_frequency.tr(),
-                                style: TextStyle(
-                                  color: R.color.dark,
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              const SizedBox(height: 3),
-                              Text(
-                                R.string.over_100_distribution.tr(),
-                                style: TextStyle(
-                                  color: R.color.grayCaption,
-                                  fontSize: 12,
-                                  fontStyle: FontStyle.italic,
-                                ),
-                              ),
-                            ],
+                          child: Text(
+                            R.string.distribution_frequency.tr(),
+                            style: TextStyle(
+                              color: R.color.dark,
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
                         const SizedBox(width: 8),
                         InkWell(
-                          onTap: () {
-                            // TODO:
-                          },
-                          child: SizedBox(
-                            width: 80,
-                            height: 32,
-                            child: Text(
-                              R.string.show_more.tr(),
-                              style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.bold,
-                                color: R.color.mainColor,
+                          onTap: _doViewMore,
+                          child: Padding(
+                            padding: const EdgeInsets.only(top: 3.0),
+                            child: SizedBox(
+                              width: 80,
+                              height: 28,
+                              child: Text(
+                                R.string.show_more.tr(),
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.bold,
+                                  color: R.color.mainColor,
+                                ),
                               ),
                             ),
                           ),
@@ -173,7 +171,8 @@ class BloodSugarDetailState extends State<BloodSugarDetail>
                       Expanded(
                         child: GestureDetector(
                           onTap: () async {
-                            BloodSugarDetailTabbarController.of(context)?.loadInputWithId(1, model.highestId);
+                            BloodSugarDetailTabbarController.of(context)
+                                ?.loadInputWithId(1, model.highestId);
                           },
                           child: Center(
                             child: Column(
@@ -190,32 +189,18 @@ class BloodSugarDetailState extends State<BloodSugarDetail>
                                   ),
                                 ),
                                 const SizedBox(height: 3),
-                                Text.rich(
-                                  TextSpan(
-                                    children: [
-                                      TextSpan(
-                                        text:
-                                            model.highest == 0 ? '--' : roundNumber(model.highest!),
-                                        style: TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.bold,
-                                          color: model.highest == 0
-                                              ? R.color.textDark
-                                              : Color(int.parse(
-                                                  '0xff${model.highestColor!.split('#').join()}')),
-                                        ),
-                                      ),
-                                      TextSpan(
-                                        text: ' mmol/L',
-                                        style: TextStyle(
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.w400,
-                                          color: R.color.primaryGreyColor,
-                                        ),
-                                      ),
-                                    ],
+                                Text(
+                                  model.highest == 0 ? '--' : roundNumber(model.highest!),
+                                  style: TextStyle(
+                                    fontSize: 20,
+                                    height: 24 / 20,
+                                    fontWeight: FontWeight.bold,
+                                    color: model.highest == 0
+                                        ? R.color.textDark
+                                        : Color(int.parse(
+                                            '0xff${model.highestColor!.split('#').join()}')),
                                   ),
-                                )
+                                ),
                               ],
                             ),
                           ),
@@ -225,7 +210,8 @@ class BloodSugarDetailState extends State<BloodSugarDetail>
                       Expanded(
                         child: GestureDetector(
                           onTap: () async {
-                            BloodSugarDetailTabbarController.of(context)?.loadInputWithId(1, model.lowestId);
+                            BloodSugarDetailTabbarController.of(context)
+                                ?.loadInputWithId(1, model.lowestId);
                           },
                           child: Center(
                             child: Column(
@@ -242,32 +228,18 @@ class BloodSugarDetailState extends State<BloodSugarDetail>
                                   ),
                                 ),
                                 const SizedBox(height: 3),
-                                Text.rich(
-                                  TextSpan(
-                                    children: [
-                                      TextSpan(
-                                        text:
-                                            model.average == 0 ? '--' : roundNumber(model.average!),
-                                        style: TextStyle(
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.bold,
-                                          color: model.average == 0
-                                              ? R.color.textDark
-                                              : Color(int.parse(
-                                                  '0xff${model.averageColor!.split('#').join()}')),
-                                        ),
-                                      ),
-                                      TextSpan(
-                                        text: ' mmol/L',
-                                        style: TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w400,
-                                          color: R.color.primaryGreyColor,
-                                        ),
-                                      ),
-                                    ],
+                                Text(
+                                  model.average == 0 ? '--' : roundNumber(model.average!),
+                                  style: TextStyle(
+                                    fontSize: 20,
+                                    height: 24 / 20,
+                                    fontWeight: FontWeight.bold,
+                                    color: model.average == 0
+                                        ? R.color.textDark
+                                        : Color(int.parse(
+                                            '0xff${model.averageColor!.split('#').join()}')),
                                   ),
-                                )
+                                ),
                               ],
                             ),
                           ),
@@ -277,7 +249,8 @@ class BloodSugarDetailState extends State<BloodSugarDetail>
                       Expanded(
                         child: GestureDetector(
                           onTap: () async {
-                            BloodSugarDetailTabbarController.of(context)?.loadInputWithId(1, model.lowestId);
+                            BloodSugarDetailTabbarController.of(context)
+                                ?.loadInputWithId(1, model.lowestId);
                           },
                           child: Center(
                             child: Column(
@@ -294,29 +267,16 @@ class BloodSugarDetailState extends State<BloodSugarDetail>
                                   ),
                                 ),
                                 const SizedBox(height: 3),
-                                Text.rich(
-                                  TextSpan(
-                                    children: [
-                                      TextSpan(
-                                        text: model.lowest == 0 ? '--' : roundNumber(model.lowest!),
-                                        style: TextStyle(
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.bold,
-                                          color: model.lowest == 0
-                                              ? R.color.textDark
-                                              : Color(int.parse(
-                                                  '0xff${model.lowestColor!.split('#').join()}')),
-                                        ),
-                                      ),
-                                      TextSpan(
-                                        text: ' mmol/L',
-                                        style: TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w400,
-                                          color: R.color.primaryGreyColor,
-                                        ),
-                                      ),
-                                    ],
+                                Text(
+                                  model.lowest == 0 ? '--' : roundNumber(model.lowest!),
+                                  style: TextStyle(
+                                    fontSize: 20,
+                                    height: 24 / 20,
+                                    fontWeight: FontWeight.bold,
+                                    color: model.lowest == 0
+                                        ? R.color.textDark
+                                        : Color(int.parse(
+                                            '0xff${model.lowestColor!.split('#').join()}')),
                                   ),
                                 ),
                               ],
@@ -343,145 +303,138 @@ class BloodSugarDetailState extends State<BloodSugarDetail>
         model.lowCount! +
         model.veryLowCount!;
 
-    return Padding(
+    const double radius = 80;
+
+    return Container(
       padding: EdgeInsets.only(left: 8, right: 8),
+      // height: 180,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
           const SizedBox(height: 12),
+          // Chart "tần suất phân bổ"
           Expanded(
-            child: AspectRatio(
-              aspectRatio: 1,
-              child: PieChart(
-                PieChartData(
+            child: Center(
+              child: SizedBox(
+                width: radius * 2,
+                height: radius * 2,
+                child: PieChart(
+                  PieChartData(
                     startDegreeOffset: 270,
                     borderData: FlBorderData(show: false),
                     sectionsSpace: 2,
-                    centerSpaceRadius: 0,
-                    sections: List.generate(5, (i) {
-                      const double radius = 100;
-                      const bool showTitle = false;
-                      late final double value;
-                      late final Color color;
-                      if (i == 0) {
-                        color = toColor(model.veryHighColor);
-                        value = model.veryHighCount! / total * 100;
-                      } else if (i == 1) {
-                        color = toColor(model.highColor);
-                        value = model.highCount! / total * 100;
-                      } else if (i == 2) {
-                        color = toColor(model.goodColor);
-                        value = model.goodCount! / total * 100;
-                      } else if (i == 3) {
-                        color = toColor(model.lowColor);
-                        value = model.lowCount! / total * 100;
-                      } else {
-                        color = toColor(model.lowColor);
-                        value = model.veryLowCount! / total * 100;
-                      }
-                      return PieChartSectionData(
-                        color: color,
-                        value: value,
-                        showTitle: showTitle,
-                        radius: radius,
-                      );
-                    })),
+                    centerSpaceRadius: double.infinity,
+                    centerSpaceColor: Colors.transparent,
+                    pieTouchData: PieTouchData(
+                      touchCallback: (FlTouchEvent event, pieTouchResponse) {
+                        print(pieTouchResponse);
+                      },
+                    ),
+                    sections: List.generate(
+                      5,
+                      (i) {
+                        const bool showTitle = false;
+                        late final double value;
+                        late final Color color;
+                        if (i == 0) {
+                          color = toColor(model.veryHighColor);
+                          value = model.veryHighCount! / total * 100;
+                        } else if (i == 1) {
+                          color = toColor(model.highColor);
+                          value = model.highCount! / total * 100;
+                        } else if (i == 2) {
+                          color = toColor(model.goodColor);
+                          value = model.goodCount! / total * 100;
+                        } else if (i == 3) {
+                          color = toColor(model.lowColor);
+                          value = model.lowCount! / total * 100;
+                        } else {
+                          color = toColor(model.lowestColor);
+                          value = model.veryLowCount! / total * 100;
+                        }
+                        return PieChartSectionData(
+                          color: color,
+                          value: value,
+                          showTitle: showTitle,
+                          radius: radius,
+                        );
+                      },
+                    ),
+                  ),
+                ),
               ),
             ),
           ),
           const SizedBox(width: 12),
+          // Guide
           Column(
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              GestureDetector(
-                onTap: () {
-                  Navigator.pushNamed(context, NavigatorName.blood_sugar_distribution_table,
-                      arguments: {
-                        'title': R.string.very_high.tr(),
-                        'glucoseDistributionType': 5,
-                        'periodFilterType': periodFilterType
-                      });
-                },
-                child: CircleIndicator(
-                  color: toColor(model.veryHighColor),
-                  number: (model.veryHighCount! / total * 100).round().toString(),
-                  text: R.string.very_high.tr(),
+              InkWell(
+                onTap: () => widget.onViewDetail(BloodSugarRangeType.very_high),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 3),
+                  child: CircleIndicator(
+                    color: toColor(model.veryHighColor),
+                    number: (model.veryHighCount! / total * 100).round().toString(),
+                    text: R.string.very_high.tr(),
+                  ),
                 ),
               ),
-              SizedBox(height: 8),
-              GestureDetector(
-                onTap: () {
-                  Navigator.pushNamed(context, NavigatorName.blood_sugar_distribution_table,
-                      arguments: {
-                        'title': R.string.high.tr(),
-                        'glucoseDistributionType': 4,
-                        'periodFilterType': periodFilterType
-                      });
-                },
-                child: CircleIndicator(
-                  color: toColor(model.highColor),
-                  number: (model.highCount! / total * 100).round().toString(),
-                  text: R.string.high.tr(),
+              SizedBox(height: 4),
+              InkWell(
+                onTap: () => widget.onViewDetail(BloodSugarRangeType.high),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 3),
+                  child: CircleIndicator(
+                    color: toColor(model.highColor),
+                    number: (model.highCount! / total * 100).round().toString(),
+                    text: R.string.high.tr(),
+                  ),
                 ),
               ),
-              SizedBox(height: 8),
-              GestureDetector(
-                onTap: () {
-                  Navigator.pushNamed(context, NavigatorName.blood_sugar_distribution_table,
-                      arguments: {
-                        'title': R.string.good.tr(),
-                        'glucoseDistributionType': 3,
-                        'periodFilterType': periodFilterType
-                      });
-                },
-                child: CircleIndicator(
-                  color: toColor(model.goodColor),
-                  number: (model.goodCount! / total * 100).round().toString(),
-                  text: R.string.good.tr(),
+              SizedBox(height: 4),
+              InkWell(
+                onTap: () => widget.onViewDetail(BloodSugarRangeType.normal),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 3),
+                  child: CircleIndicator(
+                    color: toColor(model.goodColor),
+                    number: (model.goodCount! / total * 100).round().toString(),
+                    text: R.string.good.tr(),
+                  ),
                 ),
               ),
-              SizedBox(height: 8),
-              GestureDetector(
-                onTap: () {
-                  Navigator.pushNamed(context, NavigatorName.blood_sugar_distribution_table,
-                      arguments: {
-                        'title': R.string.low.tr(),
-                        'glucoseDistributionType': 2,
-                        'periodFilterType': periodFilterType
-                      });
-                },
-                child: CircleIndicator(
-                  color: toColor(model.lowColor),
-                  number: (model.lowCount! / total * 100).round().toString(),
-                  text: R.string.low.tr(),
+              SizedBox(height: 4),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 3),
+                child: InkWell(
+                  onTap: () => widget.onViewDetail(BloodSugarRangeType.low),
+                  child: CircleIndicator(
+                    color: toColor(model.lowColor),
+                    number: (model.lowCount! / total * 100).round().toString(),
+                    text: R.string.low.tr(),
+                  ),
                 ),
               ),
-              SizedBox(
-                height: 8,
-              ),
-              GestureDetector(
-                onTap: () {
-                  Navigator.pushNamed(context, NavigatorName.blood_sugar_distribution_table,
-                      arguments: {
-                        'title': R.string.very_low.tr(),
-                        'glucoseDistributionType': 1,
-                        'periodFilterType': periodFilterType
-                      });
-                },
-                child: CircleIndicator(
-                  color: toColor(model.veryLowColor),
-                  number: (model.veryLowCount! / total * 100).round().toString(),
-                  text: R.string.very_low.tr(),
+              SizedBox(height: 4),
+              InkWell(
+                onTap: () => widget.onViewDetail(BloodSugarRangeType.very_low),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 3),
+                  child: CircleIndicator(
+                    color: toColor(model.veryLowColor),
+                    number: (model.veryLowCount! / total * 100).round().toString(),
+                    text: R.string.very_low.tr(),
+                  ),
                 ),
               ),
               SizedBox(height: 18),
             ],
           ),
-          const SizedBox(
-            width: 28
-          ),
+          const SizedBox(width: 28),
         ],
       ),
     );

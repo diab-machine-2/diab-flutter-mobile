@@ -7,6 +7,7 @@ import 'package:medical/src/modal/glucose/glucose_distribution.dart';
 import 'package:medical/src/modal/glucose/glucose_input.dart';
 import 'package:medical/src/modal/glucose/glucose_timeFrame.dart';
 import 'package:medical/src/repo/glucose/glucose_client.dart';
+import 'package:medical/src/widget/BloodSugar/constant/bloodSugar_rangetype.dart';
 import 'package:meta/meta.dart';
 import 'package:medical/src/modal/error/error_model.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -83,11 +84,68 @@ class GlucoseBloc extends Bloc<GlucoseEvent, GlucoseState> {
     try {
       final client = GlucoseClient();
       yield GlucoseLoading();
-      final model = await client.fetchGlucoseTrend(
-          timeFrameId, currentDateTime, periodFilterType, page);
-      yield GlucoseTrendLoaded(trend: model);
-      final glucoseInputAIAnalysis = await client.fetchGlucoseAlltimeAnalysis(int.parse(periodFilterType!));
-      yield GlucoseTrendLoaded(trend: model, glucoseInputAIAnalysis: glucoseInputAIAnalysis);
+      final result = await Future.wait([
+        client.fetchGlucoseTrend(timeFrameId, currentDateTime, periodFilterType, page),
+        client.fetchFlucoseDistribution(currentDateTime, periodFilterType, page),
+      ]);
+      if (result.length == 2) {
+        final model = result[0] as TrendDataModel;
+        final distribution = result[1] as DistributionModel;
+        final total = distribution.veryHighCount! +
+            distribution.highCount! +
+            distribution.goodCount! +
+            distribution.lowCount! +
+            distribution.veryLowCount!;
+        final listPercent = [
+          distribution.veryHighCount! / total,
+          distribution.highCount! / total,
+          distribution.goodCount! / total,
+          distribution.lowCount! / total,
+          distribution.veryLowCount! / total,
+        ];
+        final listNames = [
+          R.string.very_high.tr(),
+          R.string.high.tr(),
+          R.string.good.tr(),
+          R.string.low.tr(),
+          R.string.very_low.tr(),
+        ];
+        final listColors = [
+          distribution.veryHighColor,
+          distribution.highColor,
+          distribution.goodColor,
+          distribution.lowColor,
+          distribution.veryLowColor,
+        ];
+        int maxIndex = 0;
+        for (int i = 0; i < listPercent.length; i++) {
+          if (i == 0 || listPercent[i] > listPercent[maxIndex]) {
+            maxIndex = i;
+          }
+        }
+        final mostAppearType = listNames[maxIndex];
+        final mostAppearTypeColor = listColors[maxIndex];
+        final rangeType = (maxIndex == 0 || maxIndex == 1)
+            ? BloodSugarRangeType.very_high
+            : (maxIndex == listNames.length - 1 || maxIndex == listNames.length - 2)
+                ? BloodSugarRangeType.very_low
+                : BloodSugarRangeType.normal;
+        yield GlucoseTrendLoaded(
+          trend: model,
+          mostAppearType: mostAppearType,
+          mostAppearTypeColor: mostAppearTypeColor,
+          rangeType: rangeType,
+        );
+        final glucoseInputAIAnalysis =
+            await client.fetchGlucoseAlltimeAnalysis(int.parse(periodFilterType!));
+        yield GlucoseTrendLoaded(
+          trend: model,
+          glucoseInputAIAnalysis: glucoseInputAIAnalysis ?? '',
+          mostAppearType: mostAppearType,
+          mostAppearTypeColor: mostAppearTypeColor,
+          rangeType: rangeType,
+        );
+      }
     } catch (e, _) {
       if (e is Error) {
         yield GlucoseError(message: e.message);

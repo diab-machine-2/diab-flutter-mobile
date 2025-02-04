@@ -98,13 +98,16 @@ class CircleIndicator extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(6),
-              child: ColoredBox(
-                color: color,
-                child: SizedBox(
-                  width: 12,
-                  height: 12,
+            Padding(
+              padding: const EdgeInsets.only(top: 2),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(6),
+                child: ColoredBox(
+                  color: color,
+                  child: SizedBox(
+                    width: 12,
+                    height: 12,
+                  ),
                 ),
               ),
             ),

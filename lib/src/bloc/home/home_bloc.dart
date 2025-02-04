@@ -21,6 +21,7 @@ import 'package:medical/src/repo/learning/learning_client.dart';
 import 'package:medical/src/repo/user/user_client.dart';
 import 'package:medical/src/utils/date_utils.dart';
 import 'package:medical/src/utils/navigator_name.dart';
+import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/home/schema/home_schema.dart';
 import 'package:medical/src/widget/my_plan_screens/activity_tab/activity_tab/models/schedule_type.dart';
@@ -439,22 +440,29 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       //   slug: "book-lich-tai-co-so-y-te",
       //   navigatorName: NavigatorName.reminder,
       // ),
-      // HomeUtilityData(
-      //   icon: R.drawable.ic_home_doctor_consult,
-      //   title: "Tư vấn Bác sĩ",
-      //   slug: "tu-van-bac-si",
-      //   navigatorName: "consult",
-      // ),
+      HomeUtilityData(
+        icon: R.drawable.ic_home_doctor_consult,
+        title: "Tư vấn sức khoẻ",
+        slug: "tu-van-suc-khoe",
+        navigatorName: NavigatorName.dsmes_booking,
+      ),
     ];
 
     if (preOrder?.isNotEmpty == true) {
       final preOrderSlug =
           preOrder!.split(",").where((e) => e.trim().isNotEmpty).toList();
-      all.sort((a, b) {
+      // Filter to only include items that exist in preOrderSlug
+      final filteredAll =
+          all.where((item) => preOrderSlug.contains(item.slug)).toList();
+      filteredAll.sort((a, b) {
         final aIndex = preOrderSlug.indexOf(a.slug);
         final bIndex = preOrderSlug.indexOf(b.slug);
+        if (aIndex == -1) return 1;
+        if (bIndex == -1) return -1;
         return aIndex - bIndex;
       });
+
+      return full ? filteredAll : [...filteredAll.take(7), moreItem];
     }
 
     return full ? all : [...all.take(7), moreItem];
@@ -523,7 +531,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     final hba1c = HomeMeasurementInlineData(
       title: "HbA1C",
       titleColor: haveHba1c ? _haveValueTitleColor : _noValueTitleColor,
-      value: haveHba1c ? model.hbA1CIndex.index!.toString() : "--",
+      value: haveHba1c ? roundNumber(model.hbA1CIndex.index!) : "--",
       color: model?.hbA1CIndex.color != null
           ? _convertHexStringToInt(model!.hbA1CIndex.color!)
           : _noValueColor,
@@ -540,7 +548,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       title: "Cân nặng",
       icon: R.drawable.ic_home_weight,
       titleColor: haveWeight ? _haveValueTitleColor : _noValueTitleColor,
-      value: haveWeight ? model.weightCard!.weight!.toString() : "--",
+      value: haveWeight ? roundNumber(model.weightCard!.weight!) : "--",
       color: model?.weightCard?.weightColorCode != null
           ? 0xFF008479
           : _noValueColor,
@@ -555,7 +563,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     final bmi = HomeMeasurementInlineData(
       title: "BMI",
       titleColor: haveBmi ? _haveValueTitleColor : _noValueTitleColor,
-      value: haveBmi ? model.bmiCard!.bmi.toString() : "--",
+      value: haveBmi ? roundNumber(model.bmiCard!.bmi) : "--",
       unit: model?.bmiCard?.unit ?? "kg/m²",
       color: model?.bmiCard?.color != null
           ? _convertHexStringToInt(model!.bmiCard!.color)
@@ -582,7 +590,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       icon: haveGlucose
           ? R.drawable.ic_home_measurement_glucose
           : R.drawable.ic_home_measurement_glucose_inactive,
-      value1: haveGlucose ? model.glucoseIndex.index!.toString() : "--",
+      value1: haveGlucose ? roundNumber(model.glucoseIndex.index!) : "--",
       value1Color: haveGlucose
           ? _convertHexStringToInt(model.glucoseIndex.color!)
           : _noValueColor,
@@ -607,13 +615,13 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
           ? R.drawable.ic_home_measurement_blood
           : R.drawable.ic_home_measurement_blood_inactive,
       value1: haveBloodPressure
-          ? model.bloodPressureIndex.systolic!.toString()
+          ? roundNumber(model.bloodPressureIndex.systolic!)
           : "--",
       value1Color: model?.bloodPressureIndex.colorSystolic != null
           ? _convertHexStringToInt(model!.bloodPressureIndex.colorSystolic!)
           : _noValueColor,
       value2: haveBloodPressure
-          ? model.bloodPressureIndex.diastolic!.toString()
+          ? roundNumber(model.bloodPressureIndex.diastolic!)
           : "--",
       value2Color: model?.bloodPressureIndex.colorDiastolic != null
           ? _convertHexStringToInt(model!.bloodPressureIndex.colorDiastolic!)
@@ -635,7 +643,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       icon: haveExercise
           ? R.drawable.ic_home_measurement_exercise
           : R.drawable.ic_home_measurement_exercise_inactive,
-      value1: haveExercise ? model?.exercise!.index!.toString() : "--",
+      value1: haveExercise ? roundNumber(model?.exercise!.index ?? 0) : "--",
       value1Color: haveExercise ? _haveValueTitleColor : _noValueColor,
       value2: null,
       value2Color: null,
@@ -656,7 +664,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
           ? R.drawable.ic_home_measurement_nutrition
           : R.drawable.ic_home_measurement_nutrition_inactive,
       value1:
-          haveNutrition ? model.energyCard!.consumedEnergy!.toString() : "--",
+          haveNutrition ? roundNumber(model.energyCard!.consumedEnergy!) : "--",
       value1Color: haveNutrition ? _haveValueTitleColor : _noValueColor,
       value2: null,
       value2Color: null,
@@ -667,23 +675,23 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     );
 
     // Emotion
-    final haveEmotion = model?.emotionCard?.details != null &&
-        model!.emotionCard!.details!.isNotEmpty;
-    final emotion = HomeMeasurementData(
-      title: "Cảm Xúc",
-      titleColor: haveEmotion ? _haveValueTitleColor : _noValueTitleColor,
-      icon: haveEmotion
-          ? R.drawable.ic_home_measurement_emotion
-          : R.drawable.ic_home_measurement_emotion_inactive,
-      value1: haveEmotion ? model.emotionCard!.details![0].text : "--",
-      value1Color: haveEmotion ? _haveValueTitleColor : _noValueColor,
-      value2: null,
-      value2Color: null,
-      unit: "",
-      navigatorName:
-          haveEmotion ? NavigatorName.detail_emotion : NavigatorName.add_emo,
-      args: haveEmotion ? null : {'type': 'input'},
-    );
+    // final haveEmotion = model?.emotionCard?.details != null &&
+    //     model!.emotionCard!.details!.isNotEmpty;
+    // final emotion = HomeMeasurementData(
+    //   title: "Cảm Xúc",
+    //   titleColor: haveEmotion ? _haveValueTitleColor : _noValueTitleColor,
+    //   icon: haveEmotion
+    //       ? R.drawable.ic_home_measurement_emotion
+    //       : R.drawable.ic_home_measurement_emotion_inactive,
+    //   value1: haveEmotion ? model.emotionCard!.details![0].text : "--",
+    //   value1Color: haveEmotion ? _haveValueTitleColor : _noValueColor,
+    //   value2: null,
+    //   value2Color: null,
+    //   unit: "",
+    //   navigatorName:
+    //       haveEmotion ? NavigatorName.detail_emotion : NavigatorName.add_emo,
+    //   args: haveEmotion ? null : {'type': 'input'},
+    // );
 
     // Compose
     return [

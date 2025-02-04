@@ -1,24 +1,22 @@
 import 'dart:math';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_observer/Observable.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
-import 'package:medical/src/modal/HbA1C/short_gui.dart';
+import 'package:medical/src/modal/base/images.dart';
 import 'package:medical/src/modal/glucose/glucose_input.dart';
 import 'package:medical/src/modal/glucose/glucose_range_data.dart';
 import 'package:medical/src/modal/glucose/glucose_timeFrame.dart';
 import 'package:medical/src/modal/user/schedule_glucose_time.dart';
 import 'package:medical/src/model/response/config/glucose_color_config.dart';
-import 'package:medical/src/repo/HbA1C/HbA1C_client.dart';
 import 'package:medical/src/repo/glucose/glucose_client.dart';
 import 'package:medical/src/repo/home/home_client.dart';
 import 'package:medical/src/repo/user/user_client.dart';
-import 'package:medical/src/utils/app_media_query.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/utils/utils.dart';
-import 'package:medical/src/widget/HbA1C/widget/description/description.dart';
 import 'package:medical/src/widget/base/base_state.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/helper/helper.dart';
@@ -36,6 +34,7 @@ import 'package:easy_localization/easy_localization.dart';
 import '../../widgets/CalendarPicker/custom_date_picker.dart';
 import '../my_plan_screens/activity_tab/activity_tab/models/schedule_type.dart';
 import 'bloodSugar_result.dto.dart';
+import 'constant/bloodSugar_rangetype.dart';
 import 'widget/level_off_diabetes_rule_picker.dart';
 import 'widget/section_add_note.dart';
 
@@ -56,7 +55,8 @@ class _AddBloodSugarControllerNewState
     with SingleTickerProviderStateMixin {
   final TextEditingController _controller = TextEditingController();
   final TextEditingController _controllerNote = TextEditingController();
-  final GlobalKey<SectionAddNoteState> _sectionAddNoteKey = GlobalKey<SectionAddNoteState>();
+  final GlobalKey<SectionAddNoteState> _sectionAddNoteKey =
+      GlobalKey<SectionAddNoteState>();
   List<dynamic> files = [];
   DateTime selectedDate = DateTime.now();
   bool isClicked = false;
@@ -75,11 +75,12 @@ class _AddBloodSugarControllerNewState
   double? number = 0;
   InputGlucoseModel? model;
   List<String?> removeIDs = [];
-  ShortGuiModel? des;
+  // ShortGuiModel? des;
   double mmollToMgdlFactor = 18.018;
   bool fromNipro = false;
   bool isMgPerDl = false;
   int _lastUnitIndex = 0;
+  bool _changedUnit = false;
   int _lastTimeFrameIndex = 0;
 
   bool isPregnancy = false;
@@ -112,15 +113,19 @@ class _AddBloodSugarControllerNewState
   void _initData() async {
     isPregnancy = Utils.isGestationalDiabetes();
     if (widget.type == 'update') {
-      _loadDetail();
+      await _loadDetail();
+      await _loadConfig(selectedTimeframeId: selectedTimeFrame?.id);
     } else {
       await _loadConfig();
     }
     isMgPerDl = AppSettings.userInfo!.glucoseUnit == 1;
     _lastUnitIndex = isMgPerDl ? 0 : 1;
+    if (mounted) {
+      setState(() {});
+    }
     List<int> valueOfClickTime = await AppSettings.getValueOfClickShortGuide();
     clickTime = valueOfClickTime[ScreenList.BLOOD_SUGAR.index];
-    _loadDescription();
+    // _loadDescription();
     _firebaseSetup();
   }
 
@@ -139,23 +144,33 @@ class _AddBloodSugarControllerNewState
     // );
   }
 
-  void _navigateAfterSuccess(String id) {
+  void _navigateAfterSuccess(String id, List<ImagesModel> images,
+      [bool? isDataChange = false]) {
     // Observable.instance.notifyObservers([], notifyName: "glucose_change_data");
     int indexRange = findIndexInRanges(number, _rangeValue);
     final data = BloodSugarResultDto(
-      id: id,
-      dateTime: selectedDate,
-      timeFrame: selectedTimeFrame?.name?.tr() ?? '',
-      rangeValue: _rangeValue,
-      indexRange: indexRange,
-      rangeColor: _colorList[indexRange],
-      rangeLabel: indexRange > -1 ? _rangeLabel[indexRange] : '',
-      glucose: number ?? 0,
-      glucoseUnit: isMgPerDl ? R.string.mg_dl.tr() : R.string.mmol_l.tr(),
-      note: _controllerNote.text,
-      files: files,
-    );
-    Navigator.of(context).pushReplacementNamed(NavigatorName.add_blood_sugar_result, arguments: data);
+        id: id,
+        dateTime: selectedDate,
+        timeFrame: selectedTimeFrame?.name?.tr() ?? '',
+        rangeValue: _rangeValue,
+        indexRange: indexRange,
+        rangeColor: _colorList[indexRange],
+        rangeLabel: indexRange > -1 ? _rangeLabel[indexRange] : '',
+        glucose: number ?? 0,
+        glucoseUnit: isMgPerDl ? R.string.mg_dl.tr() : R.string.mmol_l.tr(),
+        note: _controllerNote.text,
+        files: images,
+        rangeType: (indexRange == 0 || indexRange == 1)
+            ? BloodSugarRangeType.very_low
+            : (indexRange == _colorList.length - 1 ||
+                    indexRange == _colorList.length - 2)
+                ? BloodSugarRangeType.very_high
+                : BloodSugarRangeType.normal,
+        isFetchAnalysis: isDataChange,
+        healthRecommendation: model?.healthRecommendation);
+    Navigator.of(context).pushReplacementNamed(
+        NavigatorName.add_blood_sugar_result,
+        arguments: data);
   }
 
   Future<void> _getGlucoseRange(TimeFrameModel selectedTimeFrame) async {
@@ -175,14 +190,14 @@ class _AddBloodSugarControllerNewState
     }
   }
 
-  void _loadDetail() async {
+  Future<void> _loadDetail() async {
     try {
       BotToast.showLoading();
       model = await GlucoseClient().fetchDetail(widget.id);
       BotToast.closeAllLoading();
       _controller.text = model!.glucose!.round() == model!.glucose
           ? model!.glucose!.round().toString()
-          : model!.glucose.toString();
+          : roundNumber(model!.glucose!);
       number = model!.glucose!.round() == model!.glucose
           ? model!.glucose!.round().toDouble()
           : model!.glucose;
@@ -193,71 +208,69 @@ class _AddBloodSugarControllerNewState
       selectedTimeFrame = TimeFrameModel(
           id: model!.timeFrameId, code: '', name: model!.timeFrame);
       fromNipro = model!.byDevice;
-
-      setState(() {});
+      if (_sectionAddNoteKey.currentState != null) {
+        _sectionAddNoteKey.currentState
+            ?.updateFilesAndNote(files, model!.note ?? '');
+      }
     } catch (e) {
       print(e);
     }
   }
 
-  Future<void> _loadConfig() async {
-    // Prd01    Thức giấc
-    // Prd02    Trước ăn sáng
-    // Prd03    Sau ăn sáng
-    // Prd04    Trước ăn trưa
-    // Prd05    Sau ăn trưa
-    // Prd06    Trước ăn tối
-    // Prd07    Sau ăn tối
-    // Prd08    Trước tập thể dục
-    // Prd09    Sau tập thể dục
-    // Prd10    Giờ đi ngủ
-    // Prd11    Nửa đêm
-    // Prd12    Khác
-    // Prd13    Ăn sáng
-    // Prd14    Ăn trưa
-    // Prd15    Ăn tối
+  bool _isDataChange() {
+    // If no original model exists, consider it as new data
+    if (model == null) {
+      return true;
+    }
 
-    Map<String, String> mapTimeFrame = {
-      // Trước ăn
-      "Prd02": "Prd02",
-      "Prd04": "Prd02",
-      "Prd06": "Prd02",
+    // Check if number/index has changed
+    final currentInputStr = _controller.text;
+    final originalValueStr = roundNumber(model!.glucose!);
 
-      // Sau ăn
-      "Prd03": "Prd03",
-      "Prd05": "Prd03",
-      "Prd07": "Prd03",
+    if (currentInputStr != originalValueStr) {
+      return true;
+    }
 
-      // Đường huyết đói
-      "*": "Prd01",
-    };
+    // Check if note has changed
+    final currentNote = _controllerNote.text;
+    if (currentNote != (model!.note ?? '')) {
+      return true;
+    }
 
+    // Check if date has changed
+    final originalDate =
+        DateTime.fromMillisecondsSinceEpoch(model!.createDate! * 1000);
+    if (selectedDate.millisecondsSinceEpoch !=
+        originalDate.millisecondsSinceEpoch) {
+      return true;
+    }
+
+    // Check if images have changed (either count or removals)
+    if (files.length != model!.images.length || removeIDs.isNotEmpty) {
+      return true;
+    }
+
+    // No changes detected
+    return false;
+  }
+
+  Future<void> _loadConfig({String? selectedTimeframeId}) async {
     BotToast.showLoading();
     // load concurrent 2 api
     final result = await Future.wait([
-      GlucoseClient().fetchFlucoseTimeFrame(
+      GlucoseClient().fetchFlucoseTimeFrameV2(
           time: selectedDate.millisecondsSinceEpoch ~/ 1000),
       GlucoseClient().fetchColorConfig(),
-      GlucoseClient().fetchFlucoseTimeFrame(),
+      GlucoseClient().fetchFlucoseTimeFrameV2(),
     ]);
 
     if (result.length > 2) {
       final timeFrames = result[0] as List<TimeFrameModel>;
       final colors = result[1] as List<GlucoseColorConfig>?;
       final timeFramesFromApi = result[2] as List<TimeFrameModel>;
-      _times.addAll(timeFramesFromApi.where((e) => mapTimeFrame.values.contains(e.code)));
+      _times.clear();
+      _times.addAll(timeFramesFromApi);
       _times.sort((a, b) => a.code!.compareTo(b.code!));
-
-      // map name
-      _times.forEach((e) {
-        if (e.code! == 'Prd01') {
-          e.name = R.string.duong_huyet_doi;
-        } else if (e.code! == 'Prd02') {
-          e.name = R.string.truoc_an;
-        } else if (e.code! == 'Prd03') {
-          e.name = R.string.sau_an;
-        }
-      });
 
       if (colors != null) {
         _colorList = colors.map(((e) {
@@ -266,10 +279,17 @@ class _AddBloodSugarControllerNewState
         _rangeLabel = colors.map(((e) => e.name)).toList();
       }
 
-      selectedTimeFrame = timeFrames.length == 0 ? null : timeFrames.first;
+      if (selectedTimeframeId != null) {
+        selectedTimeFrame = _times.firstWhere(
+          (e) => e.id == selectedTimeframeId,
+          orElse: () => _times.first,
+        );
+      } else {
+        selectedTimeFrame = timeFrames.length == 0 ? null : timeFrames.first;
+      }
       if (selectedTimeFrame != null) {
         selectedTimeFrame = _times.firstWhere(
-          (e) => e.code! == mapTimeFrame[selectedTimeFrame!.code!],
+          (e) => e.code! == selectedTimeFrame!.code!,
           orElse: () => _times.first,
         );
         _lastTimeFrameIndex = _times.indexOf(selectedTimeFrame!);
@@ -278,13 +298,16 @@ class _AddBloodSugarControllerNewState
     }
     // rangeValue = changeRange(selectedTimeFrame);
     BotToast.closeAllLoading();
-    setState(() {});
   }
 
-  void _loadDescription() async {
-    des = await HbA1CClient().fetchShortGuide(1);
-    setState(() {});
+  void _doGuide() async {
+    Navigator.of(context).pushNamed(NavigatorName.glucose_intro_2nd_page);
   }
+
+  // void _loadDescription() async {
+  //   des = await HbA1CClient().fetchShortGuide(1);
+  //   setState(() {});
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -293,108 +316,92 @@ class _AddBloodSugarControllerNewState
         FocusScope.of(context).unfocus();
       },
       child: PopScope(
-        onPopInvoked: (bool didPop) async {
-          _showDialogSave();
-        },
         canPop: false,
         child: Scaffold(
-          backgroundColor: R.color.backgroundColor,
-          body: Container(
-            decoration: BoxDecoration(
-              image: DecorationImage(image: AssetImage(R.drawable.bg_glucose), fit: BoxFit.cover),
-            ),
-            child: Column(
-              children: [
-                _appBarSection(),
-                Expanded(
-                  child: SingleChildScrollView(
-                    child: Column(children: [
-                      _inforSection(context),
-                      Container(
-                        margin: const EdgeInsets.only(
-                            bottom: 16, left: 16, right: 16),
-                        decoration: BoxDecoration(
-                          color: R.color.white,
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                        padding: EdgeInsets.all(20),
-                        child: Column(
-                          children: [
-                            _dateTimeSectionV2(),
-                            const SizedBox(height: 16),
-                            _inputSection(),
-                            const SizedBox(height: 30),
-                            _bloodSugarRange(),
-                            const SizedBox(height: 16),
-                            _dateTimeFrameV2(),
-                          ],
-                        ),
+          backgroundColor: R.color.glucose_bg_color,
+          body: Column(
+            children: [
+              _appBarSection(),
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Column(children: [
+                    _inforSection(context),
+                    Container(
+                      margin: const EdgeInsets.only(
+                          bottom: 16, left: 16, right: 16),
+                      decoration: BoxDecoration(
+                        color: R.color.white,
+                        borderRadius: BorderRadius.circular(16),
                       ),
-                      _selectImageSection(),
-                      if (!AppSettings.isUS) _connectMachine(context),
-                      const SizedBox(height: 16),
-                    ]),
-                  ),
+                      padding: EdgeInsets.all(20),
+                      child: Column(
+                        children: [
+                          _dateTimeSectionV2(),
+                          const SizedBox(height: 16),
+                          _inputSection(),
+                          const SizedBox(height: 30),
+                          _bloodSugarRange(),
+                          const SizedBox(height: 16),
+                          _dateTimeFrameV2(),
+                        ],
+                      ),
+                    ),
+                    _selectImageSection(),
+                    if (!AppSettings.isUS) _connectMachine(context),
+                    const SizedBox(height: 16),
+                  ]),
                 ),
-                widget.type == 'input'
-                    ? Container(
-                        width: double.infinity,
-                        padding: EdgeInsets.only(
-                          top: 16,
-                          left: 16,
-                          right: 16,
-                          bottom: MediaQuery.of(context).padding.bottom / 2,
-                        ),
-                        child: SpacingColumn(
-                          spacing: 20,
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            if (isPregnancy)
-                              GestureDetector(
-                                onTap: () {
-                                  LevelOffDiabetesRulePicker.showModal(
-                                    context,
-                                    onSuccess: () {
-                                      isPregnancy = false;
-                                      _getGlucoseRange(selectedTimeFrame!);
-                                    },
-                                  );
-                                },
-                                child: Container(
-                                  color: Colors.white,
-                                  child: SpacingRow(
-                                    spacing: 15,
-                                    children: [
-                                      IgnorePointer(
-                                        child: CustomCheckboxWidget(
-                                          isChecked: isChangeStatus,
-                                          onTap: () {},
-                                        ),
+              ),
+              widget.type == 'input'
+                  ? Container(
+                      width: double.infinity,
+                      padding: EdgeInsets.only(
+                        top: 16,
+                        left: 16,
+                        right: 16,
+                        bottom: MediaQuery.of(context).padding.bottom / 2,
+                      ),
+                      child: SpacingColumn(
+                        spacing: 20,
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          if (isPregnancy)
+                            GestureDetector(
+                              onTap: () {
+                                LevelOffDiabetesRulePicker.showModal(
+                                  context,
+                                  onSuccess: () {
+                                    isPregnancy = false;
+                                    _getGlucoseRange(selectedTimeFrame!);
+                                  },
+                                );
+                              },
+                              child: Container(
+                                color: Colors.white,
+                                child: SpacingRow(
+                                  spacing: 15,
+                                  children: [
+                                    IgnorePointer(
+                                      child: CustomCheckboxWidget(
+                                        isChecked: isChangeStatus,
+                                        onTap: () {},
                                       ),
-                                      Text(
-                                        'Tôi không còn trong thai kỳ.',
-                                        style: TextStyle(fontSize: 16),
-                                      )
-                                    ],
-                                  ),
+                                    ),
+                                    Text(
+                                      'Tôi không còn trong thai kỳ.',
+                                      style: TextStyle(fontSize: 16),
+                                    )
+                                  ],
                                 ),
                               ),
-                            GestureDetector(
-                              onTap: () async {
-                                int indexRange =
-                                    findIndexInRanges(number, _rangeValue);
-                                if (isChangeStatus) {
-                                  LevelOffDiabetesRulePicker.showModal(context,
-                                      onSuccess: () {
-                                    if (indexRange == 4 || indexRange == 0) {
-                                      _showDialogWarning(
-                                          onConfirm: () => _submitData(),
-                                          range: indexRange);
-                                    } else {
-                                      _submitData();
-                                    }
-                                  });
-                                } else {
+                            ),
+                          GestureDetector(
+                            onTap: () async {
+                              int indexRange =
+                                  findIndexInRanges(number, _rangeValue);
+                              if (isChangeStatus) {
+                                LevelOffDiabetesRulePicker.showModal(context,
+                                    onSuccess: () {
                                   if (indexRange == 4 || indexRange == 0) {
                                     _showDialogWarning(
                                         onConfirm: () => _submitData(),
@@ -402,96 +409,114 @@ class _AddBloodSugarControllerNewState
                                   } else {
                                     _submitData();
                                   }
+                                });
+                              } else {
+                                if (indexRange == 4 || indexRange == 0) {
+                                  _showDialogWarning(
+                                      onConfirm: () => _submitData(),
+                                      range: indexRange);
+                                } else {
+                                  _submitData();
                                 }
-                              },
-                              child: Container(
-                                height: 48,
-                                width: 195,
-                                decoration: BoxDecoration(
-                                  color: R.color.mainColor,
-                                  borderRadius: BorderRadius.circular(200),
-                                  gradient: LinearGradient(
-                                    begin: Alignment.topLeft,
-                                    end: Alignment.centerRight,
-                                    colors: [
-                                      R.color.greenGradientTop,
-                                      R.color.greenGradientBottom
-                                    ],
-                                  ),
+                              }
+                            },
+                            child: Container(
+                              height: 48,
+                              width: 195,
+                              decoration: BoxDecoration(
+                                color: R.color.mainColor,
+                                borderRadius: BorderRadius.circular(200),
+                                gradient: LinearGradient(
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.centerRight,
+                                  colors: [
+                                    R.color.greenGradientTop,
+                                    R.color.greenGradientBottom
+                                  ],
                                 ),
-                                child: Center(
-                                  child: Text(
-                                    R.string.confirm.tr(),
-                                    style: TextStyle(
-                                      color: R.color.white,
-                                      fontWeight: FontWeight.w600,
-                                      fontSize: 16,
-                                    ),
+                              ),
+                              child: Center(
+                                child: Text(
+                                  R.string.confirm.tr(),
+                                  style: TextStyle(
+                                    color: R.color.white,
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 16,
                                   ),
                                 ),
                               ),
                             ),
-                          ],
-                        ),
-                      )
-                    : SafeArea(
-                        top: false,
-                        child: Container(
-                            margin: EdgeInsets.all(16),
-                            child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  GestureDetector(
-                                    onTap: () {
-                                      _showDialogDelete(context);
-                                    },
-                                    child: Container(
-                                        height: 48,
-                                        width: 164,
-                                        decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(200),
-                                            border: Border.all(
-                                                color: R.color.red, width: 2)),
-                                        child: Center(
-                                          child: Text(R.string.xoa_du_lieu.tr(),
-                                              style: TextStyle(
-                                                  color: R.color.red,
-                                                  fontSize: 16,
-                                                  fontWeight: FontWeight.w600)),
-                                        )),
-                                  ),
-                                  GestureDetector(
-                                    onTap: _editData,
-                                    child: Container(
+                          ),
+                        ],
+                      ),
+                    )
+                  : SafeArea(
+                      top: false,
+                      child: Container(
+                          margin: EdgeInsets.all(16),
+                          child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                GestureDetector(
+                                  onTap: () {
+                                    _showDialogDelete(context);
+                                  },
+                                  child: Container(
                                       height: 48,
                                       width: 164,
                                       decoration: BoxDecoration(
-                                          color: R.color.mainColor,
                                           borderRadius:
                                               BorderRadius.circular(200),
-                                          gradient: LinearGradient(
-                                              begin: Alignment.topLeft,
-                                              end: Alignment.centerRight,
-                                              colors: [
-                                                R.color.greenGradientTop,
-                                                R.color.greenGradientBottom
-                                              ])),
+                                          border: Border.all(
+                                              color: R.color.red, width: 2)),
                                       child: Center(
-                                        child: Text(R.string.save.tr(),
+                                        child: Text(R.string.xoa_du_lieu.tr(),
                                             style: TextStyle(
-                                                color: R.color.white,
+                                                color: R.color.red,
                                                 fontSize: 16,
                                                 fontWeight: FontWeight.w600)),
-                                      ),
+                                      )),
+                                ),
+                                GestureDetector(
+                                  onTap: () {
+                                    int indexRange =
+                                        findIndexInRanges(number, _rangeValue);
+                                    if (indexRange == 4 || indexRange == 0) {
+                                      _showDialogWarning(
+                                        onConfirm: () => _editData(),
+                                        range: indexRange,
+                                      );
+                                    } else {
+                                      _editData();
+                                    }
+                                  },
+                                  child: Container(
+                                    height: 48,
+                                    width: 164,
+                                    decoration: BoxDecoration(
+                                        color: R.color.mainColor,
+                                        borderRadius:
+                                            BorderRadius.circular(200),
+                                        gradient: LinearGradient(
+                                            begin: Alignment.topLeft,
+                                            end: Alignment.centerRight,
+                                            colors: [
+                                              R.color.greenGradientTop,
+                                              R.color.greenGradientBottom
+                                            ])),
+                                    child: Center(
+                                      child: Text(R.string.save.tr(),
+                                          style: TextStyle(
+                                              color: R.color.white,
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w600)),
                                     ),
                                   ),
-                                ])),
-                      ),
-                SizedBox(height: 8),
-              ],
-            ),
+                                ),
+                              ])),
+                    ),
+              SizedBox(height: 8),
+            ],
           ),
         ),
       ),
@@ -522,7 +547,14 @@ class _AddBloodSugarControllerNewState
 
   void _editData() async {
     FocusScope.of(context).unfocus();
-    final note = _controllerNote.text;
+    final data = _sectionAddNoteKey.currentState?.getNote();
+    if (data != null) {
+      files.clear();
+      files.addAll(data.files);
+      removeIDs.clear();
+      removeIDs.addAll(data.removeIDs);
+    }
+    final note = data?.note ?? '';
     final numberInput = _controller.text;
 
     if (numberInput.isEmpty) {
@@ -554,16 +586,14 @@ class _AddBloodSugarControllerNewState
           widget.id,
           selectedTimeFrame!.id,
           (selectedDate.millisecondsSinceEpoch ~/ 1000).toInt(),
-          numberInput,
+          number.toString(),
           null,
           note,
           fromNipro,
           removeIDs,
           paths);
-      if (result == true) {
-        // TODO: update data
-        _navigateAfterSuccess('');
-      }
+      _navigateAfterSuccess(
+          widget.id ?? '', result?.images ?? [], _isDataChange());
 
       BotToast.closeAllLoading();
     } catch (e, _) {
@@ -609,7 +639,7 @@ class _AddBloodSugarControllerNewState
       for (var file in files) {
         paths.add(file.path);
       }
-      final resultId = await GlucoseClient().postIndexGlucose(
+      final result = await GlucoseClient().postIndexGlucose(
           selectedTimeFrame!.id,
           (selectedDate.millisecondsSinceEpoch ~/ 1000).toInt(),
           number.toString(),
@@ -617,7 +647,7 @@ class _AddBloodSugarControllerNewState
           note,
           fromNipro,
           paths);
-      if (resultId?.isNotEmpty == true) {
+      if (result?.id.isNotEmpty == true) {
         await TrackingManager.trackEvent(
           'glucose_add',
           'kpi_glucose_add',
@@ -628,7 +658,7 @@ class _AddBloodSugarControllerNewState
         );
         await HomeClient().completeSmartGoal(selectedDate, widget.goalId ?? '',
             1, ScheduleType.blood_sugar.typeIndex);
-        _navigateAfterSuccess(resultId!);
+        _navigateAfterSuccess(result!.id, result.images);
       }
 
       BotToast.closeAllLoading();
@@ -773,14 +803,20 @@ class _AddBloodSugarControllerNewState
       final date =
           DateTime.fromMillisecondsSinceEpoch(model!.createDate! * 1000);
       if (note == noteText &&
-          numberInput == model!.glucose!.round().toString() &&
+          numberInput == roundNumber(model!.glucose!) &&
           files.length == model!.images.length &&
           removeIDs.length == 0 &&
           date.millisecondsSinceEpoch == selectedDate.millisecondsSinceEpoch) {
+        if (_changedUnit)
+          Observable.instance
+              .notifyObservers([], notifyName: "glucose_data_refresh");
         Navigator.pop(context);
         return;
       }
     } else if (note.isEmpty && numberInput.isEmpty && files.length == 0) {
+      if (_changedUnit)
+        Observable.instance
+            .notifyObservers([], notifyName: "glucose_data_refresh");
       Navigator.pop(context);
       return;
     }
@@ -841,6 +877,9 @@ class _AddBloodSugarControllerNewState
                             Expanded(
                               child: GestureDetector(
                                   onTap: () {
+                                    if (_changedUnit)
+                                      Observable.instance.notifyObservers([],
+                                          notifyName: "glucose_data_refresh");
                                     Navigator.pop(context);
                                     Navigator.pop(context);
                                   },
@@ -992,11 +1031,11 @@ class _AddBloodSugarControllerNewState
   }
 
   Future<void> showGuide(BuildContext context) async {
-    Description.showTooltip(context,
-        data: des!, title: R.string.blood_sugar_for_diabetes.tr());
-    clickTime = clickTime + 1;
-    await AppSettings.setValueOfClickShortGuideIndex(
-        ScreenList.BLOOD_SUGAR.index, clickTime);
+    // Description.showTooltip(context,
+    //     data: des!, title: R.string.blood_sugar_for_diabetes.tr());
+    // clickTime = clickTime + 1;
+    // await AppSettings.setValueOfClickShortGuideIndex(
+    //     ScreenList.BLOOD_SUGAR.index, clickTime);
   }
 
   Widget _appBarSection() {
@@ -1019,22 +1058,24 @@ class _AddBloodSugarControllerNewState
           }),
       actions: [
         GestureDetector(
-          onTap: () async {
-            if (clickTime >= 2) {
-              await showGuide(context);
-            } else {
-              setState(() {
-                isClicked = !isClicked;
-                clickTime = clickTime + 1;
-              });
-            }
+          onTap: () {
+            _doGuide();
+            // if (clickTime >= 2) {
+            //   await showGuide(context);
+            // } else {
+            //   setState(() {
+            //     isClicked = !isClicked;
+            //     clickTime = clickTime + 1;
+            //   });
+            // }
           },
           child: Padding(
             padding: const EdgeInsets.only(left: 16, right: 16),
             child: isClicked
                 ? Image.asset(R.drawable.ic_help_circle_active,
                     width: 24, height: 24)
-                : Image.asset(R.drawable.ic_help_outlined, width: 24, height: 24),
+                : Image.asset(R.drawable.ic_help_outlined,
+                    width: 24, height: 24),
           ),
         ),
       ],
@@ -1042,15 +1083,16 @@ class _AddBloodSugarControllerNewState
   }
 
   Widget _inforSection(BuildContext context) {
-    return Padding(
-        padding: const EdgeInsets.only(bottom: 16, left: 16, right: 16),
-        child: isClicked && clickTime < 2
-            ? Description(
-                isCreateData: true,
-                input: true,
-                data: des,
-                titleDetail: R.string.blood_sugar_for_diabetes.tr())
-            : SizedBox());
+    return SizedBox();
+    // return Padding(
+    //     padding: const EdgeInsets.only(bottom: 16, left: 16, right: 16),
+    //     child: isClicked && clickTime < 2
+    //         ? Description(
+    //             isCreateData: true,
+    //             input: true,
+    //             data: des,
+    //             titleDetail: R.string.blood_sugar_for_diabetes.tr())
+    //         : SizedBox());
   }
 
   Widget _inputSection() {
@@ -1071,7 +1113,7 @@ class _AddBloodSugarControllerNewState
             child: TextField(
               focusNode: _focusNodeKPI,
               controller: _controller,
-              maxLength: isMgPerDl ? 3 : 4,
+              maxLength: isMgPerDl ? 5 : 4,
               autofocus: true,
               textAlign: TextAlign.center,
               keyboardType: TextInputType.numberWithOptions(decimal: true),
@@ -1080,9 +1122,26 @@ class _AddBloodSugarControllerNewState
                   fontSize: 48,
                   fontFamily: 'Viga',
                   fontWeight: FontWeight.w500),
+              inputFormatters: [
+                TextInputFormatter.withFunction((oldValue, newValue) {
+                  if (isMgPerDl) {
+                    // 3 digits
+                    if (RegExp(r'^\d{0,3}$').hasMatch(newValue.text)) {
+                      return newValue;
+                    }
+                  } else {
+                    // 2 digits and 1 decimal (optional)
+                    if (RegExp(r'^\d{0,2}([.,]\d{0,1})?$')
+                        .hasMatch(newValue.text)) {
+                      return newValue;
+                    }
+                  }
+                  return oldValue;
+                }),
+              ],
               decoration: InputDecoration(
                 counterText: '',
-                hintText: '0.0',
+                hintText: isMgPerDl ? '0' : '0,0',
                 contentPadding: EdgeInsets.only(bottom: 8),
                 border: InputBorder.none,
                 hintStyle: TextStyle(
@@ -1112,15 +1171,22 @@ class _AddBloodSugarControllerNewState
                 onChange: (index) async {
                   if (index == _lastUnitIndex) return;
                   _lastUnitIndex = index;
+                  _changedUnit = true;
                   await _changeUnit();
-              
+
                   final glucose = roundAsFixed(
                       AppSettings.userInfo!.glucoseUnit == 1
                           ? number! * mmollToMgdlFactor
                           : number! / mmollToMgdlFactor);
-                  number = glucose;
+                  if (AppSettings.userInfo!.glucoseUnit == 1) {
+                    number = glucose.round().toDouble();
+                  } else {
+                    number = glucose;
+                  }
                   if (_controller.text != "") {
-                    _controller.text = glucose.toString();
+                    _controller.text = AppSettings.userInfo!.glucoseUnit == 1
+                        ? glucose.round().toString()
+                        : roundNumber(glucose);
                   }
                   setState(() {
                     isMgPerDl = index == 0;
@@ -1178,7 +1244,9 @@ class _AddBloodSugarControllerNewState
       height: 32.h,
       child: ToggleButtonsHorizontal(
         names: _times.map((e) => e.name!).toList(),
-        flexes: _times.length > 1 ? [3, ...List.generate(_times.length - 1, (index) => 2)] : null,
+        flexes: _times.length > 1
+            ? [3, ...List.generate(_times.length - 1, (index) => 2)]
+            : null,
         backgroundColor: Color(0xFFF2F6F9),
         selectedIndex: _lastTimeFrameIndex,
         onChange: (index) async {
@@ -1219,7 +1287,8 @@ class _AddBloodSugarControllerNewState
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Image.asset(R.drawable.im_glucose_input_device, width: 40, height: 40),
+            Image.asset(R.drawable.im_glucose_input_device,
+                width: 40, height: 40),
             const SizedBox(width: 12),
             Expanded(
               child: Text(
@@ -1247,32 +1316,36 @@ class _AddBloodSugarControllerNewState
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(
         mainAxisSize: MainAxisSize.min,
-          children: [
-            // TODO: Enhance this
-            // magic number follow sum on design or edit 1by1 :D
-            SizedBox(height: max(height - 750 - (files.length > 0 ? 76 : 0), 12)),
-            Container(
-              width: 235,
-              height: 20,
-              alignment: Alignment.center,
-              child: Row(
-                children: [
-                  Expanded(child: Container(height: 1, color: R.color.greenGradientBottom)),
-                  Text(
-                    '   ${R.string.or.tr()}   ',
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: R.color.greenGradientBottom,
-                    ),
+        children: [
+          // TODO: Enhance this
+          // magic number follow sum on design or edit 1by1 :D
+          SizedBox(height: max(height - 750 - (files.length > 0 ? 76 : 0), 12)),
+          Container(
+            width: 235,
+            height: 20,
+            alignment: Alignment.center,
+            child: Row(
+              children: [
+                Expanded(
+                    child: Container(
+                        height: 1, color: R.color.greenGradientBottom)),
+                Text(
+                  '   ${R.string.or.tr()}   ',
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: R.color.greenGradientBottom,
                   ),
-                  Expanded(child: Container(height: 1, color: R.color.greenGradientBottom)),
-                ],
-              ),
+                ),
+                Expanded(
+                    child: Container(
+                        height: 1, color: R.color.greenGradientBottom)),
+              ],
             ),
-            const SizedBox(height: 12),
-            connectMachineW,
-          ],
-        ),
+          ),
+          const SizedBox(height: 12),
+          connectMachineW,
+        ],
+      ),
     );
   }
 
@@ -1294,11 +1367,12 @@ class _AddBloodSugarControllerNewState
     bool glucoseUnit = AppSettings.userInfo!.glucoseUnit == 1;
 
     for (int i = 0; i < ranges.length - 1; i++) {
+      if (i == ranges.length - 1) break;
       if (number >=
               (glucoseUnit
                   ? ranges[i]
                   : roundAsFixed(ranges[i] / mmollToMgdlFactor)) &&
-          number <=
+          number <
               (glucoseUnit
                   ? ranges[i + 1]
                   : roundAsFixed(ranges[i + 1] / mmollToMgdlFactor))) {
@@ -1314,7 +1388,8 @@ class _AddBloodSugarControllerNewState
     bool glucoseUnit = AppSettings.userInfo!.glucoseUnit == 1;
     int index = -1;
     int indexRange = findIndexInRanges(_number, _rangeValue);
-    num widthRange = (AppMediaQuery.deviceWidth - 72) / (_rangeValue.length);
+    num widthRange =
+        (MediaQuery.of(context).size.width - 72) / (_rangeValue.length);
     // print('hihi widthRange: $widthRange');
     num width = _number == 0 ? 0 : widthRange * (indexRange);
 
@@ -1468,6 +1543,7 @@ class _AddBloodSugarControllerNewState
             selectedDate = date ?? DateTime.now();
           });
           _loadConfig();
+          setState(() {});
         },
       ),
     );

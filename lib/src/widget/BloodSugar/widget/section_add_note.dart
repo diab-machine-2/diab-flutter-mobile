@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/widgets/network_image_widget.dart';
@@ -15,11 +16,13 @@ class SectionAddNote extends StatefulWidget {
     this.controllerNote,
     this.maxMedia = 5,
     this.initialFiles,
+    this.maxLength = 250,
   });
 
   final FocusNode? focusNode;
   final TextEditingController? controllerNote;
   final int maxMedia;
+  final int maxLength;
   final List<dynamic>? initialFiles;
 
   @override
@@ -30,11 +33,26 @@ class SectionAddNoteState extends State<SectionAddNote> {
   List<dynamic> _files = [];
   List<String?> _removeIDs = [];
 
+  int _currentLength = 0;
+
   @override
   void initState() {
     super.initState();
     _files.addAll(widget.initialFiles ?? []);
+    if (widget.controllerNote != null) {
+      _currentLength = widget.controllerNote?.text.length ?? 0;
+    }
   }
+
+  void updateFilesAndNote(List<dynamic> files, String note) {
+    _files.clear();
+    _files.addAll(files);
+    widget.controllerNote?.text = note;
+    _currentLength = note.length;
+    setState(() {});
+  }
+
+  bool get _isAddable => _files.length < widget.maxMedia;
 
   @override
   Widget build(BuildContext context) {
@@ -52,8 +70,11 @@ class SectionAddNoteState extends State<SectionAddNote> {
             controller: widget.controllerNote,
             style: TextStyle(color: R.color.black, fontSize: 16, fontWeight: FontWeight.w400),
             keyboardType: TextInputType.multiline,
+            maxLength: widget.maxLength,
+            maxLengthEnforcement: MaxLengthEnforcement.enforced,
             decoration: InputDecoration(
               hintText: R.string.nhap_ghi_chu_cua_ban.tr(),
+              counterText: '',
               contentPadding: EdgeInsets.only(bottom: 8),
               border: InputBorder.none,
               hintStyle: TextStyle(
@@ -62,10 +83,17 @@ class SectionAddNoteState extends State<SectionAddNote> {
                 color: R.color.primaryGreyColor,
               ),
               suffixIcon: GestureDetector(
-                onTap: () {
-                  _showActionSheet(context);
-                },
-                child: Image.asset(R.drawable.ic_pick_photo, width: 24, height: 24),
+                onTap: _isAddable
+                    ? () {
+                        _showActionSheet(context);
+                      }
+                    : null,
+                child: Image.asset(
+                  R.drawable.ic_pick_photo,
+                  width: 24,
+                  height: 24,
+                  color: _isAddable ? null : R.color.primaryGreyColor,
+                ),
               ),
               suffixIconConstraints: BoxConstraints(
                 maxHeight: 24,
@@ -74,8 +102,26 @@ class SectionAddNoteState extends State<SectionAddNote> {
             ),
             maxLines: 10,
             minLines: 1,
+            onChanged: (value) {
+              _currentLength = value.length;
+              setState(() {});
+            },
           ),
           Container(height: 1, color: R.color.color0xffE5E5E5),
+          Align(
+            alignment: Alignment.centerRight,
+            child: Padding(
+              padding: const EdgeInsets.only(top: 8.0),
+              child: Text(
+                '$_currentLength/${widget.maxLength}',
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w400,
+                  color: R.color.primaryGreyColor,
+                ),
+              ),
+            ),
+          ),
           if (_files.isNotEmpty) ...[
             const SizedBox(height: 16),
             Wrap(
@@ -109,7 +155,8 @@ class SectionAddNoteState extends State<SectionAddNote> {
                                     File(_files[index].path),
                                     fit: BoxFit.cover,
                                   )
-                                : NetWorkImageWidget(imageUrl: _files[index].url, fit: BoxFit.cover),
+                                : NetWorkImageWidget(
+                                    imageUrl: _files[index].url, fit: BoxFit.cover),
                           ),
                         ),
                         GestureDetector(
@@ -139,7 +186,7 @@ class SectionAddNoteState extends State<SectionAddNote> {
 
   void _showActionSheet(BuildContext context) {
     FocusScope.of(context).unfocus();
-    if (_files.length < widget.maxMedia) {
+    if (_isAddable) {
       final action = CupertinoActionSheet(
         actions: <Widget>[
           CupertinoActionSheetAction(

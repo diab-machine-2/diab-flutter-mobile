@@ -5,8 +5,7 @@ import 'package:flutter_observer/Observer.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/firebase_tracking/activity_list_tracking.dart';
 import 'package:medical/src/app_setting/firebase_tracking/kpi_glycemic_tracking.dart';
-import 'package:medical/src/modal/HbA1C/short_gui.dart';
-import 'package:medical/src/repo/HbA1C/HbA1C_client.dart';
+import 'package:medical/src/repo/glucose/glucose_client.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/components/custom_action_descriptipn.dart';
@@ -14,10 +13,9 @@ import 'package:medical/src/widget/glucose_intro/widgets/glucose_lesson_section.
 import 'package:medical/src/widget/home/fliter_enum.dart';
 import 'package:medical/src/widget/my_plan_screens/lesson_tab/lesson_detail/lesson_detail_page.dart';
 import 'package:medical/src/widget/tabbar/fillter_bloodSugar_panel.dart';
-import 'package:medical/src/widgets/common_page.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../app_setting/app_setting.dart';
+import 'constant/bloodSugar_rangetype.dart';
 import 'widget/bloodSugar_chart.dart';
 import 'widget/bloodSugar_compare_chart.dart';
 import 'widget/bloodSugar_contain_detail.dart';
@@ -39,9 +37,6 @@ class _BloodSugarDetailTabbarControllerState extends State<BloodSugarDetailTabba
     with SingleTickerProviderStateMixin, Observer {
   final GlobalKey<CustomActionDescriptionState> customActionDesKey = GlobalKey();
 
-  // GlobalKey<BloodSugarOverviewControllerState> overViewKey = GlobalKey();
-  // final GlobalKey<BloodSugarDetailControllerState> detailKey = GlobalKey();
-
   final GlobalKey<BloodSugarDetailState> sugarDetailKey = GlobalKey();
   final GlobalKey<BloodSugarChartState> sugarChartKey = GlobalKey();
   final GlobalKey<BloodSugarCompareChartState> sugarCompareKey = GlobalKey();
@@ -50,31 +45,20 @@ class _BloodSugarDetailTabbarControllerState extends State<BloodSugarDetailTabba
   late String name = R.string.filter_day.tr(args: ['30']);
   String? glucoseID;
 
-  ShortGuiModel? des;
+  bool _haveGlucoseScheduler = false;
 
   @override
   void initState() {
+    _checkGlucoseScheduler();
     super.initState();
     Observable.instance.addObserver(this);
-    checkShowDes();
-    loadDescription();
     KpiGlycemicTracking.firebaseSetup();
-
-    // TODO: KpiGlycemicTracking.clickDetailTab();
-
-    // List<String> filters = await AppSettings.getHomeFilters();
-    // name = filters[ScreenList.BLOOD_SUGAR.index];
-    // selectedIndex = valueOfSelectedFilter[name]!;
   }
 
   @override
   void update(Observable observable, String? notifyName, Map<dynamic, dynamic>? map) {
-    if (notifyName == 'glucose_change_data') {
-      // overViewKey.currentState?.reloadData(periodFilterType);
-      // detailKey.currentState?.reloadData(periodFilterType);
-      // if (map != null && map['index'] != null) {
-      //   _tabController!.animateTo(map['index']);
-      // }
+    if (notifyName == 'glucose_change_data' || notifyName == 'glucose_data_refresh') {
+      _doReloadData(periodFilterType);
     }
   }
 
@@ -83,6 +67,26 @@ class _BloodSugarDetailTabbarControllerState extends State<BloodSugarDetailTabba
     Observable.instance.removeObserver(this);
     AppSettings.syncDataFromHealthApp();
     super.dispose();
+  }
+
+  void _checkGlucoseScheduler() async {
+    _haveGlucoseScheduler = await GlucoseClient().checkGlucoseSchedulerExisting();
+    if (mounted && _haveGlucoseScheduler) {
+      setState(() {});
+    }
+  }
+
+  void _viewListing() {
+    Navigator.pushNamed(context, NavigatorName.detail_blood_sugar_listing,
+        arguments: {'glucoseID': glucoseID, 'initPeriodFilterType': periodFilterType});
+  }
+
+  void _viewFilteredListing(BloodSugarRangeType rangeType) {
+    Navigator.pushNamed(context, NavigatorName.detail_blood_sugar_listing, arguments: {
+      'glucoseID': glucoseID,
+      'glucoseDistributionType': rangeType.value,
+      'initPeriodFilterType': periodFilterType,
+    });
   }
 
   void _doReloadData(int periodFilterType) {
@@ -110,38 +114,32 @@ class _BloodSugarDetailTabbarControllerState extends State<BloodSugarDetailTabba
 
   void loadInputWithId(int index, String? id) {
     glucoseID = id;
-    // _tabController!.animateTo(index);
-
-    // if (detailKey.currentState != null) {
-    //   detailKey.currentState!.loadDataToID(periodFilterType);
-    // }
   }
 
-  void checkShowDes() async {
-    final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
-    final SharedPreferences prefs = await _prefs;
-    final showDes = prefs.getBool('show_des_glucose');
-    prefs.setBool('show_des_glucose', false);
-    if (showDes == null || showDes) {
-      customActionDesKey.currentState!.showDes();
-    }
-  }
-
-  void loadDescription() async {
-    des = await HbA1CClient().fetchShortGuide(1);
-    setState(() {});
+  void _doInputGlucose() async {
+    Navigator.of(context).pushNamed(NavigatorName.add_blood_sugar_new, arguments: {'type': 'input'});
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFFF4F4F5),
-      body: CommonPage(
-        background: R.drawable.bg_glucose,
-        title: R.string.duong_huyet.tr(),
-        appBarAction: GestureDetector(
-          onTap: () {},
-          child: Padding(
+      backgroundColor: R.color.glucose_bg_color,
+      appBar: AppBar(
+        backgroundColor: R.color.glucose_bg_color,
+        leading: IconButton(
+          onPressed: () => Navigator.of(context).pop(),
+          icon: Icon(Icons.arrow_back, color: R.color.textDark),
+        ),
+        title: Text(
+          R.string.duong_huyet.tr(),
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.w600,
+            color: R.color.textDark,
+          ),
+        ),
+        actions: [
+          Padding(
             padding: const EdgeInsets.only(right: 8),
             child: TextButton(
               onPressed: () {
@@ -154,83 +152,80 @@ class _BloodSugarDetailTabbarControllerState extends State<BloodSugarDetailTabba
               ),
             ),
           ),
-        ),
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              const SizedBox(height: 12),
-              _sectionFilter(),
-              const SizedBox(height: 24),
-              BloodSugarChart(
-                key: sugarChartKey,
-                periodFilterType: periodFilterType,
-              ),
-              const SizedBox(height: 14),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: BloodSugarDetail(
-                  key: sugarDetailKey,
-                  periodFilterType: periodFilterType,
-                ),
-              ),
-
-              // Compare chart will align itself if have data
-              // const SizedBox(height: 16),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: BloodSugarCompareChart(
-                  key: sugarCompareKey,
-                  periodFilterType: periodFilterType,
-                ),
-              ),
-
-              const SizedBox(height: 24),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12),
-                child: GlucoseLessonSection(
-                  onLessonTap: (lesson) => _navigateToLessonDetail(lesson.id, lesson.type),
-                ),
-              ),
-
-              const SizedBox(height: 32),
-
-              // Buttons
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: InkWell(
-                  onTap: () {
-                    Navigator.pushNamed(context, NavigatorName.schedule_glucose);
-                  },
-                  child: Container(
-                    height: 48,
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      color: R.color.gray_btn,
-                      borderRadius: BorderRadius.circular(24),
-                    ),
-                    child: Center(
-                      child: Text(
-                        R.string.blood_sugar_schedule_single_line.tr(),
-                        style: TextStyle(
-                          color: R.color.dark,
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
+        ],
+      ),
+      body: Stack(
+        children: [
+          Positioned.fill(
+            child: SingleChildScrollView(
+              padding: EdgeInsets.only(bottom: 128),
+              child: Column(
+                children: [
+                  // This chart also include filter and view listing
+                  BloodSugarChart(
+                    key: sugarChartKey,
+                    periodFilterType: periodFilterType,
+                    filterName: name,
+                    onFilterChanged: () {
+                      showActionFilter(context);
+                    },
+                    onViewListing: _viewListing,
+                  ),
+                  const SizedBox(height: 14),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: BloodSugarDetail(
+                      key: sugarDetailKey,
+                      periodFilterType: periodFilterType,
+                      onViewMore: _viewListing,
+                      onViewDetail: _viewFilteredListing,
                     ),
                   ),
-                ),
+
+                  // Compare chart will align itself if have data
+                  // const SizedBox(height: 16),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: BloodSugarCompareChart(
+                      key: sugarCompareKey,
+                      periodFilterType: periodFilterType,
+                      onViewDetail: _viewListing,
+                    ),
+                  ),
+
+                  const SizedBox(height: 24),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                    child: GlucoseLessonSection(
+                      onLessonTap: (lesson) => _navigateToLessonDetail(lesson.id, lesson.type),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                    child: _buildCreateScheduleButton(),
+                  ),
+                  const SizedBox(height: 20),
+                ],
               ),
-              const SizedBox(height: 16),
-              Padding(
+            ),
+          ),
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: 0,
+            child: Container(
+              padding: EdgeInsets.only(
+                bottom: 8 + MediaQuery.of(context).padding.bottom / 2,
+                left: 16,
+                right: 16,
+                top: 12,
+              ),
+              color: Colors.white,
+              child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: InkWell(
-                  onTap: () {
-                    Navigator.of(context).pushNamed(
-                      NavigatorName.add_blood_sugar_new,
-                      arguments: {'type': 'input'},
-                    );
-                  },
+                  onTap: _doInputGlucose,
                   child: Container(
                     height: 48,
                     width: double.infinity,
@@ -251,74 +246,43 @@ class _BloodSugarDetailTabbarControllerState extends State<BloodSugarDetailTabba
                   ),
                 ),
               ),
-              const SizedBox(height: 32),
-            ],
+            ),
           ),
-        ),
+        ],
       ),
     );
   }
 
-  Widget _sectionFilter() {
-    return Container(
-      height: 36,
-      width: double.infinity,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const SizedBox(width: 42),
-          SizedBox(
-            width: 165,
-            child: InkWell(
-              onTap: () {
-                showActionFilter(context);
-              },
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                  color: R.color.white,
-                  borderRadius: BorderRadius.circular(18),
-                  border: Border.all(color: R.color.color0xffE5E5E5),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        name,
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w400,
-                          color: R.color.textDark,
-                        ),
-                      ),
-                      const SizedBox(width: 4),
-                      Icon(
-                        Icons.keyboard_arrow_down,
-                        color: R.color.textDark,
-                        size: 16,
-                      ),
-                    ],
-                  ),
-                ),
+  Widget _buildCreateScheduleButton() {
+    return InkWell(
+      onTap: () {
+        Navigator.of(context).pushNamed(NavigatorName.schedule_glucose);
+      },
+      child: Container(
+        height: 76,
+        width: double.infinity,
+        decoration: BoxDecoration(
+          color: R.color.white,
+          borderRadius: BorderRadius.circular(24),
+          border: Border.all(color: R.color.gray_btn),
+        ),
+        alignment: Alignment.center,
+        child: Row(
+          children: [
+            const SizedBox(width: 17),
+            Image.asset(R.drawable.ic_glucose_create_scheduler, width: 39, height: 41),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                _haveGlucoseScheduler
+                    ? 'Lịch đo đường huyết của bạn'
+                    : 'Gợi ý lịch đo từ chuyên gia',
               ),
             ),
-          ),
-          const SizedBox(width: 6),
-          SizedBox(
-            width: 36,
-            height: 36,
-            child: DecoratedBox(
-              decoration: BoxDecoration(
-                color: R.color.white,
-                borderRadius: BorderRadius.circular(18),
-                border: Border.all(color: R.color.color0xffE5E5E5),
-              ),
-              child: Center(child: Icon(Icons.history, color: R.color.textDark, size: 20)),
-            ),
-          ),
-        ],
+            Icon(Icons.arrow_forward_ios, color: R.color.primaryGreyColor, size: 20),
+            const SizedBox(width: 16),
+          ],
+        ),
       ),
     );
   }

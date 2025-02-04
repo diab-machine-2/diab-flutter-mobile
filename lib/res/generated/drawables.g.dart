@@ -466,8 +466,8 @@ class Drawables {
   String get ic_pick_photo => "lib/res/drawables/ic_pick_photo.png";
   String get ic_social_zalo => "lib/res/drawables/ic_social_zalo.png";
   String get ic_speak_text => "lib/res/drawables/ic_speak_text.png";
-  String get ic_compare => "lib/res/drawables/ic_compare.png";
 
+  String get ic_glucose_create_scheduler => "lib/res/drawables/glucose/ic_glucose_create_scheduler.png";
   String get im_glucose_intro => "lib/res/drawables/glucose/im_glucose_intro.png";
   String get im_glucose_input_device => "lib/res/drawables/glucose/im_glucose_input_device.png";
   String get im_glucose_input_manual => "lib/res/drawables/glucose/im_glucose_input_manual.png";
@@ -586,4 +586,21 @@ class Drawables {
   String get ic_reminder => "lib/res/drawables/ic_reminder.png";
   String get ic_schedule_hb1ac => "lib/res/drawables/ic_schedule_hb1ac.png";
   String get ic_schedule_height => "lib/res/drawables/ic_schedule_height.png";
+  String get ic_at_clinic => "lib/res/drawables/ic_at_clinic.png";
+  String get ic_telemedicine => "lib/res/drawables/ic_telemedicine.png";
+  String get ic_ellipse => "lib/res/drawables/ic_ellipse.png";
+  String get ic_map_marker => "lib/res/drawables/ic_map_marker.png";
+  String get online_consulting => "lib/res/drawables/online_consulting.png";
+  String get offline_consulting => "lib/res/drawables/offline_consulting.png";
+  String get ic_dialog_success => "lib/res/drawables/ic_dialog_success.png";
+  String get map_location_bg => "lib/res/drawables/map_location_bg.png";
+  String get ic_map_direction => "lib/res/drawables/ic_map_direction.png";
+  String get ic_star => "lib/res/drawables/ic_star.png";
+  String get ic_avatar => "lib/res/drawables/ic_avatar.png";
+  String get ic_benh_ly => "lib/res/drawables/dsmes_service/benh-ly.png";
+  String get ic_dinh_duong_bua_an_can_bang => "lib/res/drawables/dsmes_service/dinh-duong-bua-an-can-bang.png";
+  String get ic_theo_doi_chi_so => "lib/res/drawables/dsmes_service/theo-doi-chi-so.png";
+  String get ic_van_dong_va_tinh_than => "lib/res/drawables/dsmes_service/van-dong-va-tinh-than.png";
+  String get ic_khac => "lib/res/drawables/dsmes_service/khac.png";
+  String get dsmes_empty => "lib/res/drawables/dsmes_empty.png";
 }
