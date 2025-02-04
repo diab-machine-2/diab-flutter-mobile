@@ -3,6 +3,7 @@ import 'package:medical/src/model/request/create_dsmes_booking_request.dart';
 import 'package:medical/src/model/request/dsmes_cancel_booking_request.dart';
 import 'package:medical/src/model/request/dsmes_reschedule_request.dart';
 import 'package:medical/src/model/request/get_dsmes_appointment_request.dart';
+import 'package:medical/src/model/response/clinic_speciality_list_response.dart';
 import 'package:medical/src/model/response/common_response.dart';
 import 'package:medical/src/model/response/create_dsmes_offline_booking_response.dart';
 import 'package:medical/src/model/response/dsmes_clinic_detail_response.dart';
@@ -64,4 +65,10 @@ abstract class DocosanApi {
   @POST("api/payment/create-order-partner")
   Future<CreateDsmesOfflineBookingResponse> createDsmesOnlineBooking(
       @Body() CreateDsmesBookingRequest request);
+
+  @GET("api/diseases")
+  Future<ClinicSpecialityListResponse> getCLinicSpecialityList(
+    @Query('language') String? language,
+    @Query('version') String? version,
+  );
 }

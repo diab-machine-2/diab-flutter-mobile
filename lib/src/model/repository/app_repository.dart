@@ -31,6 +31,7 @@ import 'package:medical/src/model/request/update_shared_profile_request.dart';
 import 'package:medical/src/model/request/zoom_token_request.dart';
 import 'package:medical/src/model/response/blood_sugar_template_response.dart';
 import 'package:medical/src/model/response/branchio_generate_zoom_response.dart';
+import 'package:medical/src/model/response/clinic_speciality_list_response.dart';
 import 'package:medical/src/model/response/common_response.dart';
 import 'package:medical/src/model/response/create_calendar_response.dart';
 import 'package:medical/src/model/response/create_dsmes_offline_booking_response.dart';
@@ -984,7 +985,8 @@ class AppRepository {
     }
   }
 
-  Future<ApiResult<DsmesClinicListResponse>> getClinicList({String? type}) async {
+  Future<ApiResult<DsmesClinicListResponse>> getClinicList(
+      {String? type}) async {
     try {
       final response = await docosanClient.getClinicList(type);
       return ApiResult.success(data: response);
@@ -1093,6 +1095,16 @@ class AppRepository {
       getDiabClinicsSchedule() async {
     try {
       final response = await docosanClient.getDiabClinicsSchedule();
+      return ApiResult.success(data: response);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
+  Future<ApiResult<ClinicSpecialityListResponse>>
+      getCLinicSpecialityList() async {
+    try {
+      final response = await docosanClient.getCLinicSpecialityList("vi", "8.5");
       return ApiResult.success(data: response);
     } catch (e) {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));
