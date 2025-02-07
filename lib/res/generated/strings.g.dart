@@ -1211,7 +1211,8 @@ class Strings {
   String get symptom => 'symptom';
   String get cancel_booking => 'cancel_booking';
   String get confirm_cancel_schedule => 'confirm_cancel_schedule';
-  String get confirm_cancel_schedule_content => 'confirm_cancel_schedule_content';
+  String get confirm_cancel_schedule_content =>
+      'confirm_cancel_schedule_content';
   String get confirm_change_booking_content => 'confirm_change_booking_content';
   String get rebooking => 'rebooking';
   String get support => 'support';
@@ -1231,4 +1232,10 @@ class Strings {
   String get at_clinic => 'at_clinic';
   String get kham_tu_xa => 'kham_tu_xa';
   String get clinic_map => 'clinic_map';
+  String get chon_nhu_cau_kham => 'chon_nhu_cau_kham';
+  String get chon_noi_kham => 'chon_noi_kham';
+  String get benh_khac => 'benh_khac';
+  String get view_information => 'view_information';
+  String get da_kham => 'da_kham';
+  String get loc => 'loc';
 }

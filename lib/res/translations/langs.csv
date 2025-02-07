@@ -1203,4 +1203,10 @@ exist_appointment,"Bạn đã chọn lịch hẹn này trước đó","You have 
 symptom_hint_text,"Nhập lưu ý của bạn","Enter your note",
 kham_tu_xa,"Khám từ xa","Remote consultation",
 at_clinic,"Tại trung tâm","At clinic",
-clinic_map,'Sơ đồ trung tâm','Clinic map'
+clinic_map,'Sơ đồ trung tâm','Clinic map',
+chon_nhu_cau_kham,"Chọn nhu cầu khám","Select consulting demand",
+chon_noi_kham,"Chọn nơi khám","Select clinic",
+benh_khac,"Bệnh khác","Other diseases",
+view_information,"Xem thông tin","View information",
+da_kham,"Đã khám","Already checked",
+loc,"Lọc","Filter"

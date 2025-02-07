@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
@@ -7,10 +9,14 @@ import 'package:flutter_observer/Observer.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
+import 'package:medical/src/app_setting/firebase_remote_config.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
+import 'package:medical/src/widget/booking_clinic/model/clinic_specialty_model.dart';
+import 'package:medical/src/widget/booking_clinic/pages/booking_clinic_provider_page.dart';
+import 'package:medical/src/widget/booking_clinic/pages/other_diseases_page.dart';
 import 'package:medical/src/widget/dsmes_appointment/dsmes_appointment_cubit.dart';
 import 'package:medical/src/widget/dsmes_appointment/model/dsmes_appointment_model.dart';
 import 'package:medical/src/widget/dsmes_appointment/dsmes_appointment_state.dart';
@@ -25,6 +31,7 @@ import 'package:medical/src/widget/dsmes_appointment/pages/dsmes_navigation_mixi
 import 'package:medical/src/widget/dsmes_appointment/pages/dsmes_select_service_page.dart';
 import 'package:medical/src/widget/dsmes_appointment/widgets/dsmes_appointment_item.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
+import 'package:medical/src/widget/question_answer/all_question_answer/model/question_model.dart';
 import 'package:medical/src/widgets/gap_widget.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
@@ -35,8 +42,7 @@ class BookingClinicPage extends StatefulWidget {
   _BookingClinicPageState createState() => _BookingClinicPageState();
 }
 
-class _BookingClinicPageState extends State<BookingClinicPage>
-    with Observer {
+class _BookingClinicPageState extends State<BookingClinicPage> with Observer {
   final RefreshController _controller = RefreshController();
   late DsmesAppointmentCubit _cubit;
   String _currentRoute = '/';
@@ -214,6 +220,7 @@ class _BookingClinicPageState extends State<BookingClinicPage>
                         settings,
                         DsmesClinicDetailPage(
                           clinicId: args!["clinicId"],
+                          bookingType: args["bookingType"],
                         ),
                       );
                     }
@@ -239,6 +246,28 @@ class _BookingClinicPageState extends State<BookingClinicPage>
                         settings,
                         WebViewScreen(
                           telemedicineId: args!["telemedicineId"],
+                        ),
+                      );
+                    }
+                  case NavigatorName.other_diseases:
+                    {
+                      Map<String, dynamic>? args =
+                          settings.arguments as Map<String, dynamic>?;
+                      return _buildRoute(
+                        settings,
+                        OtherDiseasesPage(
+                          specialties: args!["specialties"],
+                        ),
+                      );
+                    }
+                  case NavigatorName.clinic_providers:
+                    {
+                      Map<String, dynamic>? args =
+                          settings.arguments as Map<String, dynamic>?;
+                      return _buildRoute(
+                        settings,
+                        BookingClinicProvidersPage(
+                          specialtyId: args!["specialtyId"],
                         ),
                       );
                     }
@@ -281,6 +310,45 @@ class _BookingClinicPageState extends State<BookingClinicPage>
     );
   }
 
+  List<ClinicSpecialty> getDiabSpecialties() {
+    final specialtyOrder = FirebaseRemoteSetting.instance.specialtyOrder ?? '';
+    if (specialtyOrder.isEmpty) {
+      return [];
+    }
+
+    final slugs = specialtyOrder.split(',');
+
+    final Map<String, ClinicSpecialty> specialtyMap = {
+      'cao-huyet-ap': ClinicSpecialty(
+        id: 29,
+        name: 'Cao huyết áp',
+        banner: R.drawable.banner_cao_huyet_ap,
+      ),
+      'tieu-duong': ClinicSpecialty(
+        id: 17,
+        name: 'Tiểu đường',
+        banner: R.drawable.banner_tieu_duong,
+      ),
+      'suy-than-man': ClinicSpecialty(
+        id: 42,
+        name: 'Suy thận mạn',
+        banner: R.drawable.banner_suy_than_man,
+      ),
+      'suc-khoe-tim-mach': ClinicSpecialty(
+        id: 29,
+        name: 'Sức khỏe tim mạch',
+        banner: R.drawable.banner_suc_khoe_tim_mach,
+      ),
+      'benh-khac': ClinicSpecialty(
+        id: 0,
+        name: 'Bệnh khác',
+        banner: R.drawable.banner_benh_khac,
+      ),
+    };
+
+    return slugs.map((slug) => specialtyMap[slug]!).toList();
+  }
+
   Widget _buildPage(BuildContext context, DsmesAppointmentState state) {
     return Column(
       children: [
@@ -296,7 +364,7 @@ class _BookingClinicPageState extends State<BookingClinicPage>
           child: CustomAppBar(
             backgroundColor: Colors.transparent,
             title: Text(
-              R.string.health_consulting.tr(),
+              R.string.chon_nhu_cau_kham.tr(),
               style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.w700,
@@ -417,72 +485,7 @@ class _BookingClinicPageState extends State<BookingClinicPage>
                       },
                     ),
                     GapH(16),
-                    GestureDetector(
-                      onTap: () async {
-                        if (isProcessing['onlineConsulting']!) return;
-                        isProcessing['onlineConsulting'] = true;
-                        try {
-                          final clinics = await _cubit.getClinicList(type: 'online');
-                          if (clinics.isNotEmpty) {
-                            final priorityClinic = clinics.first;
-                            await _cubit.getClinicDetail(id: priorityClinic.id);
-                            await _cubit.initCreateDsmesBookingRequest(
-                                locale: context.locale.languageCode);
-
-                            DsmesNavigationMixin.navigationKey.currentState
-                                ?.pushNamed(NavigatorName.dsmes_select_service,
-                                    arguments: {
-                                  'action': 'create',
-                                  'clinic': _cubit.selectedClinic,
-                                  'serviceType': DsmesAppointmentMode
-                                      .telemedicine
-                                      .toString(),
-                                  'isMergedSchedule': true
-                                });
-                          }
-                        } finally {
-                          isProcessing['onlineConsulting'] = false;
-                        }
-                      },
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: R.color.white,
-                          borderRadius: BorderRadius.circular(12),
-                          boxShadow: [
-                            Utils.getBoxShadowDropCard(),
-                          ],
-                        ),
-                        child: Image.asset(R.drawable.online_consulting),
-                      ),
-                    ),
-                    GapH(16),
-                    GestureDetector(
-                      onTap: () async {
-                        if (isProcessing['offlineConsulting']!) return;
-                        isProcessing['offlineConsulting'] = true;
-                        try {
-                          await _cubit.getClinicList();
-                          DsmesNavigationMixin.navigationKey.currentState
-                              ?.pushNamed(NavigatorName.dsmes_booking_offline,
-                                  arguments: {
-                                'serviceType':
-                                    DsmesAppointmentMode.atClinic.toString()
-                              });
-                        } finally {
-                          isProcessing['offlineConsulting'] = false;
-                        }
-                      },
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: R.color.white,
-                          borderRadius: BorderRadius.circular(12),
-                          boxShadow: [
-                            Utils.getBoxShadowDropCard(),
-                          ],
-                        ),
-                        child: Image.asset(R.drawable.offline_consulting),
-                      ),
-                    ),
+                    _buildDiabSpecialty(),
                   ],
                 ),
               ),
@@ -490,6 +493,111 @@ class _BookingClinicPageState extends State<BookingClinicPage>
           ),
         ),
       ],
+    );
+  }
+
+  _buildDiabSpecialty() {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final containerWidth = constraints.maxWidth;
+        final itemsPerRow = (containerWidth - 24) ~/ 170;
+        final spacing =
+            ((containerWidth - 24) - (170 * itemsPerRow)) / (itemsPerRow - 1);
+        return Container(
+          padding: EdgeInsets.symmetric(horizontal: 12),
+          child: Wrap(
+            spacing: spacing,
+            runSpacing: 12,
+            alignment: WrapAlignment.start,
+            children: getDiabSpecialties().map((specialty) {
+              return GestureDetector(
+                onTap: () async {
+                  if (specialty.name == "Bệnh khác") {
+                    final specialties = await _cubit.getCLinicSpecialtyList();
+                    DsmesNavigationMixin.navigationKey.currentState
+                        ?.pushNamed(NavigatorName.other_diseases, arguments: {
+                      "specialties": specialties,
+                    });
+                  } else {
+                    _cubit.clearClinicProviders();
+                    DsmesNavigationMixin.navigationKey.currentState
+                        ?.pushNamed(NavigatorName.clinic_providers, arguments: {
+                      "specialtyId": specialty.id,
+                    });
+                  }
+                },
+                child: SizedBox(
+                  width: 170,
+                  height: 238,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Stack(
+                      children: [
+                        // Background Image
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(12),
+                          child: Image.asset(
+                            specialty.banner ?? '',
+                            width: double.infinity,
+                            height: double.infinity,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                        // Blur Container at bottom
+                        Positioned(
+                          top: 0,
+                          left: 0,
+                          right: 0,
+                          child: Container(
+                            height: 80,
+                            padding: EdgeInsets.fromLTRB(12, 16, 8, 0),
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                begin: Alignment.center,
+                                end: Alignment.bottomCenter,
+                                colors: [
+                                  R.color.color0xffFAF0D2,
+                                  R.color.color0xffFAF0D2.withOpacity(0.8),
+                                  R.color.color0xffFAF0D2.withOpacity(0.5),
+                                ],
+                              ),
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    specialty.name,
+                                    style: TextStyle(
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.w700,
+                                      color: R.color.color0xff111515,
+                                    ),
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                                Icon(
+                                  Icons.arrow_forward_ios,
+                                  size: 16,
+                                  color: R.color.color0xff111515,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              );
+            }).toList(),
+          ),
+        );
+      },
     );
   }
 

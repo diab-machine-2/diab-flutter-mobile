@@ -216,4 +216,14 @@ class Const {
   static const String ORGANIZATION_API_KEY_VALUE =
       'diab-heath-center-9a3cefac-136caaef';
   static const int DSMES_BOOKING_TIME_WINDOW_RANGE = 30; // In minutes
+  static const String CLINIC_TYPE_CLINIC = 'clinic';
+  static const String CLINIC_TYPE_HOSPITAL = 'hospital';
+  static const String CLINIC_TYPE_LAB = 'lab';
+  static const String CLINIC_TYPE_PUBLIC_HOSPITAL = 'public_hospital';
+  static const List<String> CLINIC_TYPES = [
+    CLINIC_TYPE_CLINIC,
+    CLINIC_TYPE_HOSPITAL,
+    CLINIC_TYPE_LAB,
+    CLINIC_TYPE_PUBLIC_HOSPITAL
+  ];
 }

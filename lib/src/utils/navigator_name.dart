@@ -101,4 +101,8 @@ class NavigatorName {
   // New Glucose
   static const String glucose_intro_1st_page = '/glucose-intro-1st-page';
   static const String glucose_intro_2nd_page = '/glucose-intro-2nd-page';
+  // BOOKING CLINIC
+  static const String booking_clinic = '/booking_clinic';
+  static const String other_diseases = '/other_diseases';
+  static const String clinic_providers = '/clinic_providers';
 }

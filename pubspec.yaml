@@ -213,6 +213,7 @@ flutter:
     - lib/res/generated/
     - lib/res/icons/
     - lib/res/drawables/dsmes_service/
+    - lib/res/drawables/clinic_specialty/
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

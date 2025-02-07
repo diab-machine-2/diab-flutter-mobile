@@ -2,8 +2,9 @@ import 'package:dio/dio.dart';
 import 'package:medical/src/model/request/create_dsmes_booking_request.dart';
 import 'package:medical/src/model/request/dsmes_cancel_booking_request.dart';
 import 'package:medical/src/model/request/dsmes_reschedule_request.dart';
+import 'package:medical/src/model/request/get_booking_clinic_list_request.dart';
 import 'package:medical/src/model/request/get_dsmes_appointment_request.dart';
-import 'package:medical/src/model/response/clinic_speciality_list_response.dart';
+import 'package:medical/src/model/response/clinic_specialty_list_response.dart';
 import 'package:medical/src/model/response/common_response.dart';
 import 'package:medical/src/model/response/create_dsmes_offline_booking_response.dart';
 import 'package:medical/src/model/response/dsmes_clinic_detail_response.dart';
@@ -12,6 +13,7 @@ import 'package:medical/src/model/response/dsmes_clinic_rating_response.dart';
 import 'package:medical/src/model/response/get_diab_clinics_schedule_response.dart';
 import 'package:medical/src/model/response/get_dsmes_appointment_detail_response.dart';
 import 'package:medical/src/model/response/get_dsmes_appointment_response.dart';
+import 'package:medical/src/model/response/search_list_clinic_response.dart';
 import 'package:retrofit/http.dart';
 import 'package:retrofit/retrofit.dart';
 
@@ -66,9 +68,14 @@ abstract class DocosanApi {
   Future<CreateDsmesOfflineBookingResponse> createDsmesOnlineBooking(
       @Body() CreateDsmesBookingRequest request);
 
-  @GET("api/diseases")
-  Future<ClinicSpecialityListResponse> getCLinicSpecialityList(
+  @GET("api/diseases-configuration")
+  Future<ClinicSpecialtyListResponse> getCLinicSpecialtyList({
     @Query('language') String? language,
+    @Query('top') String? top,
     @Query('version') String? version,
-  );
+  });
+
+  @POST("api/seo-static-link")
+  Future<SearchListClinicResponse> searchBookingClinicList(
+      @Body() SearchBookingClinicListRequest request);
 }

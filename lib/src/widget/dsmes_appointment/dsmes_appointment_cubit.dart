@@ -10,7 +10,9 @@ import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/request/create_dsmes_booking_request.dart';
 import 'package:medical/src/model/request/dsmes_cancel_booking_request.dart';
 import 'package:medical/src/model/request/dsmes_reschedule_request.dart';
+import 'package:medical/src/model/request/get_booking_clinic_list_request.dart';
 import 'package:medical/src/model/request/register_docosan_user_request.dart';
+import 'package:medical/src/model/response/clinic_specialty_list_response.dart';
 import 'package:medical/src/model/response/common_response.dart';
 import 'package:medical/src/model/response/create_dsmes_offline_booking_response.dart';
 import 'package:medical/src/model/response/dsmes_clinic_detail_response.dart';
@@ -19,10 +21,13 @@ import 'package:medical/src/model/response/dsmes_clinic_rating_response.dart';
 import 'package:medical/src/model/response/get_diab_clinics_schedule_response.dart';
 import 'package:medical/src/model/response/get_dsmes_appointment_detail_response.dart';
 import 'package:medical/src/model/response/get_dsmes_appointment_response.dart';
+import 'package:medical/src/model/response/search_list_clinic_response.dart';
 import 'package:medical/src/model/service/api_result.dart';
 import 'package:medical/src/model/service/network_exceptions.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/utils.dart';
+import 'package:medical/src/widget/booking_clinic/model/booking_clinic_provider_model.dart';
+import 'package:medical/src/widget/booking_clinic/model/clinic_specialty_model.dart';
 import 'package:medical/src/widget/dsmes_appointment/model/dsmes_appointment_model.dart';
 import 'package:medical/src/widget/dsmes_appointment/dsmes_appointment_state.dart';
 import 'package:medical/src/widget/dsmes_appointment/model/dsmes_clinic_model.dart';
@@ -35,15 +40,21 @@ class DsmesAppointmentCubit extends Cubit<DsmesAppointmentState> {
   late List<DsmesAppointment> listFilteredData = [];
   late List<DsmesClinicModel> listClinic = [];
   late List<ClinicReview> listClinicReview = [];
+  late List<ClinicSpecialty> listSpecialty = [];
+  late List<BookingClinicProvider> listBookingClinicProvider = [];
 
   DsmesClinicModel? selectedClinic;
   DsmesAppointment? currentDsmesAppointment;
 
   CreateDsmesBookingRequest? createDsmesBookingRequest;
+  SearchBookingClinicListRequest? searchBookingClinicListRequest;
 
   int currentPage = 1;
   bool hasMore = true;
   bool isSpecifyClinic = false;
+
+  int clinicProviderCurrentPage = 1;
+  bool clinicProviderHasMore = true;
 
   DsmesAppointmentCubit(this.appRepository)
       : super(InitialDsmesAppointmentState());
@@ -102,6 +113,12 @@ class DsmesAppointmentCubit extends Cubit<DsmesAppointmentState> {
     listFilteredData.clear();
     currentPage = 1;
     hasMore = true;
+  }
+
+  void clearClinicProviders() {
+    listBookingClinicProvider.clear();
+    clinicProviderCurrentPage = 1;
+    clinicProviderHasMore = true;
   }
 
   Future<void> getDsmesAppointmentList(
@@ -307,6 +324,63 @@ class DsmesAppointmentCubit extends Cubit<DsmesAppointmentState> {
     } catch (e) {
       throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
     }
+  }
+
+  Future<List<ClinicSpecialty>> getCLinicSpecialtyList({String? top}) async {
+    List<ClinicSpecialty> specialties = [];
+    emit(DsmesAppointmentLoading());
+    ApiResult<ClinicSpecialtyListResponse> apiResult =
+        await appRepository.getCLinicSpecialtyList();
+    apiResult.when(success: (ClinicSpecialtyListResponse response) {
+      listSpecialty = response.data;
+      specialties = listSpecialty;
+
+      emit(DsmesAppointmentLoaded());
+    }, failure: (NetworkExceptions error) {
+      emit(DsmesAppointmentFailure(NetworkExceptions.getErrorMessage(error)));
+    });
+    return specialties;
+  }
+
+  Future<List<BookingClinicProvider>> searchBookingClinicList(
+      {required SearchBookingClinicListRequest request,
+      bool isRefresh = false,
+      bool showLoading = true}) async {
+    if (isRefresh) {
+      listBookingClinicProvider.clear();
+      clinicProviderCurrentPage = 1;
+      clinicProviderHasMore = true;
+    }
+
+    if (!hasMore) return listBookingClinicProvider;
+
+    emit(showLoading
+        ? DsmesAppointmentLoading()
+        : InitialDsmesAppointmentState());
+
+    ApiResult<SearchListClinicResponse> apiResult =
+        await appRepository.searchListBookingClinic(request: request);
+
+    apiResult.when(success: (SearchListClinicResponse response) {
+      clinicProviderCurrentPage = response.attr.currentPage;
+      clinicProviderHasMore =
+          response.attr.currentPage < response.attr.totalPage;
+
+      var filteredProviders = response.data.providers
+          .where((provider) => provider.kind == 'clinic')
+          .toList();
+
+      if (isRefresh) {
+        listBookingClinicProvider = filteredProviders;
+      } else {
+        listBookingClinicProvider.addAll(filteredProviders);
+      }
+      emit(DsmesAppointmentLoaded());
+    }, failure: (NetworkExceptions error) {
+      emit(DsmesAppointmentFailure(NetworkExceptions.getErrorMessage(error)));
+    });
+
+    return listBookingClinicProvider;
   }
 
   _getFilteredData() {
@@ -533,6 +607,33 @@ class DsmesAppointmentCubit extends Cubit<DsmesAppointmentState> {
       symptom: request.symptom,
       symptomAttachment: request.symptomAttachment,
       paymentInfo: request.paymentInfo,
+    );
+  }
+
+  initSearchBookingClinicListRequest(
+      {required String specialtyId, int page = 1}) {
+    searchBookingClinicListRequest = SearchBookingClinicListRequest(
+      page: page.toString(),
+      urlKeyword: '',
+      specialty: specialtyId,
+    );
+  }
+
+  updateSearchBookingClinicListRequestSpecialty({required String specialty}) {
+    searchBookingClinicListRequest = searchBookingClinicListRequest?.copyWith(
+      specialty: specialty,
+    );
+  }
+
+  updateSearchBookingClinicListRequestPage({required int page}) {
+    searchBookingClinicListRequest = searchBookingClinicListRequest?.copyWith(
+      page: page,
+    );
+  }
+
+  updateSearchBookingClinicListRequestUrlKeyword({required String urlKeyword}) {
+    searchBookingClinicListRequest = searchBookingClinicListRequest?.copyWith(
+      urlKeyword: urlKeyword,
     );
   }
 

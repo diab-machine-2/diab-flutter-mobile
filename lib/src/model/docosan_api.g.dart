@@ -262,32 +262,58 @@ class _DocosanApi implements DocosanApi {
   }
 
   @override
-  Future<ClinicSpecialityListResponse> getCLinicSpecialityList(
+  Future<ClinicSpecialtyListResponse> getCLinicSpecialtyList({
     language,
+    top,
     version,
-  ) async {
+  }) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{
       r'language': language,
+      r'top': top,
       r'version': version,
     };
     queryParameters.removeWhere((k, v) => v == null);
     final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
     final _result = await _dio.fetch<Map<String, dynamic>>(
-        _setStreamType<ClinicSpecialityListResponse>(Options(
+        _setStreamType<ClinicSpecialtyListResponse>(Options(
       method: 'GET',
       headers: _headers,
       extra: _extra,
     )
             .compose(
               _dio.options,
-              'api/diseases',
+              'api/diseases-configuration',
               queryParameters: queryParameters,
               data: _data,
             )
             .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
-    final value = ClinicSpecialityListResponse.fromJson(_result.data!);
+    final value = ClinicSpecialtyListResponse.fromJson(_result.data!);
+    return value;
+  }
+
+  @override
+  Future<SearchListClinicResponse> searchBookingClinicList(request) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    _data.addAll(request.toJson());
+    final _result = await _dio.fetch<Map<String, dynamic>>(
+        _setStreamType<SearchListClinicResponse>(Options(
+      method: 'POST',
+      headers: _headers,
+      extra: _extra,
+    )
+            .compose(
+              _dio.options,
+              'api/seo-static-link',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = SearchListClinicResponse.fromJson(_result.data!);
     return value;
   }
 

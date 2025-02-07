@@ -17,6 +17,7 @@ class FirebaseRemoteSetting {
   late bool _activePopupHealthConnect; //ACTIVE_POPUP_HEALTH_CONNECT
   late String _linkStoreNavigation;
   String? _utilitiesOrder;
+  String? _specialtyOrder;
   List<GlucoseFaq> _glucoseFaqs = [
     GlucoseFaq(
       title: 'Máy đo của bạn không thuộc danh sách thiết bị hỗ trợ?',
@@ -42,6 +43,7 @@ class FirebaseRemoteSetting {
   bool get appDeveloperMode => _appDeveloperMode ?? false;
   String? get utilitiesOrder => _utilitiesOrder;
   List<GlucoseFaq> get glucoseFaqs => _glucoseFaqs;
+  String? get specialtyOrder => _specialtyOrder;
 
   Future<void> init({Duration timeout = const Duration(seconds: 10)}) async {
     // Get local settings
@@ -61,8 +63,9 @@ class FirebaseRemoteSetting {
       "APP_DEVELOPER_MODE":
           bool.parse(localSetting["APP_DEVELOPER_MODE"] ?? "true"),
       "UTILITIES_ORDER":
-          localSetting["UTILITIES_ORDER"] ?? "thiet-lap-muc-tieu,lich-do-duong-huyet,lich-nhac-nho,thuc-don-mau,ket-noi-thiet-bi,lich-uong-thuoc,moi-ban-be",
+          localSetting["UTILITIES_ORDER"] ?? "thiet-lap-muc-tieu,lich-do-duong-huyet,lich-nhac-nho,thuc-don-mau,ket-noi-thiet-bi,lich-uong-thuoc,moi-ban-be,dat-lich-kham-benh,tu-van-suc-khoe",
       "GLUCOSE_FAQS": jsonEncode(_glucoseFaqs.map((faq) => faq.toJson()).toList()),
+      "SPECIALTIES_ORDER": localSetting["SPECIALTIES_ORDER"] ?? "cao-huyet-ap,tieu-duong,suy-than-man,suc-khoe-tim-mach,benh-khac",
     });
     // Config timeout for remoteConfig
     await remoteConfig.setConfigSettings(RemoteConfigSettings(
@@ -104,5 +107,6 @@ class FirebaseRemoteSetting {
                         .map((item) => GlucoseFaq.fromJson(item as Map<String, dynamic>))
                         .toList();
     }
+    _specialtyOrder = remoteConfig.getString('SPECIALTIES_ORDER');
   }
 }

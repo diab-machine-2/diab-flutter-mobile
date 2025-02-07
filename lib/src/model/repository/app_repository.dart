@@ -13,6 +13,7 @@ import 'package:medical/src/model/request/dsmes_cancel_booking_request.dart';
 import 'package:medical/src/model/request/dsmes_reschedule_request.dart';
 import 'package:medical/src/model/request/exercise_feedback_request.dart';
 import 'package:medical/src/model/request/food_change_request.dart';
+import 'package:medical/src/model/request/get_booking_clinic_list_request.dart';
 import 'package:medical/src/model/request/get_dsmes_appointment_request.dart';
 import 'package:medical/src/model/request/ios_receipt_request.dart';
 import 'package:medical/src/model/request/lesson_filter_request.dart';
@@ -31,7 +32,7 @@ import 'package:medical/src/model/request/update_shared_profile_request.dart';
 import 'package:medical/src/model/request/zoom_token_request.dart';
 import 'package:medical/src/model/response/blood_sugar_template_response.dart';
 import 'package:medical/src/model/response/branchio_generate_zoom_response.dart';
-import 'package:medical/src/model/response/clinic_speciality_list_response.dart';
+import 'package:medical/src/model/response/clinic_specialty_list_response.dart';
 import 'package:medical/src/model/response/common_response.dart';
 import 'package:medical/src/model/response/create_calendar_response.dart';
 import 'package:medical/src/model/response/create_dsmes_offline_booking_response.dart';
@@ -69,6 +70,7 @@ import 'package:medical/src/model/response/question_answer_response.dart';
 import 'package:medical/src/model/response/register_docosan_user_response.dart';
 import 'package:medical/src/model/response/report_response.dart';
 import 'package:medical/src/model/response/save_survey_result_response.dart';
+import 'package:medical/src/model/response/search_list_clinic_response.dart';
 import 'package:medical/src/model/response/smart_goal_detail_response.dart';
 import 'package:medical/src/model/response/smart_goal_list_reponse.dart';
 import 'package:medical/src/model/response/smart_goal_statistic_response.dart';
@@ -1101,10 +1103,21 @@ class AppRepository {
     }
   }
 
-  Future<ApiResult<ClinicSpecialityListResponse>>
-      getCLinicSpecialityList() async {
+  Future<ApiResult<ClinicSpecialtyListResponse>> getCLinicSpecialtyList(
+      {String? top}) async {
     try {
-      final response = await docosanClient.getCLinicSpecialityList("vi", "8.5");
+      final response = await docosanClient.getCLinicSpecialtyList(
+          language: "vi", version: "8.5", top: top);
+      return ApiResult.success(data: response);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
+  Future<ApiResult<SearchListClinicResponse>> searchListBookingClinic(
+      {required SearchBookingClinicListRequest request}) async {
+    try {
+      final response = await docosanClient.searchBookingClinicList(request);
       return ApiResult.success(data: response);
     } catch (e) {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));

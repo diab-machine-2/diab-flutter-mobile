@@ -1,20 +1,20 @@
-class Specialty {
+class ClinicSpecialty {
   final String name;
   final String? shortended;
   final int id;
-  final String banner;
-  final String image;
+  final String? banner;
+  final String? image;
 
-  Specialty({
+  ClinicSpecialty({
     required this.name,
     this.shortended,
     required this.id,
-    required this.banner,
-    required this.image,
+    this.banner,
+    this.image,
   });
 
-  factory Specialty.fromJson(Map<String, dynamic> json) {
-    return Specialty(
+  factory ClinicSpecialty.fromJson(Map<String, dynamic> json) {
+    return ClinicSpecialty(
       name: json['name'],
       shortended: json['shortended'],
       id: json['id'],

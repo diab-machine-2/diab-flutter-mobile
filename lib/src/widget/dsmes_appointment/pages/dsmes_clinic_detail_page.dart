@@ -15,9 +15,11 @@ import 'package:medical/src/widgets/gap_widget.dart';
 
 class DsmesClinicDetailPage extends StatefulWidget {
   final int clinicId;
+  final String bookingType; // 'clinic' or 'center'
   const DsmesClinicDetailPage({
     Key? key,
     required this.clinicId,
+    this.bookingType = 'center',
   }) : super(key: key);
 
   @override
@@ -31,6 +33,7 @@ class _DsmesClinicDetailPageState extends State<DsmesClinicDetailPage> {
   Map<String, bool> isProcessing = {
     'onlineConsult': false,
     'clinicConsult': false,
+    'clinicBooking': false,
   };
 
   @override
@@ -98,7 +101,9 @@ class _DsmesClinicDetailPageState extends State<DsmesClinicDetailPage> {
           bottom: 0,
           left: 0,
           right: 0,
-          child: _buildAppointmentActionButtons(),
+          child: widget.bookingType == 'center'
+              ? _buildAppointmentActionButtons()
+              : _buildBookingClinicActionButtons(),
         ),
       ],
     );
@@ -618,6 +623,73 @@ class _DsmesClinicDetailPageState extends State<DsmesClinicDetailPage> {
                 child: Center(
                   child: Text(
                     R.string.consult_at_clinic.tr(),
+                    style: TextStyle(
+                      color: R.color.white,
+                      fontWeight: FontWeight.w700,
+                      fontSize: 15,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  _buildBookingClinicActionButtons() {
+    return Container(
+      padding: EdgeInsets.symmetric(vertical: 0, horizontal: 12),
+      decoration: BoxDecoration(
+        color: R.color.white,
+        borderRadius: BorderRadius.circular(8),
+        boxShadow: [
+          Utils.getBoxShadowDropButton(),
+        ],
+      ),
+      child: Row(
+        children: [
+          Flexible(
+            flex: 1,
+            child: GestureDetector(
+              onTap: () async {
+                if (isProcessing['clinicBooking']!) return;
+                isProcessing['clinicBooking'] = true;
+                try {
+                  // await _cubit.getClinicDetail(id: widget.clinicId);
+                  // if (_cubit.selectedClinic == null) return;
+                  // _cubit.initCreateDsmesBookingRequest(
+                  //     locale: context.locale.languageCode);
+                  // await DsmesNavigationMixin.navigationKey.currentState
+                  //     ?.pushNamed(NavigatorName.dsmes_booking_select_date,
+                  //         arguments: {
+                  //       'serviceType': DsmesAppointmentMode.atClinic.toString(),
+                  //       'action': 'create',
+                  //     });
+                } finally {
+                  isProcessing['clinicBooking'] = false;
+                }
+              },
+              child: Container(
+                height: 44,
+                margin: EdgeInsets.symmetric(horizontal: 0, vertical: 8),
+                decoration: BoxDecoration(
+                  color: R.color.mainColor,
+                  borderRadius: BorderRadius.circular(200),
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.centerRight,
+                    colors: [
+                      R.color.greenGradientTop,
+                      R.color.greenGradientMid,
+                      R.color.greenGradientBottom,
+                    ],
+                  ),
+                ),
+                child: Center(
+                  child: Text(
+                    R.string.submit_booking.tr(),
                     style: TextStyle(
                       color: R.color.white,
                       fontWeight: FontWeight.w700,

@@ -299,7 +299,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       currentState =
           currentState.copyWith(reminders: reminders, reminderLoading: false);
     } else {
-      currentState = currentState.copyWith(reminders: [], reminderLoading: false);
+      currentState =
+          currentState.copyWith(reminders: [], reminderLoading: false);
     }
     yield currentState;
   }
@@ -445,6 +446,12 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         title: "Tư vấn sức khoẻ",
         slug: "tu-van-suc-khoe",
         navigatorName: NavigatorName.dsmes_booking,
+      ),
+      HomeUtilityData(
+        icon: R.drawable.ic_booking_clinic,
+        title: "Đặt lịch khám bệnh",
+        slug: "dat-lich-kham-benh",
+        navigatorName: NavigatorName.booking_clinic,
       ),
     ];
 
