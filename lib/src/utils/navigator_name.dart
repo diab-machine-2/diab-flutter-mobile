@@ -75,6 +75,8 @@ class NavigatorName {
   static const String meeting = '/meeting';
   static const String sync_screen = '/sync-screen';
   static const String sync_loading = '/sync-loading';
+  static const String conversations = '/coversations';
+  static const String conversation_chatbot_ai = '/conversation_chatbot_ai';
 
   // NEW UI
   static const String utilities = '/utilities';

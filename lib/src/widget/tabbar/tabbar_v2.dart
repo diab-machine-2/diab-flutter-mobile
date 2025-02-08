@@ -26,7 +26,7 @@ import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/Bmi/widget/add_bmi.dart';
-import 'package:medical/src/widget/chat/chatboot_ai_page.dart';
+import 'package:medical/src/widget/conversation/conversations.dart';
 import 'package:medical/src/widget/helper/notification_manager.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
@@ -82,7 +82,7 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
       HomeController(sharedCode: widget.sharedCode),
       _buildProgramTab(),
       MyPlanPage(index: 0),
-      ChatbootAiPage(),
+      Conversations(),
       _buildStoreTab(),
     ];
     Observable.instance.addObserver(this);
@@ -135,7 +135,17 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
         );
       });
       _jumpTo(index);
-    } else if (index == -1) {
+    } else if(index == TabBarType.chat.index){
+      FirebaseAnalytics.instance.logEvent(
+        name: 'component_clicked',
+        parameters: {
+          "screen_name": 'BottomTabBarV2',
+          'cta_button_name': 'Go to Chatbot AI',
+        },
+      );
+      Navigator.pushNamed(context, NavigatorName.conversation_chatbot_ai);
+    }
+    else if (index == -1) {
       // _showMaterialDialog();
     } else {
       _jumpTo(index);
@@ -234,7 +244,7 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
           HomeController(sharedCode: widget.sharedCode),
           _buildProgramTab(),
           MyPlanPage(index: 0),
-          ChatbootAiPage(),
+          Conversations(),
           _buildStoreTab(),
         ];
       });

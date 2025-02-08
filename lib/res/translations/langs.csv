@@ -703,7 +703,7 @@ create_new_habit,Tạo thói quen mới,Create a new habit,
 do_a_favorite_thing,Làm một việc yêu thích,Do a favorite thing,
 biometric_monitoring_frequency,Tần suất theo dõi chỉ số sinh học,Biometric monitoring frequency,
 personal_smart_goal,Mục tiêu cá nhân,Personal goal,
-smart_setup_completed,Bạn đã cài đặt mục tiêu thành công!,Successful goal setting!,
+smart_setup_completed,Bạn đã ặt mục tiêu thành công!,Successful goal setting!,
 smart_goal_name,Mục tiêu của bạn là gì,What is your goal?,
 select_start_date,Chọn ngày bắt đầu hoạt động,Select the start day,
 select_end_date,Ngày kết thúc mục tiêu này,Select the end day,
@@ -1201,3 +1201,4 @@ pull_up_to_load_more,"Kéo lên để tải thêm","Pull up to load more",
 release_to_load_more,"Thả ra để tải thêm","Release to load more",
 exist_appointment,"Bạn đã chọn lịch hẹn này trước đó","You have already selected this appointment before",
 symptom_hint_text,"Nhập lưu ý của bạn","Enter your note"
+conversation_chatbot_ai_title,"Hỏi đáp sống khỏe","Question & Answer"
