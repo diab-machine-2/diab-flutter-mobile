@@ -5,6 +5,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
+import 'package:medical/src/model/repository/app_repository.dart';
+import 'package:medical/src/model/response/chat_supabase_response.dart';
+import 'package:medical/src/model/service/api_result.dart';
+import 'package:medical/src/utils/app_log.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../res/R.dart';
 import '../helper/tracking_manager.dart';
 
@@ -23,17 +28,39 @@ class ConversationChatbotAi extends StatefulWidget {
 }
 
 class _ConversationChatbotAiState extends State<ConversationChatbotAi> {
-  final List<types.Message> _messages = [];
-  final _user = const types.User(
-      id: '82091008-a484-4a89-ae75-a22bf8d6f3ac',
-      firstName: 'Long',
-      lastName: 'Pham',
-      imageUrl: 'https://cdn-icons-png.flaticon.com/512/147/147144.png');
-
+  final GlobalKey<ChatState> _chatKey = GlobalKey();
+  late List<types.Message> _messages = [];
+  int _page = 0;
+  String _conversationId = '11111111-1111-1111-1111-111111111111';
+  final _user = types.User(
+    id: AppSettings.userInfo?.id ?? '',
+    firstName: AppSettings.userInfo?.fullName ?? '',
+    // lastName: AppSettings.userInfo?.id as String,
+    imageUrl: AppSettings.userInfo?.imageUrl?.url ?? '',
+  );
   @override
   void initState() {
     super.initState();
     firebaseSetup();
+    subpabaseInit();
+  }
+
+  Future subpabaseInit() async {
+    Console.log('-------subpabaseInit');
+    print('SupabaseConfigResponse: -----------------');
+    final ApiResult<SupabaseConfigResponse> apiResult =
+        await AppRepository().getSupabaseConfig();
+    apiResult.when(
+        success: ((data) async => {
+              Console.log('SupabaseConfigResponse: ${data.supabaseUrl}'),
+              Console.log('SupabaseConfigResponse: ${data.supabaseKey}'),
+              await Supabase.initialize(
+                url: data.supabaseUrl,
+                anonKey: data.supabaseKey,
+              ),
+            }),
+        failure: ((error) => {Console.log('Error: $error')}));
+    _handleEndReached();
   }
 
   Future firebaseSetup() async {
@@ -43,14 +70,6 @@ class _ConversationChatbotAiState extends State<ConversationChatbotAi> {
     AppSettings.currentScreenName = 'conversation_chatbot_ai';
   }
 
-  // @override
-  // Widget build(BuildContext context) => Scaffold(
-  //       body: Chat(
-  //         messages: _messages,
-  //         onSendPressed: _handleSendPressed,
-  //         user: _user,
-  //       ),
-  //     );
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -98,15 +117,19 @@ class _ConversationChatbotAiState extends State<ConversationChatbotAi> {
                     Container(
                       // set Container flex fill size
                       width: double.infinity,
-                      height: MediaQuery.of(context).size.height * 0.9,
+                      height: MediaQuery.of(context).size.height -
+                          MediaQuery.of(context).padding.bottom -
+                          80,
                       // set Background color for the chatbot
                       child: Chat(
+                          key: _chatKey,
                           messages: _messages,
                           onSendPressed: _handleSendPressed,
                           onPreviewDataFetched: _handlePreviewDataFetched,
                           user: _user,
                           showUserAvatars: true,
                           showUserNames: false,
+                          onEndReached: _handleEndReached,
                           theme: DefaultChatTheme(
                             backgroundColor: R.color.transparent,
                             inputBackgroundColor: R.color.white,
@@ -134,63 +157,103 @@ class _ConversationChatbotAiState extends State<ConversationChatbotAi> {
     );
   }
 
-  void _addMessage(types.Message message) {
+  Future<void> _handleEndReached() async {
+    const pageSize = 20;
+    final response = await Supabase.instance.client
+        .from('messages')
+        .select()
+        .filter('conversation_id', 'eq', _conversationId)
+        //     .filter('sender', 'in', [_user.id, 'ai'])
+        //     .filter('sender_type', 'in', [
+        //   'user',
+        //   'ai'
+        // ])
+        .range(this._page * pageSize, (this._page + 1) * pageSize)
+        .order('created_at', ascending: false);
+    Console.log('-------_handleEndReached');
+    final messages = response
+        .map(
+          (e) => types.TextMessage(
+            author: new types.User(
+                id: e['sender'] as String,
+                firstName: e['sender'] as String,
+                lastName: e['sender'] as String,
+                imageUrl:
+                    'https://cdn-icons-png.flaticon.com/512/147/147144.png'),
+            id: e['id'] as String,
+            text: e['content'] as String,
+            createdAt: DateTime.parse(e['created_at'] as String)
+                .millisecondsSinceEpoch,
+          ),
+        )
+        .toList();
     setState(() {
-      _messages.insert(0, message);
+      _messages = [..._messages, ...messages];
+      _page = _page + 1;
     });
+    // if (_messages.where((e) => e.id == 'lastReadMessageId').isEmpty) {
+    //   // Recursively call to fetch more pages
+    //   await _handleEndReached();
+    // } else {
+    //   // Give some delay for the library to calculate correct indices
+    //   Future.delayed(const Duration(milliseconds: 20), () {
+    //     _chatKey.currentState?.scrollToUnreadHeader();
+    //   });
+    // }
   }
 
-  void _handleSendPressed(types.PartialText message) {
-    final textMessage = types.TextMessage(
+  void _handleSendPressed(types.PartialText _message) async {
+    var message = types.TextMessage(
       author: _user,
       createdAt: DateTime.now().millisecondsSinceEpoch,
       id: randomString(),
-      text: message.text,
+      text: _message.text,
     );
 
-    _addMessage(textMessage);
-
-    //delay for 1 second to simulate the response from the chatbot
-    Future.delayed(const Duration(seconds: 1), () {
-      _handleResponse(textMessage);
+    // add the message to the database
+    final dbMessage = await Supabase.instance.client
+        .from('messages')
+        .insert({
+          'conversation_id': _conversationId,
+          'sender': message.author.id,
+          'sender_type': 'user',
+          'content': message.text,
+        })
+        .select('id')
+        .single();
+    final updatedMessage = message.copyWith(id: dbMessage['id'] as String);
+    setState(() {
+      _messages.insert(0, updatedMessage);
     });
+    _handleResponse(updatedMessage);
   }
 
   // This is the method auto response from the chatbot
-  void _handleResponse(types.TextMessage message) {
-    final text = message.text.toLowerCase();
-    final _bot = const types.User(
-        id: 'bot-uid',
-        firstName: 'Bot',
-        lastName: 'Con',
-        imageUrl:
-            'https://cdn-icons-png.flaticon.com/512/147/147144.png');
-    if (text.contains('hi') || text.contains('hello')) {
-      _addMessage(
-        types.TextMessage(
-            author: _bot,
-            text: "Hello!",
-            id: randomString(),
-            createdAt: DateTime.now().millisecondsSinceEpoch),
-      );
-    } else if (text.contains('bye')) {
-      _addMessage(
-        types.TextMessage(
-            author: _bot,
-            text: "Goodbye! Have a great day!",
-            id: randomString(),
-            createdAt: DateTime.now().millisecondsSinceEpoch),
-      );
-    } else {
-      _addMessage(
-        types.TextMessage(
-            author: _bot,
-            text: "I'm sorry, I don't understand that yet.",
-            id: randomString(),
-            createdAt: DateTime.now().millisecondsSinceEpoch),
-      );
-    }
+  void _handleResponse(types.Message message) async {
+    final ApiResult<MessageResponse> apiResult =
+        await AppRepository().sendMessageById(_conversationId, message.id);
+    apiResult.when(
+        success: ((data) => {
+              setState(() {
+                _messages.insert(
+                    0,
+                    types.TextMessage(
+                        author: data.senderType == 'user'
+                            ? _user
+                            : types.User(
+                                id: data.sender,
+                                firstName: data.sender,
+                                lastName: data.sender,
+                                imageUrl:
+                                    'https://cdn-icons-png.flaticon.com/512/147/147144.png'),
+                        id: data.id,
+                        text: data.content,
+                        createdAt: data.createdAt));
+              })
+            }),
+        failure: ((error) => {Console.log('Error: $error')}));
   }
+
   void _handlePreviewDataFetched(
     types.TextMessage message,
     types.PreviewData previewData,
