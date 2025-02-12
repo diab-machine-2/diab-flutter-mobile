@@ -1,7 +1,7 @@
 class SearchBookingClinicListRequest {
   final String type;
   final String language;
-  final String urlKeyword;
+  final List<String> urlKeywords;
   final String specialty;
   final String name;
   final String keyword;
@@ -11,11 +11,14 @@ class SearchBookingClinicListRequest {
   final String parentTerm;
   final String lng;
   final String lat;
+  final String kind; // clinic, doctor
+  final List<String> timeframes; // weekend, weekday, after_hours
+  final List<String> clinicTypes; // clinic, hospital, public_hospital, lab
 
   SearchBookingClinicListRequest({
     this.type = 'location',
     this.language = 'vi',
-    this.urlKeyword = '',
+    this.urlKeywords = const [],
     this.specialty = '',
     this.name = '',
     this.keyword = '',
@@ -25,12 +28,15 @@ class SearchBookingClinicListRequest {
     this.parentTerm = '',
     this.lng = '',
     this.lat = '',
+    this.kind = 'clinic',
+    this.timeframes = const [],
+    this.clinicTypes = const [],
   });
 
   Map<String, dynamic> toJson() => {
         'type': type,
         'language': language,
-        'url_keyword': urlKeyword,
+        'url_keywords': urlKeywords,
         'specialty': specialty,
         'name': name,
         'keyword': keyword,
@@ -40,12 +46,15 @@ class SearchBookingClinicListRequest {
         'parent_term': parentTerm,
         'lng': lng,
         'lat': lat,
+        'kind': kind,
+        'timeframes': timeframes,
+        'clinic_types': clinicTypes,
       };
 
   SearchBookingClinicListRequest copyWith({
     String? type,
     String? language,
-    String? urlKeyword,
+    List<String>? urlKeywords,
     String? specialty,
     String? name,
     String? keyword,
@@ -55,11 +64,14 @@ class SearchBookingClinicListRequest {
     String? parentTerm,
     String? lng,
     String? lat,
+    String? kind,
+    List<String>? timeframes,
+    List<String>? clinicTypes,
   }) {
     return SearchBookingClinicListRequest(
       type: type ?? this.type,
       language: language ?? this.language,
-      urlKeyword: urlKeyword ?? this.urlKeyword,
+      urlKeywords: urlKeywords ?? this.urlKeywords,
       specialty: specialty ?? this.specialty,
       name: name ?? this.name,
       keyword: keyword ?? this.keyword,
@@ -69,6 +81,9 @@ class SearchBookingClinicListRequest {
       parentTerm: parentTerm ?? this.parentTerm,
       lng: lng ?? this.lng,
       lat: lat ?? this.lat,
+      kind: kind ?? this.kind,
+      timeframes: timeframes ?? this.timeframes,
+      clinicTypes: clinicTypes ?? this.clinicTypes,
     );
   }
 }

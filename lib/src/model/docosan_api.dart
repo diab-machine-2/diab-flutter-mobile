@@ -75,7 +75,7 @@ abstract class DocosanApi {
     @Query('version') String? version,
   });
 
-  @POST("api/seo-static-link")
+  @POST("api/seo-static-link-multi")
   Future<SearchListClinicResponse> searchBookingClinicList(
       @Body() SearchBookingClinicListRequest request);
 }

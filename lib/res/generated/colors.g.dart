@@ -176,4 +176,5 @@ class Colors {
   Color get color0xff6E7378 => Color(0xff6E7378);
   Color get color0xffC2C2C2 => Color(0xffC2C2C2);
   Color get glucose_bg_color => Color(0xFFEAF9F7);
+  Color get color0xffF7F8F8 => Color(0xFFF7F8F8);
 }

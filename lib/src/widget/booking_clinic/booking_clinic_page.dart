@@ -184,6 +184,7 @@ class _BookingClinicPageState extends State<BookingClinicPage> with Observer {
                           action: args["action"],
                           appointmentId: args["appointmentId"],
                           isMergedSchedule: args["isMergedSchedule"] ?? false,
+                          bookingType: args["bookingType"],
                         ),
                       );
                     }

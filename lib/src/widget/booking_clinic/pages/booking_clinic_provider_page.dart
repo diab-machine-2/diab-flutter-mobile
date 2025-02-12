@@ -6,6 +6,7 @@ import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
+import 'package:medical/src/widget/booking_clinic/helper/booking_clinic_helper.dart';
 import 'package:medical/src/widget/booking_clinic/model/booking_clinic_provider_model.dart';
 import 'package:medical/src/widget/dsmes_appointment/dsmes_appointment_cubit.dart';
 import 'package:medical/src/widget/dsmes_appointment/pages/dsmes_navigation_mixin.dart';
@@ -38,12 +39,47 @@ class _BookingClinicProvidersPageState
 
   Set<String> selectedDistricts = {};
   Set<String> selectedTypes = {};
+  Set<String> selectedTimeframes = {};
+
+  final ValueNotifier<bool> _showAllCities = ValueNotifier(false);
+  final Set<CityModel> _selectedOtherCities = {};
+
+  final ValueNotifier<String> _searchQuery = ValueNotifier('');
+  final TextEditingController _searchController = TextEditingController();
+  final ValueNotifier<List<CityModel>> _filteredCities =
+      ValueNotifier<List<CityModel>>([]);
 
   @override
   void initState() {
     super.initState();
     _cubit = context.read<DsmesAppointmentCubit>();
     _initData();
+    _searchController.addListener(_handleSearch);
+    _initializeFilteredCities();
+  }
+
+  void _initializeFilteredCities() {
+    final cities = getListCityModel();
+    final defaultCities = getDefaultCities();
+    _filteredCities.value =
+        cities.where((city) => !defaultCities.contains(city)).toList();
+
+    // Set default "All" selection
+    selectedTypes.add('');
+    selectedTimeframes.add('');
+  }
+
+  void _handleSearch() {
+    _searchQuery.value = _searchController.text;
+    final query = _searchController.text.toLowerCase();
+    final cities = getListCityModel();
+    final defaultCities = getDefaultCities();
+
+    _filteredCities.value = cities.where((city) {
+      return !defaultCities.contains(city) &&
+          (city.nameVi.toLowerCase().contains(query) ||
+              city.nameEn.toLowerCase().contains(query));
+    }).toList();
   }
 
   _initData() async {
@@ -65,10 +101,17 @@ class _BookingClinicProvidersPageState
   }
 
   @override
+  void dispose() {
+    _searchController.dispose();
+    _searchQuery.dispose();
+    _filteredCities.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
-        print('[POP] offline clinics pop');
         DsmesNavigationMixin.navigationKey.currentState?.pop(context);
         return false;
       },
@@ -82,9 +125,9 @@ class _BookingClinicProvidersPageState
         ),
         endDrawer: Container(
           width: MediaQuery.of(context).size.width * 0.9,
-          color: R.color.white,
           child: Drawer(
-            child: _buildDrawerContent(),
+            backgroundColor: R.color.white,
+            child: _buildDistrictFilter(),
           ),
         ),
       ),
@@ -115,48 +158,6 @@ class _BookingClinicProvidersPageState
             ),
             actions: [
               SizedBox.shrink(),
-              // GestureDetector(
-              //   onTap: () async {
-              //     DsmesNavigationMixin.navigationKey.currentState
-              //         ?.pushNamed(NavigatorName.dsmes_booking_history);
-              //   },
-              //   child: Container(
-              //     width: 90,
-              //     height: 33,
-              //     padding: EdgeInsets.symmetric(vertical: 4, horizontal: 6),
-              //     margin: EdgeInsets.fromLTRB(0, 12, 16, 12),
-              //     decoration: BoxDecoration(
-              //       borderRadius: BorderRadius.circular(8),
-              //       color: R.color.color0xffECFFFD,
-              //       border: Border.all(
-              //         color: R.color.color0xffA4E3DD,
-              //       ),
-              //     ),
-              //     child: Row(
-              //       mainAxisSize: MainAxisSize.min,
-              //       mainAxisAlignment: MainAxisAlignment.center,
-              //       children: [
-              //         SvgPicture.asset(
-              //           R.icons.ic_clock,
-              //           width: 16,
-              //           height: 16,
-              //           color: R.color.color0xff239A90,
-              //           fit: BoxFit.scaleDown,
-              //         ),
-              //         GapW(4),
-              //         Text(
-              //           R.string.consulting_history.tr(),
-              //           style: TextStyle(
-              //             fontSize: 14,
-              //             // fontFamily: 'sfpro',
-              //             fontWeight: FontWeight.w700,
-              //             color: R.color.color0xff239A90,
-              //           ),
-              //         ),
-              //       ],
-              //     ),
-              //   ),
-              // ),
             ],
             leadingIcon: IconButton(
               splashColor: Colors.transparent,
@@ -172,6 +173,7 @@ class _BookingClinicProvidersPageState
           ),
         ),
         _buildHeaderWidget(),
+        GapH(16),
         Expanded(
           child: SmartRefresher(
             controller: _refreshController,
@@ -193,7 +195,7 @@ class _BookingClinicProvidersPageState
             },
             child: SingleChildScrollView(
               child: Padding(
-                padding: const EdgeInsets.all(16.0),
+                padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: Column(
                   children: [
                     ListView.separated(
@@ -208,7 +210,7 @@ class _BookingClinicProvidersPageState
                         return _buildClinicItem(data);
                       },
                     ),
-                    GapH(20),
+                    GapH(16),
                   ],
                 ),
               ),
@@ -383,19 +385,20 @@ class _BookingClinicProvidersPageState
                                 if (isProcessing['bookingClinic']!) return;
                                 isProcessing['bookingClinic'] = true;
                                 try {
-                                  // await _cubit.getClinicDetail(id: data.id);
-                                  // if (_cubit.selectedClinic == null) return;
-                                  // _cubit.initCreateDsmesBookingRequest(
-                                  //     locale: context.locale.languageCode);
-                                  // await DsmesNavigationMixin
-                                  //     .navigationKey.currentState
-                                  //     ?.pushNamed(
-                                  //         NavigatorName
-                                  //             .dsmes_booking_select_date,
-                                  //         arguments: {
-                                  //       'serviceType': widget.serviceType,
-                                  //       'action': 'create',
-                                  //     });
+                                  await _cubit.getClinicDetail(id: data.id);
+                                  if (_cubit.selectedClinic == null) return;
+                                  _cubit.initCreateDsmesBookingRequest(
+                                      locale: context.locale.languageCode);
+                                  await DsmesNavigationMixin
+                                      .navigationKey.currentState
+                                      ?.pushNamed(
+                                          NavigatorName
+                                              .dsmes_booking_select_date,
+                                          arguments: {
+                                        // 'serviceType': widget.serviceType,
+                                        'action': 'create',
+                                        'bookingType': 'clinic',
+                                      });
                                 } finally {
                                   isProcessing['bookingClinic'] = false;
                                 }
@@ -514,12 +517,16 @@ class _BookingClinicProvidersPageState
               onTap: () {
                 Scaffold.of(context).openEndDrawer();
               },
-              child: Text(
-                R.string.loc.tr(),
-                style: TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w400,
-                  color: R.color.color0xff95682E,
+              child: Container(
+                width: 40,
+                alignment: Alignment.centerRight,
+                child: Text(
+                  R.string.loc.tr(),
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w400,
+                    color: R.color.color0xff95682E,
+                  ),
                 ),
               ),
             ),
@@ -529,92 +536,148 @@ class _BookingClinicProvidersPageState
     );
   }
 
+  Widget _buildDistrictFilter() {
+    return ValueListenableBuilder<bool>(
+      valueListenable: _showAllCities,
+      builder: (context, showAll, _) {
+        if (showAll) {
+          return _buildAllCitiesDrawer();
+        }
+        return _buildDrawerContent();
+      },
+    );
+  }
+
   Widget _buildDrawerContent() {
     return Stack(
       children: [
         SingleChildScrollView(
-          child: Flexible(
-            child: Column(
-              children: [
-                AppBar(
-                  leading: IconButton(
-                    icon: Icon(
-                      Icons.arrow_back,
-                      color: R.color.color0xff111515,
-                    ),
-                    onPressed: () => Navigator.pop(context),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              AppBar(
+                leading: IconButton(
+                  icon: Icon(
+                    Icons.arrow_back,
+                    color: R.color.color0xff111515,
                   ),
-                  backgroundColor: R.color.white,
-                  actions: [SizedBox.shrink()],
-                  title: Text(
-                    R.string.filter.tr(),
-                    style: TextStyle(
-                      color: R.color.color0xff111515,
-                      fontSize: 20,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                  centerTitle: false,
-                  titleSpacing: 0,
-                  automaticallyImplyLeading: false,
+                  onPressed: () => Navigator.pop(context),
                 ),
-                Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'District',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                      SizedBox(height: 12),
-                      GridView.count(
-                        shrinkWrap: true,
-                        physics: NeverScrollableScrollPhysics(),
-                        crossAxisCount: 2,
-                        mainAxisSpacing: 12,
-                        crossAxisSpacing: 12,
-                        childAspectRatio: 5 / 1,
-                        children: [
-                          _buildFilterItem(
-                              'TP. Hồ Chí Minh', 'tp-ho-chi-minh', 'district'),
-                          _buildFilterItem('Hà Nội', 'ha-noi', 'district'),
-                          _buildFilterItem('Đà Nẵng', 'da-nang', 'district'),
-                          _buildFilterItem('Khác', 'others', 'district'),
-                        ],
-                      ),
-                      SizedBox(height: 24),
-                      Text(
-                        'Clinic Type',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                      SizedBox(height: 12),
-                      GridView.count(
-                        shrinkWrap: true,
-                        physics: NeverScrollableScrollPhysics(),
-                        crossAxisCount: 2,
-                        mainAxisSpacing: 12,
-                        crossAxisSpacing: 12,
-                        childAspectRatio: 5 / 1,
-                        children: [
-                          _buildFilterItem('Phòng khám', 'clinic', 'type'),
-                          _buildFilterItem('Bệnh viện tư', 'hospital', 'type'),
-                          _buildFilterItem(
-                              'Bệnh viện công', 'public_hospital', 'type'),
-                          _buildFilterItem('Tất cả', '', 'type'),
-                        ],
-                      ),
-                    ],
+                backgroundColor: R.color.white,
+                actions: [SizedBox.shrink()],
+                title: Text(
+                  R.string.filter.tr(),
+                  style: TextStyle(
+                    color: R.color.color0xff111515,
+                    fontSize: 20,
+                    fontWeight: FontWeight.w700,
                   ),
                 ),
-              ],
-            ),
+                centerTitle: false,
+                titleSpacing: 0,
+                automaticallyImplyLeading: false,
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      R.string.khu_vuc.tr(),
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    GridView.count(
+                      shrinkWrap: true,
+                      physics: NeverScrollableScrollPhysics(),
+                      crossAxisCount: 2,
+                      mainAxisSpacing: 12,
+                      crossAxisSpacing: 12,
+                      childAspectRatio: 5 / 1,
+                      children: [
+                        ...getDefaultCities().map((e) =>
+                            _buildFilterItem(e.nameVi, e.slug, 'district')),
+                        if (_selectedOtherCities.isNotEmpty)
+                          ..._selectedOtherCities.map((city) =>
+                              _buildFilterItem(
+                                  city.nameVi, city.slug, 'district')),
+                        InkWell(
+                          onTap: () => _showAllCities.value = true,
+                          child: Container(
+                            alignment: Alignment.center,
+                            decoration: BoxDecoration(
+                              color: R.color.color0xffF7F8F8,
+                              border: Border.all(
+                                color: R.color.transparent,
+                              ),
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            child: Text(
+                              R.string.more.tr(),
+                              style: TextStyle(
+                                color: R.color.color0xff111515,
+                                fontWeight: FontWeight.w400,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    GapH(12),
+                    Text(
+                      R.string.clinic_type.tr(),
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    GridView.count(
+                      shrinkWrap: true,
+                      physics: NeverScrollableScrollPhysics(),
+                      crossAxisCount: 2,
+                      mainAxisSpacing: 12,
+                      crossAxisSpacing: 12,
+                      childAspectRatio: 5 / 1,
+                      children: [
+                        ...Const.CLINIC_TYPES.map((type) {
+                          return _buildFilterItem(
+                              getClinicTypeDisplay(type), type, 'type');
+                        }).toList(),
+                        _buildFilterItem(R.string.all.tr(), '', 'type'),
+                      ],
+                    ),
+                    GapH(12),
+                    Text(
+                      R.string.thoi_gian.tr(),
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    GridView.count(
+                      shrinkWrap: true,
+                      physics: NeverScrollableScrollPhysics(),
+                      crossAxisCount: 2,
+                      mainAxisSpacing: 12,
+                      crossAxisSpacing: 12,
+                      childAspectRatio: 5 / 1,
+                      children: [
+                        ...Const.CLINIC_TIMEFRAMES.map((timeframe) {
+                          return _buildFilterItem(
+                              getClinicTimeframeDisplay(timeframe),
+                              timeframe,
+                              'timeframe');
+                        }).toList(),
+                        _buildFilterItem(R.string.all.tr(), '', 'timeframe'),
+                      ],
+                    ),
+                    GapH(80),
+                  ],
+                ),
+              ),
+            ],
           ),
         ),
         Positioned(
@@ -624,6 +687,142 @@ class _BookingClinicProvidersPageState
           child: _buildFilterButtons(),
         ),
       ],
+    );
+  }
+
+  Widget _buildAllCitiesDrawer() {
+    return Stack(
+      children: [
+        Column(
+          children: [
+            AppBar(
+              leading: IconButton(
+                icon: Icon(Icons.arrow_back, color: R.color.color0xff111515),
+                onPressed: () {
+                  _showAllCities.value = false;
+                  _selectedOtherCities.clear();
+                  _searchController.clear();
+                },
+              ),
+              backgroundColor: R.color.white,
+              title: Text(
+                R.string.khu_vuc.tr(),
+                style: TextStyle(
+                  color: R.color.color0xff111515,
+                  fontSize: 20,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              centerTitle: false,
+              titleSpacing: 0,
+              automaticallyImplyLeading: false,
+              actions: [
+                GestureDetector(
+                  onTap: () {
+                    selectedDistricts
+                        .addAll(_selectedOtherCities.map((city) => city.slug));
+                    _showAllCities.value = false;
+                    _searchController.clear();
+                  },
+                  child: Container(
+                    margin: EdgeInsets.fromLTRB(0, 20, 16, 0),
+                    child: Text(
+                      R.string.apply.tr(),
+                      style: TextStyle(
+                        color: R.color.color0xff95682E,
+                        fontSize: 15,
+                        fontWeight: FontWeight.w400,
+                      ),
+                    ),
+                  ),
+                )
+              ],
+            ),
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: TextField(
+                controller: _searchController,
+                decoration: InputDecoration(
+                  hintText: R.string.tim_khu_vuc.tr(),
+                  prefixIcon: Icon(Icons.search),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(color: R.color.color0xffDFE4E4),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(color: R.color.color0xffDFE4E4),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(color: R.color.color0xffDFE4E4),
+                  ),
+                  contentPadding:
+                      EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                ),
+              ),
+            ),
+            Expanded(
+              child: ValueListenableBuilder<List<CityModel>>(
+                valueListenable: _filteredCities,
+                builder: (context, cities, _) {
+                  return SingleChildScrollView(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: GridView.count(
+                        shrinkWrap: true,
+                        physics: NeverScrollableScrollPhysics(),
+                        crossAxisCount: 2,
+                        mainAxisSpacing: 12,
+                        crossAxisSpacing: 12,
+                        childAspectRatio: 5 / 1,
+                        children: cities.map((city) {
+                          return _buildCityItem(city, 'district');
+                        }).toList(),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildCityItem(CityModel city, String filterType) {
+    final isSelected = _selectedOtherCities.contains(city);
+    return InkWell(
+      onTap: () {
+        setState(() {
+          if (isSelected) {
+            _selectedOtherCities.remove(city);
+          } else {
+            _selectedOtherCities.add(city);
+          }
+        });
+      },
+      child: Container(
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          color: R.color.color0xffF7F8F8,
+          border: Border.all(
+            color:
+                isSelected ? R.color.greenGradientBottom : R.color.transparent,
+          ),
+          borderRadius: BorderRadius.circular(4),
+        ),
+        child: Text(
+          city.nameVi,
+          style: TextStyle(
+            color: isSelected
+                ? R.color.greenGradientBottom
+                : R.color.color0xff111515,
+            fontWeight: FontWeight.w400,
+          ),
+        ),
+      ),
     );
   }
 
@@ -639,6 +838,8 @@ class _BookingClinicProvidersPageState
                 setState(() {
                   selectedDistricts.clear();
                   selectedTypes.clear();
+                  selectedTimeframes.clear();
+                  _selectedOtherCities.clear();
                 });
               },
               child: Container(
@@ -652,7 +853,7 @@ class _BookingClinicProvidersPageState
                 ),
                 child: Center(
                   child: Text(
-                    'Clear Filter',
+                    R.string.clear_filter.tr(),
                     style: TextStyle(
                       color: R.color.greenGradientBottom,
                       fontSize: 15,
@@ -667,14 +868,31 @@ class _BookingClinicProvidersPageState
           Flexible(
             flex: 1,
             child: GestureDetector(
-              onTap: () {
-                String districts = selectedDistricts.join(',');
-                String types = selectedTypes.join(',');
+              onTap: () async {
+                final districts =
+                    selectedDistricts.where((item) => item.isNotEmpty).toList();
+                final clinicTypes =
+                    selectedTypes.where((item) => item.isNotEmpty).toList();
+                final timeframes = selectedTimeframes
+                    .where((item) => item.isNotEmpty)
+                    .toList();
 
-                _cubit.searchBookingClinicListRequest = _cubit
-                    .searchBookingClinicListRequest
-                    ?.copyWith(urlKeyword: districts, type: types, page: '1');
-                _initData();
+                _cubit.updateSearchBookingClinicListRequestUrlKeyword(
+                    urlKeywords: districts);
+
+                _cubit.updateSearchBookingClinicListRequestClinicTypes(
+                    clinicTypes: clinicTypes);
+
+                _cubit.updateSearchBookingClinicListRequestTimeframes(
+                    timeframes: timeframes);
+
+                final request = _cubit.searchBookingClinicListRequest;
+                if (request == null) {
+                  return;
+                }
+                await _cubit.searchBookingClinicList(
+                    request: request, isRefresh: true);
+                setState(() {});
                 Navigator.pop(context);
               },
               child: Container(
@@ -693,7 +911,7 @@ class _BookingClinicProvidersPageState
                 ),
                 child: Center(
                   child: Text(
-                    'Apply',
+                    R.string.apply.tr(),
                     style: TextStyle(
                       color: R.color.white,
                       fontWeight: FontWeight.w700,
@@ -710,40 +928,75 @@ class _BookingClinicProvidersPageState
   }
 
   Widget _buildFilterItem(String displayText, String value, String filterType) {
-    Set<String> selectedValues =
-        filterType == 'district' ? selectedDistricts : selectedTypes;
+    Set<String> selectedValues = filterType == 'district'
+        ? selectedDistricts
+        : filterType == 'type'
+            ? selectedTypes
+            : selectedTimeframes;
     bool isSelected = selectedValues.contains(value);
 
     return InkWell(
       onTap: () {
         setState(() {
-          if (filterType == 'type' && value.isEmpty) {
-            selectedTypes.clear();
-            selectedTypes.add(value);
-          } else if (isSelected) {
-            selectedValues.remove(value);
-          } else {
-            if (filterType == 'type' && selectedTypes.contains('')) {
+          if (filterType == 'type') {
+            if (value.isEmpty) {
+              // When "All" is selected
               selectedTypes.clear();
+              selectedValues.add(value);
+            } else {
+              if (isSelected) {
+                selectedValues.remove(value);
+              } else {
+                selectedValues.add(value);
+              }
+              // Remove "All" option if any specific type is selected
+              selectedTypes.remove('');
             }
-            selectedValues.add(value);
+          }
+
+          if (filterType == 'timeframe') {
+            if (value.isEmpty) {
+              // When "All" is selected
+              selectedTimeframes.clear();
+              selectedValues.add(value);
+            } else {
+              if (isSelected) {
+                selectedValues.remove(value);
+              } else {
+                selectedValues.add(value);
+              }
+              // Remove "All" option if any specific timeframe is selected
+              selectedTimeframes.remove('');
+            }
+          }
+
+          if (filterType == 'district') {
+            // Single selection for districts
+            if (isSelected) {
+              selectedValues.remove(value);
+            } else {
+              selectedValues.add(value);
+            }
           }
         });
       },
       child: Container(
         alignment: Alignment.center,
         decoration: BoxDecoration(
+          color: R.color.color0xffF7F8F8,
           border: Border.all(
-            color: isSelected ? Color(0xFF008479) : Colors.grey[300]!,
-            width: isSelected ? 2 : 1,
+            color:
+                isSelected ? R.color.greenGradientBottom : R.color.transparent,
           ),
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(4),
         ),
         child: Text(
           displayText,
           style: TextStyle(
-            color: isSelected ? Color(0xFF008479) : Colors.black,
-            fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+            color: isSelected
+                ? R.color.greenGradientBottom
+                : R.color.color0xff111515,
+            fontWeight: FontWeight.w400,
           ),
         ),
       ),

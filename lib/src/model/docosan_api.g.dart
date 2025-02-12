@@ -308,7 +308,7 @@ class _DocosanApi implements DocosanApi {
     )
             .compose(
               _dio.options,
-              'api/seo-static-link',
+              'api/seo-static-link-multi',
               queryParameters: queryParameters,
               data: _data,
             )

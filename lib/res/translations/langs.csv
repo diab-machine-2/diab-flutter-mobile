@@ -1209,4 +1209,16 @@ chon_noi_kham,"Chọn nơi khám","Select clinic",
 benh_khac,"Bệnh khác","Other diseases",
 view_information,"Xem thông tin","View information",
 da_kham,"Đã khám","Already checked",
-loc,"Lọc","Filter"
+loc,"Lọc","Filter",
+khu_vuc,"Khu vực","District",
+clinic_type,"Loại bệnh viện","Clinic type",
+clear_filter,"Xóa lọc","Clear filter",
+apply,"Áp dụng","Apply",
+kham_tai_phong_kham,"Khám tại phòng khám","Consulting at clinic",
+tim_khu_vuc,"Tìm khu vực","Find district",
+phong_kham,"Phòng khám","Clinic",
+benh_vien_tu,"Bệnh viện tư","Private hospital",
+benh_vien_cong,"Bệnh viện công","Public hospital",
+cuoi_tuan,"Cuối tuần","Weekend"
+ngay_trong_tuan,"Ngày trong tuần","Weekday",
+ngoai_gio,"Ngoài giờ","Outside office hours"

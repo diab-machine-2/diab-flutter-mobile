@@ -223,7 +223,15 @@ class Const {
   static const List<String> CLINIC_TYPES = [
     CLINIC_TYPE_CLINIC,
     CLINIC_TYPE_HOSPITAL,
-    CLINIC_TYPE_LAB,
+    // CLINIC_TYPE_LAB,
     CLINIC_TYPE_PUBLIC_HOSPITAL
+  ];
+  static const String CLINIC_TIMEFRAME_WEEKEND = 'weekend';
+  static const String CLINIC_TIMEFRAME_WEEKDAY = 'weekday';
+  static const String CLINIC_TIMEFRAME_AFTER_HOURS = 'after_hours';
+  static const List<String> CLINIC_TIMEFRAMES = [
+    CLINIC_TIMEFRAME_WEEKEND,
+    CLINIC_TIMEFRAME_WEEKDAY,
+    CLINIC_TIMEFRAME_AFTER_HOURS,
   ];
 }

@@ -1238,4 +1238,16 @@ class Strings {
   String get view_information => 'view_information';
   String get da_kham => 'da_kham';
   String get loc => 'loc';
+  String get clinic_type => 'clinic_type';
+  String get khu_vuc => 'khu_vuc';
+  String get clear_filter => 'clear_filter';
+  String get apply => 'apply';
+  String get kham_tai_phong_kham => 'kham_tai_phong_kham';
+  String get tim_khu_vuc => 'tim_khu_vuc';
+  String get phong_kham => 'phong_kham';
+  String get benh_vien_tu => 'benh_vien_tu';
+  String get benh_vien_cong => 'benh_vien_cong';
+  String get cuoi_tuan => 'cuoi_tuan';
+  String get ngay_trong_tuan => 'ngay_trong_tuan';
+  String get ngoai_gio => 'ngoai_gio';
 }

@@ -97,8 +97,12 @@ class BookingClinicProvider {
       isSale: json['is_sale'] is String
           ? int.tryParse(json['is_sale'])
           : json['is_sale'],
-      lat: json['lat'],
-      lng: json['lng'],
+      lat: json['lat'] is String
+          ? double.tryParse(json['lat']) ?? 0.0
+          : (json['lat']?.toDouble() ?? 0.0),
+      lng: json['lng'] is String
+          ? double.tryParse(json['lng']) ?? 0.0
+          : (json['lng']?.toDouble() ?? 0.0),
     );
   }
 

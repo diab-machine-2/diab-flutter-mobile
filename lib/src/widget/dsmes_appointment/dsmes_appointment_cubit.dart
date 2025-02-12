@@ -352,7 +352,7 @@ class DsmesAppointmentCubit extends Cubit<DsmesAppointmentState> {
       clinicProviderHasMore = true;
     }
 
-    if (!hasMore) return listBookingClinicProvider;
+    if (!clinicProviderHasMore) return listBookingClinicProvider;
 
     emit(showLoading
         ? DsmesAppointmentLoading()
@@ -366,14 +366,12 @@ class DsmesAppointmentCubit extends Cubit<DsmesAppointmentState> {
       clinicProviderHasMore =
           response.attr.currentPage < response.attr.totalPage;
 
-      var filteredProviders = response.data.providers
-          .where((provider) => provider.kind == 'clinic')
-          .toList();
+      final providers = response.data.providers;
 
       if (isRefresh) {
-        listBookingClinicProvider = filteredProviders;
+        listBookingClinicProvider = providers;
       } else {
-        listBookingClinicProvider.addAll(filteredProviders);
+        listBookingClinicProvider.addAll(providers);
       }
       emit(DsmesAppointmentLoaded());
     }, failure: (NetworkExceptions error) {
@@ -614,7 +612,7 @@ class DsmesAppointmentCubit extends Cubit<DsmesAppointmentState> {
       {required String specialtyId, int page = 1}) {
     searchBookingClinicListRequest = SearchBookingClinicListRequest(
       page: page.toString(),
-      urlKeyword: '',
+      urlKeywords: [],
       specialty: specialtyId,
     );
   }
@@ -631,9 +629,24 @@ class DsmesAppointmentCubit extends Cubit<DsmesAppointmentState> {
     );
   }
 
-  updateSearchBookingClinicListRequestUrlKeyword({required String urlKeyword}) {
+  updateSearchBookingClinicListRequestUrlKeyword(
+      {required List<String> urlKeywords}) {
     searchBookingClinicListRequest = searchBookingClinicListRequest?.copyWith(
-      urlKeyword: urlKeyword,
+      urlKeywords: urlKeywords,
+    );
+  }
+
+  updateSearchBookingClinicListRequestClinicTypes(
+      {required List<String> clinicTypes}) {
+    searchBookingClinicListRequest = searchBookingClinicListRequest?.copyWith(
+      clinicTypes: clinicTypes,
+    );
+  }
+
+  updateSearchBookingClinicListRequestTimeframes(
+      {required List<String> timeframes}) {
+    searchBookingClinicListRequest = searchBookingClinicListRequest?.copyWith(
+      timeframes: timeframes,
     );
   }
 
