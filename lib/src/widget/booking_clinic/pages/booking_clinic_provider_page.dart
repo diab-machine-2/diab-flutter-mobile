@@ -8,6 +8,7 @@ import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/booking_clinic/helper/booking_clinic_helper.dart';
 import 'package:medical/src/widget/booking_clinic/model/booking_clinic_provider_model.dart';
+import 'package:medical/src/widget/booking_clinic/pages/empty_clinic_provider_page.dart';
 import 'package:medical/src/widget/dsmes_appointment/dsmes_appointment_cubit.dart';
 import 'package:medical/src/widget/dsmes_appointment/pages/dsmes_navigation_mixin.dart';
 import 'package:medical/src/widgets/gap_widget.dart';
@@ -85,8 +86,20 @@ class _BookingClinicProvidersPageState
   _initData() async {
     isLoading = true;
 
+    final position = await getPositionPreferences(); //format: "lat,lng"
+    String lat = '';
+    String lng = '';
+    if (position != null) {
+      final split = position.split(',');
+      lat = split[0];
+      lng = split[1];
+    }
     _cubit.initSearchBookingClinicListRequest(
-        page: 1, specialtyId: widget.specialtyId.toString());
+      page: 1,
+      specialtyId: widget.specialtyId.toString(),
+      lat: lat,
+      lng: lng,
+    );
 
     final request = _cubit.searchBookingClinicListRequest;
     if (request == null) {
@@ -175,47 +188,54 @@ class _BookingClinicProvidersPageState
         _buildHeaderWidget(),
         GapH(16),
         Expanded(
-          child: SmartRefresher(
-            controller: _refreshController,
-            enablePullUp: _cubit.clinicProviderHasMore,
-            enablePullDown: false,
-            footer: _cubit.clinicProviderHasMore
-                ? ClassicFooter(
-                    loadingText: "Đang tải",
-                    canLoadingText: R.string.pull_up_to_load_more.tr(),
-                  )
-                : null,
-            onLoading: () async {
-              await _cubit.searchBookingClinicList(
-                  request: _cubit.searchBookingClinicListRequest!
-                      .copyWith(page: _cubit.clinicProviderCurrentPage + 1),
-                  showLoading: false);
-              _refreshController.loadComplete();
-              setState(() {});
-            },
-            child: SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Column(
-                  children: [
-                    ListView.separated(
-                      physics: NeverScrollableScrollPhysics(),
-                      padding: EdgeInsets.zero,
-                      shrinkWrap: true,
-                      itemCount: _cubit.listBookingClinicProvider.length,
-                      separatorBuilder: (context, index) => GapH(16),
-                      itemBuilder: (context, index) {
-                        BookingClinicProvider data =
-                            _cubit.listBookingClinicProvider[index];
-                        return _buildClinicItem(data);
-                      },
+          child: _cubit.listBookingClinicProvider.isEmpty
+              ? BookingClinicEmptyWidget(
+                  imagePath: R.drawable.bg_empty_clinic,
+                  title: R.string.empty_clinic_content.tr(),
+                  subtitle: "",
+                )
+              : SmartRefresher(
+                  controller: _refreshController,
+                  enablePullUp: _cubit.clinicProviderHasMore,
+                  enablePullDown: false,
+                  footer: _cubit.clinicProviderHasMore
+                      ? ClassicFooter(
+                          loadingText: "Đang tải",
+                          canLoadingText: R.string.pull_up_to_load_more.tr(),
+                        )
+                      : null,
+                  onLoading: () async {
+                    await _cubit.searchBookingClinicList(
+                        request: _cubit.searchBookingClinicListRequest!
+                            .copyWith(
+                                page: _cubit.clinicProviderCurrentPage + 1),
+                        showLoading: false);
+                    _refreshController.loadComplete();
+                    setState(() {});
+                  },
+                  child: SingleChildScrollView(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: Column(
+                        children: [
+                          ListView.separated(
+                            physics: NeverScrollableScrollPhysics(),
+                            padding: EdgeInsets.zero,
+                            shrinkWrap: true,
+                            itemCount: _cubit.listBookingClinicProvider.length,
+                            separatorBuilder: (context, index) => GapH(16),
+                            itemBuilder: (context, index) {
+                              BookingClinicProvider data =
+                                  _cubit.listBookingClinicProvider[index];
+                              return _buildClinicItem(data);
+                            },
+                          ),
+                          GapH(16),
+                        ],
+                      ),
                     ),
-                    GapH(16),
-                  ],
+                  ),
                 ),
-              ),
-            ),
-          ),
         ),
       ],
     );
@@ -504,8 +524,8 @@ class _BookingClinicProvidersPageState
                       height: 3,
                       width: 60,
                       color: _selectedIndex == 1
-                          ? Color(0xFF008479)
-                          : Colors.transparent,
+                          ? R.color.greenGradientBottom
+                          : R.color.transparent,
                     ),
                   ],
                 ),
@@ -513,23 +533,50 @@ class _BookingClinicProvidersPageState
             ],
           ),
           Builder(
-            builder: (context) => GestureDetector(
-              onTap: () {
-                Scaffold.of(context).openEndDrawer();
-              },
-              child: Container(
-                width: 40,
-                alignment: Alignment.centerRight,
-                child: Text(
-                  R.string.loc.tr(),
-                  style: TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w400,
-                    color: R.color.color0xff95682E,
-                  ),
+            builder: (context) {
+              final isFiltered = (selectedDistricts.isNotEmpty ||
+                  (selectedTypes.length == 1 && !selectedTypes.contains('')) ||
+                  (selectedTimeframes.length == 1 &&
+                      !selectedTimeframes.contains('')));
+              return GestureDetector(
+                onTap: () {
+                  Scaffold.of(context).openEndDrawer();
+                },
+                child: Stack(
+                  children: [
+                    Container(
+                      width: 50,
+                      height: 30,
+                      alignment: Alignment.centerRight,
+                      child: Container(
+                        margin: isFiltered ? EdgeInsets.only(right: 10) : null,
+                        child: Text(
+                          R.string.loc.tr(),
+                          style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w400,
+                            color: R.color.color0xff95682E,
+                          ),
+                        ),
+                      ),
+                    ),
+                    if (isFiltered)
+                      Positioned(
+                        top: 2,
+                        right: 1,
+                        child: Container(
+                          width: 6,
+                          height: 6,
+                          decoration: BoxDecoration(
+                            color: Colors.red,
+                            shape: BoxShape.circle,
+                          ),
+                        ),
+                      ),
+                  ],
                 ),
-              ),
-            ),
+              );
+            },
           )
         ],
       ),

@@ -609,11 +609,13 @@ class DsmesAppointmentCubit extends Cubit<DsmesAppointmentState> {
   }
 
   initSearchBookingClinicListRequest(
-      {required String specialtyId, int page = 1}) {
+      {required String specialtyId, int page = 1, String lat = '', String lng = ''}) {
     searchBookingClinicListRequest = SearchBookingClinicListRequest(
       page: page.toString(),
       urlKeywords: [],
       specialty: specialtyId,
+      lat: lat,
+      lng: lng,
     );
   }
 

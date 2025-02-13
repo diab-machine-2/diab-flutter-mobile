@@ -1250,4 +1250,5 @@ class Strings {
   String get cuoi_tuan => 'cuoi_tuan';
   String get ngay_trong_tuan => 'ngay_trong_tuan';
   String get ngoai_gio => 'ngoai_gio';
+  String get empty_clinic_content => 'empty_clinic_content';
 }

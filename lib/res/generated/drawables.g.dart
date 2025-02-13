@@ -610,4 +610,5 @@ class Drawables {
   String get banner_suy_than_man => "lib/res/drawables/clinic_specialty/suy-than-man.png";
   String get banner_tieu_duong => "lib/res/drawables/clinic_specialty/tieu-duong.png";
   String get banner_benh_khac => "lib/res/drawables/clinic_specialty/benh-khac.png";
+  String get bg_empty_clinic => "lib/res/drawables/bg_empty_clinic.png";
 }

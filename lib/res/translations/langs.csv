@@ -1221,4 +1221,5 @@ benh_vien_tu,"Bệnh viện tư","Private hospital",
 benh_vien_cong,"Bệnh viện công","Public hospital",
 cuoi_tuan,"Cuối tuần","Weekend"
 ngay_trong_tuan,"Ngày trong tuần","Weekday",
-ngoai_gio,"Ngoài giờ","Outside office hours"
+ngoai_gio,"Ngoài giờ","Outside office hours",
+empty_clinic_content,"Chưa có nơi khám phù hợp yêu cầu","No clinic matches your requirements"

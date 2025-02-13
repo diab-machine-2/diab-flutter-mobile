@@ -14,6 +14,7 @@ import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
+import 'package:medical/src/widget/booking_clinic/helper/booking_clinic_helper.dart';
 import 'package:medical/src/widget/booking_clinic/model/clinic_specialty_model.dart';
 import 'package:medical/src/widget/booking_clinic/pages/booking_clinic_provider_page.dart';
 import 'package:medical/src/widget/booking_clinic/pages/other_diseases_page.dart';
@@ -60,6 +61,17 @@ class _BookingClinicPageState extends State<BookingClinicPage> with Observer {
     _cubit = DsmesAppointmentCubit(repository);
     // _cubit.getDsmesAppointmentList();
     _cubit.initDsmesBooking();
+    _initDeviceLocation();
+  }
+
+  _initDeviceLocation() async {
+    final position = await getPositionPreferences();
+    if (position == null || position.isEmpty) {
+      final geolocation = await determinePosition();
+      if (geolocation != null) {
+        await saveLocationPreferences(geolocation);
+      }
+    }
   }
 
   @override
