@@ -923,6 +923,35 @@ class AppRepository {
     }
   }
 
+  Future<ApiResult<ConversationListResponse>> getMyConversation() async {
+    try {
+      final response = await appClient.getMyConversation();
+      return ApiResult.success(data: response);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
+  Future<ApiResult<ConversationResponse>> createConversation(
+      CreateConversationRequest request) async {
+    try {
+      final response = await appClient.createConversation(request);
+      return ApiResult.success(data: response);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
+  Future<ApiResult<CommonResponse>> deleteConversation(
+      String conversationId) async {
+    try {
+      final response = await appClient.deleteConversation(conversationId);
+      return ApiResult.success(data: response);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
   Future<ApiResult<List<CreateCalendarResponse>>> getMyCalendar(
       CalendarFilter request) async {
     try {

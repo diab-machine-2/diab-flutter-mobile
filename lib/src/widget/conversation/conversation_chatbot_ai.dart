@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:ffi';
 import 'dart:math';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
@@ -9,6 +10,7 @@ import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/response/chat_supabase_response.dart';
 import 'package:medical/src/model/service/api_result.dart';
 import 'package:medical/src/utils/app_log.dart';
+import 'package:medical/src/utils/navigator_name.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../res/R.dart';
 import '../helper/tracking_manager.dart';
@@ -31,7 +33,8 @@ class _ConversationChatbotAiState extends State<ConversationChatbotAi> {
   final GlobalKey<ChatState> _chatKey = GlobalKey();
   late List<types.Message> _messages = [];
   int _page = 0;
-  String _conversationId = '11111111-1111-1111-1111-111111111111';
+  String _conversationId = '';
+  bool _isChatbotTyping = false;
   final _user = types.User(
     id: AppSettings.userInfo?.id ?? '',
     firstName: AppSettings.userInfo?.fullName ?? '',
@@ -46,21 +49,55 @@ class _ConversationChatbotAiState extends State<ConversationChatbotAi> {
   }
 
   Future subpabaseInit() async {
-    Console.log('-------subpabaseInit');
-    print('SupabaseConfigResponse: -----------------');
     final ApiResult<SupabaseConfigResponse> apiResult =
         await AppRepository().getSupabaseConfig();
     apiResult.when(
         success: ((data) async => {
-              Console.log('SupabaseConfigResponse: ${data.supabaseUrl}'),
-              Console.log('SupabaseConfigResponse: ${data.supabaseKey}'),
               await Supabase.initialize(
                 url: data.supabaseUrl,
                 anonKey: data.supabaseKey,
-              ),
+              ).onError((error, stackTrace) {
+                return Supabase.instance;
+              }),
+              await conversationInit(),
             }),
         failure: ((error) => {Console.log('Error: $error')}));
-    _handleEndReached();
+  }
+
+  Future conversationInit() async {
+    // select first conversation with the status 'active'
+    // if comes empty, create a new conversation
+    // update conversationId state with the id of the conversation
+    final apiGetResult = await AppRepository().getMyConversation();
+    apiGetResult.whenOrNull(
+        success: ((data) async => {
+              if (data.data!.length > 0)
+                {
+                  setState(() {
+                    _conversationId = data.data!.first.id;
+                  }),
+                  await _handleEndReached(isReset: true),
+                }
+              else
+                createConversation()
+            }),
+        failure: (error) => {
+              Console.log('Error: $apiGetResult'),
+            });
+  }
+
+  Future createConversation() async {
+    CreateConversationRequest newConversation = CreateConversationRequest(
+        title: 'Chat Bot AI', descrtiption: 'Chat Bot AI Description');
+    final apiResult = await AppRepository().createConversation(newConversation);
+    apiResult.when(
+        success: ((data) => {
+              setState(() {
+                _conversationId = data.data!.id;
+              }),
+              _handleEndReached(isReset: true),
+            }),
+        failure: ((error) => {Console.log('Error: $error')}));
   }
 
   Future firebaseSetup() async {
@@ -79,6 +116,51 @@ class _ConversationChatbotAiState extends State<ConversationChatbotAi> {
       child: Scaffold(
         resizeToAvoidBottomInset: false,
         backgroundColor: R.color.white,
+        appBar: AppBar(
+          leading: IconButton(
+              splashColor: R.color.transparent,
+              highlightColor: R.color.transparent,
+              icon: Icon(Icons.arrow_back, color: R.color.white),
+              onPressed: () {
+                Navigator.pop(context);
+              }),
+          title: Align(
+            alignment: Alignment.topLeft,
+            child: Text(
+              R.string.conversation_chatbot_ai_title.tr(),
+              style: TextStyle(
+                  color: R.color.white,
+                  fontSize: 20,
+                  fontWeight: FontWeight.w400),
+            ),
+          ),
+          actions: [
+            IconButton(
+              splashColor: R.color.transparent,
+              highlightColor: R.color.transparent,
+              icon: Icon(Icons.format_list_bulleted,
+                  color: R.color.white, size: 24),
+              onPressed: () {
+                Navigator.pushNamed(context, NavigatorName.conversation_setting,
+                    arguments: {
+                      'conversationId': _conversationId,
+                    });
+              },
+            ),
+          ],
+          backgroundColor: R.color.transparent, //No more green
+          elevation: 0.0, //Shadow gone
+          flexibleSpace: Container(
+            decoration: BoxDecoration(
+                gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                  R.color.greenGradientMid,
+                  R.color.greenGradientBottom
+                ])),
+          ),
+        ),
         body: Container(
           height: double.infinity,
           child: Stack(
@@ -89,67 +171,99 @@ class _ConversationChatbotAiState extends State<ConversationChatbotAi> {
                   fit: BoxFit.fill,
                 ),
               ),
-              SingleChildScrollView(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    AppBar(
-                      leading: IconButton(
-                          splashColor: R.color.transparent,
-                          highlightColor: R.color.transparent,
-                          icon: Icon(Icons.arrow_back, color: R.color.black),
-                          onPressed: () {
-                            Navigator.pop(context);
-                          }),
-                      title: Align(
-                        alignment: Alignment.topLeft,
-                        child: Text(
-                          R.string.conversation_chatbot_ai_title.tr(),
-                          style: TextStyle(
-                              color: R.color.textDark,
-                              fontSize: 24,
-                              fontWeight: FontWeight.w600),
-                        ),
+              Container(
+                // set Container flex fill size
+                width: double.infinity,
+                height: MediaQuery.of(context).size.height -
+                    MediaQuery.of(context).padding.bottom,
+                // set Background color for the chatbot
+                child: Chat(
+                    key: _chatKey,
+                    messages: _messages,
+                    onSendPressed: _handleSendPressed,
+                    onPreviewDataFetched: _handlePreviewDataFetched,
+                    user: _user,
+                    showUserAvatars: true,
+                    showUserNames: false,
+                    onEndReached: _handleEndReached,
+                    onAvatarTap: (user) => {
+                          Navigator.pushNamed(
+                              context, NavigatorName.conversation_user_profile,
+                              arguments: {
+                                'userId': user.id,
+                              })
+                        },
+                    theme: DefaultChatTheme(
+                      backgroundColor: R.color.transparent,
+                      inputBackgroundColor: R.color.white,
+                      inputBorderRadius: BorderRadius.zero,
+                      inputTextColor: R.color.textDark,
+                      inputContainerDecoration: BoxDecoration(
+                        color: R.color.white,
+                        boxShadow: [
+                          BoxShadow(
+                            color: R.color.black.withOpacity(0.1),
+                            blurRadius: 10,
+                            offset: Offset(0, 5),
+                          ),
+                        ],
                       ),
-                      backgroundColor: R.color.transparent, //No more green
-                      elevation: 0.0, //Shadow gone
-                    ),
-                    Container(
-                      // set Container flex fill size
-                      width: double.infinity,
-                      height: MediaQuery.of(context).size.height -
-                          MediaQuery.of(context).padding.bottom -
-                          80,
-                      // set Background color for the chatbot
-                      child: Chat(
-                          key: _chatKey,
-                          messages: _messages,
-                          onSendPressed: _handleSendPressed,
-                          onPreviewDataFetched: _handlePreviewDataFetched,
-                          user: _user,
-                          showUserAvatars: true,
-                          showUserNames: false,
-                          onEndReached: _handleEndReached,
-                          theme: DefaultChatTheme(
-                            backgroundColor: R.color.transparent,
-                            inputBackgroundColor: R.color.white,
-                            inputBorderRadius: BorderRadius.zero,
-                            inputTextColor: R.color.textDark,
-                            inputContainerDecoration: BoxDecoration(
-                              color: R.color.white,
-                              boxShadow: [
-                                BoxShadow(
-                                  color: R.color.black.withOpacity(0.1),
-                                  blurRadius: 10,
-                                  offset: Offset(0, 5),
-                                ),
-                              ],
-                            ),
-                          )),
-                    ),
-                  ],
-                ),
+                      primaryColor: Color.fromRGBO(202, 250, 245, 1),
+                      sentMessageBodyTextStyle: TextStyle(
+                        color: R.color.textDark,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                        height: 1.5,
+                      ),
+                      sentMessageLinkDescriptionTextStyle: TextStyle(
+                        color: R.color.captionColorGray,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w200,
+                        height: 1.2,
+                      ),
+                      sentMessageLinkTitleTextStyle: TextStyle(
+                        color: R.color.textDark,
+                        fontSize: 15,
+                        fontWeight: FontWeight.w400,
+                        height: 1.4,
+                      ),
+                      // sentMessageBodyLinkTextStyle: TextStyle(
+                      //   color: R.color.red,
+                      //   fontSize: 16,
+                      //   fontWeight: FontWeight.w500,
+                      //   height: 1.5,
+                      // ),
+                    )),
               ),
+              AnimatedOpacity(
+                opacity: _isChatbotTyping ? 1 : 0,
+                duration: const Duration(milliseconds: 500),
+                child: Align(
+                  alignment: Alignment(-0.98, 0.83),
+                  child: Container(
+                    padding: EdgeInsets.all(4),
+                    decoration: BoxDecoration(
+                        color: R.color.greenGradientMid,
+                        borderRadius: BorderRadius.circular(2),
+                        boxShadow: null),
+                    child: Text(
+                      'Đang trả lời ...',
+                      style: TextStyle(
+                          color: R.color.white,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w400),
+                    ),
+                  ),
+                ),
+              )
+
+              // Positioned(
+              //     bottom: 0,
+              //     left: 0,
+              //     child: Container(
+              //       padding: EdgeInsets.all(4),
+              //       child: Text('Typing...'),
+              //     )),
             ],
           ),
         ),
@@ -157,17 +271,18 @@ class _ConversationChatbotAiState extends State<ConversationChatbotAi> {
     );
   }
 
-  Future<void> _handleEndReached() async {
+  Future<void> _handleEndReached({bool? isReset = false}) async {
+    if (isReset == true) {
+      _page = 0;
+      _messages = [];
+    }
     const pageSize = 20;
     final response = await Supabase.instance.client
         .from('messages')
         .select()
         .filter('conversation_id', 'eq', _conversationId)
-        //     .filter('sender', 'in', [_user.id, 'ai'])
-        //     .filter('sender_type', 'in', [
-        //   'user',
-        //   'ai'
-        // ])
+        .filter('sender', 'in', [_user.id, 'ai'])
+        .filter('sender_type', 'in', ['user', 'ai'])
         .range(this._page * pageSize, (this._page + 1) * pageSize)
         .order('created_at', ascending: false);
     Console.log('-------_handleEndReached');
@@ -179,7 +294,7 @@ class _ConversationChatbotAiState extends State<ConversationChatbotAi> {
                 firstName: e['sender'] as String,
                 lastName: e['sender'] as String,
                 imageUrl:
-                    'https://cdn-icons-png.flaticon.com/512/147/147144.png'),
+                    'https://s160-ava-talk.zadn.vn/8/b/a/e/7/160/0e6d45871cf216bf78e2d435ed3ba31a.jpg'),
             id: e['id'] as String,
             text: e['content'] as String,
             createdAt: DateTime.parse(e['created_at'] as String)
@@ -230,6 +345,9 @@ class _ConversationChatbotAiState extends State<ConversationChatbotAi> {
 
   // This is the method auto response from the chatbot
   void _handleResponse(types.Message message) async {
+    setState(() {
+      _isChatbotTyping = true;
+    });
     final ApiResult<MessageResponse> apiResult =
         await AppRepository().sendMessageById(_conversationId, message.id);
     apiResult.when(
@@ -238,20 +356,26 @@ class _ConversationChatbotAiState extends State<ConversationChatbotAi> {
                 _messages.insert(
                     0,
                     types.TextMessage(
-                        author: data.senderType == 'user'
+                        author: data.data!.senderType == 'user'
                             ? _user
                             : types.User(
-                                id: data.sender,
-                                firstName: data.sender,
-                                lastName: data.sender,
+                                id: data.data!.sender,
+                                firstName: data.data!.sender,
+                                lastName: data.data!.sender,
                                 imageUrl:
-                                    'https://cdn-icons-png.flaticon.com/512/147/147144.png'),
-                        id: data.id,
-                        text: data.content,
-                        createdAt: data.createdAt));
+                                    'https://s160-ava-talk.zadn.vn/8/b/a/e/7/160/0e6d45871cf216bf78e2d435ed3ba31a.jpg'),
+                        id: data.data!.id,
+                        text: data.data!.content,
+                        createdAt: data.data!.createdAt));
+                _isChatbotTyping = false;
               })
             }),
-        failure: ((error) => {Console.log('Error: $error')}));
+        failure: ((error) {
+          Console.log('Error: $error');
+          setState(() {
+            _isChatbotTyping = false;
+          });
+        }));
   }
 
   void _handlePreviewDataFetched(

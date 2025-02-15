@@ -135,7 +135,7 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
         );
       });
       _jumpTo(index);
-    } else if(index == TabBarType.chat.index){
+    } else if (index == TabBarType.chat.index) {
       FirebaseAnalytics.instance.logEvent(
         name: 'component_clicked',
         parameters: {
@@ -143,9 +143,9 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
           'cta_button_name': 'Go to Chatbot AI',
         },
       );
+      _jumpTo(index);
       Navigator.pushNamed(context, NavigatorName.conversation_chatbot_ai);
-    }
-    else if (index == -1) {
+    } else if (index == -1) {
       // _showMaterialDialog();
     } else {
       _jumpTo(index);

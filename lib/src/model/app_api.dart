@@ -430,94 +430,29 @@ abstract class AppApi {
   @PUT("/App/CustomerReceives/interview/{courseId}")
   Future<void> updateDoneInterview(String courseId);
 
-  //## 1. Lấy Cấu hình Supabase
-//
-// ### Endpoint
-//
-// ```
-// GET /config/supabase
-// ```
-//
-// ### Mô tả
-//
-// API này dùng để lấy thông tin cấu hình Supabase cần thiết cho client, bao gồm endpoint và key.
-//
-// ### Response
-//
-// ```json
-// {
-//   "data": {
-//     "Endpoint": "đường dẫn đến Supabase",
-//     "Key": "key xác thực Supabase"
-//   }
-// }
-// ```
-//
+  // ## 1. Lấy Cấu hình Supabase
   @GET('/App/Chat/config/supabase')
   Future<SupabaseConfigResponse> getSupabaseConfig();
-// ## 2. Gửi Câu Hỏi Cho AI
-//
-// ### Endpoint
-//
-// ```
-// GET /conversations/{conversationId}/messages/{messageId}
-// ```
-//
-// ### Mô tả
-//
-// API này cho phép người dùng gửi câu hỏi và nhận phản hồi từ AI. Hệ thống sẽ lưu câu trả lời vào cơ sở dữ liệu.
-//
-// ### Response
-//
-// ```json
-// {
-//   "meta": {
-//     "success": true
-//   },
-//   "data": {
-//     "id": "cf984121-0348-44d0-83bf-0e856b3cc89b",
-//     "conversationId": "11111111-1111-1111-1111-111111111111",
-//     "content": "Of course! I'd be happy to help you with API integration. Could you provide more details about what you need assistance with? Specifically, it would be useful to know which API you're trying to integrate, the technology stack you're using, and any specific issues you're facing.",
-//     "sender": "ai",
-//     "senderType": "ai",
-//     "metadata": null,
-//     "createdAt": 1738770134,
-//     "updatedAt": 1738770134,
-//     "deletedAt": null,
-//     "conversation": null
-//   }
-// }
-// ```
-//
+  // ## 2. Gửi Câu Hỏi Cho AI
   @GET('/App/Chat/conversations/{conversationId}/messages/{messageId}')
   Future<MessageResponse> sendMessageById(
     @Path('conversationId') String conversationId,
     @Path('messageId') String messageId,
   );
-// ## 3. Tạo Lại Câu Trả Lời AI
-//
-// ### Endpoint
-//
-// ```
-// PUT /conversations/{conversationId}/messages/regenerate
-// ```
-//
-// ### Mô tả
-//
-// API này cho phép tạo lại câu trả lời từ AI cho một câu hỏi đã tồn tại, thường được sử dụng khi câu trả lời trước đó không thỏa mãn hoặc gặp lỗi.
-//
-// ### Body
-//
-// - `conversationId`: ID của cuộc hội thoại (UUID)
-// - Body:
-//
-// ```json
-// {
-//   "messageId": "UUID của tin nhắn AI cần tạo lại",
-//   "questionMessageId": "UUID của tin nhắn câu hỏi gốc"
-// }
-// ```
+  // ## 3. Tạo Lại Câu Trả Lời AI
   @PUT('/App/Chat/conversations/{conversationId}/messages/regenerate')
   Future<MessageResponse> regenerateMessage(
       @Path('conversationId') String conversationId);
+  // Create
+  @POST('/App/Chat/conversations')
+  Future<ConversationResponse> createConversation(
+    @Body() CreateConversationRequest request,
+  );
+  @DELETE('/App/Chat/conversations/{conversationId}')
+  Future<CommonResponse> deleteConversation(
+    @Path('conversationId') String conversationId,
+  );
+  //GET {{url}}/app/chat/conversations/me
+  @GET('/App/Chat/conversations/me')
+  Future<ConversationListResponse> getMyConversation();
 }

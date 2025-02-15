@@ -531,25 +531,25 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/zalo_flutter/ios"
 
 SPEC CHECKSUMS:
-  app_settings: 017320c6a680cdc94c799949d95b84cb69389ebc
+  app_settings: 3507c575c2b18a462c99948f61d5de21d4420999
   AppAuth: 501c04eda8a8d11f179dbe8637b7a91bb7e5d2fa
-  audio_session: 4f3e461722055d21515cf3261b64c973c062f345
-  audioplayers_darwin: 877d9a4d06331c5c374595e46e16453ac7eafa40
-  better_player_plus: 89f911bd69171edfe6d2ee689014355036bffdb0
+  audio_session: 9bdd3bf46960d4322cb8c3cb6138295dcfe84eee
+  audioplayers_darwin: ccf9c770ee768abb07e26d90af093f7bab1c12ab
+  better_player_plus: 10794c0ed1b3b4ae058939e22a6172f850a2039b
   BranchSDK: a5418b5fde1b837567cf00a4a7f2ed45abf2e26c
   Cache: 4ca7e00363fca5455f26534e5607634c820ffc2d
-  camera_avfoundation: 8b8d780bcfb6a4a02b0fbe2b4bd17b5b71946e68
-  device_info_plus: c6fb39579d0f423935b0c9ce7ee2f44b71b9fce6
-  external_app_launcher: ad55ac844aa21f2d2197d7cec58ff0d0dc40bbc0
+  camera_avfoundation: 26d4f51b8e0bb0443a1cfc08f1b58989e5c39f11
+  device_info_plus: 335f3ce08d2e174b9fdc3db3db0f4e3b1f66bd89
+  external_app_launcher: 3411245965270a74040a3de17e27bd02b8abb905
   FBSDKCoreKit: 1d5acf7c9d7a2f92bb1a242dc60cae5b7adb91df
   FBSDKLoginKit: f1ea8026a58b52d30c9f2e6a58ca7d813619fb83
   Firebase: 797fd7297b7e1be954432743a0b3f90038e45a71
-  firebase_analytics: b9ce200bfc2c54629076bb22d6a510f31c296ab8
-  firebase_core: 100945864b4aedce3cfef0c62ab864858bf013cf
-  firebase_crashlytics: 2b9ca6246501a03427eb43280be7615027e32142
-  firebase_dynamic_links: 6149c6fc3790997eb8a392074e5ee4974840942b
-  firebase_messaging: e65050bf9b187511d80ea3a4de7cf5573d2c7543
-  firebase_remote_config: 5ebb1bf2503404f6b24e64f117dc6c22c0498d4c
+  firebase_analytics: 70651a3039e73e5878dd5bb832ac9154c30b5bb5
+  firebase_core: 2a80983e98480c7f02ff001358621c8d7f1ff8f0
+  firebase_crashlytics: 85fdba54a96f7daefd59441cfc289bad404908fb
+  firebase_dynamic_links: 91b5ee040084253f1a92234d40ed0ec0ef64bc86
+  firebase_messaging: 879b396d2be7aa1eaf044d50d2407d24c971b934
+  firebase_remote_config: 72d913f342a8c0c775a892e575309f482b1a4530
   FirebaseABTesting: d87f56707159bae64e269757a6e963d490f2eebe
   FirebaseAnalytics: 8d0ff929c63b7f72260f332b86ccf569776b75d3
   FirebaseCore: 0326ec9b05fbed8f8716cddbf0e36894a13837f7
@@ -563,61 +563,61 @@ SPEC CHECKSUMS:
   FirebaseSessions: dbd14adac65ce996228652c1fc3a3f576bdf3ecc
   FirebaseSharedSwift: 20530f495084b8d840f78a100d8c5ee613375f6e
   Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
-  flutter_blue_plus: 4837da7d00cf5d441fdd6635b3a57f936778ea96
-  flutter_branch_sdk: 1d670475694ffa7050141754b5f4bc83f4ee8f68
-  flutter_facebook_login: cfb5659f686b1c575ef205c6b6fd20db9679d3c4
-  flutter_image_compress_common: ec1d45c362c9d30a3f6a0426c297f47c52007e3e
-  flutter_inapp_purchase: 5c6a1ac3f11b11d0c8c0321c0c41c1f05805e4c8
-  flutter_inappwebview_ios: 97215cf7d4677db55df76782dbd2930c5e1c1ea0
-  flutter_native_splash: 52501b97d1c0a5f898d687f1646226c1f93c56ef
-  flutter_pdfview: 25f53dd6097661e6395b17de506e6060585946bd
-  flutter_zoom_meeting: e7b1969db6997fa1c9e49971a18fa33dbe6e8cde
-  fluttertoast: 31b00dabfa7fb7bacd9e7dbee580d7a2ff4bf265
+  flutter_blue_plus: e5808fc4e5ebc58bb911635f8fdaf5e2b4da2754
+  flutter_branch_sdk: 8fb8986a4749be6051581cbec262f9dc9a8ceadd
+  flutter_facebook_login: b260598f3b01c608cfb6f8ba692ba936a2793cfa
+  flutter_image_compress_common: 1697a328fd72bfb335507c6bca1a65fa5ad87df1
+  flutter_inapp_purchase: 722da12971a50f306f37e62fc1aaf576b1cbecf6
+  flutter_inappwebview_ios: 25b61a1b550d1068e4ddaf490fc1d03c2ce6828d
+  flutter_native_splash: 9e672d3818957718ee006a491730c09deeecace9
+  flutter_pdfview: 54e283d5851b0b247b3cc57877d35f1a05a204de
+  flutter_zoom_meeting: 4028287e6b52e8c5ac5a87c40cf8db782e308211
+  fluttertoast: 294ad8b4b83f149520f7c13484770323c54df109
   GCDWebServer: 2c156a56c8226e2d5c0c3f208a3621ccffbe3ce4
-  google_sign_in_ios: 8115e3fbe097e6509beb819ed602d47369d9011f
+  google_sign_in_ios: 8c4b89589e876fc9fcf22035d6208077008f6c03
   GoogleAppMeasurement: ccefe3eac9b0aa27f96066809fb1a7fe4b462626
   GoogleDataTransport: 6c09b596d841063d76d4288cc2d2f42cc36e1e2a
   GoogleSignIn: d4281ab6cf21542b1cfaff85c191f230b399d2db
   GoogleUtilities: ea963c370a38a8069cc5f7ba4ca849a60b6d7d15
   GTMAppAuth: f69bd07d68cd3b766125f7e072c45d7340dea0de
   GTMSessionFetcher: 5aea5ba6bd522a239e236100971f10cb71b96ab6
-  health: 5d10c4296a95f6be50a8131d47d3cb3ad640bdf5
+  health: a4ddeac72091000e94776864d0028f6be31ec7a5
   HLSCachingReverseProxyServer: 59935e1e0244ad7f3375d75b5ef46e8eb26ab181
-  image_cropper: 2c150b3d63f4feaad31054d20381ddac0a460e63
-  image_picker_ios: 99dfe1854b4fa34d0364e74a78448a0151025425
-  in_app_review: 318597b3a06c22bb46dc454d56828c85f444f99d
-  just_audio: baa7252489dbcf47a4c7cc9ca663e9661c99aafa
+  image_cropper: 7af7a3993d0a3767bc1a977fcf2605b077dbc686
+  image_picker_ios: 85f2b3c9fb98c09d63725c4d12ebd585b56ec35d
+  in_app_review: 8efcf4a4d3ba72d5d776d29e5a268f1abf64d184
+  just_audio: 6c031bb61297cf218b4462be616638e81c058e97
   libwebp: 1786c9f4ff8a279e4dac1e8f385004d5fc253009
   Mantle: c5aa8794a29a022dfbbfc9799af95f477a69b62d
   Mixpanel-swift: 2192b9a24cf41b870749e4e0e10fbc9822bb2b4a
-  mixpanel_flutter: 455c6c7906a0bd21b609b32fef390245187068a6
+  mixpanel_flutter: d84097a22c87f32fbe1c7f4991c8c357f18016c1
   MTBBarcodeScanner: f453b33c4b7dfe545d8c6484ed744d55671788cb
   nanopb: 438bc412db1928dac798aa6fd75726007be04262
   OrderedSet: aaeb196f7fef5a9edf55d89760da9176ad40b93c
-  package_info: 873975fc26034f0b863a300ad47e7f1ac6c7ec62
-  package_info_plus: 115f4ad11e0698c8c1c5d8a689390df880f47e85
-  path_provider_foundation: 3784922295ac71e43754bd15e0653ccfd36a147c
-  permission_handler_apple: e76247795d700c14ea09e3a2d8855d41ee80a2e6
+  package_info: cce50adca9873c79f931618469d2114b91d71189
+  package_info_plus: 566e1b7a2f3900e4b0020914ad3fc051dcc95596
+  path_provider_foundation: 608fcb11be570ce83519b076ab6a1fffe2474f05
+  permission_handler_apple: 3787117e48f80715ff04a3830ca039283d6a4f29
   PINCache: d9a87a0ff397acffe9e2f0db972ac14680441158
   PINOperation: fb563bcc9c32c26d6c78aaff967d405aa2ee74a7
   PromisesObjC: f5707f49cb48b9636751c5b2e7d227e43fba9f47
   PromisesSwift: 9d77319bbe72ebf6d872900551f7eeba9bce2851
-  qr_code_scanner: bb67d64904c3b9658ada8c402e8b4d406d5d796e
+  qr_code_scanner: d77f94ecc9abf96d9b9b8fc04ef13f611e5a147a
   SDWebImage: 8a6b7b160b4d710e2a22b6900e25301075c34cb3
   SDWebImageWebPCoder: e38c0a70396191361d60c092933e22c20d5b1380
-  share_plus: c3fef564749587fc939ef86ffb283ceac0baf9f5
-  shared_preferences_foundation: b4c3b4cddf1c21f02770737f147a3f5da9d39695
-  sign_in_with_apple: f3bf75217ea4c2c8b91823f225d70230119b8440
-  sqflite: 673a0e54cc04b7d6dba8d24fb8095b31c3a99eec
-  store_redirect: 2977747cf81689a39bd62c248c2deacb7a0d131e
+  share_plus: de6030e33b4e106470e09322d87cf2a4258d2d1d
+  shared_preferences_foundation: 0b09b969fb36da5551c0bc4a2dbd9d0ff9387478
+  sign_in_with_apple: c5dcc141574c8c54d5ac99dd2163c0c72ad22418
+  sqflite: c35dad70033b8862124f8337cc994a809fcd9fa3
+  store_redirect: 55fd455802ceab09803b2df6e68f19a58815266a
   Toast: 1f5ea13423a1e6674c4abdac5be53587ae481c4e
   TOCropViewController: 80b8985ad794298fb69d3341de183f33d1853654
-  uni_links: d97da20c7701486ba192624d99bffaaffcfc298a
-  url_launcher_ios: 5334b05cef931de560670eeae103fd3e431ac3fe
-  wakelock_plus: 78ec7c5b202cab7761af8e2b2b3d0671be6c4ae1
-  zalo_flutter: 0fe7092dc50f3f4baf26ed980cedc9b4ed66c5b2
+  uni_links: ed8c961e47ed9ce42b6d91e1de8049e38a4b3152
+  url_launcher_ios: 694010445543906933d732453a59da0a173ae33d
+  wakelock_plus: fd58c82b1388f4afe3fe8aa2c856503a262a5b03
+  zalo_flutter: bdf45766dd7af0da9655efd03f43a0514e17222a
   ZaloSDK: 233c5cb5247bd6891f4a7d2d9505f6a2b9aa38c6
 
 PODFILE CHECKSUM: fbbcaadb8c0139ac01ec5bb8383d1a2a3c9d8c71
 
-COCOAPODS: 1.14.3
+COCOAPODS: 1.16.2
