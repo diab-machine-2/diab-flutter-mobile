@@ -234,4 +234,20 @@ class Const {
     CLINIC_TIMEFRAME_WEEKDAY,
     CLINIC_TIMEFRAME_AFTER_HOURS,
   ];
+
+  static const String CLINIC_SERVICE_TYPE_ONLINE = 'online';
+  static const String CLINIC_SERVICE_TYPE_OFFLINE = 'offline';
+  static const List<String> CLINIC_SERVICE_TYPES = [
+    CLINIC_SERVICE_TYPE_ONLINE,
+    CLINIC_SERVICE_TYPE_OFFLINE,
+  ];
+
+  static const String BOOKING_TYPE_CENTER = 'center';
+  static const String BOOKING_TYPE_CLINIC = 'clinic';
+  static const String BOOKING_TYPE_DOCTOR = 'doctor';
+  static const List<String> BOOKING_TYPES = const [
+    BOOKING_TYPE_CENTER,
+    BOOKING_TYPE_CLINIC,
+    BOOKING_TYPE_DOCTOR,
+  ];
 }

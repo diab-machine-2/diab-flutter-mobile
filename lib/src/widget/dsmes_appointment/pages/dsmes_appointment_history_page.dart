@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
+import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/dsmes_appointment/dsmes_appointment_cubit.dart';
@@ -14,6 +15,12 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:sticky_headers/sticky_headers.dart';
 
 class DsmesAppointmentHistoryPage extends StatefulWidget {
+  final String bookingType; // 'clinic' or 'center' or 'doctor'
+
+  const DsmesAppointmentHistoryPage({
+    Key? key,
+    this.bookingType = Const.BOOKING_TYPE_CENTER,
+  }) : super(key: key);
   @override
   _DsmesAppointmentHistoryPageState createState() =>
       _DsmesAppointmentHistoryPageState();
@@ -255,6 +262,8 @@ class _DsmesAppointmentHistoryPageState
                                                     'appointment': appointment,
                                                     'previousRoute': NavigatorName
                                                         .dsmes_booking_history,
+                                                    'bookingType':
+                                                        widget.bookingType,
                                                   },
                                                 );
                                               } finally {

@@ -26,6 +26,8 @@ class DsmesClinicModel {
   final Map<String, Map<String, int>> schedule;
   final String aptInterval;
   final List<ExtraAvatar> extraAvatar;
+  final List<ServiceAvailable> svAvailable; // 'at_clinic', 'telemedicine', 'at_home'
+  final String profileType; // 'booking' or 'premium'
 
   DsmesClinicModel({
     required this.id,
@@ -53,6 +55,8 @@ class DsmesClinicModel {
     required this.schedule,
     required this.aptInterval,
     required this.extraAvatar,
+    required this.svAvailable,
+    required this.profileType,
   });
 
   factory DsmesClinicModel.fromJson(Map<String, dynamic> json) {
@@ -97,6 +101,11 @@ class DsmesClinicModel {
               ?.map((e) => ExtraAvatar.fromJson(e))
               .toList() ??
           [],
+      svAvailable: (json['sv_available'] as List?)
+              ?.map((e) => ServiceAvailable.fromJson(e))
+              .toList() ??
+          [],
+      profileType: json['profile_type'] ?? '',
     );
   }
 
@@ -336,6 +345,23 @@ class ExtraAvatar {
       id: json['id'] ?? 0,
       path: json['path'] ?? '',
       thumbPath: json['thumb_path'] ?? '',
+    );
+  }
+}
+
+class ServiceAvailable {
+  final String key;
+  final String name;
+
+  ServiceAvailable({
+    required this.key,
+    required this.name,
+  });
+
+  factory ServiceAvailable.fromJson(Map<String, dynamic> json) {
+    return ServiceAvailable(
+      key: json['key'] ?? '',
+      name: json['name'] ?? '',
     );
   }
 }

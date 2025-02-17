@@ -11,12 +11,14 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/app_setting/firebase_remote_config.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
+import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/booking_clinic/helper/booking_clinic_helper.dart';
 import 'package:medical/src/widget/booking_clinic/model/clinic_specialty_model.dart';
 import 'package:medical/src/widget/booking_clinic/pages/booking_clinic_provider_page.dart';
+import 'package:medical/src/widget/booking_clinic/pages/booking_clinic_select_service.dart';
 import 'package:medical/src/widget/booking_clinic/pages/other_diseases_page.dart';
 import 'package:medical/src/widget/dsmes_appointment/dsmes_appointment_cubit.dart';
 import 'package:medical/src/widget/dsmes_appointment/model/dsmes_appointment_model.dart';
@@ -172,9 +174,13 @@ class _BookingClinicPageState extends State<BookingClinicPage> with Observer {
                       builder: (_) => _buildMainContent(context),
                     );
                   case NavigatorName.dsmes_booking_history:
+                    Map<String, dynamic>? args =
+                        settings.arguments as Map<String, dynamic>?;
                     return _buildRoute(
                       settings,
-                      DsmesAppointmentHistoryPage(),
+                      DsmesAppointmentHistoryPage(
+                        bookingType: args!["bookingType"],
+                      ),
                     );
                   case NavigatorName.dsmes_booking_offline:
                     Map<String, dynamic>? args =
@@ -210,6 +216,7 @@ class _BookingClinicPageState extends State<BookingClinicPage> with Observer {
                           serviceType: args!["serviceType"],
                           action: args["action"],
                           appointmentId: args["appointmentId"],
+                          bookingType: args["bookingType"],
                         ),
                       );
                     }
@@ -222,6 +229,7 @@ class _BookingClinicPageState extends State<BookingClinicPage> with Observer {
                         DsmesBookingDetail(
                           serviceType: args!["serviceType"],
                           appointment: args["appointment"],
+                          bookingType: args["bookingType"],
                         ),
                       );
                     }
@@ -281,6 +289,20 @@ class _BookingClinicPageState extends State<BookingClinicPage> with Observer {
                         settings,
                         BookingClinicProvidersPage(
                           specialtyId: args!["specialtyId"],
+                        ),
+                      );
+                    }
+                  case NavigatorName.clinic_select_service:
+                    {
+                      Map<String, dynamic>? args =
+                          settings.arguments as Map<String, dynamic>?;
+                      return _buildRoute(
+                        settings,
+                        BookingCLinicSelectServicePage(
+                          clinic: args!["clinic"],
+                          serviceType: args["serviceType"],
+                          action: args["action"],
+                          bookingType: args["bookingType"],
                         ),
                       );
                     }
@@ -389,8 +411,11 @@ class _BookingClinicPageState extends State<BookingClinicPage> with Observer {
                 onTap: () async {
                   _cubit.clearAppointments();
 
-                  DsmesNavigationMixin.navigationKey.currentState
-                      ?.pushNamed(NavigatorName.dsmes_booking_history);
+                  DsmesNavigationMixin.navigationKey.currentState?.pushNamed(
+                      NavigatorName.dsmes_booking_history,
+                      arguments: {
+                        'bookingType': Const.BOOKING_TYPE_CLINIC,
+                      });
                 },
                 child: Container(
                   width: 90,
@@ -486,7 +511,8 @@ class _BookingClinicPageState extends State<BookingClinicPage> with Observer {
                                 NavigatorName.dsmes_booking_detail,
                                 arguments: {
                                   'serviceType': appointment?.mode,
-                                  'appointment': appointment
+                                  'appointment': appointment,
+                                  'bookingType': 'clinic',
                                 },
                               );
                             } finally {

@@ -6,7 +6,7 @@ class SearchBookingClinicListRequest {
   final String name;
   final String keyword;
   final String page;
-  final String svAvailable;
+  final List<String> svAvailable;
   final String sellType;
   final String parentTerm;
   final String lng;
@@ -23,7 +23,7 @@ class SearchBookingClinicListRequest {
     this.name = '',
     this.keyword = '',
     this.page = '1',
-    this.svAvailable = '',
+    this.svAvailable = const [],
     this.sellType = '',
     this.parentTerm = '',
     this.lng = '',
@@ -59,7 +59,7 @@ class SearchBookingClinicListRequest {
     String? name,
     String? keyword,
     dynamic page,
-    String? svAvailable,
+    List<String>? svAvailable,
     String? sellType,
     String? parentTerm,
     String? lng,

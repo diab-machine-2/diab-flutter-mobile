@@ -1251,4 +1251,9 @@ class Strings {
   String get ngay_trong_tuan => 'ngay_trong_tuan';
   String get ngoai_gio => 'ngoai_gio';
   String get empty_clinic_content => 'empty_clinic_content';
+  String get hinh_thuc => 'hinh_thuc';
+  String get chon_dich_vu => 'chon_dich_vu';
+  String get selected_service => 'selected_service';
+  String get estimated_cost => 'estimated_cost';
+  String get service_type => 'service_type';
 }

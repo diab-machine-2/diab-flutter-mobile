@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/model/response/dsmes_clinic_rating_response.dart';
+import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
@@ -19,7 +20,7 @@ class DsmesClinicDetailPage extends StatefulWidget {
   const DsmesClinicDetailPage({
     Key? key,
     required this.clinicId,
-    this.bookingType = 'center',
+    this.bookingType = Const.BOOKING_TYPE_CENTER,
   }) : super(key: key);
 
   @override
@@ -101,7 +102,7 @@ class _DsmesClinicDetailPageState extends State<DsmesClinicDetailPage> {
           bottom: 0,
           left: 0,
           right: 0,
-          child: widget.bookingType == 'center'
+          child: widget.bookingType == Const.BOOKING_TYPE_CENTER
               ? _buildAppointmentActionButtons()
               : _buildBookingClinicActionButtons(),
         ),

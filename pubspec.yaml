@@ -182,6 +182,7 @@ dependency_overrides:
   js: 0.7.1
   url_launcher_ios: 6.3.1
   geolocator: ^11.1.0
+  flutter_widget_from_html_core: ^0.15.2
   # flutter_inappwebview_ios:
   #   git:
   #     url: https://github.com/ngocphuc1612/flutter_inappwebview.git

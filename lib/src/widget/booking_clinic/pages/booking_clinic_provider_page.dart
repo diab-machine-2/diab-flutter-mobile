@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -41,6 +43,7 @@ class _BookingClinicProvidersPageState
   Set<String> selectedDistricts = {};
   Set<String> selectedTypes = {};
   Set<String> selectedTimeframes = {};
+  Set<String> selectedServiceTypes = {};
 
   final ValueNotifier<bool> _showAllCities = ValueNotifier(false);
   final Set<CityModel> _selectedOtherCities = {};
@@ -68,6 +71,7 @@ class _BookingClinicProvidersPageState
     // Set default "All" selection
     selectedTypes.add('');
     selectedTimeframes.add('');
+    selectedServiceTypes.add('');
   }
 
   void _handleSearch() {
@@ -103,6 +107,9 @@ class _BookingClinicProvidersPageState
 
     final request = _cubit.searchBookingClinicListRequest;
     if (request == null) {
+      setState(() {
+        isLoading = false;
+      });
       return;
     }
 
@@ -188,54 +195,58 @@ class _BookingClinicProvidersPageState
         _buildHeaderWidget(),
         GapH(16),
         Expanded(
-          child: _cubit.listBookingClinicProvider.isEmpty
-              ? BookingClinicEmptyWidget(
-                  imagePath: R.drawable.bg_empty_clinic,
-                  title: R.string.empty_clinic_content.tr(),
-                  subtitle: "",
-                )
-              : SmartRefresher(
-                  controller: _refreshController,
-                  enablePullUp: _cubit.clinicProviderHasMore,
-                  enablePullDown: false,
-                  footer: _cubit.clinicProviderHasMore
-                      ? ClassicFooter(
-                          loadingText: "Đang tải",
-                          canLoadingText: R.string.pull_up_to_load_more.tr(),
-                        )
-                      : null,
-                  onLoading: () async {
-                    await _cubit.searchBookingClinicList(
-                        request: _cubit.searchBookingClinicListRequest!
-                            .copyWith(
-                                page: _cubit.clinicProviderCurrentPage + 1),
-                        showLoading: false);
-                    _refreshController.loadComplete();
-                    setState(() {});
-                  },
-                  child: SingleChildScrollView(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      child: Column(
-                        children: [
-                          ListView.separated(
-                            physics: NeverScrollableScrollPhysics(),
-                            padding: EdgeInsets.zero,
-                            shrinkWrap: true,
-                            itemCount: _cubit.listBookingClinicProvider.length,
-                            separatorBuilder: (context, index) => GapH(16),
-                            itemBuilder: (context, index) {
-                              BookingClinicProvider data =
-                                  _cubit.listBookingClinicProvider[index];
-                              return _buildClinicItem(data);
-                            },
+          child: isLoading
+              ? Container()
+              : _cubit.listBookingClinicProvider.isEmpty
+                  ? BookingClinicEmptyWidget(
+                      imagePath: R.drawable.bg_empty_clinic,
+                      title: R.string.empty_clinic_content.tr(),
+                      subtitle: "",
+                    )
+                  : SmartRefresher(
+                      controller: _refreshController,
+                      enablePullUp: _cubit.clinicProviderHasMore,
+                      enablePullDown: false,
+                      footer: _cubit.clinicProviderHasMore
+                          ? ClassicFooter(
+                              loadingText: "Đang tải",
+                              canLoadingText:
+                                  R.string.pull_up_to_load_more.tr(),
+                            )
+                          : null,
+                      onLoading: () async {
+                        await _cubit.searchBookingClinicList(
+                            request: _cubit.searchBookingClinicListRequest!
+                                .copyWith(
+                                    page: _cubit.clinicProviderCurrentPage + 1),
+                            showLoading: false);
+                        _refreshController.loadComplete();
+                        setState(() {});
+                      },
+                      child: SingleChildScrollView(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          child: Column(
+                            children: [
+                              ListView.separated(
+                                physics: NeverScrollableScrollPhysics(),
+                                padding: EdgeInsets.zero,
+                                shrinkWrap: true,
+                                itemCount:
+                                    _cubit.listBookingClinicProvider.length,
+                                separatorBuilder: (context, index) => GapH(16),
+                                itemBuilder: (context, index) {
+                                  BookingClinicProvider data =
+                                      _cubit.listBookingClinicProvider[index];
+                                  return _buildClinicItem(data);
+                                },
+                              ),
+                              GapH(16),
+                            ],
                           ),
-                          GapH(16),
-                        ],
+                        ),
                       ),
                     ),
-                  ),
-                ),
         ),
       ],
     );
@@ -365,7 +376,7 @@ class _BookingClinicProvidersPageState
                                           NavigatorName.dsmes_clinic_detail,
                                           arguments: {
                                         'clinicId': data.id,
-                                        'bookingType': 'clinic'
+                                        'bookingType': Const.BOOKING_TYPE_CLINIC
                                       });
                                 } finally {
                                   isProcessing['viewInfo'] = false;
@@ -417,7 +428,8 @@ class _BookingClinicProvidersPageState
                                           arguments: {
                                         // 'serviceType': widget.serviceType,
                                         'action': 'create',
-                                        'bookingType': 'clinic',
+                                        'bookingType':
+                                            Const.BOOKING_TYPE_CLINIC,
                                       });
                                 } finally {
                                   isProcessing['bookingClinic'] = false;
@@ -534,10 +546,12 @@ class _BookingClinicProvidersPageState
           ),
           Builder(
             builder: (context) {
-              final isFiltered = (selectedDistricts.isNotEmpty ||
+              final isFiltered = selectedDistricts.isNotEmpty ||
                   (selectedTypes.length == 1 && !selectedTypes.contains('')) ||
                   (selectedTimeframes.length == 1 &&
-                      !selectedTimeframes.contains('')));
+                      !selectedTimeframes.contains('')) ||
+                  (selectedServiceTypes.length == 1 &&
+                      !selectedServiceTypes.contains(''));
               return GestureDetector(
                 onTap: () {
                   Scaffold.of(context).openEndDrawer();
@@ -720,6 +734,31 @@ class _BookingClinicProvidersPageState
                         _buildFilterItem(R.string.all.tr(), '', 'timeframe'),
                       ],
                     ),
+                    GapH(12),
+                    Text(
+                      R.string.hinh_thuc.tr(),
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    GridView.count(
+                      shrinkWrap: true,
+                      physics: NeverScrollableScrollPhysics(),
+                      crossAxisCount: 2,
+                      mainAxisSpacing: 12,
+                      crossAxisSpacing: 12,
+                      childAspectRatio: 5 / 1,
+                      children: [
+                        ...Const.CLINIC_SERVICE_TYPES.map((serviceType) {
+                          return _buildFilterItem(
+                              getClinicServiceTypeDisplay(serviceType),
+                              serviceType,
+                              'serviceType');
+                        }).toList(),
+                        _buildFilterItem(R.string.all.tr(), '', 'serviceType'),
+                      ],
+                    ),
                     GapH(80),
                   ],
                 ),
@@ -886,6 +925,7 @@ class _BookingClinicProvidersPageState
                   selectedDistricts.clear();
                   selectedTypes.clear();
                   selectedTimeframes.clear();
+                  selectedServiceTypes.clear();
                   _selectedOtherCities.clear();
                 });
               },
@@ -923,6 +963,9 @@ class _BookingClinicProvidersPageState
                 final timeframes = selectedTimeframes
                     .where((item) => item.isNotEmpty)
                     .toList();
+                final serviceTypes = selectedServiceTypes
+                    .where((item) => item.isNotEmpty)
+                    .toList();
 
                 _cubit.updateSearchBookingClinicListRequestUrlKeyword(
                     urlKeywords: districts);
@@ -932,6 +975,9 @@ class _BookingClinicProvidersPageState
 
                 _cubit.updateSearchBookingClinicListRequestTimeframes(
                     timeframes: timeframes);
+
+                _cubit.updateSearchBookingClinicListRequestServiceTypes(
+                    serviceTypes: serviceTypes);
 
                 final request = _cubit.searchBookingClinicListRequest;
                 if (request == null) {
@@ -975,11 +1021,17 @@ class _BookingClinicProvidersPageState
   }
 
   Widget _buildFilterItem(String displayText, String value, String filterType) {
-    Set<String> selectedValues = filterType == 'district'
-        ? selectedDistricts
-        : filterType == 'type'
-            ? selectedTypes
-            : selectedTimeframes;
+    Set<String> selectedValues = {};
+    if (filterType == 'district') {
+      selectedValues = selectedDistricts;
+    } else if (filterType == 'type') {
+      selectedValues = selectedTypes;
+    } else if (filterType == 'timeframe') {
+      selectedValues = selectedTimeframes;
+    } else if (filterType == 'serviceType') {
+      selectedValues = selectedServiceTypes;
+    }
+
     bool isSelected = selectedValues.contains(value);
 
     return InkWell(
@@ -1014,6 +1066,22 @@ class _BookingClinicProvidersPageState
               }
               // Remove "All" option if any specific timeframe is selected
               selectedTimeframes.remove('');
+            }
+          }
+
+          if (filterType == 'serviceType') {
+            if (value.isEmpty) {
+              // When "All" is selected
+              selectedServiceTypes.clear();
+              selectedValues.add(value);
+            } else {
+              if (isSelected) {
+                selectedValues.remove(value);
+              } else {
+                selectedValues.add(value);
+              }
+              // Remove "All" option if any specific service type is selected
+              selectedServiceTypes.remove('');
             }
           }
 

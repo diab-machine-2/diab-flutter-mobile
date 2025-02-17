@@ -169,6 +169,17 @@ String getClinicTimeframeDisplay(String value) {
   }
 }
 
+String getClinicServiceTypeDisplay(String value) {
+  switch (value) {
+    case Const.CLINIC_SERVICE_TYPE_ONLINE:
+      return R.string.kham_tu_xa.tr();
+    case Const.CLINIC_SERVICE_TYPE_OFFLINE:
+      return R.string.kham_tai_phong_kham.tr();
+    default:
+      return '';
+  }
+}
+
 Future<Position> determinePosition() async {
   bool serviceEnabled;
   LocationPermission permission;

@@ -1222,4 +1222,9 @@ benh_vien_cong,"Bệnh viện công","Public hospital",
 cuoi_tuan,"Cuối tuần","Weekend"
 ngay_trong_tuan,"Ngày trong tuần","Weekday",
 ngoai_gio,"Ngoài giờ","Outside office hours",
-empty_clinic_content,"Chưa có nơi khám phù hợp yêu cầu","No clinic matches your requirements"
+empty_clinic_content,"Chưa có nơi khám phù hợp yêu cầu","No clinic matches your requirements",
+hinh_thuc,"Hình thức","Service Type",
+chon_dich_vu,"Chọn dịch vụ","Select service",
+selected_service,"Dịch vụ đã chọn","Selected service",
+estimated_cost,"Tạm tính","Estimated cost",
+service_type,"Loại dịch vụ","Service type"

@@ -22,11 +22,13 @@ import 'package:url_launcher/url_launcher.dart';
 class DsmesBookingDetail extends StatefulWidget {
   final String serviceType;
   final DsmesAppointment appointment;
+  final String bookingType; // 'clinic' or 'center' or 'doctor'
 
   const DsmesBookingDetail({
     Key? key,
     required this.serviceType,
     required this.appointment,
+    this.bookingType = Const.BOOKING_TYPE_CENTER,
   }) : super(key: key);
 
   @override
@@ -813,6 +815,7 @@ class _DsmesBookingDetailState extends State<DsmesBookingDetail> {
                             'serviceType': widget.serviceType,
                             'action': 'reschedule',
                             'appointmentId': widget.appointment.id,
+                            'bookingType': widget.bookingType,
                           });
                     });
               },

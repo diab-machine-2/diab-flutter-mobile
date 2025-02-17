@@ -31,7 +31,7 @@ class DsmesCalendarSection extends StatefulWidget {
     this.action = 'create',
     this.appointmentId,
     this.isMergedSchedule = false,
-    this.bookingType = 'center',
+    this.bookingType = Const.BOOKING_TYPE_CENTER,
   }) : super(key: key);
 
   @override
@@ -44,6 +44,10 @@ class _DsmesCalendarSectionState extends State<DsmesCalendarSection> {
   bool isMorningSelected = true;
   BookingSchedule? selectedBookingSchedule;
   bool _isProcessing = false;
+  Map<String, bool> isProcessingClinic = {
+    'telemedicine': false,
+    'atClnic': false,
+  };
   bool isAllowReschedule = false;
 
   late List<BookingSchedule> availableBookingSchedule = [];
@@ -229,7 +233,7 @@ class _DsmesCalendarSectionState extends State<DsmesCalendarSection> {
                   color: R.color.white,
                   boxShadow: [Utils.getBoxShadowDropButton()],
                 ),
-                child: widget.bookingType == 'center'
+                child: widget.bookingType == Const.BOOKING_TYPE_CENTER
                     ? _buildBookingDsmesActionButtons()
                     : _buildBookingClinicActionButtons(),
               ),
@@ -240,11 +244,32 @@ class _DsmesCalendarSectionState extends State<DsmesCalendarSection> {
     );
   }
 
+  List<ServiceAvailable> getFilteredServiceTypes() {
+    final listServiceTypes =
+        List<ServiceAvailable>.from(_cubit.selectedClinic?.svAvailable ?? []);
+    listServiceTypes.removeWhere((element) => element.key == 'at_home');
+
+    if (_cubit.selectedClinic?.profileType == 'premium') {
+      return listServiceTypes
+          .where((element) => element.key == 'at_clinic')
+          .toList();
+    }
+
+    return listServiceTypes;
+  }
+
   Widget _buildBookingClinicActionButtons() {
-    final listServiceTypes = [
-      DsmesAppointmentMode.atClinic.toString(),
-      DsmesAppointmentMode.telemedicine.toString()
-    ];
+    final listServiceTypes = getFilteredServiceTypes();
+
+    final route = ModalRoute.of(context)?.settings;
+    final args = route?.arguments as Map<String, dynamic>?;
+    final isEditing = args?['isEditing'] ?? false;
+
+    if (widget.action == 'reschedule' || isEditing) {
+      return _buildButton(R.string.tiep_tuc.tr(), () {
+        _handleClinicContinueButton();
+      }, isDisabled: !isAllowReschedule);
+    }
 
     if (listServiceTypes.length == 2) {
       return Padding(
@@ -255,27 +280,32 @@ class _DsmesCalendarSectionState extends State<DsmesCalendarSection> {
             Row(
               children: [
                 Expanded(
-                  child: Container(
-                    alignment: Alignment.center,
-                    height: 44,
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        colors: [
-                          R.color.greenGradientTop02,
-                          R.color.greenGradientBottom
-                        ],
+                  child: GestureDetector(
+                    onTap: () {
+                      _handleBookingClinicTelemedicine();
+                    },
+                    child: Container(
+                      alignment: Alignment.center,
+                      height: 44,
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [
+                            R.color.greenGradientTop02,
+                            R.color.greenGradientBottom
+                          ],
+                        ),
+                        borderRadius: BorderRadius.circular(200),
                       ),
-                      borderRadius: BorderRadius.circular(200),
-                    ),
-                    padding: EdgeInsets.all(10),
-                    child: Text(
-                      R.string.kham_tu_xa.tr(),
-                      style: TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w700,
-                        color: R.color.white,
+                      padding: EdgeInsets.all(10),
+                      child: Text(
+                        R.string.kham_tu_xa.tr(),
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w700,
+                          color: R.color.white,
+                        ),
                       ),
                     ),
                   ),
@@ -286,20 +316,25 @@ class _DsmesCalendarSectionState extends State<DsmesCalendarSection> {
             Row(
               children: [
                 Expanded(
-                  child: Container(
-                    alignment: Alignment.center,
-                    height: 44,
-                    decoration: BoxDecoration(
-                      color: R.color.color0xffE7FDFB,
-                      borderRadius: BorderRadius.circular(200),
-                    ),
-                    padding: EdgeInsets.all(10),
-                    child: Text(
-                      R.string.kham_tai_phong_kham.tr(),
-                      style: TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w700,
-                        color: R.color.greenGradientBottom,
+                  child: GestureDetector(
+                    onTap: () {
+                      _handleBookingClinicAtClinic();
+                    },
+                    child: Container(
+                      alignment: Alignment.center,
+                      height: 44,
+                      decoration: BoxDecoration(
+                        color: R.color.color0xffE7FDFB,
+                        borderRadius: BorderRadius.circular(200),
+                      ),
+                      padding: EdgeInsets.all(10),
+                      child: Text(
+                        R.string.kham_tai_phong_kham.tr(),
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w700,
+                          color: R.color.greenGradientBottom,
+                        ),
                       ),
                     ),
                   ),
@@ -309,27 +344,198 @@ class _DsmesCalendarSectionState extends State<DsmesCalendarSection> {
           ],
         ),
       );
-    } else {
+    } else if (listServiceTypes.length == 1) {
+      final serviceType = listServiceTypes.first;
+      final title = serviceType.key == DsmesAppointmentMode.atClinic.toString()
+          ? R.string.kham_tai_phong_kham.tr()
+          : R.string.kham_tu_xa.tr();
+
       return Container(
-        height: 44,
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [R.color.greenGradientTop02, R.color.greenGradientBottom],
-          ),
-          borderRadius: BorderRadius.circular(200),
-        ),
-        padding: EdgeInsets.all(10),
-        child: Text(
-          R.string.submit_booking.tr(),
-          style: TextStyle(
-            fontSize: 13,
-            fontWeight: FontWeight.w700,
-            color: R.color.white,
+        color: R.color.white,
+        padding: EdgeInsets.fromLTRB(12, 8, 12, 12),
+        child: GestureDetector(
+          onTap: () {
+            serviceType.key == DsmesAppointmentMode.atClinic.toString()
+                ? _handleBookingClinicAtClinic()
+                : _handleBookingClinicTelemedicine();
+          },
+          child: Container(
+            height: 44,
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  R.color.greenGradientTop02,
+                  R.color.greenGradientBottom
+                ],
+              ),
+              borderRadius: BorderRadius.circular(200),
+            ),
+            child: Text(
+              title,
+              style: TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.w700,
+                color: R.color.white,
+              ),
+            ),
           ),
         ),
       );
+    } else {
+      return SizedBox.shrink();
+    }
+  }
+
+  _handleBookingClinicAtClinic() {
+    if (isProcessingClinic['atClinic'] == true) return;
+
+    if (selectedBookingSchedule == null) {
+      Message.showToastMessage(context, R.string.vui_long_chon_gio_kham.tr());
+      return;
+    }
+
+    // When selected booking schedule is before active dates
+    if (DateTime.parse(selectedBookingSchedule!.startTime)
+        .isBefore(activeDates.first)) {
+      Message.showToastMessage(context, R.string.vui_long_chon_gio_kham.tr());
+      return;
+    }
+    setState(() => isProcessingClinic['atClinic'] = true);
+
+    try {
+      _cubit.updateCreateDsmesBookingRequestTime(
+          startTime: selectedBookingSchedule!.startTime,
+          endTime: selectedBookingSchedule!.endTime);
+
+      // Normal flow
+      DsmesNavigationMixin.navigationKey.currentState
+          ?.pushNamed(NavigatorName.dsmes_confirm_information, arguments: {
+        'serviceType': DsmesAppointmentMode.atClinic.toString(),
+        'action': widget.action,
+        'appointmentId': widget.appointmentId,
+        'isMergedSchedule': widget.isMergedSchedule,
+        'bookingType': widget.bookingType,
+      });
+    } finally {
+      setState(() => isProcessingClinic['atClinic'] = false);
+    }
+  }
+
+  _handleBookingClinicTelemedicine() {
+    if (isProcessingClinic['telemedicine'] == true) return;
+
+    if (selectedBookingSchedule == null) {
+      Message.showToastMessage(context, R.string.vui_long_chon_gio_kham.tr());
+      return;
+    }
+
+    // When selected booking schedule is before active dates
+    if (DateTime.parse(selectedBookingSchedule!.startTime)
+        .isBefore(activeDates.first)) {
+      Message.showToastMessage(context, R.string.vui_long_chon_gio_kham.tr());
+      return;
+    }
+    setState(() => isProcessingClinic['telemedicine'] = true);
+
+    try {
+      _cubit.updateCreateDsmesBookingRequestTime(
+          startTime: selectedBookingSchedule!.startTime,
+          endTime: selectedBookingSchedule!.endTime);
+
+      // Normal flow
+      DsmesNavigationMixin.navigationKey.currentState
+          ?.pushNamed(NavigatorName.clinic_select_service, arguments: {
+        'clinic': _cubit.selectedClinic,
+        'serviceType': DsmesAppointmentMode.telemedicine.toString(),
+        'action': widget.action,
+        'bookingType': widget.bookingType,
+      });
+    } finally {
+      setState(() => isProcessingClinic['telemedicine'] = false);
+    }
+  }
+
+  _handleClinicContinueButton() {
+    if (selectedBookingSchedule == null) {
+      Message.showToastMessage(context, R.string.vui_long_chon_gio_kham.tr());
+      return;
+    }
+
+    // When selected booking schedule is before active dates
+    if (DateTime.parse(selectedBookingSchedule!.startTime)
+        .isBefore(activeDates.first)) {
+      Message.showToastMessage(context, R.string.vui_long_chon_gio_kham.tr());
+      return;
+    }
+
+    // Prevent user from reschedule the same time
+    if (widget.action == 'reschedule') {
+      final selectedDateTime =
+          DateTime.parse(selectedBookingSchedule!.startTime);
+      final existingDateTime =
+          DateTime.parse(_cubit.createDsmesBookingRequest!.startTime);
+
+      if (selectedDateTime.isSameDayWith(existingDateTime) &&
+          selectedDateTime.hour == existingDateTime.hour &&
+          selectedDateTime.minute == existingDateTime.minute) {
+        Message.showToastMessage(context, R.string.exist_appointment.tr());
+        return;
+      }
+    }
+
+    setState(() => _isProcessing = true);
+
+    try {
+      _cubit.updateCreateDsmesBookingRequestTime(
+          startTime: selectedBookingSchedule!.startTime,
+          endTime: selectedBookingSchedule!.endTime);
+
+      final route = ModalRoute.of(context)?.settings;
+      final args = route?.arguments as Map<String, dynamic>?;
+      final isEditing = args?['isEditing'] ?? false;
+
+      if (isEditing) {
+        if (widget.serviceType ==
+            DsmesAppointmentMode.telemedicine.toString()) {
+        } else {
+          // First pop the current select_date page
+          DsmesNavigationMixin.navigationKey.currentState?.pop();
+          DsmesNavigationMixin.navigationKey.currentState?.popUntil((route) =>
+              route.settings.name == NavigatorName.dsmes_booking_select_date);
+
+          DsmesNavigationMixin.navigationKey.currentState?.pushReplacementNamed(
+              NavigatorName.dsmes_booking_select_date,
+              arguments: {
+                'serviceType': widget.serviceType,
+                'action': widget.action,
+              });
+        }
+
+        // Push confirm info
+        DsmesNavigationMixin.navigationKey.currentState
+            ?.pushNamed(NavigatorName.dsmes_confirm_information, arguments: {
+          'serviceType': widget.serviceType,
+          'action': widget.action,
+          'appointmentId': widget.appointmentId,
+          'isMergedSchedule': widget.isMergedSchedule,
+          'bookingType': widget.bookingType,
+        });
+      } else {
+        // Normal flow
+        DsmesNavigationMixin.navigationKey.currentState
+            ?.pushNamed(NavigatorName.dsmes_confirm_information, arguments: {
+          'serviceType': widget.serviceType,
+          'action': widget.action,
+          'appointmentId': widget.appointmentId,
+          'isMergedSchedule': widget.isMergedSchedule,
+          'bookingType': widget.bookingType,
+        });
+      }
+    } finally {
+      setState(() => _isProcessing = false);
     }
   }
 
@@ -631,7 +837,7 @@ class _DsmesCalendarSectionState extends State<DsmesCalendarSection> {
                   availableBookingSchedule[i].startTime,
                   availableBookingSchedule[i].endTime,
                 ),
-                if (widget.bookingType == 'center')
+                if (widget.bookingType == Const.BOOKING_TYPE_CENTER)
                   Text(
                     "-",
                     style: TextStyle(
@@ -645,7 +851,7 @@ class _DsmesCalendarSectionState extends State<DsmesCalendarSection> {
                           hasSlot: true,
                         )),
                   ),
-                if (widget.bookingType == 'center')
+                if (widget.bookingType == Const.BOOKING_TYPE_CENTER)
                   _buildItemTimeFrame(
                     endTime,
                     availableBookingSchedule[i].startTime,

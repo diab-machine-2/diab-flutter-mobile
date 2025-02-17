@@ -609,7 +609,10 @@ class DsmesAppointmentCubit extends Cubit<DsmesAppointmentState> {
   }
 
   initSearchBookingClinicListRequest(
-      {required String specialtyId, int page = 1, String lat = '', String lng = ''}) {
+      {required String specialtyId,
+      int page = 1,
+      String lat = '',
+      String lng = ''}) {
     searchBookingClinicListRequest = SearchBookingClinicListRequest(
       page: page.toString(),
       urlKeywords: [],
@@ -649,6 +652,13 @@ class DsmesAppointmentCubit extends Cubit<DsmesAppointmentState> {
       {required List<String> timeframes}) {
     searchBookingClinicListRequest = searchBookingClinicListRequest?.copyWith(
       timeframes: timeframes,
+    );
+  }
+
+  updateSearchBookingClinicListRequestServiceTypes(
+      {required List<String> serviceTypes}) {
+    searchBookingClinicListRequest = searchBookingClinicListRequest?.copyWith(
+      svAvailable: serviceTypes,
     );
   }
 
