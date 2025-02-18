@@ -3,6 +3,7 @@ import 'dart:ffi';
 import 'dart:math';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
@@ -36,12 +37,19 @@ class _ConversationChatbotAiState extends State<ConversationChatbotAi> {
   late List<types.Message> _messages = [];
   int _page = 0;
   String _conversationId = '';
-  bool _isChatbotTyping = false;
+  late List<types.User> _typingUsers = [];
   final _user = types.User(
     id: AppSettings.userInfo?.id ?? '',
     firstName: AppSettings.userInfo?.fullName ?? '',
     // lastName: AppSettings.userInfo?.id as String,
     imageUrl: AppSettings.userInfo?.imageUrl?.url ?? '',
+  );
+  var _bot = types.User(
+    id: 'ai',
+    firstName: 'Chat Bot AI',
+    // lastName: 'Chat Bot AI',
+    imageUrl:
+        'https://s160-ava-talk.zadn.vn/8/b/a/e/7/160/0e6d45871cf216bf78e2d435ed3ba31a.jpg',
   );
   @override
   void initState() {
@@ -184,10 +192,35 @@ class _ConversationChatbotAiState extends State<ConversationChatbotAi> {
                     messages: _messages,
                     onSendPressed: _handleSendPressed,
                     onPreviewDataFetched: _handlePreviewDataFetched,
+                    onMessageDoubleTap: (context, p1) => {
+                          // copy message to clipboard
+                          Clipboard.setData(ClipboardData(
+                              text: p1 is types.TextMessage ? p1.text : p1.id)),
+                          // show message copied by snackbar
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                            padding: EdgeInsets.all(8),
+                            content: Text('Copied to clipboard'),
+                            backgroundColor: Colors.blueAccent,
+                          ))
+                        },
+                    inputOptions: InputOptions(
+                        onTextChanged: (str) => {
+                              if (_typingUsers
+                                  .where((e) => e.id == _user.id)
+                                  .isEmpty)
+                                {
+                                  setState(() {
+                                    _typingUsers = [..._typingUsers, _user];
+                                  })
+                                }
+                            }),
                     user: _user,
                     showUserAvatars: true,
                     showUserNames: false,
                     onEndReached: _handleEndReached,
+                    typingIndicatorOptions: TypingIndicatorOptions(
+                      typingUsers: _typingUsers,
+                    ),
                     onAvatarTap: (user) => {
                           Navigator.pushNamed(
                               context, NavigatorName.conversation_user_profile,
@@ -237,38 +270,40 @@ class _ConversationChatbotAiState extends State<ConversationChatbotAi> {
                       // ),
                     )),
               ),
-              Positioned(
-                bottom: MediaQuery.of(context).viewInsets.bottom + 60 + 8,
-                left: 4,
-                child: AnimatedOpacity(
-                  opacity: _isChatbotTyping ? 1 : 0,
-                  duration: const Duration(milliseconds: 500),
-                  child: Container(
-                    padding:
-                        EdgeInsets.only(left: 4, right: 10, top: 3, bottom: 3),
-                    decoration: BoxDecoration(
-                        color: R.color.greenGradientMid,
-                        borderRadius: BorderRadius.circular(2),
-                        boxShadow: null),
-                    child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisSize: MainAxisSize.min,
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          Text('Typing',
-                              style: TextStyle(
-                                  color: R.color.white,
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w400)),
-                          SizedBox(width: 6),
-                          LoadingAnimationWidget.staggeredDotsWave(
-                            color: R.color.white,
-                            size: 16,
-                          )
-                        ]),
-                  ),
-                ),
-              ),
+              // Positioned(
+              //   bottom: MediaQuery.of(context).viewInsets.bottom + 60 + 8,
+              //   left: 4,
+              //   child: AnimatedOpacity(
+              //     opacity: _typingUsers.where((e) => e.id == _bot.id).isNotEmpty
+              //         ? 1
+              //         : 0,
+              //     duration: const Duration(milliseconds: 500),
+              //     child: Container(
+              //       padding:
+              //           EdgeInsets.only(left: 4, right: 10, top: 3, bottom: 3),
+              //       decoration: BoxDecoration(
+              //           color: R.color.greenGradientMid,
+              //           borderRadius: BorderRadius.circular(2),
+              //           boxShadow: null),
+              //       child: Row(
+              //           crossAxisAlignment: CrossAxisAlignment.center,
+              //           mainAxisSize: MainAxisSize.min,
+              //           mainAxisAlignment: MainAxisAlignment.start,
+              //           children: [
+              //             Text('Typing',
+              //                 style: TextStyle(
+              //                     color: R.color.white,
+              //                     fontSize: 12,
+              //                     fontWeight: FontWeight.w400)),
+              //             SizedBox(width: 6),
+              //             LoadingAnimationWidget.staggeredDotsWave(
+              //               color: R.color.white,
+              //               size: 16,
+              //             )
+              //           ]),
+              //     ),
+              //   ),
+              // ),
 
               // Positioned(
               //     bottom: 0,
@@ -294,7 +329,7 @@ class _ConversationChatbotAiState extends State<ConversationChatbotAi> {
         .from('messages')
         .select()
         .filter('conversation_id', 'eq', _conversationId)
-        .filter('sender', 'in', [_user.id, 'ai'])
+        .filter('sender', 'in', [_user.id, _bot.id])
         .filter('sender_type', 'in', ['user', 'ai'])
         .range(this._page * pageSize, (this._page + 1) * pageSize)
         .order('created_at', ascending: false);
@@ -353,40 +388,50 @@ class _ConversationChatbotAiState extends State<ConversationChatbotAi> {
     setState(() {
       _messages.insert(0, updatedMessage);
     });
+    // Delay 1 second then remove _user from typing list
+    await Future.delayed(Duration(seconds: 1));
+    setState(() {
+      _typingUsers = _typingUsers.where((e) => e.id != _user.id).toList();
+    });
+
     _handleResponse(updatedMessage);
   }
 
   // This is the method auto response from the chatbot
   void _handleResponse(types.Message message) async {
     setState(() {
-      _isChatbotTyping = true;
+      _typingUsers = [..._typingUsers, _bot];
     });
     final ApiResult<MessageResponse> apiResult =
         await AppRepository().sendMessageById(_conversationId, message.id);
     apiResult.when(
         success: ((data) => {
               setState(() {
+                _bot = types.User(
+                  id: data.data!.sender,
+                  firstName: data.data!.sender,
+                  lastName: data.data!.sender,
+                  imageUrl:
+                      'https://s160-ava-talk.zadn.vn/8/b/a/e/7/160/0e6d45871cf216bf78e2d435ed3ba31a.jpg',
+                );
                 _messages.insert(
                     0,
                     types.TextMessage(
-                        author: data.data!.senderType == 'user'
-                            ? _user
-                            : types.User(
-                                id: data.data!.sender,
-                                firstName: data.data!.sender,
-                                lastName: data.data!.sender,
-                                imageUrl:
-                                    'https://s160-ava-talk.zadn.vn/8/b/a/e/7/160/0e6d45871cf216bf78e2d435ed3ba31a.jpg'),
+                        author: data.data!.senderType == 'user' ? _user : _bot,
                         id: data.data!.id,
                         text: data.data!.content,
                         createdAt: data.data!.createdAt));
-                _isChatbotTyping = false;
+                _typingUsers = _typingUsers
+                    .where((e) => e.id != _bot.id)
+                    .toList(); // remove user bot typing list
               })
             }),
         failure: ((error) {
           Console.log('Error: $error');
           setState(() {
-            _isChatbotTyping = false;
+            _typingUsers = _typingUsers
+                .where((e) => e.id != _bot.id)
+                .toList(); // remove bot from typing list
           });
         }));
   }
