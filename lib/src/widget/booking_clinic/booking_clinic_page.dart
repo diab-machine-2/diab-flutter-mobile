@@ -304,7 +304,7 @@ class _BookingClinicPageState extends State<BookingClinicPage> with Observer {
                         ),
                       );
                     }
-                    case NavigatorName.clinic_payment:
+                  case NavigatorName.clinic_payment:
                     {
                       Map<String, dynamic>? args =
                           settings.arguments as Map<String, dynamic>?;
@@ -495,7 +495,7 @@ class _BookingClinicPageState extends State<BookingClinicPage> with Observer {
             },
             child: SingleChildScrollView(
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(12, 16, 12, 16),
+                padding: const EdgeInsets.fromLTRB(12, 16, 12, 12),
                 child: Column(
                   children: [
                     ListView.separated(
@@ -534,7 +534,6 @@ class _BookingClinicPageState extends State<BookingClinicPage> with Observer {
                         );
                       },
                     ),
-                    GapH(16),
                     _buildDiabSpecialty(),
                   ],
                 ),
@@ -549,103 +548,100 @@ class _BookingClinicPageState extends State<BookingClinicPage> with Observer {
   _buildDiabSpecialty() {
     return LayoutBuilder(
       builder: (context, constraints) {
-        final containerWidth = constraints.maxWidth;
-        final itemsPerRow = (containerWidth - 24) ~/ 170;
-        final spacing =
-            ((containerWidth - 24) - (170 * itemsPerRow)) / (itemsPerRow - 1);
-        return Container(
-          padding: EdgeInsets.symmetric(horizontal: 12),
-          child: Wrap(
-            spacing: spacing,
-            runSpacing: 12,
-            alignment: WrapAlignment.start,
-            children: getDiabSpecialties().map((specialty) {
-              return GestureDetector(
-                onTap: () async {
-                  if (specialty.name == "Bệnh khác") {
-                    final specialties = await _cubit.getCLinicSpecialtyList();
-                    DsmesNavigationMixin.navigationKey.currentState
-                        ?.pushNamed(NavigatorName.other_diseases, arguments: {
-                      "specialties": specialties,
-                    });
-                  } else {
-                    _cubit.clearClinicProviders();
-                    DsmesNavigationMixin.navigationKey.currentState
-                        ?.pushNamed(NavigatorName.clinic_providers, arguments: {
-                      "specialtyId": specialty.id,
-                    });
-                  }
-                },
-                child: SizedBox(
-                  width: 170,
-                  height: 238,
-                  child: Container(
-                    decoration: BoxDecoration(
+        final isTablet = constraints.maxWidth > 600;
+        final crossAxisCount = isTablet ? 3 : 2;
+
+        return GridView.builder(
+          shrinkWrap: true,
+          physics: NeverScrollableScrollPhysics(),
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: crossAxisCount,
+            crossAxisSpacing: 12,
+            mainAxisSpacing: 12,
+            childAspectRatio: 170 / 238,
+          ),
+          itemCount: getDiabSpecialties().length,
+          itemBuilder: (context, index) {
+            final specialty = getDiabSpecialties()[index];
+            return GestureDetector(
+              onTap: () async {
+                if (specialty.name == "Bệnh khác") {
+                  final specialties = await _cubit.getCLinicSpecialtyList();
+                  DsmesNavigationMixin.navigationKey.currentState
+                      ?.pushNamed(NavigatorName.other_diseases, arguments: {
+                    "specialties": specialties,
+                  });
+                } else {
+                  _cubit.clearClinicProviders();
+                  DsmesNavigationMixin.navigationKey.currentState
+                      ?.pushNamed(NavigatorName.clinic_providers, arguments: {
+                    "specialtyId": specialty.id,
+                  });
+                }
+              },
+              child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Stack(
+                  children: [
+                    ClipRRect(
                       borderRadius: BorderRadius.circular(12),
+                      child: Image.asset(
+                        specialty.banner ?? '',
+                        width: double.infinity,
+                        height: double.infinity,
+                        fit: BoxFit.cover,
+                      ),
                     ),
-                    child: Stack(
-                      children: [
-                        // Background Image
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(12),
-                          child: Image.asset(
-                            specialty.banner ?? '',
-                            width: double.infinity,
-                            height: double.infinity,
-                            fit: BoxFit.cover,
+                    Positioned(
+                      top: 0,
+                      left: 0,
+                      right: 0,
+                      child: Container(
+                        height: 80,
+                        padding: EdgeInsets.fromLTRB(12, 16, 8, 0),
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.center,
+                            end: Alignment.bottomCenter,
+                            colors: [
+                              R.color.color0xffFAF0D2,
+                              R.color.color0xffFAF0D2.withOpacity(0.8),
+                              R.color.color0xffFAF0D2.withOpacity(0.5),
+                            ],
                           ),
                         ),
-                        // Blur Container at bottom
-                        Positioned(
-                          top: 0,
-                          left: 0,
-                          right: 0,
-                          child: Container(
-                            height: 80,
-                            padding: EdgeInsets.fromLTRB(12, 16, 8, 0),
-                            decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                begin: Alignment.center,
-                                end: Alignment.bottomCenter,
-                                colors: [
-                                  R.color.color0xffFAF0D2,
-                                  R.color.color0xffFAF0D2.withOpacity(0.8),
-                                  R.color.color0xffFAF0D2.withOpacity(0.5),
-                                ],
-                              ),
-                            ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Expanded(
-                                  child: Text(
-                                    specialty.name,
-                                    style: TextStyle(
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.w700,
-                                      color: R.color.color0xff111515,
-                                    ),
-                                    maxLines: 2,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                ),
-                                Icon(
-                                  Icons.arrow_forward_ios,
-                                  size: 16,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Expanded(
+                              child: Text(
+                                specialty.name,
+                                style: TextStyle(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w700,
                                   color: R.color.color0xff111515,
                                 ),
-                              ],
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                              ),
                             ),
-                          ),
+                            Icon(
+                              Icons.arrow_forward_ios,
+                              size: 16,
+                              color: R.color.color0xff111515,
+                            ),
+                          ],
                         ),
-                      ],
+                      ),
                     ),
-                  ),
+                  ],
                 ),
-              );
-            }).toList(),
-          ),
+              ),
+            );
+          },
         );
       },
     );
