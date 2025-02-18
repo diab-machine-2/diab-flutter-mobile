@@ -5,12 +5,14 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/response/chat_supabase_response.dart';
 import 'package:medical/src/model/service/api_result.dart';
 import 'package:medical/src/utils/app_log.dart';
 import 'package:medical/src/utils/navigator_name.dart';
+import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../res/R.dart';
 import '../helper/tracking_manager.dart';
@@ -79,7 +81,7 @@ class _ConversationChatbotAiState extends State<ConversationChatbotAi> {
                   await _handleEndReached(isReset: true),
                 }
               else
-                createConversation()
+                await createConversation()
             }),
         failure: (error) => {
               Console.log('Error: $apiGetResult'),
@@ -91,11 +93,11 @@ class _ConversationChatbotAiState extends State<ConversationChatbotAi> {
         title: 'Chat Bot AI', descrtiption: 'Chat Bot AI Description');
     final apiResult = await AppRepository().createConversation(newConversation);
     apiResult.when(
-        success: ((data) => {
+        success: ((data) async => {
               setState(() {
                 _conversationId = data.data!.id;
               }),
-              _handleEndReached(isReset: true),
+              await _handleEndReached(isReset: true),
             }),
         failure: ((error) => {Console.log('Error: $error')}));
   }
@@ -235,27 +237,38 @@ class _ConversationChatbotAiState extends State<ConversationChatbotAi> {
                       // ),
                     )),
               ),
-              AnimatedOpacity(
-                opacity: _isChatbotTyping ? 1 : 0,
-                duration: const Duration(milliseconds: 500),
-                child: Align(
-                  alignment: Alignment(-0.98, 0.83),
+              Positioned(
+                bottom: MediaQuery.of(context).viewInsets.bottom + 60 + 8,
+                left: 4,
+                child: AnimatedOpacity(
+                  opacity: _isChatbotTyping ? 1 : 0,
+                  duration: const Duration(milliseconds: 500),
                   child: Container(
-                    padding: EdgeInsets.all(4),
+                    padding:
+                        EdgeInsets.only(left: 4, right: 10, top: 3, bottom: 3),
                     decoration: BoxDecoration(
                         color: R.color.greenGradientMid,
                         borderRadius: BorderRadius.circular(2),
                         boxShadow: null),
-                    child: Text(
-                      'Đang trả lời ...',
-                      style: TextStyle(
-                          color: R.color.white,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w400),
-                    ),
+                    child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisSize: MainAxisSize.min,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          Text('Typing',
+                              style: TextStyle(
+                                  color: R.color.white,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w400)),
+                          SizedBox(width: 6),
+                          LoadingAnimationWidget.staggeredDotsWave(
+                            color: R.color.white,
+                            size: 16,
+                          )
+                        ]),
                   ),
                 ),
-              )
+              ),
 
               // Positioned(
               //     bottom: 0,

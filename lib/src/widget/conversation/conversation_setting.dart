@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/utils/app_log.dart';
+import 'package:medical/src/utils/navigator_name.dart';
 
 import '../../../res/R.dart';
 import '../../app_setting/app_setting.dart';
@@ -147,7 +148,7 @@ class _ConversationSettingState extends State<ConversationSetting> {
                   backgroundColor: Colors.red,
                 ),
               ),
-              Navigator.popUntil(context, (route) => route.isFirst)
+              Navigator.pushNamed(context, NavigatorName.tabbar)
             },
         failure: (error) => {
               Console.log('Error: $error'),
