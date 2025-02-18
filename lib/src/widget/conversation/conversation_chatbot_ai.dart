@@ -262,6 +262,19 @@ class _ConversationChatbotAiState extends State<ConversationChatbotAi> {
                         fontWeight: FontWeight.w400,
                         height: 1.4,
                       ),
+                      typingIndicatorTheme: TypingIndicatorTheme(
+                        animatedCirclesColor: neutral1,
+                        animatedCircleSize: 5.0,
+                        bubbleBorder: BorderRadius.all(Radius.circular(27.0)),
+                        bubbleColor: neutral7,
+                        countAvatarColor: primary,
+                        countTextColor: secondary,
+                        multipleUserTextStyle: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+                          color: neutral2,
+                        ),
+                      ),
                       // sentMessageBodyLinkTextStyle: TextStyle(
                       //   color: R.color.red,
                       //   fontSize: 16,
