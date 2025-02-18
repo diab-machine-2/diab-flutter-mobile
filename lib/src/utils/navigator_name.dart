@@ -106,4 +106,5 @@ class NavigatorName {
   static const String other_diseases = '/other_diseases';
   static const String clinic_providers = '/clinic_providers';
   static const String clinic_select_service = '/clinic_select_service';
+  static const String clinic_payment = '/clinic_payment';
 }

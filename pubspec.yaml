@@ -164,6 +164,9 @@ dependencies:
       ref: 1.0.3
   mixpanel_flutter: ^2.3.3
   animated_text_kit: ^4.2.2
+  vnpay_flutter : ^1.0.3
+  geolocator: ^11.1.0
+  flutter_widget_from_html_core: ^0.14.11
 
 dev_dependencies:
   flutter_test:
@@ -181,8 +184,7 @@ dependency_overrides:
   visibility_detector: 0.4.0+2
   js: 0.7.1
   url_launcher_ios: 6.3.1
-  geolocator: ^11.1.0
-  flutter_widget_from_html_core: ^0.15.2
+  intl: 0.18.1
   # flutter_inappwebview_ios:
   #   git:
   #     url: https://github.com/ngocphuc1612/flutter_inappwebview.git

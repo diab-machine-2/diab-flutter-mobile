@@ -1031,14 +1031,22 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
-  flutter_widget_from_html_core:
-    dependency: "direct overridden"
+  flutter_webview_plugin_ios_android:
+    dependency: transitive
     description:
-      name: flutter_widget_from_html_core
-      sha256: b1048fd119a14762e2361bd057da608148a895477846d6149109b2151d2f7abf
+      name: flutter_webview_plugin_ios_android
+      sha256: "2a084ac5d2e9fd1788bd76794b79055199fe40621c306a14e29ab8fa7f96466b"
       url: "https://pub.dev"
     source: hosted
-    version: "0.15.2"
+    version: "0.3.13+12"
+  flutter_widget_from_html_core:
+    dependency: "direct main"
+    description:
+      name: flutter_widget_from_html_core
+      sha256: cc1d9be3d187ce668ee02091cd5442dfb050cdaf98e0ab9a4d12ad008f966979
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.14.12"
   flutter_zoom_meeting:
     dependency: "direct main"
     description:
@@ -1081,7 +1089,7 @@ packages:
     source: hosted
     version: "2.23.8"
   geolocator:
-    dependency: "direct overridden"
+    dependency: "direct main"
     description:
       name: geolocator
       sha256: "6cb9fb6e5928b58b9a84bdf85012d757fd07aab8215c5205337021c4999bad27"
@@ -1100,10 +1108,10 @@ packages:
     dependency: transitive
     description:
       name: geolocator_apple
-      sha256: "6154ea2682563f69fc0125762ed7e91e7ed85d0b9776595653be33918e064807"
+      sha256: c4ecead17985ede9634f21500072edfcb3dba0ef7b97f8d7bc556d2d722b3ba3
       url: "https://pub.dev"
     source: hosted
-    version: "2.3.8+1"
+    version: "2.3.9"
   geolocator_platform_interface:
     dependency: transitive
     description:
@@ -1345,7 +1353,7 @@ packages:
     source: hosted
     version: "2.0.5"
   intl:
-    dependency: transitive
+    dependency: "direct overridden"
     description:
       name: intl
       sha256: "3bc132a9dbce73a7e4a21a17d06e1878839ffbf975568bc875c60537824b0c4d"
@@ -2198,6 +2206,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.4.0+2"
+  vnpay_flutter:
+    dependency: "direct main"
+    description:
+      name: vnpay_flutter
+      sha256: "236bae066f50c731fc52899267c5bf9dd3c5d8606cef2026f46526b926be1ff3"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.3"
   wakelock_plus:
     dependency: "direct overridden"
     description:

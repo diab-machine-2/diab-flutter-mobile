@@ -224,6 +224,26 @@ class _DsmesConfirmCreateInformationState
                             DsmesAppointmentMode.telemedicine.toString() &&
                         widget.bookingType == Const.BOOKING_TYPE_CLINIC) {
                       // Handle navigate to payment screen
+                      final services = _cubit
+                          .createDsmesBookingRequest!.paymentInfo!.services;
+                      int totalPrice = 0;
+                      for (var e in services) {
+                        final service = _cubit
+                            .selectedClinic?.serviceList.categories
+                            .expand((category) => category.data)
+                            .firstWhere((service) => service.id == e.id);
+                        totalPrice += service?.fromPrice ?? 0;
+                      }
+
+                      DsmesNavigationMixin.navigationKey.currentState
+                          ?.pushNamed(
+                        NavigatorName.clinic_payment,
+                        arguments: {
+                          'totalPrice': totalPrice,
+                          'serviceType': widget.serviceType,
+                          'bookingType': widget.bookingType,
+                        },
+                      );
                     } else {
                       if (widget.action == 'reschedule' &&
                           widget.appointmentId != null) {

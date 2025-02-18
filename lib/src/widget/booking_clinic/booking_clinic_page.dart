@@ -13,15 +13,14 @@ import 'package:medical/src/app_setting/firebase_remote_config.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigator_name.dart';
-import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/booking_clinic/helper/booking_clinic_helper.dart';
 import 'package:medical/src/widget/booking_clinic/model/clinic_specialty_model.dart';
+import 'package:medical/src/widget/booking_clinic/pages/booking_clinic_payment_page.dart';
 import 'package:medical/src/widget/booking_clinic/pages/booking_clinic_provider_page.dart';
 import 'package:medical/src/widget/booking_clinic/pages/booking_clinic_select_service.dart';
 import 'package:medical/src/widget/booking_clinic/pages/other_diseases_page.dart';
 import 'package:medical/src/widget/dsmes_appointment/dsmes_appointment_cubit.dart';
-import 'package:medical/src/widget/dsmes_appointment/model/dsmes_appointment_model.dart';
 import 'package:medical/src/widget/dsmes_appointment/dsmes_appointment_state.dart';
 import 'package:medical/src/widget/dsmes_appointment/pages/dsmes_appointment_history_page.dart';
 import 'package:medical/src/widget/dsmes_appointment/pages/dsmes_booking_detail.dart';
@@ -34,7 +33,6 @@ import 'package:medical/src/widget/dsmes_appointment/pages/dsmes_navigation_mixi
 import 'package:medical/src/widget/dsmes_appointment/pages/dsmes_select_service_page.dart';
 import 'package:medical/src/widget/dsmes_appointment/widgets/dsmes_appointment_item.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
-import 'package:medical/src/widget/question_answer/all_question_answer/model/question_model.dart';
 import 'package:medical/src/widgets/gap_widget.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
@@ -302,6 +300,19 @@ class _BookingClinicPageState extends State<BookingClinicPage> with Observer {
                           clinic: args!["clinic"],
                           serviceType: args["serviceType"],
                           action: args["action"],
+                          bookingType: args["bookingType"],
+                        ),
+                      );
+                    }
+                    case NavigatorName.clinic_payment:
+                    {
+                      Map<String, dynamic>? args =
+                          settings.arguments as Map<String, dynamic>?;
+                      return _buildRoute(
+                        settings,
+                        BookingClinicPaymentPage(
+                          totalPrice: args!["totalPrice"],
+                          serviceType: args["serviceType"],
                           bookingType: args["bookingType"],
                         ),
                       );
