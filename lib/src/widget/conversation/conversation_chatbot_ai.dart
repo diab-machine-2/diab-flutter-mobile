@@ -124,7 +124,7 @@ class _ConversationChatbotAiState extends State<ConversationChatbotAi> {
               highlightColor: R.color.transparent,
               icon: Icon(Icons.arrow_back, color: R.color.white),
               onPressed: () {
-                Navigator.pop(context);
+                Navigator.pushNamed(context, NavigatorName.tabbar);
               }),
           title: Align(
             alignment: Alignment.topLeft,
