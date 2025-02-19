@@ -61,14 +61,14 @@ class MessageModel {
 
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
-      'conversationId': conversationId,
-      'content': content,
-      'sender': sender,
-      'senderType': senderType,
-      'createdAt': createdAt,
-      'updatedAt': updatedAt,
-      'deletedAt': deletedAt,
+      'id': id ?? '',
+      'conversationId': conversationId ?? '',
+      'content': content ?? '',
+      'sender': sender ?? '',
+      'senderType': senderType ?? '',
+      'createdAt': createdAt ?? '',
+      'updatedAt': updatedAt ?? '',
+      'deletedAt': deletedAt ?? '',
       // 'conversation': conversation,
     };
   }
@@ -143,6 +143,54 @@ class CreateConversationRequest {
   }
 }
 
+class MemberModel {
+  final String id;
+  final String conversationId;
+  final String userId;
+  final String role;
+  final int joinedAt;
+  final int? leftAt;
+  final int createdAt;
+  final int updatedAt;
+
+  MemberModel({
+    required this.id,
+    required this.conversationId,
+    required this.userId,
+    required this.role,
+    required this.joinedAt,
+    required this.leftAt,
+    required this.createdAt,
+    required this.updatedAt,
+  });
+
+  factory MemberModel.fromJson(Map<String, dynamic> json) {
+    return MemberModel(
+      id: json['id'],
+      conversationId: json['conversationId'],
+      userId: json['userId'],
+      role: json['role'],
+      joinedAt: json['joinedAt'],
+      leftAt: json['leftAt'],
+      createdAt: json['createdAt'],
+      updatedAt: json['updatedAt'],
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'conversationId': conversationId,
+      'userId': userId,
+      'role': role,
+      'joinedAt': joinedAt,
+      'leftAt': leftAt,
+      'createdAt': createdAt,
+      'updatedAt': updatedAt,
+    };
+  }
+}
+
 class ConversationModel {
   final String id;
   final String? title;
@@ -151,16 +199,17 @@ class ConversationModel {
   final int? updatedAt;
   final int? deletedAt;
   final List<MessageModel>? messages;
+  final List<MemberModel>? members;
 
-  ConversationModel({
-    required this.id,
-    this.title,
-    this.descrtiption,
-    this.createdAt,
-    this.updatedAt,
-    this.deletedAt,
-    this.messages,
-  });
+  ConversationModel(
+      {required this.id,
+      this.title,
+      this.descrtiption,
+      this.createdAt,
+      this.updatedAt,
+      this.deletedAt,
+      this.messages,
+      this.members});
 
   factory ConversationModel.fromJson(Map<String, dynamic> json) {
     return ConversationModel(
@@ -173,6 +222,10 @@ class ConversationModel {
       messages: json['messages'] != null
           ? List<MessageModel>.from(
               json['messages'].map((x) => MessageModel.fromJson(x)))
+          : null,
+      members: json['members'] != null
+          ? List<MemberModel>.from(
+              json['members'].map((x) => MemberModel.fromJson(x)))
           : null,
     );
   }
@@ -187,6 +240,9 @@ class ConversationModel {
       'deletedAt': deletedAt,
       'messages': messages != null
           ? List<dynamic>.from(messages!.map((x) => x.toJson()))
+          : null,
+      'members': members != null
+          ? List<dynamic>.from(members!.map((x) => x.toJson()))
           : null,
     };
   }

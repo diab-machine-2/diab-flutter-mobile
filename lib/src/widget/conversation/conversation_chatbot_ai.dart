@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:ffi';
 import 'dart:math';
@@ -35,30 +36,47 @@ class ConversationChatbotAi extends StatefulWidget {
 class _ConversationChatbotAiState extends State<ConversationChatbotAi> {
   final GlobalKey<ChatState> _chatKey = GlobalKey();
   late List<types.Message> _messages = [];
-  int _page = 0;
-  String _conversationId = '';
-  late List<types.User> _typingUsers = [];
-  final _user = types.User(
+  types.User _author = types.User(
     id: AppSettings.userInfo?.id ?? '',
     firstName: AppSettings.userInfo?.fullName ?? '',
     // lastName: AppSettings.userInfo?.id as String,
     imageUrl: AppSettings.userInfo?.imageUrl?.url ?? '',
   );
-  var _bot = types.User(
+  types.User _bot = types.User(
     id: 'ai',
     firstName: 'Chat Bot AI',
     // lastName: 'Chat Bot AI',
     imageUrl:
         'https://s160-ava-talk.zadn.vn/8/b/a/e/7/160/0e6d45871cf216bf78e2d435ed3ba31a.jpg',
   );
+  types.Room _conversation = types.Room(
+    id: '1',
+    type: types.RoomType.direct,
+    imageUrl:
+        'https://s160-ava-talk.zadn.vn/8/b/a/e/7/160/0e6d45871cf216bf78e2d435ed3ba31a.jpg',
+    name: 'Chat Bot AI',
+    users: [],
+  );
+  List<types.User> _typingUsers = [];
+  bool _isLoading = false;
+  final TextEditingController _messageController = TextEditingController();
+
   @override
   void initState() {
     super.initState();
+    _conversation = _conversation.copyWith(
+        users: [
+      _author,
+      _bot,
+    ].toList());
     firebaseSetup();
     subpabaseInit();
   }
 
   Future subpabaseInit() async {
+    setState(() {
+      _isLoading = true;
+    });
     final ApiResult<SupabaseConfigResponse> apiResult =
         await AppRepository().getSupabaseConfig();
     apiResult.when(
@@ -74,6 +92,33 @@ class _ConversationChatbotAiState extends State<ConversationChatbotAi> {
         failure: ((error) => {Console.log('Error: $error')}));
   }
 
+  StreamSubscription<List<Map<String, dynamic>>>? _messageSubscription;
+
+  void _subscribeToMessages() {
+    if (_conversation.id.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text('Conversation ID is empty'),
+        backgroundColor: Colors.red,
+      ));
+    }
+    _messageSubscription?.cancel();
+    _messageSubscription = Supabase.instance.client
+        .from('messages')
+        .stream(primaryKey: ['id'])
+        .eq('conversation_id', _conversation.id)
+        .order('created_at', ascending: false)
+        .listen(
+          (data) {
+            final messages =
+                data.map((msg) => Message.fromMap(msg).uiMessage!).toList();
+            setState(() => _messages = messages);
+          },
+          onError: (error) {
+            debugPrint('Error in message subscription: $error');
+          },
+        );
+  }
+
   Future conversationInit() async {
     // select first conversation with the status 'active'
     // if comes empty, create a new conversation
@@ -81,18 +126,33 @@ class _ConversationChatbotAiState extends State<ConversationChatbotAi> {
     final apiGetResult = await AppRepository().getMyConversation();
     apiGetResult.whenOrNull(
         success: ((data) async => {
-              if (data.data!.length > 0)
+              if (data.data!.isNotEmpty)
                 {
                   setState(() {
-                    _conversationId = data.data!.first.id;
+                    _conversation =
+                        Conversation.fromMap(data.data!.first.toJson()).uiRoom!;
+                    _isLoading = false;
                   }),
-                  await _handleEndReached(isReset: true),
+                  _subscribeToMessages()
                 }
               else
-                await createConversation()
+                await createConversation().whenComplete(() {
+                  setState(() {
+                    _isLoading = false;
+                  });
+                  _subscribeToMessages();
+                }).catchError((error) {
+                  Console.log('Error: $error');
+                  setState(() {
+                    _isLoading = false;
+                  });
+                }),
             }),
         failure: (error) => {
               Console.log('Error: $apiGetResult'),
+              setState(() {
+                _isLoading = false;
+              })
             });
   }
 
@@ -103,12 +163,26 @@ class _ConversationChatbotAiState extends State<ConversationChatbotAi> {
     apiResult.when(
         success: ((data) async => {
               setState(() {
-                _conversationId = data.data!.id;
+                _conversation =
+                    Conversation.fromMap(data.data!.toJson()).uiRoom!;
               }),
-              await _handleEndReached(isReset: true),
+              // createWellcomeMessage()
             }),
         failure: ((error) => {Console.log('Error: $error')}));
   }
+
+  // Future createWellcomeMessage() async {
+  //   final wcMessage = await Supabase.instance.client
+  //       .from('messages')
+  //       .insert({
+  //         'conversation_id': _conversation.id,
+  //         'sender': _bot.id,
+  //         'sender_type': 'ai',
+  //         'content': 'Hello, I am Chat Bot AI. How can I help you?',
+  //       })
+  //       .select('id')
+  //       .single();
+  // }
 
   Future firebaseSetup() async {
     await TrackingManager.analytics.logScreenView(
@@ -153,7 +227,7 @@ class _ConversationChatbotAiState extends State<ConversationChatbotAi> {
               onPressed: () {
                 Navigator.pushNamed(context, NavigatorName.conversation_setting,
                     arguments: {
-                      'conversationId': _conversationId,
+                      'conversationId': _conversation.id,
                     });
               },
             ),
@@ -192,6 +266,8 @@ class _ConversationChatbotAiState extends State<ConversationChatbotAi> {
                     messages: _messages,
                     onSendPressed: _handleSendPressed,
                     onPreviewDataFetched: _handlePreviewDataFetched,
+                    // l10n:
+                    //     const ChatL10nEn(inputPlaceholder: 'Type a message...'),
                     onMessageDoubleTap: (context, p1) => {
                           // copy message to clipboard
                           Clipboard.setData(ClipboardData(
@@ -206,18 +282,19 @@ class _ConversationChatbotAiState extends State<ConversationChatbotAi> {
                     inputOptions: InputOptions(
                         onTextChanged: (str) => {
                               if (_typingUsers
-                                  .where((e) => e.id == _user.id)
+                                  .where((e) => e.id == _author.id)
                                   .isEmpty)
                                 {
                                   setState(() {
-                                    _typingUsers = [..._typingUsers, _user];
+                                    _typingUsers = [..._typingUsers, _author];
                                   })
                                 }
-                            }),
-                    user: _user,
+                            },
+                        textEditingController: _messageController),
+                    user: _author,
                     showUserAvatars: true,
                     showUserNames: false,
-                    onEndReached: _handleEndReached,
+                    // onEndReached: _handleEndReached,
                     typingIndicatorOptions: TypingIndicatorOptions(
                       typingUsers: _typingUsers,
                     ),
@@ -317,14 +394,6 @@ class _ConversationChatbotAiState extends State<ConversationChatbotAi> {
               //     ),
               //   ),
               // ),
-
-              // Positioned(
-              //     bottom: 0,
-              //     left: 0,
-              //     child: Container(
-              //       padding: EdgeInsets.all(4),
-              //       child: Text('Typing...'),
-              //     )),
             ],
           ),
         ),
@@ -332,55 +401,43 @@ class _ConversationChatbotAiState extends State<ConversationChatbotAi> {
     );
   }
 
-  Future<void> _handleEndReached({bool? isReset = false}) async {
-    if (isReset == true) {
-      _page = 0;
-      _messages = [];
-    }
-    const pageSize = 20;
-    final response = await Supabase.instance.client
-        .from('messages')
-        .select()
-        .filter('conversation_id', 'eq', _conversationId)
-        .filter('sender', 'in', [_user.id, _bot.id])
-        .filter('sender_type', 'in', ['user', 'ai'])
-        .range(this._page * pageSize, (this._page + 1) * pageSize)
-        .order('created_at', ascending: false);
-    Console.log('-------_handleEndReached');
-    final messages = response
-        .map(
-          (e) => types.TextMessage(
-            author: new types.User(
-                id: e['sender'] as String,
-                firstName: e['sender'] as String,
-                lastName: e['sender'] as String,
-                imageUrl:
-                    'https://s160-ava-talk.zadn.vn/8/b/a/e/7/160/0e6d45871cf216bf78e2d435ed3ba31a.jpg'),
-            id: e['id'] as String,
-            text: e['content'] as String,
-            createdAt: DateTime.parse(e['created_at'] as String)
-                .millisecondsSinceEpoch,
-          ),
-        )
-        .toList();
-    setState(() {
-      _messages = [..._messages, ...messages];
-      _page = _page + 1;
-    });
-    // if (_messages.where((e) => e.id == 'lastReadMessageId').isEmpty) {
-    //   // Recursively call to fetch more pages
-    //   await _handleEndReached();
-    // } else {
-    //   // Give some delay for the library to calculate correct indices
-    //   Future.delayed(const Duration(milliseconds: 20), () {
-    //     _chatKey.currentState?.scrollToUnreadHeader();
-    //   });
-    // }
-  }
+  // Future<void> _handleEndReached() async {
+  // const pageSize = 20;
+  // final response = await Supabase.instance.client
+  //     .from('messages')
+  //     .select()
+  //     .filter('conversation_id', 'eq', _conversation.id)
+  //     // .filter('sender', 'in', [_user.id, _bot.id])
+  //     // .filter('sender_type', 'in', ['user', 'ai'])
+  //     // .range(this._page * pageSize, (this._page + 1) * pageSize)
+  //     .order('created_at', ascending: false);
+  // final messages =
+  //     response.map((e) => Message.fromMap(e).uiMessage!).toList();
+  // setState(() {
+  //   _messages = messages;
+  //   // _page = _page + 1;
+  // });
+  // if (_messages.where((e) => e.id == 'lastReadMessageId').isEmpty) {
+  //   // Recursively call to fetch more pages
+  //   await _handleEndReached();
+  // } else {
+  //   // Give some delay for the library to calculate correct indices
+  //   Future.delayed(const Duration(milliseconds: 20), () {
+  //     _chatKey.currentState?.scrollToUnreadHeader();
+  //   });
+  // }
+  // }
 
   void _handleSendPressed(types.PartialText _message) async {
+    if (_typingUsers.where((e) => e.id == _bot.id).isNotEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text('Please wait for the bot to finish typing'),
+        backgroundColor: R.color.yellowAccent,
+      ));
+      return;
+    }
     var message = types.TextMessage(
-      author: _user,
+      author: _author,
       createdAt: DateTime.now().millisecondsSinceEpoch,
       id: randomString(),
       text: _message.text,
@@ -390,7 +447,7 @@ class _ConversationChatbotAiState extends State<ConversationChatbotAi> {
     final dbMessage = await Supabase.instance.client
         .from('messages')
         .insert({
-          'conversation_id': _conversationId,
+          'conversation_id': _conversation.id,
           'sender': message.author.id,
           'sender_type': 'user',
           'content': message.text,
@@ -400,40 +457,38 @@ class _ConversationChatbotAiState extends State<ConversationChatbotAi> {
     final updatedMessage = message.copyWith(id: dbMessage['id'] as String);
     setState(() {
       _messages.insert(0, updatedMessage);
-    });
-    // Delay 1 second then remove _user from typing list
-    await Future.delayed(Duration(seconds: 1));
-    setState(() {
-      _typingUsers = _typingUsers.where((e) => e.id != _user.id).toList();
+      _typingUsers = _typingUsers.where((e) => e.id != _author.id).toList();
     });
 
-    _handleResponse(updatedMessage);
+    return _handleBotResponse(updatedMessage);
   }
 
-  // This is the method auto response from the chatbot
-  void _handleResponse(types.Message message) async {
-    setState(() {
-      _typingUsers = [..._typingUsers, _bot];
-    });
+  // // This is the method auto response from the chatbot
+  void _handleBotResponse(types.Message message) async {
+    if (_typingUsers.where((e) => e.id == _bot.id).isEmpty) {
+      setState(() {
+        _typingUsers = [..._typingUsers, _bot];
+      });
+    }
     final ApiResult<MessageResponse> apiResult =
-        await AppRepository().sendMessageById(_conversationId, message.id);
+        await AppRepository().sendMessageById(_conversation.id, message.id);
     apiResult.when(
         success: ((data) => {
               setState(() {
-                _bot = types.User(
-                  id: data.data!.sender,
-                  firstName: data.data!.sender,
-                  lastName: data.data!.sender,
-                  imageUrl:
-                      'https://s160-ava-talk.zadn.vn/8/b/a/e/7/160/0e6d45871cf216bf78e2d435ed3ba31a.jpg',
-                );
+                _bot = _bot.copyWith(
+                    id: data.data!.sender,
+                    firstName: data.data!.sender,
+                    lastName: data.data!.senderType);
+                // Change load message from suprise event to the message response from the chatbot
                 _messages.insert(
                     0,
                     types.TextMessage(
-                        author: data.data!.senderType == 'user' ? _user : _bot,
+                        author:
+                            data.data!.sender == _author.id ? _author : _bot,
                         id: data.data!.id,
                         text: data.data!.content,
                         createdAt: data.data!.createdAt));
+
                 _typingUsers = _typingUsers
                     .where((e) => e.id != _bot.id)
                     .toList(); // remove user bot typing list
@@ -461,5 +516,108 @@ class _ConversationChatbotAiState extends State<ConversationChatbotAi> {
     setState(() {
       _messages[index] = updatedMessage;
     });
+  }
+}
+
+class Conversation {
+  final String id;
+  final String title;
+  final String? description;
+  final String status;
+  final DateTime createdAt;
+  types.Room? uiRoom;
+
+  Conversation({
+    required this.id,
+    required this.title,
+    this.description,
+    required this.status,
+    required this.createdAt,
+    this.uiRoom,
+  }) {
+    uiRoom = this.uiRoom ??
+        types.Room(
+          id: id,
+          type: types.RoomType.direct,
+          imageUrl:
+              'https://s160-ava-talk.zadn.vn/8/b/a/e/7/160/0e6d45871cf216bf78e2d435ed3ba31a.jpg',
+          name: title,
+          users: [],
+        );
+  }
+
+  factory Conversation.fromMap(Map<String, dynamic> map) {
+    return Conversation(
+      id: map['id'],
+      title: map['title'] ?? 'Chat Bot AI',
+      description: map['description'] ?? 'Chat Bot AI Description',
+      status: map['status'] ?? 'active',
+      createdAt: map['created_at'] != null
+          ? DateTime.parse(map['created_at'])
+          : DateTime.now(),
+      uiRoom: types.Room(
+        id: map['id'],
+        type: types.RoomType.direct,
+        imageUrl:
+            'https://s160-ava-talk.zadn.vn/8/b/a/e/7/160/0e6d45871cf216bf78e2d435ed3ba31a.jpg',
+        name: map['title'] ?? 'Chat Bot AI',
+        users: [],
+      ),
+    );
+  }
+}
+
+class Message {
+  final String id;
+  final String conversationId;
+  final String content;
+  final String sender;
+  final String senderType;
+  final DateTime createdAt;
+  final Map<String, dynamic>? metadata;
+  types.Message? uiMessage;
+
+  Message({
+    required this.id,
+    required this.conversationId,
+    required this.content,
+    required this.sender,
+    required this.senderType,
+    required this.createdAt,
+    this.uiMessage,
+    this.metadata,
+  }) {
+    uiMessage = this.uiMessage ??
+        types.TextMessage(
+          id: id,
+          author: types.User(id: sender),
+          text: content,
+        );
+  }
+
+  factory Message.fromMap(Map<String, dynamic> map) {
+    return Message(
+        id: map['id'],
+        conversationId: map['conversation_id'] ?? '',
+        content: map['content'] ?? '',
+        sender: map['sender'] ?? '',
+        senderType: map['sender_type'] ?? '',
+        createdAt: map['created_at'] != null
+            ? DateTime.parse(map['created_at'])
+            : DateTime.now(),
+        metadata: map['metadata'],
+        uiMessage: types.TextMessage(
+          id: map['id'],
+          author: types.User(
+              id: map['sender'] ?? '',
+              lastName: map['sender'] ?? '',
+              firstName: map['sender']),
+          text: map['content'] ?? '',
+          createdAt: map['created_at'] != null
+              ? DateTime.parse(map['created_at']).millisecondsSinceEpoch
+              : DateTime.now().millisecondsSinceEpoch,
+          roomId: map['conversation_id'],
+          metadata: map,
+        ));
   }
 }
