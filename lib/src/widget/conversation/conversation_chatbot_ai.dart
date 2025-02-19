@@ -50,7 +50,7 @@ class _ConversationChatbotAiState extends State<ConversationChatbotAi> {
         'https://s160-ava-talk.zadn.vn/8/b/a/e/7/160/0e6d45871cf216bf78e2d435ed3ba31a.jpg',
   );
   types.Room _conversation = types.Room(
-    id: '1',
+    id: '',
     type: types.RoomType.direct,
     imageUrl:
         'https://s160-ava-talk.zadn.vn/8/b/a/e/7/160/0e6d45871cf216bf78e2d435ed3ba31a.jpg',
@@ -60,6 +60,7 @@ class _ConversationChatbotAiState extends State<ConversationChatbotAi> {
   List<types.User> _typingUsers = [];
   bool _isLoading = false;
   final TextEditingController _messageController = TextEditingController();
+  StreamSubscription<List<Map<String, dynamic>>>? _messageSubscription;
 
   @override
   void initState() {
@@ -92,8 +93,6 @@ class _ConversationChatbotAiState extends State<ConversationChatbotAi> {
         failure: ((error) => {Console.log('Error: $error')}));
   }
 
-  StreamSubscription<List<Map<String, dynamic>>>? _messageSubscription;
-
   void _subscribeToMessages() {
     if (_conversation.id.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -111,10 +110,14 @@ class _ConversationChatbotAiState extends State<ConversationChatbotAi> {
           (data) {
             final messages =
                 data.map((msg) => Message.fromMap(msg).uiMessage!).toList();
+
             setState(() => _messages = messages);
           },
           onError: (error) {
             debugPrint('Error in message subscription: $error');
+          },
+          onDone: () {
+            debugPrint('Message subscription done');
           },
         );
   }
@@ -170,7 +173,6 @@ class _ConversationChatbotAiState extends State<ConversationChatbotAi> {
             }),
         failure: ((error) => {Console.log('Error: $error')}));
   }
-
   // Future createWellcomeMessage() async {
   //   final wcMessage = await Supabase.instance.client
   //       .from('messages')
@@ -480,15 +482,15 @@ class _ConversationChatbotAiState extends State<ConversationChatbotAi> {
                     firstName: data.data!.sender,
                     lastName: data.data!.senderType);
                 // Change load message from suprise event to the message response from the chatbot
-                _messages.insert(
-                    0,
-                    types.TextMessage(
-                        author:
-                            data.data!.sender == _author.id ? _author : _bot,
-                        id: data.data!.id,
-                        text: data.data!.content,
-                        createdAt: data.data!.createdAt));
-
+                // _messages.insert(
+                //     0,
+                //     types.TextMessage(
+                //         author:
+                //             data.data!.sender == _author.id ? _author : _bot,
+                //         id: data.data!.id,
+                //         text: data.data!.content,
+                //         createdAt: data.data!.createdAt));
+                _subscribeToMessages();
                 _typingUsers = _typingUsers
                     .where((e) => e.id != _bot.id)
                     .toList(); // remove user bot typing list
