@@ -123,6 +123,8 @@ class _ConversationChatbotAiState extends State<ConversationChatbotAi> {
   }
 
   Future conversationInit() async {
+    // delete all conversations of _au
+
     // select first conversation with the status 'active'
     // if comes empty, create a new conversation
     // update conversationId state with the id of the conversation
@@ -139,17 +141,7 @@ class _ConversationChatbotAiState extends State<ConversationChatbotAi> {
                   _subscribeToMessages()
                 }
               else
-                await createConversation().whenComplete(() {
-                  setState(() {
-                    _isLoading = false;
-                  });
-                  _subscribeToMessages();
-                }).catchError((error) {
-                  Console.log('Error: $error');
-                  setState(() {
-                    _isLoading = false;
-                  });
-                }),
+                await createConversation()
             }),
         failure: (error) => {
               Console.log('Error: $apiGetResult'),
@@ -163,13 +155,14 @@ class _ConversationChatbotAiState extends State<ConversationChatbotAi> {
     CreateConversationRequest newConversation = CreateConversationRequest(
         title: 'Chat Bot AI', descrtiption: 'Chat Bot AI Description');
     final apiResult = await AppRepository().createConversation(newConversation);
-    apiResult.when(
-        success: ((data) async => {
+    return apiResult.when(
+        success: ((data) => {
               setState(() {
                 _conversation =
                     Conversation.fromMap(data.data!.toJson()).uiRoom!;
+                _isLoading = false;
               }),
-              // createWellcomeMessage()
+              _subscribeToMessages()
             }),
         failure: ((error) => {Console.log('Error: $error')}));
   }
@@ -490,7 +483,7 @@ class _ConversationChatbotAiState extends State<ConversationChatbotAi> {
                 //         id: data.data!.id,
                 //         text: data.data!.content,
                 //         createdAt: data.data!.createdAt));
-                _subscribeToMessages();
+                // _subscribeToMessages();
                 _typingUsers = _typingUsers
                     .where((e) => e.id != _bot.id)
                     .toList(); // remove user bot typing list
