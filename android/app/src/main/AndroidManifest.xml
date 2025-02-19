@@ -56,14 +56,13 @@
         android:icon="@mipmap/ic_launcher"
         android:allowBackup="false"
         android:fullBackupOnly="false"
-        android:usesCleartextTraffic="true"
-        tools:replace="android:name">
+        android:usesCleartextTraffic="true">
         <meta-data android:name="google_analytics_automatic_screen_reporting_enabled" android:value="false" />
         <!-- android:requestLegacyExternalStorage="true" -->
         <!-- <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"
             android:resource="@drawable/icon_app" /> -->
-        <provider
+        <!-- <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.provider"
             android:exported="false"
@@ -73,7 +72,7 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/filepaths"
                 tools:replace="android:resource"/>
-        </provider>
+        </provider> -->
         <activity
             android:name=".MainActivity"
             android:exported="true"

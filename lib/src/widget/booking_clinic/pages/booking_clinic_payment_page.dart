@@ -1,11 +1,8 @@
-import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:medical/res/R.dart';
-import 'package:medical/src/utils/utils.dart';
+import 'package:medical/src/widget/booking_clinic/helper/vnpay_model.dart';
 import 'package:medical/src/widget/booking_clinic/widgets/vnpay_view_widget.dart';
 import 'package:medical/src/widget/dsmes_appointment/dsmes_appointment_cubit.dart';
-import 'package:vnpay_flutter/vnpay_flutter.dart';
 
 class BookingClinicPaymentPage extends StatefulWidget {
   final int totalPrice;
@@ -40,131 +37,50 @@ class _BookingClinicPaymentPageState extends State<BookingClinicPaymentPage> {
   Future<void> _initiatePayment() async {
     paymentUrl = VNPAYFlutter.instance.generatePaymentUrl(
       url: 'https://sandbox.vnpayment.vn/paymentv2/vpcpay.html',
-      version: '2.0.1',
+      version: '2.1.0',
       tmnCode: 'D3IIRNCX',
       txnRef: DateTime.now().millisecondsSinceEpoch.toString(),
       orderInfo: 'Payment for ${widget.serviceType} - ${widget.bookingType}',
       amount: widget.totalPrice.toDouble(),
-      returnUrl: 'https://staging.docosan.com/',
+      returnUrl: 'xxxxx',
       ipAdress: '192.168.10.10',
       vnpayHashKey: 'S6X6KJBB4IJSJLMBL6CWIAZ4HBTBNKT8',
       vnPayHashType: VNPayHashType.HMACSHA512,
-      vnpayExpireDate: DateTime.now().add(const Duration(hours: 1)),
     );
-
-    // await VNPAYFlutter.instance.show(
-    //   paymentUrl: paymentUrl,
-    //   onPaymentSuccess: (params) {
-    //     print("[VNPAY] Payment success: $params");
-    //     setState(() {
-    //       responseCode = params['vnp_ResponseCode'];
-    //     });
-    //   },
-    //   onPaymentError: (params) {
-    //     print("[VNPAY] Payment error: $params");
-    //     setState(() {
-    //       responseCode = 'Error';
-    //     });
-    //   },
-    // );
+    print('[VNPAY] Payment url: $paymentUrl');
   }
 
   @override
   Widget build(BuildContext context) {
-    final services =
-        _cubit.createDsmesBookingRequest?.paymentInfo?.services ?? [];
     return Scaffold(
-      body: Column(
-        children: [
-          Expanded(
-            child: Container(
-              padding: EdgeInsets.all(16),
-              child: Column(
-                children: [
-                  // TextButton(
-                  //   onPressed: () {
-                  //     _initiatePayment();
-                  //   },
-                  //   child: Text('Thanh toán'),
-                  // ),
-                  VNPayView(
-                    paymentUrl: paymentUrl,
-                    onPaymentSuccess: (params) {
-                      print("[VNPAY] Payment success: $params");
-                      setState(() {
-                        responseCode = params['vnp_ResponseCode'];
-                      });
-                    },
-                    onPaymentError: (params) {
-                      print("[VNPAY] Payment error: $params");
-                      setState(() {
-                        responseCode = 'Error';
-                      });
-                    },
-                  ),
-                  ...services.map((e) {
-                    final service = _cubit
-                        .selectedClinic?.serviceList.categories
-                        .expand((category) => category.data)
-                        .firstWhere((service) => service.id == e.id);
-
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 8),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Expanded(
-                            child: Text(
-                              service?.name ?? '',
-                              style: TextStyle(
-                                fontSize: 15,
-                                fontWeight: FontWeight.w400,
-                                color: R.color.color0xff636A6B,
-                              ),
-                            ),
-                          ),
-                          Text(
-                            Utils.formatMoney(service?.fromPrice ?? 0) ?? '',
-                            style: TextStyle(
-                              fontSize: 15,
-                              fontWeight: FontWeight.w400,
-                              color: R.color.color0xff111515,
-                            ),
-                          ),
-                        ],
-                      ),
-                    );
-                  }).toList(),
-                  Divider(color: R.color.color0xffE6E8EC),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 8),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          R.string.total_price.tr(),
-                          style: TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w400,
-                            color: R.color.color0xff636A6B,
-                          ),
-                        ),
-                        Text(
-                          Utils.formatMoney(widget.totalPrice) ?? '',
-                          style: TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w700,
-                            color: R.color.color0xff111515,
-                          ),
-                        ),
-                      ],
+      body: SafeArea(
+        child: Column(
+          children: [
+            Expanded(
+              child: Container(
+                child: Column(
+                  children: [
+                    VNPayView(
+                      paymentUrl: paymentUrl,
+                      onPaymentSuccess: (params) {
+                        print("[VNPAY] Payment success: $params");
+                        setState(() {
+                          responseCode = params['vnp_ResponseCode'];
+                        });
+                      },
+                      onPaymentError: (params) {
+                        print("[VNPAY] Payment error: $params");
+                        setState(() {
+                          responseCode = 'Error';
+                        });
+                      },
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
