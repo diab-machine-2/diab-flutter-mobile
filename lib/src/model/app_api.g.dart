@@ -1868,14 +1868,14 @@ class _AppApi implements AppApi {
   }
 
   @override
-  Future<ConversationResponse> createConversation(request) async {
+  Future<CreateConversationResponse> createConversation(request) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
     _data.addAll(request.toJson());
     final _result = await _dio.fetch<Map<String, dynamic>>(
-        _setStreamType<ConversationResponse>(Options(
+        _setStreamType<CreateConversationResponse>(Options(
       method: 'POST',
       headers: _headers,
       extra: _extra,
@@ -1887,7 +1887,7 @@ class _AppApi implements AppApi {
               data: _data,
             )
             .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
-    final value = ConversationResponse.fromJson(_result.data!);
+    final value = CreateConversationResponse.fromJson(_result.data!);
     return value;
   }
 

@@ -275,6 +275,29 @@ class ConversationResponse {
   }
 }
 
+class CreateConversationResponse {
+  BaseResponseMeta? meta;
+  late String data;
+
+  CreateConversationResponse({required this.meta, required this.data});
+
+  CreateConversationResponse.fromJson(Map<String, dynamic> json) {
+    meta =
+        (json['meta'] != null) ? BaseResponseMeta.fromJson(json['meta']) : null;
+    if (json['data'] != null) {
+      data = json['data'];
+    }
+  }
+  Map<String, dynamic> toJson() {
+    final map = <String, dynamic>{};
+    if (meta != null) {
+      map['meta'] = meta!.toJson();
+    }
+    map['data'] = data;
+    return map;
+  }
+}
+
 class BaseResponseMeta {
   bool? success;
 

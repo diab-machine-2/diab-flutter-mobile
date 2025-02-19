@@ -46,14 +46,12 @@ class _ConversationChatbotAiState extends State<ConversationChatbotAi> {
     id: 'ai',
     firstName: 'Chat Bot AI',
     // lastName: 'Chat Bot AI',
-    imageUrl:
-        'https://s160-ava-talk.zadn.vn/8/b/a/e/7/160/0e6d45871cf216bf78e2d435ed3ba31a.jpg',
+    imageUrl: Image.asset(R.drawable.chat_avatar_chatbot_ai).toString(),
   );
   types.Room _conversation = types.Room(
     id: '',
     type: types.RoomType.direct,
-    imageUrl:
-        'https://s160-ava-talk.zadn.vn/8/b/a/e/7/160/0e6d45871cf216bf78e2d435ed3ba31a.jpg',
+    imageUrl: Image.asset(R.drawable.chat_avatar_chatbot_ai).toString(),
     name: 'Chat Bot AI',
     users: [],
   );
@@ -123,8 +121,6 @@ class _ConversationChatbotAiState extends State<ConversationChatbotAi> {
   }
 
   Future conversationInit() async {
-    // delete all conversations of _au
-
     // select first conversation with the status 'active'
     // if comes empty, create a new conversation
     // update conversationId state with the id of the conversation
@@ -141,7 +137,7 @@ class _ConversationChatbotAiState extends State<ConversationChatbotAi> {
                   _subscribeToMessages()
                 }
               else
-                await createConversation()
+                createConversation()
             }),
         failure: (error) => {
               Console.log('Error: $apiGetResult'),
@@ -152,18 +148,24 @@ class _ConversationChatbotAiState extends State<ConversationChatbotAi> {
   }
 
   Future createConversation() async {
-    CreateConversationRequest newConversation = CreateConversationRequest(
+    var newConversation = CreateConversationRequest(
         title: 'Chat Bot AI', descrtiption: 'Chat Bot AI Description');
     final apiResult = await AppRepository().createConversation(newConversation);
-    return apiResult.when(
-        success: ((data) => {
-              setState(() {
-                _conversation =
-                    Conversation.fromMap(data.data!.toJson()).uiRoom!;
-                _isLoading = false;
-              }),
-              _subscribeToMessages()
-            }),
+    apiResult.whenOrNull(
+        success: ((data) {
+          // setState(() {
+          //   _conversation = Conversation.fromMap({
+          //     'id': data.data,
+          //     'title': newConversation.title,
+          //     'description': newConversation.descrtiption,
+          //     'status': 'active',
+          //     'created_at': DateTime.now().toIso8601String(),
+          //   }).uiRoom!;
+          //   _isLoading = false;
+          // });
+          // _subscribeToMessages();
+          return conversationInit();
+        }),
         failure: ((error) => {Console.log('Error: $error')}));
   }
   // Future createWellcomeMessage() async {
@@ -534,8 +536,7 @@ class Conversation {
         types.Room(
           id: id,
           type: types.RoomType.direct,
-          imageUrl:
-              'https://s160-ava-talk.zadn.vn/8/b/a/e/7/160/0e6d45871cf216bf78e2d435ed3ba31a.jpg',
+          imageUrl: Image.asset(R.drawable.chat_avatar_chatbot_ai).toString(),
           name: title,
           users: [],
         );
@@ -553,8 +554,7 @@ class Conversation {
       uiRoom: types.Room(
         id: map['id'],
         type: types.RoomType.direct,
-        imageUrl:
-            'https://s160-ava-talk.zadn.vn/8/b/a/e/7/160/0e6d45871cf216bf78e2d435ed3ba31a.jpg',
+        imageUrl: Image.asset(R.drawable.chat_avatar_chatbot_ai).toString(),
         name: map['title'] ?? 'Chat Bot AI',
         users: [],
       ),

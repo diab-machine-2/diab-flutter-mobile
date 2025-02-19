@@ -932,7 +932,7 @@ class AppRepository {
     }
   }
 
-  Future<ApiResult<ConversationResponse>> createConversation(
+  Future<ApiResult<CreateConversationResponse>> createConversation(
       CreateConversationRequest request) async {
     try {
       final response = await appClient.createConversation(request);

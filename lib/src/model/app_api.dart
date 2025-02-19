@@ -445,7 +445,7 @@ abstract class AppApi {
       @Path('conversationId') String conversationId);
   // Create
   @POST('/App/Chat/conversations')
-  Future<ConversationResponse> createConversation(
+  Future<CreateConversationResponse> createConversation(
     @Body() CreateConversationRequest request,
   );
   @DELETE('/App/Chat/conversations/{conversationId}')
