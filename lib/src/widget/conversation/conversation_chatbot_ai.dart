@@ -281,11 +281,20 @@ class _ConversationChatbotAiState extends State<ConversationChatbotAi> {
                             backgroundColor: Colors.blueAccent,
                           ))
                         },
-                    avatarBuilder: (author) => CircleAvatar(
-                          backgroundImage: author.imageUrl != null
-                              ? NetworkImage(author.imageUrl!)
-                              : AssetImage(R.drawable.chat_avatar_chatbot_ai)
-                                  as ImageProvider,
+                    avatarBuilder: (author) => GestureDetector(
+                          onTap: () {
+                            Navigator.pushNamed(context,
+                                NavigatorName.conversation_user_profile,
+                                arguments: {
+                                  'userId': author.id,
+                                });
+                          },
+                          child: CircleAvatar(
+                            backgroundImage: author.imageUrl != null
+                                ? NetworkImage(author.imageUrl!)
+                                : AssetImage(R.drawable.chat_avatar_chatbot_ai)
+                                    as ImageProvider,
+                          ),
                         ),
                     inputOptions: InputOptions(
                         onTextChanged: (str) => {
@@ -307,13 +316,13 @@ class _ConversationChatbotAiState extends State<ConversationChatbotAi> {
                     //   typingUsers: _typingUsers,
                     //   // typingWidgetBuilder: _typingWidgetBuilder,
                     // ),
-                    onAvatarTap: (user) => {
-                          Navigator.pushNamed(
-                              context, NavigatorName.conversation_user_profile,
-                              arguments: {
-                                'userId': user.id,
-                              })
-                        },
+                    // onAvatarTap: (user) => {
+                    //       Navigator.pushNamed(
+                    //           context, NavigatorName.conversation_user_profile,
+                    //           arguments: {
+                    //             'userId': user.id,
+                    //           })
+                    //     },
                     theme: DefaultChatTheme(
                       backgroundColor: R.color.bg_conversation_chat,
                       inputBackgroundColor: R.color.white,
