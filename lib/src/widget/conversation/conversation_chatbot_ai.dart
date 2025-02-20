@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:ffi';
 import 'dart:math';
+import 'package:bubble/bubble.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -14,10 +15,12 @@ import 'package:medical/src/model/response/chat_supabase_response.dart';
 import 'package:medical/src/model/service/api_result.dart';
 import 'package:medical/src/utils/app_log.dart';
 import 'package:medical/src/utils/navigator_name.dart';
+import 'package:readmore/readmore.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../res/R.dart';
 import '../helper/tracking_manager.dart';
+import 'custom_text_message_text.dart';
 
 // For the testing purposes, you should probably use https://pub.dev/packages/uuid.
 String randomString() {
@@ -46,12 +49,12 @@ class _ConversationChatbotAiState extends State<ConversationChatbotAi> {
     id: 'ai',
     firstName: 'Chat Bot AI',
     // lastName: 'Chat Bot AI',
-    imageUrl: Image.asset(R.drawable.chat_avatar_chatbot_ai).toString(),
+    imageUrl: R.drawable.chat_avatar_chatbot_ai,
   );
   types.Room _conversation = types.Room(
     id: '',
     type: types.RoomType.direct,
-    imageUrl: Image.asset(R.drawable.chat_avatar_chatbot_ai).toString(),
+    imageUrl: R.drawable.chat_avatar_chatbot_ai,
     name: 'Chat Bot AI',
     users: [],
   );
@@ -246,12 +249,12 @@ class _ConversationChatbotAiState extends State<ConversationChatbotAi> {
           height: double.infinity,
           child: Stack(
             children: [
-              Positioned.fill(
-                child: Image.asset(
-                  R.drawable.bg_splash,
-                  fit: BoxFit.fill,
-                ),
-              ),
+              // Positioned.fill(
+              //   child: Image.asset(
+              //     R.drawable.bg_splash,
+              //     fit: BoxFit.fill,
+              //   ),
+              // ),
               Container(
                 // set Container flex fill size
                 width: double.infinity,
@@ -263,6 +266,7 @@ class _ConversationChatbotAiState extends State<ConversationChatbotAi> {
                     messages: _messages,
                     onSendPressed: _handleSendPressed,
                     onPreviewDataFetched: _handlePreviewDataFetched,
+                    bubbleBuilder: _bubbleBuilder,
                     // l10n:
                     //     const ChatL10nEn(inputPlaceholder: 'Type a message...'),
                     onMessageDoubleTap: (context, p1) => {
@@ -276,6 +280,12 @@ class _ConversationChatbotAiState extends State<ConversationChatbotAi> {
                             backgroundColor: Colors.blueAccent,
                           ))
                         },
+                    avatarBuilder: (author) => CircleAvatar(
+                          backgroundImage: author.imageUrl != null
+                              ? NetworkImage(author.imageUrl!)
+                              : AssetImage(R.drawable.chat_avatar_chatbot_ai)
+                                  as ImageProvider,
+                        ),
                     inputOptions: InputOptions(
                         onTextChanged: (str) => {
                               if (_typingUsers
@@ -292,9 +302,10 @@ class _ConversationChatbotAiState extends State<ConversationChatbotAi> {
                     showUserAvatars: true,
                     showUserNames: false,
                     // onEndReached: _handleEndReached,
-                    typingIndicatorOptions: TypingIndicatorOptions(
-                      typingUsers: _typingUsers,
-                    ),
+                    // typingIndicatorOptions: TypingIndicatorOptions(
+                    //   typingUsers: _typingUsers,
+                    //   // typingWidgetBuilder: _typingWidgetBuilder,
+                    // ),
                     onAvatarTap: (user) => {
                           Navigator.pushNamed(
                               context, NavigatorName.conversation_user_profile,
@@ -303,7 +314,7 @@ class _ConversationChatbotAiState extends State<ConversationChatbotAi> {
                               })
                         },
                     theme: DefaultChatTheme(
-                      backgroundColor: R.color.transparent,
+                      backgroundColor: R.color.bg_conversation_chat,
                       inputBackgroundColor: R.color.white,
                       inputBorderRadius: BorderRadius.zero,
                       inputTextColor: R.color.textDark,
@@ -357,46 +368,101 @@ class _ConversationChatbotAiState extends State<ConversationChatbotAi> {
                       // ),
                     )),
               ),
-              // Positioned(
-              //   bottom: MediaQuery.of(context).viewInsets.bottom + 60 + 8,
-              //   left: 4,
-              //   child: AnimatedOpacity(
-              //     opacity: _typingUsers.where((e) => e.id == _bot.id).isNotEmpty
-              //         ? 1
-              //         : 0,
-              //     duration: const Duration(milliseconds: 500),
-              //     child: Container(
-              //       padding:
-              //           EdgeInsets.only(left: 4, right: 10, top: 3, bottom: 3),
-              //       decoration: BoxDecoration(
-              //           color: R.color.greenGradientMid,
-              //           borderRadius: BorderRadius.circular(2),
-              //           boxShadow: null),
-              //       child: Row(
-              //           crossAxisAlignment: CrossAxisAlignment.center,
-              //           mainAxisSize: MainAxisSize.min,
-              //           mainAxisAlignment: MainAxisAlignment.start,
-              //           children: [
-              //             Text('Typing',
-              //                 style: TextStyle(
-              //                     color: R.color.white,
-              //                     fontSize: 12,
-              //                     fontWeight: FontWeight.w400)),
-              //             SizedBox(width: 6),
-              //             LoadingAnimationWidget.staggeredDotsWave(
-              //               color: R.color.white,
-              //               size: 16,
-              //             )
-              //           ]),
-              //     ),
-              //   ),
-              // ),
+              Positioned(
+                bottom: MediaQuery.of(context).viewInsets.bottom + 60 + 5,
+                left: 1,
+                child: AnimatedOpacity(
+                  opacity: _typingUsers.where((e) => e.id == _bot.id).isNotEmpty
+                      ? 1
+                      : 0,
+                  duration: const Duration(milliseconds: 500),
+                  child: Container(
+                    padding:
+                        EdgeInsets.only(left: 4, right: 10, top: 3, bottom: 3),
+                    decoration: BoxDecoration(
+                        color: R.color.white,
+                        borderRadius: BorderRadius.circular(6),
+                        border: Border(
+                            top: BorderSide(
+                                color: R.color.conversation_typing_broder,
+                                width: 1),
+                            left: BorderSide(
+                                color: R.color.conversation_typing_broder,
+                                width: 1),
+                            bottom: BorderSide(
+                                color: R.color.conversation_typing_broder,
+                                width: 1),
+                            right: BorderSide(
+                                color: R.color.conversation_typing_broder,
+                                width: 1))),
+                    child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisSize: MainAxisSize.min,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          LoadingAnimationWidget.staggeredDotsWave(
+                            color: R.color.mainColor,
+                            size: 16,
+                          ),
+                          SizedBox(width: 6),
+                          Text('Đang soạn tin',
+                              style: TextStyle(
+                                  color: R.color.mainColor,
+                                  fontSize: 12,
+                                  fontFamily: 'sfpro',
+                                  fontWeight: FontWeight.w400)),
+                        ]),
+                  ),
+                ),
+              ),
             ],
           ),
         ),
       ),
     );
   }
+
+  Widget _typingWidgetBuilder(
+      {required BuildContext context,
+      required TypingIndicatorMode mode,
+      required TypingIndicator widget}) {
+    return widget;
+  }
+
+  Widget _bubbleBuilder(
+    Widget child, {
+    required types.Message message,
+    required bool nextMessageInGroup,
+  }) =>
+      Bubble(
+        padding: BubbleEdges.all(10),
+        borderColor: _author.id == message.author.id
+            ? R.color.conversation_bubble_author_broder
+            : R.color.conversation_bubble_bot_broder,
+        child: message.type != types.MessageType.text
+            ? child
+            : ReadMoreText(
+                (message as types.TextMessage).text,
+                trimMode: TrimMode.Length,
+                trimLines: 5,
+                trimLength: 240,
+                style: TextStyle(color: R.color.textDark, fontSize: 16),
+                colorClickableText: Color.fromARGB(149, 104, 46, 1),
+                trimCollapsedText: 'xem thêm',
+                trimExpandedText: 'thu gọn',
+              ),
+        color: _author.id != message.author.id ||
+                message.type == types.MessageType.image
+            ? R.color.white
+            : const Color(0xffCAFAF5),
+        nip: nextMessageInGroup
+            ? BubbleNip.no
+            : _author.id != message.author.id
+                ? BubbleNip.leftBottom
+                : BubbleNip.rightBottom,
+        margin: BubbleEdges.only(top: 10),
+        stick: true,
+      );
 
   // Future<void> _handleEndReached() async {
   // const pageSize = 20;
@@ -429,7 +495,7 @@ class _ConversationChatbotAiState extends State<ConversationChatbotAi> {
     if (_typingUsers.where((e) => e.id == _bot.id).isNotEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text('Please wait for the bot to finish typing'),
-        backgroundColor: R.color.yellowAccent,
+        backgroundColor: R.color.orangeAccent,
       ));
       return;
     }

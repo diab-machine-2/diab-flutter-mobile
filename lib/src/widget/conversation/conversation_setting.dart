@@ -107,9 +107,8 @@ class _ConversationSettingState extends State<ConversationSetting> {
                                     context: context,
                                     builder: (context) {
                                       return AlertDialog(
-                                        title: Text('Xoá lịch sử trò chuyện'),
-                                        content: Text(
-                                            'Bạn có chắc chắn muốn xoá lịch sử trò chuyện không?'),
+                                        title: Text(
+                                            'Xoá trò chuyện với trợ lý sống khoẻ DiaB'),
                                         actions: [
                                           TextButton(
                                               onPressed: () =>
@@ -120,8 +119,9 @@ class _ConversationSettingState extends State<ConversationSetting> {
                                                   _handleDeleteConversation(
                                                       arguments[
                                                           'conversationId']),
-                                              child: Text(
-                                                  'Xoá lịch sử trò chuyện')),
+                                              child: Text('Xoá trò chuyện',
+                                                  style: TextStyle(
+                                                      color: R.color.red))),
                                         ],
                                       );
                                     })
@@ -148,7 +148,8 @@ class _ConversationSettingState extends State<ConversationSetting> {
                   backgroundColor: Colors.red,
                 ),
               ),
-              Navigator.pushNamed(context, NavigatorName.tabbar)
+              Navigator.pushReplacementNamed(
+                  context, NavigatorName.conversation_chatbot_ai)
             },
         failure: (error) => {
               Console.log('Error: $error'),

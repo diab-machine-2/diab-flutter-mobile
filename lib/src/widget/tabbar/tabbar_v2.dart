@@ -143,7 +143,8 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
           'cta_button_name': 'Go to Chatbot AI',
         },
       );
-      _jumpTo(index);
+      // _jumpTo(index);
+      _lastIndex = index;
       Navigator.pushNamed(context, NavigatorName.conversation_chatbot_ai);
     } else if (index == -1) {
       // _showMaterialDialog();
