@@ -442,35 +442,35 @@ class _ConversationChatbotAiState extends State<ConversationChatbotAi> {
             : R.color.conversation_bubble_bot_broder,
         child: message.type != types.MessageType.text
             ? child
-            : Column(children: [
-                ReadMoreText((message as types.TextMessage).text,
-                    trimMode: TrimMode.Length,
-                    trimLines: 5,
-                    trimLength: 240,
-                    style: TextStyle(color: R.color.textDark, fontSize: 16),
-                    colorClickableText: Color.fromARGB(149, 104, 46, 1),
-                    trimCollapsedText: 'xem thêm',
-                    trimExpandedText: 'thu gọn'),
-                // Draw time for each group of messages
-                if (!nextMessageInGroup && _author.id != message.author.id)
-                  Container(
-                    margin: EdgeInsets.only(top: 10),
-                    alignment: _author.id == message.author.id
-                        ? Alignment.centerRight
-                        : Alignment.centerLeft,
-                    child: Text(
-                      // format time HH:mm,
-                      getStringToday(message.createdAt!).isEmpty
-                          ? convertToUTC(message.createdAt!, 'HH:mm')
-                          : getStringToday(message.createdAt!),
-                      textAlign: TextAlign.left,
-                      style: TextStyle(
-                          color: R.color.captionColorGray,
-                          fontSize: 12,
-                          fontWeight: FontWeight.w400),
-                    ),
-                  ),
-              ]),
+            : Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                    ReadMoreText((message as types.TextMessage).text,
+                        trimMode: TrimMode.Length,
+                        trimLines: 5,
+                        trimLength: 240,
+                        style: TextStyle(color: R.color.textDark, fontSize: 16),
+                        colorClickableText: Color.fromARGB(149, 104, 46, 1),
+                        trimCollapsedText: 'xem thêm',
+                        trimExpandedText: '< thu gọn'),
+                    // Draw time for each group of messages
+                    if (!nextMessageInGroup)
+                      Container(
+                        margin: EdgeInsets.only(top: 6),
+                        child: Text(
+                          // format time HH:mm,
+                          getStringToday(message.createdAt!).isEmpty
+                              ? convertToUTC(message.createdAt!, 'HH:mm')
+                              : getStringToday(message.createdAt!),
+                          textAlign: TextAlign.left,
+                          style: TextStyle(
+                              color: R.color.captionColorGray,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w400),
+                        ),
+                      ),
+                  ]),
         color: _author.id != message.author.id ||
                 message.type == types.MessageType.image
             ? R.color.white
