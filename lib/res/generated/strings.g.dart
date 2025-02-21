@@ -1254,4 +1254,6 @@ class Strings {
       'conversation_setting_delete_success';
   String get conversation_setting_delete_failed =>
       'conversation_setting_delete_failed';
+  String get conversation_message_placeholder =>
+      'conversation_message_placeholder';
 }

@@ -290,8 +290,9 @@ class _ConversationChatbotAiState extends State<ConversationChatbotAi> {
                             ),
                           ),
                         ),
-                        // l10n:
-                        //     const ChatL10nEn(inputPlaceholder: 'Type a message...'),
+                        l10n: ChatL10nEn(
+                            inputPlaceholder:
+                                R.string.conversation_message_placeholder.tr()),
                         onMessageDoubleTap: (context, p1) => {
                               // copy message to clipboard
                               Clipboard.setData(ClipboardData(

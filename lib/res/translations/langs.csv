@@ -1218,3 +1218,4 @@ conversation_setting_delete_btn_delete,"Xoá trò chuyện","Delete conversation
 conversation_setting_action_delete,"Xoá trò chuyện","Delete conversation",
 conversation_setting_delete_success,"Đã xoá trò chuyện","Conversation deleted",
 conversation_setting_delete_failed,"Xoá trò chuyện thất bại","Delete conversation failed",
+conversation_message_placeholder,"Nhập câu hỏi","Enter your question",
