@@ -583,9 +583,13 @@ class DsmesAppointmentCubit extends Cubit<DsmesAppointmentState> {
   }
 
   updateCreateDsmesBookingRequestServiceList(
-      {required List<ServiceItem> selectedServices}) {
+      {String? paymentType, required List<ServiceItem> selectedServices}) {
     createDsmesBookingRequest = createDsmesBookingRequest?.copyWith(
-        paymentInfo: PaymentInfo(services: selectedServices));
+      paymentInfo: PaymentInfo(
+        paymentType: paymentType,
+        services: selectedServices,
+      ),
+    );
   }
 
   updateCreateDsmesBookingRequest(

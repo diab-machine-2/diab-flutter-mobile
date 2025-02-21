@@ -4,6 +4,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/utils/utils.dart';
@@ -12,6 +13,7 @@ import 'package:medical/src/widget/booking_clinic/helper/booking_clinic_helper.d
 import 'package:medical/src/widget/booking_clinic/model/booking_clinic_provider_model.dart';
 import 'package:medical/src/widget/booking_clinic/pages/empty_clinic_provider_page.dart';
 import 'package:medical/src/widget/dsmes_appointment/dsmes_appointment_cubit.dart';
+import 'package:medical/src/widget/dsmes_appointment/model/dsmes_appointment_model.dart';
 import 'package:medical/src/widget/dsmes_appointment/pages/dsmes_navigation_mixin.dart';
 import 'package:medical/src/widgets/gap_widget.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
@@ -90,7 +92,8 @@ class _BookingClinicProvidersPageState
   _initData() async {
     isLoading = true;
 
-    final position = await getPositionPreferences(); //format: "lat,lng"
+    final position =
+        await AppSettings.getPositionPreferences(); //format: "lat,lng"
     String lat = '';
     String lng = '';
     if (position != null) {
@@ -260,9 +263,11 @@ class _BookingClinicProvidersPageState
         try {
           await _cubit.getClinicDetail(id: data.id);
           await _cubit.getClinicRate(id: data.id);
-          DsmesNavigationMixin.navigationKey.currentState?.pushNamed(
-              NavigatorName.dsmes_clinic_detail,
-              arguments: {'clinicId': data.id, 'bookingType': 'clinic'});
+          DsmesNavigationMixin.navigationKey.currentState
+              ?.pushNamed(NavigatorName.dsmes_clinic_detail, arguments: {
+            'clinicId': data.id,
+            'bookingType': Const.BOOKING_TYPE_CLINIC
+          });
         } finally {
           isProcessing['clinicDetail'] = false;
         }
@@ -370,6 +375,7 @@ class _BookingClinicProvidersPageState
                                 try {
                                   await _cubit.getClinicDetail(id: data.id);
                                   await _cubit.getClinicRate(id: data.id);
+
                                   DsmesNavigationMixin
                                       .navigationKey.currentState
                                       ?.pushNamed(
@@ -750,10 +756,10 @@ class _BookingClinicProvidersPageState
                       crossAxisSpacing: 12,
                       childAspectRatio: 5 / 1,
                       children: [
-                        ...Const.CLINIC_SERVICE_TYPES.map((serviceType) {
+                        ...DsmesAppointmentMode.values.map((serviceType) {
                           return _buildFilterItem(
                               getClinicServiceTypeDisplay(serviceType),
-                              serviceType,
+                              serviceType.toString(),
                               'serviceType');
                         }).toList(),
                         _buildFilterItem(R.string.all.tr(), '', 'serviceType'),
@@ -927,6 +933,11 @@ class _BookingClinicProvidersPageState
                   selectedTimeframes.clear();
                   selectedServiceTypes.clear();
                   _selectedOtherCities.clear();
+
+                  // Set default is choosing 'All'
+                  selectedTypes.add('');
+                  selectedTimeframes.add('');
+                  selectedServiceTypes.add('');
                 });
               },
               child: Container(

@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
@@ -65,11 +63,11 @@ class _BookingClinicPageState extends State<BookingClinicPage> with Observer {
   }
 
   _initDeviceLocation() async {
-    final position = await getPositionPreferences();
+    final position = await AppSettings.getPositionPreferences();
     if (position == null || position.isEmpty) {
       final geolocation = await determinePosition();
       if (geolocation != null) {
-        await saveLocationPreferences(geolocation);
+        await AppSettings.saveLocationPreferences(geolocation);
       }
     }
   }
@@ -126,8 +124,8 @@ class _BookingClinicPageState extends State<BookingClinicPage> with Observer {
                 // }
                 DsmesNavigationMixin.navigationKey.currentState
                     ?.popUntil((route) => route.isFirst);
-                Observable.instance.notifyObservers([],
-                    notifyName: "refresh_dsmes_appointment");
+                Observable.instance
+                    .notifyObservers([], notifyName: "refresh_booking_clinic");
                 return false;
               }
 
@@ -523,7 +521,7 @@ class _BookingClinicPageState extends State<BookingClinicPage> with Observer {
                                 arguments: {
                                   'serviceType': appointment?.mode,
                                   'appointment': appointment,
-                                  'bookingType': 'clinic',
+                                  'bookingType': Const.BOOKING_TYPE_CLINIC,
                                 },
                               );
                             } finally {
@@ -599,7 +597,7 @@ class _BookingClinicPageState extends State<BookingClinicPage> with Observer {
                       left: 0,
                       right: 0,
                       child: Container(
-                        height: 80,
+                        height: 111,
                         padding: EdgeInsets.fromLTRB(12, 16, 8, 0),
                         decoration: BoxDecoration(
                           gradient: LinearGradient(
@@ -607,9 +605,9 @@ class _BookingClinicPageState extends State<BookingClinicPage> with Observer {
                             end: Alignment.bottomCenter,
                             colors: [
                               R.color.color0xffFAF0D2,
-                              R.color.color0xffFAF0D2.withOpacity(0.8),
-                              R.color.color0xffFAF0D2.withOpacity(0.5),
+                              R.color.color0xffFAF0D2.withOpacity(0),
                             ],
+                            stops: [0.0, 1],
                           ),
                         ),
                         child: Row(

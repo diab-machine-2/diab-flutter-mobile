@@ -141,7 +141,8 @@ class _DsmesAppointmentHistoryPageState
                             },
                             onLoading: () async {
                               await _cubit.getDsmesAppointmentList(
-                                  page: _cubit.currentPage + 1);
+                                  page: _cubit.currentPage + 1,
+                                  showLoading: false);
                               _refreshController.loadComplete();
                               setState(() {});
                             },

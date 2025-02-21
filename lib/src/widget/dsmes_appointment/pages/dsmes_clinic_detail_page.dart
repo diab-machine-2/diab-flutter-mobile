@@ -12,6 +12,7 @@ import 'package:medical/src/widget/dsmes_appointment/model/dsmes_appointment_mod
 import 'package:medical/src/widget/dsmes_appointment/model/dsmes_clinic_model.dart';
 import 'package:medical/src/widget/dsmes_appointment/pages/dsmes_navigation_mixin.dart';
 import 'package:medical/src/widget/dsmes_appointment/widgets/dsmes_appointment_item.dart';
+import 'package:medical/src/widget/dsmes_appointment/widgets/dsmes_empty_widget.dart';
 import 'package:medical/src/widgets/gap_widget.dart';
 
 class DsmesClinicDetailPage extends StatefulWidget {
@@ -89,7 +90,16 @@ class _DsmesClinicDetailPageState extends State<DsmesClinicDetailPage> {
                   padding: const EdgeInsets.symmetric(vertical: 16.0),
                   child: Column(
                     children: [
-                      _buildClinicItem(_cubit.selectedClinic!),
+                      _cubit.selectedClinic != null
+                          ? _buildClinicItem(_cubit.selectedClinic!)
+                          : Center(
+                              child: DsmesEmptyWidget(
+                                imagePath: R.drawable.bg_empty_clinic,
+                                title: R.string.not_exist_clinic.tr(),
+                                titleColor: R.color.color0xff636A6B,
+                                subtitle: "",
+                              ),
+                            ),
                       GapH(24),
                     ],
                   ),
@@ -98,14 +108,15 @@ class _DsmesClinicDetailPageState extends State<DsmesClinicDetailPage> {
             ),
           ],
         ),
-        Positioned(
-          bottom: 0,
-          left: 0,
-          right: 0,
-          child: widget.bookingType == Const.BOOKING_TYPE_CENTER
-              ? _buildAppointmentActionButtons()
-              : _buildBookingClinicActionButtons(),
-        ),
+        if (_cubit.selectedClinic != null)
+          Positioned(
+            bottom: 0,
+            left: 0,
+            right: 0,
+            child: widget.bookingType == Const.BOOKING_TYPE_CENTER
+                ? _buildAppointmentActionButtons()
+                : _buildBookingClinicActionButtons(),
+          ),
       ],
     );
   }

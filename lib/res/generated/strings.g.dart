@@ -1256,4 +1256,9 @@ class Strings {
   String get selected_service => 'selected_service';
   String get estimated_cost => 'estimated_cost';
   String get service_type => 'service_type';
+  String get payment_success => 'payment_success';
+  String get payment_failed => 'payment_failed';
+  String get payment_success_content => 'payment_success_content';
+  String get repayment => 'repayment';
+  String get not_exist_clinic => 'not_exist_clinic';
 }

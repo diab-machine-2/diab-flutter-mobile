@@ -82,8 +82,13 @@ class _DsmesBookingDetailState extends State<DsmesBookingDetail> {
         FocusScope.of(context).unfocus();
         DsmesNavigationMixin.navigationKey.currentState
             ?.popUntil((route) => route.isFirst);
-        Observable.instance
-            .notifyObservers([], notifyName: "refresh_dsmes_appointment");
+        if (widget.bookingType == Const.BOOKING_TYPE_CENTER) {
+          Observable.instance
+              .notifyObservers([], notifyName: "refresh_dsmes_appointment");
+        } else {
+          Observable.instance
+              .notifyObservers([], notifyName: "refresh_booking_clinic");
+        }
         return false;
       },
       child: Scaffold(
@@ -146,16 +151,17 @@ class _DsmesBookingDetailState extends State<DsmesBookingDetail> {
                           color: R.color.ho_so_color,
                           fit: BoxFit.scaleDown,
                         ),
-                        SizedBox(
-                          width: 4,
-                        ),
-                        Text(
-                          R.string.contact.tr(),
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontFamily: 'sfpro',
-                            fontWeight: FontWeight.w700,
-                            color: R.color.ho_so_color,
+                        GapW(4),
+                        Expanded(
+                          child: Text(
+                            R.string.contact.tr(),
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontFamily: 'sfpro',
+                              fontWeight: FontWeight.w700,
+                              color: R.color.ho_so_color,
+                            ),
                           ),
                         ),
                       ],
@@ -185,8 +191,14 @@ class _DsmesBookingDetailState extends State<DsmesBookingDetail> {
 
                   DsmesNavigationMixin.navigationKey.currentState
                       ?.popUntil((route) => route.isFirst);
-                  Observable.instance.notifyObservers([],
-                      notifyName: "refresh_dsmes_appointment");
+
+                  if (widget.bookingType == Const.BOOKING_TYPE_CENTER) {
+                    Observable.instance.notifyObservers([],
+                        notifyName: "refresh_dsmes_appointment");
+                  } else {
+                    Observable.instance.notifyObservers([],
+                        notifyName: "refresh_booking_clinic");
+                  }
                   return;
                 },
               ),
@@ -205,7 +217,9 @@ class _DsmesBookingDetailState extends State<DsmesBookingDetail> {
                         GapH(12),
                       if (widget.serviceType ==
                           DsmesAppointmentMode.telemedicine.toString())
-                        _buildSelectedServiceInformation(),
+                        widget.bookingType == Const.BOOKING_TYPE_CENTER
+                            ? _buildSelectedServiceInformation()
+                            : _buildBookingClinicSelectedServicesInformation(),
                       if (widget.appointment.symptom.isNotEmpty) GapH(12),
                       if (widget.appointment.symptom.isNotEmpty ||
                           widget.appointment.symptomAttachment.isNotEmpty)
@@ -613,6 +627,104 @@ class _DsmesBookingDetailState extends State<DsmesBookingDetail> {
     );
   }
 
+  _buildBookingClinicSelectedServicesInformation() {
+    if (widget.appointment.services.isEmpty) return SizedBox.shrink();
+
+    int totalPrice = 0;
+
+    return Container(
+      padding: EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+      decoration: BoxDecoration(
+        color: R.color.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          Utils.getBoxShadowDropCard(),
+        ],
+      ),
+      child: Container(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  R.string.service_type.tr(),
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w700,
+                    color: R.color.color0xff141416,
+                  ),
+                ),
+              ],
+            ),
+            GapH(12),
+            ...widget.appointment.services.map((e) {
+              final service = _cubit.selectedClinic?.serviceList.categories
+                  .expand((category) => category.data)
+                  .firstWhere((service) => service.id == e.id);
+
+              totalPrice += service?.fromPrice ?? 0;
+
+              return Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: Text(
+                        service?.name ?? '',
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w400,
+                          color: R.color.color0xff636A6B,
+                        ),
+                      ),
+                    ),
+                    Text(
+                      Utils.formatMoney(totalPrice) ?? '',
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w400,
+                        color: R.color.color0xff111515,
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }).toList(),
+            Divider(color: R.color.color0xffE6E8EC),
+            Padding(
+              padding: const EdgeInsets.only(top: 8),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    R.string.total_price.tr(),
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w400,
+                      color: R.color.color0xff636A6B,
+                    ),
+                  ),
+                  Text(
+                    Utils.formatMoney(totalPrice) ?? '',
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w700,
+                      color: R.color.color0xff111515,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   _buildNoticeSymptom() {
     return Container(
       padding: EdgeInsets.symmetric(vertical: 16, horizontal: 12),
@@ -732,8 +844,13 @@ class _DsmesBookingDetailState extends State<DsmesBookingDetail> {
                   DsmesNavigationMixin.navigationKey.currentState
                       ?.popUntil((route) => route.isFirst);
 
-                  Observable.instance.notifyObservers([],
-                      notifyName: "refresh_dsmes_appointment");
+                  if (widget.bookingType == Const.BOOKING_TYPE_CENTER) {
+                    Observable.instance.notifyObservers([],
+                        notifyName: "refresh_dsmes_appointment");
+                  } else {
+                    Observable.instance.notifyObservers([],
+                        notifyName: "refresh_booking_clinic");
+                  }
                 },
               );
             },
@@ -920,22 +1037,34 @@ class _DsmesBookingDetailState extends State<DsmesBookingDetail> {
                 DsmesNavigationMixin.navigationKey.currentState
                     ?.popUntil((route) => route.isFirst);
 
-                // Then push to select date
-                if (widget.appointment.mode ==
-                    DsmesAppointmentMode.atClinic.toString()) {
-                  await DsmesNavigationMixin.navigationKey.currentState
-                      ?.pushNamed(NavigatorName.dsmes_booking_select_date,
-                          arguments: {
-                        'serviceType': widget.appointment.mode,
-                        'action': 'create',
-                      });
+                // Handle rebooking for booking dsmes center
+                if (widget.bookingType == Const.BOOKING_TYPE_CENTER) {
+                  // Then push to select date
+                  if (widget.appointment.mode ==
+                      DsmesAppointmentMode.atClinic.toString()) {
+                    await DsmesNavigationMixin.navigationKey.currentState
+                        ?.pushNamed(NavigatorName.dsmes_booking_select_date,
+                            arguments: {
+                          'serviceType': widget.appointment.mode,
+                          'action': 'create',
+                        });
+                  } else {
+                    DsmesNavigationMixin.navigationKey.currentState?.pushNamed(
+                        NavigatorName.dsmes_select_service,
+                        arguments: {
+                          'action': 'create',
+                          'clinic': _cubit.selectedClinic,
+                          'serviceType': widget.appointment.mode,
+                        });
+                  }
                 } else {
+                  // Handle rebooking for booking clinic
                   DsmesNavigationMixin.navigationKey.currentState?.pushNamed(
-                      NavigatorName.dsmes_select_service,
+                      NavigatorName.dsmes_booking_select_date,
                       arguments: {
-                        'action': 'create',
-                        'clinic': _cubit.selectedClinic,
                         'serviceType': widget.appointment.mode,
+                        'action': 'create',
+                        'bookingType': widget.bookingType,
                       });
                 }
               },

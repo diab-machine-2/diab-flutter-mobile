@@ -220,21 +220,42 @@ class _DsmesConfirmCreateInformationState
                   setState(() => isProcessing['confirmBooking'] = true);
 
                   try {
-                    if (widget.serviceType ==
+                    // Check if it's telemedicine clinic booking
+                    bool isTelemedicineClinic = widget.serviceType ==
                             DsmesAppointmentMode.telemedicine.toString() &&
-                        widget.bookingType == Const.BOOKING_TYPE_CLINIC) {
-                      // Handle navigate to payment screen
-                      final services = _cubit
-                          .createDsmesBookingRequest!.paymentInfo!.services;
-                      int totalPrice = 0;
-                      for (var e in services) {
-                        final service = _cubit
-                            .selectedClinic?.serviceList.categories
-                            .expand((category) => category.data)
-                            .firstWhere((service) => service.id == e.id);
-                        totalPrice += service?.fromPrice ?? 0;
+                        widget.bookingType == Const.BOOKING_TYPE_CLINIC;
+
+                    // Handle reschedule case
+                    if (widget.action == 'reschedule' &&
+                        widget.appointmentId != null) {
+                      _handleRescheduleBooking();
+                      return;
+                    }
+
+                    // Handle telemedicine clinic booking
+                    if (isTelemedicineClinic) {
+                      final phoneNumber = AppSettings.userInfo?.phoneNumber ??
+                          phoneController.text;
+
+                      final token = await AppSettings.getDocosanToken();
+                      if (token.isEmpty) {
+                        await _cubit.registerDocosanUser(
+                            phoneNumber: phoneNumber);
+                        await AppSettings.clearOrganizationApiKey();
                       }
 
+                      // Update symptom and attachments
+                      final data =
+                          _sectionAddSymptomKey.currentState?.getNote();
+                      _cubit.updateCreateDsmesBookingRequestSymptom(
+                          symptom: data?.note ?? '');
+                      _cubit.updateCreateDsmesBookingRequestSymptomAttachments(
+                          symptomAttachments: data?.fileNetworkName ?? []);
+
+                      // Calculate total price
+                      int totalPrice = _calculateTotalPrice();
+
+                      // Navigate to payment
                       DsmesNavigationMixin.navigationKey.currentState
                           ?.pushNamed(
                         NavigatorName.clinic_payment,
@@ -244,25 +265,23 @@ class _DsmesConfirmCreateInformationState
                           'bookingType': widget.bookingType,
                         },
                       );
-                    } else {
-                      if (widget.action == 'reschedule' &&
-                          widget.appointmentId != null) {
-                        _handleRescheduleBooking();
-                      }
-
-                      if (widget.action == 'create' ||
-                          widget.action == 'edit') {
-                        final phoneNumber = AppSettings.userInfo?.phoneNumber ??
-                            phoneController.text;
-
-                        if (phoneNumber.isEmpty) {
-                          await _showDialogUpdatePhone();
-                          return;
-                        }
-
-                        _handleCreateBooking();
-                      }
+                      return;
                     }
+
+                    // Handle create/edit case
+                    if (widget.action == 'create' || widget.action == 'edit') {
+                      final phoneNumber = AppSettings.userInfo?.phoneNumber ??
+                          phoneController.text;
+
+                      if (phoneNumber.isEmpty) {
+                        await _showDialogUpdatePhone();
+                        return;
+                      }
+
+                      _handleCreateBooking();
+                    }
+
+                    // Helper method to calculate total price
                   } finally {
                     setState(() => isProcessing['confirmBooking'] = false);
                   }
@@ -273,6 +292,18 @@ class _DsmesConfirmCreateInformationState
         ),
       ],
     );
+  }
+
+  int _calculateTotalPrice() {
+    final services = _cubit.createDsmesBookingRequest!.paymentInfo!.services;
+    int totalPrice = 0;
+    for (var e in services) {
+      final service = _cubit.selectedClinic?.serviceList.categories
+          .expand((category) => category.data)
+          .firstWhere((service) => service.id == e.id);
+      totalPrice += service?.fromPrice ?? 0;
+    }
+    return totalPrice;
   }
 
   _handleCreateBooking() async {

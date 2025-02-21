@@ -19,6 +19,7 @@ class VNPayView extends StatefulWidget {
 
 class VNPayViewState extends State<VNPayView> {
   late InAppWebViewController webViewController;
+  bool isPaymentHandled = false;
 
   @override
   Widget build(BuildContext context) {
@@ -35,6 +36,7 @@ class VNPayViewState extends State<VNPayView> {
             allowUniversalAccessFromFileURLs: true,
             // Enable external app launching
             javaScriptCanOpenWindowsAutomatically: true,
+            transparentBackground: true,
           ),
           shouldOverrideUrlLoading: (controller, navigationAction) async {
             final url = navigationAction.request.url.toString();
@@ -103,14 +105,16 @@ class VNPayViewState extends State<VNPayView> {
             webViewController = controller;
           },
           onLoadStop: (controller, url) {
-            if (url.toString().contains('vnp_ResponseCode')) {
+            if (url.toString().contains('vnp_ResponseCode') &&
+                !isPaymentHandled) {
               final params = Uri.parse(url.toString()).queryParameters;
               if (params['vnp_ResponseCode'] == '00') {
+                isPaymentHandled = true;
                 widget.onPaymentSuccess?.call(params);
               } else {
                 widget.onPaymentError?.call(params);
               }
-              Navigator.of(context).pop();
+              // Navigator.of(context).pop();
             }
           },
         ),

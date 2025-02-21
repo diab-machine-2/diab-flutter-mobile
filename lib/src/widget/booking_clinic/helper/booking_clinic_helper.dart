@@ -2,6 +2,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:medical/src/widget/dsmes_appointment/model/dsmes_appointment_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 const locations = [
@@ -169,11 +170,11 @@ String getClinicTimeframeDisplay(String value) {
   }
 }
 
-String getClinicServiceTypeDisplay(String value) {
+String getClinicServiceTypeDisplay(DsmesAppointmentMode value) {
   switch (value) {
-    case Const.CLINIC_SERVICE_TYPE_ONLINE:
+    case DsmesAppointmentMode.telemedicine:
       return R.string.kham_tu_xa.tr();
-    case Const.CLINIC_SERVICE_TYPE_OFFLINE:
+    case DsmesAppointmentMode.atClinic:
       return R.string.kham_tai_phong_kham.tr();
     default:
       return '';
@@ -217,18 +218,4 @@ Future<Position> determinePosition() async {
   return await Geolocator.getCurrentPosition();
 }
 
-Future<void> saveLocationPreferences(Position position) async {
-  final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
-  final SharedPreferences prefs = await _prefs;
-  try {
-    prefs.setString('position', "${position.latitude},${position.longitude}");
-  } catch (error) {}
-}
 
-Future<String?> getPositionPreferences() async {
-  final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
-  final SharedPreferences prefs = await _prefs;
-  final position = prefs.getString('position');
-
-  return position;
-}
