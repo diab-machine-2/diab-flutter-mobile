@@ -40,6 +40,7 @@ import 'package:medical/src/widget/calendar/calendar_booking_page.dart';
 import 'package:medical/src/widget/calendar/calendar_page.dart';
 import 'package:medical/src/widget/calendar/interview_success.dart';
 import 'package:medical/src/widget/conversation/conversation_chatbot_ai.dart';
+import 'package:medical/src/widget/conversation/conversation_comon.dart';
 import 'package:medical/src/widget/conversation/conversation_setting.dart';
 import 'package:medical/src/widget/conversation/conversation_user_profile.dart';
 import 'package:medical/src/widget/dsmes_appointment/dsmes_appointment_page.dart';
@@ -677,7 +678,13 @@ class App extends StatelessWidget {
                   case NavigatorName.conversation_user_profile:
                     return _buildRoute(settings, ConversationUserProfile());
                   case NavigatorName.conversation_setting:
-                    return _buildRoute(settings, ConversationSetting());
+                    final conversation = Conversation.fromMap(
+                        settings.arguments as Map<String, dynamic>);
+                    return _buildRoute(
+                        settings,
+                        ConversationSetting(
+                          conversation: conversation,
+                        ));
                   default:
                     return null;
                 }

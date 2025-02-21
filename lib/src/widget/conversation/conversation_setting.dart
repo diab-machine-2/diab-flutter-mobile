@@ -1,14 +1,20 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/utils/app_log.dart';
 import 'package:medical/src/utils/navigator_name.dart';
+import 'package:medical/src/widget/conversation/conversation_comon.dart'
+    as itypes;
 
 import '../../../res/R.dart';
 import '../../app_setting/app_setting.dart';
+import '../helper/show_message.dart';
 import '../helper/tracking_manager.dart';
 
 class ConversationSetting extends StatefulWidget {
-  const ConversationSetting({Key? key}) : super(key: key);
+  final itypes.Conversation conversation;
+  const ConversationSetting({Key? key, required this.conversation})
+      : super(key: key);
 
   @override
   _ConversationSettingState createState() => _ConversationSettingState();
@@ -30,7 +36,6 @@ class _ConversationSettingState extends State<ConversationSetting> {
 
   @override
   Widget build(BuildContext context) {
-    final arguments = (ModalRoute.of(context)!.settings.arguments ?? {}) as Map;
     return GestureDetector(
         onTap: () {
           FocusScope.of(context).requestFocus(FocusNode());
@@ -49,7 +54,7 @@ class _ConversationSettingState extends State<ConversationSetting> {
               title: Align(
                 alignment: Alignment.topLeft,
                 child: Text(
-                  'Tuỳ chọn trò chuyện',
+                  R.string.conversation_setting_title.tr(),
                   style: TextStyle(
                       color: R.color.white,
                       fontSize: 18,
@@ -84,7 +89,7 @@ class _ConversationSettingState extends State<ConversationSetting> {
                           ),
                           SizedBox(height: 10),
                           Text(
-                            'Hỏi đáp sống khoẻ',
+                            widget.conversation.title,
                             style: TextStyle(
                                 fontSize: 20,
                                 fontWeight: FontWeight.bold,
@@ -107,19 +112,24 @@ class _ConversationSettingState extends State<ConversationSetting> {
                                     context: context,
                                     builder: (context) {
                                       return AlertDialog(
-                                        title: Text(
-                                            'Xoá trò chuyện với trợ lý sống khoẻ DiaB'),
+                                        title: Text(R.string
+                                            .conversation_setting_delete_title
+                                            .tr()),
                                         actions: [
                                           TextButton(
                                               onPressed: () =>
                                                   Navigator.pop(context),
-                                              child: Text('Hủy')),
+                                              child: Text(R.string
+                                                  .conversation_setting_delete_btn_cancel
+                                                  .tr())),
                                           TextButton(
                                               onPressed: () =>
                                                   _handleDeleteConversation(
-                                                      arguments[
-                                                          'conversationId']),
-                                              child: Text('Xoá trò chuyện',
+                                                      widget.conversation.id),
+                                              child: Text(
+                                                  R.string
+                                                      .conversation_setting_delete_btn_delete
+                                                      .tr(),
                                                   style: TextStyle(
                                                       color: R.color.red))),
                                         ],
@@ -127,7 +137,9 @@ class _ConversationSettingState extends State<ConversationSetting> {
                                     })
                               },
                           child: ListTile(
-                            title: Text('Xoá lịch sử trò chuyện',
+                            title: Text(
+                                R.string.conversation_setting_action_delete
+                                    .tr(),
                                 style: TextStyle(color: R.color.red)),
                             leading: Icon(Icons.delete, color: R.color.red),
                           )))
@@ -140,14 +152,9 @@ class _ConversationSettingState extends State<ConversationSetting> {
     final apiResult = await AppRepository().deleteConversation(conversationId);
     apiResult.when(
         success: (data) => {
-              Console.log('Success: $data'),
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  padding: EdgeInsets.all(8),
-                  content: Text('Xoá lịch sử trò chuyện thành công!'),
-                  backgroundColor: Colors.red,
-                ),
-              ),
+              // Console.log('Success: $data'),
+              Message.showToastMessage(
+                  context, R.string.conversation_setting_delete_success.tr()),
               Navigator.pushReplacementNamed(
                   context, NavigatorName.conversation_chatbot_ai)
             },

@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:ffi';
 import 'dart:math';
 import 'package:bubble/bubble.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -15,13 +14,14 @@ import 'package:medical/src/model/response/chat_supabase_response.dart';
 import 'package:medical/src/model/service/api_result.dart';
 import 'package:medical/src/utils/app_log.dart';
 import 'package:medical/src/utils/navigator_name.dart';
+import 'package:medical/src/widget/conversation/conversation_comon.dart'
+    as itypes;
 import 'package:readmore/readmore.dart';
-import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../res/R.dart';
 import '../helper/helper.dart';
 import '../helper/tracking_manager.dart';
-import 'custom_text_message_text.dart';
+import '../helper/show_message.dart' as appMessage;
 
 // For the testing purposes, you should probably use https://pub.dev/packages/uuid.
 String randomString() {
@@ -60,7 +60,7 @@ class _ConversationChatbotAiState extends State<ConversationChatbotAi> {
     users: [],
   );
   List<types.User> _typingUsers = [];
-  bool _isLoading = false;
+  bool _isLoading = true;
   final TextEditingController _messageController = TextEditingController();
   StreamSubscription<List<Map<String, dynamic>>>? _messageSubscription;
 
@@ -98,7 +98,7 @@ class _ConversationChatbotAiState extends State<ConversationChatbotAi> {
   void _subscribeToMessages() {
     if (_conversation.id.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text('Conversation ID is empty'),
+        content: Text(R.string.conversation_alert_id_is_empty.tr()),
         backgroundColor: Colors.red,
       ));
     }
@@ -110,13 +110,20 @@ class _ConversationChatbotAiState extends State<ConversationChatbotAi> {
         .order('created_at', ascending: false)
         .listen(
           (data) {
-            final messages =
-                data.map((msg) => Message.fromMap(msg).uiMessage!).toList();
+            final messages = data
+                .map((msg) => itypes.Message.fromMap(msg).uiMessage!)
+                .toList();
 
-            setState(() => _messages = messages);
+            setState(() {
+              _messages = messages;
+              _isLoading = false;
+            });
           },
           onError: (error) {
             debugPrint('Error in message subscription: $error');
+            setState(() {
+              _isLoading = false;
+            });
           },
           onDone: () {
             debugPrint('Message subscription done');
@@ -135,8 +142,8 @@ class _ConversationChatbotAiState extends State<ConversationChatbotAi> {
                 {
                   setState(() {
                     _conversation =
-                        Conversation.fromMap(data.data!.first.toJson()).uiRoom!;
-                    _isLoading = false;
+                        itypes.Conversation.fromMap(data.data!.first.toJson())
+                            .uiRoom!;
                   }),
                   _subscribeToMessages()
                 }
@@ -153,7 +160,8 @@ class _ConversationChatbotAiState extends State<ConversationChatbotAi> {
 
   Future createConversation() async {
     var newConversation = CreateConversationRequest(
-        title: 'Chat Bot AI', descrtiption: 'Chat Bot AI Description');
+        title: R.string.conversation_chatbot_ai_title.tr(),
+        descrtiption: R.string.conversation_mockup_description.tr());
     final apiResult = await AppRepository().createConversation(newConversation);
     apiResult.whenOrNull(
         success: ((data) {
@@ -227,9 +235,7 @@ class _ConversationChatbotAiState extends State<ConversationChatbotAi> {
                   color: R.color.white, size: 24),
               onPressed: () {
                 Navigator.pushNamed(context, NavigatorName.conversation_setting,
-                    arguments: {
-                      'conversationId': _conversation.id,
-                    });
+                    arguments: _conversation.metadata);
               },
             ),
           ],
@@ -262,121 +268,146 @@ class _ConversationChatbotAiState extends State<ConversationChatbotAi> {
                 height: MediaQuery.of(context).size.height -
                     MediaQuery.of(context).padding.bottom,
                 // set Background color for the chatbot
-                child: Chat(
-                    key: _chatKey,
-                    messages: _messages,
-                    onSendPressed: _handleSendPressed,
-                    onPreviewDataFetched: _handlePreviewDataFetched,
-                    bubbleBuilder: _bubbleBuilder,
-                    // l10n:
-                    //     const ChatL10nEn(inputPlaceholder: 'Type a message...'),
-                    onMessageDoubleTap: (context, p1) => {
-                          // copy message to clipboard
-                          Clipboard.setData(ClipboardData(
-                              text: p1 is types.TextMessage ? p1.text : p1.id)),
-                          // show message copied by snackbar
-                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                            padding: EdgeInsets.all(8),
-                            content: Text('Copied to clipboard'),
-                            backgroundColor: Colors.blueAccent,
-                          ))
-                        },
-                    avatarBuilder: (author) => GestureDetector(
-                          onTap: () {
-                            Navigator.pushNamed(context,
-                                NavigatorName.conversation_user_profile,
-                                arguments: {
-                                  'userId': author.id,
-                                });
-                          },
-                          child: CircleAvatar(
-                            backgroundImage: author.imageUrl != null
-                                ? NetworkImage(author.imageUrl!)
-                                : AssetImage(R.drawable.chat_avatar_chatbot_ai)
-                                    as ImageProvider,
+                child: _isLoading
+                    ? Center(
+                        child: LoadingAnimationWidget.staggeredDotsWave(
+                        color: R.color.mainColor,
+                        size: 24,
+                      ))
+                    : Chat(
+                        key: _chatKey,
+                        messages: _messages,
+                        onSendPressed: _handleSendPressed,
+                        onPreviewDataFetched: _handlePreviewDataFetched,
+                        bubbleBuilder: _bubbleBuilder,
+                        emptyState: Center(
+                          child: Text(
+                            'No messages here yet',
+                            style: TextStyle(
+                              color: R.color.textDark,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w400,
+                            ),
                           ),
                         ),
-                    inputOptions: InputOptions(
-                        onTextChanged: (str) => {
-                              if (_typingUsers
-                                  .where((e) => e.id == _author.id)
-                                  .isEmpty)
-                                {
-                                  setState(() {
-                                    _typingUsers = [..._typingUsers, _author];
-                                  })
-                                }
+                        // l10n:
+                        //     const ChatL10nEn(inputPlaceholder: 'Type a message...'),
+                        onMessageDoubleTap: (context, p1) => {
+                              // copy message to clipboard
+                              Clipboard.setData(ClipboardData(
+                                  text: p1 is types.TextMessage
+                                      ? p1.text
+                                      : p1.id)),
+                              // show message copied by snackbar
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(SnackBar(
+                                padding: EdgeInsets.all(8),
+                                content: Text(
+                                    R.string.conversation_message_copied.tr()),
+                                backgroundColor: Colors.blueAccent,
+                              ))
                             },
-                        textEditingController: _messageController),
-                    user: _author,
-                    showUserAvatars: true,
-                    showUserNames: false,
-                    // onEndReached: _handleEndReached,
-                    // typingIndicatorOptions: TypingIndicatorOptions(
-                    //   typingUsers: _typingUsers,
-                    //   // typingWidgetBuilder: _typingWidgetBuilder,
-                    // ),
-                    // onAvatarTap: (user) => {
-                    //       Navigator.pushNamed(
-                    //           context, NavigatorName.conversation_user_profile,
-                    //           arguments: {
-                    //             'userId': user.id,
-                    //           })
-                    //     },
-                    theme: DefaultChatTheme(
-                      backgroundColor: R.color.bg_conversation_chat,
-                      inputBackgroundColor: R.color.white,
-                      inputBorderRadius: BorderRadius.zero,
-                      inputTextColor: R.color.textDark,
-                      inputContainerDecoration: BoxDecoration(
-                        color: R.color.white,
-                        boxShadow: [
-                          BoxShadow(
-                            color: R.color.black.withOpacity(0.1),
-                            blurRadius: 10,
-                            offset: Offset(0, 5),
+                        avatarBuilder: (author) => GestureDetector(
+                              onTap: () {
+                                Navigator.pushNamed(context,
+                                    NavigatorName.conversation_user_profile,
+                                    arguments: {
+                                      'userId': author.id,
+                                    });
+                              },
+                              child: CircleAvatar(
+                                backgroundImage: author.imageUrl != null
+                                    ? NetworkImage(author.imageUrl!)
+                                    : AssetImage(
+                                            R.drawable.chat_avatar_chatbot_ai)
+                                        as ImageProvider,
+                              ),
+                            ),
+                        inputOptions: InputOptions(
+                            onTextChanged: (str) => {
+                                  if (_typingUsers
+                                      .where((e) => e.id == _author.id)
+                                      .isEmpty)
+                                    {
+                                      setState(() {
+                                        _typingUsers = [
+                                          ..._typingUsers,
+                                          _author
+                                        ];
+                                      })
+                                    }
+                                },
+                            textEditingController: _messageController),
+                        user: _author,
+                        showUserAvatars: true,
+                        showUserNames: false,
+                        // onEndReached: _handleEndReached,
+                        // typingIndicatorOptions: TypingIndicatorOptions(
+                        //   typingUsers: _typingUsers,
+                        //   // typingWidgetBuilder: _typingWidgetBuilder,
+                        // ),
+                        // onAvatarTap: (user) => {
+                        //       Navigator.pushNamed(
+                        //           context, NavigatorName.conversation_user_profile,
+                        //           arguments: {
+                        //             'userId': user.id,
+                        //           })
+                        //     },
+                        theme: DefaultChatTheme(
+                          backgroundColor: R.color.bg_conversation_chat,
+                          inputBackgroundColor: R.color.white,
+                          inputBorderRadius: BorderRadius.zero,
+                          inputTextColor: R.color.textDark,
+                          inputContainerDecoration: BoxDecoration(
+                            color: R.color.white,
+                            boxShadow: [
+                              BoxShadow(
+                                color: R.color.black.withOpacity(0.1),
+                                blurRadius: 10,
+                                offset: Offset(0, 5),
+                              ),
+                            ],
                           ),
-                        ],
-                      ),
-                      primaryColor: Color.fromRGBO(202, 250, 245, 1),
-                      sentMessageBodyTextStyle: TextStyle(
-                        color: R.color.textDark,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                        height: 1.5,
-                      ),
-                      sentMessageLinkDescriptionTextStyle: TextStyle(
-                        color: R.color.captionColorGray,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w200,
-                        height: 1.2,
-                      ),
-                      sentMessageLinkTitleTextStyle: TextStyle(
-                        color: R.color.textDark,
-                        fontSize: 15,
-                        fontWeight: FontWeight.w400,
-                        height: 1.4,
-                      ),
-                      typingIndicatorTheme: TypingIndicatorTheme(
-                        animatedCirclesColor: neutral1,
-                        animatedCircleSize: 5.0,
-                        bubbleBorder: BorderRadius.all(Radius.circular(27.0)),
-                        bubbleColor: neutral7,
-                        countAvatarColor: primary,
-                        countTextColor: secondary,
-                        multipleUserTextStyle: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w500,
-                          color: neutral2,
-                        ),
-                      ),
-                      // sentMessageBodyLinkTextStyle: TextStyle(
-                      //   color: R.color.red,
-                      //   fontSize: 16,
-                      //   fontWeight: FontWeight.w500,
-                      //   height: 1.5,
-                      // ),
-                    )),
+                          primaryColor: Color.fromRGBO(202, 250, 245, 1),
+                          sentMessageBodyTextStyle: TextStyle(
+                            color: R.color.textDark,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
+                            height: 1.5,
+                          ),
+                          sentMessageLinkDescriptionTextStyle: TextStyle(
+                            color: R.color.captionColorGray,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w200,
+                            height: 1.2,
+                          ),
+                          sentMessageLinkTitleTextStyle: TextStyle(
+                            color: R.color.textDark,
+                            fontSize: 15,
+                            fontWeight: FontWeight.w400,
+                            height: 1.4,
+                          ),
+                          typingIndicatorTheme: TypingIndicatorTheme(
+                            animatedCirclesColor: neutral1,
+                            animatedCircleSize: 5.0,
+                            bubbleBorder:
+                                BorderRadius.all(Radius.circular(27.0)),
+                            bubbleColor: neutral7,
+                            countAvatarColor: primary,
+                            countTextColor: secondary,
+                            multipleUserTextStyle: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w500,
+                              color: neutral2,
+                            ),
+                          ),
+                          // sentMessageBodyLinkTextStyle: TextStyle(
+                          //   color: R.color.red,
+                          //   fontSize: 16,
+                          //   fontWeight: FontWeight.w500,
+                          //   height: 1.5,
+                          // ),
+                        )),
               ),
               Positioned(
                 bottom: MediaQuery.of(context).viewInsets.bottom + 60 + 5,
@@ -415,7 +446,7 @@ class _ConversationChatbotAiState extends State<ConversationChatbotAi> {
                             size: 16,
                           ),
                           SizedBox(width: 6),
-                          Text('Đang soạn tin',
+                          Text(R.string.conversation_typing.tr(),
                               style: TextStyle(
                                   color: R.color.mainColor,
                                   fontSize: 12,
@@ -461,8 +492,10 @@ class _ConversationChatbotAiState extends State<ConversationChatbotAi> {
                         trimLength: 240,
                         style: TextStyle(color: R.color.textDark, fontSize: 16),
                         colorClickableText: Color.fromARGB(149, 104, 46, 1),
-                        trimCollapsedText: 'xem thêm',
-                        trimExpandedText: '< thu gọn'),
+                        trimCollapsedText:
+                            R.string.conversation_message_read_more.tr(),
+                        trimExpandedText:
+                            R.string.conversation_message_read_less.tr()),
                     // Draw time for each group of messages
                     if (!nextMessageInGroup)
                       Container(
@@ -525,7 +558,8 @@ class _ConversationChatbotAiState extends State<ConversationChatbotAi> {
   void _handleSendPressed(types.PartialText _message) async {
     if (_typingUsers.where((e) => e.id == _bot.id).isNotEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text('Please wait for the bot to finish typing'),
+        //'Please wait for the bot to finish typing'
+        content: Text(R.string.conversation_pls_wait_bot_finish_typing.tr()),
         backgroundColor: R.color.orangeAccent,
       ));
       return;
@@ -610,106 +644,5 @@ class _ConversationChatbotAiState extends State<ConversationChatbotAi> {
     setState(() {
       _messages[index] = updatedMessage;
     });
-  }
-}
-
-class Conversation {
-  final String id;
-  final String title;
-  final String? description;
-  final String status;
-  final DateTime createdAt;
-  types.Room? uiRoom;
-
-  Conversation({
-    required this.id,
-    required this.title,
-    this.description,
-    required this.status,
-    required this.createdAt,
-    this.uiRoom,
-  }) {
-    uiRoom = this.uiRoom ??
-        types.Room(
-          id: id,
-          type: types.RoomType.direct,
-          imageUrl: Image.asset(R.drawable.chat_avatar_chatbot_ai).toString(),
-          name: title,
-          users: [],
-        );
-  }
-
-  factory Conversation.fromMap(Map<String, dynamic> map) {
-    return Conversation(
-      id: map['id'],
-      title: map['title'] ?? 'Chat Bot AI',
-      description: map['description'] ?? 'Chat Bot AI Description',
-      status: map['status'] ?? 'active',
-      createdAt: map['created_at'] != null
-          ? DateTime.parse(map['created_at'])
-          : DateTime.now(),
-      uiRoom: types.Room(
-        id: map['id'],
-        type: types.RoomType.direct,
-        imageUrl: Image.asset(R.drawable.chat_avatar_chatbot_ai).toString(),
-        name: map['title'] ?? 'Chat Bot AI',
-        users: [],
-      ),
-    );
-  }
-}
-
-class Message {
-  final String id;
-  final String conversationId;
-  final String content;
-  final String sender;
-  final String senderType;
-  final DateTime createdAt;
-  final Map<String, dynamic>? metadata;
-  types.Message? uiMessage;
-
-  Message({
-    required this.id,
-    required this.conversationId,
-    required this.content,
-    required this.sender,
-    required this.senderType,
-    required this.createdAt,
-    this.uiMessage,
-    this.metadata,
-  }) {
-    uiMessage = this.uiMessage ??
-        types.TextMessage(
-          id: id,
-          author: types.User(id: sender),
-          text: content,
-        );
-  }
-
-  factory Message.fromMap(Map<String, dynamic> map) {
-    return Message(
-        id: map['id'],
-        conversationId: map['conversation_id'] ?? '',
-        content: map['content'] ?? '',
-        sender: map['sender'] ?? '',
-        senderType: map['sender_type'] ?? '',
-        createdAt: map['created_at'] != null
-            ? DateTime.parse(map['created_at'])
-            : DateTime.now(),
-        metadata: map['metadata'],
-        uiMessage: types.TextMessage(
-          id: map['id'],
-          author: types.User(
-              id: map['sender'] ?? '',
-              lastName: map['sender'] ?? '',
-              firstName: map['sender']),
-          text: map['content'] ?? '',
-          createdAt: map['created_at'] != null
-              ? DateTime.parse(map['created_at']).millisecondsSinceEpoch
-              : DateTime.now().millisecondsSinceEpoch,
-          roomId: map['conversation_id'],
-          metadata: map,
-        ));
   }
 }
