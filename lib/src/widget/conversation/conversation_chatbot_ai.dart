@@ -13,6 +13,7 @@ import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/response/chat_supabase_response.dart';
 import 'package:medical/src/model/service/api_result.dart';
 import 'package:medical/src/utils/app_log.dart';
+import 'package:medical/src/utils/extention.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/conversation/conversation_comon.dart'
     as itypes;
@@ -37,7 +38,8 @@ class ConversationChatbotAi extends StatefulWidget {
   _ConversationChatbotAiState createState() => _ConversationChatbotAiState();
 }
 
-class _ConversationChatbotAiState extends State<ConversationChatbotAi> {
+class _ConversationChatbotAiState extends State<ConversationChatbotAi>
+    with WidgetsBindingObserver {
   final GlobalKey<ChatState> _chatKey = GlobalKey();
   late List<types.Message> _messages = [];
   types.User _author = types.User(
@@ -61,12 +63,14 @@ class _ConversationChatbotAiState extends State<ConversationChatbotAi> {
   );
   List<types.User> _typingUsers = [];
   bool _isLoading = true;
+  bool _isKeyboardVisible = false;
   final TextEditingController _messageController = TextEditingController();
   StreamSubscription<List<Map<String, dynamic>>>? _messageSubscription;
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _conversation = _conversation.copyWith(
         users: [
       _author,
@@ -74,6 +78,13 @@ class _ConversationChatbotAiState extends State<ConversationChatbotAi> {
     ].toList());
     firebaseSetup();
     subpabaseInit();
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    _messageSubscription?.cancel();
+    super.dispose();
   }
 
   Future subpabaseInit() async {
@@ -93,6 +104,23 @@ class _ConversationChatbotAiState extends State<ConversationChatbotAi> {
               await conversationInit(),
             }),
         failure: ((error) => {Console.log('Error: $error')}));
+  }
+
+  @override
+  void didChangeMetrics() {
+    final bottomInset = WidgetsBinding.instance.window.viewInsets.bottom;
+    final newValue = bottomInset > 0.0;
+    if (newValue != _isKeyboardVisible) {
+      setState(() {
+        _isKeyboardVisible = newValue;
+      });
+      if (!newValue &&
+          _typingUsers.where((e) => e.id == _author.id).isNotEmpty) {
+        setState(() {
+          _typingUsers = _typingUsers.where((e) => e.id != _author.id).toList();
+        });
+      }
+    }
   }
 
   void _subscribeToMessages() {
@@ -309,21 +337,20 @@ class _ConversationChatbotAiState extends State<ConversationChatbotAi> {
                               ))
                             },
                         avatarBuilder: (author) => GestureDetector(
-                              onTap: () {
-                                Navigator.pushNamed(context,
-                                    NavigatorName.conversation_user_profile,
-                                    arguments: {
-                                      'userId': author.id,
-                                    });
-                              },
-                              child: CircleAvatar(
-                                backgroundImage: author.imageUrl != null
-                                    ? NetworkImage(author.imageUrl!)
-                                    : AssetImage(
-                                            R.drawable.chat_avatar_chatbot_ai)
-                                        as ImageProvider,
-                              ),
-                            ),
+                            onTap: () {
+                              Navigator.pushNamed(context,
+                                  NavigatorName.conversation_user_profile,
+                                  arguments: {
+                                    'userId': author.id,
+                                  });
+                            },
+                            child: CircleAvatar(
+                              backgroundImage: author.imageUrl != null
+                                  ? NetworkImage(author.imageUrl!)
+                                  : AssetImage(
+                                          R.drawable.chat_avatar_chatbot_ai)
+                                      as ImageProvider,
+                            )),
                         inputOptions: InputOptions(
                             onTextChanged: (str) => {
                                   if (_typingUsers
@@ -475,59 +502,63 @@ class _ConversationChatbotAiState extends State<ConversationChatbotAi> {
     Widget child, {
     required types.Message message,
     required bool nextMessageInGroup,
-  }) =>
-      Bubble(
-        padding: BubbleEdges.all(10),
-        borderColor: _author.id == message.author.id
-            ? R.color.conversation_bubble_author_broder
-            : R.color.conversation_bubble_bot_broder,
-        child: message.type != types.MessageType.text
-            ? child
-            : Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                    ReadMoreText((message as types.TextMessage).text,
-                        trimMode: TrimMode.Length,
-                        trimLines: 5,
-                        trimLength: 240,
-                        style: TextStyle(color: R.color.textDark, fontSize: 16),
-                        colorClickableText: Color.fromARGB(149, 104, 46, 1),
-                        trimCollapsedText:
-                            R.string.conversation_message_read_more.tr(),
-                        trimExpandedText:
-                            R.string.conversation_message_read_less.tr()),
-                    // Draw time for each group of messages
-                    if (!nextMessageInGroup)
-                      Container(
-                        margin: EdgeInsets.only(top: 6),
-                        child: Text(
-                          // format time HH:mm,
-                          getStringToday(message.createdAt!).isEmpty
-                              ? convertToUTC(message.createdAt!, 'HH:mm')
-                              : getStringToday(message.createdAt!),
-                          textAlign: TextAlign.left,
-                          style: TextStyle(
-                              color: R.color.captionColorGray,
-                              fontSize: 12,
-                              fontWeight: FontWeight.w400),
-                        ),
+  }) {
+    DateTime dateTime =
+        DateTime.fromMillisecondsSinceEpoch(message.createdAt ?? 0);
+    String formattedDateTime = dateTime.isSameDayWith(DateTime.now())
+        ? DateFormat('HH:mm').format(dateTime)
+        : DateFormat('HH:mm - dd/MM/yyyy').format(dateTime);
+    return Bubble(
+      padding: BubbleEdges.all(10),
+      borderColor: _author.id == message.author.id
+          ? R.color.conversation_bubble_author_broder
+          : R.color.conversation_bubble_bot_broder,
+      child: message.type != types.MessageType.text
+          ? child
+          : Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                  ReadMoreText((message as types.TextMessage).text,
+                      trimMode: TrimMode.Length,
+                      trimLines: 5,
+                      trimLength: 240,
+                      style: TextStyle(color: R.color.textDark, fontSize: 16),
+                      colorClickableText: Color.fromARGB(149, 104, 46, 1),
+                      trimCollapsedText:
+                          R.string.conversation_message_read_more.tr(),
+                      trimExpandedText:
+                          R.string.conversation_message_read_less.tr()),
+                  // Draw time for each group of messages
+                  if (!nextMessageInGroup)
+                    Container(
+                      margin: EdgeInsets.only(top: 6),
+                      child: Text(
+                        // format time HH:mm,
+                        formattedDateTime,
+                        textAlign: TextAlign.left,
+                        style: TextStyle(
+                            color: R.color.captionColorGray,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w400),
                       ),
-                  ]),
-        color: _author.id != message.author.id ||
-                message.type == types.MessageType.image
-            ? R.color.white
-            : const Color(0xffCAFAF5),
-        nip: nextMessageInGroup
-            ? BubbleNip.no
-            : _author.id != message.author.id
-                ? BubbleNip.leftBottom
-                : BubbleNip.rightBottom,
-        margin: nextMessageInGroup
-            ? const BubbleEdges.symmetric(horizontal: 6)
-            : null,
-        stick: true,
-      );
+                    ),
+                ]),
+      color: _author.id != message.author.id ||
+              message.type == types.MessageType.image
+          ? R.color.white
+          : const Color(0xffCAFAF5),
+      nip: nextMessageInGroup
+          ? BubbleNip.no
+          : _author.id != message.author.id
+              ? BubbleNip.leftBottom
+              : BubbleNip.rightBottom,
+      margin: nextMessageInGroup
+          ? const BubbleEdges.symmetric(horizontal: 6)
+          : null,
+      stick: true,
+    );
+  }
 
   // Future<void> _handleEndReached() async {
   // const pageSize = 20;

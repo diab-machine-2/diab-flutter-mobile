@@ -98,8 +98,7 @@ class _ConversationSettingState extends State<ConversationSetting> {
                         ]),
                   )),
               SizedBox(height: 16),
-              ListView(
-                shrinkWrap: true,
+              Column(
                 children: [
                   Container(
                       decoration: BoxDecoration(color: R.color.white),
