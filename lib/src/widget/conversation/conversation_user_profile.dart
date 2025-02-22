@@ -62,8 +62,31 @@ class _ConversationUserProfileState extends State<ConversationUserProfile> {
                 right: 0,
                 child: Image.asset(
                   R.drawable.chat_banner_family,
-                  width: double.infinity,
+                  height: MediaQuery.of(context).size.height * 0.3,
                   fit: BoxFit.cover,
+                  alignment: Alignment.center,
+                ),
+              ),
+              Positioned(
+                top: MediaQuery.of(context).size.height * 0.2,
+                left: 0,
+                right: 0,
+                child: Column(
+                  children: [
+                    Image.asset(
+                      R.drawable.chat_avatar_chatbot_ai_2,
+                      width: 120,
+                      fit: BoxFit.cover,
+                    ),
+                    SizedBox(height: 10),
+                    Text(
+                      title,
+                      style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          fontFamily: 'sfpro'),
+                    ),
+                  ],
                 ),
               ),
               SingleChildScrollView(
@@ -73,20 +96,7 @@ class _ConversationUserProfileState extends State<ConversationUserProfile> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       SizedBox(
-                          height: MediaQuery.of(context).size.height * 0.20),
-                      Image.asset(
-                        R.drawable.chat_avatar_chatbot_ai_2,
-                        width: 120,
-                        fit: BoxFit.cover,
-                      ),
-                      SizedBox(height: 10),
-                      Text(
-                        title,
-                        style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                            fontFamily: 'sfpro'),
-                      ),
+                          height: MediaQuery.of(context).size.height * 0.38),
                       SizedBox(height: 16),
                       _buildInfoCard(introductionTitle, introductionPoints,
                           R.drawable.chat_ic_edu),
