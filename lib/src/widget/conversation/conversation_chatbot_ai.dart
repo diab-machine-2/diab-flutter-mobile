@@ -592,9 +592,13 @@ class _ConversationChatbotAiState extends State<ConversationChatbotAi>
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         //'Please wait for the bot to finish typing'
         content: Text(R.string.conversation_pls_wait_bot_finish_typing.tr()),
-        backgroundColor: R.color.orangeAccent,
+        backgroundColor: R.color.deepOrange,
       ));
       return;
+    } else {
+      setState(() {
+        _typingUsers = [_bot];
+      });
     }
     var message = types.TextMessage(
       author: _author,
@@ -617,7 +621,6 @@ class _ConversationChatbotAiState extends State<ConversationChatbotAi>
     final updatedMessage = message.copyWith(id: dbMessage['id'] as String);
     setState(() {
       _messages.insert(0, updatedMessage);
-      _typingUsers = _typingUsers.where((e) => e.id != _author.id).toList();
     });
 
     return _handleBotResponse(updatedMessage);
