@@ -512,7 +512,8 @@ class _ConversationChatbotAiState extends State<ConversationChatbotAi>
     required bool nextMessageInGroup,
   }) {
     DateTime dateTime =
-        DateTime.fromMillisecondsSinceEpoch(message.createdAt ?? 0);
+        DateTime.fromMillisecondsSinceEpoch(message.createdAt ?? 0, isUtc: true)
+            .toLocal();
     String formattedDateTime = dateTime.isSameDayWith(DateTime.now())
         ? DateFormat('HH:mm').format(dateTime)
         : DateFormat('HH:mm - dd/MM/yyyy').format(dateTime);

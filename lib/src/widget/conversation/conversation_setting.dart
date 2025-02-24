@@ -1,5 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/utils/app_log.dart';
 import 'package:medical/src/utils/navigator_name.dart';
@@ -21,6 +22,8 @@ class ConversationSetting extends StatefulWidget {
 }
 
 class _ConversationSettingState extends State<ConversationSetting> {
+  bool _isLoadingDelete = false;
+
   @override
   void initState() {
     super.initState();
@@ -136,15 +139,30 @@ class _ConversationSettingState extends State<ConversationSetting> {
                                               onPressed: () =>
                                                   _handleDeleteConversation(
                                                       widget.conversation.id),
-                                              child: Text(
-                                                  R.string
-                                                      .conversation_setting_delete_btn_delete
-                                                      .tr(),
-                                                  style: TextStyle(
-                                                      color: R.color.red,
-                                                      fontSize: 16,
-                                                      fontWeight:
-                                                          FontWeight.bold))),
+                                              child: Container(
+                                                width: 130,
+                                                child: Row(
+                                                  children: [
+                                                    (_isLoadingDelete)
+                                                        ? SpinKitCircle(
+                                                            color: R.color.red,
+                                                            size: 16,
+                                                          )
+                                                        : Container(),
+                                                    SizedBox(width: 2),
+                                                    Text(
+                                                      R.string
+                                                          .conversation_setting_delete_btn_delete
+                                                          .tr(),
+                                                      style: TextStyle(
+                                                          color: R.color.red,
+                                                          fontSize: 16,
+                                                          fontWeight:
+                                                              FontWeight.bold),
+                                                    ),
+                                                  ],
+                                                ),
+                                              )),
                                         ],
                                       );
                                     })
@@ -162,16 +180,26 @@ class _ConversationSettingState extends State<ConversationSetting> {
   }
 
   void _handleDeleteConversation(conversationId) async {
+    if (_isLoadingDelete) return;
+    setState(() {
+      _isLoadingDelete = true;
+    });
     final apiResult = await AppRepository().deleteConversation(conversationId);
     apiResult.when(
         success: (data) => {
               // Console.log('Success: $data'),
+              setState(() {
+                _isLoadingDelete = false;
+              }),
               Message.showToastMessage(
                   context, R.string.conversation_setting_delete_success.tr()),
               Navigator.pushReplacementNamed(
                   context, NavigatorName.conversation_chatbot_ai)
             },
         failure: (error) => {
+              setState(() {
+                _isLoadingDelete = false;
+              }),
               Console.log('Error: $error'),
             });
   }
