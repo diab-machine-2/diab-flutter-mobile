@@ -111,6 +111,10 @@ class _ConversationSettingState extends State<ConversationSetting> {
                                     context: context,
                                     builder: (context) {
                                       return AlertDialog(
+                                        titleTextStyle: TextStyle(
+                                            color: R.color.black,
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.bold),
                                         title: Text(R.string
                                             .conversation_setting_delete_title
                                             .tr()),
@@ -118,9 +122,16 @@ class _ConversationSettingState extends State<ConversationSetting> {
                                           TextButton(
                                               onPressed: () =>
                                                   Navigator.pop(context),
-                                              child: Text(R.string
-                                                  .conversation_setting_delete_btn_cancel
-                                                  .tr())),
+                                              child: Text(
+                                                R.string
+                                                    .conversation_setting_delete_btn_cancel
+                                                    .tr(),
+                                                style: TextStyle(
+                                                    color: R.color.textDark,
+                                                    fontSize: 16,
+                                                    fontWeight:
+                                                        FontWeight.bold),
+                                              )),
                                           TextButton(
                                               onPressed: () =>
                                                   _handleDeleteConversation(
@@ -130,7 +141,10 @@ class _ConversationSettingState extends State<ConversationSetting> {
                                                       .conversation_setting_delete_btn_delete
                                                       .tr(),
                                                   style: TextStyle(
-                                                      color: R.color.red))),
+                                                      color: R.color.red,
+                                                      fontSize: 16,
+                                                      fontWeight:
+                                                          FontWeight.bold))),
                                         ],
                                       );
                                     })
