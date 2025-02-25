@@ -59,18 +59,9 @@ class _BookingClinicPageState extends State<BookingClinicPage> with Observer {
     _cubit = DsmesAppointmentCubit(repository);
     // _cubit.getDsmesAppointmentList();
     _cubit.initDsmesBooking();
-    _initDeviceLocation();
   }
 
-  _initDeviceLocation() async {
-    final position = await AppSettings.getPositionPreferences();
-    if (position == null || position.isEmpty) {
-      final geolocation = await determinePosition();
-      if (geolocation != null) {
-        await AppSettings.saveLocationPreferences(geolocation);
-      }
-    }
-  }
+  
 
   @override
   void dispose() {
@@ -571,6 +562,8 @@ class _BookingClinicPageState extends State<BookingClinicPage> with Observer {
                   });
                 } else {
                   _cubit.clearClinicProviders();
+                  final position = await AppSettings.getPositionPreferences();
+                  print('POSITION: $position');
                   DsmesNavigationMixin.navigationKey.currentState
                       ?.pushNamed(NavigatorName.clinic_providers, arguments: {
                     "specialtyId": specialty.id,

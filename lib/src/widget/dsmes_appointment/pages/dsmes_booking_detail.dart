@@ -682,12 +682,15 @@ class _DsmesBookingDetailState extends State<DsmesBookingDetail> {
                         ),
                       ),
                     ),
-                    Text(
-                      Utils.formatMoney(totalPrice) ?? '',
-                      style: TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w400,
-                        color: R.color.color0xff111515,
+                    Container(
+                      margin: EdgeInsets.only(left: 8),
+                      child: Text(
+                        Utils.formatMoney(totalPrice) ?? '',
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w400,
+                          color: R.color.color0xff111515,
+                        ),
                       ),
                     ),
                   ],

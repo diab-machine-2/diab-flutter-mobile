@@ -26,6 +26,7 @@ import 'package:medical/src/model/service/api_result.dart';
 import 'package:medical/src/model/service/network_exceptions.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/utils.dart';
+import 'package:medical/src/widget/booking_clinic/helper/booking_clinic_helper.dart';
 import 'package:medical/src/widget/booking_clinic/model/booking_clinic_provider_model.dart';
 import 'package:medical/src/widget/booking_clinic/model/clinic_specialty_model.dart';
 import 'package:medical/src/widget/dsmes_appointment/model/dsmes_appointment_model.dart';
@@ -69,9 +70,22 @@ class DsmesAppointmentCubit extends Cubit<DsmesAppointmentState> {
       }
       await registerDocosanUser(
           phoneNumber: Utils.formatPhoneNumber(phoneNumber));
+
+      await _initDeviceLocation();
+
       await getDsmesAppointmentList();
     }
     emit(DsmesAppointmentLoaded());
+  }
+
+  Future<void> _initDeviceLocation() async {
+    final position = await AppSettings.getPositionPreferences();
+    if (position == null || position.isEmpty) {
+      final geolocation = await determinePosition();
+      if (geolocation != null) {
+        await AppSettings.saveLocationPreferences(geolocation);
+      }
+    }
   }
 
   Future<bool> isExistDocosanUser() async {
@@ -362,9 +376,11 @@ class DsmesAppointmentCubit extends Cubit<DsmesAppointmentState> {
         await appRepository.searchListBookingClinic(request: request);
 
     apiResult.when(success: (SearchListClinicResponse response) {
-      clinicProviderCurrentPage = response.attr.currentPage;
-      clinicProviderHasMore =
-          response.attr.currentPage < response.attr.totalPage;
+      final totalPage = response.attr.totalPage ?? 0;
+      final currentPage = response.attr.currentPage ?? 0;
+
+      clinicProviderCurrentPage = currentPage;
+      clinicProviderHasMore = currentPage < totalPage;
 
       final providers = response.data.providers;
 

@@ -1232,4 +1232,5 @@ payment_success,"Thanh toán thành công","Payment success",
 payment_failed,"Thanh toán thất bại","Payment failed",
 payment_success_content,Bạn đã thanh toán số tiền {price} \nvào lúc {time} ngày {date}","You have paid {price} at {time} on {date}",
 repayment,"Thanh toán lại","Repayment",
-not_exist_clinic,"Không tìm thấy trung tâm","No clinic found"
+not_exist_clinic,"Không tìm thấy trung tâm","No clinic found",
+payment_unavailable_warning,"Hệ thống thanh toán tạm thời không khả dụng. Vui lòng thử lại sau.","Payment configuration is invalid. Please try again later."

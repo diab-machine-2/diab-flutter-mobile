@@ -1261,4 +1261,5 @@ class Strings {
   String get payment_success_content => 'payment_success_content';
   String get repayment => 'repayment';
   String get not_exist_clinic => 'not_exist_clinic';
+  String get payment_unavailable_warning => 'payment_unavailable_warning';
 }

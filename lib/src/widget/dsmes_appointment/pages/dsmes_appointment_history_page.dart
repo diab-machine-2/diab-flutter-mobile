@@ -136,6 +136,8 @@ class _DsmesAppointmentHistoryPageState
                             onRefresh: () async {
                               await _cubit.getDsmesAppointmentList(
                                   isRefresh: true, page: 1, showLoading: false);
+                              sortedMyAppointments =
+                                  _cubit.getSortedAppointments();
                               _refreshController.refreshCompleted();
                               setState(() {});
                             },
@@ -143,6 +145,8 @@ class _DsmesAppointmentHistoryPageState
                               await _cubit.getDsmesAppointmentList(
                                   page: _cubit.currentPage + 1,
                                   showLoading: false);
+                              sortedMyAppointments =
+                                  _cubit.getSortedAppointments();
                               _refreshController.loadComplete();
                               setState(() {});
                             },
@@ -165,8 +169,8 @@ class _DsmesAppointmentHistoryPageState
                                           !isPast);
                                 }).toList();
 
-                                final doneAppointments =
-                                    sortedMyAppointments.where((appointment) {
+                                final doneAppointments = sortedMyAppointments
+                                    .where((appointment) {
                                   final endDateTime =
                                       DateFormat('yyyy-MM-dd HH:mm:ss')
                                           .parse(appointment.endTime);
@@ -177,7 +181,13 @@ class _DsmesAppointmentHistoryPageState
                                       (appointment.status ==
                                               DSMES_STATUS_APPROVE &&
                                           isPast);
-                                }).toList();
+                                }).toList()
+                                  ..sort((a, b) =>
+                                      DateFormat('yyyy-MM-dd HH:mm:ss')
+                                          .parse(b.startTime)
+                                          .compareTo(
+                                              DateFormat('yyyy-MM-dd HH:mm:ss')
+                                                  .parse(a.startTime)));
 
                                 // Manage expansion state
                                 final isExpanded = ValueNotifier<bool>(true);

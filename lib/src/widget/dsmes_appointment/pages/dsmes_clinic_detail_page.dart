@@ -276,11 +276,13 @@ class _DsmesClinicDetailPageState extends State<DsmesClinicDetailPage> {
                 children: [
                   Row(
                     children: [
-                      Text(
-                        goodAtList.first.name,
-                        style: TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w700,
+                      Flexible(
+                        child: Text(
+                          goodAtList.first.name,
+                          style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w700,
+                          ),
                         ),
                       ),
                     ],
@@ -669,16 +671,17 @@ class _DsmesClinicDetailPageState extends State<DsmesClinicDetailPage> {
                 if (isProcessing['clinicBooking']!) return;
                 isProcessing['clinicBooking'] = true;
                 try {
-                  // await _cubit.getClinicDetail(id: widget.clinicId);
-                  // if (_cubit.selectedClinic == null) return;
-                  // _cubit.initCreateDsmesBookingRequest(
-                  //     locale: context.locale.languageCode);
-                  // await DsmesNavigationMixin.navigationKey.currentState
-                  //     ?.pushNamed(NavigatorName.dsmes_booking_select_date,
-                  //         arguments: {
-                  //       'serviceType': DsmesAppointmentMode.atClinic.toString(),
-                  //       'action': 'create',
-                  //     });
+                  await _cubit.getClinicDetail(id: widget.clinicId);
+                  if (_cubit.selectedClinic == null) return;
+                  _cubit.initCreateDsmesBookingRequest(
+                      locale: context.locale.languageCode);
+                  await DsmesNavigationMixin.navigationKey.currentState
+                      ?.pushNamed(NavigatorName.dsmes_booking_select_date,
+                          arguments: {
+                        // 'serviceType': widget.serviceType,
+                        'action': 'create',
+                        'bookingType': Const.BOOKING_TYPE_CLINIC,
+                      });
                 } finally {
                   isProcessing['clinicBooking'] = false;
                 }

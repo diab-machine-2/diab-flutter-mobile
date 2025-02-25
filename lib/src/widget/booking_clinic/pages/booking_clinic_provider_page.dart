@@ -90,37 +90,45 @@ class _BookingClinicProvidersPageState
   }
 
   _initData() async {
-    isLoading = true;
+    try {
+      isLoading = true;
+      final position = await AppSettings.getPositionPreferences();
 
-    final position =
-        await AppSettings.getPositionPreferences(); //format: "lat,lng"
-    String lat = '';
-    String lng = '';
-    if (position != null) {
-      final split = position.split(',');
-      lat = split[0];
-      lng = split[1];
-    }
-    _cubit.initSearchBookingClinicListRequest(
-      page: 1,
-      specialtyId: widget.specialtyId.toString(),
-      lat: lat,
-      lng: lng,
-    );
+      String lat = '';
+      String lng = '';
 
-    final request = _cubit.searchBookingClinicListRequest;
-    if (request == null) {
+      if (position != null && position.isNotEmpty) {
+        final split = position.split(',');
+        if (split.length == 2) {
+          lat = split[0];
+          lng = split[1];
+        }
+      }
+
+      _cubit.initSearchBookingClinicListRequest(
+        page: 1,
+        specialtyId: widget.specialtyId.toString(),
+        lat: lat,
+        lng: lng,
+      );
+
+      final request = _cubit.searchBookingClinicListRequest;
+      if (request == null) {
+        setState(() {
+          isLoading = false;
+        });
+        return;
+      }
+
+      await _cubit.searchBookingClinicList(
+          request: request, isRefresh: true, showLoading: true);
+    } catch (e) {
+      // Log error if needed
+    } finally {
       setState(() {
         isLoading = false;
       });
-      return;
     }
-
-    await _cubit.searchBookingClinicList(
-        request: request, isRefresh: true, showLoading: true);
-    setState(() {
-      isLoading = false;
-    });
   }
 
   @override
@@ -196,7 +204,7 @@ class _BookingClinicProvidersPageState
           ),
         ),
         _buildHeaderWidget(),
-        GapH(16),
+        GapH(12),
         Expanded(
           child: isLoading
               ? Container()
@@ -518,34 +526,37 @@ class _BookingClinicProvidersPageState
                 ),
               ),
               SizedBox(width: 24),
-              GestureDetector(
-                onTap: () {
-                  setState(() {
-                    _selectedIndex = 1;
-                  });
-                },
-                child: Column(
-                  children: [
-                    Text(
-                      R.string.da_kham.tr(),
-                      style: TextStyle(
+              Visibility(
+                visible: false, // TODO: Handle hiển thị phòng khám đã khám
+                child: GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      _selectedIndex = 1;
+                    });
+                  },
+                  child: Column(
+                    children: [
+                      Text(
+                        R.string.da_kham.tr(),
+                        style: TextStyle(
+                          color: _selectedIndex == 1
+                              ? R.color.greenGradientBottom
+                              : R.color.color0xff111515,
+                          fontSize: 15,
+                          fontWeight: _selectedIndex == 1
+                              ? FontWeight.w700
+                              : FontWeight.w400,
+                        ),
+                      ),
+                      Container(
+                        height: 3,
+                        width: 60,
                         color: _selectedIndex == 1
                             ? R.color.greenGradientBottom
-                            : R.color.color0xff111515,
-                        fontSize: 15,
-                        fontWeight: _selectedIndex == 1
-                            ? FontWeight.w700
-                            : FontWeight.w400,
+                            : R.color.transparent,
                       ),
-                    ),
-                    Container(
-                      height: 3,
-                      width: 60,
-                      color: _selectedIndex == 1
-                          ? R.color.greenGradientBottom
-                          : R.color.transparent,
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ],

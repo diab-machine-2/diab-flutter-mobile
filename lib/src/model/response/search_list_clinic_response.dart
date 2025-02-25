@@ -36,20 +36,20 @@ class BookingClinicData {
 
 class Attr {
   final int total;
-  final int totalPage;
-  final int currentPage;
+  final int? totalPage;
+  final int? currentPage;
 
   Attr({
     required this.total,
-    required this.totalPage,
-    required this.currentPage,
+     this.totalPage,
+     this.currentPage,
   });
 
   factory Attr.fromJson(Map<String, dynamic> json) {
     return Attr(
       total: json['total'],
-      totalPage: json['total_page'],
-      currentPage: json['current_page'],
+      totalPage: json['total_page'] ?? 0,
+      currentPage: json['current_page'] ?? 0,
     );
   }
 }

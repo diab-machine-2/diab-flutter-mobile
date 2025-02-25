@@ -1,9 +1,12 @@
+import 'dart:convert';
+
+import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
-import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
+import 'package:medical/src/app_setting/firebase_remote_config.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/booking_clinic/model/vnpay_model.dart';
@@ -51,20 +54,64 @@ class _BookingClinicPaymentPageState extends State<BookingClinicPaymentPage> {
     _initiatePayment();
   }
 
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
   Future<void> _initiatePayment() async {
     final ipAddress = await _getPublicIpAddress();
     final accountId = AppSettings.userInfo?.accountId ?? '';
+    // Get VNPAY config and validate
+    final vnpayIntegratedInfo =
+        FirebaseRemoteSetting.instance.vnpayIntegratedInfo ?? '';
+    if (vnpayIntegratedInfo.isEmpty) {
+      setState(() {
+        isLoading = false;
+      });
+
+      BotToast.showCustomText(
+        toastBuilder: (_) => Container(
+          // width: MediaQuery.of(context).size.width * 0.8,
+          padding: EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+          decoration: BoxDecoration(
+            color: R.color.color0xff111515.withOpacity(0.7),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Text(
+            R.string.payment_unavailable_warning.tr(),
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: R.color.white,
+              fontSize: 15,
+              fontWeight: FontWeight.w400,
+            ),
+          ),
+        ),
+        align: Alignment.center,
+        duration: Duration(seconds: 2),
+        clickClose: true,
+        crossPage: true,
+        onlyOne: true,
+      );
+
+      Navigator.of(context).pop();
+      return;
+    }
+
+    final vnpayIntegratedInfoMap = jsonDecode(vnpayIntegratedInfo);
+
     paymentUrl = VNPAYFlutter.instance.generatePaymentUrl(
-      url: 'https://sandbox.vnpayment.vn/paymentv2/vpcpay.html',
+      url: vnpayIntegratedInfoMap['vnp_Url'] ?? '',
       version: '2.1.0',
-      tmnCode: 'D3IIRNCX',
+      tmnCode: vnpayIntegratedInfoMap['vnp_TmnCode'] ?? '',
       txnRef: DateTime.now().millisecondsSinceEpoch.toString(),
       orderInfo:
           'Payment for booking ${widget.bookingType} - Account: $accountId',
       amount: widget.totalPrice.toDouble(),
-      returnUrl: 'https://demo.ladipage.diab.vn/success',
+      returnUrl: vnpayIntegratedInfoMap['vnp_ReturnUrl'] ?? '',
       ipAdress: ipAddress,
-      vnpayHashKey: 'S6X6KJBB4IJSJLMBL6CWIAZ4HBTBNKT8',
+      vnpayHashKey: vnpayIntegratedInfoMap['vnp_HashSecret'] ?? '',
       vnPayHashType: VNPayHashType.HMACSHA512,
     );
     print('[VNPAY] Payment url: $paymentUrl');
@@ -155,48 +202,64 @@ class _BookingClinicPaymentPageState extends State<BookingClinicPaymentPage> {
     final payTime = DateFormat('HH:mm').format(parsedDate);
     final payDate = DateFormat('dd/MM/yyyy').format(parsedDate);
 
-    _showPopupBookingSuccess(
-      context: dialogContext,
-      title2: R.string.payment_success.tr(),
-      title: Utils.formatMoney(widget.totalPrice) ?? '',
-      subtitle: R.string.payment_success_content.tr(namedArgs: {
-        'price': Utils.formatMoney(widget.totalPrice) ?? '',
-        'time': payTime,
-        'date': payDate,
-      }),
-      isShowImg: true,
-      primaryButtonTitle: R.string.back_home_page.tr(),
-      secondaryButtonTitle: R.string.recheck_information.tr(),
-      onNavigateHome: () {
-        // Back to homepage
-        Navigator.of(context, rootNavigator: true).pushNamedAndRemoveUntil(
-          NavigatorName.tabbar,
-          (route) => false, // This removes all routes from stack
-        );
-      },
-      onShowInfo: () async {
-        // Navigate to booking detail
-        final myAppointment =
-            await _cubit.getDsmesAppointmentDetail(appointmentId: resp!.id);
+    _showPopupBooking(
+        context: dialogContext,
+        title2: R.string.payment_success.tr(),
+        title: Utils.formatMoney(widget.totalPrice) ?? '',
+        subtitle: R.string.payment_success_content.tr(namedArgs: {
+          'price': Utils.formatMoney(widget.totalPrice) ?? '',
+          'time': payTime,
+          'date': payDate,
+        }),
+        isShowImg: true,
+        primaryButtonTitle: R.string.back_home_page.tr(),
+        secondaryButtonTitle: R.string.recheck_information.tr(),
+        onPrimaryButtonPressed: () {
+          // Back to homepage
+          Navigator.of(context, rootNavigator: true).pushNamedAndRemoveUntil(
+            NavigatorName.tabbar,
+            (route) => false, // This removes all routes from stack
+          );
+        },
+        onSecondaryButtonPressed: () async {
+          // Navigate to booking detail
+          final myAppointment =
+              await _cubit.getDsmesAppointmentDetail(appointmentId: resp!.id);
 
-        if (myAppointment == null) return;
+          if (myAppointment == null) return;
 
-        DsmesNavigationMixin.navigationKey.currentState?.pushNamed(
-          NavigatorName.dsmes_booking_detail,
-          arguments: {
-            'serviceType': widget.serviceType,
-            'appointment': myAppointment,
-            'bookingType': widget.bookingType,
-          },
-        );
-      },
-    );
+          DsmesNavigationMixin.navigationKey.currentState?.pushNamed(
+            NavigatorName.dsmes_booking_detail,
+            arguments: {
+              'serviceType': widget.serviceType,
+              'appointment': myAppointment,
+              'bookingType': widget.bookingType,
+            },
+          );
+        },
+        onWillPop: () async {
+          // Navigate to booking detail
+          final myAppointment =
+              await _cubit.getDsmesAppointmentDetail(appointmentId: resp!.id);
+
+          if (myAppointment == null) return;
+
+          DsmesNavigationMixin.navigationKey.currentState?.pushNamed(
+            NavigatorName.dsmes_booking_detail,
+            arguments: {
+              'serviceType': widget.serviceType,
+              'appointment': myAppointment,
+              'bookingType': widget.bookingType,
+            },
+          );
+        });
   }
 
-  _showPopupBookingSuccess({
+  _showPopupBooking({
     required BuildContext context,
-    required Function onNavigateHome,
-    Function? onShowInfo,
+    required Function onPrimaryButtonPressed,
+    Function? onSecondaryButtonPressed,
+    Function? onWillPop,
     bool isShowImg = false,
     String? subtitle,
     String? title,
@@ -211,7 +274,7 @@ class _BookingClinicPaymentPageState extends State<BookingClinicPaymentPage> {
         return WillPopScope(
           onWillPop: () async {
             Navigator.pop(context);
-            onShowInfo?.call();
+            onWillPop?.call();
             return false;
           },
           child: Container(
@@ -232,7 +295,7 @@ class _BookingClinicPaymentPageState extends State<BookingClinicPaymentPage> {
                         GestureDetector(
                           onTap: () {
                             Navigator.pop(context);
-                            onShowInfo?.call();
+                            onWillPop?.call();
                           },
                           child: Icon(
                             Icons.close,
@@ -302,7 +365,7 @@ class _BookingClinicPaymentPageState extends State<BookingClinicPaymentPage> {
                                   () => isProcessing['recheckInfo'] = true);
                               try {
                                 Navigator.pop(context);
-                                onShowInfo?.call();
+                                onSecondaryButtonPressed?.call();
                               } finally {
                                 setState(
                                     () => isProcessing['recheckInfo'] = false);
@@ -336,7 +399,8 @@ class _BookingClinicPaymentPageState extends State<BookingClinicPaymentPage> {
                             if (isProcessing['backHome']!) return;
                             setState(() => isProcessing['backHome'] = true);
                             try {
-                              onNavigateHome();
+                              Navigator.pop(context);
+                              onPrimaryButtonPressed.call();
                             } finally {
                               setState(() => isProcessing['backHome'] = false);
                             }
@@ -358,30 +422,33 @@ class _BookingClinicPaymentPageState extends State<BookingClinicPaymentPage> {
   Future<void> _handlePaymentFailed(
       {required Map<String, dynamic> params}) async {
     final BuildContext dialogContext = context;
-    
+
     String errorMessage = VnpayResponseCode.getResponseCodeMessage(
         params['vnp_ResponseCode'] ?? '');
 
-    _showPopupBookingSuccess(
-      context: dialogContext,
-      title2: R.string.payment_failed.tr(),
-      title: Utils.formatMoney(widget.totalPrice) ?? '',
-      subtitle: errorMessage,
-      isShowImg: true,
-      primaryButtonTitle: R.string.repayment.tr(),
-      secondaryButtonTitle: R.string.back_home_page.tr(),
-      onNavigateHome: () {
-        Navigator.of(context).pop();
-      },
-      onShowInfo: () async {
-        // Back to homepage
-        Navigator.of(context, rootNavigator: true).pushNamedAndRemoveUntil(
-          NavigatorName.tabbar,
-          (route) => false, // This removes all routes from stack
-        );
-      },
-      icon: R.drawable.ic_dialog_fail,
-    );
+    _showPopupBooking(
+        context: dialogContext,
+        icon: R.drawable.ic_dialog_fail,
+        title2: R.string.payment_failed.tr(),
+        title: Utils.formatMoney(widget.totalPrice) ?? '',
+        subtitle: errorMessage,
+        isShowImg: true,
+        primaryButtonTitle: R.string.repayment.tr(),
+        secondaryButtonTitle: R.string.back_home_page.tr(),
+        onPrimaryButtonPressed: () {
+          Navigator.pop(dialogContext);
+        },
+        onSecondaryButtonPressed: () async {
+          Navigator.pop(dialogContext);
+          // Back to homepage
+          Navigator.of(context, rootNavigator: true).pushNamedAndRemoveUntil(
+            NavigatorName.tabbar,
+            (route) => false, // This removes all routes from stack
+          );
+        },
+        onWillPop: () {
+          Navigator.pop(dialogContext);
+        });
   }
 
   Widget _buildButton(String text, VoidCallback onTap) {

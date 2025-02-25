@@ -693,12 +693,6 @@ class ServiceRow extends StatelessWidget {
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Image.asset(
-                          R.drawable.ic_money,
-                          width: 20,
-                          height: 20,
-                        ),
-                        GapW(4),
                         Text(
                           Utils.formatMoney(service.fromPrice) ?? '',
                           style: TextStyle(
