@@ -85,6 +85,7 @@ class _ConversationChatbotAiState extends State<ConversationChatbotAi>
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
     _messageSubscription?.cancel();
+    _messages.clear();
     super.dispose();
   }
 
