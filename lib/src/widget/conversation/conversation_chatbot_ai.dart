@@ -66,6 +66,7 @@ class _ConversationChatbotAiState extends State<ConversationChatbotAi>
   bool _isKeyboardVisible = false;
   final TextEditingController _messageController = TextEditingController();
   StreamSubscription<List<Map<String, dynamic>>>? _messageSubscription;
+  bool _isSending = false;
 
   @override
   void initState() {
@@ -598,12 +599,15 @@ class _ConversationChatbotAiState extends State<ConversationChatbotAi>
   // }
 
   void _handleSendPressed(types.PartialText _message) async {
+    if (_isSending) return; // Prevent multiple submissions
+    _isSending = true;
+
     if (_typingUsers.where((e) => e.id == _bot.id).isNotEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        //'Please wait for the bot to finish typing'
         content: Text(R.string.conversation_pls_wait_bot_finish_typing.tr()),
         backgroundColor: R.color.deepOrange,
       ));
+      _isSending = false;
       return;
     } else {
       setState(() {
@@ -616,33 +620,41 @@ class _ConversationChatbotAiState extends State<ConversationChatbotAi>
       id: randomString(),
       text: _message.text,
     );
+    try {
+      // add the message to the database
+      final dbMessage = await Supabase.instance.client
+          .from('messages')
+          .insert({
+            'conversation_id': _conversation.id,
+            'sender': message.author.id,
+            'sender_type': 'user',
+            'content': message.text,
+          })
+          .select('id')
+          .single();
+      final updatedMessage = message.copyWith(id: dbMessage['id'] as String);
+      setState(() {
+        _messages.insert(0, updatedMessage);
+      });
 
-    // add the message to the database
-    final dbMessage = await Supabase.instance.client
-        .from('messages')
-        .insert({
-          'conversation_id': _conversation.id,
-          'sender': message.author.id,
-          'sender_type': 'user',
-          'content': message.text,
-        })
-        .select('id')
-        .single();
-    final updatedMessage = message.copyWith(id: dbMessage['id'] as String);
-    setState(() {
-      _messages.insert(0, updatedMessage);
-    });
+      await _handleBotResponse(updatedMessage);
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(e.toString()),
+        backgroundColor: R.color.deepOrange,
+      ));
+      setState(() {
+        _typingUsers = _typingUsers
+            .where((e) => e.id != _bot.id)
+            .toList(); // remove bot from typing list
+      });
+    }
 
-    return _handleBotResponse(updatedMessage);
+    _isSending = false;
   }
 
   // // This is the method auto response from the chatbot
-  void _handleBotResponse(types.Message message) async {
-    if (_typingUsers.where((e) => e.id == _bot.id).isEmpty) {
-      setState(() {
-        _typingUsers = [..._typingUsers, _bot];
-      });
-    }
+  _handleBotResponse(types.Message message) async {
     final ApiResult<MessageResponse> apiResult =
         await AppRepository().sendMessageById(_conversation.id, message.id);
     apiResult.when(
