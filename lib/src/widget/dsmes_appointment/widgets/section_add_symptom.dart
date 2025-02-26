@@ -118,7 +118,7 @@ class SectionAddSymptomState extends State<SectionAddSymptom> {
                   GapH(16),
                   Row(
                     children: [
-                      _buildImageList(),
+                      Expanded(child: _buildImageList()),
                     ],
                   ),
                 ],
@@ -211,66 +211,71 @@ class SectionAddSymptomState extends State<SectionAddSymptom> {
 
     return Column(
       children: [
-        Wrap(
-          spacing: 16,
-          runSpacing: 16,
-          children: _files.map((e) {
-            final index = _files.indexOf(e);
-            return GestureDetector(
-              onTap: () {
-                _showFullscreenImage(context, index);
-              },
-              child: SizedBox(
-                width: 60,
-                height: 60,
-                child: Stack(
-                  alignment: AlignmentDirectional.topEnd,
-                  children: [
-                    Positioned.fill(
-                      top: 4,
-                      right: 4,
-                      child: Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(8),
+        GapH(12),
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: Row(
+            // spacing: 16,
+            // runSpacing: 16,
+            children: _files.map((e) {
+              final index = _files.indexOf(e);
+              return GestureDetector(
+                onTap: () {
+                  _showFullscreenImage(context, index);
+                },
+                child: Container(
+                  margin: EdgeInsets.only(right: 16),
+                  width: 60,
+                  height: 60,
+                  child: Stack(
+                    alignment: AlignmentDirectional.topEnd,
+                    children: [
+                      Positioned.fill(
+                        top: 4,
+                        right: 4,
+                        child: Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          width: 56,
+                          height: 56,
+                          clipBehavior: Clip.hardEdge,
+                          child: _files[index] is PickedFile
+                              ? Image.file(
+                                  File(_files[index].path),
+                                  fit: BoxFit.cover,
+                                )
+                              : NetWorkImageWidget(
+                                  imageUrl:
+                                      '${Utils.getHostDocosanUrl()}${_files[index]}',
+                                  fit: BoxFit.cover),
                         ),
-                        width: 56,
-                        height: 56,
-                        clipBehavior: Clip.hardEdge,
-                        child: _files[index] is PickedFile
-                            ? Image.file(
-                                File(_files[index].path),
-                                fit: BoxFit.cover,
-                              )
-                            : NetWorkImageWidget(
-                                imageUrl:
-                                    '${Utils.getHostDocosanUrl()}${_files[index]}',
-                                fit: BoxFit.cover),
                       ),
-                    ),
-                    Visibility(
-                      visible: widget.isDisplayRemove,
-                      child: GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            if (_files[index] is PickedFile) {
-                              _files.removeAt(index);
-                              _fileNetworkName.removeAt(index);
-                            } else {
-                              _removeIDs.add(_files[index]);
-                              _files.removeAt(index);
-                              _fileNetworkName.removeAt(index);
-                            }
-                          });
-                        },
-                        child: Image.asset(R.drawable.ic_close_circle_red,
-                            width: 24, height: 24),
+                      Visibility(
+                        visible: widget.isDisplayRemove,
+                        child: GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              if (_files[index] is PickedFile) {
+                                _files.removeAt(index);
+                                _fileNetworkName.removeAt(index);
+                              } else {
+                                _removeIDs.add(_files[index]);
+                                _files.removeAt(index);
+                                _fileNetworkName.removeAt(index);
+                              }
+                            });
+                          },
+                          child: Image.asset(R.drawable.ic_close_circle_red,
+                              width: 24, height: 24),
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-            );
-          }).toList(),
+              );
+            }).toList(),
+          ),
         ),
       ],
     );

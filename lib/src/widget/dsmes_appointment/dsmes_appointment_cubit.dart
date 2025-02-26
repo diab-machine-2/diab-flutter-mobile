@@ -184,29 +184,33 @@ class DsmesAppointmentCubit extends Cubit<DsmesAppointmentState> {
     return clinics;
   }
 
-  Future<void> getClinicDetail({required int id, bool isLoading = true}) async {
+  Future<bool> getClinicDetail({required int id, bool isLoading = true}) async {
     if (isLoading) {
       emit(DsmesAppointmentLoading());
     }
     ApiResult<DsmesClinicDetailResponse> apiResult =
         await appRepository.getClinicDetail(id: id);
-    apiResult.when(success: (DsmesClinicDetailResponse response) {
+
+    return apiResult.when(success: (DsmesClinicDetailResponse response) {
       setSelectedClinic(response.data);
       emit(DsmesAppointmentLoaded());
+      return true;
     }, failure: (NetworkExceptions error) {
       emit(DsmesAppointmentFailure(NetworkExceptions.getErrorMessage(error)));
+      return false;
     });
   }
 
-  Future<void> getClinicRate({required int id}) async {
-    // emit(DsmesAppointmentLoading());
+  Future<bool> getClinicRate({required int id}) async {
     ApiResult<DsmesClinicRatingResponse> apiResult =
         await appRepository.getClinicRate(id: id);
-    apiResult.when(success: (DsmesClinicRatingResponse response) {
+
+    return apiResult.when(success: (DsmesClinicRatingResponse response) {
       listClinicReview = response.data.normalReview;
-      // emit(DsmesAppointmentLoaded());
+      return true;
     }, failure: (NetworkExceptions error) {
       emit(DsmesAppointmentFailure(NetworkExceptions.getErrorMessage(error)));
+      return false;
     });
   }
 

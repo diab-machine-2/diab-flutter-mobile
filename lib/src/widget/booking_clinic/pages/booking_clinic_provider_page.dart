@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -188,7 +189,7 @@ class _BookingClinicProvidersPageState
                   color: R.color.white),
             ),
             actions: [
-              SizedBox.shrink(),
+              _buildFilterButton(),
             ],
             leadingIcon: IconButton(
               splashColor: Colors.transparent,
@@ -203,7 +204,7 @@ class _BookingClinicProvidersPageState
             ),
           ),
         ),
-        _buildHeaderWidget(),
+        // _buildHeaderWidget(),
         GapH(12),
         Expanded(
           child: isLoading
@@ -245,7 +246,7 @@ class _BookingClinicProvidersPageState
                                 shrinkWrap: true,
                                 itemCount:
                                     _cubit.listBookingClinicProvider.length,
-                                separatorBuilder: (context, index) => GapH(16),
+                                separatorBuilder: (context, index) => GapH(12),
                                 itemBuilder: (context, index) {
                                   BookingClinicProvider data =
                                       _cubit.listBookingClinicProvider[index];
@@ -263,19 +264,92 @@ class _BookingClinicProvidersPageState
     );
   }
 
+  _buildFilterButton() {
+    return Builder(
+      builder: (context) {
+        final isFiltered = selectedDistricts.isNotEmpty ||
+            (selectedTypes.length == 1 && !selectedTypes.contains('')) ||
+            (selectedTimeframes.length == 1 &&
+                !selectedTimeframes.contains('')) ||
+            (selectedServiceTypes.length == 1 &&
+                !selectedServiceTypes.contains(''));
+
+        return GestureDetector(
+          onTap: () {
+            Scaffold.of(context).openEndDrawer();
+          },
+          child: Stack(
+            children: [
+              Container(
+                margin: EdgeInsets.only(top: 12, right: 16),
+                padding: EdgeInsets.fromLTRB(6, 8, 8, 8),
+                decoration: BoxDecoration(
+                  color: R.color.white,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.filter_alt_outlined,
+                      size: 20,
+                      color: R.color.greenGradientBottom,
+                    ),
+                    GapW(2),
+                    Text(
+                      R.string.loc.tr(),
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w700,
+                        color: R.color.greenGradientBottom,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              if (isFiltered)
+                Positioned(
+                  top: 8,
+                  right: 12,
+                  child: Container(
+                    width: 12,
+                    height: 12,
+                    decoration: BoxDecoration(
+                      color: Colors.red,
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: R.color.white,
+                        width: 1,
+                      ),
+                    ),
+                  ),
+                ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  _handleViewClinicDetailInfo(BookingClinicProvider data) async {
+    final detailSuccess = await _cubit.getClinicDetail(id: data.id);
+    final rateSuccess = await _cubit.getClinicRate(id: data.id);
+    if (detailSuccess && rateSuccess) {
+      DsmesNavigationMixin.navigationKey.currentState
+          ?.pushNamed(NavigatorName.dsmes_clinic_detail, arguments: {
+        'clinicId': data.id,
+        'bookingType': Const.BOOKING_TYPE_CLINIC
+      });
+    }
+  }
+
   _buildClinicItem(BookingClinicProvider data) {
     return GestureDetector(
       onTap: () async {
         if (isProcessing['clinicDetail']!) return;
         isProcessing['clinicDetail'] = true;
         try {
-          await _cubit.getClinicDetail(id: data.id);
-          await _cubit.getClinicRate(id: data.id);
-          DsmesNavigationMixin.navigationKey.currentState
-              ?.pushNamed(NavigatorName.dsmes_clinic_detail, arguments: {
-            'clinicId': data.id,
-            'bookingType': Const.BOOKING_TYPE_CLINIC
-          });
+          _handleViewClinicDetailInfo(data);
         } finally {
           isProcessing['clinicDetail'] = false;
         }
@@ -318,9 +392,10 @@ class _BookingClinicProvidersPageState
                         GapH(10),
                         Row(
                           mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Image.asset(R.drawable.ic_map_marker,
-                                width: 12, height: 12),
+                                width: 14, height: 14),
                             GapW(5),
                             Flexible(
                               child: Text(
@@ -381,17 +456,7 @@ class _BookingClinicProvidersPageState
                                 if (isProcessing['viewInfo']!) return;
                                 isProcessing['viewInfo'] = true;
                                 try {
-                                  await _cubit.getClinicDetail(id: data.id);
-                                  await _cubit.getClinicRate(id: data.id);
-
-                                  DsmesNavigationMixin
-                                      .navigationKey.currentState
-                                      ?.pushNamed(
-                                          NavigatorName.dsmes_clinic_detail,
-                                          arguments: {
-                                        'clinicId': data.id,
-                                        'bookingType': Const.BOOKING_TYPE_CLINIC
-                                      });
+                                  _handleViewClinicDetailInfo(data);
                                 } finally {
                                   isProcessing['viewInfo'] = false;
                                 }
@@ -430,8 +495,14 @@ class _BookingClinicProvidersPageState
                                 if (isProcessing['bookingClinic']!) return;
                                 isProcessing['bookingClinic'] = true;
                                 try {
-                                  await _cubit.getClinicDetail(id: data.id);
-                                  if (_cubit.selectedClinic == null) return;
+                                  final detailSuccess =
+                                      await _cubit.getClinicDetail(id: data.id);
+
+                                  if (!detailSuccess ||
+                                      _cubit.selectedClinic == null) {
+                                    return;
+                                  }
+
                                   _cubit.initCreateDsmesBookingRequest(
                                       locale: context.locale.languageCode);
                                   await DsmesNavigationMixin
@@ -526,37 +597,34 @@ class _BookingClinicProvidersPageState
                 ),
               ),
               SizedBox(width: 24),
-              Visibility(
-                visible: false, // TODO: Handle hiển thị phòng khám đã khám
-                child: GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      _selectedIndex = 1;
-                    });
-                  },
-                  child: Column(
-                    children: [
-                      Text(
-                        R.string.da_kham.tr(),
-                        style: TextStyle(
-                          color: _selectedIndex == 1
-                              ? R.color.greenGradientBottom
-                              : R.color.color0xff111515,
-                          fontSize: 15,
-                          fontWeight: _selectedIndex == 1
-                              ? FontWeight.w700
-                              : FontWeight.w400,
-                        ),
-                      ),
-                      Container(
-                        height: 3,
-                        width: 60,
+              GestureDetector(
+                onTap: () {
+                  setState(() {
+                    _selectedIndex = 1;
+                  });
+                },
+                child: Column(
+                  children: [
+                    Text(
+                      R.string.da_kham.tr(),
+                      style: TextStyle(
                         color: _selectedIndex == 1
                             ? R.color.greenGradientBottom
-                            : R.color.transparent,
+                            : R.color.color0xff111515,
+                        fontSize: 15,
+                        fontWeight: _selectedIndex == 1
+                            ? FontWeight.w700
+                            : FontWeight.w400,
                       ),
-                    ],
-                  ),
+                    ),
+                    Container(
+                      height: 3,
+                      width: 60,
+                      color: _selectedIndex == 1
+                          ? R.color.greenGradientBottom
+                          : R.color.transparent,
+                    ),
+                  ],
                 ),
               ),
             ],
