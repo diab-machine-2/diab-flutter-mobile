@@ -1,3 +1,4 @@
+import 'package:avatars/avatars.dart';
 import 'package:flutter/material.dart';
 
 import '../../../res/R.dart';
@@ -25,6 +26,7 @@ class _ConversationUserProfileState extends State<ConversationUserProfile> {
   final String hotlineDescription =
       'Trong trường hợp cần trợ giúp, hãy gọi ngay đến Hotline của DiaB 012.3456.789';
   final String buttonText = 'Liên hệ hỗ trợ';
+  final _coverHeightRate = 0.3; // -> 30% of screen height
 
   Future firebaseSetup() async {
     await TrackingManager.analytics.logScreenView(
@@ -63,7 +65,8 @@ class _ConversationUserProfileState extends State<ConversationUserProfile> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       SizedBox(
-                          height: MediaQuery.of(context).size.height * 0.38),
+                          height: MediaQuery.of(context).size.height *
+                              (_coverHeightRate + 0.08)),
                       SizedBox(height: 16),
                       _buildInfoCard(introductionTitle, introductionPoints,
                           R.drawable.chat_ic_edu),
@@ -76,7 +79,7 @@ class _ConversationUserProfileState extends State<ConversationUserProfile> {
                 ),
               ),
               Positioned(
-                  top: MediaQuery.of(context).size.height * 0.3,
+                  top: MediaQuery.of(context).size.height * _coverHeightRate,
                   left: 0,
                   right: 0,
                   child: Container(
@@ -90,25 +93,85 @@ class _ConversationUserProfileState extends State<ConversationUserProfile> {
                 right: 0,
                 child: Image.asset(
                   R.drawable.chat_banner_family,
-                  height: MediaQuery.of(context).size.height * 0.3,
+                  height: MediaQuery.of(context).size.height * _coverHeightRate,
                   fit: BoxFit.cover,
                   alignment: Alignment.center,
                 ),
               ),
               Positioned(
-                top: MediaQuery.of(context).size.height * 0.2,
+                top: MediaQuery.of(context).size.height *
+                    _coverHeightRate *
+                    2 /
+                    3,
                 left: 0,
                 right: 0,
                 child: Container(
                   // color: R.color.red,
                   child: Column(
                     children: [
-                      Image.asset(
-                        R.drawable.chat_avatar_chatbot_ai_2,
-                        width: 120,
-                        fit: BoxFit.cover,
+                      Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          Container(
+                            width: 120,
+                            height: 120,
+                            decoration: BoxDecoration(
+                              color: R.color.white,
+                              borderRadius: BorderRadius.circular(100),
+                            ),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(100),
+                              child: Image.asset(
+                                R.drawable.chat_avatar_chatbot_ai_3,
+                                width: 120,
+                                height: 120,
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                          ),
+                          Positioned(
+                            bottom: 0,
+                            width: 100,
+                            child: Container(
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 12, vertical: 1),
+                              decoration: BoxDecoration(
+                                border:
+                                    Border.all(color: Colors.white, width: 1),
+                                color: R.color.mainColor,
+                                borderRadius: BorderRadius.circular(20),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.grey.withOpacity(0.3),
+                                    blurRadius: 5,
+                                    spreadRadius: 2,
+                                  ),
+                                ],
+                              ),
+                              child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Text(
+                                      'Trợ lý AI',
+                                      style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.w300,
+                                          fontFamily: 'sfpro'),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                    SizedBox(width: 4),
+                                    Image.asset(
+                                        R.drawable.chat_avatar_bagged_star,
+                                        width: 12),
+                                  ]),
+                            ),
+                          ),
+                        ],
                       ),
-                      SizedBox(height: 10),
+                      SizedBox(height: 8),
                       Text(
                         title,
                         style: TextStyle(

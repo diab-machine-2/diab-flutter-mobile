@@ -617,4 +617,8 @@ class Drawables {
   String get chat_ic_hotline => "lib/res/drawables/chat/ic_hotline.png";
   String get chat_avatar_chatbot_ai_2 =>
       "lib/res/drawables/chat/avatar_chatbot_ai_2.png";
+  String get chat_avatar_chatbot_ai_3 =>
+      "lib/res/drawables/chat/avatar_chatbot_ai_3.webp";
+  String get chat_avatar_bagged_star =>
+      "lib/res/drawables/chat/avatar_bagged_star.png";
 }

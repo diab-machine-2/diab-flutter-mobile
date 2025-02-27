@@ -52,12 +52,12 @@ class _ConversationChatbotAiState extends State<ConversationChatbotAi>
     id: 'ai',
     firstName: 'Chat Bot AI',
     // lastName: 'Chat Bot AI',
-    imageUrl: R.drawable.chat_avatar_chatbot_ai,
+    imageUrl: R.drawable.chat_avatar_chatbot_ai_3,
   );
   types.Room _conversation = types.Room(
     id: '',
     type: types.RoomType.direct,
-    imageUrl: R.drawable.chat_avatar_chatbot_ai,
+    imageUrl: R.drawable.chat_avatar_chatbot_ai_3,
     name: 'Chat Bot AI',
     users: [],
   );
@@ -366,7 +366,7 @@ class _ConversationChatbotAiState extends State<ConversationChatbotAi>
                         child: CircleAvatar(
                           backgroundImage: author.imageUrl != null
                               ? NetworkImage(author.imageUrl!)
-                              : AssetImage(R.drawable.chat_avatar_chatbot_ai)
+                              : AssetImage(R.drawable.chat_avatar_chatbot_ai_3)
                                   as ImageProvider,
                         )),
                     inputOptions: InputOptions(
