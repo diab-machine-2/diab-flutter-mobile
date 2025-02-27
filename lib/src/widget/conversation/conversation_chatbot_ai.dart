@@ -633,12 +633,12 @@ class _ConversationChatbotAiState extends State<ConversationChatbotAi>
           })
           .select('id')
           .single();
-      final updatedMessage = message.copyWith(id: dbMessage['id'] as String);
-      setState(() {
-        _messages.insert(0, updatedMessage);
-      });
+      // final updatedMessage = itypes.Message.fromMap(dbMessage).uiMessage!;
+      // setState(() {
+      //   _messages.insert(0, updatedMessage);
+      // });
 
-      await _handleBotResponse(updatedMessage);
+      await _handleBotResponse(dbMessage['id'] as String);
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text(e.toString()),
@@ -655,9 +655,9 @@ class _ConversationChatbotAiState extends State<ConversationChatbotAi>
   }
 
   // // This is the method auto response from the chatbot
-  _handleBotResponse(types.Message message) async {
+  _handleBotResponse(String messageId) async {
     final ApiResult<MessageResponse> apiResult =
-        await AppRepository().sendMessageById(_conversation.id, message.id);
+        await AppRepository().sendMessageById(_conversation.id, messageId);
     apiResult.when(
         success: ((data) => {
               setState(() {
