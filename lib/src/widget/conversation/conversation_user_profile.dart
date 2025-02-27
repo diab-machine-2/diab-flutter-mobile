@@ -26,7 +26,7 @@ class _ConversationUserProfileState extends State<ConversationUserProfile> {
   final String hotlineDescription =
       'Trong trường hợp cần trợ giúp, hãy gọi ngay đến Hotline của DiaB 012.3456.789';
   final String buttonText = 'Liên hệ hỗ trợ';
-  final _coverHeightRate = 0.3; // -> 30% of screen height
+  final _coverHeightRate = 0.28; // -> 30% of screen height
 
   Future firebaseSetup() async {
     await TrackingManager.analytics.logScreenView(
@@ -58,23 +58,29 @@ class _ConversationUserProfileState extends State<ConversationUserProfile> {
           ),
           body: Stack(
             children: [
-              SingleChildScrollView(
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      SizedBox(
-                          height: MediaQuery.of(context).size.height *
-                              (_coverHeightRate + 0.08)),
-                      SizedBox(height: 16),
-                      _buildInfoCard(introductionTitle, introductionPoints,
-                          R.drawable.chat_ic_edu),
-                      SizedBox(height: 16),
-                      _buildInfoCard(hotlineTitle, [hotlineDescription],
-                          R.drawable.chat_ic_hotline),
-                      SizedBox(height: 100),
-                    ],
+              Positioned(
+                top: MediaQuery.of(context).size.height *
+                    (_coverHeightRate + 0.1),
+                left: 0,
+                right: 0,
+                child: Container(
+                  height: MediaQuery.of(context).size.height * 0.6,
+                  child: SingleChildScrollView(
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          SizedBox(height: 16),
+                          _buildInfoCard(introductionTitle, introductionPoints,
+                              R.drawable.chat_ic_edu),
+                          SizedBox(height: 16),
+                          _buildInfoCard(hotlineTitle, [hotlineDescription],
+                              R.drawable.chat_ic_hotline),
+                          SizedBox(height: 100),
+                        ],
+                      ),
+                    ),
                   ),
                 ),
               ),
