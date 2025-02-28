@@ -14,6 +14,7 @@ import 'package:medical/src/widget/dsmes_appointment/pages/dsmes_navigation_mixi
 import 'package:medical/src/widget/dsmes_appointment/widgets/dsmes_appointment_item.dart';
 import 'package:medical/src/widget/dsmes_appointment/widgets/dsmes_empty_widget.dart';
 import 'package:medical/src/widgets/gap_widget.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class DsmesClinicDetailPage extends StatefulWidget {
   final int clinicId;
@@ -228,13 +229,25 @@ class _DsmesClinicDetailPageState extends State<DsmesClinicDetailPage> {
                     child: GestureDetector(
                       onTap: data.extraAvatar.isNotEmpty
                           ? () {
-                              showDialog(
-                                context: context,
-                                builder: (context) => Dialog(
-                                  child: Image.network(
-                                      "${Utils.getHostDocosanUrl()}${data.extraAvatar.first.path}"),
-                                ),
-                              );
+                              if (widget.bookingType ==
+                                  Const.BOOKING_TYPE_CENTER) {
+                                showDialog(
+                                  context: context,
+                                  builder: (context) => Dialog(
+                                    child: Image.network(
+                                        "${Utils.getHostDocosanUrl()}${data.extraAvatar.first.path}"),
+                                  ),
+                                );
+                              } else {
+                                final lat = data.lat;
+                                final lng = data.lng;
+                                if (lat.isNotEmpty && lng.isNotEmpty) {
+                                  launchUrl(
+                                      Uri.parse(
+                                          'https://www.google.com/maps/search/?api=1&query=$lat,$lng'),
+                                      mode: LaunchMode.externalApplication);
+                                }
+                              }
                             }
                           : null,
                       child: Container(

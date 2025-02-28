@@ -61,8 +61,6 @@ class _BookingClinicPageState extends State<BookingClinicPage> with Observer {
     _cubit.initDsmesBooking();
   }
 
-  
-
   @override
   void dispose() {
     BotToast.closeAllLoading();
@@ -593,6 +591,7 @@ class _BookingClinicPageState extends State<BookingClinicPage> with Observer {
                         height: 111,
                         padding: EdgeInsets.fromLTRB(12, 16, 8, 0),
                         decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(12),
                           gradient: LinearGradient(
                             begin: Alignment.center,
                             end: Alignment.bottomCenter,

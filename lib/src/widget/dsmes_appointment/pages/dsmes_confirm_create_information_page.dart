@@ -935,7 +935,7 @@ class _DsmesConfirmCreateInformationState
                     Container(
                       margin: EdgeInsets.only(left: 8),
                       child: Text(
-                        Utils.formatMoney(totalPrice) ?? '',
+                        Utils.formatMoney(service?.fromPrice ?? 0) ?? '',
                         style: TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.w400,

@@ -205,7 +205,7 @@ class _BookingClinicProvidersPageState
           ),
         ),
         // _buildHeaderWidget(),
-        GapH(12),
+
         Expanded(
           child: isLoading
               ? Container()
@@ -237,7 +237,8 @@ class _BookingClinicProvidersPageState
                       },
                       child: SingleChildScrollView(
                         child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 16, vertical: 12),
                           child: Column(
                             children: [
                               ListView.separated(
@@ -771,7 +772,7 @@ class _BookingClinicProvidersPageState
                         ),
                       ],
                     ),
-                    GapH(12),
+                    GapH(24),
                     Text(
                       R.string.clinic_type.tr(),
                       style: TextStyle(
@@ -794,7 +795,7 @@ class _BookingClinicProvidersPageState
                         _buildFilterItem(R.string.all.tr(), '', 'type'),
                       ],
                     ),
-                    GapH(12),
+                    GapH(24),
                     Text(
                       R.string.thoi_gian.tr(),
                       style: TextStyle(
@@ -819,7 +820,7 @@ class _BookingClinicProvidersPageState
                         _buildFilterItem(R.string.all.tr(), '', 'timeframe'),
                       ],
                     ),
-                    GapH(12),
+                    GapH(24),
                     Text(
                       R.string.hinh_thuc.tr(),
                       style: TextStyle(

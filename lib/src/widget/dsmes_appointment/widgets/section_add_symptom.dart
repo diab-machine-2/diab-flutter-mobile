@@ -210,13 +210,13 @@ class SectionAddSymptomState extends State<SectionAddSymptom> {
     if (_files.isEmpty) return SizedBox.shrink();
 
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         GapH(12),
         SingleChildScrollView(
           scrollDirection: Axis.horizontal,
           child: Row(
-            // spacing: 16,
-            // runSpacing: 16,
+            mainAxisAlignment: MainAxisAlignment.start,
             children: _files.map((e) {
               final index = _files.indexOf(e);
               return GestureDetector(

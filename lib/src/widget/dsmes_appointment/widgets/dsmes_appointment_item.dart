@@ -11,6 +11,7 @@ import 'package:medical/src/widget/dsmes_appointment/model/dsmes_appointment_mod
 import 'package:medical/src/widget/dsmes_appointment/dsmes_appointment_cubit.dart';
 import 'package:medical/src/widget/dsmes_appointment/pages/dsmes_navigation_mixin.dart';
 import 'package:medical/src/widgets/gap_widget.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class DsmesAppointmentItem extends StatelessWidget {
   final DsmesAppointment data;
@@ -59,7 +60,6 @@ class DsmesAppointmentItem extends StatelessWidget {
             _buildHeader(mode, icon, isPast: isPast),
             GapH(12),
             _buildClinicInfo(data),
-            GapH(12),
             _buildDateTime(startDateTime, formattedDate, startTime, endTime),
             if (displayActionButtons)
               Padding(
@@ -125,6 +125,7 @@ class DsmesAppointmentItem extends StatelessWidget {
 
   Widget _buildClinicInfo(DsmesAppointment data) {
     return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         SizedBox(
             width: 40,
@@ -270,8 +271,14 @@ class DsmesAppointmentItem extends StatelessWidget {
           Flexible(
             flex: 1,
             child: GestureDetector(
-              onTap: () {
-                // TODO: Handle support
+              onTap: () async {
+                final launchUri =
+                    Uri(scheme: 'tel', path: Const.HOTLINE_NUMBER);
+                if (await canLaunchUrl(launchUri)) {
+                  await launchUrl(launchUri);
+                } else {
+                  throw 'Could not make phone call ${Const.HOTLINE_NUMBER}';
+                }
               },
               child: Container(
                 height: 43,
@@ -321,8 +328,13 @@ class DsmesAppointmentItem extends StatelessWidget {
           flex: 1,
           child: _buildPrimaryButton(
             R.string.support.tr(),
-            () => () {
-              //TODO: Handle support
+            () => () async {
+              final launchUri = Uri(scheme: 'tel', path: Const.HOTLINE_NUMBER);
+              if (await canLaunchUrl(launchUri)) {
+                await launchUrl(launchUri);
+              } else {
+                throw 'Could not make phone call ${Const.HOTLINE_NUMBER}';
+              }
             },
           ),
         ),
@@ -413,7 +425,7 @@ class DsmesAppointmentItem extends StatelessWidget {
               : Container(
                   height: 44,
                   // width: 158,
-                  margin: EdgeInsets.symmetric(horizontal: 0, vertical: 8),
+                  // margin: EdgeInsets.symmetric(horizontal: 0, vertical: 8),
                   decoration: BoxDecoration(
                     color: R.color.color0xffBFC6C6,
                     borderRadius: BorderRadius.circular(200),

@@ -371,6 +371,14 @@ class _DsmesBookingDetailState extends State<DsmesBookingDetail> {
         DateFormat('yyyy-MM-dd HH:mm:ss').parse(widget.appointment.endTime);
     final isPast = endDateTime.isBefore(DateTime.now());
 
+    String _getConsultTitle() => widget.bookingType == Const.BOOKING_TYPE_CENTER
+        ? widget.serviceType == DsmesAppointmentMode.atClinic.toString()
+            ? R.string.consult_at_clinic.tr()
+            : R.string.consult_online.tr()
+        : widget.serviceType == DsmesAppointmentMode.atClinic.toString()
+            ? R.string.kham_tai_phong_kham.tr()
+            : R.string.kham_tu_xa.tr();
+
     return Container(
       padding: EdgeInsets.symmetric(vertical: 16, horizontal: 12),
       decoration: BoxDecoration(
@@ -389,9 +397,7 @@ class _DsmesBookingDetailState extends State<DsmesBookingDetail> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  widget.serviceType == DsmesAppointmentMode.atClinic.toString()
-                      ? R.string.consult_at_clinic.tr()
-                      : R.string.consult_online.tr(),
+                  _getConsultTitle(),
                   style: TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.w700,

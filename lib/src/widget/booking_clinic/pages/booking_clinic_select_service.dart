@@ -502,7 +502,6 @@ class _ClinicCategorySectionState extends State<ClinicCategorySection> {
               ],
             ),
           ),
-          GapH(12),
           if (services.isNotEmpty && isExpanded)
             Container(
               child: ListView.builder(
@@ -525,14 +524,7 @@ class _ClinicCategorySectionState extends State<ClinicCategorySection> {
                           onSelected: (selected) =>
                               widget.onServiceSelected(service.id, selected),
                         ),
-                        if (index == services.length - 1)
-                          Padding(
-                            padding: const EdgeInsets.fromLTRB(0, 12, 0, 12),
-                            child: Divider(
-                              color: R.color.color0xffDFE4E4,
-                              height: 1,
-                            ),
-                          ),
+                        if (index == services.length - 1) GapH(20),
                       ],
                     ),
                   );

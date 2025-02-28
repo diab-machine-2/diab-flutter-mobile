@@ -1,8 +1,10 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widgets/gap_widget.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class BookingClinicEmptyWidget extends StatelessWidget {
   final String imagePath;
@@ -68,7 +70,14 @@ class BookingClinicEmptyWidget extends StatelessWidget {
 
   _buildButton() {
     return GestureDetector(
-      onTap: () {},
+      onTap: () async {
+        final launchUri = Uri(scheme: 'tel', path: Const.HOTLINE_NUMBER);
+        if (await canLaunchUrl(launchUri)) {
+          await launchUrl(launchUri);
+        } else {
+          throw 'Could not make phone call ${Const.HOTLINE_NUMBER}';
+        }
+      },
       child: Container(
         padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: BoxDecoration(
