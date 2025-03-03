@@ -20,6 +20,7 @@ import 'package:medical/src/widget/conversation/conversation_comon.dart'
 import 'package:readmore/readmore.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../res/R.dart';
+import '../base/custom_appbar.dart';
 import '../helper/helper.dart';
 import '../helper/tracking_manager.dart';
 import '../helper/show_message.dart' as appMessage;
@@ -259,14 +260,17 @@ class _ConversationChatbotAiState extends State<ConversationChatbotAi>
                     (route) => false, // This removes all routes from stack
                   );
                 }),
-            title: Align(
-              alignment: Alignment.topLeft,
-              child: Text(
-                R.string.conversation_chatbot_ai_title.tr(),
-                style: TextStyle(
-                    color: R.color.white,
-                    fontSize: 20,
-                    fontWeight: FontWeight.w400),
+            title: Transform(
+              transform: Matrix4.translationValues(-20, 0.0, 0.0),
+              child: Align(
+                alignment: Alignment.topLeft,
+                child: Text(
+                  R.string.conversation_chatbot_ai_title.tr(),
+                  style: TextStyle(
+                      color: R.color.white,
+                      fontSize: 20,
+                      fontWeight: FontWeight.w400),
+                ),
               ),
             ),
             actions: [
