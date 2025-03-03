@@ -841,10 +841,11 @@ packages:
   flutter_chat_ui:
     dependency: "direct main"
     description:
-      name: flutter_chat_ui
-      sha256: "168a4231464ad00a17ea5f0813f1b58393bdd4035683ea4dc37bbe26be62891e"
-      url: "https://pub.dev"
-    source: hosted
+      path: "."
+      ref: v1
+      resolved-ref: a6879ea52a9554463aea8ef9a4f96e03c9cc73b7
+      url: "https://github.com/longpnmd/flutter_chat_ui.git"
+    source: git
     version: "1.6.15"
   flutter_datetime_picker_plus:
     dependency: "direct main"
