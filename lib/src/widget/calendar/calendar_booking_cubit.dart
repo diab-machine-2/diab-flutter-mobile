@@ -1,5 +1,7 @@
 import 'package:bot_toast/bot_toast.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/request/booking_success_request.dart';
@@ -14,7 +16,7 @@ import 'package:medical/src/repo/user/user_client.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/widget/calendar/calendar_booking_state.dart';
 import 'package:medical/src/widget/calendar/calendar_model.dart';
-import 'package:intl/intl.dart';
+import 'package:medical/src/modal/error/error_model.dart' as error;
 
 class CalendarBookingCubit extends Cubit<CalendarBookingState> {
   final AppRepository repository;
@@ -65,7 +67,7 @@ class CalendarBookingCubit extends Cubit<CalendarBookingState> {
       return isAdd1Day == false ? extendedData : data;
     } catch (e) {
       emit(CalendarBookingFailure(
-          "An error occurred while fetching calendar data."));
+          (e as error.Error).message ?? R.string.error_unexpected_error.tr()));
       return [];
     } finally {
       BotToast.closeAllLoading();
@@ -86,7 +88,7 @@ class CalendarBookingCubit extends Cubit<CalendarBookingState> {
     DateTime? startDate,
     DateTime? endDate,
   }) async {
-    startDate ??= DateTime.now().add(Duration(days: 0 ));
+    startDate ??= DateTime.now().add(Duration(days: 0));
     endDate ??= DateTime.now()
         .add(Duration(days: Const.MAX_DAY_RANGE_PRIMARY_SCREENING));
     emit(CalendarBookingLoading());
