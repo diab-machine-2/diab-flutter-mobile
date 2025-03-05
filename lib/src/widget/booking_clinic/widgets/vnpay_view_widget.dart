@@ -29,6 +29,138 @@ class VNPayViewState extends State<VNPayView> {
     super.dispose();
   }
 
+  Future<NavigationActionPolicy> _handleBankUrl(String url) async {
+    print('[VNPAY] BANK URL: $url');
+
+    // Handle intent:// URLs (format used by many banks on Android)
+    if (url.startsWith('intent://')) {
+      print('[VNPAY] Intent URL: $url');
+      try {
+        // Parse the intent URL
+        final uri = Uri.parse(url.replaceFirst('intent://', 'intent:'));
+
+        // Extract all important parts from the intent URL
+        final packageName = url.split('package=')[1].split(';')[0];
+        final scheme = url.split('scheme=')[1].split(';')[0];
+
+        // Extract the data parameter
+        final data = uri.queryParameters['data'];
+        final callbackUrl = uri.queryParameters['callbackurl'];
+
+        // Construct the deep link URL with all necessary parameters
+        final deepLinkData = {
+          'data': data,
+          'callbackurl': callbackUrl,
+        };
+
+        // Create the final URL with scheme and encoded parameters
+        final deepLinkUrl = Uri(
+          scheme: scheme,
+          host: 'view',
+          queryParameters: deepLinkData,
+        ).toString();
+
+        print('[VNPAY] Deep link URL: $deepLinkUrl');
+
+        // Try to launch the bank app with the payment data
+        await _launchUrlOrStore(deepLinkUrl, packageName);
+      } catch (e) {
+        print('[VNPAY] Error launching intent URL: $e');
+      }
+      return NavigationActionPolicy.CANCEL;
+    }
+    // Handle direct scheme URLs (banking apps with custom URL schemes)
+    else if (url.contains('://') && !url.startsWith('http')) {
+      print('[VNPAY] Direct scheme URL: $url');
+
+      try {
+        // Parse the URL to extract scheme, host and parameters
+        final uri = Uri.parse(url);
+        final scheme = uri.scheme;
+        String? packageName;
+
+        // Extract QR content parameter
+        String? qrContent;
+        if (uri.queryParameters.containsKey('qrContent')) {
+          qrContent = uri.queryParameters['qrContent'];
+        }
+
+        final callbackUrl = uri.queryParameters['callbackurl'];
+
+        // Known package mappings - extend this list as needed
+        final knownSchemes = {
+          'vpbankneo': 'com.vnpay.vpbankonline',
+          'tcb': 'vn.com.techcombank.bb.app',
+          // Add more mappings as you discover them
+        };
+
+        packageName = knownSchemes[scheme];
+
+        // Reconstruct URL with consistent 'data' parameter
+        // This aligns with the intent:// format for consistency
+        if (qrContent != null && callbackUrl != null) {
+          // Create URL with standardized parameters
+          final standardizedUri = Uri(
+            scheme: scheme,
+            host: uri.host,
+            path: uri.path,
+            queryParameters: {
+              'data': qrContent,
+              'callbackurl': callbackUrl,
+            },
+          );
+
+          print('[VNPAY] Standardized URL: ${standardizedUri.toString()}');
+
+          // Try to launch with standardized format
+          final launched =
+              await _launchUrlOrStore(standardizedUri.toString(), packageName);
+          if (launched) {
+            return NavigationActionPolicy.CANCEL;
+          }
+        }
+
+        // If standardization failed, try original URL as fallback
+        await _launchUrlOrStore(url, packageName);
+      } catch (e) {
+        print('[VNPAY] Error handling direct scheme URL: $e');
+      }
+      return NavigationActionPolicy.CANCEL;
+    }
+
+    // Allow all other URLs to load normally
+    return NavigationActionPolicy.ALLOW;
+  }
+
+  // Helper method to launch URL or open app store if not installed
+  Future<bool> _launchUrlOrStore(String url, String? packageName) async {
+    try {
+      final canLaunch = await canLaunchUrl(Uri.parse(url));
+      if (canLaunch) {
+        await launchUrl(
+          Uri.parse(url),
+          mode: LaunchMode.externalApplication,
+        );
+        return true;
+      } else if (packageName != null) {
+        // If app is not installed, open Play Store
+        final marketUrl = Uri.parse('market://details?id=$packageName');
+        final httpUrl = Uri.parse(
+            'https://play.google.com/store/apps/details?id=$packageName');
+
+        try {
+          await launchUrl(marketUrl, mode: LaunchMode.externalApplication);
+        } catch (_) {
+          await launchUrl(httpUrl, mode: LaunchMode.externalApplication);
+        }
+        return true;
+      }
+    } catch (e) {
+      print('[VNPAY] Error launching URL: $e');
+    }
+    return false;
+  }
+
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
@@ -56,69 +188,7 @@ class VNPayViewState extends State<VNPayView> {
                 shouldOverrideUrlLoading: (controller, navigationAction) async {
                   final url = navigationAction.request.url.toString();
                   print('[VNPAY] BANK URL: $url');
-
-                  if (url.startsWith('intent://')) {
-                    print('[VNPAY] Intent URL: $url');
-
-                    try {
-                      // Parse the intent URL
-                      final uri =
-                          Uri.parse(url.replaceFirst('intent://', 'intent:'));
-
-                      // Extract all important parts from the intent URL
-                      final packageName =
-                          url.split('package=')[1].split(';')[0];
-                      final scheme = url.split('scheme=')[1].split(';')[0];
-
-                      // Extract the data parameter
-                      final data = uri.queryParameters['data'];
-                      final callbackUrl = uri.queryParameters['callbackurl'];
-
-                      // Construct the deep link URL with all necessary parameters
-                      final deepLinkData = {
-                        'data': data,
-                        'callbackurl': callbackUrl,
-                      };
-
-                      // Create the final URL with scheme and encoded parameters
-                      final deepLinkUrl = Uri(
-                        scheme: scheme,
-                        host: 'view',
-                        queryParameters: deepLinkData,
-                      ).toString();
-
-                      print('[VNPAY] Deep link URL: $deepLinkUrl');
-
-                      // Try to launch the bank app with the payment data
-                      final canLaunchApp =
-                          await canLaunchUrl(Uri.parse(deepLinkUrl));
-
-                      if (canLaunchApp) {
-                        await launchUrl(
-                          Uri.parse(deepLinkUrl),
-                          mode: LaunchMode.externalApplication,
-                        );
-                      } else {
-                        // If app is not installed, open Play Store
-                        final marketUrl =
-                            Uri.parse('market://details?id=$packageName');
-                        final httpUrl = Uri.parse(
-                            'https://play.google.com/store/apps/details?id=$packageName');
-
-                        try {
-                          await launchUrl(marketUrl,
-                              mode: LaunchMode.externalApplication);
-                        } catch (_) {
-                          await launchUrl(httpUrl,
-                              mode: LaunchMode.externalApplication);
-                        }
-                      }
-                    } catch (e) {
-                      print('[VNPAY] Error launching app: $e');
-                    }
-                    return NavigationActionPolicy.CANCEL;
-                  }
-                  return NavigationActionPolicy.ALLOW;
+                  return _handleBankUrl(url);
                 },
                 onWebViewCreated: (controller) {
                   webViewController = controller;
