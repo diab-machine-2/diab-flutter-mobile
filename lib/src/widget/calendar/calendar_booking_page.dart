@@ -56,9 +56,10 @@ class _CalendarBookingControllerState extends State<CalendarBookingController> {
 
   Future<void> setUpCalendar() async {
     await _cubit.initializeMyCalendar(
-        courseId: widget.courseId,
-        endDate: DateTime.fromMillisecondsSinceEpoch(
-            int.parse(widget.endTime) * 1000));
+      courseId: widget.courseId,
+      // endDate: DateTime.fromMillisecondsSinceEpoch(
+      //     int.parse(widget.endTime) * 1000)
+    );
 
     myCalendar = CalendarBookingCubit.myCalendar;
     seletedDate = myCalendar != null
@@ -118,9 +119,7 @@ class _CalendarBookingControllerState extends State<CalendarBookingController> {
       },
       child: Scaffold(
         body: Container(
-          decoration: BoxDecoration(
-            color: R.color.backgroundColorNew
-          ),
+          decoration: BoxDecoration(color: R.color.backgroundColorNew),
           child: BlocProvider(
               create: (context) => _cubit,
               child: BlocConsumer<CalendarBookingCubit, CalendarBookingState>(
@@ -398,7 +397,7 @@ class _CalendarBookingControllerState extends State<CalendarBookingController> {
     );
   }
 
-   _showPopupOverSwitchTime({
+  _showPopupOverSwitchTime({
     required Function onConfirm,
     bool isShowImg = false,
     String? subtitle,

@@ -88,8 +88,8 @@ class CalendarBookingCubit extends Cubit<CalendarBookingState> {
     DateTime? startDate,
     DateTime? endDate,
   }) async {
-    startDate ??= DateTime.now().add(Duration(days: 0));
-    endDate ??= DateTime.now()
+    startDate = DateTime.now().add(Duration(days: 0));
+    endDate = DateTime.now()
         .add(Duration(days: Const.MAX_DAY_RANGE_PRIMARY_SCREENING));
     emit(CalendarBookingLoading());
 

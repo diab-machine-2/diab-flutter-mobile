@@ -130,9 +130,14 @@ class BranchioLinkConfig {
           bookingQuantity = response.length;
           if (bookingQuantity >= 1) {
             final pickSlot = response.where(
-                (element) => element.isDeleted == false,
-                );
-            if (pickSlot.isEmpty) return;
+              (element) => element.isDeleted == false,
+            );
+            if (pickSlot.isEmpty) {
+              navigatorKey.currentState?.pushNamed(
+                  NavigatorName.calendar_booking,
+                  arguments: {'courseId': _courseId, 'endTime': _endTime});
+              return;
+            }
 
             navigatorKey.currentState
                 ?.pushNamed(NavigatorName.calendar, arguments: {
