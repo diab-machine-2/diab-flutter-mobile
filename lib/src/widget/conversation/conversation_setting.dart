@@ -54,16 +54,18 @@ class _ConversationSettingState extends State<ConversationSetting> {
                   onPressed: () {
                     Navigator.pop(context);
                   }),
-              title: Align(
-                alignment: Alignment.topLeft,
-                child: Text(
-                  R.string.conversation_setting_title.tr(),
-                  style: TextStyle(
-                      color: R.color.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.w600),
-                ),
-              ),
+              title: Transform(
+                  transform: Matrix4.translationValues(-20, 0.0, 0.0),
+                  child: Align(
+                    alignment: Alignment.topLeft,
+                    child: Text(
+                      R.string.conversation_setting_title.tr(),
+                      style: TextStyle(
+                          color: R.color.white,
+                          fontSize: 18,
+                          fontWeight: FontWeight.w600),
+                    ),
+                  )),
               flexibleSpace: Container(
                 decoration: BoxDecoration(
                     gradient: LinearGradient(
@@ -78,28 +80,82 @@ class _ConversationSettingState extends State<ConversationSetting> {
             ),
             body: Column(children: [
               Container(
-                  padding: EdgeInsets.all(16),
-                  decoration: BoxDecoration(color: R.color.white),
-                  child: Align(
-                    child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          Image.asset(
-                            R.drawable.chat_avatar_chatbot_ai_2,
-                            width: 120,
-                            fit: BoxFit.cover,
+                // color: R.color.red,
+                margin: EdgeInsets.only(top: 32, bottom: 16),
+                child: Column(
+                  children: [
+                    Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        Container(
+                          width: 120,
+                          height: 120,
+                          decoration: BoxDecoration(
+                            color: R.color.white,
+                            borderRadius: BorderRadius.circular(100),
                           ),
-                          SizedBox(height: 10),
-                          Text(
-                            widget.conversation.title,
-                            style: TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                                fontFamily: 'sfpro'),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(100),
+                            child: Image.asset(
+                              R.drawable.chat_avatar_chatbot_ai_3,
+                              width: 120,
+                              height: 120,
+                              fit: BoxFit.cover,
+                            ),
                           ),
-                        ]),
-                  )),
+                        ),
+                        Positioned(
+                          bottom: 0,
+                          width: 100,
+                          child: Container(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 12, vertical: 1),
+                            decoration: BoxDecoration(
+                              border: Border.all(color: Colors.white, width: 1),
+                              color: R.color.mainColor,
+                              borderRadius: BorderRadius.circular(20),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.grey.withOpacity(0.3),
+                                  blurRadius: 5,
+                                  spreadRadius: 2,
+                                ),
+                              ],
+                            ),
+                            child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text(
+                                    'Trợ lý AI',
+                                    style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w300,
+                                        fontFamily: 'sfpro'),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                  SizedBox(width: 4),
+                                  Image.asset(
+                                      R.drawable.chat_avatar_bagged_star,
+                                      width: 12),
+                                ]),
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 8),
+                    Text(
+                      widget.conversation.title,
+                      style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          fontFamily: 'sfpro'),
+                    ),
+                  ],
+                ),
+              ),
               SizedBox(height: 16),
               Column(
                 children: [

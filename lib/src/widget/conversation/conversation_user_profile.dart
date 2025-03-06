@@ -25,7 +25,7 @@ class _ConversationUserProfileState extends State<ConversationUserProfile> {
       'Trong trường hợp cần trợ giúp, hãy gọi ngay đến Hotline của DiaB 0931888832';
   final String buttonText = 'Hỗ trợ';
   final String phoneNumber = '0931888832';
-  final _coverHeightRate = 0.26; // -> 30% of screen height
+  final _coverHeightRate = 0.22; // -> 22% of screen height
 
   Future firebaseSetup() async {
     await TrackingManager.analytics.logScreenView(
