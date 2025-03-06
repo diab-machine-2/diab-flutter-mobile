@@ -1,6 +1,3 @@
-import 'dart:math';
-
-import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -269,10 +266,10 @@ class _BookingClinicProvidersPageState
     return Builder(
       builder: (context) {
         final isFiltered = selectedDistricts.isNotEmpty ||
-            (selectedTypes.length == 1 && !selectedTypes.contains('')) ||
-            (selectedTimeframes.length == 1 &&
+            (selectedTypes.length >= 1 && !selectedTypes.contains('')) ||
+            (selectedTimeframes.length >= 1 &&
                 !selectedTimeframes.contains('')) ||
-            (selectedServiceTypes.length == 1 &&
+            (selectedServiceTypes.length >= 1 &&
                 !selectedServiceTypes.contains(''));
 
         return GestureDetector(
@@ -751,7 +748,10 @@ class _BookingClinicProvidersPageState
                               _buildFilterItem(
                                   city.nameVi, city.slug, 'district')),
                         InkWell(
-                          onTap: () => _showAllCities.value = true,
+                          onTap: () {
+                            _syncSelectedCities();
+                            _showAllCities.value = true;
+                          },
                           child: Container(
                             alignment: Alignment.center,
                             decoration: BoxDecoration(
@@ -862,6 +862,25 @@ class _BookingClinicProvidersPageState
     );
   }
 
+  void _syncSelectedCities() {
+    // Clear the current selections
+    _selectedOtherCities.clear();
+
+    // Add cities that are in selectedDistricts
+    if (selectedDistricts.isNotEmpty) {
+      for (String slug in selectedDistricts) {
+        final city = getListCityModel()
+            .where(
+              (city) => city.slug == slug,
+            )
+            .firstOrNull;
+        if (city != null) {
+          _selectedOtherCities.add(city);
+        }
+      }
+    }
+  }
+
   Widget _buildAllCitiesDrawer() {
     return Stack(
       children: [
@@ -872,7 +891,6 @@ class _BookingClinicProvidersPageState
                 icon: Icon(Icons.arrow_back, color: R.color.color0xff111515),
                 onPressed: () {
                   _showAllCities.value = false;
-                  _selectedOtherCities.clear();
                   _searchController.clear();
                 },
               ),
@@ -891,8 +909,16 @@ class _BookingClinicProvidersPageState
               actions: [
                 GestureDetector(
                   onTap: () {
-                    selectedDistricts
-                        .addAll(_selectedOtherCities.map((city) => city.slug));
+                    setState(() {
+                      // Clear existing district selections
+                      selectedDistricts.clear();
+
+                      // Add only currently selected cities
+                      for (CityModel city in _selectedOtherCities) {
+                        selectedDistricts.add(city.slug);
+                      }
+                    });
+
                     _showAllCities.value = false;
                     _searchController.clear();
                   },
@@ -1180,6 +1206,7 @@ class _BookingClinicProvidersPageState
             // Single selection for districts
             if (isSelected) {
               selectedValues.remove(value);
+              _selectedOtherCities.removeWhere((city) => city.slug == value);
             } else {
               selectedValues.add(value);
             }
