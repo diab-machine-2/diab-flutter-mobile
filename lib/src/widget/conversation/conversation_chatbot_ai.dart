@@ -8,21 +8,19 @@ import 'package:flutter/services.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:flutter_chat_ui/src/models/date_header.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/response/chat_supabase_response.dart';
 import 'package:medical/src/model/service/api_result.dart';
 import 'package:medical/src/utils/app_log.dart';
-import 'package:medical/src/utils/extention.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/conversation/conversation_comon.dart'
     as itypes;
 import 'package:readmore/readmore.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../res/R.dart';
-import '../helper/helper.dart';
 import '../helper/tracking_manager.dart';
-import '../helper/show_message.dart' as appMessage;
 
 // For the testing purposes, you should probably use https://pub.dev/packages/uuid.
 String randomString() {
@@ -259,14 +257,17 @@ class _ConversationChatbotAiState extends State<ConversationChatbotAi>
                     (route) => false, // This removes all routes from stack
                   );
                 }),
-            title: Align(
-              alignment: Alignment.topLeft,
-              child: Text(
-                R.string.conversation_chatbot_ai_title.tr(),
-                style: TextStyle(
-                    color: R.color.white,
-                    fontSize: 20,
-                    fontWeight: FontWeight.w400),
+            title: Transform(
+              transform: Matrix4.translationValues(-20, 0.0, 0.0),
+              child: Align(
+                alignment: Alignment.topLeft,
+                child: Text(
+                  R.string.conversation_chatbot_ai_title.tr(),
+                  style: TextStyle(
+                      color: R.color.white,
+                      fontSize: 20,
+                      fontWeight: FontWeight.w400),
+                ),
               ),
             ),
             actions: [
@@ -330,6 +331,7 @@ class _ConversationChatbotAiState extends State<ConversationChatbotAi>
                     onSendPressed: _handleSendPressed,
                     onPreviewDataFetched: _handlePreviewDataFetched,
                     bubbleBuilder: _bubbleBuilder,
+                    dateHeaderBuilder: _dateHeaderBuilder,
                     emptyState: Center(
                       child: Text(
                         'No messages here yet',
@@ -508,6 +510,34 @@ class _ConversationChatbotAiState extends State<ConversationChatbotAi>
     return widget;
   }
 
+  Widget _dateHeaderBuilder(DateHeader dateHeader) {
+    return Container(
+      alignment: Alignment.center,
+      child: Opacity(
+        opacity: 0.3,
+        child: Container(
+          decoration: BoxDecoration(
+            color: Color(0xFF3E3F3F),
+            borderRadius: BorderRadius.circular(20),
+          ),
+          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+          margin: EdgeInsets.only(
+            bottom: 32,
+            top: 16,
+          ),
+          child: Text(
+            DateFormat('HH:mm dd/MM/yyyy').format(dateHeader.dateTime),
+            style: TextStyle(
+              color: R.color.white,
+              fontSize: 12,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _bubbleBuilder(
     Widget child, {
     required types.Message message,
@@ -516,9 +546,10 @@ class _ConversationChatbotAiState extends State<ConversationChatbotAi>
     DateTime dateTime =
         DateTime.fromMillisecondsSinceEpoch(message.createdAt ?? 0, isUtc: true)
             .toLocal();
-    String formattedDateTime = dateTime.isSameDayWith(DateTime.now())
-        ? DateFormat('HH:mm').format(dateTime)
-        : DateFormat('HH:mm - dd/MM/yyyy').format(dateTime);
+    // String formattedDateTime = dateTime.isSameDayWith(DateTime.now())
+    //     ? DateFormat('HH:mm').format(dateTime)
+    //     : DateFormat('HH:mm - dd/MM/yyyy').format(dateTime);
+    String formattedDateTime = DateFormat('HH:mm').format(dateTime);
     return Bubble(
       padding: BubbleEdges.all(10),
       borderColor: _author.id == message.author.id
