@@ -496,23 +496,25 @@ class _DsmesCalendarSectionState extends State<DsmesCalendarSection> {
       final route = ModalRoute.of(context)?.settings;
       final args = route?.arguments as Map<String, dynamic>?;
       final isEditing = args?['isEditing'] ?? false;
+      final bookingType = args?['bookingType'] ?? widget.bookingType;
+      final previousRoute =
+          args?['previousRoute'] ?? NavigatorName.dsmes_confirm_information;
 
       if (isEditing) {
-        if (widget.serviceType ==
-            DsmesAppointmentMode.telemedicine.toString()) {
-        } else {
-          // First pop the current select_date page
-          DsmesNavigationMixin.navigationKey.currentState?.pop();
-          DsmesNavigationMixin.navigationKey.currentState?.popUntil((route) =>
-              route.settings.name == NavigatorName.dsmes_booking_select_date);
+        // First pop the current select_date page
+        DsmesNavigationMixin.navigationKey.currentState?.pop();
+        DsmesNavigationMixin.navigationKey.currentState?.popUntil((route) =>
+            route.settings.name == NavigatorName.dsmes_booking_select_date);
 
-          DsmesNavigationMixin.navigationKey.currentState?.pushReplacementNamed(
-              NavigatorName.dsmes_booking_select_date,
-              arguments: {
-                'serviceType': widget.serviceType,
-                'action': widget.action,
-              });
-        }
+        DsmesNavigationMixin.navigationKey.currentState?.pushReplacementNamed(
+            NavigatorName.dsmes_booking_select_date,
+            arguments: {
+              'serviceType': widget.serviceType,
+              'action': widget.action,
+              'previousRoute': previousRoute,
+              'bookingType': bookingType,
+              'isEditing': isEditing,
+            });
 
         // Push confirm info
         DsmesNavigationMixin.navigationKey.currentState
