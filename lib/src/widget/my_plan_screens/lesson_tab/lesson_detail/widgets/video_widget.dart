@@ -1,4 +1,3 @@
-
 import 'package:better_player_plus/better_player_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
@@ -42,7 +41,15 @@ class _VideoWidgetState extends State<VideoWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return BetterPlayer(controller: videoManager!.controller!);
+    return FutureBuilder<BetterPlayerController?>(
+      future: videoManager?.controller,
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) {
+          return Center(child: CircularProgressIndicator());
+        }
+        return BetterPlayer(controller: snapshot.data!);
+      },
+    );
   }
 
   Future<void> getThumbnail() async {
