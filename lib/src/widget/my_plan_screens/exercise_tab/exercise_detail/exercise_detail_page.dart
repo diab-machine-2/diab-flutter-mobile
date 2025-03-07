@@ -36,12 +36,40 @@ class _ExerciseDetailState extends State<ExerciseDetail> {
     _cubit = ExerciseDetailCubit(appRepository);
     _cubit.initData(widget.exerciseData, context);
     ExcerciseDetailTracking.firebaseSetup();
+
+    // Initialize player after the widget is built
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _initializePlayer();
+    });
   }
 
   @override
   void dispose() {
     _cubit.videoManager.dispose();
     super.dispose();
+  }
+
+  Future<void> _initializePlayer() async {
+    if (_cubit.videoManager.controller != null) {
+      try {
+        // Make sure the player is properly initialized
+        await _cubit.videoManager.ensureVideoInitialized();
+
+        // If there's still an issue, you can force a reload
+        if (_cubit.videoManager.videoDuration == null ||
+            _cubit.videoManager.videoDuration!.inMilliseconds <= 0) {
+          debugPrint('[EXERCISE] Forcing video data source retry');
+          await _cubit.videoManager.controller!.retryDataSource();
+        }
+
+        // Set autoplay
+        await _cubit.videoManager.controller!.play();
+
+        if (mounted) setState(() {});
+      } catch (e) {
+        debugPrint('[EXERCISE] Error initializing player: $e');
+      }
+    }
   }
 
   @override
@@ -88,7 +116,11 @@ class _ExerciseDetailState extends State<ExerciseDetail> {
                       child: _cubit.videoManager.isYoutubeUrl() == false
                           ? _cubit.videoManager.controller != null
                               ? BetterPlayer(
-                                  controller: _cubit.videoManager.controller!)
+                                  controller: _cubit.videoManager.controller!,
+                                  // Add key to force rebuild when needed
+                                  key: ValueKey(
+                                      'better_player_${DateTime.now().millisecondsSinceEpoch}'),
+                                )
                               : const SizedBox.shrink()
                           : YoutubeVideoWidget(
                               videoUrl: _cubit.exerciseData.videoUrl ?? '',

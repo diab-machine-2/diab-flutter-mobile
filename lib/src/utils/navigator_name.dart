@@ -15,7 +15,8 @@ class NavigatorName {
   static const String detail_hba1c = '/detail_hba1c';
   static const String detail_exercrises = '/detail_exercrises';
   static const String detail_blood_sugar = '/detail_blood_sugar';
-  static const String detail_blood_sugar_listing = '/detail_blood_sugar_listing';
+  static const String detail_blood_sugar_listing =
+      '/detail_blood_sugar_listing';
   static const String hba1c_tabble = '/hba1c_tabble';
   static const String add_blood_sugar = '/add_blood_sugar';
   static const String add_blood_sugar_new = '/add_blood_sugar_new';
@@ -75,6 +76,10 @@ class NavigatorName {
   static const String meeting = '/meeting';
   static const String sync_screen = '/sync-screen';
   static const String sync_loading = '/sync-loading';
+  static const String conversations = '/coversations';
+  static const String conversation_chatbot_ai = '/conversation_chatbot_ai';
+  static const String conversation_user_profile = '/conversation_user_profile';
+  static const String conversation_setting = '/conversation_setting';
 
   // NEW UI
   static const String utilities = '/utilities';
@@ -97,7 +102,8 @@ class NavigatorName {
   static const String dsmes_confirm_information = '/dsmes_confirm_information';
   static const String dsmes_clinic_detail = '/dsmes_clinic_detail';
   static const String dsmes_select_service = '/dsmes_select_service';
-  static const String dsmes_booking_online_join_room = '/dsmes_booking_online_join_room';
+  static const String dsmes_booking_online_join_room =
+      '/dsmes_booking_online_join_room';
   // New Glucose
   static const String glucose_intro_1st_page = '/glucose-intro-1st-page';
   static const String glucose_intro_2nd_page = '/glucose-intro-2nd-page';
