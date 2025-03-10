@@ -165,8 +165,12 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
   void _checkExistLessonId() async {
     final String? lessonId = DynamicLinkConfig.instance.lessonId;
     final String? activityId = DynamicLinkConfig.instance.activityId;
-    if (lessonId != null || activityId != null) {
+    if (lessonId != null) {
       _jumpTo(TabBarType.library.index);
+      _bottomTabbarKey.currentState?.setPage(TabBarType.library.index);
+    } else if (activityId != null) {
+      _jumpTo(TabBarType.program.index);
+      _bottomTabbarKey.currentState?.setPage(TabBarType.program.index);
     }
   }
 
