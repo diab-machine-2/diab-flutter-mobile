@@ -72,6 +72,7 @@ import 'package:medical/src/widget/profile/setting_schedule_glucose.dart';
 import 'package:medical/src/widget/profile/user_info.dart';
 import 'package:medical/src/widget/question_answer/make_question/make_question_page.dart';
 import 'package:medical/src/widget/question_answer/question_detail/question_detail_page.dart';
+import 'package:medical/src/widget/subscription/pages/paywall_screen.dart';
 import 'package:medical/src/widget/tabbar/tabbar.dart';
 import 'package:medical/src/widget/voucher/presentation/voucher_detail/pages/voucher_detail_view.dart';
 import 'package:medical/src/widget/voucher/presentation/voucher_list/pages/voucher_list_view.dart';
@@ -668,7 +669,6 @@ class App extends StatelessWidget {
                       settings,
                       DsmesAppointmentPage(),
                     );
-
                   default:
                     return null;
                 }

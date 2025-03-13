@@ -19,6 +19,7 @@ import 'package:medical/src/modal/base/referral_code_temp.dart';
 import 'package:medical/src/modal/error/error_model.dart';
 import 'package:medical/src/modal/user/user_model.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
+import 'package:medical/src/model/response/user_info_response.dart';
 import 'package:medical/src/repo/user/user_client.dart';
 import 'package:medical/src/service/zoom_service.dart';
 import 'package:medical/src/utils/app_storages.dart';
@@ -33,6 +34,7 @@ import 'package:medical/src/widget/home/home_v2.dart';
 import 'package:medical/src/widget/my_plan_screens/activity_tab/activity_tab/activity_tab.dart';
 import 'package:medical/src/widget/my_plan_screens/my_plan/my_plan.dart';
 import 'package:medical/src/widget/question_answer/question_answer_page.dart';
+import 'package:medical/src/widget/subscription/subscription_page.dart';
 import 'package:medical/src/widget/tabbar/tabbar_v2_data.dart';
 import 'package:medical/src/widget/voucher/presentation/widgets/webview_store.dart';
 import 'package:medical/curved_navigation_bar/curved_navigation_bar.dart';
@@ -68,6 +70,7 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
 
   int _initialPage = 0;
   late int _lastIndex = _initialPage;
+  bool _showBottomBar = true;
 
   @override
   void initState() {
@@ -238,6 +241,16 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
         ];
       });
     }
+    if (notifyName == 'hide_bottom_bar') {
+      setState(() {
+        _showBottomBar = false;
+      });
+    }
+    if (notifyName == 'show_bottom_bar') {
+      setState(() {
+        _showBottomBar = true;
+      });
+    }
   }
 
   void _jumpTo(int index) {
@@ -294,13 +307,15 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
       create: (context) => MyPlanCubit(AppRepository(), 0),
       child: BlocBuilder<MyPlanCubit, MyPlanState>(
         builder: (context, state) {
-          return CommonPage(
-            title: R.string.title_activity.tr(),
-            background: R.drawable.bg_welcome,
-            appbarColor: R.color.white,
-            hideAllBackButton: true,
-            child: ActivityTabPage(extendTabbar: true),
-          );
+          return AppSettings.userInfo?.packageType == PackageType.free
+              ? SubscriptionPage()
+              : CommonPage(
+                  title: R.string.title_activity.tr(),
+                  background: R.drawable.bg_welcome,
+                  appbarColor: R.color.white,
+                  hideAllBackButton: true,
+                  child: ActivityTabPage(extendTabbar: true),
+                );
         },
       ),
     );

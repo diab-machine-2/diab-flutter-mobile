@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:bot_toast/bot_toast.dart';
 import 'package:carousel_slider/carousel_slider.dart';
@@ -46,6 +47,9 @@ import 'package:medical/src/widget/my_plan_screens/activity_tab/activity_tab/mod
 import 'package:medical/src/widget/my_plan_screens/exercise_tab/exercise_detail/exercise_detail_page.dart';
 import 'package:medical/src/widget/my_plan_screens/lesson_tab/lesson_detail/lesson_detail.dart';
 import 'package:medical/src/widget/profile/user_info.dart';
+import 'package:medical/src/widget/subscription/services/revenue_cat_service.dart';
+import 'package:medical/src/widget/subscription/pages/paywall_screen.dart';
+import 'package:medical/src/widget/subscription/subscription_payment_state.dart';
 import 'package:medical/src/widget/survey_screens/introduce_survey/introduce_survey.dart';
 import 'package:medical/src/widget/tabbar/tabbar_v2.dart';
 import 'package:medical/src/widget/voucher/presentation/widgets/voucher_popup.dart';
@@ -53,6 +57,7 @@ import 'package:medical/src/widgets/button_widget.dart';
 import 'package:medical/src/widgets/network_image_widget.dart';
 import 'package:medical/src/widgets/share_profile_popup.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../service/rating_service.dart';
 import 'welcome_package_screen/welcome_package_screen.dart';
@@ -77,6 +82,9 @@ class _HomeControllerState extends State<HomeController>
   final GlobalKey<CourseSuggestState> _courseSuggestKey = GlobalKey();
   final HomeBloc _homeBloc = HomeBloc();
   final String _screenName = "home";
+  CustomerInfo? customerInfo;
+  String packageTitle = '';
+  SubscriptionPaymentState? subscriptionState;
 
   int page = 1;
   bool _isDisplayedWelcome = false;
@@ -110,6 +118,7 @@ class _HomeControllerState extends State<HomeController>
     }
     _firebaseSetup();
     _initHealthApp();
+    // initRevenueCat();
   }
 
   @override
@@ -155,6 +164,155 @@ class _HomeControllerState extends State<HomeController>
       //   _showPopupStore();
       // });
     }
+  }
+
+  void initRevenueCat() async {
+    final accountId = AppSettings.userInfo?.accountId ?? '';
+    if (accountId.isEmpty) {
+      return;
+    }
+
+    try {
+      // Login to RevenueCat with the user's accountId
+      await RevenueCatService.login(accountId);
+
+      // Get the latest customer info
+      customerInfo = await RevenueCatService.getCustomerInfo();
+
+      // Check subscription state
+      subscriptionState = await checkSubscriptionPaymentState();
+
+      // Update UI with current subscription info
+      final offering = await RevenueCatService.getCurrentOffering();
+      if (offering != null) {
+        packageTitle = await getActiveSubscriptionDescription();
+        if (mounted) setState(() {});
+      }
+
+      // Set up a listener for subscription changes
+      Purchases.addCustomerInfoUpdateListener((info) {
+        if (mounted) {
+          setState(() {
+            customerInfo = info;
+            _updateSubscriptionStatus();
+          });
+        }
+      });
+    } catch (e) {
+      print("RevenueCat login error: $e");
+    }
+  }
+
+  void _updateSubscriptionStatus() async {
+    try {
+      // Update subscription state
+      subscriptionState = await checkSubscriptionPaymentState();
+
+      final offering = await RevenueCatService.getCurrentOffering();
+      if (offering != null) {
+        packageTitle = await getActiveSubscriptionDescription();
+        if (mounted) setState(() {});
+      }
+    } catch (e) {
+      print("Error updating subscription status: $e");
+    }
+  }
+
+  void refreshSubscriptionStatus() async {
+    try {
+      await Purchases.syncPurchases();
+      customerInfo = await RevenueCatService.getCustomerInfo();
+      subscriptionState = await checkSubscriptionPaymentState();
+      if (mounted)
+        setState(() {
+          _updateSubscriptionStatus();
+        });
+    } catch (e) {
+      print("Error refreshing subscription: $e");
+    }
+  }
+
+  Future<SubscriptionPaymentState> checkSubscriptionPaymentState() async {
+    // Get updated customer info
+    final customerInfo = await RevenueCatService.getCustomerInfo();
+
+    if (customerInfo == null) return SubscriptionPaymentState.none();
+
+    // Check for active entitlements
+    if (customerInfo.entitlements.active.isNotEmpty) {
+      // Check each active entitlement
+      for (final entitlementId in customerInfo.entitlements.active.keys) {
+        final entitlement = customerInfo.entitlements.active[entitlementId]!;
+
+        // If this is cancelled but still active
+        if (entitlement.isActive && !entitlement.willRenew) {
+          return SubscriptionPaymentState.activeCancelled(
+              entitlementId: entitlementId,
+              expirationDate: DateTime.parse(entitlement.expirationDate!),
+              productId: entitlement.productIdentifier);
+        }
+
+        // If this is active and will renew
+        if (entitlement.isActive && entitlement.willRenew) {
+          return SubscriptionPaymentState.activeRenewing(
+              entitlementId: entitlementId,
+              expirationDate: DateTime.parse(entitlement.expirationDate!),
+              productId: entitlement.productIdentifier);
+        }
+      }
+    }
+
+    // No active subscriptions
+    return SubscriptionPaymentState.none();
+  }
+
+  Widget _buildSubscriptionStatusWidget() {
+    if (subscriptionState == null) {
+      return SizedBox.shrink();
+    }
+
+    if (subscriptionState!.isActive && !subscriptionState!.willRenew) {
+      return Container(
+        padding: EdgeInsets.all(8),
+        margin: EdgeInsets.symmetric(vertical: 8),
+        decoration: BoxDecoration(
+          color: Colors.amber.shade100,
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              "Your subscription is ending soon",
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+            SizedBox(height: 4),
+            Text(
+              "Access until: ${DateFormat('yyyy-MM-dd, HH:mm').format(subscriptionState!.expirationDate!.toLocal())}",
+              style: TextStyle(fontSize: 12),
+            ),
+            SizedBox(height: 8),
+            InkWell(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => PaywallScreen()),
+                );
+              },
+              child: Text(
+                "Renew now",
+                style: TextStyle(
+                  color: Colors.blue,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    return SizedBox.shrink();
   }
 
   void _showDialogSuccess() {
@@ -384,7 +542,32 @@ class _HomeControllerState extends State<HomeController>
   Future<bool> _refresh() async {
     page = 1;
     _homeBloc.add(FetchHome());
+
     return true;
+  }
+
+  Future<String> getActiveSubscriptionDescription() async {
+    final offering = await RevenueCatService.getCurrentOffering();
+
+    // Get active entitlements
+    final activeEntitlements =
+        customerInfo?.entitlements.active.values.toList() ?? [];
+
+    for (var entitlement in activeEntitlements) {
+      // Create identifier in format "productIdentifier:productPlanIdentifier"
+      final identifier =
+          "${entitlement.productIdentifier}:${entitlement.productPlanIdentifier}";
+
+      // Find matching package in offerings
+      final package = offering?.availablePackages.firstWhere(
+        (package) => package.storeProduct.identifier == identifier,
+      );
+
+      if (package != null) {
+        return package.storeProduct.title;
+      }
+    }
+    return '';
   }
 
   Future<bool> _pullToRefresh() async {
@@ -393,6 +576,17 @@ class _HomeControllerState extends State<HomeController>
     // _homeBloc.add(FetchHome());
     user = await UserClient().fetchUser();
     AppSettings.isReloadCurrentUserInfo = true;
+
+    customerInfo = await RevenueCatService.getCustomerInfo();
+    // Update subscription state
+    subscriptionState = await checkSubscriptionPaymentState();
+    packageTitle = await getActiveSubscriptionDescription();
+    if (mounted) setState(() {});
+
+    log('[SUBSCRIPTION] customerInfo activeSubscriptions: ${customerInfo?.activeSubscriptions}');
+    log('[SUBSCRIPTION] customerInfo entitlements: ${customerInfo?.entitlements}');
+    log('[SUBSCRIPTION] subscriptionState: ${subscriptionState?.expirationDate?.toLocal()}');
+
     return true;
   }
 
@@ -423,7 +617,7 @@ class _HomeControllerState extends State<HomeController>
                 });
               } else {}
             }
-            // 
+            //
             _haveInputGlucoseAlready = state.model.measurements?.isNotEmpty == true
               && state.model.measurements?.first.value1?.isNotEmpty == true
               && state.model.measurements?.first.value1 != "--";

@@ -1228,4 +1228,6 @@ class Strings {
   String get release_to_load_more => 'release_to_load_more';
   String get exist_appointment => 'exist_appointment';
   String get symptom_hint_text => 'symptom_hint_text';
+  String get lifestyle_program => 'lifestyle_program';
+  String get recommended => 'recommended';
 }

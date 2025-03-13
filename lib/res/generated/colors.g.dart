@@ -176,4 +176,8 @@ class Colors {
   Color get color0xff6E7378 => Color(0xff6E7378);
   Color get color0xffC2C2C2 => Color(0xffC2C2C2);
   Color get glucose_bg_color => Color(0xFFEAF9F7);
+  Color get gradientGold1 => Color(0xffB09459);
+  Color get gradientGold2 => Color(0xffD7BA82);
+  Color get gradientGold3 => Color(0xffDAB36A);
+  Color get gradientGold4 => Color(0xff998552);
 }

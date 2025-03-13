@@ -147,6 +147,8 @@ dependencies:
 
   flutter_in_app_pip: ^1.7.3
   carp_serializable: 1.2.0
+  purchases_flutter: ^8.6.0
+  purchases_ui_flutter: ^8.6.0
 
   # Social login
   # zalo_flutter: ^0.0.6
@@ -172,6 +174,7 @@ dev_dependencies:
   retrofit_generator: ^4.0.3
   build_runner: ^2.3.3
   json_serializable: ^6.3.1
+  device_preview: ^1.0.0
 
 dependency_overrides:
   provider: 6.0.2
@@ -213,6 +216,7 @@ flutter:
     - lib/res/generated/
     - lib/res/icons/
     - lib/res/drawables/dsmes_service/
+    - lib/src/widget/subscription/data/subscription_packages.json
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see
