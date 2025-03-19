@@ -1,8 +1,10 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/subscription/model/subscription_package_model.dart';
 import 'package:medical/src/widget/subscription/services/subscription_service.dart';
+import 'package:medical/src/widget/subscription/subscription_navigation_mixin.dart';
 import 'package:medical/src/widget/subscription/widgets/feature_item_widget.dart';
 import 'package:medical/src/widgets/gap_widget.dart';
 
@@ -80,25 +82,28 @@ class PackageDetailBottomSheet extends StatelessWidget {
               ),
             ),
             GapH(16),
-            Container(
-              height: 48,
-              decoration: BoxDecoration(
-                  color: R.color.mainColor,
-                  borderRadius: BorderRadius.circular(200),
-                  gradient: LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.centerRight,
-                      colors: [
-                        R.color.greenGradientTop,
-                        R.color.greenGradientBottom
-                      ])),
-              child: Center(
-                child: Text(
-                  R.string.sign_up.tr(),
-                  style: TextStyle(
-                    color: R.color.white,
-                    fontWeight: FontWeight.w700,
-                    fontSize: 15,
+            GestureDetector(
+              onTap: () => onPurchase(),
+              child: Container(
+                height: 48,
+                decoration: BoxDecoration(
+                    color: R.color.mainColor,
+                    borderRadius: BorderRadius.circular(200),
+                    gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.centerRight,
+                        colors: [
+                          R.color.greenGradientTop,
+                          R.color.greenGradientBottom
+                        ])),
+                child: Center(
+                  child: Text(
+                    R.string.sign_up.tr(),
+                    style: TextStyle(
+                      color: R.color.white,
+                      fontWeight: FontWeight.w700,
+                      fontSize: 15,
+                    ),
                   ),
                 ),
               ),

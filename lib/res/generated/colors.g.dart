@@ -180,4 +180,7 @@ class Colors {
   Color get gradientGold2 => Color(0xffD7BA82);
   Color get gradientGold3 => Color(0xffDAB36A);
   Color get gradientGold4 => Color(0xff998552);
+  Color get color0xffCAFAF5 => Color(0xffCAFAF5);
+  Color get color0xff8FEBE0 => Color(0xff8FEBE0);
+  Color get color0xffBC8550 => Color(0xffBC8550);
 }

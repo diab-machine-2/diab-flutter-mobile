@@ -1,11 +1,17 @@
+import 'dart:developer';
+
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_observer/Observable.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/utils/navigator_name.dart';
+import 'package:medical/src/widget/subscription/pages/package_program_detail_page.dart';
 import 'package:medical/src/widget/subscription/services/revenue_cat_service.dart';
 import 'package:medical/src/widget/subscription/model/subscription_package_model.dart';
 import 'package:medical/src/widget/subscription/services/subscription_service.dart';
+import 'package:medical/src/widget/subscription/subscription_navigation_mixin.dart';
 import 'package:medical/src/widget/subscription/widgets/package_detail_bottom_sheet.dart';
+import 'package:medical/src/widget/subscription/pages/package_program_list_page.dart';
 import 'package:medical/src/widgets/gap_widget.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
 
@@ -20,18 +26,16 @@ class _PaywallScreenState extends State<PaywallScreen> {
   Map<String, SubscriptionPackage> _packageMap = {};
   bool _isLoading = true;
   int _selectedPackageIndex = 0;
+  String _currentRoute = '/';
 
   @override
   void initState() {
     super.initState();
-    Observable.instance.notifyObservers([], notifyName: 'hide_bottom_bar');
     _loadPackages();
   }
 
   @override
   void dispose() {
-    // Notify to show bottom bar when this screen closes
-    Observable.instance.notifyObservers([], notifyName: 'show_bottom_bar');
     super.dispose();
   }
 
@@ -74,16 +78,19 @@ class _PaywallScreenState extends State<PaywallScreen> {
       builder: (context) => PackageDetailBottomSheet(
         package: package,
         onPurchase: () async {
+          log('[SUBSCRIPTION] onPurchase revenueCatPackage: $revenueCatPackage');
           Navigator.pop(context);
-          final purchased =
-              await RevenueCatService.purchasePackage(revenueCatPackage);
-          if (purchased) {
-            Observable.instance.notifyObservers([], notifyName: "refresh_home");
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Purchase successful!')),
-            );
-            Navigator.pop(context);
-          }
+          SubscriptionNavigationMixin.navigationKey.currentState
+              ?.pushNamed(NavigatorName.package_program_list);
+          // final purchased =
+          //     await RevenueCatService.purchasePackage(revenueCatPackage);
+          // if (purchased) {
+          //   Observable.instance.notifyObservers([], notifyName: "refresh_home");
+          //   ScaffoldMessenger.of(context).showSnackBar(
+          //     SnackBar(content: Text('Purchase successful!')),
+          //   );
+          // Navigator.pop(context);
+          // }
         },
       ),
     );
@@ -93,85 +100,123 @@ class _PaywallScreenState extends State<PaywallScreen> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
-        // Make sure bottom bar is shown when going back
-        Observable.instance.notifyObservers([], notifyName: 'show_bottom_bar');
         return true;
       },
       child: Scaffold(
-        body: _isLoading
-            ? Center(child: CircularProgressIndicator())
-            : _localPackages.isEmpty
-                ? Center(child: Text('No subscription options available'))
-                : Stack(
-                    children: [
-                      // Background image with proper alignment
-                      Container(
-                        width: MediaQuery.of(context).size.width,
-                        height: MediaQuery.of(context).size.height,
-                        child: Image.asset(
-                          SubscriptionService.getBackgroundImageFromId(
-                              _localPackages[_selectedPackageIndex].id),
-                          fit: BoxFit.fitWidth,
-                          alignment: Alignment.topCenter,
-                        ),
-                      ),
+        body: Container(
+          decoration: BoxDecoration(
+            color: R.color.backgroundColorNew,
+          ),
+          child: Navigator(
+            key: SubscriptionNavigationMixin.navigationKey,
+            onGenerateRoute: (settings) {
+              print('[ROUTE] Current Route: ${settings.name}');
+              _currentRoute = settings.name ?? '/';
+              print(
+                  '[ROUTE] Navigator Stack: ${SubscriptionNavigationMixin.navigationKey.currentState?.toString()}');
 
-                      // Back arrow positioned at top
-                      Positioned(
-                        top: 40,
-                        left: 16,
-                        child: IconButton(
-                          icon: Icon(Icons.arrow_back,
-                              color: R.color.greenGradientTop02),
-                          onPressed: () {
-                            // Make sure bottom bar shows when navigating back
-                            Observable.instance.notifyObservers([],
-                                notifyName: 'show_bottom_bar');
-                            Navigator.of(context).pop();
-                          },
-                        ),
-                      ),
-
-                      // Main content aligned to bottom
-                      Positioned(
-                        left: 0,
-                        right: 0,
-                        bottom: 0,
-                        child: Container(
-                          padding: EdgeInsets.only(top: 180),
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              colors: [
-                                R.color.transparent,
-                                R.color.white.withOpacity(0.3),
-                                R.color.white.withOpacity(0.7),
-                                R.color.white.withOpacity(0.9),
-                                R.color.white,
-                              ],
-                              stops: [0.0, 0.15, 0.5, 0.7, 0.85],
-                              begin: Alignment.topCenter,
-                              end: Alignment.bottomCenter,
-                            ),
-                          ),
-                          child: Column(
-                            children: [
-                              _buildPackageCard(
-                                _localPackages[_selectedPackageIndex],
-                                _revenueCatPackages.firstWhere(
-                                  (p) =>
-                                      p.storeProduct.identifier ==
-                                      _localPackages[_selectedPackageIndex].id,
-                                  orElse: () => _revenueCatPackages.first,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
+              switch (settings.name) {
+                case '/':
+                  return MaterialPageRoute(
+                    builder: (_) => _buildMainContent(),
+                  );
+                case NavigatorName.package_program_list:
+                  return _buildRoute(
+                    settings,
+                    ProgramsListPage(),
+                  );
+                case NavigatorName.package_program_detail:
+                  Map<String, dynamic>? args =
+                      settings.arguments as Map<String, dynamic>?;
+                  return _buildRoute(
+                    settings,
+                    ProgramDetailPage(
+                      program: args?['program'],
+                    ),
+                  );
+                default:
+                  return null;
+              }
+            },
+          ),
+        ),
       ),
     );
+  }
+
+  Widget _buildMainContent() {
+    return _isLoading
+        ? Center(child: CircularProgressIndicator())
+        : _localPackages.isEmpty
+            ? Center(child: Text('No subscription options available'))
+            : Stack(
+                children: [
+                  // Background image with proper alignment
+                  Container(
+                    width: MediaQuery.of(context).size.width,
+                    height: MediaQuery.of(context).size.height,
+                    child: Image.asset(
+                      SubscriptionService.getBackgroundImageFromId(
+                          _localPackages[_selectedPackageIndex].id),
+                      fit: BoxFit.fitWidth,
+                      alignment: Alignment.topCenter,
+                    ),
+                  ),
+
+                  // Back arrow positioned at top
+                  Positioned(
+                    top: 40,
+                    left: 16,
+                    child: IconButton(
+                      icon: Icon(Icons.arrow_back,
+                          color: R.color.greenGradientTop02),
+                      onPressed: () {
+                        // Make sure bottom bar shows when navigating back
+                        Observable.instance
+                            .notifyObservers([], notifyName: 'show_bottom_bar');
+                        Navigator.of(context).pop();
+                      },
+                    ),
+                  ),
+
+                  // Main content aligned to bottom
+                  Positioned(
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    child: Container(
+                      padding: EdgeInsets.only(top: 180),
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            R.color.transparent,
+                            R.color.white.withOpacity(0.3),
+                            R.color.white.withOpacity(0.7),
+                            R.color.white.withOpacity(0.9),
+                            R.color.white,
+                          ],
+                          stops: [0.0, 0.15, 0.5, 0.7, 0.85],
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                        ),
+                      ),
+                      child: Column(
+                        children: [
+                          _buildPackageCard(
+                            _localPackages[_selectedPackageIndex],
+                            _revenueCatPackages.firstWhere(
+                              (p) =>
+                                  p.storeProduct.identifier ==
+                                  _localPackages[_selectedPackageIndex].id,
+                              orElse: () => _revenueCatPackages.first,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              );
   }
 
   Widget _buildPackageCard(
@@ -387,24 +432,10 @@ class _PaywallScreenState extends State<PaywallScreen> {
 
         // Register button
         GestureDetector(
-          onTap: () async {
-            // final revenueCatPackage = _revenueCatPackages.firstWhere(
-            //   (p) =>
-            //       p.storeProduct.identifier ==
-            //       _localPackages[_selectedPackageIndex].id,
-            //   orElse: () => _revenueCatPackages.first,
-            // );
-
-            // final purchased =
-            //     await RevenueCatService.purchasePackage(revenueCatPackage);
-            // if (purchased) {
-            //   Observable.instance
-            //       .notifyObservers([], notifyName: "refresh_home");
-            //   ScaffoldMessenger.of(context).showSnackBar(
-            //     SnackBar(content: Text('Purchase successful!')),
-            //   );
-            //   Navigator.pop(context);
-            // }
+          onTap: () {
+            // Navigate to package program list using the SubscriptionNavigationMixin
+            SubscriptionNavigationMixin.navigationKey.currentState
+                ?.pushNamed(NavigatorName.package_program_list);
           },
           child: Container(
             margin: EdgeInsets.fromLTRB(16, 0, 16, 24),
@@ -438,6 +469,16 @@ class _PaywallScreenState extends State<PaywallScreen> {
           ),
         ),
       ],
+    );
+  }
+
+  PageRoute _buildRoute(
+    RouteSettings settings,
+    Widget builder,
+  ) {
+    return MaterialPageRoute(
+      settings: settings,
+      builder: (ctx) => builder,
     );
   }
 }

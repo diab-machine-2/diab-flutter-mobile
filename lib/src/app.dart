@@ -669,6 +669,12 @@ class App extends StatelessWidget {
                       settings,
                       DsmesAppointmentPage(),
                     );
+                  case NavigatorName.paywall_screen:
+                    final args = settings.arguments as Map<String, dynamic>;
+                    return _buildRoute(
+                      settings,
+                      PaywallScreen(),
+                    );
                   default:
                     return null;
                 }

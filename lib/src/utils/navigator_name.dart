@@ -105,4 +105,6 @@ class NavigatorName {
   // SUBSCRIPTION
   static const String subscription_page = '/subscription_page';
   static const String paywall_screen = '/paywall_screen';
+  static const String package_program_list = '/package_program_list';
+  static const String package_program_detail = '/package_program_detail';
 }

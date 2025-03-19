@@ -1230,4 +1230,11 @@ class Strings {
   String get symptom_hint_text => 'symptom_hint_text';
   String get lifestyle_program => 'lifestyle_program';
   String get recommended => 'recommended';
+  String get basic_program => 'basic_program';
+  String get most_suitable => 'most_suitable';
+  String get consult_request => 'consult_request';
+  String get audience => 'audience';
+  String get action => 'action';
+  String get receive_consult_request_title => 'receive_consult_request_title';
+  String get receive_consult_request_subtitle => 'receive_consult_request_subtitle';
 }

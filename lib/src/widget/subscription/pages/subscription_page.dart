@@ -6,13 +6,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_observer/Observable.dart';
 import 'package:flutter_observer/Observer.dart';
 import 'package:medical/res/R.dart';
-import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/subscription/pages/paywall_screen.dart';
 import 'package:medical/src/widget/subscription/subscription_cubit.dart';
 import 'package:medical/src/widget/subscription/subscription_state.dart';
-import 'package:medical/src/widget/subscription/subscription_navigation_mixin.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
@@ -25,7 +23,6 @@ class SubscriptionPage extends StatefulWidget {
 
 class _SubscriptionPageState extends State<SubscriptionPage> with Observer {
   late SubscriptionCubit _cubit;
-  String _currentRoute = '/';
   int _currentCarouselIndex = 0;
   final CarouselController _carouselController = CarouselController();
 
@@ -77,29 +74,7 @@ class _SubscriptionPageState extends State<SubscriptionPage> with Observer {
         ),
         child: BlocProvider(
           create: (context) => _cubit,
-          child: Navigator(
-            key: SubscriptionNavigationMixin.navigationKey,
-            onGenerateRoute: (settings) {
-              print('[ROUTE] Current Route: ${settings.name}');
-              _currentRoute = settings.name ?? '/';
-              print(
-                  '[ROUTE] Navigator Stack: ${SubscriptionNavigationMixin.navigationKey.currentState?.toString()}');
-
-              switch (settings.name) {
-                case '/':
-                  return MaterialPageRoute(
-                    builder: (_) => _buildMainContent(context),
-                  );
-                case NavigatorName.paywall_screen:
-                  return _buildRoute(
-                    settings,
-                    PaywallScreen(),
-                  );
-                default:
-                  return null;
-              }
-            },
-          ),
+          child: _buildMainContent(context),
         ),
       ),
     );
@@ -130,7 +105,6 @@ class _SubscriptionPageState extends State<SubscriptionPage> with Observer {
 
   Widget _buildPage(BuildContext context, SubscriptionState state) {
     double screenWidth = MediaQuery.of(context).size.width;
-    double screenHeight = MediaQuery.of(context).size.height;
     double aspectRatio = 125 / 172; // width/height
     double calculatedHeight = screenWidth / aspectRatio;
     return Column(
@@ -253,6 +227,7 @@ class _SubscriptionPageState extends State<SubscriptionPage> with Observer {
             ),
             ElevatedButton(
               onPressed: () {
+                // Navigate to PaywallScreen with full-screen dialog
                 Navigator.of(context, rootNavigator: true).push(
                   MaterialPageRoute(
                     builder: (context) => PaywallScreen(),
@@ -279,16 +254,6 @@ class _SubscriptionPageState extends State<SubscriptionPage> with Observer {
           ],
         ),
       ),
-    );
-  }
-
-  PageRoute _buildRoute(
-    RouteSettings settings,
-    Widget builder,
-  ) {
-    return MaterialPageRoute(
-      settings: settings,
-      builder: (ctx) => builder,
     );
   }
 }

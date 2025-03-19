@@ -1202,4 +1202,11 @@ release_to_load_more,"Thả ra để tải thêm","Release to load more",
 exist_appointment,"Bạn đã chọn lịch hẹn này trước đó","You have already selected this appointment before",
 symptom_hint_text,"Nhập lưu ý của bạn","Enter your note",
 lifestyle_program,"Thay đổi lối sống","Lifestyle program",
-recommended,"Đề xuất","Recommended"
+recommended,"Đề xuất","Recommended",
+basic_program,"Chương trình cơ bản","Basic program",
+most_suitable,"Phù hợp nhất","Most suitable",
+consult_request,"Yêu cầu tư vấn","Consult request",
+audience,"Đối tượng","Audience",
+action,"Hành động","Action",
+receive_consult_request_title,"DiaB đã nhận được\nyêu cầu","DiaB has received\nyour request"
+receive_consult_request_subtitle,"Chúng tôi sẽ liên hệ đến bạn trong 2h","We will contact you within 2 hours"
