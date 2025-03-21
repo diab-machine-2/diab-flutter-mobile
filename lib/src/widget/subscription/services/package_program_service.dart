@@ -347,7 +347,7 @@ class ProgramService {
                           child: GestureDetector(
                             onTap: () {
                               Navigator.pop(context);
-                              onNavigateHome.call();
+                              onContact?.call();
                             },
                             child: Container(
                               height: 43,

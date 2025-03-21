@@ -1,4 +1,5 @@
 import 'package:bot_toast/bot_toast.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
@@ -8,6 +9,7 @@ import 'package:flutter_observer/Observer.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
+import 'package:medical/src/widget/subscription/model/subscription_banner_model.dart';
 import 'package:medical/src/widget/subscription/pages/paywall_screen.dart';
 import 'package:medical/src/widget/subscription/subscription_cubit.dart';
 import 'package:medical/src/widget/subscription/subscription_state.dart';
@@ -26,8 +28,8 @@ class _SubscriptionPageState extends State<SubscriptionPage> with Observer {
   int _currentCarouselIndex = 0;
   final CarouselController _carouselController = CarouselController();
 
-  // Carousel data - represents the 3 images you've provided
-  final List<Map<String, dynamic>> _carouselItems = [
+  // Fallback carousel data in case API fails
+  final List<Map<String, dynamic>> _fallbackCarouselItems = [
     {
       'image': R.drawable.subscription_image_1,
       'title': 'Giảm HbA1c,\nngừa biến chứng',
@@ -46,8 +48,19 @@ class _SubscriptionPageState extends State<SubscriptionPage> with Observer {
   void initState() {
     super.initState();
     Observable.instance.addObserver(this);
-    _cubit = SubscriptionCubit();
-    _cubit.checkSubscriptionStatus();
+    try {
+      // Try to get the cubit from context
+      _cubit = context.read<SubscriptionCubit>();
+      // Check if we need to load data
+      if (_cubit.state is SubscriptionInitial || !_cubit.isBannersLoaded) {
+        _cubit.checkSubscriptionStatus();
+      }
+    } catch (e) {
+      // If reading from context fails, create a new cubit
+      print('Error accessing SubscriptionCubit: $e');
+      _cubit = SubscriptionCubit();
+      _cubit.checkSubscriptionStatus();
+    }
   }
 
   @override
@@ -72,34 +85,30 @@ class _SubscriptionPageState extends State<SubscriptionPage> with Observer {
         decoration: BoxDecoration(
           color: R.color.backgroundColorNew,
         ),
-        child: BlocProvider(
-          create: (context) => _cubit,
-          child: _buildMainContent(context),
-        ),
+        child: _buildMainContent(context),
       ),
     );
   }
 
   Widget _buildMainContent(BuildContext context) {
-    return BlocConsumer<SubscriptionCubit, SubscriptionState>(
-      listener: (context, state) {
-        print('Current state: $state');
-        if (state is SubscriptionFailure) {
-          BotToast.closeAllLoading();
-          Message.showToastMessage(context, state.error);
-        } else {
-          BotToast.closeAllLoading();
-        }
-      },
-      builder: (BuildContext context, SubscriptionState state) {
-        print('Building with state: $state');
-        if (state is SubscriptionLoading) {
-          BotToast.showLoading(allowClick: false);
-        } else {
-          BotToast.closeAllLoading();
-        }
-        return _buildPage(context, state);
-      },
+    // Make sure we provide a cubit if one doesn't exist in context
+    return BlocProvider.value(
+      value: _cubit,
+      child: BlocConsumer<SubscriptionCubit, SubscriptionState>(
+        listener: (context, state) {
+          if (state is SubscriptionFailure) {
+            BotToast.closeAllLoading();
+            Message.showToastMessage(context, state.error);
+          } else if (state is SubscriptionLoading) {
+            BotToast.showLoading(allowClick: false);
+          } else {
+            BotToast.closeAllLoading();
+          }
+        },
+        builder: (BuildContext context, SubscriptionState state) {
+          return _buildPage(context, state);
+        },
+      ),
     );
   }
 
@@ -107,6 +116,16 @@ class _SubscriptionPageState extends State<SubscriptionPage> with Observer {
     double screenWidth = MediaQuery.of(context).size.width;
     double aspectRatio = 125 / 172; // width/height
     double calculatedHeight = screenWidth / aspectRatio;
+
+    // Get the banners from the state or use fallback
+    List<dynamic> carouselItems = [];
+
+    if (state is SubscriptionSuccess && state.banners.isNotEmpty) {
+      carouselItems = state.banners;
+    } else {
+      carouselItems = _fallbackCarouselItems;
+    }
+
     return Column(
       children: [
         DecoratedBox(
@@ -149,7 +168,7 @@ class _SubscriptionPageState extends State<SubscriptionPage> with Observer {
                     });
                   },
                 ),
-                items: _carouselItems.map((item) {
+                items: carouselItems.map((item) {
                   return Builder(
                     builder: (BuildContext context) {
                       return Container(
@@ -158,10 +177,7 @@ class _SubscriptionPageState extends State<SubscriptionPage> with Observer {
                         decoration: BoxDecoration(
                           color: Colors.white,
                         ),
-                        child: Image.asset(
-                          item['image'],
-                          fit: BoxFit.cover,
-                        ),
+                        child: _buildBannerImage(item),
                       );
                     },
                   );
@@ -169,7 +185,7 @@ class _SubscriptionPageState extends State<SubscriptionPage> with Observer {
               ),
               // Content overlay
               _buildCarouselContent(context,
-                  _carouselItems[_currentCarouselIndex], _currentCarouselIndex),
+                  carouselItems[_currentCarouselIndex], _currentCarouselIndex),
             ],
           ),
         ),
@@ -177,8 +193,36 @@ class _SubscriptionPageState extends State<SubscriptionPage> with Observer {
     );
   }
 
-  Widget _buildCarouselContent(
-      BuildContext context, Map<String, dynamic> item, int index) {
+  Widget _buildBannerImage(dynamic item) {
+    // Check if item is a BannerModel or a fallback map
+    if (item is BannerModel) {
+      // Use CachedNetworkImage for network images
+      return CachedNetworkImage(
+        imageUrl: item.imageUrl,
+        fit: BoxFit.cover,
+        placeholder: (context, url) => Center(
+          child: CircularProgressIndicator(
+            color: R.color.greenGradientBottom,
+          ),
+        ),
+        errorWidget: (context, url, error) => Image.asset(
+          R.drawable.subscription_image_1, // Fallback image
+          fit: BoxFit.cover,
+        ),
+      );
+    } else {
+      // Use local asset image for fallback
+      return Image.asset(
+        item['image'],
+        fit: BoxFit.cover,
+      );
+    }
+  }
+
+  Widget _buildCarouselContent(BuildContext context, dynamic item, int index) {
+    // Extract title based on item type
+    String title = item is BannerModel ? item.title : item['title'];
+
     return Positioned(
       bottom: MediaQuery.of(context).size.height * 0.12,
       left: 0,
@@ -196,7 +240,7 @@ class _SubscriptionPageState extends State<SubscriptionPage> with Observer {
         child: Column(
           children: [
             Text(
-              item['title'],
+              title,
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 34,
@@ -210,7 +254,9 @@ class _SubscriptionPageState extends State<SubscriptionPage> with Observer {
                 child: SmoothPageIndicator(
                   controller:
                       PageController(initialPage: _currentCarouselIndex),
-                  count: _carouselItems.length,
+                  count: item is BannerModel
+                      ? _cubit.banners.length
+                      : _fallbackCarouselItems.length,
                   effect: ExpandingDotsEffect(
                     dotHeight: 8,
                     dotWidth: 8,

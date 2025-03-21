@@ -35,6 +35,7 @@ import 'package:medical/src/widget/my_plan_screens/activity_tab/activity_tab/act
 import 'package:medical/src/widget/my_plan_screens/my_plan/my_plan.dart';
 import 'package:medical/src/widget/question_answer/question_answer_page.dart';
 import 'package:medical/src/widget/subscription/pages/subscription_page.dart';
+import 'package:medical/src/widget/subscription/subscription_cubit.dart';
 import 'package:medical/src/widget/tabbar/tabbar_v2_data.dart';
 import 'package:medical/src/widget/voucher/presentation/widgets/webview_store.dart';
 import 'package:medical/curved_navigation_bar/curved_navigation_bar.dart';
@@ -59,6 +60,8 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
   bool isNavigateToStepList = false;
   // final _checker = AppVersionChecker();
   final GlobalKey<CurvedNavigationBarState> _bottomTabbarKey = GlobalKey();
+
+  final SubscriptionCubit _subscriptionCubit = SubscriptionCubit();
 
   final List<TabBarType> _bottomTabs = [
     TabBarType.home,
@@ -101,6 +104,10 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
 
     if (Const.ENVIRONMENT_DEFAULT == 'product') {
       await _getNewVersion();
+    }
+
+    if (AppSettings.userInfo?.packageType == PackageType.free) {
+      _subscriptionCubit.fetchBanners();
     }
 
     Future.delayed(Duration(seconds: 1), () async {
@@ -240,7 +247,6 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
         ];
       });
     }
-    
   }
 
   void _jumpTo(int index) {
@@ -293,22 +299,34 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
   }
 
   Widget _buildProgramTab() {
-    return BlocProvider(
-      create: (context) => MyPlanCubit(AppRepository(), 0),
-      child: BlocBuilder<MyPlanCubit, MyPlanState>(
-        builder: (context, state) {
-          return AppSettings.userInfo?.packageType == PackageType.free
-              ? SubscriptionPage()
-              : CommonPage(
-                  title: R.string.title_activity.tr(),
-                  background: R.drawable.bg_welcome,
-                  appbarColor: R.color.white,
-                  hideAllBackButton: true,
-                  child: ActivityTabPage(extendTabbar: true),
-                );
-        },
-      ),
-    );
+    if (AppSettings.userInfo?.packageType == PackageType.free) {
+      return MultiBlocProvider(
+        providers: [
+          BlocProvider<MyPlanCubit>(
+            create: (context) => MyPlanCubit(AppRepository(), 0),
+          ),
+          BlocProvider<SubscriptionCubit>.value(
+            value: _subscriptionCubit,
+          ),
+        ],
+        child: SubscriptionPage(),
+      );
+    } else {
+      return BlocProvider(
+        create: (context) => MyPlanCubit(AppRepository(), 0),
+        child: BlocBuilder<MyPlanCubit, MyPlanState>(
+          builder: (context, state) {
+            return CommonPage(
+              title: R.string.title_activity.tr(),
+              background: R.drawable.bg_welcome,
+              appbarColor: R.color.white,
+              hideAllBackButton: true,
+              child: ActivityTabPage(extendTabbar: true),
+            );
+          },
+        ),
+      );
+    }
   }
 
   Widget _buildStoreTab() {

@@ -281,30 +281,28 @@ class _ProgramDetailPageState extends State<ProgramDetailPage> {
         decoration: BoxDecoration(
           color: R.color.white,
         ),
-        child: Expanded(
-          child: Container(
-            height: 42,
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(20),
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  R.color.greenGradientTop02,
-                  R.color.greenGradientBottom,
-                  R.color.greenGradientBottom,
-                ],
-              ),
+        child: Container(
+          height: 42,
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(20),
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                R.color.greenGradientTop02,
+                R.color.greenGradientBottom,
+                R.color.greenGradientBottom,
+              ],
             ),
-            child: Text(
-              title,
-              style: TextStyle(
-                  color: R.color.white,
-                  fontSize: 15,
-                  fontWeight: FontWeight.w700),
-              textAlign: TextAlign.center,
-            ),
+          ),
+          child: Text(
+            title,
+            style: TextStyle(
+                color: R.color.white,
+                fontSize: 15,
+                fontWeight: FontWeight.w700),
+            textAlign: TextAlign.center,
           ),
         ),
       ),
