@@ -476,6 +476,13 @@ class Drawables {
   String get im_glucose_input_manual =>
       "lib/res/drawables/glucose/im_glucose_input_manual.png";
 
+  String get im_bloodpressure_intro =>
+      "lib/res/drawables/bloodpressure/im_bloodpressure_intro.png";
+  String get im_bloodpressure_input_healthkit =>
+      "lib/res/drawables/bloodpressure/im_bloodpressure_input_healthkit.png";
+  String get im_bloodpressure_input_manual =>
+      "lib/res/drawables/bloodpressure/im_bloodpressure_input_manual.png";
+
   String get ic_lesson_category => "lib/res/drawables/ic_lesson_category.png";
   String get ic_lesson_like => "lib/res/drawables/ic_lesson_like.png";
   String get ic_lesson_comment => "lib/res/drawables/ic_lesson_comment.png";

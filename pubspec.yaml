@@ -215,6 +215,7 @@ flutter:
     - lib/res/drawables/home/
     - lib/res/drawables/chat/
     - lib/res/drawables/glucose/
+    - lib/res/drawables/bloodpressure/
     - lib/res/drawables/tab/
     - lib/res/drawables/zoom/
     - lib/res/translations/
