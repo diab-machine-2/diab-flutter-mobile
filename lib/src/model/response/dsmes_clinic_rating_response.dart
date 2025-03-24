@@ -34,9 +34,11 @@ class DsmesClinicRatingData {
 
   factory DsmesClinicRatingData.fromJson(Map<String, dynamic> json) {
     return DsmesClinicRatingData(
-      totalRate: json['total_rate'] is int
-          ? (json['total_rate'] as int).toDouble()
-          : (json['total_rate'] as double),
+      totalRate: json['total_rate'] == null
+          ? 0.0
+          : json['total_rate'] is int
+              ? (json['total_rate'] as int).toDouble()
+              : (json['total_rate'] as double),
       topReview: (json['top_review'] as List?)
               ?.map((e) => ClinicReview.fromJson(e))
               .toList() ??

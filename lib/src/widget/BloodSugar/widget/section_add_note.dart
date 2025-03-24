@@ -92,7 +92,9 @@ class SectionAddNoteState extends State<SectionAddNote> {
                   R.drawable.ic_pick_photo,
                   width: 24,
                   height: 24,
-                  color: _isAddable ? null : R.color.primaryGreyColor,
+                  color: _isAddable 
+                          ? R.color.greenGradientBottom
+                          : R.color.color0xffBFC6C6,
                 ),
               ),
               suffixIconConstraints: BoxConstraints(

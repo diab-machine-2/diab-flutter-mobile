@@ -364,93 +364,96 @@ class CategorySection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final filteredServices = filterFreePriceServices(category);
-    return Container(
-      // padding: EdgeInsets.fromLTRB(12, 12, 12, 0),
-      margin: EdgeInsets.fromLTRB(12, 20, 12, 0),
-      decoration: BoxDecoration(
-        color: R.color.backgroundColorNew,
-        borderRadius: BorderRadius.only(
-          topLeft: isFirst ? Radius.circular(12) : Radius.zero,
-          topRight: isFirst ? Radius.circular(12) : Radius.zero,
-          bottomLeft: isLast ? Radius.circular(12) : Radius.zero,
-          bottomRight: isLast ? Radius.circular(12) : Radius.zero,
+    return Visibility(
+      visible: filteredServices.isNotEmpty,
+      child: Container(
+        // padding: EdgeInsets.fromLTRB(12, 12, 12, 0),
+        margin: EdgeInsets.fromLTRB(12, 20, 12, 0),
+        decoration: BoxDecoration(
+          color: R.color.backgroundColorNew,
+          borderRadius: BorderRadius.only(
+            topLeft: isFirst ? Radius.circular(12) : Radius.zero,
+            topRight: isFirst ? Radius.circular(12) : Radius.zero,
+            bottomLeft: isLast ? Radius.circular(12) : Radius.zero,
+            bottomRight: isLast ? Radius.circular(12) : Radius.zero,
+          ),
         ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Image.asset(
-                getIconPathFromSlug(category.slug),
-                width: 30,
-                height: 24,
-              ),
-              GapW(8),
-              Flexible(
-                child: Text(
-                  category.name,
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w700,
-                    color: R.color.color0xff141416,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Image.asset(
+                  getIconPathFromSlug(category.slug),
+                  width: 30,
+                  height: 24,
+                ),
+                GapW(8),
+                Flexible(
+                  child: Text(
+                    category.name,
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w700,
+                      color: R.color.color0xff141416,
+                    ),
                   ),
                 ),
-              ),
-            ],
-          ),
-          GapH(16),
-          if (filteredServices.isNotEmpty)
-            Container(
-              padding: EdgeInsets.symmetric(vertical: 16, horizontal: 12),
-              decoration: BoxDecoration(
-                color: R.color.white,
-                borderRadius: BorderRadius.circular(12),
-                boxShadow: [Utils.getBoxShadowDropCard()],
-              ),
-              child: ListView.builder(
-                shrinkWrap: true,
-                padding: EdgeInsets.zero,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: filteredServices.length,
-                itemBuilder: (context, index) {
-                  final service = filteredServices[index];
-                  return GestureDetector(
-                    onTap: () => onServiceSelected(
-                        service.id, !selectedServices.contains(service.id)),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        ServiceRow(
-                          service: service,
-                          isSelected: selectedServices.contains(service.id),
-                          onSelected: (selected) =>
-                              onServiceSelected(service.id, selected),
-                        ),
-                        index != filteredServices.length - 1
-                            ? Padding(
+              ],
+            ),
+            GapH(16),
+            if (filteredServices.isNotEmpty)
+              Container(
+                padding: EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+                decoration: BoxDecoration(
+                  color: R.color.white,
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: [Utils.getBoxShadowDropCard()],
+                ),
+                child: ListView.builder(
+                  shrinkWrap: true,
+                  padding: EdgeInsets.zero,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: filteredServices.length,
+                  itemBuilder: (context, index) {
+                    final service = filteredServices[index];
+                    return GestureDetector(
+                      onTap: () => onServiceSelected(
+                          service.id, !selectedServices.contains(service.id)),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          ServiceRow(
+                            service: service,
+                            isSelected: selectedServices.contains(service.id),
+                            onSelected: (selected) =>
+                                onServiceSelected(service.id, selected),
+                          ),
+                          index != filteredServices.length - 1
+                              ? Padding(
                                 padding:
                                     const EdgeInsets.symmetric(vertical: 12.0),
-                                child: Divider(
-                                  color: R.color.color0xffDFE4E4,
-                                  height: 1,
+                                  child: Divider(
+                                    color: R.color.color0xffDFE4E4,
+                                    height: 1,
+                                  ),
+                                )
+                              : Padding(
+                                  padding:
+                                      const EdgeInsets.fromLTRB(0, 12, 0, 12),
+                                  child: Divider(
+                                    color: R.color.color0xffDFE4E4,
+                                    height: 1,
+                                  ),
                                 ),
-                              )
-                            : Padding(
-                                padding:
-                                    const EdgeInsets.fromLTRB(0, 12, 0, 12),
-                                child: Divider(
-                                  color: R.color.color0xffDFE4E4,
-                                  height: 1,
-                                ),
-                              ),
-                      ],
-                    ),
-                  );
-                },
+                        ],
+                      ),
+                    );
+                  },
+                ),
               ),
-            ),
-        ],
+          ],
+        ),
       ),
     );
   }
