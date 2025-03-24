@@ -9,6 +9,7 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/date_utils.dart';
 import 'package:medical/src/utils/utils.dart';
+import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widgets/CalendarPicker/picker_helper.dart';
 import 'date_utils.dart' as utils;
 
@@ -95,25 +96,24 @@ class _CustomCalendarDatePickerState extends State<CustomHorizontalDatePicker> {
   DateTime? _currentDisplayedMonthDate;
   DateTime? _selectedDate;
   late MaterialLocalizations _localizations;
-  // final ScrollController _scrollController = ScrollController();
-  // bool _hasReachedEnd = false;
+  final ScrollController _scrollController = ScrollController();
+  bool _hasReachedEnd = false;
 
   @override
   void initState() {
     super.initState();
     _initWidgetState();
-    // _scrollController.addListener(() {
-    //   if (widget.onEndReached != null &&
-    //       !_hasReachedEnd &&
-    //       _scrollController.position.pixels >=
-    //           _scrollController.position.maxScrollExtent - 10) {
-    //     _hasReachedEnd = true;
-    //     widget.onEndReached!();
-    //   } else if (_scrollController.position.pixels <= 10) {
-    //     // Only reset when near start
-    //     _hasReachedEnd = false;
-    //   }
-    // });
+    _scrollController.addListener(() {
+      if (!_hasReachedEnd &&
+          _scrollController.position.pixels >=
+              _scrollController.position.maxScrollExtent) {
+        _hasReachedEnd = true;
+        widget.onEndReached?.call();
+      } else if (_scrollController.position.pixels <
+          _scrollController.position.maxScrollExtent) {
+        _hasReachedEnd = false;
+      }
+    });
   }
 
   @override
@@ -168,7 +168,7 @@ class _CustomCalendarDatePickerState extends State<CustomHorizontalDatePicker> {
 
   @override
   void dispose() {
-    // _scrollController.dispose();
+    _scrollController.dispose();
     super.dispose();
   }
 
@@ -193,14 +193,7 @@ class _CustomCalendarDatePickerState extends State<CustomHorizontalDatePicker> {
       height: _datePickerHeight,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
-        // controller: _scrollController
-        //   ..addListener(() {
-        //     if (widget.onEndReached != null &&
-        //         _scrollController.position.pixels ==
-        //             _scrollController.position.maxScrollExtent) {
-        //       widget.onEndReached!();
-        //     }
-        //   }),
+        controller: _scrollController,
         itemCount: widget.datesRange,
         itemBuilder: (context, index) {
           final date = days[index];

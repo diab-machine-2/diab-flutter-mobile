@@ -138,6 +138,7 @@ class HomeReminder extends StatelessWidget {
                         fontSize: 10.0,
                         color: R.color.reminder_color,
                       ),
+                      textAlign: TextAlign.center,
                     ),
                   ],
                 ),

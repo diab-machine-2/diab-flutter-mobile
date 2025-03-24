@@ -10,10 +10,12 @@ import 'package:medical/src/utils/date_utils.dart';
 import 'package:medical/src/utils/length_limit_text_field.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/utils/utils.dart';
+import 'package:medical/src/widget/BloodSugar/widget/section_add_note.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/dsmes_appointment/dsmes_appointment_cubit.dart';
 import 'package:medical/src/widget/dsmes_appointment/model/dsmes_appointment_model.dart';
 import 'package:medical/src/widget/dsmes_appointment/pages/dsmes_navigation_mixin.dart';
+import 'package:medical/src/widget/dsmes_appointment/widgets/section_add_symptom.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/profile/user_info.dart';
 import 'package:medical/src/widgets/gap_widget.dart';
@@ -50,6 +52,9 @@ class _DsmesConfirmCreateInformationState
   late TextEditingController symptomController;
 
   late bool isReschedule = false;
+  final GlobalKey<SectionAddSymptomState> _sectionAddSymptomKey =
+      GlobalKey<SectionAddSymptomState>();
+  List<dynamic> files = [];
 
   Map<String, bool> isProcessing = {
     'confirmBooking': false,
@@ -91,6 +96,8 @@ class _DsmesConfirmCreateInformationState
         });
       }
     });
+
+    files = currentCreateRequest?.symptomAttachment ?? [];
   }
 
   @override
@@ -181,7 +188,8 @@ class _DsmesConfirmCreateInformationState
                               DsmesAppointmentMode.telemedicine.toString())
                             _buildSelectedServiceInformation(),
                           GapH(12),
-                          _buildNoticeSymptom(),
+                          // _buildNoticeSymptom(),
+                          _selectImageSection(),
                         ],
                       ),
                     ),
@@ -236,8 +244,13 @@ class _DsmesConfirmCreateInformationState
   }
 
   _handleCreateBooking() async {
-    _cubit.updateCreateDsmesBookingRequestSymptom(
-        symptom: symptomController.text);
+    final data = _sectionAddSymptomKey.currentState?.getNote();
+
+    _cubit.updateCreateDsmesBookingRequestSymptom(symptom: data?.note ?? '');
+
+    _cubit.updateCreateDsmesBookingRequestSymptomAttachments(
+        symptomAttachments: data?.fileNetworkName ?? []);
+
     final phoneNumber =
         AppSettings.userInfo?.phoneNumber ?? phoneController.text;
 
@@ -474,8 +487,15 @@ class _DsmesConfirmCreateInformationState
                       if (isProcessing['editConsultInfo']!) return;
                       setState(() => isProcessing['editConsultInfo'] = true);
                       try {
+                        final data =
+                            _sectionAddSymptomKey.currentState?.getNote();
                         _cubit.updateCreateDsmesBookingRequestSymptom(
-                            symptom: symptomController.text);
+                            symptom: data?.note ?? symptomController.text);
+                        _cubit
+                            .updateCreateDsmesBookingRequestSymptomAttachments(
+                                symptomAttachments:
+                                    data?.fileNetworkName ?? []);
+
                         final route = ModalRoute.of(context)?.settings;
                         final args = route?.arguments as Map<String, dynamic>?;
                         final isMergedSchedule =
@@ -657,8 +677,13 @@ class _DsmesConfirmCreateInformationState
                     if (isProcessing['editServiceInfo']!) return;
                     setState(() => isProcessing['editServiceInfo'] = true);
                     try {
+                      final data =
+                          _sectionAddSymptomKey.currentState?.getNote();
                       _cubit.updateCreateDsmesBookingRequestSymptom(
-                          symptom: symptomController.text);
+                          symptom: data?.note ?? symptomController.text);
+                      _cubit.updateCreateDsmesBookingRequestSymptomAttachments(
+                          symptomAttachments: data?.fileNetworkName ?? []);
+
                       await DsmesNavigationMixin.navigationKey.currentState
                           ?.pushNamed(NavigatorName.dsmes_select_service,
                               arguments: {
@@ -1316,5 +1341,18 @@ class _DsmesConfirmCreateInformationState
   void updateUserInfo(UserModel user, {bool isUpdateDiabetes = false}) async {
     ProfileInfoController.updateUserInfo(context, user,
         isUpdateDiabetes: isUpdateDiabetes);
+  }
+
+  Widget _selectImageSection() {
+    return SectionAddSymptom(
+      focusNode: symptomFocusNode,
+      controllerNote: symptomController,
+      maxMedia: 5,
+      key: _sectionAddSymptomKey,
+      initialFiles: files,
+      isDisplayRemove: isReschedule ? false : true,
+      readOnly: isReschedule,
+      isDisplayTextField: !(isReschedule && symptomController.text.isEmpty),
+    );
   }
 }
