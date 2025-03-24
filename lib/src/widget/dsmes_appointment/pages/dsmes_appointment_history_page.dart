@@ -238,8 +238,16 @@ class _DsmesAppointmentHistoryPageState
                                               isProcessing['chooseService'] =
                                                   true;
                                               try {
-                                                await _cubit.getClinicDetail(
-                                                    id: data.clinicId);
+                                                final detailSuccess =
+                                                    await _cubit
+                                                        .getClinicDetail(
+                                                            id: data.id);
+
+                                                if (!detailSuccess ||
+                                                    _cubit.selectedClinic ==
+                                                        null) {
+                                                  return;
+                                                }
                                                 final appointment = await _cubit
                                                     .getDsmesAppointmentDetail(
                                                         appointmentId: data.id);

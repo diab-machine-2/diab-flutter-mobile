@@ -331,7 +331,11 @@ class DsmesAppointmentItem extends StatelessWidget {
   }
 
   _handleRebooking({String locale = 'vi'}) async {
-    await cubit.getClinicDetail(id: data.clinicId);
+    final detailSuccess = await cubit.getClinicDetail(id: data.clinicId);
+
+    if (!detailSuccess || cubit.selectedClinic == null) {
+      return;
+    }
     final appointment =
         await cubit.getDsmesAppointmentDetail(appointmentId: data.id);
     if (appointment == null) {
