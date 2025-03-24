@@ -347,89 +347,91 @@ class _DsmesClinicDetailPageState extends State<DsmesClinicDetailPage> {
                   ),
                 ],
               ),
-            Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                GapH(24),
-                Row(
-                  children: [
-                    Text(
-                      R.string.customer_rating.tr(),
-                      style:
-                          TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
-                    ),
-                  ],
-                ),
-                GapH(12),
-                Container(
-                  padding: EdgeInsets.symmetric(horizontal: 12, vertical: 16),
-                  decoration: BoxDecoration(
-                    color: R.color.white,
-                    borderRadius: BorderRadius.circular(8),
-                    boxShadow: [
-                      Utils.getBoxShadowDropCard(),
+            Visibility(
+              visible: _cubit.listClinicReview.isNotEmpty,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  GapH(24),
+                  Row(
+                    children: [
+                      Text(
+                        R.string.customer_rating.tr(),
+                        style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
+                      ),
                     ],
                   ),
-                  child: Column(
-                    children: [
-                      ..._cubit.listClinicReview
-                          .take(_visibleComments)
-                          .map((e) {
-                        return Column(
-                          children: [
-                            _buildCommentItem(e),
-                            if (e.id !=
-                                _cubit.listClinicReview
-                                    .take(_visibleComments)
-                                    .last
-                                    .id)
-                              Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    vertical: 14.0, horizontal: 12),
-                                child: Divider(
-                                  color: R.color.color0xffDFE4E4,
-                                ),
-                              )
-                          ],
-                        );
-                      }).toList(),
-                      if (_cubit.listClinicReview.length > 3)
-                        Center(
-                          child: Padding(
-                            padding: const EdgeInsets.only(top: 8.0),
-                            child: TextButton(
-                              onPressed: () {
-                                setState(() {
-                                  if (_showingAll) {
-                                    _visibleComments = 3;
-                                    _showingAll = false;
-                                  } else {
-                                    _visibleComments += 3;
-                                    if (_visibleComments >=
-                                        _cubit.listClinicReview.length) {
-                                      _visibleComments =
-                                          _cubit.listClinicReview.length;
-                                      _showingAll = true;
+                  GapH(12),
+                  Container(
+                    padding: EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+                    decoration: BoxDecoration(
+                      color: R.color.white,
+                      borderRadius: BorderRadius.circular(8),
+                      boxShadow: [
+                        Utils.getBoxShadowDropCard(),
+                      ],
+                    ),
+                    child: Column(
+                      children: [
+                        ..._cubit.listClinicReview
+                            .take(_visibleComments)
+                            .map((e) {
+                          return Column(
+                            children: [
+                              _buildCommentItem(e),
+                              if (e.id !=
+                                  _cubit.listClinicReview
+                                      .take(_visibleComments)
+                                      .last
+                                      .id)
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 14.0, horizontal: 12),
+                                  child: Divider(
+                                    color: R.color.color0xffDFE4E4,
+                                  ),
+                                )
+                            ],
+                          );
+                        }).toList(),
+                        if (_cubit.listClinicReview.length > 3)
+                          Center(
+                            child: Padding(
+                              padding: const EdgeInsets.only(top: 8.0),
+                              child: TextButton(
+                                onPressed: () {
+                                  setState(() {
+                                    if (_showingAll) {
+                                      _visibleComments = 3;
+                                      _showingAll = false;
+                                    } else {
+                                      _visibleComments += 3;
+                                      if (_visibleComments >=
+                                          _cubit.listClinicReview.length) {
+                                        _visibleComments =
+                                            _cubit.listClinicReview.length;
+                                        _showingAll = true;
+                                      }
                                     }
-                                  }
-                                });
-                              },
-                              child: Text(
-                                _showingAll
-                                    ? R.string.show_less.tr()
-                                    : R.string.show_more.tr(),
-                                style: TextStyle(
-                                  color: R.color.color0xff95682E,
-                                  fontWeight: FontWeight.w500,
+                                  });
+                                },
+                                child: Text(
+                                  _showingAll
+                                      ? R.string.show_less.tr()
+                                      : R.string.show_more.tr(),
+                                  style: TextStyle(
+                                    color: R.color.color0xff95682E,
+                                    fontWeight: FontWeight.w500,
+                                  ),
                                 ),
                               ),
                             ),
                           ),
-                        ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ],
         ),
@@ -521,8 +523,12 @@ class _DsmesClinicDetailPageState extends State<DsmesClinicDetailPage> {
   }
 
   _buildAppointmentActionButtons() {
+    final bool hasTelemedicine = _cubit.selectedClinic!
+        .hasServiceAvailable(DsmesAppointmentMode.telemedicine);
+    final bool hasAtClinic = _cubit.selectedClinic!
+        .hasServiceAvailable(DsmesAppointmentMode.atClinic);
     return Container(
-      padding: EdgeInsets.symmetric(vertical: 0, horizontal: 12),
+      padding: EdgeInsets.symmetric(vertical: 8, horizontal: 12),
       decoration: BoxDecoration(
         color: R.color.white,
         borderRadius: BorderRadius.circular(8),
@@ -532,102 +538,114 @@ class _DsmesClinicDetailPageState extends State<DsmesClinicDetailPage> {
       ),
       child: Row(
         children: [
-          Flexible(
-            flex: 1,
-            child: GestureDetector(
-              onTap: () async {
-                if (isProcessing['onlineConsult']!) return;
-                isProcessing['onlineConsult'] = true;
-                try {
-                  await _cubit.getClinicDetail(id: widget.clinicId);
-                  await _cubit.initCreateDsmesBookingRequest(
-                      locale: context.locale.languageCode);
+          if (hasTelemedicine)
+            Flexible(
+              flex: 1,
+              child: GestureDetector(
+                onTap: () async {
+                  if (isProcessing['onlineConsult']!) return;
+                  isProcessing['onlineConsult'] = true;
+                  try {
+                    final detailSuccess =
+                        await _cubit.getClinicDetail(id: widget.clinicId);
 
-                  DsmesNavigationMixin.navigationKey.currentState?.pushNamed(
-                      NavigatorName.dsmes_select_service,
-                      arguments: {
-                        'clinic': _cubit.selectedClinic,
-                        'action': 'create',
-                        'serviceType':
-                            DsmesAppointmentMode.telemedicine.toString()
-                      });
-                } finally {
-                  isProcessing['onlineConsult'] = false;
-                }
-              },
-              child: Container(
-                height: 43,
-                decoration: BoxDecoration(
-                  color: R.color.white,
-                  borderRadius: BorderRadius.circular(200),
-                  border: Border.all(
-                    color: R.color.greenGradientBottom,
-                  ),
-                ),
-                child: Center(
-                  child: Text(
-                    R.string.consult_online.tr(),
-                    style: TextStyle(
+                    if (!detailSuccess || _cubit.selectedClinic == null) {
+                      return;
+                    }
+                    await _cubit.initCreateDsmesBookingRequest(
+                        locale: context.locale.languageCode);
+
+                    DsmesNavigationMixin.navigationKey.currentState?.pushNamed(
+                        NavigatorName.dsmes_select_service,
+                        arguments: {
+                          'clinic': _cubit.selectedClinic,
+                          'action': 'create',
+                          'serviceType':
+                              DsmesAppointmentMode.telemedicine.toString()
+                        });
+                  } finally {
+                    isProcessing['onlineConsult'] = false;
+                  }
+                },
+                child: Container(
+                  height: 43,
+                  decoration: BoxDecoration(
+                    color: R.color.white,
+                    borderRadius: BorderRadius.circular(200),
+                    border: Border.all(
                       color: R.color.greenGradientBottom,
-                      fontSize: 15,
-                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  child: Center(
+                    child: Text(
+                      R.string.consult_online.tr(),
+                      style: TextStyle(
+                        color: R.color.greenGradientBottom,
+                        fontSize: 15,
+                        fontWeight: FontWeight.w700,
+                      ),
                     ),
                   ),
                 ),
               ),
             ),
-          ),
-          GapW(12),
-          Flexible(
-            flex: 1,
-            child: GestureDetector(
-              onTap: () async {
-                if (isProcessing['clinicConsult']!) return;
-                isProcessing['clinicConsult'] = true;
-                try {
-                  await _cubit.getClinicDetail(id: widget.clinicId);
-                  if (_cubit.selectedClinic == null) return;
-                  _cubit.initCreateDsmesBookingRequest(
-                      locale: context.locale.languageCode);
-                  await DsmesNavigationMixin.navigationKey.currentState
-                      ?.pushNamed(NavigatorName.dsmes_booking_select_date,
-                          arguments: {
-                        'serviceType': DsmesAppointmentMode.atClinic.toString(),
-                        'action': 'create',
-                      });
-                } finally {
-                  isProcessing['clinicConsult'] = false;
-                }
-              },
-              child: Container(
-                height: 44,
-                margin: EdgeInsets.symmetric(horizontal: 0, vertical: 8),
-                decoration: BoxDecoration(
-                  color: R.color.mainColor,
-                  borderRadius: BorderRadius.circular(200),
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.centerRight,
-                    colors: [
-                      R.color.greenGradientTop,
-                      R.color.greenGradientMid,
-                      R.color.greenGradientBottom,
-                    ],
+          if (hasAtClinic && hasTelemedicine) GapW(12),
+          if (hasAtClinic)
+            Flexible(
+              flex: 1,
+              child: GestureDetector(
+                onTap: () async {
+                  if (isProcessing['clinicConsult']!) return;
+                  isProcessing['clinicConsult'] = true;
+                  try {
+                    final detailSuccess =
+                        await _cubit.getClinicDetail(id: widget.clinicId);
+
+                    if (!detailSuccess || _cubit.selectedClinic == null) {
+                      return;
+                    }
+                    if (_cubit.selectedClinic == null) return;
+                    _cubit.initCreateDsmesBookingRequest(
+                        locale: context.locale.languageCode);
+                    await DsmesNavigationMixin.navigationKey.currentState
+                        ?.pushNamed(NavigatorName.dsmes_booking_select_date,
+                            arguments: {
+                          'serviceType':
+                              DsmesAppointmentMode.atClinic.toString(),
+                          'action': 'create',
+                        });
+                  } finally {
+                    isProcessing['clinicConsult'] = false;
+                  }
+                },
+                child: Container(
+                  height: 44,
+                  decoration: BoxDecoration(
+                    color: R.color.mainColor,
+                    borderRadius: BorderRadius.circular(200),
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.centerRight,
+                      colors: [
+                        R.color.greenGradientTop,
+                        R.color.greenGradientMid,
+                        R.color.greenGradientBottom,
+                      ],
+                    ),
                   ),
-                ),
-                child: Center(
-                  child: Text(
-                    R.string.consult_at_clinic.tr(),
-                    style: TextStyle(
-                      color: R.color.white,
-                      fontWeight: FontWeight.w700,
-                      fontSize: 15,
+                  child: Center(
+                    child: Text(
+                      R.string.consult_at_clinic.tr(),
+                      style: TextStyle(
+                        color: R.color.white,
+                        fontWeight: FontWeight.w700,
+                        fontSize: 15,
+                      ),
                     ),
                   ),
                 ),
               ),
             ),
-          ),
         ],
       ),
     );

@@ -1229,6 +1229,9 @@ class Strings {
   String get release_to_load_more => 'release_to_load_more';
   String get exist_appointment => 'exist_appointment';
   String get symptom_hint_text => 'symptom_hint_text';
+  String get at_clinic => 'at_clinic';
+  String get kham_tu_xa => 'kham_tu_xa';
+  String get clinic_map => 'clinic_map';
   String get conversation_chatbot_ai_title => 'conversation_chatbot_ai_title';
   String get conversation_alert_id_is_empty => 'conversation_alert_id_is_empty';
   String get conversation_mockup_title => 'conversation_mockup_title';

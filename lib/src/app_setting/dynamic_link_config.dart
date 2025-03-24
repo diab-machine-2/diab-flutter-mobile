@@ -49,6 +49,7 @@ class DynamicLinkConfig {
     _subLink = FirebaseDynamicLinks.instance.onLink.listen((dynamicLinkData) {
       final Uri? deepLink = dynamicLinkData.link;
       if (deepLink != null) {
+        print('FirebaseDynamicLinks - DeepLink: $deepLink');
         progressDynamicLink(deepLink);
       }
     });
