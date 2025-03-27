@@ -7,6 +7,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_observer/Observable.dart';
 import 'package:flutter_observer/Observer.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/subscription/model/subscription_banner_model.dart';
@@ -58,7 +59,7 @@ class _SubscriptionPageState extends State<SubscriptionPage> with Observer {
     } catch (e) {
       // If reading from context fails, create a new cubit
       print('Error accessing SubscriptionCubit: $e');
-      _cubit = SubscriptionCubit();
+      _cubit = SubscriptionCubit(AppRepository());
       _cubit.checkSubscriptionStatus();
     }
   }
@@ -196,9 +197,13 @@ class _SubscriptionPageState extends State<SubscriptionPage> with Observer {
   Widget _buildBannerImage(dynamic item) {
     // Check if item is a BannerModel or a fallback map
     if (item is BannerModel) {
+      String imageUrl = item.value.startsWith('http')
+          ? item.value
+          : '${Utils.getHostUrl()}/image/${item.value}';
+
       // Use CachedNetworkImage for network images
       return CachedNetworkImage(
-        imageUrl: item.imageUrl,
+        imageUrl: imageUrl,
         fit: BoxFit.cover,
         placeholder: (context, url) => Center(
           child: CircularProgressIndicator(

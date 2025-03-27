@@ -1,14 +1,17 @@
 // screens/programs_list_page.dart
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/model/request/notify_subscription_request.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/subscription/model/package_program_model.dart';
 import 'package:medical/src/widget/subscription/services/package_program_service.dart';
+import 'package:medical/src/widget/subscription/subscription_cubit.dart';
 import 'package:medical/src/widget/subscription/subscription_navigation_mixin.dart';
 import 'package:medical/src/widgets/gap_widget.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -21,12 +24,14 @@ class ProgramsListPage extends StatefulWidget {
 }
 
 class _ProgramsListPageState extends State<ProgramsListPage> {
-  late Future<List<Program>> _programsFuture;
+  late SubscriptionCubit _cubit;
+  late Future<List<PackageProgram>> _programsFuture;
   final ProgramService _programService = ProgramService();
 
   @override
   void initState() {
     super.initState();
+    _cubit = context.read<SubscriptionCubit>();
     _programsFuture = _programService.getPrograms();
   }
 
@@ -34,7 +39,7 @@ class _ProgramsListPageState extends State<ProgramsListPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: R.color.glucose_bg_color,
-      body: FutureBuilder<List<Program>>(
+      body: FutureBuilder<List<PackageProgram>>(
         future: _programsFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -165,7 +170,7 @@ class _ProgramsListPageState extends State<ProgramsListPage> {
 }
 
 class ProgramCard extends StatelessWidget {
-  final Program program;
+  final PackageProgram program;
 
   const ProgramCard({Key? key, required this.program}) : super(key: key);
 
@@ -173,6 +178,17 @@ class ProgramCard extends StatelessWidget {
   double getShortestSide(BuildContext context) {
     double shortestSide = MediaQuery.sizeOf(context).shortestSide;
     return shortestSide;
+  }
+
+  notifySubscriptionSuccess(BuildContext context) async {
+    final subscriptionCubit = BlocProvider.of<SubscriptionCubit>(context);
+
+    if (subscriptionCubit.selectedPackage == null) return;
+
+    final request = NotifySubscriptionRequest(
+        servicePackage: subscriptionCubit.selectedPackage!.title,
+        programName: program.title);
+    await subscriptionCubit.notifySubscriptionSuccess(request);
   }
 
   @override
@@ -341,7 +357,8 @@ class ProgramCard extends StatelessWidget {
             GapW(16),
             Expanded(
               child: GestureDetector(
-                onTap: () {
+                onTap: () async {
+                  await notifySubscriptionSuccess(context);
                   ProgramService.showPopupRequestConsultSubscription(
                     context: context,
                     title: R.string.receive_consult_request_title.tr(),
@@ -558,6 +575,7 @@ class ProgramCard extends StatelessWidget {
                 flex: 1,
                 child: GestureDetector(
                   onTap: () async {
+                    await notifySubscriptionSuccess(context);
                     ProgramService.showPopupRequestConsultSubscription(
                       context: context,
                       title: R.string.receive_consult_request_title.tr(),

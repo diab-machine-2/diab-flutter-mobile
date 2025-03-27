@@ -61,7 +61,8 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
   // final _checker = AppVersionChecker();
   final GlobalKey<CurvedNavigationBarState> _bottomTabbarKey = GlobalKey();
 
-  final SubscriptionCubit _subscriptionCubit = SubscriptionCubit();
+  final SubscriptionCubit _subscriptionCubit =
+      SubscriptionCubit(AppRepository());
 
   final List<TabBarType> _bottomTabs = [
     TabBarType.home,
@@ -107,7 +108,7 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
     }
 
     if (AppSettings.userInfo?.packageType == PackageType.free) {
-      _subscriptionCubit.fetchBanners();
+      await _subscriptionCubit.getSubscriptionBanners();
     }
 
     Future.delayed(Duration(seconds: 1), () async {

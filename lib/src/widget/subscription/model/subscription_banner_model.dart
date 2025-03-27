@@ -1,20 +1,17 @@
 class BannerModel {
-  final String id;
-  final String imageUrl;
+  final String value; // This maybe image id or image url
   final String title;
   final int order;
 
   BannerModel({
-    required this.id,
-    required this.imageUrl,
+    required this.value,
     required this.title,
     required this.order,
   });
 
   factory BannerModel.fromJson(Map<String, dynamic> json) {
     return BannerModel(
-      id: json['id'],
-      imageUrl: json['image_url'],
+      value: json['value'],
       title: json['title'],
       order: json['order'],
     );
@@ -22,8 +19,7 @@ class BannerModel {
 
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
-      'image_url': imageUrl,
+      'value': value,
       'title': title,
       'order': order,
     };

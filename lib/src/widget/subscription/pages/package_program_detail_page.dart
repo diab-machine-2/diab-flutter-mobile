@@ -1,19 +1,22 @@
 // screens/package_program_detail_page.dart
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/model/request/notify_subscription_request.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/subscription/model/package_program_model.dart';
 import 'package:medical/src/widget/subscription/services/package_program_service.dart';
+import 'package:medical/src/widget/subscription/subscription_cubit.dart';
 import 'package:medical/src/widget/subscription/subscription_navigation_mixin.dart';
 import 'package:medical/src/widgets/gap_widget.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class ProgramDetailPage extends StatefulWidget {
-  final Program program;
+  final PackageProgram program;
 
   const ProgramDetailPage({
     Key? key,
@@ -59,7 +62,18 @@ class _ProgramDetailPageState extends State<ProgramDetailPage> {
                     ),
                     child: _buildButton(
                       title: R.string.consult_request.tr(),
-                      onTap: () {
+                      onTap: () async {
+                        final subscriptionCubit =
+                            BlocProvider.of<SubscriptionCubit>(context);
+
+                        if (subscriptionCubit.selectedPackage == null) return;
+
+                        final request = NotifySubscriptionRequest(
+                            servicePackage:
+                                subscriptionCubit.selectedPackage!.title,
+                            programName: widget.program.title);
+                        await subscriptionCubit.notifySubscriptionSuccess(request);
+                        
                         ProgramService.showPopupRequestConsultSubscription(
                           context: context,
                           title: R.string.receive_consult_request_title.tr(),

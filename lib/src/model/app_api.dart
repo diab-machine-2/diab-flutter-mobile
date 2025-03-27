@@ -6,12 +6,14 @@ import 'package:medical/src/model/request/delete_calendar_request.dart';
 import 'package:medical/src/model/request/make_comment_request.dart';
 import 'package:medical/src/model/request/make_question_request.dart';
 import 'package:medical/src/model/request/mark_completed_target_request.dart';
+import 'package:medical/src/model/request/notify_subscription_request.dart';
 import 'package:medical/src/model/request/sync_index_from_zalo_request.dart';
 import 'package:medical/src/model/response/app_version_response.dart';
 import 'package:medical/src/model/response/calendar_training_response.dart';
 import 'package:medical/src/model/response/content_welcome_response.dart';
 import 'package:medical/src/model/response/create_calendar_response.dart';
 import 'package:medical/src/model/response/expert_comment_list_response.dart';
+import 'package:medical/src/model/response/get_subscription_banners_response.dart';
 import 'package:medical/src/model/response/learning_post_response.dart';
 import 'package:medical/src/model/response/branchio_generate_zoom_response.dart';
 import 'package:medical/src/model/response/lesson_module_response.dart';
@@ -427,4 +429,10 @@ abstract class AppApi {
   // Customer Receives
   @PUT("/App/CustomerReceives/interview/{courseId}")
   Future<void> updateDoneInterview(String courseId);
+
+  @GET("/App/Image/Banner/Subscription")
+  Future<GetSubscriptionBannersResponse> getSubscriptionBanners();
+
+  @POST("/App/Notification/Subscription")
+  Future<CommonResponse> notifySubscription(@Body() NotifySubscriptionRequest request);
 }

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
 
-class Program {
+class PackageProgram {
   final String id;
   final String title;
   final bool isRecommended;
@@ -11,7 +11,7 @@ class Program {
   final List<ProgramTarget> targets;
   final List<ProgramAction> actions;
 
-  Program({
+  PackageProgram({
     required this.id,
     required this.title,
     required this.isRecommended,
@@ -29,8 +29,8 @@ class Program {
   }
 
   // Factory constructor for creating a Program from JSON
-  factory Program.fromJson(Map<String, dynamic> json) {
-    return Program(
+  factory PackageProgram.fromJson(Map<String, dynamic> json) {
+    return PackageProgram(
       id: json['id'] as String,
       title: json['title'] as String,
       isRecommended: json['isRecommended'] as bool,

@@ -17,10 +17,10 @@ class ProgramService {
   ProgramService._internal();
 
   // Cache for loaded programs
-  List<Program>? _programsCache;
+  List<PackageProgram>? _programsCache;
 
   // Load programs from the JSON file
-  Future<List<Program>> getPrograms() async {
+  Future<List<PackageProgram>> getPrograms() async {
     // Return cached data if available
     if (_programsCache != null) {
       return _programsCache!;
@@ -34,7 +34,7 @@ class ProgramService {
 
       // Parse JSON data into Program objects
       _programsCache = (jsonData['programs'] as List<dynamic>)
-          .map((program) => Program.fromJson(program as Map<String, dynamic>))
+          .map((program) => PackageProgram.fromJson(program as Map<String, dynamic>))
           .toList();
 
       return _programsCache!;
@@ -46,7 +46,7 @@ class ProgramService {
   }
 
   // Get a specific program by ID
-  Future<Program?> getProgramById(String id) async {
+  Future<PackageProgram?> getProgramById(String id) async {
     final programs = await getPrograms();
     try {
       return programs.firstWhere((program) => program.id == id);

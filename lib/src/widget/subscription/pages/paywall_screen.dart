@@ -2,13 +2,16 @@ import 'dart:developer';
 
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_observer/Observable.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/subscription/pages/package_program_detail_page.dart';
 import 'package:medical/src/widget/subscription/services/revenue_cat_service.dart';
 import 'package:medical/src/widget/subscription/model/subscription_package_model.dart';
 import 'package:medical/src/widget/subscription/services/subscription_service.dart';
+import 'package:medical/src/widget/subscription/subscription_cubit.dart';
 import 'package:medical/src/widget/subscription/subscription_navigation_mixin.dart';
 import 'package:medical/src/widget/subscription/widgets/package_detail_bottom_sheet.dart';
 import 'package:medical/src/widget/subscription/pages/package_program_list_page.dart';
@@ -27,10 +30,13 @@ class _PaywallScreenState extends State<PaywallScreen> {
   bool _isLoading = true;
   int _selectedPackageIndex = 0;
   String _currentRoute = '/';
+  late SubscriptionCubit _cubit;
 
   @override
   void initState() {
     super.initState();
+    final AppRepository repository = AppRepository();
+    _cubit = SubscriptionCubit(repository);
     _loadPackages();
   }
 
@@ -79,6 +85,9 @@ class _PaywallScreenState extends State<PaywallScreen> {
         package: package,
         onPurchase: () async {
           log('[SUBSCRIPTION] onPurchase revenueCatPackage: $revenueCatPackage');
+
+          _cubit.setSelectedPackage(_localPackages[_selectedPackageIndex]);
+
           Navigator.pop(context);
           SubscriptionNavigationMixin.navigationKey.currentState
               ?.pushNamed(NavigatorName.package_program_list);
@@ -98,46 +107,49 @@ class _PaywallScreenState extends State<PaywallScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async {
-        return true;
-      },
-      child: Scaffold(
-        body: Container(
-          decoration: BoxDecoration(
-            color: R.color.backgroundColorNew,
-          ),
-          child: Navigator(
-            key: SubscriptionNavigationMixin.navigationKey,
-            onGenerateRoute: (settings) {
-              print('[ROUTE] Current Route: ${settings.name}');
-              _currentRoute = settings.name ?? '/';
-              print(
-                  '[ROUTE] Navigator Stack: ${SubscriptionNavigationMixin.navigationKey.currentState?.toString()}');
+    return BlocProvider(
+      create: (context) => _cubit,
+      child: WillPopScope(
+        onWillPop: () async {
+          return true;
+        },
+        child: Scaffold(
+          body: Container(
+            decoration: BoxDecoration(
+              color: R.color.backgroundColorNew,
+            ),
+            child: Navigator(
+              key: SubscriptionNavigationMixin.navigationKey,
+              onGenerateRoute: (settings) {
+                print('[ROUTE] Current Route: ${settings.name}');
+                _currentRoute = settings.name ?? '/';
+                print(
+                    '[ROUTE] Navigator Stack: ${SubscriptionNavigationMixin.navigationKey.currentState?.toString()}');
 
-              switch (settings.name) {
-                case '/':
-                  return MaterialPageRoute(
-                    builder: (_) => _buildMainContent(),
-                  );
-                case NavigatorName.package_program_list:
-                  return _buildRoute(
-                    settings,
-                    ProgramsListPage(),
-                  );
-                case NavigatorName.package_program_detail:
-                  Map<String, dynamic>? args =
-                      settings.arguments as Map<String, dynamic>?;
-                  return _buildRoute(
-                    settings,
-                    ProgramDetailPage(
-                      program: args?['program'],
-                    ),
-                  );
-                default:
-                  return null;
-              }
-            },
+                switch (settings.name) {
+                  case '/':
+                    return MaterialPageRoute(
+                      builder: (_) => _buildMainContent(),
+                    );
+                  case NavigatorName.package_program_list:
+                    return _buildRoute(
+                      settings,
+                      ProgramsListPage(),
+                    );
+                  case NavigatorName.package_program_detail:
+                    Map<String, dynamic>? args =
+                        settings.arguments as Map<String, dynamic>?;
+                    return _buildRoute(
+                      settings,
+                      ProgramDetailPage(
+                        program: args?['program'],
+                      ),
+                    );
+                  default:
+                    return null;
+                }
+              },
+            ),
           ),
         ),
       ),
@@ -433,6 +445,8 @@ class _PaywallScreenState extends State<PaywallScreen> {
         // Register button
         GestureDetector(
           onTap: () {
+            _cubit.setSelectedPackage(_localPackages[_selectedPackageIndex]);
+
             // Navigate to package program list using the SubscriptionNavigationMixin
             SubscriptionNavigationMixin.navigationKey.currentState
                 ?.pushNamed(NavigatorName.package_program_list);
