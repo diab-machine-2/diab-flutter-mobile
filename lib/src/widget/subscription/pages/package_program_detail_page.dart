@@ -73,7 +73,7 @@ class _ProgramDetailPageState extends State<ProgramDetailPage> {
                                 subscriptionCubit.selectedPackage!.title,
                             programName: widget.program.title);
                         await subscriptionCubit.notifySubscriptionSuccess(request);
-                        
+
                         ProgramService.showPopupRequestConsultSubscription(
                           context: context,
                           title: R.string.receive_consult_request_title.tr(),
@@ -291,7 +291,7 @@ class _ProgramDetailPageState extends State<ProgramDetailPage> {
     return InkWell(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.fromLTRB(12, 8, 12, 24),
+        padding: const EdgeInsets.fromLTRB(12, 8, 12, 8),
         decoration: BoxDecoration(
           color: R.color.white,
         ),
