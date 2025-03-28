@@ -467,10 +467,14 @@ class Drawables {
   String get ic_social_zalo => "lib/res/drawables/ic_social_zalo.png";
   String get ic_speak_text => "lib/res/drawables/ic_speak_text.png";
 
-  String get ic_glucose_create_scheduler => "lib/res/drawables/glucose/ic_glucose_create_scheduler.png";
-  String get im_glucose_intro => "lib/res/drawables/glucose/im_glucose_intro.png";
-  String get im_glucose_input_device => "lib/res/drawables/glucose/im_glucose_input_device.png";
-  String get im_glucose_input_manual => "lib/res/drawables/glucose/im_glucose_input_manual.png";
+  String get ic_glucose_create_scheduler =>
+      "lib/res/drawables/glucose/ic_glucose_create_scheduler.png";
+  String get im_glucose_intro =>
+      "lib/res/drawables/glucose/im_glucose_intro.png";
+  String get im_glucose_input_device =>
+      "lib/res/drawables/glucose/im_glucose_input_device.png";
+  String get im_glucose_input_manual =>
+      "lib/res/drawables/glucose/im_glucose_input_manual.png";
 
   String get ic_lesson_category => "lib/res/drawables/ic_lesson_category.png";
   String get ic_lesson_like => "lib/res/drawables/ic_lesson_like.png";
@@ -600,9 +604,12 @@ class Drawables {
   String get ic_star => "lib/res/drawables/ic_star.png";
   String get ic_avatar => "lib/res/drawables/ic_avatar.png";
   String get ic_benh_ly => "lib/res/drawables/dsmes_service/benh-ly.png";
-  String get ic_dinh_duong_bua_an_can_bang => "lib/res/drawables/dsmes_service/dinh-duong-bua-an-can-bang.png";
-  String get ic_theo_doi_chi_so => "lib/res/drawables/dsmes_service/theo-doi-chi-so.png";
-  String get ic_van_dong_va_tinh_than => "lib/res/drawables/dsmes_service/van-dong-va-tinh-than.png";
+  String get ic_dinh_duong_bua_an_can_bang =>
+      "lib/res/drawables/dsmes_service/dinh-duong-bua-an-can-bang.png";
+  String get ic_theo_doi_chi_so =>
+      "lib/res/drawables/dsmes_service/theo-doi-chi-so.png";
+  String get ic_van_dong_va_tinh_than =>
+      "lib/res/drawables/dsmes_service/van-dong-va-tinh-than.png";
   String get ic_khac => "lib/res/drawables/dsmes_service/khac.png";
   String get dsmes_empty => "lib/res/drawables/dsmes_empty.png";
   String get banner_cao_huyet_ap => "lib/res/drawables/clinic_specialty/cao-huyet-ap.png";
@@ -613,4 +620,15 @@ class Drawables {
   String get bg_empty_clinic => "lib/res/drawables/bg_empty_clinic.png";
   String get ic_money => "lib/res/drawables/ic_money.png";
   String get ic_dialog_fail => "lib/res/drawables/ic_dialog_fail.png";
+  String get chat_avatar_chatbot_ai =>
+      "lib/res/drawables/chat/avatar_chatbot_ai.png";
+  String get chat_banner_family => "lib/res/drawables/chat/banner_family.png";
+  String get chat_ic_edu => "lib/res/drawables/chat/ic_edu.png";
+  String get chat_ic_hotline => "lib/res/drawables/chat/ic_hotline.png";
+  String get chat_avatar_chatbot_ai_2 =>
+      "lib/res/drawables/chat/avatar_chatbot_ai_2.png";
+  String get chat_avatar_chatbot_ai_3 =>
+      "lib/res/drawables/chat/avatar_chatbot_ai_3.webp";
+  String get chat_avatar_bagged_star =>
+      "lib/res/drawables/chat/avatar_bagged_star.png";
 }

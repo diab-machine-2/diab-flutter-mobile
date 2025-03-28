@@ -37,7 +37,7 @@ class BranchioLinkConfig {
 
   void setUpHandleDeepLink() {
     _subLink = FlutterBranchSdk.listSession().listen((data) async {
-      print('listenDynamicLinks - DeepLink Data: $data');
+      print('listenDynamicLinks - Branchio DeepLink Data: $data');
       AppSettings.saveClickedBranchLink(data['+clicked_branch_link']);
 
       if (data['+clicked_branch_link'] == true &&
@@ -81,7 +81,7 @@ class BranchioLinkConfig {
       if (data['+non_branch_link'] != null) {
         final urlString = data['+non_branch_link'] as String;
         AppSettings.saveClickedBranchLink(urlString.isNotEmpty);
-        if (urlString.isNotEmpty) {
+        if (urlString.isNotEmpty && urlString.contains('referralCode')) {
           List<String> separatedString = urlString.split('referralCode=');
           _referalCode = separatedString[1].substring(0, 6);
           return;

@@ -166,6 +166,13 @@ dependencies:
   animated_text_kit: ^4.2.2
   geolocator: ^11.1.0
   flutter_widget_from_html_core: ^0.14.12
+  flutter_chat_ui:
+    git:
+      url: https://github.com/longpnmd/flutter_chat_ui.git
+      ref: v1
+  supabase_flutter: ^2.0.0
+  bubble: ^1.2.1
+  readmore: ^3.0.0
 
 dev_dependencies:
   flutter_test:
@@ -208,6 +215,7 @@ flutter:
     - lib/res/fonts/
     - lib/res/drawables/
     - lib/res/drawables/home/
+    - lib/res/drawables/chat/
     - lib/res/drawables/glucose/
     - lib/res/drawables/tab/
     - lib/res/drawables/zoom/

@@ -2,7 +2,7 @@ enum TabBarType {
   home,
   program,
   library,
-  faq,
+  chat,
   store,
 }
 
@@ -16,7 +16,7 @@ extension TabBarTypeExt on TabBarType {
         return 'Chương trình';
       case TabBarType.library:
         return 'Thư viện';
-      case TabBarType.faq:
+      case TabBarType.chat:
         return 'Hỏi đáp';
       case TabBarType.store:
         return 'Cửa hàng';
@@ -31,7 +31,7 @@ extension TabBarTypeExt on TabBarType {
         return 'lib/res/drawables/tab/ic_tab_program.png';
       case TabBarType.library:
         return 'lib/res/drawables/tab/ic_tab_library.png';
-      case TabBarType.faq:
+      case TabBarType.chat:
         return 'lib/res/drawables/tab/ic_tab_faq.png';
       case TabBarType.store:
         return 'lib/res/drawables/tab/ic_tab_store_new.png';
@@ -46,7 +46,7 @@ extension TabBarTypeExt on TabBarType {
         return 1;
       case TabBarType.library:
         return 2;
-      case TabBarType.faq:
+      case TabBarType.chat:
         return 3;
       case TabBarType.store:
         return 4;

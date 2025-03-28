@@ -1,4 +1,5 @@
 import 'package:easy_localization/easy_localization.dart';
+import 'package:medical/src/widget/dsmes_appointment/model/dsmes_appointment_model.dart';
 
 class DsmesClinicModel {
   final int id;
@@ -157,6 +158,10 @@ class DsmesClinicModel {
     bookingSchedules.sort((a, b) => a.startTime.compareTo(b.startTime));
 
     return bookingSchedules;
+  }
+
+  bool hasServiceAvailable(DsmesAppointmentMode mode) {
+    return svAvailable.any((service) => service.key == mode.toString());
   }
 }
 

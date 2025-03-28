@@ -177,4 +177,8 @@ class Colors {
   Color get color0xffC2C2C2 => Color(0xffC2C2C2);
   Color get glucose_bg_color => Color(0xFFEAF9F7);
   Color get color0xffF7F8F8 => Color(0xFFF7F8F8);
+  Color get bg_conversation_chat => Color(0xffEAF4F4);
+  Color get conversation_typing_broder => Color(0xffD4D4D8);
+  Color get conversation_bubble_author_broder => Color(0xff8FEBE0);
+  Color get conversation_bubble_bot_broder => Color(0xffDFE4E4);
 }

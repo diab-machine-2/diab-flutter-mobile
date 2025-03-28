@@ -190,7 +190,6 @@ class DsmesAppointmentCubit extends Cubit<DsmesAppointmentState> {
     }
     ApiResult<DsmesClinicDetailResponse> apiResult =
         await appRepository.getClinicDetail(id: id);
-
     return apiResult.when(success: (DsmesClinicDetailResponse response) {
       setSelectedClinic(response.data);
       emit(DsmesAppointmentLoaded());

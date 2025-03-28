@@ -26,13 +26,14 @@ import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/Bmi/widget/add_bmi.dart';
+import 'package:medical/src/widget/conversation/conversations.dart';
 import 'package:medical/src/widget/helper/notification_manager.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/home/home_v2.dart';
 import 'package:medical/src/widget/my_plan_screens/activity_tab/activity_tab/activity_tab.dart';
 import 'package:medical/src/widget/my_plan_screens/my_plan/my_plan.dart';
-import 'package:medical/src/widget/question_answer/question_answer_page.dart';
+// import 'package:medical/src/widget/question_answer/question_answer_page.dart';
 import 'package:medical/src/widget/tabbar/tabbar_v2_data.dart';
 import 'package:medical/src/widget/voucher/presentation/widgets/webview_store.dart';
 import 'package:medical/curved_navigation_bar/curved_navigation_bar.dart';
@@ -62,7 +63,7 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
     TabBarType.home,
     TabBarType.program,
     TabBarType.library,
-    TabBarType.faq,
+    TabBarType.chat,
     TabBarType.store,
   ];
 
@@ -81,7 +82,7 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
       HomeController(sharedCode: widget.sharedCode),
       _buildProgramTab(),
       MyPlanPage(index: 0),
-      QuestionAnswerPage(),
+      Conversations(),
       _buildStoreTab(),
     ];
     Observable.instance.addObserver(this);
@@ -134,6 +135,17 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
         );
       });
       _jumpTo(index);
+    } else if (index == TabBarType.chat.index) {
+      FirebaseAnalytics.instance.logEvent(
+        name: 'component_clicked',
+        parameters: {
+          "screen_name": 'BottomTabBarV2',
+          'cta_button_name': 'Go to Chatbot AI',
+        },
+      );
+      // _jumpTo(index);
+      // _lastIndex = index;
+      Navigator.pushNamed(context, NavigatorName.conversation_chatbot_ai);
     } else if (index == -1) {
       // _showMaterialDialog();
     } else {
@@ -153,8 +165,12 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
   void _checkExistLessonId() async {
     final String? lessonId = DynamicLinkConfig.instance.lessonId;
     final String? activityId = DynamicLinkConfig.instance.activityId;
-    if (lessonId != null || activityId != null) {
+    if (lessonId != null) {
       _jumpTo(TabBarType.library.index);
+      _bottomTabbarKey.currentState?.setPage(TabBarType.library.index);
+    } else if (activityId != null) {
+      _jumpTo(TabBarType.program.index);
+      _bottomTabbarKey.currentState?.setPage(TabBarType.program.index);
     }
   }
 
@@ -233,7 +249,7 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
           HomeController(sharedCode: widget.sharedCode),
           _buildProgramTab(),
           MyPlanPage(index: 0),
-          QuestionAnswerPage(),
+          Conversations(),
           _buildStoreTab(),
         ];
       });
