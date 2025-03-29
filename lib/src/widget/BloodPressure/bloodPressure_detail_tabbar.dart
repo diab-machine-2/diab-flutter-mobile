@@ -11,7 +11,7 @@ import 'package:medical/src/modal/HbA1C/short_gui.dart';
 import 'package:medical/src/repo/HbA1C/HbA1C_client.dart';
 import 'package:medical/src/utils/app_storages.dart';
 import 'package:medical/src/utils/navigator_name.dart';
-import 'package:medical/src/widget/BloodPressure/bloodPressure_detail.dart';
+import 'package:medical/src/widget/BloodPressure/bloodPressure_detail_listing.dart';
 import 'package:medical/src/widget/BloodPressure/overview.dart';
 import 'package:medical/src/widget/HbA1C/widget/description/description.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
@@ -44,7 +44,7 @@ class _BloodPressureDetailTabbarControllerState
   GlobalKey<CustomActionDescriptionState> customActionDesKey = GlobalKey();
 
   GlobalKey<BloodPressureOverviewControllerState> overViewKey = GlobalKey();
-  GlobalKey<BloodPressureDetailControllerState> detailKey = GlobalKey();
+  GlobalKey<BloodPressureDetailListingControllerState> detailKey = GlobalKey();
 
   int periodFilterType = 1;
   String? bloodPressureID;
@@ -187,7 +187,7 @@ class _BloodPressureDetailTabbarControllerState
             Expanded(
               child: TabBarView(controller: _tabController, children: [
                 BloodPressureOverviewController(key: overViewKey),
-                BloodPressureDetailController(key: detailKey)
+                BloodPressureDetailListingController(key: detailKey)
               ]),
             ),
           ]),

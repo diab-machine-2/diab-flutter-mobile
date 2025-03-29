@@ -14,17 +14,17 @@ import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
-class BloodPressureDetailController extends StatefulWidget {
-  BloodPressureDetailController({Key? key}) : super(key: key);
+class BloodPressureDetailListingController extends StatefulWidget {
+  BloodPressureDetailListingController({Key? key}) : super(key: key);
   @override
-  BloodPressureDetailControllerState createState() =>
-      BloodPressureDetailControllerState();
+  BloodPressureDetailListingControllerState createState() =>
+      BloodPressureDetailListingControllerState();
 }
 
-class BloodPressureDetailControllerState
-    extends State<BloodPressureDetailController>
+class BloodPressureDetailListingControllerState
+    extends State<BloodPressureDetailListingController>
     with
-        AutomaticKeepAliveClientMixin<BloodPressureDetailController>,
+        AutomaticKeepAliveClientMixin<BloodPressureDetailListingController>,
         Observer {
   @override
   bool get wantKeepAlive => true;
