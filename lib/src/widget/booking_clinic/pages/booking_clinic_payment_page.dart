@@ -37,6 +37,7 @@ class BookingClinicPaymentPage extends StatefulWidget {
 class _BookingClinicPaymentPageState extends State<BookingClinicPaymentPage> {
   String responseCode = '';
   String paymentUrl = '';
+  String tmnCode = '';
   late DsmesAppointmentCubit _cubit;
 
   bool isLoading = true;
@@ -62,7 +63,8 @@ class _BookingClinicPaymentPageState extends State<BookingClinicPaymentPage> {
   Future<void> _initiatePayment() async {
     final ipAddress = await _getPublicIpAddress();
     final accountId = AppSettings.userInfo?.accountId ?? '';
-    // Get VNPAY config and validate
+
+    // Get VNPAY config
     final vnpayIntegratedInfo =
         FirebaseRemoteSetting.instance.vnpayIntegratedInfo ?? '';
     if (vnpayIntegratedInfo.isEmpty) {
@@ -72,7 +74,6 @@ class _BookingClinicPaymentPageState extends State<BookingClinicPaymentPage> {
 
       BotToast.showCustomText(
         toastBuilder: (_) => Container(
-          // width: MediaQuery.of(context).size.width * 0.8,
           padding: EdgeInsets.symmetric(vertical: 8, horizontal: 8),
           decoration: BoxDecoration(
             color: R.color.color0xff111515.withOpacity(0.7),
@@ -100,11 +101,12 @@ class _BookingClinicPaymentPageState extends State<BookingClinicPaymentPage> {
     }
 
     final vnpayIntegratedInfoMap = jsonDecode(vnpayIntegratedInfo);
+    tmnCode = vnpayIntegratedInfoMap['vnp_TmnCode'] ?? '';
 
     paymentUrl = VNPAYFlutter.instance.generatePaymentUrl(
       url: vnpayIntegratedInfoMap['vnp_Url'] ?? '',
       version: '2.1.0',
-      tmnCode: vnpayIntegratedInfoMap['vnp_TmnCode'] ?? '',
+      tmnCode: tmnCode,
       txnRef: DateTime.now().millisecondsSinceEpoch.toString(),
       orderInfo:
           'Payment for booking ${widget.bookingType} - Account: $accountId',
@@ -125,12 +127,12 @@ class _BookingClinicPaymentPageState extends State<BookingClinicPaymentPage> {
       final response =
           await http.get(Uri.parse('https://api64.ipify.org/?format=text'));
       if (response.statusCode == 200) {
-        return response.body; // IP công cộng
+        return response.body;
       } else {
-        return 'Lỗi khi lấy IP công cộng';
+        return 'Error getting public IP';
       }
     } catch (e) {
-      return 'Không thể lấy IP công cộng: $e';
+      return 'Unknown IP';
     }
   }
 
@@ -140,27 +142,22 @@ class _BookingClinicPaymentPageState extends State<BookingClinicPaymentPage> {
       body: SafeArea(
         child: Column(
           children: [
-            Expanded(
-              child: Container(
-                child: isLoading
-                    ? Center(child: CircularProgressIndicator())
-                    : Column(
-                        children: [
-                          VNPayView(
-                            paymentUrl: paymentUrl,
-                            onPaymentSuccess: (params) async {
-                              print("[VNPAY] Payment success: $params");
-                              await _handleCreateBookingClinic(params: params);
-                            },
-                            onPaymentError: (params) async {
-                              print("[VNPAY] Payment error: $params");
-                              await _handlePaymentFailed(params: params);
-                            },
-                          ),
-                        ],
-                      ),
-              ),
-            ),
+            isLoading
+                ? Expanded(
+                    child: Center(child: CircularProgressIndicator()),
+                  )
+                : VNPayView(
+                    paymentUrl: paymentUrl,
+                    tmnCode: tmnCode,
+                    onPaymentSuccess: (params) async {
+                      print("[VNPAY] Payment success: $params");
+                      await _handleCreateBookingClinic(params: params);
+                    },
+                    onPaymentError: (params) async {
+                      print("[VNPAY] Payment error: $params");
+                      await _handlePaymentFailed(params: params);
+                    },
+                  ),
           ],
         ),
       ),
@@ -190,14 +187,19 @@ class _BookingClinicPaymentPageState extends State<BookingClinicPaymentPage> {
 
     if (!mounted || resp == null) return;
 
-    final DateTime parsedDate =
-        DateTime.parse('${paymentDate.substring(0, 4)}-' // year
-            '${paymentDate.substring(4, 6)}-' // month
-            '${paymentDate.substring(6, 8)} ' // day
-            '${paymentDate.substring(8, 10)}:' // hour
-            '${paymentDate.substring(10, 12)}:' // minute
-            '${paymentDate.substring(12, 14)}' // second
-            );
+    // Parse the payment date from VNPAY format
+    DateTime parsedDate;
+    try {
+      parsedDate = DateTime.parse('${paymentDate.substring(0, 4)}-' // year
+          '${paymentDate.substring(4, 6)}-' // month
+          '${paymentDate.substring(6, 8)} ' // day
+          '${paymentDate.substring(8, 10)}:' // hour
+          '${paymentDate.substring(10, 12)}:' // minute
+          '${paymentDate.substring(12, 14)}' // second
+          );
+    } catch (e) {
+      parsedDate = DateTime.now();
+    }
 
     final payTime = DateFormat('HH:mm').format(parsedDate);
     final payDate = DateFormat('dd/MM/yyyy').format(parsedDate);
@@ -456,7 +458,6 @@ class _BookingClinicPaymentPageState extends State<BookingClinicPaymentPage> {
       onTap: onTap,
       child: Container(
         height: 44,
-        // width: 158,
         decoration: BoxDecoration(
           color: R.color.mainColor,
           borderRadius: BorderRadius.circular(200),

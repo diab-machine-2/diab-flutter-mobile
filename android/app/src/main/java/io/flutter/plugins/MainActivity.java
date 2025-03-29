@@ -77,6 +77,9 @@ import io.reactivex.schedulers.Schedulers;
 import android.content.Intent;
 import android.os.Bundle;
 
+import com.vnpay.authentication.VNP_AuthenticationActivity;
+import com.vnpay.authentication.VNP_SdkCompletedCallback;
+
 public class MainActivity extends FlutterFragmentActivity {
 
     private ScanCallback mScanCallback;
@@ -87,6 +90,8 @@ public class MainActivity extends FlutterFragmentActivity {
     private EventChannel.EventSink events;
 
     private Context context;
+    private static final String TAG = "MainActivity";
+    private static final String VNPAY_CHANNEL = "paymentGateway";
 
     @Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -134,21 +139,25 @@ public class MainActivity extends FlutterFragmentActivity {
                         }
                 );
 
-        new EventChannel(flutterEngine.getDartExecutor().getBinaryMessenger(), "eventChannelStreamiBle").setStreamHandler(
-                new EventChannel.StreamHandler() {
-                    @Override
-                    public void onListen(Object args, EventChannel.EventSink event) {
-                        events = event;
-                    }
-
-                    @Override
-                    public void onCancel(Object args) {
-                        emitData("event_cancel", null);
-                    }
-                }
-        );
+        // Add VNPay channel
+        new MethodChannel(flutterEngine.getDartExecutor().getBinaryMessenger(), VNPAY_CHANNEL)
+                .setMethodCallHandler(
+                        (call, result) -> {
+                            if (call.method.equals("openSDK")) {
+                                String url = call.argument("url");
+                                String tmnCode = call.argument("tmnCode");
+                                String scheme = call.argument("scheme") != null ? call.argument("scheme") : "vnpflutterapp";
+                                Boolean isSandbox = call.argument("isSandbox") != null ? call.argument("isSandbox") : false;
+                                
+                                Log.d(TAG, "Opening VNPay SDK with URL: " + url);
+                                startVNPayActivity(url, tmnCode, scheme, isSandbox);
+                                result.success(true);
+                            } else {
+                                result.notImplemented();
+                            }
+                        }
+                );
     }
-
 
     final IBLE_Callback mIBleCallback = new IBLE_Callback() {
 
@@ -496,4 +505,55 @@ public class MainActivity extends FlutterFragmentActivity {
         IBLE_Manager.getInstance().RequestAllRecords();
     }
 
+    /**
+     * Start the VNPAY Authentication Activity
+     */
+   private void startVNPayActivity(String url, String tmnCode, String scheme, Boolean isSandbox) {
+        Intent intent = new Intent(this, VNP_AuthenticationActivity.class);
+        
+        // Required parameters for VNPay SDK
+        intent.putExtra("url", url);          // Payment URL provided by VNPay
+        intent.putExtra("tmn_code", tmnCode); // Terminal code provided by VNPay
+        intent.putExtra("scheme", scheme);    // Scheme for reopening app after bank payment
+        intent.putExtra("is_sandbox", isSandbox); // Whether to use sandbox environment
+        
+        Log.d(TAG, "Starting VNPay activity with URL: " + url);
+        
+        // Set callback for VNPay SDK
+        VNP_AuthenticationActivity.setSdkCompletedCallback(new VNP_SdkCompletedCallback() {
+            @Override
+            public void sdkAction(String action) {
+                Log.d(TAG, "VNPay SDK Action: " + action);
+                // MethodChannel channel = new MethodChannel(getFlutterEngine().getDartExecutor().getBinaryMessenger(), VNPAY_CHANNEL);
+                // Map<String, Object> resultMap = new HashMap<>();
+                
+                // if ("AppBackAction".equals(action)) {
+                //     // User pressed back from SDK
+                //     resultMap.put("resultCode", -1);
+                //     channel.invokeMethod("PaymentBack", resultMap);
+                // } else if ("CallMobileBankingApp".equals(action)) {
+                //     // User chose to pay via mobile banking app
+                //     resultMap.put("resultCode", 10);
+                //     channel.invokeMethod("PaymentBack", resultMap);
+                // } else if ("WebBackAction".equals(action)) {
+                //     // User pressed back from payment page
+                //     resultMap.put("resultCode", 24);
+                //     channel.invokeMethod("PaymentBack", resultMap);
+                // } else if ("FaildBackAction".equals(action) || "FailBackAction".equals(action)) {
+                //     // Payment failed
+                //     resultMap.put("resultCode", 99);
+                //     channel.invokeMethod("PaymentBack", resultMap);
+                // } else if ("SuccessBackAction".equals(action)) {
+                //     // Payment successful
+                //     resultMap.put("resultCode", 0);
+                //     // Add additional payment information if available
+
+                //     channel.invokeMethod("PaymentBack", resultMap);
+                // }
+            }
+        });
+        
+        // Start the VNPay activity
+        startActivity(intent);
+    }
 }
