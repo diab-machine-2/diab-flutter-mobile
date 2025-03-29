@@ -131,7 +131,7 @@ class _BloodPressureIntro2ndPageState extends State<BloodPressureIntro2ndPage> {
       'Tăng huyết áp độ 3': Color(0xFFAF0000),
       'Tăng huyết áp độ 2': Color(0xFFDC0000),
       'Tăng huyết áp độ 1': Color(0xFFF86F6F),
-      'Bình thường cao': Color(0xFF16AA47),
+      'Bình thường cao': Color(0xFF21A567), // Color(0xFF16AA47) of 85%
       'Bình thường': Color(0xFF16AA47),
       'Thấp': Color(0xFFF9BA1A),
     };

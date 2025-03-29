@@ -103,11 +103,11 @@ class _BloodPressureDetailTabbarControllerState
     }
   }
 
-  changeIndex(int index) {
+  void changeIndex(int index) {
     _tabController!.animateTo(index);
   }
 
-  loadInputWithId(int index, String? id) {
+  void loadInputWithId(int index, String? id) {
     bloodPressureID = id;
     _tabController!.animateTo(index);
 
@@ -116,7 +116,7 @@ class _BloodPressureDetailTabbarControllerState
     }
   }
 
-  checkShowDes() async {
+  void checkShowDes() async {
     Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
     final SharedPreferences prefs = await _prefs;
     final showDes = prefs.getBool('show_des_pressure');
@@ -127,7 +127,7 @@ class _BloodPressureDetailTabbarControllerState
     }
   }
 
-  loadDescription() async {
+  void loadDescription() async {
     des = await HbA1CClient().fetchShortGuide(2);
     setState(() {});
   }
@@ -202,7 +202,7 @@ class _BloodPressureDetailTabbarControllerState
     );
   }
 
-  _showMaterialDialog() async {
+  void _showMaterialDialog() async {
     bool? hasHealthConnection = await AppStorages.getHealthAppPermission();
     if (hasHealthConnection == true) {
       Navigator.pushNamed(context, NavigatorName.add_blood_pressure,
@@ -305,7 +305,7 @@ class CustomTabbarImageState extends State<CustomTabbarImage> {
 
   int clickTime = 0;
 
-  showDescription() async {
+  void showDescription() async {
     print(showDes);
     print(clickTime);
 

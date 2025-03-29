@@ -31,7 +31,7 @@ class BloodPressureOverviewControllerState
     KpiBloodPressureTracking.firebaseSetup();
   }
 
-  reloadData(int periodFilterType) {
+  void reloadData(int periodFilterType) {
     _scrollController.jumpTo(0);
     if (bloodPressureDetailKey.currentState != null) {
       bloodPressureDetailKey.currentState!.reloadData(periodFilterType);

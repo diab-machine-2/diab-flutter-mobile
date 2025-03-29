@@ -107,4 +107,7 @@ class NavigatorName {
   // New Glucose
   static const String glucose_intro_1st_page = '/glucose-intro-1st-page';
   static const String glucose_intro_2nd_page = '/glucose-intro-2nd-page';
+  // New Blood Pressure
+  static const String blood_pressure_intro_1st_page = '/blood-pressure-intro-1st-page';
+  static const String blood_pressure_intro_2nd_page = '/blood-pressure-intro-2nd-page';
 }

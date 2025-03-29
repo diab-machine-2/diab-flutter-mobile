@@ -144,7 +144,7 @@ class BloodPressureChartState extends State<BloodPressureChart>
         }));
   }
 
-  buildChart(BloodPressureTrendModel model) {
+  Widget buildChart(BloodPressureTrendModel model) {
     final width = (MediaQuery.of(context).size.width - 200) / 5;
 
     List<int?> dates = [];
