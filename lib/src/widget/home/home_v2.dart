@@ -423,10 +423,11 @@ class _HomeControllerState extends State<HomeController>
                 });
               } else {}
             }
-            // 
-            _haveInputGlucoseAlready = state.model.measurements?.isNotEmpty == true
-              && state.model.measurements?.first.value1?.isNotEmpty == true
-              && state.model.measurements?.first.value1 != "--";
+            //
+            _haveInputGlucoseAlready = state.model.measurements?.isNotEmpty ==
+                    true &&
+                state.model.measurements?.first.value1?.isNotEmpty == true &&
+                state.model.measurements?.first.value1 != "--";
           }
 
           Widget activitiesW = HomeActivity(
@@ -591,13 +592,18 @@ class _HomeControllerState extends State<HomeController>
                                 return;
                               }
                               // case input glucose
-                              if (await _showGlucoseAddBottomSheet(routeName) == false) {
+                              if (await _showGlucoseAddBottomSheet(routeName) ==
+                                  false) {
                                 return;
                               }
                               // others
                               if (routeName != null) {
-                                Navigator.pushNamed(context, routeName,
-                                    arguments: args);
+                                if (title == "Vận Động") {
+                                  BotToast.showText(text: 'hello world');
+                                } else {
+                                  Navigator.pushNamed(context, routeName,
+                                      arguments: args);
+                                }
                               }
                             },
                             loading: stateLoaded?.measurementLoading ?? true,
@@ -980,7 +986,12 @@ class _HomeControllerState extends State<HomeController>
           return;
         }
         // others
-        Navigator.pushNamed(context, item.navigatorName, arguments: item.args);
+        if (item.title == "Vận động") {
+          BotToast.showText(text: 'hello world');
+        } else {
+          Navigator.pushNamed(context, item.navigatorName,
+              arguments: item.args);
+        }
       },
     );
     showModalBottomSheet(
@@ -1023,7 +1034,8 @@ class _HomeControllerState extends State<HomeController>
         return true;
       }
       // Logic navigate to glucose input page (saved before)
-      String? lastOpenedGlucoseInputType = await AppSettings.getLastOpenedGlucoseInputType();
+      String? lastOpenedGlucoseInputType =
+          await AppSettings.getLastOpenedGlucoseInputType();
       if (lastOpenedGlucoseInputType == null) {
         BloodSugarFunctions.showModalAddData(context);
       } else if (lastOpenedGlucoseInputType == 'device') {
@@ -1051,6 +1063,7 @@ class _HomeControllerState extends State<HomeController>
   Future<void> _onSelectGoal(ScheduleType type,
       {SmartGoalList? smartGoal, required String title}) async {
     // track event
+    Console.log('home_select_activity', title);
     final String eventName = "home_select_activity";
     TrackingManager.trackEvent(eventName, _screenName, params: {
       "object_title": title,
@@ -1097,9 +1110,9 @@ class _HomeControllerState extends State<HomeController>
         break;
       case ScheduleType.exercise:
       case ScheduleType.exercise_recommend:
+        BotToast.showText(text: 'hello world');
         await Navigator.pushNamed(context, NavigatorName.add_exercrises,
             arguments: {'type': 'input', 'goalId': smartGoal?.id});
-        // _cubit.refreshData(isRefresh: true);
         break;
       case ScheduleType.exercise_movement:
         if (smartGoal?.exerciseData == null) break;
