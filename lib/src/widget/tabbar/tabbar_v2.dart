@@ -27,15 +27,16 @@ import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/Bmi/widget/add_bmi.dart';
+import 'package:medical/src/widget/conversation/conversations.dart';
 import 'package:medical/src/widget/helper/notification_manager.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/home/home_v2.dart';
 import 'package:medical/src/widget/my_plan_screens/activity_tab/activity_tab/activity_tab.dart';
 import 'package:medical/src/widget/my_plan_screens/my_plan/my_plan.dart';
-import 'package:medical/src/widget/question_answer/question_answer_page.dart';
 import 'package:medical/src/widget/subscription/pages/subscription_page.dart';
 import 'package:medical/src/widget/subscription/subscription_cubit.dart';
+// import 'package:medical/src/widget/question_answer/question_answer_page.dart';
 import 'package:medical/src/widget/tabbar/tabbar_v2_data.dart';
 import 'package:medical/src/widget/voucher/presentation/widgets/webview_store.dart';
 import 'package:medical/curved_navigation_bar/curved_navigation_bar.dart';
@@ -68,7 +69,7 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
     TabBarType.home,
     TabBarType.program,
     TabBarType.library,
-    TabBarType.faq,
+    TabBarType.chat,
     TabBarType.store,
   ];
 
@@ -87,7 +88,7 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
       HomeController(sharedCode: widget.sharedCode),
       _buildProgramTab(),
       MyPlanPage(index: 0),
-      QuestionAnswerPage(),
+      Conversations(),
       _buildStoreTab(),
     ];
     Observable.instance.addObserver(this);
@@ -122,28 +123,43 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
   void _trackUserVisit() async {
     final clickedBranchLink = await AppSettings.getClickedBranchLink();
     print('[TRACKING] ${clickedBranchLink == true ? 'deeplink' : 'organic'}');
-    FirebaseAnalytics.instance.logEvent(
-      name: 'home_app_open',
-      parameters: {
-        "screen_name": 'home',
+    TrackingManager.trackEvent(
+      'home_app_open',
+      'home',
+      params: {
         'source': clickedBranchLink == true ? 'deeplink' : 'organic',
       },
     );
   }
 
-  void _onBottomNavigationBarTap(int index) {
+  String getComponentName(int index) {
+    return _bottomTabs.elementAt(index).title;
+  }
+
+  void _onBottomNavigationBarTap(int index) async {
+    await TrackingManager.trackEvent(
+      'home_select_tabbar',
+      'home',
+      params: {
+        'component_name': getComponentName(index),
+      },
+    );
     if (index == TabBarType.store.index) {
       BotToast.showLoading();
       Future.delayed(Duration(seconds: 1), () async {
-        FirebaseAnalytics.instance.logEvent(
-          name: 'component_clicked',
-          parameters: {
-            "screen_name": 'StoreInApp',
+        TrackingManager.trackEvent(
+          'component_clicked',
+          'StoreInApp',
+          params: {
             'cta_button_name': 'cta_btn_store',
           },
         );
       });
       _jumpTo(index);
+    } else if (index == TabBarType.chat.index) {
+      // _jumpTo(index);
+      // _lastIndex = index;
+      Navigator.pushNamed(context, NavigatorName.conversation_chatbot_ai);
     } else if (index == -1) {
       // _showMaterialDialog();
     } else {
@@ -163,8 +179,12 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
   void _checkExistLessonId() async {
     final String? lessonId = DynamicLinkConfig.instance.lessonId;
     final String? activityId = DynamicLinkConfig.instance.activityId;
-    if (lessonId != null || activityId != null) {
+    if (lessonId != null) {
       _jumpTo(TabBarType.library.index);
+      _bottomTabbarKey.currentState?.setPage(TabBarType.library.index);
+    } else if (activityId != null) {
+      _jumpTo(TabBarType.program.index);
+      _bottomTabbarKey.currentState?.setPage(TabBarType.program.index);
     }
   }
 
@@ -243,7 +263,7 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
           HomeController(sharedCode: widget.sharedCode),
           _buildProgramTab(),
           MyPlanPage(index: 0),
-          QuestionAnswerPage(),
+          Conversations(),
           _buildStoreTab(),
         ];
       });

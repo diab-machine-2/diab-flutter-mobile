@@ -37,13 +37,48 @@ class VideoManager {
     }
   }
 
+  Future<void> ensureVideoInitialized() async {
+    // Add a safety check to ensure video is properly initialized
+    if (controller != null) {
+      // Wait for up to 3 seconds for the video to initialize properly
+      int attempts = 0;
+      while (attempts < 30) {
+        if (controller!.videoPlayerController?.value.duration != null &&
+            controller!.videoPlayerController!.value.duration!.inMilliseconds >
+                0) {
+          debugPrint(
+              '[EXERCISE] Video successfully initialized with duration: ${controller!.videoPlayerController!.value.duration!.inSeconds}s');
+          break;
+        }
+        await Future.delayed(Duration(milliseconds: 100));
+        attempts++;
+      }
+
+      // If still not initialized properly, attempt to reload
+      if (controller!.videoPlayerController?.value.duration == null ||
+          controller!.videoPlayerController!.value.duration!.inMilliseconds <=
+              0) {
+        debugPrint(
+            '[EXERCISE] Video not properly initialized, attempting reload');
+        await controller!.retryDataSource();
+      }
+    }
+  }
+
   bool isYoutubeUrl() {
-    debugPrint('[EXERCISE] isYoutubeUrl: ${sourceList[currentSourceIndex].url}');
+    if (currentSourceIndex >= sourceList.length ||
+        sourceList[currentSourceIndex].url.isEmpty) {
+      return false;
+    }
+
+    final url = sourceList[currentSourceIndex].url;
+    debugPrint('[EXERCISE] Checking URL type: $url');
+
     RegExp youtubeRegExp = RegExp(
       r'^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.?be)\/.+$',
       caseSensitive: false,
     );
-    return youtubeRegExp.hasMatch(sourceList[currentSourceIndex].url);
+    return youtubeRegExp.hasMatch(url);
   }
 
   VideoManager.fromExerciseData(
@@ -123,40 +158,44 @@ class VideoManager {
       newController.setupDataSource(betterPlayerDataSource);
 
       newController.videoPlayerController?.addListener(() async {
-        // if (Platform.isIOS) {
-        //   if ((newController
-        //           .videoPlayerController!.value.position.inMilliseconds) ==
-        //       newController
-        //           .videoPlayerController!.value.duration!.inMilliseconds) {
-        //     //    Message.showToastMessage(context, 'Paused');
-        //     // await newController.pause();
-        //   }
-        // }
-        if (videoDuration == null) {
-          videoDuration = newController.videoPlayerController!.value.duration;
-        }
-        if (!isLocked &&
-            newController.videoPlayerController?.value != null &&
-            !newController.videoPlayerController!.value.isPlaying &&
-            newController.videoPlayerController!.value.initialized &&
-            (newController.videoPlayerController!.value.duration ==
-                newController.videoPlayerController!.value.position)) {
+        // Wait until the video is properly initialized with a valid duration
+        if (newController.videoPlayerController?.value.duration != null &&
+            newController
+                    .videoPlayerController!.value.duration!.inMilliseconds >
+                0) {
+          // Update videoDuration only if it's not set or if the current value is invalid
+          if (videoDuration == null || videoDuration!.inMilliseconds <= 0) {
+            videoDuration = newController.videoPlayerController!.value.duration;
+            debugPrint(
+                '[EXERCISE] Video duration set: ${videoDuration?.inSeconds} seconds');
+          }
+
+          // Get current values
           Duration? duration =
               newController.videoPlayerController!.value.duration;
           Duration? position =
               newController.videoPlayerController!.value.position;
 
-          // WHEN COMPLETE VIDEO
-          if (duration == position) {
-            checkCallbackEventListener(CustomPlayerEventType.videoCompleted);
-            isCompleted = true;
+          // Only process completion logic if we have valid duration and position
+          if (!isLocked &&
+              duration != null &&
+              position != null &&
+              duration.inMilliseconds > 0 &&
+              !newController.videoPlayerController!.value.isPlaying &&
+              newController.videoPlayerController!.value.initialized) {
+            // Check if video is within 500ms of completion or past completion
+            // This tolerance helps with iOS timing issues
+            bool isAtEnd =
+                duration.inMilliseconds - position.inMilliseconds <= 500;
+
+            if (isAtEnd) {
+              debugPrint(
+                  '[EXERCISE] Video reached end: position=${position.inSeconds}s, duration=${duration.inSeconds}s');
+              checkCallbackEventListener(CustomPlayerEventType.videoCompleted);
+              isCompleted = true;
+              _startTimer();
+            }
           }
-          _startTimer();
-          // if (Platform.isIOS) {
-          //   Message.showToastMessage(context, 'Paused1');
-          //   await this.controller?.pause();
-          // }
-          // await loopVideo();
         }
       });
       this.controller = newController;

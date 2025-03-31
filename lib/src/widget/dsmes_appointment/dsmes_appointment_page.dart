@@ -24,6 +24,7 @@ import 'package:medical/src/widget/dsmes_appointment/pages/dsmes_confirm_create_
 import 'package:medical/src/widget/dsmes_appointment/pages/dsmes_navigation_mixin.dart';
 import 'package:medical/src/widget/dsmes_appointment/pages/dsmes_select_service_page.dart';
 import 'package:medical/src/widget/dsmes_appointment/widgets/dsmes_appointment_item.dart';
+import 'package:medical/src/widget/helper/photo_view.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widgets/gap_widget.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
@@ -395,7 +396,13 @@ class _DsmesAppointmentPageState extends State<DsmesAppointmentPage>
                             if (isProcessing['chooseService']!) return;
                             isProcessing['chooseService'] = true;
                             try {
-                              await _cubit.getClinicDetail(id: data.clinicId);
+                              final detailSuccess =
+                                  await _cubit.getClinicDetail(id: data.id);
+
+                              if (!detailSuccess ||
+                                  _cubit.selectedClinic == null) {
+                                return;
+                              }
                               final appointment =
                                   await _cubit.getDsmesAppointmentDetail(
                                       appointmentId: data.id);
@@ -425,7 +432,13 @@ class _DsmesAppointmentPageState extends State<DsmesAppointmentPage>
                           final clinics = await _cubit.getClinicList(type: 'online');
                           if (clinics.isNotEmpty) {
                             final priorityClinic = clinics.first;
-                            await _cubit.getClinicDetail(id: priorityClinic.id);
+                            final detailSuccess = await _cubit.getClinicDetail(
+                                id: priorityClinic.id);
+
+                            if (!detailSuccess ||
+                                _cubit.selectedClinic == null) {
+                              return;
+                            }
                             await _cubit.initCreateDsmesBookingRequest(
                                 locale: context.locale.languageCode);
 

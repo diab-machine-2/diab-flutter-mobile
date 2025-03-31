@@ -10,6 +10,7 @@ import 'package:medical/src/model/request/notify_subscription_request.dart';
 import 'package:medical/src/model/request/sync_index_from_zalo_request.dart';
 import 'package:medical/src/model/response/app_version_response.dart';
 import 'package:medical/src/model/response/calendar_training_response.dart';
+import 'package:medical/src/model/response/chat_supabase_response.dart';
 import 'package:medical/src/model/response/content_welcome_response.dart';
 import 'package:medical/src/model/response/create_calendar_response.dart';
 import 'package:medical/src/model/response/expert_comment_list_response.dart';
@@ -20,6 +21,7 @@ import 'package:medical/src/model/response/lesson_module_response.dart';
 import 'package:medical/src/model/response/list_calendart_response.dart';
 import 'package:medical/src/model/response/question_answer_response.dart';
 import 'package:medical/src/model/response/report_response.dart';
+import 'package:medical/src/utils/app_log.dart';
 import 'package:retrofit/http.dart';
 import 'package:retrofit/retrofit.dart';
 import 'request/complete_exercise_request.dart';
@@ -435,4 +437,30 @@ abstract class AppApi {
 
   @POST("/App/Notification/Subscription")
   Future<CommonResponse> notifySubscription(@Body() NotifySubscriptionRequest request);
+  
+  // ## 1. Lấy Cấu hình Supabase
+  @GET('/App/Chat/config/supabase')
+  Future<SupabaseConfigResponse> getSupabaseConfig();
+  // ## 2. Gửi Câu Hỏi Cho AI
+  @GET('/App/Chat/conversations/{conversationId}/messages/{messageId}')
+  Future<MessageResponse> sendMessageById(
+    @Path('conversationId') String conversationId,
+    @Path('messageId') String messageId,
+  );
+  // ## 3. Tạo Lại Câu Trả Lời AI
+  @PUT('/App/Chat/conversations/{conversationId}/messages/regenerate')
+  Future<MessageResponse> regenerateMessage(
+      @Path('conversationId') String conversationId);
+  // Create
+  @POST('/App/Chat/conversations')
+  Future<CreateConversationResponse> createConversation(
+    @Body() CreateConversationRequest request,
+  );
+  @DELETE('/App/Chat/conversations/{conversationId}')
+  Future<CommonResponse> deleteConversation(
+    @Path('conversationId') String conversationId,
+  );
+  //GET {{url}}/app/chat/conversations/me
+  @GET('/App/Chat/conversations/me')
+  Future<ConversationListResponse> getMyConversation();
 }

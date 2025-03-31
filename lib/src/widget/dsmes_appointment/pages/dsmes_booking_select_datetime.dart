@@ -428,18 +428,28 @@ class _DsmesCalendarSectionState extends State<DsmesCalendarSection> {
             lastDate: _getLastDate(),
             datesRange: Const.MAX_DAY_RANGE_DSMES_BOOKING,
             onEndReached: () {
-              BotToast.showText(
-                text: R.string.select_booking_dates_warning.tr(),
-                contentColor: R.color.color0xff111515.withOpacity(0.7),
-                contentPadding:
-                    EdgeInsets.symmetric(vertical: 8, horizontal: 25),
-                borderRadius: BorderRadius.circular(8),
-                textStyle: TextStyle(
-                  color: R.color.white,
-                  fontSize: 15,
-                  fontWeight: FontWeight.w400,
+              BotToast.showCustomText(
+                toastBuilder: (_) => Container(
+                  padding: EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+                  decoration: BoxDecoration(
+                    color: R.color.color0xff111515.withOpacity(0.7),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Text(
+                    R.string.select_booking_dates_warning.tr(),
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: R.color.white,
+                      fontSize: 15,
+                      fontWeight: FontWeight.w400,
+                    ),
+                  ),
                 ),
                 align: Alignment.center,
+                duration: Duration(seconds: 2),
+                clickClose: true,
+                crossPage: true,
+                onlyOne: true,
               );
             },
             onDateChanged: (datetime) async {

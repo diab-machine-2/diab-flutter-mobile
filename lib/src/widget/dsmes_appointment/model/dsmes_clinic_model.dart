@@ -1,4 +1,5 @@
 import 'package:easy_localization/easy_localization.dart';
+import 'package:medical/src/widget/dsmes_appointment/model/dsmes_appointment_model.dart';
 
 class DsmesClinicModel {
   final int id;
@@ -26,6 +27,7 @@ class DsmesClinicModel {
   final Map<String, Map<String, int>> schedule;
   final String aptInterval;
   final List<ExtraAvatar> extraAvatar;
+  final List<ServiceAvailable> svAvailable;
 
   DsmesClinicModel({
     required this.id,
@@ -53,6 +55,7 @@ class DsmesClinicModel {
     required this.schedule,
     required this.aptInterval,
     required this.extraAvatar,
+    required this.svAvailable,
   });
 
   factory DsmesClinicModel.fromJson(Map<String, dynamic> json) {
@@ -95,6 +98,10 @@ class DsmesClinicModel {
       aptInterval: json['apt_interval'] ?? '',
       extraAvatar: (json['extra_avatar'] as List?)
               ?.map((e) => ExtraAvatar.fromJson(e))
+              .toList() ??
+          [],
+      svAvailable: (json['sv_available'] as List?)
+              ?.map((e) => ServiceAvailable.fromJson(e))
               .toList() ??
           [],
     );
@@ -148,6 +155,10 @@ class DsmesClinicModel {
     bookingSchedules.sort((a, b) => a.startTime.compareTo(b.startTime));
 
     return bookingSchedules;
+  }
+
+  bool hasServiceAvailable(DsmesAppointmentMode mode) {
+    return svAvailable.any((service) => service.key == mode.toString());
   }
 }
 
@@ -336,6 +347,23 @@ class ExtraAvatar {
       id: json['id'] ?? 0,
       path: json['path'] ?? '',
       thumbPath: json['thumb_path'] ?? '',
+    );
+  }
+}
+
+class ServiceAvailable {
+  final String key;
+  final String name;
+
+  ServiceAvailable({
+    required this.key,
+    required this.name,
+  });
+
+  factory ServiceAvailable.fromJson(Map<String, dynamic> json) {
+    return ServiceAvailable(
+      key: json['key'] ?? '',
+      name: json['name'] ?? '',
     );
   }
 }
