@@ -13,6 +13,7 @@ import 'package:medical/src/widget/subscription/model/subscription_package_model
 import 'package:medical/src/widget/subscription/services/subscription_service.dart';
 import 'package:medical/src/widget/subscription/subscription_cubit.dart';
 import 'package:medical/src/widget/subscription/subscription_navigation_mixin.dart';
+import 'package:medical/src/widget/subscription/subscription_tracking.dart';
 import 'package:medical/src/widget/subscription/widgets/package_detail_bottom_sheet.dart';
 import 'package:medical/src/widget/subscription/pages/package_program_list_page.dart';
 import 'package:medical/src/widgets/gap_widget.dart';
@@ -67,6 +68,9 @@ class _PaywallScreenState extends State<PaywallScreen> {
         _packageMap = packageMap;
         _isLoading = false;
       });
+
+      SubscriptionTracking.programServiceSelect(
+          objectTitle: localPackages.first.title);
     } catch (e) {
       print('Error loading packages: $e');
       setState(() {
@@ -303,6 +307,8 @@ class _PaywallScreenState extends State<PaywallScreen> {
                     padding: EdgeInsets.zero,
                   ),
                   onPressed: () {
+                    SubscriptionTracking.serviceView(
+                        objectTitle: package.title);
                     _showPackageDetails(package, revenueCatPackage);
                   },
                   child: Row(
@@ -343,6 +349,8 @@ class _PaywallScreenState extends State<PaywallScreen> {
                     if (index >= 0) {
                       setState(() {
                         _selectedPackageIndex = index;
+                        SubscriptionTracking.programServiceSelect(
+                            objectTitle: p.title);
                       });
                     }
                   },
@@ -446,6 +454,10 @@ class _PaywallScreenState extends State<PaywallScreen> {
         GestureDetector(
           onTap: () {
             _cubit.setSelectedPackage(_localPackages[_selectedPackageIndex]);
+
+            SubscriptionTracking.programServiceRegister(
+                screenName: 'program_service',
+                objectTitle: _localPackages[_selectedPackageIndex].title);
 
             // Navigate to package program list using the SubscriptionNavigationMixin
             SubscriptionNavigationMixin.navigationKey.currentState

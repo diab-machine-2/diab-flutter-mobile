@@ -13,6 +13,7 @@ import 'package:medical/src/widget/subscription/model/package_program_model.dart
 import 'package:medical/src/widget/subscription/services/package_program_service.dart';
 import 'package:medical/src/widget/subscription/subscription_cubit.dart';
 import 'package:medical/src/widget/subscription/subscription_navigation_mixin.dart';
+import 'package:medical/src/widget/subscription/subscription_tracking.dart';
 import 'package:medical/src/widgets/gap_widget.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -90,6 +91,8 @@ class _ProgramsListPageState extends State<ProgramsListPage> {
                     actions: [
                       InkWell(
                         onTap: () async {
+                          SubscriptionTracking.supportClick(
+                              screenName: 'program_listing');
                           final launchUri =
                               Uri(scheme: 'tel', path: Const.HOTLINE_NUMBER);
                           if (await canLaunchUrl(launchUri)) {
@@ -198,20 +201,30 @@ class ProgramCard extends StatelessWidget {
 
     return Stack(
       children: [
-        Container(
-          margin:
-              EdgeInsets.fromLTRB(12, program.isRecommended ? 24 : 12, 12, 12),
-          padding: EdgeInsets.symmetric(vertical: 16, horizontal: 12),
-          decoration: BoxDecoration(
-            color: R.color.white,
-            borderRadius: BorderRadius.circular(16),
-            boxShadow: [
-              Utils.getBoxShadowDropCard(),
-            ],
+        GestureDetector(
+          onTap: () {
+            SubscriptionTracking.programView(
+                objectTitle: program.title, objectAction: 'Card');
+
+            SubscriptionNavigationMixin.navigationKey.currentState?.pushNamed(
+                NavigatorName.package_program_detail,
+                arguments: {'program': program});
+          },
+          child: Container(
+            margin: EdgeInsets.fromLTRB(
+                12, program.isRecommended ? 24 : 12, 12, 12),
+            padding: EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+            decoration: BoxDecoration(
+              color: R.color.white,
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: [
+                Utils.getBoxShadowDropCard(),
+              ],
+            ),
+            child: isMobile
+                ? _buildMobileLayout(context)
+                : _buildTabletLayout(context),
           ),
-          child: isMobile
-              ? _buildMobileLayout(context)
-              : _buildTabletLayout(context),
         ),
         if (program.isRecommended)
           Positioned(
@@ -329,6 +342,9 @@ class ProgramCard extends StatelessWidget {
             Expanded(
                 child: GestureDetector(
               onTap: () {
+                SubscriptionTracking.programView(
+                    objectTitle: program.title, objectAction: 'Xem thêm');
+
                 SubscriptionNavigationMixin.navigationKey.currentState
                     ?.pushNamed(NavigatorName.package_program_detail,
                         arguments: {'program': program});
@@ -358,7 +374,11 @@ class ProgramCard extends StatelessWidget {
             Expanded(
               child: GestureDetector(
                 onTap: () async {
-                  await notifySubscriptionSuccess(context);
+                  SubscriptionTracking.programRequest(
+                      screenName: 'program_listing',
+                      objectTitle: program.title);
+
+                  // await notifySubscriptionSuccess(context);
                   ProgramService.showPopupRequestConsultSubscription(
                     context: context,
                     title: R.string.receive_consult_request_title.tr(),
@@ -367,6 +387,9 @@ class ProgramCard extends StatelessWidget {
                     primaryButtonTitle: R.string.back_home_page.tr(),
                     secondaryButtonTitle: R.string.support.tr(),
                     onNavigateHome: () {
+                      SubscriptionTracking.homeReturn(
+                          screenName: 'program_listing');
+
                       Navigator.of(context, rootNavigator: true)
                           .pushNamedAndRemoveUntil(
                         NavigatorName.tabbar,
@@ -374,6 +397,9 @@ class ProgramCard extends StatelessWidget {
                       );
                     },
                     onContact: () async {
+                      SubscriptionTracking.supportClick(
+                          screenName: 'program_listing');
+
                       final launchUri =
                           Uri(scheme: 'tel', path: Const.HOTLINE_NUMBER);
                       if (await canLaunchUrl(launchUri)) {
@@ -544,6 +570,8 @@ class ProgramCard extends StatelessWidget {
                 flex: 1,
                 child: GestureDetector(
                   onTap: () {
+                    SubscriptionTracking.programView(
+                        objectTitle: program.title, objectAction: 'Xem thêm');
                     SubscriptionNavigationMixin.navigationKey.currentState
                         ?.pushNamed(NavigatorName.package_program_detail,
                             arguments: {'program': program});
@@ -575,7 +603,11 @@ class ProgramCard extends StatelessWidget {
                 flex: 1,
                 child: GestureDetector(
                   onTap: () async {
-                    await notifySubscriptionSuccess(context);
+                    SubscriptionTracking.programRequest(
+                      screenName: 'program_listing',
+                      objectTitle: program.title);
+
+                    // await notifySubscriptionSuccess(context);
                     ProgramService.showPopupRequestConsultSubscription(
                       context: context,
                       title: R.string.receive_consult_request_title.tr(),
@@ -584,6 +616,9 @@ class ProgramCard extends StatelessWidget {
                       primaryButtonTitle: R.string.back_home_page.tr(),
                       secondaryButtonTitle: R.string.support.tr(),
                       onNavigateHome: () {
+                        SubscriptionTracking.homeReturn(
+                                screenName: 'program_listing');
+
                         Navigator.of(context, rootNavigator: true)
                             .pushNamedAndRemoveUntil(
                           NavigatorName.tabbar,
@@ -592,6 +627,9 @@ class ProgramCard extends StatelessWidget {
                         );
                       },
                       onContact: () async {
+                        SubscriptionTracking.supportClick(
+                          screenName: 'program_listing');
+
                         final launchUri =
                             Uri(scheme: 'tel', path: Const.HOTLINE_NUMBER);
                         if (await canLaunchUrl(launchUri)) {

@@ -15,6 +15,7 @@ import 'package:medical/src/widget/subscription/pages/paywall_screen.dart';
 import 'package:medical/src/widget/subscription/subscription_cubit.dart';
 import 'package:medical/src/widget/subscription/subscription_state.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
+import 'package:medical/src/widget/subscription/subscription_tracking.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 class SubscriptionPage extends StatefulWidget {
@@ -278,6 +279,7 @@ class _SubscriptionPageState extends State<SubscriptionPage> with Observer {
             ),
             ElevatedButton(
               onPressed: () {
+                SubscriptionTracking.programExplore(_currentCarouselIndex + 1);
                 // Navigate to PaywallScreen with full-screen dialog
                 Navigator.of(context, rootNavigator: true).push(
                   MaterialPageRoute(

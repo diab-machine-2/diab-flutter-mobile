@@ -12,6 +12,7 @@ import 'package:medical/src/widget/subscription/model/package_program_model.dart
 import 'package:medical/src/widget/subscription/services/package_program_service.dart';
 import 'package:medical/src/widget/subscription/subscription_cubit.dart';
 import 'package:medical/src/widget/subscription/subscription_navigation_mixin.dart';
+import 'package:medical/src/widget/subscription/subscription_tracking.dart';
 import 'package:medical/src/widgets/gap_widget.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -63,6 +64,10 @@ class _ProgramDetailPageState extends State<ProgramDetailPage> {
                     child: _buildButton(
                       title: R.string.consult_request.tr(),
                       onTap: () async {
+                        SubscriptionTracking.programRequest(
+                            screenName: 'program_detail',
+                            objectTitle: widget.program.title);
+                            
                         final subscriptionCubit =
                             BlocProvider.of<SubscriptionCubit>(context);
 
@@ -72,8 +77,9 @@ class _ProgramDetailPageState extends State<ProgramDetailPage> {
                             servicePackage:
                                 subscriptionCubit.selectedPackage!.title,
                             programName: widget.program.title);
-                        await subscriptionCubit.notifySubscriptionSuccess(request);
-                        
+                        await subscriptionCubit
+                            .notifySubscriptionSuccess(request);
+
                         ProgramService.showPopupRequestConsultSubscription(
                           context: context,
                           title: R.string.receive_consult_request_title.tr(),
@@ -83,6 +89,9 @@ class _ProgramDetailPageState extends State<ProgramDetailPage> {
                           primaryButtonTitle: R.string.back_home_page.tr(),
                           secondaryButtonTitle: R.string.support.tr(),
                           onNavigateHome: () {
+                            SubscriptionTracking.homeReturn(
+                                screenName: 'program_detail');
+
                             Navigator.of(context, rootNavigator: true)
                                 .pushNamedAndRemoveUntil(
                               NavigatorName.tabbar,
@@ -91,6 +100,8 @@ class _ProgramDetailPageState extends State<ProgramDetailPage> {
                             );
                           },
                           onContact: () async {
+                            SubscriptionTracking.supportClick(
+                                screenName: 'program_detail');
                             final launchUri =
                                 Uri(scheme: 'tel', path: Const.HOTLINE_NUMBER);
                             if (await canLaunchUrl(launchUri)) {

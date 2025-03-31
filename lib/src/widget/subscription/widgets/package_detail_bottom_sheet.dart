@@ -1,10 +1,9 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
-import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/subscription/model/subscription_package_model.dart';
 import 'package:medical/src/widget/subscription/services/subscription_service.dart';
-import 'package:medical/src/widget/subscription/subscription_navigation_mixin.dart';
+import 'package:medical/src/widget/subscription/subscription_tracking.dart';
 import 'package:medical/src/widget/subscription/widgets/feature_item_widget.dart';
 import 'package:medical/src/widgets/gap_widget.dart';
 
@@ -83,7 +82,11 @@ class PackageDetailBottomSheet extends StatelessWidget {
             ),
             GapH(16),
             GestureDetector(
-              onTap: () => onPurchase(),
+              onTap: () {
+                SubscriptionTracking.programServiceRegister(
+                    screenName: 'program_service_detail', objectTitle: package.title);
+                onPurchase();
+              },
               child: Container(
                 height: 48,
                 decoration: BoxDecoration(
