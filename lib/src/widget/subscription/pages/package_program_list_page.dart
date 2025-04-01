@@ -378,7 +378,7 @@ class ProgramCard extends StatelessWidget {
                       screenName: 'program_listing',
                       objectTitle: program.title);
 
-                  // await notifySubscriptionSuccess(context);
+                  await notifySubscriptionSuccess(context);
                   ProgramService.showPopupRequestConsultSubscription(
                     context: context,
                     title: R.string.receive_consult_request_title.tr(),
@@ -607,7 +607,7 @@ class ProgramCard extends StatelessWidget {
                       screenName: 'program_listing',
                       objectTitle: program.title);
 
-                    // await notifySubscriptionSuccess(context);
+                    await notifySubscriptionSuccess(context);
                     ProgramService.showPopupRequestConsultSubscription(
                       context: context,
                       title: R.string.receive_consult_request_title.tr(),
