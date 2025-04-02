@@ -60,7 +60,7 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
   String? textValidate = '';
   ShortGuiModel? des;
   List<int> _rangeValueSystolic = [0, 90, 130, 140, 160, 180];
-  List<int> _rangeValueDiastolic = [0, 60, 85, 90, 100, 220];
+  List<int> _rangeValueDiastolic = [0, 60, 85, 90, 100, 110];
   List<String> _rangeLabel = [
     "Thấp",
     "Bình thường",
@@ -264,7 +264,7 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
                             _dateTimeSectionV2(),
                             const SizedBox(height: 24),
                             _inputSection(),
-                            const SizedBox(height: 48),
+                            const SizedBox(height: 12),
                             Padding(
                               padding: const EdgeInsets.symmetric(horizontal: 12),
                               child: _bloodPressureRange(),
@@ -497,11 +497,22 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
     int indexRangeSystolic = _findIndexInRanges(_valueOfSystolic, _rangeValueSystolic);
     int indexRangeDiastolic = _findIndexInRanges(_valueOfDiastolic, _rangeValueDiastolic);
     // 12*2 side padding + 16*2 component padding
-    num widthRange = (AppMediaQuery.deviceWidth - 12 * 2 - 16 * 2) / (_rangeLabel.length + 1);
+    num widthRange = (AppMediaQuery.deviceWidth - (12 * 2) - (12 * 2)) / (_rangeLabel.length + 1);
+    widthRange = widthRange.roundToDouble();
 
     // num width = _number == 0 ? 0 : widthRange * (indexRange);
     num widthOfSystolic = _valueOfSystolic == 0 ? 0 : widthRange * (indexRangeSystolic);
+    if (indexRangeSystolic >= 2) {
+      widthOfSystolic += widthRange;
+    } else {
+      widthOfSystolic *= 2;
+    }
     num widthDiastolic = _valueOfDiastolic == 0 ? 0 : widthRange * (indexRangeDiastolic);
+    if (indexRangeDiastolic >= 2) {
+      widthDiastolic += widthRange;
+    } else {
+      widthDiastolic *= 2;
+    }
 
     if (_valueOfDiastolic != 0 || _valueOfSystolic != 0) {
       num minSystolic = _rangeValueSystolic[indexRangeSystolic];
@@ -534,7 +545,6 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
           : widthDiastolic;
     }
     int indexRange = _determineBloodPressureType(_valueOfSystolic, _valueOfDiastolic);
-    double extraWidthForTitle = 35;
     return SpacingColumn(
       spacing: 50,
       children: [
@@ -557,166 +567,183 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
         Stack(
           clipBehavior: Clip.none,
           children: [
-            Padding(
-              padding: const EdgeInsets.only(bottom: 40),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(5),
-                child: Row(
-                  children: _colorList.asMap().entries.map(
-                    (entry) {
-                      // TODO: BLOOD PRESSURE << DO debug
-                      return Container(
-                        height: 8,
-                        width: entry.key == 0
-                            ? widthRange.toDouble() * 2
-                            : widthRange.toDouble(),
-                        color: entry.value,
-                      );
-                    },
-                  ).toList(),
+            // height for all elements = 100
+            Container(height: 100, width: double.infinity),
+            Positioned.fill(
+              child: Center(
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(5),
+                  child: Row(
+                    children: _colorList.asMap().entries.map(
+                      (entry) {
+                        return Expanded(
+                          flex: entry.key == 0 ? 2 : 1,
+                          child: Container(
+                            height: 8,
+                            color: entry.value,
+                          ),
+                        );
+                      },
+                    ).toList(),
+                  ),
                 ),
               ),
             ),
             // Arrow diastolic
             Positioned(
-              left: widthDiastolic.toDouble() - 20,
-              bottom: 10,
+              left: widthDiastolic.toDouble() - 18,
+              bottom: -5,
               child: Container(child: Icon(Icons.arrow_drop_up_rounded, size: 40)),
             ),
             // Arrow systolic
             Positioned(
-              left: widthOfSystolic.toDouble() - 20,
-              bottom: 40,
+              left: widthOfSystolic.toDouble() - 18,
+              top: -5,
               child: Container(child: Icon(Icons.arrow_drop_down_rounded, size: 40)),
             ),
-            // Range diastolic
-            Positioned(
-              left: 0,
-              right: 0,
-              bottom: 20,
-              child: Row(
-                  children: _rangeValueDiastolic
-                      .map(
-                        (e) => Expanded(
-                          flex: e == 0 ? 2 : 1,
-                          child: Stack(
-                            clipBehavior: Clip.none,
-                            children: [
-                              SizedBox(),
-                              Positioned(
-                                left: e.toString().length == 3 ? -15 : -10,
-                                child: e == 0
-                                    ? Padding(
-                                        padding: EdgeInsets.only(right: extraWidthForTitle),
-                                        child: Text(
-                                          'Tâm trương',
-                                          style: TextStyle(
-                                            fontSize: 10,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                      )
-                                    : Text(
-                                        '$e',
-                                        style: TextStyle(
-                                            // Default style for other values of e
+            // Range diastolic (text values)
+            Positioned.fill(
+              child: Center(
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 28),
+                  child: Row(
+                      children: _rangeValueDiastolic
+                          .map(
+                            (e) => Expanded(
+                              flex: e == 0 ? 2 : 1,
+                              child: Stack(
+                                clipBehavior: Clip.none,
+                                children: [
+                                  SizedBox(),
+                                  Positioned(
+                                    left: e == 0
+                                        ? 0
+                                        : e.toString().length == 3
+                                            ? -10
+                                            : -6,
+                                    child: e == 0
+                                        ? Text(
+                                            'Tâm trương',
+                                            style: TextStyle(
+                                              fontSize: 10,
+                                              fontWeight: FontWeight.bold,
                                             ),
-                                      ),
-                              )
-                            ],
-                          ),
-                        ),
-                      )
-                      .toList()),
-            ),
-            // Range systolic
-            Positioned(
-              left: 0,
-              right: 0,
-              top: -30,
-              child: Row(
-                  children: _rangeValueSystolic
-                      .map(
-                        (e) => Expanded(
-                          flex: e == 0 ? 2 : 1,
-                          child: Stack(
-                            clipBehavior: Clip.none,
-                            children: [
-                              SizedBox(),
-                              Positioned(
-                                left: e.toString().length == 3 ? -15 : -10,
-                                child: e == 0
-                                    ? Padding(
-                                        padding: EdgeInsets.only(right: extraWidthForTitle),
-                                        child: Text(
-                                          'Tâm Thu',
-                                          style: TextStyle(
-                                            fontSize: 10,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                      )
-                                    : Text(
-                                        '$e',
-                                        style: TextStyle(
-                                            // Default style for other values of e
+                                          )
+                                        : Text(
+                                            '$e',
+                                            style: TextStyle(
+                                              fontSize: 12,
+                                              // Default style for other values of e
                                             ),
-                                      ),
-                              )
-                            ],
-                          ),
-                        ),
-                      )
-                      .toList()),
-            ),
-            Positioned(
-              left: 0,
-              right: 0,
-              top: -15,
-              child: Row(
-                  children: _rangeValueSystolic
-                      .asMap()
-                      .entries
-                      .map(
-                        (entry) => Expanded(
-                          flex: entry.key == 0 ? 2 : 1,
-                          child: Container(
-                            width: (entry.key == 0 ? 2 : 1) * 30,
-                            child: Text(
-                              '|',
-                              style: TextStyle(
-                                color: entry.key == 0 ? Colors.transparent : Color(0xFFD7D7D7),
-                                fontSize: 10,
+                                          ),
+                                  )
+                                ],
                               ),
                             ),
-                          ),
-                        ),
-                      )
-                      .toList()),
+                          )
+                          .toList()),
+                ),
+              ),
             ),
-            Positioned(
-              left: 0,
-              right: 0,
-              bottom: 25,
-              child: Row(
-                  children: _rangeValueDiastolic
-                      .asMap()
-                      .entries
-                      .map(
-                        (entry) => Expanded(
-                          child: Container(
-                            width: (entry.key == 0 ? 2 : 1) * 30,
-                            child: Text(
-                              '|',
-                              style: TextStyle(
-                                color: entry.key == 0 ? Colors.transparent : Color(0xFFD7D7D7),
-                                fontSize: 10,
+            // Range systolic (text values)
+            Positioned.fill(
+              child: Center(
+                child: Padding(
+                  padding: const EdgeInsets.only(bottom: 48),
+                  child: Row(
+                      children: _rangeValueSystolic
+                          .map(
+                            (e) => Expanded(
+                              flex: e == 0 ? 2 : 1,
+                              child: Stack(
+                                clipBehavior: Clip.none,
+                                children: [
+                                  SizedBox(),
+                                  Positioned(
+                                    left: e == 0
+                                        ? 0
+                                        : e.toString().length == 3
+                                            ? -10
+                                            : -8,
+                                    child: e == 0
+                                        ? Text(
+                                            'Tâm Thu',
+                                            style: TextStyle(
+                                              fontSize: 10,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          )
+                                        : Text(
+                                            '$e',
+                                            style: TextStyle(
+                                              fontSize: 12,
+                                              // Default style for other values of e
+                                            ),
+                                          ),
+                                  )
+                                ],
                               ),
                             ),
-                          ),
-                        ),
-                      )
-                      .toList()),
+                          )
+                          .toList()),
+                ),
+              ),
+            ),
+            // Range systolic (separator)
+            Positioned.fill(
+              child: Center(
+                child: Padding(
+                  padding: const EdgeInsets.only(bottom: 18),
+                  child: Row(
+                      children: _rangeValueSystolic
+                          .asMap()
+                          .entries
+                          .map(
+                            (entry) => Expanded(
+                              flex: entry.key == 0 ? 2 : 1,
+                              child: Container(
+                                width: 30,
+                                child: Text(
+                                  '|',
+                                  style: TextStyle(
+                                    color: entry.key == 0 ? Colors.transparent : Color(0xFFD7D7D7),
+                                    fontSize: 5,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          )
+                          .toList()),
+                ),
+              ),
+            ),
+            // Range diastolic (separator)
+            Positioned.fill(
+              child: Center(
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 15),
+                  child: Row(
+                      children: _rangeValueDiastolic
+                          .asMap()
+                          .entries
+                          .map(
+                            (entry) => Expanded(
+                              flex: entry.key == 0 ? 2 : 1,
+                              child: Container(
+                                width: 30,
+                                child: Text(
+                                  '|',
+                                  style: TextStyle(
+                                    color: entry.key == 0 ? Colors.transparent : Color(0xFFD7D7D7),
+                                    fontSize: 5,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          )
+                          .toList()),
+                ),
+              ),
             ),
           ],
         ),
@@ -758,14 +785,18 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
         color: R.color.white,
         borderRadius: BorderRadius.circular(16),
       ),
-      padding: EdgeInsets.all(16),
+      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Text(
-              R.string.heart_rate.tr(),
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+            Padding(
+              padding: const EdgeInsets.only(bottom: 8),
+              child: Text(
+                R.string.heart_rate.tr(),
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+              ),
             ),
             CupertinoSwitch(
               value: true,
