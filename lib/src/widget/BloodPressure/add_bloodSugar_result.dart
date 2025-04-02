@@ -18,7 +18,7 @@ import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widgets/network_image_widget.dart';
 import 'package:syncfusion_flutter_gauges/gauges.dart';
 
-import 'widget/aihelp_butotn.dart';
+import 'widget/aihelp_button.dart';
 import 'add_bloodSugar_result_note.dart';
 import 'bloodpressure_result.dto.dart';
 

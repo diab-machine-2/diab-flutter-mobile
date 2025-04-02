@@ -30,6 +30,7 @@ import '../../repo/home/home_client.dart';
 import '../../widgets/CalendarPicker/custom_date_picker.dart';
 import '../../widgets/spacing_row.dart';
 import '../my_plan_screens/activity_tab/activity_tab/models/schedule_type.dart';
+import 'widget/bloodpressure_warning_popup.dart';
 
 class AddBloodPressureController extends StatefulWidget {
   final String? type;
@@ -332,7 +333,10 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
               },
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                child: Text('Hướng dẫn', style: TextStyle(color: R.color.white, fontSize: 15)),
+                child: Text(
+                  R.string.huong_dan.tr(),
+                  style: TextStyle(color: R.color.white, fontSize: 15),
+                ),
               ),
             ),
           ),

@@ -1,7 +1,18 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:medical/res/R.dart';
 
 class BloodPressureWarningPopupWidget extends StatefulWidget {
-  const BloodPressureWarningPopupWidget({super.key});
+  BloodPressureWarningPopupWidget({super.key});
+
+  final List<String> reasons = [
+    'Thiếu ngủ',
+    'Tức giận',
+    'Buồn',
+    'Đói',
+    'Vận động quá sức',
+    'Không rõ lý do',
+  ];
 
   @override
   State<BloodPressureWarningPopupWidget> createState() => _BloodPressureWarningPopupWidgetState();
@@ -10,14 +21,18 @@ class BloodPressureWarningPopupWidget extends StatefulWidget {
 class _BloodPressureWarningPopupWidgetState extends State<BloodPressureWarningPopupWidget> {
   BloodPressureWarningPopupStep _step = BloodPressureWarningPopupStep.warning;
 
+  final List<String> _selectedReasons = [];
+
   void _inputtedReason() {
     setState(() {
       _step = BloodPressureWarningPopupStep.confirm;
     });
   }
 
-  void _cancel() {
-    Navigator.of(context).pop();
+  void _clearSelections() {
+    setState(() {
+      _selectedReasons.clear();
+    });
   }
 
   void _confirm() {
@@ -27,115 +42,158 @@ class _BloodPressureWarningPopupWidgetState extends State<BloodPressureWarningPo
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Image.asset(
-            'assets/images/warning.png', // Make sure this asset exists
-            width: 40,
-            height: 40,
+    return Material(
+      color: Colors.transparent,
+      child: Center(
+        child: Container(
+          margin: const EdgeInsets.symmetric(horizontal: 20),
+          padding: const EdgeInsets.symmetric(horizontal: 12),
+          decoration: BoxDecoration(
+            color: R.color.white,
+            borderRadius: BorderRadius.circular(16),
           ),
-          const SizedBox(height: 16),
-          Text(
-            'Warning',
-            style: TextStyle(
-              fontSize: 14,
-              color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.6),
-            ),
-          ),
-          const SizedBox(height: 8),
-          const Text(
-            'Blood Pressure Alert',
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'Please select the reason below:',
-            style: TextStyle(
-              fontSize: 14,
-              color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.6),
-            ),
-          ),
-          const SizedBox(height: 16),
-          if (_step == BloodPressureWarningPopupStep.warning) ...[
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              alignment: WrapAlignment.center,
-              children: [
-                FilterChip(
-                  label: const Text('Reason 1'),
-                  selected: false,
-                  onSelected: (bool selected) {
-                    // Handle selection
-                  },
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // close button at top right
+              Transform.translate(
+                offset: const Offset(12, 0),
+                child: Align(
+                  alignment: Alignment.topRight,
+                  child: IconButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    icon: const Icon(Icons.close),
+                  ),
                 ),
-                FilterChip(
-                  label: const Text('Reason 2'),
-                  selected: false,
-                  onSelected: (bool selected) {
-                    // Handle selection
-                  },
+              ),
+              // TODO: replace icon
+              Image.asset(
+                R.drawable.ic_warning,
+                width: 43,
+                height: 43,
+              ),
+              const SizedBox(height: 12),
+              Text(
+                'Huyết áp trong ngưỡng',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: R.color.color0xff636A6B,
                 ),
-                FilterChip(
-                  label: const Text('Reason 3'),
-                  selected: false,
-                  onSelected: (bool selected) {
-                    // Handle selection
-                  },
+              ),
+              const SizedBox(height: 4),
+              const Text(
+                'Không an toàn',
+                style: TextStyle(
+                  fontSize: 34,
+                  fontWeight: FontWeight.bold,
+                  height: 1.2,
                 ),
-              ],
-            ),
-            const SizedBox(height: 24),
-            Row(
-              children: [
-                Expanded(
-                  child: OutlinedButton(
-                    style: OutlinedButton.styleFrom(
-                      shape: const StadiumBorder(),
+              ),
+              const SizedBox(height: 40),
+              if (_step == BloodPressureWarningPopupStep.warning) ...[
+                Text(
+                  'Vui lòng cho biết lý do',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Wrap(
+                  spacing: 5,
+                  runSpacing: 0,
+                  alignment: WrapAlignment.center,
+                  runAlignment: WrapAlignment.center,
+                  children:
+                      // Chip when unselect will think-text and light gray color
+                      // Chip when selected will bold-text and background mainColor and text white
+                      widget.reasons.map(
+                    (reason) {
+                      final selected = _selectedReasons.contains(reason);
+                      return ChoiceChip(
+                        elevation: 0,
+                        pressElevation: 0.1,
+                        label: Text(
+                          reason,
+                          style: TextStyle(
+                            color: selected ? R.color.white : Color(0xFF636A6B),
+                            fontWeight: selected ? FontWeight.bold : FontWeight.normal,
+                          ),
+                        ),
+                        selected: selected,
+                        selectedColor: R.color.mainColor,
+                        backgroundColor: Color(0xFFF7F8F8),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        onSelected: (bool selected) {
+                          // Handle selection
+                          setState(() {
+                            if (selected) {
+                              _selectedReasons.add(reason);
+                            } else {
+                              _selectedReasons.remove(reason);
+                            }
+                          });
+                        },
+                      );
+                    },
+                  ).toList(),
+                ),
+                const SizedBox(height: 52),
+                Row(
+                  children: [
+                    Expanded(
+                      child: OutlinedButton(
+                        style: OutlinedButton.styleFrom(
+                          shape: const StadiumBorder(),
+                        ),
+                        onPressed: _clearSelections,
+                        child: Text(R.string.re_type.tr()),
+                      ),
                     ),
-                    onPressed: _cancel,
-                    child: const Text('Cancel'),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      shape: const StadiumBorder(),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          shape: const StadiumBorder(),
+                        ),
+                        onPressed: _inputtedReason,
+                        child: Text(R.string.confirm.tr()),
+                      ),
                     ),
-                    onPressed: _inputtedReason,
-                    child: const Text('Confirm'),
-                  ),
+                  ],
                 ),
               ],
-            ),
-          ],
-          if (_step == BloodPressureWarningPopupStep.confirm) ...[
-            Column(
-              children: [
-                const Text(
-                  'Bạn đã xác nhận lý do này. Cảm ơn bạn!',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 16),
-                ),
-                const SizedBox(height: 16),
-                ElevatedButton(
-                  onPressed: _confirm,
-                  child: const Text('Toi da hieu'),
-                  style: ElevatedButton.styleFrom(
-                    minimumSize: Size(double.infinity, 48), // Full width button
-                  ),
+              if (_step == BloodPressureWarningPopupStep.confirm) ...[
+                Column(
+                  children: [
+                    const Text(
+                      'Nếu có các triệu chứng thở nhanh, đau bụng, nôn ói,.. gặp bác sĩ sớm để được tư vấn và điều chỉnh toa thuốc',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(fontSize: 16),
+                    ),
+                    const SizedBox(height: 52),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 4),
+                      child: ElevatedButton(
+                        onPressed: _confirm,
+                        style: ElevatedButton.styleFrom(
+                          shape: const StadiumBorder(),
+                          minimumSize: Size(double.infinity, 48), // Full width button
+                        ),
+                        child: Text(R.string.i_understand.tr()),
+                      ),
+                    ),
+                  ],
                 ),
               ],
-            ),
-          ],
-        ],
+              const SizedBox(height: 12),
+            ],
+          ),
+        ),
       ),
     );
   }
