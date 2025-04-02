@@ -397,7 +397,7 @@ class _DsmesAppointmentPageState extends State<DsmesAppointmentPage>
                             isProcessing['chooseService'] = true;
                             try {
                               final detailSuccess =
-                                  await _cubit.getClinicDetail(id: data.id);
+                                  await _cubit.getClinicDetail(id: data.clinicId);
 
                               if (!detailSuccess ||
                                   _cubit.selectedClinic == null) {
