@@ -67,7 +67,7 @@ class _ProgramDetailPageState extends State<ProgramDetailPage> {
                         SubscriptionTracking.programRequest(
                             screenName: 'program_detail',
                             objectTitle: widget.program.title);
-                            
+
                         final subscriptionCubit =
                             BlocProvider.of<SubscriptionCubit>(context);
 
@@ -275,7 +275,7 @@ class _ProgramDetailPageState extends State<ProgramDetailPage> {
                 physics: NeverScrollableScrollPhysics(),
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: crossAxisCount,
-                  childAspectRatio: 1.7 / 1, // Adjust height as needed
+                  childAspectRatio: 1.5 / 1, // Adjust height as needed
                   crossAxisSpacing: 12,
                   mainAxisSpacing: 12,
                 ),

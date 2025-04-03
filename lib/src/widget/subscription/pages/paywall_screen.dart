@@ -115,6 +115,17 @@ class _PaywallScreenState extends State<PaywallScreen> {
       create: (context) => _cubit,
       child: WillPopScope(
         onWillPop: () async {
+          print('[ROUTE] onWillPop _currentRoute: $_currentRoute');
+          // Check if the inner navigator can handle the back button press
+          final NavigatorState? navigator =
+              SubscriptionNavigationMixin.navigationKey.currentState;
+
+          if (navigator != null && navigator.canPop()) {
+            navigator.pop();
+            return false;
+          }
+
+          // Otherwise, handle the back button normally (return to subscription page)
           return true;
         },
         child: Scaffold(
