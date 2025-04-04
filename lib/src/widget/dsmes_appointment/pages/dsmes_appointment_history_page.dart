@@ -259,7 +259,7 @@ class _DsmesAppointmentHistoryPageState
                                                 final detailSuccess =
                                                     await _cubit
                                                         .getClinicDetail(
-                                                            id: data.id);
+                                                            id: data.clinicId);
 
                                                 if (!detailSuccess ||
                                                     _cubit.selectedClinic ==
