@@ -74,7 +74,7 @@ class FirebaseRemoteSetting {
       "SPECIALTIES_ORDER": localSetting["SPECIALTIES_ORDER"] ??
           "cao-huyet-ap,tieu-duong,suy-than-man,suc-khoe-tim-mach,benh-khac",
       "VNPAY_INTEGRATED_INFO":
-          '{"vnp_TmnCode":"ASFD4566","vnp_HashSecret":"O193V7Z7LECRYXGQWPDQ1DZ1OSARGGRU","vnp_Url":"https://sandbox.vnpayment.vn/paymentv2/vpcpay.html","vnp_Api":"https://sandbox.vnpayment.vn/merchant_webapi/api/transaction","vnp_ReturnUrl":"https://demo.ladipage.diab.vn/success"}'
+          '{"vnp_TmnCode":"ASFD4566","vnp_HashSecret":"O193V7Z7LECRYXGQWPDQ1DZ1OSARGGRU","vnp_Url":"https://sandbox.vnpayment.vn/paymentv2/vpcpay.html","vnp_Api":"https://sandbox.vnpayment.vn/merchant_webapi/api/transaction","vnp_ReturnUrl":"diabvnpay://sdk"}'
     });
     // Config timeout for remoteConfig
     await remoteConfig.setConfigSettings(RemoteConfigSettings(
@@ -120,6 +120,6 @@ class FirebaseRemoteSetting {
     }
     _specialtyOrder = remoteConfig.getString('SPECIALTIES_ORDER');
     _vnpayIntegratedInfo =
-        '{"vnp_TmnCode":"ASFD4566","vnp_HashSecret":"O193V7Z7LECRYXGQWPDQ1DZ1OSARGGRU","vnp_Url":"https://sandbox.vnpayment.vn/paymentv2/vpcpay.html","vnp_Api":"https://sandbox.vnpayment.vn/merchant_webapi/api/transaction","vnp_ReturnUrl":"https://demo.ladipage.diab.vn/success"}';
+        '{"vnp_TmnCode":"ASFD4566","vnp_HashSecret":"O193V7Z7LECRYXGQWPDQ1DZ1OSARGGRU","vnp_Url":"https://sandbox.vnpayment.vn/paymentv2/vpcpay.html","vnp_Api":"https://sandbox.vnpayment.vn/merchant_webapi/api/transaction","vnp_ReturnUrl":"diabvnpay://sdk"}';
   }
 }

@@ -38,21 +38,45 @@ class _VNPayViewState extends State<VNPayView> {
   }
 
   void _handlePaymentResult(dynamic arguments) {
-    final int? resultCode = arguments['resultCode'];
+    final String action = arguments['action'] ?? '';
+    final int resultCode = arguments['resultCode'] ?? -1;
+    final String responseCode = arguments['vnp_ResponseCode'] ?? '99';
 
-    if (resultCode == 0) {
+    print("[VNPAY] Payment result: action=$action, resultCode=$resultCode, responseCode=$responseCode");
+
+    // Extract transaction details if available
+    Map<String, dynamic> transactionDetails = {};
+    
+    // Copy all vnp_ prefixed parameters to transaction details
+    arguments.forEach((key, value) {
+      if (key.startsWith('vnp_')) {
+        transactionDetails[key] = value;
+      }
+    });
+
+    if (resultCode == 0 || responseCode == '00') {
       // Payment successful
       widget.onPaymentSuccess?.call({
-        'vnp_ResponseCode': '00',
+        'vnp_ResponseCode': responseCode,
+        ...transactionDetails,
       });
     } else if (resultCode == 10) {
       // User selected mobile banking app, waiting for return
-    } else {
-      // Payment failed or canceled
+      // No dialog here as we're waiting for the user to return from the banking app
+    } else if (resultCode == 24) {
+      // Payment canceled
       widget.onPaymentError?.call({
-        'vnp_ResponseCode': resultCode == 24 ? '24' : '99',
-        'error': resultCode == 24 ? 'Payment canceled' : 'Payment failed',
+        'vnp_ResponseCode': responseCode,
+        'error': 'Payment canceled',
+        ...transactionDetails,
       });
+    } else {
+      // Payment failed
+      widget.onPaymentError?.call({
+        'vnp_ResponseCode': responseCode,
+        ...transactionDetails,
+      });
+      
     }
   }
 
@@ -67,7 +91,7 @@ class _VNPayViewState extends State<VNPayView> {
       await platform.invokeMethod('openSDK', {
         'url': widget.paymentUrl,
         'tmnCode': widget.tmnCode,
-        'scheme': 'vnpflutterapp',
+        'scheme': 'diabvnpay',
       });
       setState(() {
         isLoading = false;
@@ -89,7 +113,7 @@ class _VNPayViewState extends State<VNPayView> {
     return Expanded(
       child: Center(
         child: isLoading
-            ? CircularProgressIndicator()
+            ? SizedBox.shrink()
             : Text('Processing payment via VNPAY...'),
       ),
     );

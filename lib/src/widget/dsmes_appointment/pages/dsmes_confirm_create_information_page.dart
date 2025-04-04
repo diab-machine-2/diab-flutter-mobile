@@ -11,8 +11,8 @@ import 'package:medical/src/utils/date_utils.dart';
 import 'package:medical/src/utils/length_limit_text_field.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/utils/utils.dart';
-import 'package:medical/src/widget/BloodSugar/widget/section_add_note.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
+import 'package:medical/src/widget/booking_clinic/helper/vnpay_payment_service.dart';
 import 'package:medical/src/widget/dsmes_appointment/dsmes_appointment_cubit.dart';
 import 'package:medical/src/widget/dsmes_appointment/model/dsmes_appointment_model.dart';
 import 'package:medical/src/widget/dsmes_appointment/pages/dsmes_navigation_mixin.dart';
@@ -234,37 +234,7 @@ class _DsmesConfirmCreateInformationState
 
                     // Handle telemedicine clinic booking
                     if (isTelemedicineClinic) {
-                      final phoneNumber = AppSettings.userInfo?.phoneNumber ??
-                          phoneController.text;
-
-                      final token = await AppSettings.getDocosanToken();
-                      if (token.isEmpty) {
-                        await _cubit.registerDocosanUser(
-                            phoneNumber: phoneNumber);
-                        await AppSettings.clearOrganizationApiKey();
-                      }
-
-                      // Update symptom and attachments
-                      final data =
-                          _sectionAddSymptomKey.currentState?.getNote();
-                      _cubit.updateCreateDsmesBookingRequestSymptom(
-                          symptom: data?.note ?? '');
-                      _cubit.updateCreateDsmesBookingRequestSymptomAttachments(
-                          symptomAttachments: data?.fileNetworkName ?? []);
-
-                      // Calculate total price
-                      int totalPrice = _calculateTotalPrice();
-
-                      // Navigate to payment
-                      DsmesNavigationMixin.navigationKey.currentState
-                          ?.pushNamed(
-                        NavigatorName.clinic_payment,
-                        arguments: {
-                          'totalPrice': totalPrice,
-                          'serviceType': widget.serviceType,
-                          'bookingType': widget.bookingType,
-                        },
-                      );
+                      _handleTelemedicineClinicBooking();
                       return;
                     }
 
@@ -292,6 +262,48 @@ class _DsmesConfirmCreateInformationState
         ),
       ],
     );
+  }
+
+  Future<void> _handleTelemedicineClinicBooking() async {
+    setState(() => isProcessing['confirmBooking'] = true);
+
+    try {
+      final phoneNumber =
+          AppSettings.userInfo?.phoneNumber ?? phoneController.text;
+
+      final token = await AppSettings.getDocosanToken();
+      if (token.isEmpty) {
+        await _cubit.registerDocosanUser(phoneNumber: phoneNumber);
+        await AppSettings.clearOrganizationApiKey();
+      }
+
+      // Update symptom and attachments
+      final data = _sectionAddSymptomKey.currentState?.getNote();
+      _cubit.updateCreateDsmesBookingRequestSymptom(symptom: data?.note ?? '');
+      _cubit.updateCreateDsmesBookingRequestSymptomAttachments(
+          symptomAttachments: data?.fileNetworkName ?? []);
+
+      // Calculate total price
+      int totalPrice = _calculateTotalPrice();
+
+      // Initialize VNPay service
+      VNPayService paymentService = VNPayService(
+        context: context,
+        totalPrice: totalPrice,
+        bookingType: widget.bookingType,
+        serviceType: widget.serviceType,
+        cubit: _cubit,
+      );
+
+      bool initialized = await paymentService.initializePayment();
+
+      if (initialized) {
+        // Process payment directly
+        await paymentService.openVNPaySDK();
+      }
+    } finally {
+      setState(() => isProcessing['confirmBooking'] = false);
+    }
   }
 
   int _calculateTotalPrice() {
