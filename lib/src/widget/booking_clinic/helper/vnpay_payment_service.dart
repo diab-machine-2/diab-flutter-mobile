@@ -134,11 +134,7 @@ class VNPayService {
         "[VNPAY] handlePyamentResult callback: ${DateTime.now().millisecondsSinceEpoch}");
     if (call.method == 'PaymentBack') {
       try {
-        final cancelLoading = BotToast.showLoading(
-          clickClose: false,
-          allowClick: false,
-          backButtonBehavior: BackButtonBehavior.ignore,
-        );
+        
 
         final String action = call.arguments['action'] ?? '';
         final int resultCode = call.arguments['resultCode'] ?? -1;
@@ -180,7 +176,6 @@ class VNPayService {
             ...transactionDetails,
           });
         }
-        cancelLoading();
       } catch (e) {
         print("[VNPAY] Error handling payment result: $e");
         BotToast.closeAllLoading();
