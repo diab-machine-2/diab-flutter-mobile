@@ -393,7 +393,7 @@ class AppSettings {
     return numberOfOpenHome;
   }
 
-  // Check to show 1st page
+  // Check to show 1st page -> Glucose
   static Future<String?> getLastOpenedGlucoseInputType() async {
     String? lastOpenedGlucoseInputType = appPreference.getData("lastOpenedGlucoseInputType");
     return lastOpenedGlucoseInputType;
@@ -403,6 +403,31 @@ class AppSettings {
   }
   static void clearLastOpenedGlucoseInputType() {
     appPreference.removeData("lastOpenedGlucoseInputType");
+  }
+
+  // Check to show 1st page -> Blood Pressure
+  static Future<String?> getLastOpenedBloodPressureInputType() async {
+    String? lastOpenedBloodPressureInputType = appPreference.getData("lastOpenedBloodPressureInputType");
+    return lastOpenedBloodPressureInputType;
+  }
+  static void setLastOpenedBloodPressureInputType(String inputType) {
+    appPreference.setData("lastOpenedBloodPressureInputType", inputType);
+  }
+  static void clearLastOpenedBloodPressureInputType() {
+    appPreference.removeData("lastOpenedBloodPressureInputType");
+  }
+
+  // Check to show heart rate input with blood pressure
+  static Future<bool?> getInputHeartRateWithBloodPressure() async {
+    String? inputHeartRateWithBloodPressure = appPreference.getData("inputHeartRateWithBloodPressure");
+    return inputHeartRateWithBloodPressure != null ?
+        inputHeartRateWithBloodPressure == "true" : null;
+  }
+  static void setInputHeartRateWithBloodPressure(bool input) {
+    appPreference.setData("inputHeartRateWithBloodPressure", input.toString());
+  }
+  static void clearInputHeartRateWithBloodPressure() {
+    appPreference.removeData("inputHeartRateWithBloodPressure");
   }
 
   static Future<bool> logout(

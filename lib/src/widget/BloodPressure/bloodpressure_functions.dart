@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -5,7 +7,6 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/bloc/nipro/nipro_bloc.dart';
 import 'package:medical/src/utils/navigator_name.dart';
-import 'package:medical/src/widget/helper/tracking_manager.dart';
 
 class BloodPressureFunctions {
   static void showModalAddData(BuildContext context,
@@ -74,6 +75,13 @@ class BloodPressureFunctions {
     //   },
     // );
 
+    String healthIcon = Platform.isIOS
+        ? R.drawable.logo_healthkit
+        : R.drawable.logo_healthConnect;
+    String healthTitle = Platform.isIOS
+        ? R.string.connect_from_Apple_Health.tr()
+        : R.string.connect_from_Health_Connect.tr();
+
     showModalBottomSheet(
       shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(top: Radius.circular(16))),
@@ -128,13 +136,12 @@ class BloodPressureFunctions {
               child: Column(
                 children: [
                   buildContentItem(
-                    'Kết nối Health Connect',
+                    healthTitle,
                     'Tự động nhập chỉ số một cách nhanh chóng và chính xác.',
-                    R.drawable.im_bloodpressure_input_healthkit,
+                    healthIcon,
                     () async {
-                      // TODO: BLOOD PRESSURE
-                      if (await AppSettings.getLastOpenedGlucoseInputType() == null) {
-                        AppSettings.setLastOpenedGlucoseInputType('device');
+                      if (await AppSettings.getLastOpenedBloodPressureInputType() == null) {
+                        AppSettings.setLastOpenedBloodPressureInputType('device');
                       }
                       // TODO: BLOOD PRESSURE
                       // TrackingManager.trackEvent(
@@ -157,23 +164,22 @@ class BloodPressureFunctions {
                     'Nhập chỉ số huyết áp của bạn bằng cách nhập thủ công từ kết quả đo đã có sẵn',
                     R.drawable.im_bloodpressure_input_manual,
                     () async {
-                      // TODO: BLOOD PRESSURE
-                      if (await AppSettings.getLastOpenedGlucoseInputType() == null) {
-                        AppSettings.setLastOpenedGlucoseInputType('manual');
+                      if (await AppSettings.getLastOpenedBloodPressureInputType() == null) {
+                        AppSettings.setLastOpenedBloodPressureInputType('manual');
                       }
-                      TrackingManager.trackEvent(
-                        'glucose_select_method',
-                        'kpi_glucose',
-                        params: {
-                          'method': 'manual',
-                        },
-                      );
+                      // TrackingManager.trackEvent(
+                      //   'glucose_select_method',
+                      //   'kpi_glucose',
+                      //   params: {
+                      //     'method': 'manual',
+                      //   },
+                      // );
                       Navigator.pop(context);
                       if (popPrevious) {
                         Navigator.pop(context);
                       }
                       Navigator.pushNamed(
-                          context, NavigatorName.add_blood_sugar_new,
+                          context, NavigatorName.add_blood_pressure,
                           arguments: {'type': 'input'});
                     },
                   ),

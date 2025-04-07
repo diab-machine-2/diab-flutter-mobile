@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/firebase_tracking/activity_list_tracking.dart';
-import 'package:medical/src/modal/glucose/glucose_lesson.dart';
-import 'package:medical/src/repo/glucose/glucose_client.dart';
+import 'package:medical/src/modal/blood_pressure/bloodpressure_lesson.dart';
+import 'package:medical/src/repo/blood_pressure/bloodPressure_client.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/my_plan_screens/lesson_tab/lesson_detail/lesson_detail.dart';
@@ -19,7 +19,7 @@ class BloodPressureIntro2ndPage extends StatefulWidget {
 }
 
 class _BloodPressureIntro2ndPageState extends State<BloodPressureIntro2ndPage> {
-  final List<GlucoseLesson> _pinedLessons = [];
+  final List<BloodPressureLesson> _pinedLessons = [];
 
   @override
   void initState() {
@@ -30,8 +30,7 @@ class _BloodPressureIntro2ndPageState extends State<BloodPressureIntro2ndPage> {
   void _loadLessons() async {
     try {
       _pinedLessons.clear();
-      // TODO: BLOOD PRESSURE
-      final lessons = await GlucoseClient().fetchGlucoseLessons();
+      final lessons = await BloodPressureClient().fetchBloodPressureLessons();
       if (lessons != null) {
         setState(() {
           _pinedLessons.addAll(lessons);
@@ -266,7 +265,7 @@ class _BloodPressureIntro2ndPageState extends State<BloodPressureIntro2ndPage> {
     );
   }
 
-  Widget _buildPinnedLessonItem(GlucoseLesson lesson) {
+  Widget _buildPinnedLessonItem(BloodPressureLesson lesson) {
     String title = lesson.name;
     String? imageUrl = lesson.imageUrl;
     return InkWell(

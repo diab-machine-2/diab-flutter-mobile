@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
@@ -17,6 +19,7 @@ import 'package:medical/src/repo/HbA1C/HbA1C_client.dart';
 import 'package:medical/src/repo/blood_pressure/bloodPressure_client.dart';
 import 'package:medical/src/repo/glucose/glucose_client.dart';
 import 'package:medical/src/utils/app_media_query.dart';
+import 'package:medical/src/utils/app_storages.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/BloodSugar/widget/section_add_note.dart';
 import 'package:medical/src/widget/base/base_state.dart';
@@ -30,7 +33,6 @@ import '../../repo/home/home_client.dart';
 import '../../widgets/CalendarPicker/custom_date_picker.dart';
 import '../../widgets/spacing_row.dart';
 import '../my_plan_screens/activity_tab/activity_tab/models/schedule_type.dart';
-import 'widget/bloodpressure_warning_popup.dart';
 
 class AddBloodPressureController extends StatefulWidget {
   final String? type;
@@ -95,6 +97,7 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
     TimeFrameModel(id: "Prd01", code: "Prd01", name: "Thức dậy"),
     TimeFrameModel(id: "Prd02", code: "Prd02", name: "Bất kì"),
   ];
+  bool _isInputHeartRate = false;
 
   @override
   void initState() {
@@ -126,6 +129,15 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
 
   void _initData() async {
     BotToast.showLoading();
+
+    // Init input heart rate at the first time
+    bool? willInputHeartRate = await AppSettings.getInputHeartRateWithBloodPressure();
+    if (willInputHeartRate == null) {
+      willInputHeartRate = true;
+      AppSettings.setInputHeartRateWithBloodPressure(willInputHeartRate);
+    } else {
+      _isInputHeartRate = willInputHeartRate;
+    }
     try {
       Map<String, List<int>> ranges = await BloodPressureClient().fetchRange();
       _rangeValueSystolic = ranges['systolic']!;
@@ -235,6 +247,10 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
     );
   }
 
+  void _doHealthConnect() async {
+    // TODO: BLOOD PRESSURE
+  }
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -289,7 +305,12 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
                         child: _heartRateSection(),
                       ),
                       const SizedBox(height: 16),
-                      _selectImageSection(),
+                      _noteSection(),
+                      const SizedBox(height: 16),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                        child: _showInputWithHealthConnect(),
+                      ),
                       const SizedBox(height: 16),
                     ],
                   ),
@@ -790,63 +811,83 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
         borderRadius: BorderRadius.circular(16),
       ),
       padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(bottom: 8),
-              child: Text(
-                R.string.heart_rate.tr(),
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: Text(
+                  R.string.heart_rate.tr(),
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                ),
               ),
-            ),
-            CupertinoSwitch(
-              value: true,
-              onChanged: (bool value) {},
-              activeColor: R.color.mainColor,
-            ),
-          ],
-        ),
-        SizedBox(height: 24),
-        Center(
-          child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-            Column(
-              children: [
-                Container(
-                  width: 80,
-                  child: TextField(
-                      focusNode: heartFocus,
-                      controller: _controllerHeart,
-                      textAlign: TextAlign.center,
-                      maxLength: 3,
-                      keyboardType: TextInputType.number,
-                      style: TextStyle(
-                          color: R.color.black, fontSize: 34, fontWeight: FontWeight.w500),
-                      decoration: InputDecoration(
+              CupertinoSwitch(
+                value: _isInputHeartRate,
+                onChanged: (bool value) {
+                  setState(() {
+                    _isInputHeartRate = value;
+                  });
+                  AppSettings.setInputHeartRateWithBloodPressure(value);
+                },
+                activeColor: R.color.mainColor,
+              ),
+            ],
+          ),
+          if (_isInputHeartRate) ...[
+            SizedBox(height: 24),
+            Container(
+              width: double.infinity,
+              height: 42,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(left: 0.0, right: 4),
+                    child: SizedBox(
+                      width: 120,
+                      child: TextField(
+                        focusNode: heartFocus,
+                        controller: _controllerHeart,
+                        textAlign: TextAlign.right,
+                        maxLength: 3,
+                        keyboardType: TextInputType.number,
+                        style: TextStyle(
+                            color: R.color.black, fontSize: 48, fontWeight: FontWeight.w500),
+                        decoration: InputDecoration(
                           hintText: '-',
                           counterText: '',
                           contentPadding: EdgeInsets.only(bottom: 8),
                           border: InputBorder.none,
                           hintStyle: TextStyle(
                               color: R.color.captionColorGray,
-                              fontSize: 34,
-                              fontWeight: FontWeight.w500))),
-                ),
-                Container(height: 1, width: 54, color: R.color.color0xffE5E5E5)
-              ],
+                              fontSize: 48,
+                              fontWeight: FontWeight.w500),
+                        ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    width: 80,
+                    child: Text(R.string.time_per_minute.tr(),
+                        style: TextStyle(fontSize: 15, fontWeight: FontWeight.w400)),
+                  ),
+                ],
+              ),
             ),
-            Text(R.string.time_per_minute.tr(),
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400))
-          ]),
-        ),
-        SizedBox(height: 8),
-      ]),
+            SizedBox(height: 2),
+            Container(height: 1, width: double.infinity, color: R.color.color0xffE5E5E5)
+          ],
+          SizedBox(height: 8),
+        ],
+      ),
     );
   }
 
-  Widget _selectImageSection() {
+  Widget _noteSection() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 12),
       child: SectionAddNote(
@@ -856,6 +897,88 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
         key: _sectionAddNoteKey,
         initialFiles: files,
       ),
+    );
+  }
+
+  Widget _showInputWithHealthConnect() {
+    return FutureBuilder(
+      future: AppStorages.getHealthAppPermission(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting || snapshot.hasError) {
+          return SizedBox.shrink();
+        }
+
+        if (snapshot.hasData) {
+          bool? hasPermission = snapshot.data as bool?;
+          if (hasPermission == true) {
+            return SizedBox.shrink();
+          }
+        }
+
+        String healthIcon =
+            Platform.isIOS ? R.drawable.logo_healthkit : R.drawable.logo_healthConnect;
+        String healthTitle = Platform.isIOS
+            ? R.string.connect_from_Apple_Health.tr()
+            : R.string.connect_from_Health_Connect.tr();
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 235,
+              height: 20,
+              alignment: Alignment.center,
+              child: Row(
+                children: [
+                  Expanded(child: Container(height: 1, color: R.color.greenGradientBottom)),
+                  Text(
+                    '   ${R.string.or.tr()}   ',
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: R.color.greenGradientBottom,
+                    ),
+                  ),
+                  Expanded(child: Container(height: 1, color: R.color.greenGradientBottom)),
+                ],
+              ),
+            ),
+            const SizedBox(height: 12),
+            InkWell(
+              onTap: _doHealthConnect,
+              borderRadius: BorderRadius.circular(16),
+              child: Container(
+                padding: EdgeInsets.symmetric(vertical: 12, horizontal: 12),
+                decoration: BoxDecoration(
+                  color: R.color.white,
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                height: 64,
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Image.asset(healthIcon, width: 40, height: 40),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        healthTitle,
+                        style: TextStyle(
+                          fontSize: 15,
+                          color: R.color.dark,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Icon(
+                      Icons.chevron_right,
+                      color: R.color.primaryGreyColor,
+                      size: 24,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 
@@ -1084,7 +1207,7 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
     FocusScope.of(context).unfocus();
     final systolic = _controllerSystolic.text;
     final diastolic = _controllerDiastolic.text;
-    final pulseRate = _controllerHeart.text;
+    final pulseRate = _isInputHeartRate ? _controllerHeart.text : '';
     // TODO: BLOOD PRESSURE
     // final note = _controllerNote.text;
     // final reason = _controllerReason.text;
@@ -1103,8 +1226,12 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
       Message.showToastMessage(context, R.string.mes_diastolic_empty.tr());
       return;
     }
-    if (pulseRate.isEmpty) {
+    if (_isInputHeartRate && pulseRate.isEmpty) {
       Message.showToastMessage(context, R.string.mes_heart_rate_empty.tr());
+      return;
+    }
+    if (_isInputHeartRate && int.parse(pulseRate.splitMapJoin(',')) > 200) {
+      Message.showToastMessage(context, R.string.mes_heart_rate_invalid.tr());
       return;
     }
     if (selectedTimeFrame == null) {
@@ -1150,7 +1277,7 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
     FocusScope.of(context).unfocus();
     final systolic = _controllerSystolic.text;
     final diastolic = _controllerDiastolic.text;
-    final pulseRate = _controllerHeart.text;
+    final pulseRate = _isInputHeartRate ? _controllerHeart.text : '';
     // TODO: BLOOD PRESSURE
     // final note = _controllerNote.text;
     // final reason = _controllerReason.text;
@@ -1169,11 +1296,11 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
       Message.showToastMessage(context, R.string.mes_diastolic_empty.tr());
       return;
     }
-    if (pulseRate.isEmpty) {
+    if (_isInputHeartRate && pulseRate.isEmpty) {
       Message.showToastMessage(context, R.string.mes_heart_rate_empty.tr());
       return;
     }
-    if (int.parse(pulseRate.splitMapJoin(',')) > 200) {
+    if (_isInputHeartRate && int.parse(pulseRate.splitMapJoin(',')) > 200) {
       Message.showToastMessage(context, R.string.mes_heart_rate_invalid.tr());
       return;
     }

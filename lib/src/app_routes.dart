@@ -6,6 +6,8 @@ import 'package:medical/src/widget/my_plan_screens/activity_tab/create_goal/crea
 import 'package:medical/src/widget/utilities/utilities_page.dart';
 
 import 'utils/navigator_name.dart';
+import 'widget/BloodPressure/intro/bloodpressure_intro_1st_page.dart';
+import 'widget/BloodPressure/intro/bloodpressure_intro_2nd_page.dart';
 import 'widget/BloodSugar/add_bloodSugar_result.dart';
 import 'widget/BloodSugar/bloodSugar_detail.dart';
 import 'widget/BloodSugar/bloodSugar_result.dto.dart';
@@ -88,6 +90,14 @@ class AppRoutes {
           glucoseDistributionType: data?['glucoseDistributionType'],
         );
         break;
+      // ~ Huyet Ap (mới) ~
+      case NavigatorName.blood_pressure_intro_1st_page:
+        page = BloodPressureIntro1stPage();
+        break;
+      case NavigatorName.blood_pressure_intro_2nd_page:
+        page = BloodPressureIntro2ndPage();
+        break;
+      // ~ END: Huyet Ap (mới) ~
       default:
         break;
     }

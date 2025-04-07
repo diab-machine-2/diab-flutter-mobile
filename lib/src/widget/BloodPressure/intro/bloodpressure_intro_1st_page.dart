@@ -2,19 +2,19 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medical/res/R.dart';
-import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/app_setting/firebase_tracking/activity_list_tracking.dart';
-import 'package:medical/src/modal/glucose/glucose_lesson.dart';
-import 'package:medical/src/repo/glucose/glucose_client.dart';
+import 'package:medical/src/modal/blood_pressure/bloodpressure_lesson.dart';
+import 'package:medical/src/repo/blood_pressure/bloodPressure_client.dart';
+import 'package:medical/src/utils/app_storages.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/navigator_name.dart';
-import 'package:medical/src/widget/BloodSugar/blood_sugar_functions.dart';
+import 'package:medical/src/widget/BloodPressure/bloodpressure_functions.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/my_plan_screens/lesson_tab/lesson_detail/lesson_detail.dart';
 import 'package:medical/src/widgets/common_page.dart';
 import 'package:medical/src/widgets/network_image_widget.dart';
 
-import 'widgets/glucose_lesson_section.dart';
+import 'widgets/bloodpresure_lesson_section.dart';
 
 class BloodPressureIntro1stPage extends StatefulWidget {
   const BloodPressureIntro1stPage({super.key});
@@ -24,7 +24,7 @@ class BloodPressureIntro1stPage extends StatefulWidget {
 }
 
 class _BloodPressureIntro1stPageState extends State<BloodPressureIntro1stPage> {
-  final List<GlucoseLesson> _pinedLessons = [];
+  final List<BloodPressureLesson> _pinedLessons = [];
 
   @override
   void initState() {
@@ -35,8 +35,7 @@ class _BloodPressureIntro1stPageState extends State<BloodPressureIntro1stPage> {
   void _loadLessons() async {
     try {
       _pinedLessons.clear();
-      // TODO: BLOOD PRESSURE
-      final lessons = await GlucoseClient().fetchGlucoseLessons();
+      final lessons = await BloodPressureClient().fetchBloodPressureLessons();
       if (lessons != null) {
         setState(() {
           _pinedLessons.addAll(lessons);
@@ -47,15 +46,16 @@ class _BloodPressureIntro1stPageState extends State<BloodPressureIntro1stPage> {
     }
   }
 
-  void _navigateToInputSelection() {
-    if (AppSettings.isUS) {
-      Navigator.of(context).pop();
-      Navigator.of(context).pushNamed(
-        NavigatorName.add_blood_sugar_new,
+  void _navigateToInputSelection() async {
+    bool? hasHealthConnection = await AppStorages.getHealthAppPermission();
+    if (hasHealthConnection == true) {
+      Navigator.pushNamed(
+        context, NavigatorName.add_blood_pressure,
         arguments: {'type': 'input'},
       );
+      return;
     }
-    BloodSugarFunctions.showModalAddData(context, popPrevious: true);
+    BloodPressureFunctions.showModalAddData(context, popPrevious: true);
   }
 
   void _navigateToLessonDetail(String id, int type) async {
@@ -132,7 +132,7 @@ class _BloodPressureIntro1stPageState extends State<BloodPressureIntro1stPage> {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  R.string.glucose_benefit_observe.tr(),
+                  R.string.bloodpressure_benefit_observe.tr(),
                   style: TextStyle(
                     fontSize: 15,
                     height: 24 / 15,
@@ -177,7 +177,7 @@ class _BloodPressureIntro1stPageState extends State<BloodPressureIntro1stPage> {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Text(
-              R.string.glucose_intro_help_title.tr(),
+              R.string.bloodpressure_intro_help_title.tr(),
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w700,
@@ -220,13 +220,13 @@ class _BloodPressureIntro1stPageState extends State<BloodPressureIntro1stPage> {
   Widget _buildLessonSection() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 12),
-      child: GlucoseLessonSection(
+      child: BloodPressureLessonSection(
         onLessonTap: (lesson) => _navigateToLessonDetail(lesson.id, lesson.type),
       ),
     );
   }
 
-  Widget _buildPinnedLessonItem(GlucoseLesson lesson) {
+  Widget _buildPinnedLessonItem(BloodPressureLesson lesson) {
     String title = lesson.name;
     String? imageUrl = lesson.imageUrl;
     return InkWell(

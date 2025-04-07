@@ -6,16 +6,16 @@ import 'package:medical/src/bloc/glucose/intro_lesson/glucose_intro_lesson_bloc.
 import 'package:medical/src/modal/learning/learning_post_model.dart';
 import 'package:medical/src/widgets/network_image_widget.dart';
 
-class GlucoseLessonSection extends StatefulWidget {
-  const GlucoseLessonSection({super.key, required this.onLessonTap});
+class BloodPressureLessonSection extends StatefulWidget {
+  const BloodPressureLessonSection({super.key, required this.onLessonTap});
 
   final Function(LessonModel) onLessonTap;
 
   @override
-  State<GlucoseLessonSection> createState() => _GlucoseLessonSectionState();
+  State<BloodPressureLessonSection> createState() => _BloodPressureLessonSectionState();
 }
 
-class _GlucoseLessonSectionState extends State<GlucoseLessonSection> {
+class _BloodPressureLessonSectionState extends State<BloodPressureLessonSection> {
   int _currentIndex = 0;
   final double _lessonItemWidth = 338.0;
   final ScrollController _scrollController = ScrollController();
