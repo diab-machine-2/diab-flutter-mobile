@@ -442,8 +442,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       // ),
       HomeUtilityData(
         icon: R.drawable.ic_home_doctor_consult,
-        title: "Tư vấn sức khoẻ",
-        slug: "tu-van-suc-khoe",
+        title: "Tư vấn sống khoẻ",
+        slug: "tu-van-song-khoe",
         navigatorName: NavigatorName.dsmes_booking,
       ),
     ];
