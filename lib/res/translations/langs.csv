@@ -1200,4 +1200,5 @@ select_booking_dates_warning,"Chỉ hỗ trợ đặt trước tối đa 30 ngà
 pull_up_to_load_more,"Kéo lên để tải thêm","Pull up to load more",
 release_to_load_more,"Thả ra để tải thêm","Release to load more",
 exist_appointment,"Bạn đã chọn lịch hẹn này trước đó","You have already selected this appointment before",
-symptom_hint_text,"Nhập lưu ý của bạn","Enter your note"
+symptom_hint_text,"Nhập lưu ý của bạn","Enter your note",
+join_zalo_group,"Tham gia nhóm Zalo","Join Zalo group"

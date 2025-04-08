@@ -54,7 +54,7 @@ class WelcomePackageScreenCubit extends Cubit<WelcomePackageScreenState> {
     final ApiResult<CommonResponse> apiResult =
         await repository.markDisplayedWelcome();
     apiResult.when(success: (CommonResponse response) {
-      AppSettings.isDisplayedWelcome = true;
+      // AppSettings.isDisplayedWelcome = true;
       emit(const WelcomePackageScreenSuccess());
     }, failure: (NetworkExceptions error) {
       // emit(WelcomePackageScreenFailure(

@@ -393,6 +393,9 @@ class _HomeControllerState extends State<HomeController>
     // _homeBloc.add(FetchHome());
     user = await UserClient().fetchUser();
     AppSettings.isReloadCurrentUserInfo = true;
+
+    // For case re-activate new package
+    _isDisplayedWelcome = false;
     return true;
   }
 
@@ -417,16 +420,20 @@ class _HomeControllerState extends State<HomeController>
             if (false == model?.packageAccount?.isDisplayedWelcome &&
                 !_isDisplayedWelcome) {
               _isDisplayedWelcome = true;
-              if (AppSettings.isDisplayedWelcome == false) {
-                Future.delayed(Duration.zero, () async {
+              // if (AppSettings.isDisplayedWelcome == false) {
+              //   Future.delayed(Duration.zero, () async {
+              //     _showWelcomeDialog(model?.packageAccount);
+              //   });
+              // } else {}
+              Future.delayed(Duration.zero, () async {
                   _showWelcomeDialog(model?.packageAccount);
                 });
-              } else {}
             }
-            // 
-            _haveInputGlucoseAlready = state.model.measurements?.isNotEmpty == true
-              && state.model.measurements?.first.value1?.isNotEmpty == true
-              && state.model.measurements?.first.value1 != "--";
+            //
+            _haveInputGlucoseAlready = state.model.measurements?.isNotEmpty ==
+                    true &&
+                state.model.measurements?.first.value1?.isNotEmpty == true &&
+                state.model.measurements?.first.value1 != "--";
           }
 
           Widget activitiesW = HomeActivity(
@@ -591,7 +598,8 @@ class _HomeControllerState extends State<HomeController>
                                 return;
                               }
                               // case input glucose
-                              if (await _showGlucoseAddBottomSheet(routeName) == false) {
+                              if (await _showGlucoseAddBottomSheet(routeName) ==
+                                  false) {
                                 return;
                               }
                               // others
@@ -1023,7 +1031,8 @@ class _HomeControllerState extends State<HomeController>
         return true;
       }
       // Logic navigate to glucose input page (saved before)
-      String? lastOpenedGlucoseInputType = await AppSettings.getLastOpenedGlucoseInputType();
+      String? lastOpenedGlucoseInputType =
+          await AppSettings.getLastOpenedGlucoseInputType();
       if (lastOpenedGlucoseInputType == null) {
         BloodSugarFunctions.showModalAddData(context);
       } else if (lastOpenedGlucoseInputType == 'device') {
