@@ -215,20 +215,68 @@ class _PageAddBloodPressureResultState extends State<PageAddBloodPressureResult>
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
       child: Column(
         children: [
-          const SizedBox(height: 24),
           Container(
-            height: 200,
-            width: 250,
+            width: MediaQuery.of(context).size.width - 80,
             child: _SegmentedCircularGauge(
               rangeValue: widget.data.rangeValue,
               diastolic: widget.data.diastolic,
               systolic: widget.data.systolic,
+              pulse: widget.data.pulse,
+              pulseResultText: widget.data.pulseResultText,
               timeFrame: widget.data.timeFrame,
               rangeLabel: widget.data.rangeType.title,
               indexRange: widget.data.indexRange,
               rangeColor: widget.data.rangeType.color,
             ),
           ),
+
+          if (widget.data.pulse != null) ...[
+            Divider(
+              height: 1,
+              color: Color(0xFFDFE4E4),
+            ),
+            const SizedBox(height: 16),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                SizedBox(width: 16),
+                Image.asset(R.drawable.ic_pulse, width: 20, height: 20),
+                const SizedBox(width: 8),
+                Text.rich(
+                  TextSpan(
+                    text: '${widget.data.pulse!.round()}',
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
+                    color: R.color.textDark,
+                    ),
+                    children: [
+                      TextSpan(
+                        text: ' nhịp/phút',
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w400,
+                          color: R.color.primaryGreyColor,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const Spacer(),
+                // text
+                Text(
+                  'Cao',
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF636A6B),
+                  ),
+                ),
+                SizedBox(width: 16),
+              ],
+            ),
+          ],
+          const SizedBox(height: 16),
 
           // const SizedBox(height: 24),
           // button add note
@@ -440,6 +488,8 @@ class _SegmentedCircularGauge extends StatelessWidget {
   final String rangeLabel;
   final int indexRange;
   final Color rangeColor;
+  final double? pulse;
+  final String? pulseResultText;
   const _SegmentedCircularGauge({
     required this.rangeValue,
     required this.diastolic,
@@ -448,12 +498,14 @@ class _SegmentedCircularGauge extends StatelessWidget {
     required this.rangeLabel,
     required this.indexRange,
     required this.rangeColor,
+    this.pulse,
+    this.pulseResultText,
   });
 
   @override
   Widget build(BuildContext context) {
-    double startAngle = 135;
-    double endAngle = 405;
+    double startAngle = 155;
+    double endAngle = 385;
 
     // scale list rangeValue
     List<double> scaleList = rangeValue.map((e) => e.toDouble()).toList();
@@ -482,34 +534,37 @@ class _SegmentedCircularGauge extends StatelessWidget {
       scaleListRendering.add(renderMaxValue);
     }
 
-    return Center(
+    return SizedBox(
+      width: MediaQuery.of(context).size.width - 80,
+      height:( MediaQuery.of(context).size.width - 80) * 0.8,
       child: SfRadialGauge(
         backgroundColor: Colors.white,
         axes: <RadialAxis>[
           RadialAxis(
+            canScaleToFit: true,
             startAngle: startAngle,
             endAngle: endAngle,
-            minimum: minValue, // 0
-            maximum: renderMaxValue, // 200
+            minimum: minValue,
+            maximum: renderMaxValue,
             showLabels: false,
             showTicks: false,
+            radiusFactor: 1.0, // Make gauge slightly smaller to fit within container
             axisLineStyle: AxisLineStyle(
               thickness: 0,
               thicknessUnit: GaugeSizeUnit.logicalPixel,
-              cornerStyle: CornerStyle.bothFlat,
+              cornerStyle: CornerStyle.bothCurve,
             ),
             ranges: <GaugeRange>[
               for (int i = 0; i < scaleListRendering.length - 1; i++)
                 GaugeRange(
-                  startValue: scaleListRendering[i] + 1,
-                  endValue: max(0, scaleListRendering[i + 1] - 1),
+                  startValue: scaleListRendering[i] + 0.5,
+                  endValue: max(0, scaleListRendering[i + 1] - 0.5),
                   color: i == indexRange ? rangeColor : Color(0xFFE6ECF1),
-                  startWidth: 10,
-                  endWidth: 10,
+                  startWidth: 36,
+                  endWidth: 36,
                 ),
             ],
             annotations: <GaugeAnnotation>[
-              // Add the text annotations for "Trước ăn", "Cao", and "135 mg/dL"
               GaugeAnnotation(
                 widget: Column(
                   mainAxisSize: MainAxisSize.min,
@@ -517,11 +572,11 @@ class _SegmentedCircularGauge extends StatelessWidget {
                     Text(
                       timeFrame,
                       style: TextStyle(
-                        fontSize: 16,
+                        fontSize: 15,
                         color: Colors.grey.shade600,
                       ),
                     ),
-                    SizedBox(height: 12),
+                    SizedBox(height: 8),
                     Text(
                       rangeLabel,
                       style: TextStyle(
@@ -530,8 +585,7 @@ class _SegmentedCircularGauge extends StatelessWidget {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    SizedBox(height: 4),
-                    // bold value then normal unit text
+                    SizedBox(height: 16),
                     Text.rich(
                       TextSpan(
                         text: '${roundNumber(diastolic)}/${roundNumber(systolic)}',

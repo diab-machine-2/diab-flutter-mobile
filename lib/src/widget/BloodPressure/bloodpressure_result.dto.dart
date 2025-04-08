@@ -8,6 +8,8 @@ class BloodPressureResultDto {
   final int indexRange;
   final double diastolic;
   final double systolic;
+  final double? pulse;
+  final String? pulseResultText;
   final String? note;
   final List<dynamic>? files;
   final String? aiResult;
@@ -24,6 +26,8 @@ class BloodPressureResultDto {
     required this.indexRange,
     required this.diastolic,
     required this.systolic,
+    this.pulse,
+    this.pulseResultText,
     required this.rangeColors,
     required this.rangeType,
     this.note,
