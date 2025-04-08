@@ -24,6 +24,7 @@ import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/home/schema/home_schema.dart';
+import 'package:medical/src/widget/home/welcome_package_screen/bloc/welcome_package_screen_cubit.dart';
 import 'package:medical/src/widget/my_plan_screens/activity_tab/activity_tab/models/schedule_type.dart';
 import 'package:medical/src/modal/error/error_model.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -62,6 +63,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     } else if (event is HomeFetchBannersEvent) {
       yield* _fetchBanners();
     } else if (event is FetchHome) {
+      yield* _fetchCustomerReceivesUser();
       // Fetch all data
       yield* _fetchHomes();
     }
@@ -299,7 +301,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       currentState =
           currentState.copyWith(reminders: reminders, reminderLoading: false);
     } else {
-      currentState = currentState.copyWith(reminders: [], reminderLoading: false);
+      currentState =
+          currentState.copyWith(reminders: [], reminderLoading: false);
     }
     yield currentState;
   }
@@ -341,6 +344,28 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     }, test: (error) => true);
     final currentState = state as HomeLoaded;
     yield currentState.copyWith(lessons: lessonsResponse);
+  }
+
+  Stream<HomeState> _fetchCustomerReceivesUser() async* {
+    String? zaloGroup;
+    try {
+      // Create cubit instance with repository
+      final repository = AppRepository();
+      final welcomeCubit = WelcomePackageScreenCubit(repository);
+
+      // Call the API and get zaloGroup
+      zaloGroup = await welcomeCubit.getCustomerReceivesUser();
+
+      // Save to AppPreference if not null
+      if (zaloGroup != null) {
+        await AppSettings.saveZaloGroup(zaloGroup);
+      }
+    } catch (e, s) {
+      // Log error but don't disrupt the UI flow
+      TrackingManager.recordError(e, s);
+    }
+    final currentState = state as HomeLoaded;
+    yield currentState.copyWith(zaloGroup: zaloGroup);
   }
 
   Future<void> shareLesson(String lessonId, BuildContext context) async {

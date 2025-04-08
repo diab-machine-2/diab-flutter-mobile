@@ -2,11 +2,10 @@ import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_html/flutter_html.dart';
+import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../model/repository/app_repository.dart';
-import '../../../utils/const.dart';
 import 'welcome_package_screen.dart';
-import 'package:flutter_observer/Observable.dart';
 import 'package:medical/res/R.dart';
 import 'package:easy_localization/easy_localization.dart';
 
@@ -42,7 +41,7 @@ class _WelcomePackageScreenPageState extends State<WelcomePackageScreenPage> {
         create: (context) => _cubit,
         child: BlocListener<WelcomePackageScreenCubit, WelcomePackageScreenState>(
           listener: (context, state) {
-            if(state is WelcomePackageScreenLoading){
+            if (state is WelcomePackageScreenLoading) {
               BotToast.showLoading();
             } else {
               BotToast.closeAllLoading();
@@ -62,20 +61,20 @@ class _WelcomePackageScreenPageState extends State<WelcomePackageScreenPage> {
     return WillPopScope(
       onWillPop: () => _backPressed(),
       child: Scaffold(
-      body: Container(
-        decoration: BoxDecoration(
-            image: DecorationImage(
-          image: AssetImage(R.drawable.bg_welcome),
-          fit: BoxFit.cover,
-        )),
-        padding: EdgeInsets.all(20),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Expanded(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
+        body: Container(
+          decoration: BoxDecoration(
+              image: DecorationImage(
+            image: AssetImage(R.drawable.bg_welcome),
+            fit: BoxFit.cover,
+          )),
+          padding: EdgeInsets.all(20),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
                     Image.asset(widget.icon!, width: 220, height: 220,),
                     SizedBox(height: 30),
                     Text(widget.title ?? '',
@@ -83,11 +82,11 @@ class _WelcomePackageScreenPageState extends State<WelcomePackageScreenPage> {
                     SizedBox(height: 16),
                     Padding(
                       padding: EdgeInsets.only(left: 8, right: 8),
-                      child: 
-                      // Text(widget.subTitle ?? '',
-                      //     style: TextStyle(color: R.color.color0xff333333, fontSize: 16, fontWeight: FontWeight.w400),
-                      //     textAlign: TextAlign.center),
-                      Html(
+                      child:
+                          // Text(widget.subTitle ?? '',
+                          //     style: TextStyle(color: R.color.color0xff333333, fontSize: 16, fontWeight: FontWeight.w400),
+                          //     textAlign: TextAlign.center),
+                          Html(
                         data: '''<p style="line-height: 1;"><span style="font-family: Arial, Helvetica, sans-serif; font-size: 15px;line-height: 1">Ch&agrave;o mừng <strong>${_cubit.content?.fullName ?? ''}</strong> đ&atilde; đăng k&yacute; th&agrave;nh c&ocirc;ng g&oacute;i dịch vụ <strong>${_cubit.content?.packageName ?? ''}</strong> của diaB.</span></p>
                           <p style="line-height: 1;"><span style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; line-height: 1;">Để chuẩn bị tốt nhất cho chương tr&igrave;nh của m&igrave;nh, <strong>${_cubit.getGender(_cubit.content?.gender)}</strong> h&atilde;y theo c&aacute;c hướng dẫn sau:</span></p>
                           <ul>
@@ -108,26 +107,26 @@ class _WelcomePackageScreenPageState extends State<WelcomePackageScreenPage> {
                         },
                       ),
                     ),
-                ],  
+                  ],
+                ),
               ),
-            ),
-            Container(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  GestureDetector(
-                    onTap: () async {
+              Container(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    GestureDetector(
+                      onTap: () async {
                       if(!isClickSkip){
-                        isClickSkip = true;
-                        await _backPressed();
-                      }
-                    },
-                    child: SafeArea(
-                      top: false,
-                      child: Container(
+                          isClickSkip = true;
+                          await _backPressed();
+                        }
+                      },
+                      child: SafeArea(
+                        top: false,
+                        child: Container(
                           height: 48,
-                          width: 100, 
+                          width: 100,
                           child: Center(
                             child: Text(R.string.skip.tr(),
                               style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: R.color.mainColor),
@@ -136,39 +135,50 @@ class _WelcomePackageScreenPageState extends State<WelcomePackageScreenPage> {
                         ),
                       ),
                     ),
-                  GestureDetector(
-                    onTap: () async {
-                      if(!isClickSkip){
-                        isClickSkip = true;
-                        await _backPressed();
-                        Observable.instance.notifyObservers([], notifyName: Const.NAVIGATE_TO_MY_PLAN_TAB);
-                      }                      
-                    },
-                    child: SafeArea(
-                      top: false,
-                      child: Container(
-                          height: 48,
-                          width: 180,
-                          margin: EdgeInsets.all(16),
-                          decoration: BoxDecoration(
-                              color: R.color.mainColor,
-                              borderRadius: BorderRadius.circular(200),
-                              gradient: LinearGradient(
-                                  begin: Alignment.topLeft,
-                                  end: Alignment.centerRight,
+                    GestureDetector(
+                      onTap: () async {
+                        // if(!isClickSkip){
+                        //   isClickSkip = true;
+                        //   await _backPressed();
+                        //   Observable.instance.notifyObservers([], notifyName: Const.NAVIGATE_TO_MY_PLAN_TAB);
+                        // }
+
+                        final zaloGroup =
+                            await AppSettings.getZaloGroup() ?? '';
+                            final url = Uri.tryParse(zaloGroup);
+                        if (zaloGroup.isNotEmpty && url != null) {
+                          if (await canLaunchUrl(url)) {
+                            await launchUrl(url);
+                          } else {
+                            throw 'Could not launch $url';
+                          }
+                        }
+                      },
+                      child: SafeArea(
+                        top: false,
+                        child: Container(
+                            height: 48,
+                            width: 180,
+                            margin: EdgeInsets.all(16),
+                            decoration: BoxDecoration(
+                                color: R.color.mainColor,
+                                borderRadius: BorderRadius.circular(200),
+                                gradient: LinearGradient(
+                                    begin: Alignment.topLeft,
+                                    end: Alignment.centerRight,
                                   colors: [R.color.greenGradientTop, R.color.greenGradientBottom])),
-                          child: Center(
+                            child: Center(
                               child: Text(R.string.my_plan.tr(),
                                   style: TextStyle(color: R.color.white, fontSize: 16, fontWeight: FontWeight.w600)))),
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
-    ),
     );
   }
 

@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_branch_sdk/flutter_branch_sdk.dart';
 import 'package:medical/src/app.dart';
@@ -34,6 +35,18 @@ class BranchioLinkConfig {
   String? get meetingPassword => _meetingPassword;
   String? get referalCode => _referalCode;
   DateTime? lastMeetingEndTime;
+
+  bool? _haveOnBoardingFlag;
+  bool get haveOnBoardingFlag => _haveOnBoardingFlag ?? false;
+  set haveOnBoardingFlag(bool? value) {
+    _haveOnBoardingFlag = value;
+  }
+
+  bool? _isStepListInit;
+  bool get isStepListInit => _isStepListInit ?? false;
+  set isStepListInit(bool? value) {
+    _isStepListInit = value;
+  }
 
   void setUpHandleDeepLink() {
     _subLink = FlutterBranchSdk.listSession().listen((data) async {
@@ -74,6 +87,28 @@ class BranchioLinkConfig {
       if (data['+clicked_branch_link'] == true &&
           data.containsKey("\$referral_code")) {
         _referalCode = data['\$referral_code'] as String;
+        return;
+      }
+
+      // Handle on boarding login flow
+      if (data['+clicked_branch_link'] == true && data.containsKey("\$login")) {
+        if (AppSettings.userInfo != null) {
+          // User already logged in, no need to show login screen
+          return;
+        }
+
+        if (haveOnBoardingFlag == false && isStepListInit == true) {
+          // App is already running - navigate immediately
+          haveOnBoardingFlag = null;
+          print(
+              '[BRANCH] App already running - navigating to login immediately');
+          navigatorKey.currentState
+              ?.pushNamed(NavigatorName.login, arguments: '');
+        } else {
+          // Cold start - wait for StepList to initialize
+          print('[BRANCH] Cold start - setting flag for delayed navigation');
+          _haveOnBoardingFlag = true;
+        }
         return;
       }
 
@@ -202,6 +237,7 @@ class BranchioLinkConfig {
     _courseId = null;
     _endTime = null;
   }
+
 
   void dispose() {
     _subLink?.cancel();

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:bot_toast/bot_toast.dart';
@@ -155,10 +156,26 @@ class _StepListControllerState extends State<StepListController>
       // );
     }
     Future.delayed(Duration(milliseconds: 600), () async {
+      print(
+          '[ONBOARDING] native splash removed: ${DateTime.now().millisecondsSinceEpoch}');
       FlutterNativeSplash.remove();
       checkReferralCode();
     });
     firebaseSetup();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      onboardingNavigateLogin();
+    });
+  }
+
+  void onboardingNavigateLogin() {
+    final haveOnBoardingFlag = BranchioLinkConfig.instance.haveOnBoardingFlag;
+    BranchioLinkConfig.instance.isStepListInit = true;
+    if (haveOnBoardingFlag == true && mounted) {
+      print('[ONBOARDING] Navigating to login after StepList initialization');
+      BranchioLinkConfig.instance.haveOnBoardingFlag = null;
+
+      Navigator.of(context).pushNamed(NavigatorName.login);
+    }
   }
 
   Future firebaseSetup() async {
@@ -247,245 +264,245 @@ class _StepListControllerState extends State<StepListController>
         child: Stack(
           children: [
             Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                SpacingColumn(
-                  spacing: 25.h,
-                  children: [
-                    SizedBox(height: 20.h),
-                    SizedBox(
-                      height: 290.h,
-                      child: PageView.builder(
-                          onPageChanged: (index) async {
-                            // final name = data[index]['name']!;
-                            // await TrackingManager.analytics.logEvent(
-                            //     name: 'component_clicked',
-                            //     parameters: {
-                            //       "screen_name": 'welcome',
-                            //       'object_index': index,
-                            //       'object_title': name,
-                            //       'component_name': 'slider_welcome',
-                            //     });
-                            setState(() {
-                              currentPage = index;
-                            });
-                          },
-                          controller: pageController,
-                          itemCount: data.length,
-                          itemBuilder: (BuildContext context, int index) {
-                            final name = data[index]['name']!;
-                            final image = data[index]['image']!;
-                            final text = data[index]['text']!;
-                            return imageItem(context, name, image, text);
-                          }),
-                    ),
-                    SmoothPageIndicator(
-                      controller: pageController,
-                      count: 3,
-                      effect: ExpandingDotsEffect(
-                          dotWidth: 5,
-                          dotHeight: 5,
-                          dotColor: Color(0xFFD3D3D3),
-                          activeDotColor: R.color.mainColor),
-                    ),
-                    builtItemText(
-                      data[currentPage]['name']!,
-                      data[currentPage]['text']!,
-                    ),
-                    SizedBox(height: 20),
-                  ],
-                ),
-                Column(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.only(left: 16, right: 16),
-                      margin: EdgeInsets.only(bottom: 16),
-                      child: SpacingColumn(
-                          spacing: 15,
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Container(
-                              height: 52,
-                              padding: EdgeInsets.symmetric(horizontal: 20),
-                              decoration: BoxDecoration(
-                                gradient: LinearGradient(
-                                  begin: Alignment.topCenter,
-                                  end: Alignment.bottomCenter,
-                                  colors: [
-                                    R.color.greenGradientTop,
-                                    R.color.greenGradientBottom
-                                  ],
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  SpacingColumn(
+                    spacing: 25.h,
+                    children: [
+                      SizedBox(height: 20.h),
+                      SizedBox(
+                        height: 290.h,
+                        child: PageView.builder(
+                            onPageChanged: (index) async {
+                              // final name = data[index]['name']!;
+                              // await TrackingManager.analytics.logEvent(
+                              //     name: 'component_clicked',
+                              //     parameters: {
+                              //       "screen_name": 'welcome',
+                              //       'object_index': index,
+                              //       'object_title': name,
+                              //       'component_name': 'slider_welcome',
+                              //     });
+                              setState(() {
+                                currentPage = index;
+                              });
+                            },
+                            controller: pageController,
+                            itemCount: data.length,
+                            itemBuilder: (BuildContext context, int index) {
+                              final name = data[index]['name']!;
+                              final image = data[index]['image']!;
+                              final text = data[index]['text']!;
+                              return imageItem(context, name, image, text);
+                            }),
+                      ),
+                      SmoothPageIndicator(
+                        controller: pageController,
+                        count: 3,
+                        effect: ExpandingDotsEffect(
+                            dotWidth: 5,
+                            dotHeight: 5,
+                            dotColor: Color(0xFFD3D3D3),
+                            activeDotColor: R.color.mainColor),
+                      ),
+                      builtItemText(
+                        data[currentPage]['name']!,
+                        data[currentPage]['text']!,
+                      ),
+                      SizedBox(height: 20),
+                    ],
+                  ),
+                  Column(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.only(left: 16, right: 16),
+                        margin: EdgeInsets.only(bottom: 16),
+                        child: SpacingColumn(
+                            spacing: 15,
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Container(
+                                height: 52,
+                                padding: EdgeInsets.symmetric(horizontal: 20),
+                                decoration: BoxDecoration(
+                                  gradient: LinearGradient(
+                                    begin: Alignment.topCenter,
+                                    end: Alignment.bottomCenter,
+                                    colors: [
+                                      R.color.greenGradientTop,
+                                      R.color.greenGradientBottom
+                                    ],
+                                  ),
+                                  borderRadius: BorderRadius.circular(200),
                                 ),
-                                borderRadius: BorderRadius.circular(200),
+                                child: GestureDetector(
+                                    onTap: () async {
+                                      await TrackingManager.trackEvent(
+                                        'login_select',
+                                        'welcome',
+                                        params: {
+                                          'method': 'zalo',
+                                        },
+                                      );
+                                      loginZalo();
+                                    },
+                                    child: Row(
+                                      children: [
+                                        SvgPicture.asset(
+                                          width: 24,
+                                          height: 24,
+                                          R.icons.ic_zalo,
+                                        ),
+                                        Expanded(
+                                          child: AutoSizeText(
+                                            'Đăng nhập qua Zalo',
+                                            maxLines: 1,
+                                            textAlign: TextAlign.center,
+                                            style: TextStyle(
+                                              color: R.color.white,
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w700,
+                                            ),
+                                          ),
+                                        )
+                                      ],
+                                    )),
                               ),
-                              child: GestureDetector(
-                                  onTap: () async {
-                                    await TrackingManager.trackEvent(
-                                      'login_select',
-                                      'welcome',
-                                      params: {
-                                        'method': 'zalo',
-                                      },
-                                    );
-                                    loginZalo();
-                                  },
+                              // Expanded(
+                              //   child: GestureDetector(
+                              //     onTap: () async {
+                              //       await TrackingManager.analytics.logEvent(
+                              //         name: 'cta_button_clicked',
+                              //         parameters: {
+                              //           "screen_name": 'welcome',
+                              //           'cta_button_name':
+                              //               'cta_welcome_sign_up',
+                              //         },
+                              //       );
+                              //       Navigator.pushNamed(
+                              //         context,
+                              //         NavigatorName.register,
+                              //         arguments: sharedCode,
+                              //       );
+                              //     },
+                              //     child: Container(
+                              //         height: 48,
+                              //         decoration: BoxDecoration(
+                              //             color: R.color.mainColor,
+                              //             borderRadius:
+                              //                 BorderRadius.circular(200),
+                              //             gradient: LinearGradient(
+                              //                 begin: Alignment.topLeft,
+                              //                 end: Alignment.centerRight,
+                              //                 colors: [
+                              //                   R.color.greenGradientTop,
+                              //                   R.color.greenGradientBottom
+                              //                 ])),
+                              //         child: Center(
+                              //           child: Text(R.string.tao_tai_khoan.tr(),
+                              //               style: TextStyle(
+                              //                   color: R.color.white,
+                              //                   fontSize: 16,
+                              //                   fontWeight: FontWeight.w600)),
+                              //         )),
+                              //   ),
+                              // ),
+                              // SizedBox(width: 16),
+                              GestureDetector(
+                                onTap: () async {
+                                  // Navigator.pushReplacementNamed(
+                                  //     context, NavigatorName.register,
+                                  //     arguments: {
+                                  //       'phone': '0909202394',
+                                  //     });
+                                  await TrackingManager.trackEvent(
+                                    'login_select',
+                                    'welcome',
+                                    params: {
+                                      'method': 'phone',
+                                    },
+                                  );
+
+                                  Navigator.pushNamed(
+                                    context,
+                                    NavigatorName.login,
+                                    arguments: sharedCode,
+                                  );
+                                },
+                                child: Container(
+                                  height: 52,
+                                  padding: EdgeInsets.symmetric(horizontal: 20),
+                                  decoration: BoxDecoration(
+                                    color: Color(0xFFE8F9F7),
+                                    borderRadius: BorderRadius.circular(200),
+                                  ),
                                   child: Row(
                                     children: [
                                       SvgPicture.asset(
                                         width: 24,
                                         height: 24,
-                                        R.icons.ic_zalo,
+                                        R.icons.ic_device,
+                                        color: R.color.mainColor,
                                       ),
                                       Expanded(
-                                        child: AutoSizeText(
-                                          'Đăng nhập qua Zalo',
-                                          maxLines: 1,
-                                          textAlign: TextAlign.center,
-                                          style: TextStyle(
-                                            color: R.color.white,
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.w700,
-                                          ),
-                                        ),
-                                      )
-                                    ],
-                                  )),
-                            ),
-                            // Expanded(
-                            //   child: GestureDetector(
-                            //     onTap: () async {
-                            //       await TrackingManager.analytics.logEvent(
-                            //         name: 'cta_button_clicked',
-                            //         parameters: {
-                            //           "screen_name": 'welcome',
-                            //           'cta_button_name':
-                            //               'cta_welcome_sign_up',
-                            //         },
-                            //       );
-                            //       Navigator.pushNamed(
-                            //         context,
-                            //         NavigatorName.register,
-                            //         arguments: sharedCode,
-                            //       );
-                            //     },
-                            //     child: Container(
-                            //         height: 48,
-                            //         decoration: BoxDecoration(
-                            //             color: R.color.mainColor,
-                            //             borderRadius:
-                            //                 BorderRadius.circular(200),
-                            //             gradient: LinearGradient(
-                            //                 begin: Alignment.topLeft,
-                            //                 end: Alignment.centerRight,
-                            //                 colors: [
-                            //                   R.color.greenGradientTop,
-                            //                   R.color.greenGradientBottom
-                            //                 ])),
-                            //         child: Center(
-                            //           child: Text(R.string.tao_tai_khoan.tr(),
-                            //               style: TextStyle(
-                            //                   color: R.color.white,
-                            //                   fontSize: 16,
-                            //                   fontWeight: FontWeight.w600)),
-                            //         )),
-                            //   ),
-                            // ),
-                            // SizedBox(width: 16),
-                            GestureDetector(
-                              onTap: () async {
-                                // Navigator.pushReplacementNamed(
-                                //     context, NavigatorName.register,
-                                //     arguments: {
-                                //       'phone': '0909202394',
-                                //     });
-                                await TrackingManager.trackEvent(
-                                  'login_select',
-                                  'welcome',
-                                  params: {
-                                    'method': 'phone',
-                                  },
-                                );
-
-                                Navigator.pushNamed(
-                                  context,
-                                  NavigatorName.login,
-                                  arguments: sharedCode,
-                                );
-                              },
-                              child: Container(
-                                height: 52,
-                                padding: EdgeInsets.symmetric(horizontal: 20),
-                                decoration: BoxDecoration(
-                                  color: Color(0xFFE8F9F7),
-                                  borderRadius: BorderRadius.circular(200),
-                                ),
-                                child: Row(
-                                  children: [
-                                    SvgPicture.asset(
-                                      width: 24,
-                                      height: 24,
-                                      R.icons.ic_device,
-                                      color: R.color.mainColor,
-                                    ),
-                                    Expanded(
-                                      child: Center(
-                                        child: AutoSizeText(
-                                          'Đăng nhập qua số điện thoại',
-                                          maxLines: 1,
-                                          style: TextStyle(
-                                            color: R.color.mainColor,
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.w700,
+                                        child: Center(
+                                          child: AutoSizeText(
+                                            'Đăng nhập qua số điện thoại',
+                                            maxLines: 1,
+                                            style: TextStyle(
+                                              color: R.color.mainColor,
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w700,
+                                            ),
                                           ),
                                         ),
                                       ),
-                                    ),
-                                  ],
+                                    ],
+                                  ),
                                 ),
                               ),
-                            ),
-                          ]),
-                    ),
-                    SizedBox(
-                      height: 12,
-                    ),
-                    SocialLoginSection(),
-                    // GestureDetector(
-                    //   onTap: () async {
-                    //     await TrackingManager.analytics.logEvent(
-                    //       name: 'cta_button_clicked',
-                    //       parameters: {
-                    //         "screen_name": 'welcome',
-                    //         'cta_button_name': 'cta_welcome_support',
-                    //       },
-                    //     );
-                    //     if (AppSettings.secureModel != null) {
-                    //       Navigator.pushNamed(context, NavigatorName.contact,
-                    //           arguments: {'contact': AppSettings.secureModel});
-                    //     }
-                    //   },
-                    //   child: Row(
-                    //     mainAxisAlignment: MainAxisAlignment.center,
-                    //     children: [
-                    //       Image.asset(
-                    //         R.drawable.ic_contact,
-                    //         width: 19,
-                    //         height: 19,
-                    //       ),
-                    //       SizedBox(
-                    //         width: 8,
-                    //       ),
-                    //       Text(R.string.contact_diab_info.tr(),
-                    //           style: TextStyle(
-                    //               fontSize: 15,
-                    //               color: R.color.captionColorGray)),
-                    //     ],
-                    //   ),
-                    // ),
-                    // SizedBox(height: 12)
-                  ],
-                ),
-              ],
+                            ]),
+                      ),
+                      SizedBox(
+                        height: 12,
+                      ),
+                      SocialLoginSection(),
+                      // GestureDetector(
+                      //   onTap: () async {
+                      //     await TrackingManager.analytics.logEvent(
+                      //       name: 'cta_button_clicked',
+                      //       parameters: {
+                      //         "screen_name": 'welcome',
+                      //         'cta_button_name': 'cta_welcome_support',
+                      //       },
+                      //     );
+                      //     if (AppSettings.secureModel != null) {
+                      //       Navigator.pushNamed(context, NavigatorName.contact,
+                      //           arguments: {'contact': AppSettings.secureModel});
+                      //     }
+                      //   },
+                      //   child: Row(
+                      //     mainAxisAlignment: MainAxisAlignment.center,
+                      //     children: [
+                      //       Image.asset(
+                      //         R.drawable.ic_contact,
+                      //         width: 19,
+                      //         height: 19,
+                      //       ),
+                      //       SizedBox(
+                      //         width: 8,
+                      //       ),
+                      //       Text(R.string.contact_diab_info.tr(),
+                      //           style: TextStyle(
+                      //               fontSize: 15,
+                      //               color: R.color.captionColorGray)),
+                      //     ],
+                      //   ),
+                      // ),
+                      // SizedBox(height: 12)
+                    ],
+                  ),
+                ],
             ),
             Positioned(
               top: 5,

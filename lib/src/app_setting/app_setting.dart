@@ -405,6 +405,20 @@ class AppSettings {
     appPreference.removeData("lastOpenedGlucoseInputType");
   }
 
+   static Future<void> saveZaloGroup(String? zaloGroup) async {
+    if (zaloGroup != null && zaloGroup.isNotEmpty) {
+      appPreference.setData("zaloGroup", zaloGroup);
+    }
+  }
+
+  static Future<String?> getZaloGroup() async {
+    return appPreference.getData("zaloGroup");
+  }
+
+   static Future<void> clearZaloGroup() async {
+    appPreference.removeData("zaloGroup");
+  }
+
   static Future<bool> logout(
       {bool isNavigateToStepListScreen = true, bool isSync = false}) async {
     try {
@@ -433,6 +447,7 @@ class AppSettings {
       _googleSignIn.signOut();
       final facebookLogin = FacebookLogin();
       facebookLogin.logOut();
+      await clearZaloGroup();
       return true;
     } catch (_) {
       return false;

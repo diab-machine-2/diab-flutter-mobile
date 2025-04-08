@@ -1,8 +1,11 @@
+import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/modal/user/user_model.dart';
 import 'package:medical/src/model/preference/app_preference.dart';
 import 'package:medical/src/model/response/content_welcome_response.dart';
+import 'package:medical/src/model/response/get_customer_receives_user_response.dart';
+import 'package:medical/src/utils/utils.dart';
 import '../../../../model/repository/app_repository.dart';
 import '../../../../model/response/common_response.dart';
 import '../../../../model/service/api_result.dart';
@@ -57,6 +60,39 @@ class WelcomePackageScreenCubit extends Cubit<WelcomePackageScreenState> {
       // emit(WelcomePackageScreenFailure(
       //     NetworkExceptions.getErrorMessage(error)));
     });
+  }
+
+
+  Future<String?> getCustomerReceivesUser() async {
+    await Future.delayed(Duration.zero);
+    // BotToast.showLoading();
+    final phoneNumber = AppSettings.userInfo?.phoneNumber ?? '';
+    if (phoneNumber.isEmpty) {
+      // BotToast.closeAllLoading();
+      BotToast.showText(text: "Không tìm thấy thông tin người nhận");
+      return null;
+    }
+
+    String? result;
+    final ApiResult<GetCustomerReceivesUserResponse> apiResult =
+        await repository
+            .getCustomerReceivesUser(Utils.formatPhoneNumber(phoneNumber));
+
+    apiResult.when(success: (GetCustomerReceivesUserResponse response) {
+      if (response.data != null) {
+        final value = response.data?.firstOrNull;
+        if (value != null) {
+          emit(WelcomePackageScreenSuccess());
+          result = response.data?.first.zaloGroup;
+        }
+      }
+    }, failure: (NetworkExceptions error) {
+      emit(WelcomePackageScreenFailure(
+          NetworkExceptions.getErrorMessage(error)));
+    });
+
+    // BotToast.closeAllLoading();
+    return result;
   }
 
   String getGender(int? gender) {
