@@ -18,9 +18,9 @@ import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widgets/network_image_widget.dart';
 import 'package:syncfusion_flutter_gauges/gauges.dart';
 
-import 'widget/aihelp_button.dart';
-import 'add_bloodSugar_result_note.dart';
+import 'add_bloodpressure_result_note.dart';
 import 'bloodpressure_result.dto.dart';
+import 'widget/aihelp_button.dart';
 
 class PageAddBloodPressureResult extends StatefulWidget {
   const PageAddBloodPressureResult({super.key, required this.data});
@@ -50,13 +50,12 @@ class _PageAddBloodPressureResultState extends State<PageAddBloodPressureResult>
     _files = data.files ?? [];
     final unit = AppSettings.userInfo?.glucoseUnit ?? 1;
 
-    bool shouldFetchNewData = (data.isFetchAnalysis ?? false) ||
-        ((data.healthRecommendation?.isEmpty) ?? true);
+    bool shouldFetchNewData =
+        (data.isFetchAnalysis ?? false) || ((data.healthRecommendation?.isEmpty) ?? true);
 
+    // TODO: BLOOD PRESSURE
     final aiResult = shouldFetchNewData
-        ? await GlucoseClient()
-            .fetchGlucoseInputAnalysis(widget.data.id, unit)
-            .catchError((e, s) {
+        ? await GlucoseClient().fetchGlucoseInputAnalysis(widget.data.id, unit).catchError((e, s) {
             TrackingManager.recordError(e, s);
             return null;
           })
@@ -78,22 +77,23 @@ class _PageAddBloodPressureResultState extends State<PageAddBloodPressureResult>
             paths.add(file.path);
           }
         }
-        final result = await GlucoseClient().putIndexGlucose(
-            widget.data.id,
-            null,
-            (widget.data.dateTime.millisecondsSinceEpoch ~/ 1000).toInt(),
-            widget.data.glucose.toString(),
-            null,
-            _note,
-            // TODO: check fromNipro
-            false,
-            _removeIDs,
-            paths);
-        if (result == true) {
-          BotToast.closeAllLoading();
-          Observable.instance.notifyObservers([], notifyName: "glucose_change_data");
-          return;
-        }
+        // TODO: BLOOD PRESSURE
+        // final result = await GlucoseClient().putIndexGlucose(
+        //     widget.data.id,
+        //     null,
+        //     (widget.data.dateTime.millisecondsSinceEpoch ~/ 1000).toInt(),
+        //     widget.data.glucose.toString(),
+        //     null,
+        //     _note,
+        //     // TODO: check fromNipro
+        //     false,
+        //     _removeIDs,
+        //     paths);
+        // if (result == true) {
+        //   BotToast.closeAllLoading();
+        //   Observable.instance.notifyObservers([], notifyName: "glucose_change_data");
+        //   return;
+        // }
       }
       Observable.instance.notifyObservers([], notifyName: "glucose_change_data");
     } catch (e, s) {
@@ -152,7 +152,7 @@ class _PageAddBloodPressureResultState extends State<PageAddBloodPressureResult>
                     child: SingleChildScrollView(
                       padding: EdgeInsets.only(bottom: 100),
                       physics: const ClampingScrollPhysics(),
-                      child: _bloodpressureResultSection(),
+                      child: _glucoseResultSection(),
                     ),
                   ),
                 ),
@@ -206,7 +206,7 @@ class _PageAddBloodPressureResultState extends State<PageAddBloodPressureResult>
     );
   }
 
-  Widget _bloodpressureResultSection() {
+  Widget _glucoseResultSection() {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -221,56 +221,18 @@ class _PageAddBloodPressureResultState extends State<PageAddBloodPressureResult>
             width: 250,
             child: _SegmentedCircularGauge(
               rangeValue: widget.data.rangeValue,
-              glucose: widget.data.glucose,
-              glucoseUnit: widget.data.glucoseUnit,
+              diastolic: widget.data.diastolic,
+              systolic: widget.data.systolic,
               timeFrame: widget.data.timeFrame,
-              rangeLabel: widget.data.rangeLabel,
+              rangeLabel: widget.data.rangeType.title,
               indexRange: widget.data.indexRange,
-              rangeColor: widget.data.rangeColor,
+              rangeColor: widget.data.rangeType.color,
             ),
           ),
 
           // const SizedBox(height: 24),
           // button add note
           _buildNoteOrAddNoteSection(),
-
-          const SizedBox(height: 24),
-          Container(
-            height: 1,
-            color: Color(0xFFE5E5E5),
-          ),
-
-          const SizedBox(height: 24),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Row(
-                children: [
-                  Image.asset(
-                    R.drawable.ic_info,
-                    width: 16,
-                    height: 16,
-                  ),
-                  const SizedBox(width: 4),
-                  Text(
-                    'Thông tin',
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: R.color.primaryGreyColor,
-                    ),
-                  ),
-                ],
-              ),
-              Text(
-                'Cao',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: R.color.textDark,
-                ),
-              ),
-            ],
-          ),
 
           const SizedBox(height: 24),
           // result
@@ -472,16 +434,16 @@ class _PageAddBloodPressureResultState extends State<PageAddBloodPressureResult>
 
 class _SegmentedCircularGauge extends StatelessWidget {
   final List<int> rangeValue;
-  final double glucose;
-  final String glucoseUnit;
+  final double diastolic;
+  final double systolic;
   final String timeFrame;
   final String rangeLabel;
   final int indexRange;
   final Color rangeColor;
   const _SegmentedCircularGauge({
     required this.rangeValue,
-    required this.glucose,
-    required this.glucoseUnit,
+    required this.diastolic,
+    required this.systolic,
     required this.timeFrame,
     required this.rangeLabel,
     required this.indexRange,
@@ -520,12 +482,6 @@ class _SegmentedCircularGauge extends StatelessWidget {
       scaleListRendering.add(renderMaxValue);
     }
 
-    // recalculate glucose by scaleListRendering
-    double glucoseRendering = glucose;
-    if (scaleListRendering.length > 2) {
-      glucoseRendering = scaleListRendering[indexRange] + (step / 2);
-    }
-
     return Center(
       child: SfRadialGauge(
         backgroundColor: Colors.white,
@@ -552,16 +508,6 @@ class _SegmentedCircularGauge extends StatelessWidget {
                   endWidth: 10,
                 ),
             ],
-            pointers: <GaugePointer>[
-              MarkerPointer(
-                value: glucoseRendering, // Current value
-                markerType: MarkerType.invertedTriangle,
-                color: R.color.dark,
-                markerHeight: 8,
-                markerWidth: 12,
-                markerOffset: -6,
-              ),
-            ],
             annotations: <GaugeAnnotation>[
               // Add the text annotations for "Trước ăn", "Cao", and "135 mg/dL"
               GaugeAnnotation(
@@ -585,11 +531,24 @@ class _SegmentedCircularGauge extends StatelessWidget {
                       ),
                     ),
                     SizedBox(height: 4),
-                    Text(
-                      '${roundNumber(glucose)} $glucoseUnit',
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Colors.black,
+                    // bold value then normal unit text
+                    Text.rich(
+                      TextSpan(
+                        text: '${roundNumber(diastolic)}/${roundNumber(systolic)}',
+                        style: TextStyle(
+                          fontSize: 15,
+                          color: Color(0xFF111515),
+                          fontWeight: FontWeight.bold,
+                        ),
+                        children: [
+                          TextSpan(
+                            text: ' mmHg',
+                            style: TextStyle(
+                              fontSize: 15,
+                              color: Color(0xFF636A6B),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                     SizedBox(height: 24),

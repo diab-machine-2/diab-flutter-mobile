@@ -11,6 +11,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/modal/HbA1C/short_gui.dart';
+import 'package:medical/src/modal/base/images.dart';
 import 'package:medical/src/modal/blood_pressure/blood_pressure.dart';
 import 'package:medical/src/modal/error/error_model.dart';
 import 'package:medical/src/modal/glucose/glucose_timeFrame.dart';
@@ -33,6 +34,7 @@ import '../../repo/home/home_client.dart';
 import '../../widgets/CalendarPicker/custom_date_picker.dart';
 import '../../widgets/spacing_row.dart';
 import '../my_plan_screens/activity_tab/activity_tab/models/schedule_type.dart';
+import 'bloodpressure_result.dto.dart';
 
 class AddBloodPressureController extends StatefulWidget {
   final String? type;
@@ -249,6 +251,28 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
 
   void _doHealthConnect() async {
     // TODO: BLOOD PRESSURE
+  }
+
+  void _navigateAfterSuccess(String id, List<ImagesModel> images, [bool? isDataChange = false]) {
+    // Observable.instance.notifyObservers([], notifyName: "glucose_change_data");
+    int indexRange = 0;
+    final data = BloodPressureResultDto(
+      id: id,
+      dateTime: selectedDate,
+      timeFrame: selectedTimeFrame?.name?.tr() ?? '',
+      rangeColors: _colorList,
+      rangeValue: [0],
+      indexRange: indexRange,
+      diastolic: double.tryParse(_controllerDiastolic.text) ?? 0,
+      systolic: double.tryParse(_controllerSystolic.text) ?? 0,
+      note: _controllerNote.text,
+      files: images,
+      rangeType: BloodPressureRangeType.high1,
+      isFetchAnalysis: isDataChange,
+      healthRecommendation: null,
+    );
+    Navigator.of(context)
+        .pushReplacementNamed(NavigatorName.add_blood_sugar_result, arguments: data);
   }
 
   @override
