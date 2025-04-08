@@ -317,7 +317,20 @@ class _DsmesBookingOfflinePageState extends State<DsmesBookingOfflinePage> {
                                   alignment: Alignment.center,
                                   padding: EdgeInsets.all(10),
                                   decoration: BoxDecoration(
-                                    color: R.color.color0xffE7FDFB,
+                                    // Change color based on whether it's the only button
+                                    color: hasAtClinic
+                                        ? R.color.color0xffE7FDFB
+                                        : null,
+                                    gradient: !hasAtClinic
+                                        ? LinearGradient(
+                                            begin: Alignment.topCenter,
+                                            end: Alignment.bottomCenter,
+                                            colors: [
+                                              R.color.greenGradientTop02,
+                                              R.color.greenGradientBottom
+                                            ],
+                                          )
+                                        : null,
                                     borderRadius: BorderRadius.circular(200),
                                   ),
                                   child: Text(
@@ -325,7 +338,10 @@ class _DsmesBookingOfflinePageState extends State<DsmesBookingOfflinePage> {
                                     style: TextStyle(
                                       fontSize: 13,
                                       fontWeight: FontWeight.w700,
-                                      color: R.color.greenGradientBottom,
+                                      // Change text color based on whether it's the only button
+                                      color: hasAtClinic
+                                          ? R.color.greenGradientBottom
+                                          : R.color.white,
                                     ),
                                   ),
                                 ),
@@ -400,7 +416,7 @@ class _DsmesBookingOfflinePageState extends State<DsmesBookingOfflinePage> {
                       ),
                     ),
                 ],
-              ),
+              )
             ],
           ),
         ),

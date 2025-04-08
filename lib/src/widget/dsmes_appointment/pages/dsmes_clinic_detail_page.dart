@@ -326,18 +326,15 @@ class _DsmesClinicDetailPageState extends State<DsmesClinicDetailPage> {
                   DsmesAppointmentItem(
                     data: recentBooking,
                     onChooseService: () async {
-                      // if (recentBooking.mode ==
-                      //     DsmesAppointmentMode.atClinic.toString()) {
-                      //   await _cubit.getClinicDetail(id: data.clinicId);
-                      // }
+                      final recentAppointment = await _cubit
+                          .getDsmesAppointmentDetail(appointmentId: recentBooking.id);
 
                       DsmesNavigationMixin.navigationKey.currentState
                           ?.pushNamed(
                         NavigatorName.dsmes_booking_detail,
                         arguments: {
-                          'serviceType':
-                              DsmesAppointmentMode.atClinic.toString(),
-                          'appointment': recentBooking,
+                          'serviceType': recentAppointment?.mode,
+                          'appointment': recentAppointment,
                           'previousRoute': NavigatorName.dsmes_clinic_detail,
                         },
                       );
@@ -357,7 +354,8 @@ class _DsmesClinicDetailPageState extends State<DsmesClinicDetailPage> {
                     children: [
                       Text(
                         R.string.customer_rating.tr(),
-                        style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
+                        style: TextStyle(
+                            fontSize: 15, fontWeight: FontWeight.w700),
                       ),
                     ],
                   ),
