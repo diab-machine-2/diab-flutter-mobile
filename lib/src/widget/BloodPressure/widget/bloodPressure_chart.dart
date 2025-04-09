@@ -7,7 +7,6 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/bloc/bloodPressure/bloodPressure_bloc.dart';
 import 'package:medical/src/modal/blood_pressure/blood_pressure_trend.dart';
 import 'package:medical/src/utils/navigator_name.dart';
-import 'package:medical/src/widget/BloodPressure/bloodPressure_detail_tabbar.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -15,7 +14,8 @@ import 'package:medical/src/widgets/empty_data_box.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 
 class BloodPressureChart extends StatefulWidget {
-  BloodPressureChart({Key? key}) : super(key: key);
+  BloodPressureChart({Key? key, required this.initPeriodFilterType}) : super(key: key);
+  final int initPeriodFilterType;
   @override
   BloodPressureChartState createState() => BloodPressureChartState();
 }
@@ -27,6 +27,8 @@ class BloodPressureChartState extends State<BloodPressureChart>
 
   int touchIndex = -1;
 
+  int _focusIndex = -1;
+
   int periodFilterType = 1;
   late BuildContext currentContext;
   int? previousDate = 0;
@@ -36,11 +38,11 @@ class BloodPressureChartState extends State<BloodPressureChart>
 
   @override
   void initState() {
-    periodFilterType = BloodPressureDetailTabbarController.of(context)!.periodFilterType;
+    periodFilterType = widget.initPeriodFilterType;
     super.initState();
   }
 
-  reloadData(int periodFilter) {
+  void reloadData(int periodFilter) {
     periodFilterType = periodFilter;
     _refresh();
   }
@@ -53,13 +55,15 @@ class BloodPressureChartState extends State<BloodPressureChart>
     return true;
   }
 
+  void _viewHistory() {}
+
   @override
   Widget build(BuildContext context) {
     super.build(context);
     return BlocProvider<BloodPressureBloc>(
-        create: (context) => BloodPressureBloc(),
-        child: BlocBuilder<BloodPressureBloc, BloodPressureState>(
-            builder: (BuildContext context, BloodPressureState state) {
+      create: (context) => BloodPressureBloc(),
+      child: BlocBuilder<BloodPressureBloc, BloodPressureState>(
+        builder: (BuildContext context, BloodPressureState state) {
           currentContext = context;
           BloodPressureTrendModel? model;
 
@@ -76,59 +80,63 @@ class BloodPressureChartState extends State<BloodPressureChart>
           if (state is BloodPressureTrendLoaded) {
             model = state.model;
           }
-          return model == null
-              ? Container(height: 240, child: Center(child: CircularProgressIndicator()))
-              : VisibilityDetector(
-                  key: Key('blood_pressure_chart'),
-                  onVisibilityChanged: (visibilityInfo) {
-                    var visiblePercentage = visibilityInfo.visibleFraction * 100;
-                    if (visiblePercentage == 0) {
-                      previousDate = 0;
-                    }
-                  },
-                  child: Container(
-                    color: R.color.transparent,
-                    padding: EdgeInsets.only(left: 18, right: 18),
-                    child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+
+          if (model == null) {
+            return Container(
+              height: 240,
+              child: Center(
+                child: CircularProgressIndicator(),
+              ),
+            );
+          }
+
+          return VisibilityDetector(
+            key: Key('blood_pressure_chart'),
+            onVisibilityChanged: (visibilityInfo) {
+              var visiblePercentage = visibilityInfo.visibleFraction * 100;
+              if (visiblePercentage == 0) {
+                previousDate = 0;
+              }
+            },
+            child: Container(
+              color: R.color.transparent,
+              padding: EdgeInsets.only(left: 18, right: 18),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
                       Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Row(
-                            children: [
-                              Text(R.string.blood_pressure_trend.tr(),
-                                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700)),
-                            ],
-                          ),
+                          Text(R.string.blood_pressure_trend.tr(),
+                              style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700)),
                         ],
                       ),
-                      SizedBox(height: 14),
-                      model.trendItems.items.length == 0
-                          ? EmptyDataBox(
-                              text: 'chỉ số huyết áp',
-                              onTap: () {
-                                Navigator.pushNamed(context, NavigatorName.add_blood_pressure,
-                                    arguments: {'type': 'input', 'id': null});
-                              },
-                            )
-                          : Container(
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(16),
-                                color: R.color.white,
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: R.color.grey.withOpacity(0.5),
-                                    spreadRadius: 1,
-                                    blurRadius: 7,
-                                    offset: Offset(0, 2),
-                                  ),
-                                ],
-                              ),
-                              child: buildChart(model)),
-                      SizedBox(height: 26),
-                    ]),
+                    ],
                   ),
-                );
-        }));
+                  SizedBox(height: 14),
+                  if (model.trendItems.items.length == 0)
+                    EmptyDataBox(
+                      text: 'chỉ số huyết áp',
+                      onTap: () {
+                        Navigator.pushNamed(context, NavigatorName.add_blood_pressure,
+                            arguments: {'type': 'input', 'id': null});
+                      },
+                    )
+                  else ...[
+                    _buildNavigatorIndex([]),
+                    SizedBox(height: 24),
+                    _buildChart(model),
+                  ],
+                  SizedBox(height: 26),
+                ],
+              ),
+            ),
+          );
+        },
+      ),
+    );
   }
 
   double _customYTransform(double y) {
@@ -144,7 +152,208 @@ class BloodPressureChartState extends State<BloodPressureChart>
     }
   }
 
-  Widget buildChart(BloodPressureTrendModel model) {
+  Widget _buildNavigatorIndex(List<SubTrendItemModel> trends) {
+    if (_focusIndex == -1) {
+      _focusIndex = (trends.length - 1) ~/ 2;
+    }
+    String selectedDate = '21/08';
+    String selectedDateTime = '07:00';
+    String selectedType = 'Tăng huyết áp độ 2';
+    String selectedTimeFrame = 'Thức dậy';
+    String selectedDiastolic = '166';
+    String selectedSystolic = '110';
+    String selectedColor = '';
+
+    //  if (_focusIndex != -1 && _focusIndex < trends.length) {
+    //   final selectedTrend = trends[_focusIndex];
+    //   selectedDate = DateFormat('HH:mm - dd/MM/yyyy').format(
+    //       DateTime.fromMillisecondsSinceEpoch(selectedTrend.date! * 1000,
+    //           isUtc: true));
+    //   selectedType = selectedTrend.type!;
+    //   selectedTimeFrame = selectedTrend.timeFrameName!;
+    //   selectedGlucose = roundNumber(selectedTrend.glucose!);
+    //   selectedColor = selectedTrend.color!;
+    // }
+
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            // Row: Stadium with white background (include time -> date) and icon history, center align
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  width: 130,
+                  height: 38,
+                  decoration: BoxDecoration(
+                    color: R.color.white,
+                    borderRadius: BorderRadius.circular(19),
+                    border: Border.all(color: R.color.color0xffE5E5E5, width: 1),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        selectedDateTime,
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w400,
+                          color: Color(0xFF636A6B),
+                        ),
+                      ),
+                      Container(
+                        width: 4,
+                        height: 4,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Color(0xFFBFC6C6),
+                        ),
+                      ),
+                      Text(
+                        selectedDate,
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w400,
+                          color: Color(0xFF636A6B),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                InkWell(
+                  onTap: _viewHistory,
+                  child: SizedBox(
+                    width: 36,
+                    height: 36,
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        color: R.color.white,
+                        borderRadius: BorderRadius.circular(18),
+                        border: Border.all(color: R.color.color0xffE5E5E5),
+                      ),
+                      child: Center(child: Icon(Icons.history, color: R.color.textDark, size: 20)),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 4),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                const SizedBox(width: 16),
+                InkWell(
+                  onTap: _focusIndex > 0
+                      ? () {
+                          setState(() {
+                            _focusIndex = max(0, _focusIndex - 1);
+                          });
+                        }
+                      : null,
+                  child: Container(
+                    width: 32,
+                    height: 32,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: R.color.color0xffE5E5E5,
+                        width: 1,
+                      ),
+                      color: Colors.white,
+                    ),
+                    child: Icon(
+                      Icons.chevron_left,
+                      size: 20,
+                      color: _focusIndex > 0 ? R.color.textDark : R.color.color0xffE5E5E5,
+                    ),
+                  ),
+                ),
+                Expanded(
+                  child: Center(
+                    child: Text(
+                      selectedType,
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: selectedColor.isNotEmpty
+                            ? Color(int.parse('0xff${selectedColor.split('#').join()}'))
+                            : null,
+                        height: 36 / 24,
+                      ),
+                    ),
+                  ),
+                ),
+                InkWell(
+                  onTap: _focusIndex < trends.length - 1
+                      ? () {
+                          setState(() {
+                            _focusIndex = min(trends.length - 1, _focusIndex + 1);
+                          });
+                        }
+                      : null,
+                  child: Container(
+                    width: 32,
+                    height: 32,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: R.color.color0xffE5E5E5,
+                        width: 1,
+                      ),
+                      color: Colors.white,
+                    ),
+                    child: Icon(
+                      Icons.chevron_right,
+                      size: 20,
+                      color: _focusIndex < trends.length - 1
+                          ? R.color.textDark
+                          : R.color.color0xffE5E5E5,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 16),
+              ],
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  selectedTimeFrame,
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF636A6B),
+                  ),
+                ),
+                Container(
+                  width: 4,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: Color(0xFFBFC6C6),
+                  ),
+                ),
+                Text(
+                  '$selectedDiastolic/$selectedSystolic mmHg',
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w400,
+                    color: Color(0xFF111515),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildChart(BloodPressureTrendModel model) {
     final width = (MediaQuery.of(context).size.width - 200) / 5;
 
     List<int?> dates = [];
@@ -181,11 +390,12 @@ class BloodPressureChartState extends State<BloodPressureChart>
               child: Column(
                 children: [
                   Spacer(flex: 1),
-                  Text(_mediumHigh.toString(), style: TextStyle(color: R.color.black, fontSize: 14)),
+                  Text(_mediumHigh.toString(),
+                      style: TextStyle(color: R.color.black, fontSize: 14)),
                   Spacer(flex: 1),
                   Text(_mediumLow.toString(), style: TextStyle(color: R.color.black, fontSize: 14)),
                   Spacer(flex: 2),
-                  SizedBox(height: 16),
+                  Icon(Icons.heat_pump_rounded, size: 20),
                 ],
               ),
             ),
@@ -221,7 +431,7 @@ class BloodPressureChartState extends State<BloodPressureChart>
                             getTooltipItems: (List<LineBarSpot> lineBarsSpot) {
                               return lineBarsSpot.map((lineBarSpot) {
                                 if (lineBarSpot.barIndex == 0) {
-                                  if (lineBarSpot.spotIndex < 0 || 
+                                  if (lineBarSpot.spotIndex < 0 ||
                                       lineBarSpot.spotIndex >= trends.length ||
                                       trends[lineBarSpot.spotIndex].systolic == null ||
                                       trends[lineBarSpot.spotIndex].diastolic == null) {
@@ -330,6 +540,35 @@ class BloodPressureChartState extends State<BloodPressureChart>
                 ),
               ),
             )
+          ],
+        ),
+        SizedBox(height: 12),
+        // guide line
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Container(
+              width: 23,
+              height: 1,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(1),
+                color: Color(0xFF008479),
+              ),
+            ),
+            SizedBox(width: 8),
+            Text('Tâm thu', style: TextStyle(fontSize: 14)),
+            SizedBox(width: 48),
+            Container(
+              width: 23,
+              height: 1,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(1),
+                color: Color(0xFF95682E),
+              ),
+            ),
+            SizedBox(width: 8),
+            Text('Tâm trương', style: TextStyle(fontSize: 14)),
           ],
         ),
       ],

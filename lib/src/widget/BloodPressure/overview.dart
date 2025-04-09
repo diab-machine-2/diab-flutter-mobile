@@ -64,7 +64,7 @@ class BloodPressureOverviewControllerState
           children: [
             BloodPressureDetail(key: bloodPressureDetailKey),
             BloodPressureDistributionChart(key: bloodPressureDistributionChart),
-            BloodPressureChart(key: bloodPressureTrendKey),
+            BloodPressureChart(key: bloodPressureTrendKey, initPeriodFilterType: 1),
             HeartChart(key: bloodPressureHeartKey),
             CourseSuggest(position: 3),
             SizedBox(height: 36)
