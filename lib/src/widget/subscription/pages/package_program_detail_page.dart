@@ -8,6 +8,7 @@ import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
+import 'package:medical/src/widget/home/widget/home_support_functions.dart';
 import 'package:medical/src/widget/subscription/model/package_program_model.dart';
 import 'package:medical/src/widget/subscription/services/package_program_service.dart';
 import 'package:medical/src/widget/subscription/subscription_cubit.dart';
@@ -102,13 +103,14 @@ class _ProgramDetailPageState extends State<ProgramDetailPage> {
                           onContact: () async {
                             SubscriptionTracking.supportClick(
                                 screenName: 'program_detail');
-                            final launchUri =
-                                Uri(scheme: 'tel', path: Const.HOTLINE_NUMBER);
-                            if (await canLaunchUrl(launchUri)) {
-                              await launchUrl(launchUri);
-                            } else {
-                              throw 'Could not make phone call ${Const.HOTLINE_NUMBER}';
-                            }
+                            // final launchUri =
+                            //     Uri(scheme: 'tel', path: Const.HOTLINE_NUMBER);
+                            // if (await canLaunchUrl(launchUri)) {
+                            //   await launchUrl(launchUri);
+                            // } else {
+                            //   throw 'Could not make phone call ${Const.HOTLINE_NUMBER}';
+                            // }
+                            HomeSupportFunctions.showModalAddData(context);
                           },
                         );
                       },
@@ -350,7 +352,7 @@ class AudienceCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Calculate image height to maintain 4:3 aspect ratio
-    final imageHeight = (cardWidth * 3) / 4;
+    final imageHeight = (cardWidth * 2.9) / 4;
 
     return Container(
       width: cardWidth,
@@ -363,7 +365,7 @@ class AudienceCard extends StatelessWidget {
         ],
       ),
       child: Column(
-        mainAxisSize: MainAxisSize.min, // Only take up necessary space
+        mainAxisSize: MainAxisSize.min,
         children: [
           // Image container with ClipRRect to respect border radius
           ClipRRect(
@@ -383,16 +385,22 @@ class AudienceCard extends StatelessWidget {
             child: Container(
               padding: const EdgeInsets.all(8),
               alignment: Alignment.center,
-              child: Text(
-                audience.title,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w500,
-                  color: R.color.color0xff111515,
+              child: MediaQuery(
+                data: MediaQuery.of(context).copyWith(
+                  textScaler: TextScaler.linear(
+                      MediaQuery.of(context).textScaleFactor.clamp(1.0, 1.3)),
                 ),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
+                child: Text(
+                  audience.title,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w500,
+                    color: R.color.color0xff111515,
+                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
               ),
             ),
           ),

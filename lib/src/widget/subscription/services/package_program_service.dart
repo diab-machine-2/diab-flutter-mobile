@@ -34,7 +34,8 @@ class ProgramService {
 
       // Parse JSON data into Program objects
       _programsCache = (jsonData['programs'] as List<dynamic>)
-          .map((program) => PackageProgram.fromJson(program as Map<String, dynamic>))
+          .map((program) =>
+              PackageProgram.fromJson(program as Map<String, dynamic>))
           .toList();
 
       return _programsCache!;
@@ -260,7 +261,7 @@ class ProgramService {
         return WillPopScope(
           onWillPop: () async {
             Navigator.pop(context);
-            onNavigateHome.call();
+
             return false;
           },
           child: Container(
@@ -281,7 +282,6 @@ class ProgramService {
                         GestureDetector(
                           onTap: () {
                             Navigator.pop(context);
-                            onNavigateHome.call();
                           },
                           child: Icon(
                             Icons.close,

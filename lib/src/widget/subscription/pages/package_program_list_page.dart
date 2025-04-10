@@ -9,6 +9,7 @@ import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
+import 'package:medical/src/widget/home/widget/home_support_functions.dart';
 import 'package:medical/src/widget/subscription/model/package_program_model.dart';
 import 'package:medical/src/widget/subscription/services/package_program_service.dart';
 import 'package:medical/src/widget/subscription/subscription_cubit.dart';
@@ -81,7 +82,7 @@ class _ProgramsListPageState extends State<ProgramsListPage> {
                   child: CustomAppBar(
                     backgroundColor: Colors.transparent,
                     title: Text(
-                      R.string.basic_program.tr(),
+                      _cubit.getTitlePackage(),
                       style: TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.w700,
@@ -93,17 +94,17 @@ class _ProgramsListPageState extends State<ProgramsListPage> {
                         onTap: () async {
                           SubscriptionTracking.supportClick(
                               screenName: 'program_listing');
-                          final launchUri =
-                              Uri(scheme: 'tel', path: Const.HOTLINE_NUMBER);
-                          if (await canLaunchUrl(launchUri)) {
-                            await launchUrl(launchUri);
-                          } else {
-                            throw 'Could not make phone call ${Const.HOTLINE_NUMBER}';
-                          }
+                          // final launchUri =
+                          //     Uri(scheme: 'tel', path: Const.HOTLINE_NUMBER);
+                          // if (await canLaunchUrl(launchUri)) {
+                          //   await launchUrl(launchUri);
+                          // } else {
+                          //   throw 'Could not make phone call ${Const.HOTLINE_NUMBER}';
+                          // }
+                          HomeSupportFunctions.showModalAddData(context);
                         },
                         child: Container(
-                          width: 85,
-                          height: 33,
+                          height: 36,
                           padding:
                               EdgeInsets.symmetric(vertical: 4, horizontal: 6),
                           margin: EdgeInsets.fromLTRB(0, 12, 16, 12),
@@ -400,13 +401,14 @@ class ProgramCard extends StatelessWidget {
                       SubscriptionTracking.supportClick(
                           screenName: 'program_listing');
 
-                      final launchUri =
-                          Uri(scheme: 'tel', path: Const.HOTLINE_NUMBER);
-                      if (await canLaunchUrl(launchUri)) {
-                        await launchUrl(launchUri);
-                      } else {
-                        throw 'Could not make phone call ${Const.HOTLINE_NUMBER}';
-                      }
+                      // final launchUri =
+                      //     Uri(scheme: 'tel', path: Const.HOTLINE_NUMBER);
+                      // if (await canLaunchUrl(launchUri)) {
+                      //   await launchUrl(launchUri);
+                      // } else {
+                      //   throw 'Could not make phone call ${Const.HOTLINE_NUMBER}';
+                      // }
+                      HomeSupportFunctions.showModalAddData(context);
                     },
                   );
                 },
@@ -604,8 +606,8 @@ class ProgramCard extends StatelessWidget {
                 child: GestureDetector(
                   onTap: () async {
                     SubscriptionTracking.programRequest(
-                      screenName: 'program_listing',
-                      objectTitle: program.title);
+                        screenName: 'program_listing',
+                        objectTitle: program.title);
 
                     await notifySubscriptionSuccess(context);
                     ProgramService.showPopupRequestConsultSubscription(
@@ -617,7 +619,7 @@ class ProgramCard extends StatelessWidget {
                       secondaryButtonTitle: R.string.support.tr(),
                       onNavigateHome: () {
                         SubscriptionTracking.homeReturn(
-                                screenName: 'program_listing');
+                            screenName: 'program_listing');
 
                         Navigator.of(context, rootNavigator: true)
                             .pushNamedAndRemoveUntil(
@@ -628,15 +630,16 @@ class ProgramCard extends StatelessWidget {
                       },
                       onContact: () async {
                         SubscriptionTracking.supportClick(
-                          screenName: 'program_listing');
+                            screenName: 'program_listing');
 
-                        final launchUri =
-                            Uri(scheme: 'tel', path: Const.HOTLINE_NUMBER);
-                        if (await canLaunchUrl(launchUri)) {
-                          await launchUrl(launchUri);
-                        } else {
-                          throw 'Could not make phone call ${Const.HOTLINE_NUMBER}';
-                        }
+                        // final launchUri =
+                        //     Uri(scheme: 'tel', path: Const.HOTLINE_NUMBER);
+                        // if (await canLaunchUrl(launchUri)) {
+                        //   await launchUrl(launchUri);
+                        // } else {
+                        //   throw 'Could not make phone call ${Const.HOTLINE_NUMBER}';
+                        // }
+                        HomeSupportFunctions.showModalAddData(context);
                       },
                     );
                   },

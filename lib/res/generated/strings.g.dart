@@ -1237,7 +1237,8 @@ class Strings {
   String get audience => 'audience';
   String get action => 'action';
   String get receive_consult_request_title => 'receive_consult_request_title';
-  String get receive_consult_request_subtitle => 'receive_consult_request_subtitle';
+  String get receive_consult_request_subtitle =>
+      'receive_consult_request_subtitle';
   String get at_clinic => 'at_clinic';
   String get kham_tu_xa => 'kham_tu_xa';
   String get clinic_map => 'clinic_map';
@@ -1268,4 +1269,9 @@ class Strings {
       'conversation_setting_delete_failed';
   String get conversation_message_placeholder =>
       'conversation_message_placeholder';
+  String get chuong_trinh_dong_hanh => 'chuong_trinh_dong_hanh';
+  String get chuong_trinh_thau_cam => 'chuong_trinh_thau_cam';
+  String get subscription_title_1 => 'subscription_title_1';
+  String get subscription_title_2 => 'subscription_title_2';
+  String get subscription_subtitle => 'subscription_subtitle';
 }

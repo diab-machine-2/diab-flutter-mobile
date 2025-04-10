@@ -42,27 +42,34 @@ class PackageDetailBottomSheet extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      package.title.toUpperCase(),
-                      style: TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w700,
-                        color: R.color.greenGradientTop02,
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        package.title.toUpperCase(),
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w700,
+                          color: R.color.greenGradientTop02,
+                        ),
                       ),
-                    ),
-                    Text(
-                      '${package.price}',
-                      style: TextStyle(
-                        fontSize: 40,
-                        fontWeight: FontWeight.w700,
-                        color: R.color.color0xff111515,
+                      FittedBox(
+                        fit: BoxFit.scaleDown,
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          '${package.price}',
+                          style: TextStyle(
+                            fontSize: 40,
+                            fontWeight: FontWeight.w700,
+                            color: R.color.color0xff111515,
+                          ),
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
+                GapW(4),
                 Image.asset(
                   SubscriptionService.getBadgeImageFromId(package.id),
                   width: 78,
@@ -84,7 +91,8 @@ class PackageDetailBottomSheet extends StatelessWidget {
             GestureDetector(
               onTap: () {
                 SubscriptionTracking.programServiceRegister(
-                    screenName: 'program_service_detail', objectTitle: package.title);
+                    screenName: 'program_service_detail',
+                    objectTitle: package.title);
                 onPurchase();
               },
               child: Container(
