@@ -14,9 +14,11 @@ import 'package:medical/src/widgets/gap_widget.dart';
 
 class DsmesBookingOfflinePage extends StatefulWidget {
   final String serviceType;
+  final int? pendingClinicId;
   const DsmesBookingOfflinePage({
     Key? key,
     required this.serviceType,
+    this.pendingClinicId,
   }) : super(key: key);
 
   @override
@@ -36,6 +38,29 @@ class _DsmesBookingOfflinePageState extends State<DsmesBookingOfflinePage> {
   void initState() {
     super.initState();
     _cubit = context.read<DsmesAppointmentCubit>();
+
+    if (widget.pendingClinicId != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _handlePendingClinicId();
+      });
+    }
+  }
+
+  Future<void> _handlePendingClinicId() async {
+    try {
+      final detailSuccess =
+          await _cubit.getClinicDetail(id: widget.pendingClinicId!);
+
+      if (!detailSuccess || _cubit.selectedClinic == null) {
+        return;
+      }
+      await _cubit.getClinicRate(id: widget.pendingClinicId!);
+      DsmesNavigationMixin.navigationKey.currentState?.pushNamed(
+          NavigatorName.dsmes_clinic_detail,
+          arguments: {'clinicId': widget.pendingClinicId});
+    } catch (e) {
+      print('[ROUTE] Error handling pending clinic ID: $e');
+    }
   }
 
   @override

@@ -30,7 +30,15 @@ import 'package:medical/src/widgets/gap_widget.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class DsmesAppointmentPage extends StatefulWidget {
-  const DsmesAppointmentPage({Key? key}) : super(key: key);
+  final bool? pendingOnlineDeeplink;
+  final int? pendingClinicId;
+  final int? pendingMode;
+  const DsmesAppointmentPage({
+    Key? key,
+    this.pendingOnlineDeeplink = false,
+    this.pendingClinicId,
+    this.pendingMode,
+  }) : super(key: key);
 
   @override
   _DsmesAppointmentPageState createState() => _DsmesAppointmentPageState();
@@ -45,7 +53,13 @@ class _DsmesAppointmentPageState extends State<DsmesAppointmentPage>
     'chooseService': false,
     'onlineConsulting': false,
     'offlineConsulting': false,
+    'deeplink': false,
   };
+
+  // Flag to track when initialization is complete
+  bool _isInitialized = false;
+  // Flag to track if we need to handle deep links
+  bool _needToHandleDeeplinks = false;
 
   @override
   void initState() {
@@ -53,7 +67,12 @@ class _DsmesAppointmentPageState extends State<DsmesAppointmentPage>
     Observable.instance.addObserver(this);
     final AppRepository repository = AppRepository();
     _cubit = DsmesAppointmentCubit(repository);
-    // _cubit.getDsmesAppointmentList();
+
+    // Set flag if we have pending deeplinks
+    _needToHandleDeeplinks =
+        widget.pendingOnlineDeeplink == true || widget.pendingClinicId != null;
+
+    // Initialize without handling deeplinks yet
     _cubit.initDsmesBooking();
   }
 
@@ -77,6 +96,102 @@ class _DsmesAppointmentPageState extends State<DsmesAppointmentPage>
     await _cubit.getDsmesAppointmentList(isRefresh: true, page: 1);
   }
 
+  // Handle any pending deeplinks that were passed as arguments
+  void _handlePendingDeeplinks() async {
+    // Only process if we have pending deeplinks and aren't already processing
+    if (!_needToHandleDeeplinks || isProcessing['deeplink'] == true) return;
+
+    print('[ROUTE] Handling pending deeplinks');
+    isProcessing['deeplink'] = true;
+
+    try {
+      // Case 1: Handle online mode deeplink (0: online, 1: offline)
+      if (widget.pendingOnlineDeeplink == true) {
+        if (widget.pendingMode == 0) {
+          await _handleOnlineDeeplink();
+        } else if (widget.pendingMode == 1) {
+          await _handleOfflineDeeplink();
+        }
+      }
+      // Case 2: Handle clinic detail deeplink
+      else if (widget.pendingClinicId != null) {
+        await _handleClinicDetailDeeplink();
+      }
+
+      // Clear flag after handling
+      _needToHandleDeeplinks = false;
+    } catch (e) {
+      print('[ROUTE] Error handling deeplink in DsmesAppointmentPage: $e');
+    } finally {
+      isProcessing['deeplink'] = false;
+    }
+  }
+
+  // Handle online mode deeplink
+  Future<void> _handleOnlineDeeplink() async {
+    try {
+      final clinics = await _cubit.getClinicList(type: 'online');
+      if (clinics.isNotEmpty) {
+        final priorityClinic = clinics.first;
+        final detailSuccess =
+            await _cubit.getClinicDetail(id: priorityClinic.id);
+
+        if (!detailSuccess || _cubit.selectedClinic == null) {
+          return;
+        }
+
+        await _cubit.initCreateDsmesBookingRequest(
+            locale: context.locale.languageCode);
+
+        DsmesNavigationMixin.navigationKey.currentState
+            ?.pushNamed(NavigatorName.dsmes_select_service, arguments: {
+          'action': 'create',
+          'clinic': _cubit.selectedClinic,
+          'serviceType': DsmesAppointmentMode.telemedicine.toString(),
+          'isMergedSchedule': true
+        });
+      }
+    } catch (e) {
+      print('[ROUTE] Error handling online deeplink: $e');
+    }
+  }
+
+  // Handle offline mode deeplink
+  Future<void> _handleOfflineDeeplink() async {
+    try {
+      await _cubit.getClinicList();
+      DsmesNavigationMixin.navigationKey.currentState
+          ?.pushNamed(NavigatorName.dsmes_booking_offline, arguments: {
+        'serviceType': DsmesAppointmentMode.atClinic.toString(),
+      });
+    } catch (e) {
+      print('[ROUTE] Error handling offline deeplink: $e');
+    }
+  }
+
+  // Handle clinic detail deeplink
+  Future<void> _handleClinicDetailDeeplink() async {
+    try {
+      if (widget.pendingClinicId != null) {
+        final detailSuccess =
+            await _cubit.getClinicDetail(id: widget.pendingClinicId!);
+
+        if (!detailSuccess || _cubit.selectedClinic == null) {
+          return;
+        }
+
+        await _cubit.getClinicRate(id: widget.pendingClinicId!);
+
+        // Otherwise, just navigate to clinic detail
+        DsmesNavigationMixin.navigationKey.currentState?.pushNamed(
+            NavigatorName.dsmes_clinic_detail,
+            arguments: {'clinicId': widget.pendingClinicId});
+      }
+    } catch (e) {
+      print('[ROUTE] Error handling clinic detail deeplink: $e');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -88,25 +203,17 @@ class _DsmesAppointmentPageState extends State<DsmesAppointmentPage>
           create: (context) => _cubit,
           child: WillPopScope(
             onWillPop: () async {
-              print('[POP] root pop scope');
+              print('[POP] root pop scope: $_currentRoute');
+              if (_currentRoute == '/') {
+                Navigator.of(context).pop();
+                return false;
+              }
+
               if (_currentRoute == NavigatorName.dsmes_booking_detail) {
                 FocusScope.of(
                         DsmesNavigationMixin.navigationKey.currentContext!)
                     .unfocus();
 
-                // final route = ModalRoute.of(
-                //         DsmesNavigationMixin.navigationKey.currentContext!)
-                //     ?.settings;
-                // print('[POP] route: $route');
-                // final args = route?.arguments as Map<String, dynamic>?;
-                // print('[POP] Args: ${route?.arguments}');
-                // final previousRoute = args?['previousRoute'] as String?;
-
-                // if (previousRoute == NavigatorName.dsmes_booking_history ||
-                //     previousRoute == NavigatorName.dsmes_clinic_detail) {
-                //   DsmesNavigationMixin.navigationKey.currentState?.pop();
-                //   return false;
-                // }
                 DsmesNavigationMixin.navigationKey.currentState
                     ?.popUntil((route) => route.isFirst);
                 Observable.instance.notifyObservers([],
@@ -166,6 +273,7 @@ class _DsmesAppointmentPageState extends State<DsmesAppointmentPage>
                       settings,
                       DsmesBookingOfflinePage(
                         serviceType: args!["serviceType"],
+                        pendingClinicId: args["pendingClinicId"],
                       ),
                     );
                   case NavigatorName.dsmes_booking_select_date:
@@ -257,10 +365,24 @@ class _DsmesAppointmentPageState extends State<DsmesAppointmentPage>
   Widget _buildMainContent(BuildContext context) {
     return BlocConsumer<DsmesAppointmentCubit, DsmesAppointmentState>(
       listener: (context, state) {
-        print('Current state: $state');
+        print('[BLOC] Current state: $state');
+
         if (state is DsmesAppointmentFailure) {
           BotToast.closeAllLoading();
           Message.showToastMessage(context, state.error);
+        } else if (state is DsmesAppointmentLoaded) {
+          BotToast.closeAllLoading();
+          _controller.refreshCompleted();
+
+          // If we just loaded and need to handle deeplinks, do it after a short delay
+          // to ensure the UI is fully built
+          if (_needToHandleDeeplinks && !_isInitialized) {
+            _isInitialized = true;
+            // Short delay to ensure the UI is fully built and BlocProvider has updated
+            Future.delayed(const Duration(milliseconds: 500), () {
+              _handlePendingDeeplinks();
+            });
+          }
         } else {
           BotToast.closeAllLoading();
           _controller.refreshCompleted();
@@ -270,7 +392,7 @@ class _DsmesAppointmentPageState extends State<DsmesAppointmentPage>
         BuildContext context,
         DsmesAppointmentState state,
       ) {
-        print('Building with state: $state');
+        print('[BLOC] Building UI with state: $state');
         if (state is DsmesAppointmentLoading) {
           BotToast.showLoading(allowClick: false);
         } else {
@@ -396,8 +518,8 @@ class _DsmesAppointmentPageState extends State<DsmesAppointmentPage>
                             if (isProcessing['chooseService']!) return;
                             isProcessing['chooseService'] = true;
                             try {
-                              final detailSuccess =
-                                  await _cubit.getClinicDetail(id: data.clinicId);
+                              final detailSuccess = await _cubit
+                                  .getClinicDetail(id: data.clinicId);
 
                               if (!detailSuccess ||
                                   _cubit.selectedClinic == null) {
@@ -429,7 +551,8 @@ class _DsmesAppointmentPageState extends State<DsmesAppointmentPage>
                         if (isProcessing['onlineConsulting']!) return;
                         isProcessing['onlineConsulting'] = true;
                         try {
-                          final clinics = await _cubit.getClinicList(type: 'online');
+                          final clinics =
+                              await _cubit.getClinicList(type: 'online');
                           if (clinics.isNotEmpty) {
                             final priorityClinic = clinics.first;
                             final detailSuccess = await _cubit.getClinicDetail(

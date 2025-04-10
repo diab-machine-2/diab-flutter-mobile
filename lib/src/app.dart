@@ -670,7 +670,11 @@ class App extends StatelessWidget {
                     final args = settings.arguments as Map<String, dynamic>;
                     return _buildRoute(
                       settings,
-                      DsmesAppointmentPage(),
+                      DsmesAppointmentPage(
+                        pendingOnlineDeeplink: args['pendingOnlineDeeplink'],
+                        pendingClinicId: args['pendingClinicId'],
+                        pendingMode: args['pendingMode'],
+                      ),
                     );
                   // case NavigatorName.conversation_chatbot_ai:
                   case NavigatorName.conversation_chatbot_ai:
