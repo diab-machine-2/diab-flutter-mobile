@@ -1211,7 +1211,8 @@ class Strings {
   String get symptom => 'symptom';
   String get cancel_booking => 'cancel_booking';
   String get confirm_cancel_schedule => 'confirm_cancel_schedule';
-  String get confirm_cancel_schedule_content => 'confirm_cancel_schedule_content';
+  String get confirm_cancel_schedule_content =>
+      'confirm_cancel_schedule_content';
   String get confirm_change_booking_content => 'confirm_change_booking_content';
   String get rebooking => 'rebooking';
   String get support => 'support';
@@ -1229,4 +1230,34 @@ class Strings {
   String get exist_appointment => 'exist_appointment';
   String get symptom_hint_text => 'symptom_hint_text';
   String get join_zalo_group => 'join_zalo_group';
+  String get at_clinic => 'at_clinic';
+  String get kham_tu_xa => 'kham_tu_xa';
+  String get clinic_map => 'clinic_map';
+  String get conversation_chatbot_ai_title => 'conversation_chatbot_ai_title';
+  String get conversation_alert_id_is_empty => 'conversation_alert_id_is_empty';
+  String get conversation_mockup_title => 'conversation_mockup_title';
+  String get conversation_mockup_description =>
+      'conversation_mockup_description';
+  String get conversation_empty_message => 'conversation_empty_message';
+  String get conversation_message_copied => 'conversation_message_copied';
+  String get conversation_typing => 'conversation_typing';
+  String get conversation_message_read_more => 'conversation_message_read_more';
+  String get conversation_message_read_less => 'conversation_message_read_less';
+  String get conversation_pls_wait_bot_finish_typing =>
+      'conversation_pls_wait_bot_finish_typing';
+  String get conversation_setting_title => 'conversation_setting_title';
+  String get conversation_setting_delete_title =>
+      'conversation_setting_delete_title';
+  String get conversation_setting_delete_btn_cancel =>
+      'conversation_setting_delete_btn_cancel';
+  String get conversation_setting_delete_btn_delete =>
+      'conversation_setting_delete_btn_delete';
+  String get conversation_setting_action_delete =>
+      'conversation_setting_action_delete';
+  String get conversation_setting_delete_success =>
+      'conversation_setting_delete_success';
+  String get conversation_setting_delete_failed =>
+      'conversation_setting_delete_failed';
+  String get conversation_message_placeholder =>
+      'conversation_message_placeholder';
 }

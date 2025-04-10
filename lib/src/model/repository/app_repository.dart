@@ -31,6 +31,7 @@ import 'package:medical/src/model/request/update_shared_profile_request.dart';
 import 'package:medical/src/model/request/zoom_token_request.dart';
 import 'package:medical/src/model/response/blood_sugar_template_response.dart';
 import 'package:medical/src/model/response/branchio_generate_zoom_response.dart';
+import 'package:medical/src/model/response/chat_supabase_response.dart';
 import 'package:medical/src/model/response/common_response.dart';
 import 'package:medical/src/model/response/create_calendar_response.dart';
 import 'package:medical/src/model/response/create_dsmes_offline_booking_response.dart';
@@ -891,6 +892,67 @@ class AppRepository {
     }
   }
 
+  Future<ApiResult<SupabaseConfigResponse>> getSupabaseConfig() async {
+    try {
+      final response = await appClient.getSupabaseConfig();
+      return ApiResult.success(data: response);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
+  Future<ApiResult<MessageResponse>> sendMessageById(
+    String conversationId,
+    String messageId,
+  ) async {
+    try {
+      final response =
+          await appClient.sendMessageById(conversationId, messageId);
+      return ApiResult.success(data: response);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
+  Future<ApiResult<MessageResponse>> regenerateMessage(
+      String conversationId) async {
+    try {
+      final response = await appClient.regenerateMessage(conversationId);
+      return ApiResult.success(data: response);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
+  Future<ApiResult<ConversationListResponse>> getMyConversation() async {
+    try {
+      final response = await appClient.getMyConversation();
+      return ApiResult.success(data: response);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
+  Future<ApiResult<CreateConversationResponse>> createConversation(
+      CreateConversationRequest request) async {
+    try {
+      final response = await appClient.createConversation(request);
+      return ApiResult.success(data: response);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
+  Future<ApiResult<CommonResponse>> deleteConversation(
+      String conversationId) async {
+    try {
+      final response = await appClient.deleteConversation(conversationId);
+      return ApiResult.success(data: response);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
   Future<ApiResult<List<CreateCalendarResponse>>> getMyCalendar(
       CalendarFilter request) async {
     try {
@@ -985,7 +1047,8 @@ class AppRepository {
     }
   }
 
-  Future<ApiResult<DsmesClinicListResponse>> getClinicList({String? type}) async {
+  Future<ApiResult<DsmesClinicListResponse>> getClinicList(
+      {String? type}) async {
     try {
       final response = await docosanClient.getClinicList(type);
       return ApiResult.success(data: response);

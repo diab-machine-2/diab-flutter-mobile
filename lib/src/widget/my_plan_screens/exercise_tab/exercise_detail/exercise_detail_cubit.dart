@@ -39,9 +39,16 @@ class ExerciseDetailCubit extends Cubit<ExerciseDetailState> {
           objectId: exerciseData.id,
           objectTitle: exerciseData.name,
         );
+
+        // Only mark exercise as completed when it's actually completed
+        // and only if it hasn't been marked completed before
         if (!exerciseCompleted &&
             exerciseData.completionStatus != CompletionStatus.completed &&
-            eventType == CustomPlayerEventType.videoCompleted) {
+            eventType == CustomPlayerEventType.videoCompleted &&
+            // Additional check to ensure we have a valid duration
+            duration.inMilliseconds > 0) {
+          debugPrint(
+              '[EXERCISE] Marking exercise as completed through event listener');
           exerciseCompleted = true;
           completeExercise(exerciseData.id ?? '');
         }
@@ -49,11 +56,17 @@ class ExerciseDetailCubit extends Cubit<ExerciseDetailState> {
       onDone: () {
         if (!exerciseCompleted &&
             exerciseData.completionStatus != CompletionStatus.completed) {
+          debugPrint('[EXERCISE] Marking exercise as completed through onDone');
           exerciseCompleted = true;
           completeExercise(exerciseData.id ?? '');
         }
       },
     );
+
+    // Ensure the video is properly initialized
+    if (videoManager.controller != null) {
+      await videoManager.ensureVideoInitialized();
+    }
   }
 
   Future<void> completeVideo(String exerciseCategoryId, int duration) async {

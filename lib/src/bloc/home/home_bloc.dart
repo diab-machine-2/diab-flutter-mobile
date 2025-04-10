@@ -62,8 +62,9 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       yield* _fetchNews();
     } else if (event is HomeFetchBannersEvent) {
       yield* _fetchBanners();
-    } else if (event is FetchHome) {
+    } else if (event is HomeFetchCustomerReceivesUser) {
       yield* _fetchCustomerReceivesUser();
+    } else if (event is FetchHome) {
       // Fetch all data
       yield* _fetchHomes();
     }
@@ -467,8 +468,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       // ),
       HomeUtilityData(
         icon: R.drawable.ic_home_doctor_consult,
-        title: "Tư vấn sức khoẻ",
-        slug: "tu-van-suc-khoe",
+        title: "Tư vấn sống khoẻ",
+        slug: "tu-van-song-khoe",
         navigatorName: NavigatorName.dsmes_booking,
       ),
     ];

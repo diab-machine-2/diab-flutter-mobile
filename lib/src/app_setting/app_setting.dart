@@ -54,6 +54,12 @@ class AppSettings {
     _countryCode = code;
   }
 
+  static bool _splashScreenInitDone = false;
+  static bool get splashScreenInitDone => _splashScreenInitDone;
+  static void setSplashScreenInitDone(bool value) {
+    _splashScreenInitDone = value;
+  }
+
   static Future<void> setZaloId(String id) async {
     zaloId = id;
     appPreference.setData("zaloId", id);
@@ -395,12 +401,15 @@ class AppSettings {
 
   // Check to show 1st page
   static Future<String?> getLastOpenedGlucoseInputType() async {
-    String? lastOpenedGlucoseInputType = appPreference.getData("lastOpenedGlucoseInputType");
+    String? lastOpenedGlucoseInputType =
+        appPreference.getData("lastOpenedGlucoseInputType");
     return lastOpenedGlucoseInputType;
   }
+
   static void setLastOpenedGlucoseInputType(String inputType) {
     appPreference.setData("lastOpenedGlucoseInputType", inputType);
   }
+
   static void clearLastOpenedGlucoseInputType() {
     appPreference.removeData("lastOpenedGlucoseInputType");
   }

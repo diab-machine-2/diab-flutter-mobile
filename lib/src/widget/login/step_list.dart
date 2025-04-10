@@ -15,7 +15,6 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/app_setting/branchio_link_config.dart';
 import 'package:medical/src/app_setting/deep_link_config.dart';
-import 'package:medical/src/app_setting/dynamic_link_config.dart';
 import 'package:medical/src/modal/error/error_model.dart';
 import 'package:medical/src/repo/login/login_client.dart';
 import 'package:medical/src/repo/user/user_client.dart';
@@ -162,19 +161,12 @@ class _StepListControllerState extends State<StepListController>
       checkReferralCode();
     });
     firebaseSetup();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      onboardingNavigateLogin();
-    });
-  }
-
-  void onboardingNavigateLogin() {
-    final haveOnBoardingFlag = BranchioLinkConfig.instance.haveOnBoardingFlag;
-    BranchioLinkConfig.instance.isStepListInit = true;
-    if (haveOnBoardingFlag == true && mounted) {
-      print('[ONBOARDING] Navigating to login after StepList initialization');
-      BranchioLinkConfig.instance.haveOnBoardingFlag = null;
-
-      Navigator.of(context).pushNamed(NavigatorName.login);
+    if (BranchioLinkConfig.instance.hasPendingLoginDeeplink) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        // This runs after the frame is built
+        Navigator.of(context).pushNamed(NavigatorName.login, arguments: '');
+        BranchioLinkConfig.instance.clearPendingLoginData();
+      });
     }
   }
 

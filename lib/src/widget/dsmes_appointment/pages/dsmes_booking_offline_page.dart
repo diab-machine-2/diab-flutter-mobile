@@ -14,9 +14,11 @@ import 'package:medical/src/widgets/gap_widget.dart';
 
 class DsmesBookingOfflinePage extends StatefulWidget {
   final String serviceType;
+  final int? pendingClinicId;
   const DsmesBookingOfflinePage({
     Key? key,
     required this.serviceType,
+    this.pendingClinicId,
   }) : super(key: key);
 
   @override
@@ -36,6 +38,29 @@ class _DsmesBookingOfflinePageState extends State<DsmesBookingOfflinePage> {
   void initState() {
     super.initState();
     _cubit = context.read<DsmesAppointmentCubit>();
+
+    if (widget.pendingClinicId != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _handlePendingClinicId();
+      });
+    }
+  }
+
+  Future<void> _handlePendingClinicId() async {
+    try {
+      final detailSuccess =
+          await _cubit.getClinicDetail(id: widget.pendingClinicId!);
+
+      if (!detailSuccess || _cubit.selectedClinic == null) {
+        return;
+      }
+      await _cubit.getClinicRate(id: widget.pendingClinicId!);
+      DsmesNavigationMixin.navigationKey.currentState?.pushNamed(
+          NavigatorName.dsmes_clinic_detail,
+          arguments: {'clinicId': widget.pendingClinicId});
+    } catch (e) {
+      print('[ROUTE] Error handling pending clinic ID: $e');
+    }
   }
 
   @override
@@ -164,12 +189,20 @@ class _DsmesBookingOfflinePageState extends State<DsmesBookingOfflinePage> {
   }
 
   _buildClinicItem(DsmesClinicModel data) {
+    final bool hasTelemedicine =
+        data.hasServiceAvailable(DsmesAppointmentMode.telemedicine);
+    final bool hasAtClinic =
+        data.hasServiceAvailable(DsmesAppointmentMode.atClinic);
     return GestureDetector(
       onTap: () async {
         if (isProcessing['clinicDetail']!) return;
         isProcessing['clinicDetail'] = true;
         try {
-          await _cubit.getClinicDetail(id: data.id);
+          final detailSuccess = await _cubit.getClinicDetail(id: data.id);
+
+          if (!detailSuccess || _cubit.selectedClinic == null) {
+            return;
+          }
           await _cubit.getClinicRate(id: data.id);
           DsmesNavigationMixin.navigationKey.currentState?.pushNamed(
               NavigatorName.dsmes_clinic_detail,
@@ -268,118 +301,147 @@ class _DsmesBookingOfflinePageState extends State<DsmesBookingOfflinePage> {
               GapH(16),
               Row(
                 children: [
-                  Expanded(
-                    child: Container(
-                      height: 40,
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: InkWell(
-                              onTap: () async {
-                                if (isProcessing['onlineConsult']!) return;
-                                isProcessing['onlineConsult'] = true;
-                                try {
-                                  await _cubit.getClinicDetail(id: data.id);
-                                  await _cubit.initCreateDsmesBookingRequest(
-                                      locale: context.locale.languageCode);
+                  if (hasTelemedicine)
+                    Expanded(
+                      child: Container(
+                        height: 40,
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: InkWell(
+                                onTap: () async {
+                                  if (isProcessing['onlineConsult']!) return;
+                                  isProcessing['onlineConsult'] = true;
+                                  try {
+                                    final detailSuccess = await _cubit
+                                        .getClinicDetail(id: data.id);
 
-                                  DsmesNavigationMixin
-                                      .navigationKey.currentState
-                                      ?.pushNamed(
-                                          NavigatorName.dsmes_select_service,
-                                          arguments: {
-                                        'action': 'create',
-                                        'clinic': _cubit.selectedClinic,
-                                        'serviceType': DsmesAppointmentMode
-                                            .telemedicine
-                                            .toString(),
-                                      });
-                                } finally {
-                                  isProcessing['onlineConsult'] = false;
-                                }
-                              },
-                              child: Container(
-                                alignment: Alignment.center,
-                                padding: EdgeInsets.all(10),
-                                decoration: BoxDecoration(
-                                  color: R.color.color0xffE7FDFB,
-                                  borderRadius: BorderRadius.circular(200),
-                                ),
-                                child: Text(
-                                  R.string.consult_online.tr(),
-                                  style: TextStyle(
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.w700,
-                                    color: R.color.greenGradientBottom,
+                                    if (!detailSuccess ||
+                                        _cubit.selectedClinic == null) {
+                                      return;
+                                    }
+                                    await _cubit.initCreateDsmesBookingRequest(
+                                        locale: context.locale.languageCode);
+
+                                    DsmesNavigationMixin
+                                        .navigationKey.currentState
+                                        ?.pushNamed(
+                                            NavigatorName.dsmes_select_service,
+                                            arguments: {
+                                          'action': 'create',
+                                          'clinic': _cubit.selectedClinic,
+                                          'serviceType': DsmesAppointmentMode
+                                              .telemedicine
+                                              .toString(),
+                                        });
+                                  } finally {
+                                    isProcessing['onlineConsult'] = false;
+                                  }
+                                },
+                                child: Container(
+                                  alignment: Alignment.center,
+                                  padding: EdgeInsets.all(10),
+                                  decoration: BoxDecoration(
+                                    // Change color based on whether it's the only button
+                                    color: hasAtClinic
+                                        ? R.color.color0xffE7FDFB
+                                        : null,
+                                    gradient: !hasAtClinic
+                                        ? LinearGradient(
+                                            begin: Alignment.topCenter,
+                                            end: Alignment.bottomCenter,
+                                            colors: [
+                                              R.color.greenGradientTop02,
+                                              R.color.greenGradientBottom
+                                            ],
+                                          )
+                                        : null,
+                                    borderRadius: BorderRadius.circular(200),
+                                  ),
+                                  child: Text(
+                                    R.string.consult_online.tr(),
+                                    style: TextStyle(
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.w700,
+                                      // Change text color based on whether it's the only button
+                                      color: hasAtClinic
+                                          ? R.color.greenGradientBottom
+                                          : R.color.white,
+                                    ),
                                   ),
                                 ),
                               ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-                  GapW(12),
-                  Expanded(
-                    child: Container(
-                      height: 40,
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: InkWell(
-                              onTap: () async {
-                                if (isProcessing['clinicConsult']!) return;
-                                isProcessing['clinicConsult'] = true;
-                                try {
-                                  await _cubit.getClinicDetail(id: data.id);
-                                  if (_cubit.selectedClinic == null) return;
-                                  _cubit.initCreateDsmesBookingRequest(
-                                      locale: context.locale.languageCode);
-                                  await DsmesNavigationMixin
-                                      .navigationKey.currentState
-                                      ?.pushNamed(
-                                          NavigatorName
-                                              .dsmes_booking_select_date,
-                                          arguments: {
-                                        'serviceType': widget.serviceType,
-                                        'action': 'create',
-                                      });
-                                } finally {
-                                  isProcessing['clinicConsult'] = false;
-                                }
-                              },
-                              child: Container(
-                                alignment: Alignment.center,
-                                decoration: BoxDecoration(
-                                  gradient: LinearGradient(
-                                    begin: Alignment.topCenter,
-                                    end: Alignment.bottomCenter,
-                                    colors: [
-                                      R.color.greenGradientTop02,
-                                      R.color.greenGradientBottom
-                                    ],
+                  if (hasTelemedicine && hasAtClinic) GapW(12),
+                  if (hasAtClinic)
+                    Expanded(
+                      child: Container(
+                        height: 40,
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: InkWell(
+                                onTap: () async {
+                                  if (isProcessing['clinicConsult']!) return;
+                                  isProcessing['clinicConsult'] = true;
+                                  try {
+                                    final detailSuccess = await _cubit
+                                        .getClinicDetail(id: data.id);
+
+                                    if (!detailSuccess ||
+                                        _cubit.selectedClinic == null) {
+                                      return;
+                                    }
+                                    _cubit.initCreateDsmesBookingRequest(
+                                        locale: context.locale.languageCode);
+                                    await DsmesNavigationMixin
+                                        .navigationKey.currentState
+                                        ?.pushNamed(
+                                            NavigatorName
+                                                .dsmes_booking_select_date,
+                                            arguments: {
+                                          'serviceType': widget.serviceType,
+                                          'action': 'create',
+                                        });
+                                  } finally {
+                                    isProcessing['clinicConsult'] = false;
+                                  }
+                                },
+                                child: Container(
+                                  alignment: Alignment.center,
+                                  decoration: BoxDecoration(
+                                    gradient: LinearGradient(
+                                      begin: Alignment.topCenter,
+                                      end: Alignment.bottomCenter,
+                                      colors: [
+                                        R.color.greenGradientTop02,
+                                        R.color.greenGradientBottom
+                                      ],
+                                    ),
+                                    borderRadius: BorderRadius.circular(200),
                                   ),
-                                  borderRadius: BorderRadius.circular(200),
-                                ),
-                                padding: EdgeInsets.all(10),
-                                child: Text(
-                                  R.string.consult_at_clinic.tr(),
-                                  style: TextStyle(
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.w700,
-                                    color: R.color.white,
+                                  padding: EdgeInsets.all(10),
+                                  child: Text(
+                                    R.string.consult_at_clinic.tr(),
+                                    style: TextStyle(
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.w700,
+                                      color: R.color.white,
+                                    ),
                                   ),
                                 ),
                               ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
-                  ),
                 ],
-              ),
+              )
             ],
           ),
         ),
